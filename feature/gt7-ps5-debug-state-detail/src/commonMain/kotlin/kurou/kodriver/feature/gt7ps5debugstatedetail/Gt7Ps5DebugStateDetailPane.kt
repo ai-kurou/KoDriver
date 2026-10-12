@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -29,6 +30,8 @@ import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.navigat
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyGridState
 
 private val NARROW_WIDTH_UPPER_BOUND = 400.dp
 private val MEDIUM_WIDTH_UPPER_BOUND = 700.dp
@@ -58,6 +61,7 @@ fun Gt7Ps5DebugStateDetailPane(
         uiState = uiState,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
+        onMoveCard = viewModel::moveCard,
         modifier = modifier,
     )
 }
@@ -67,6 +71,7 @@ internal fun Gt7Ps5DebugStateDetailPaneContent(
     uiState: Gt7Ps5DebugStateDetailUiState,
     canNavigateBack: Boolean,
     onBack: () -> Unit,
+    onMoveCard: (Int, Int) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
 ) {
     DetailPaneScaffold(
@@ -78,17 +83,25 @@ internal fun Gt7Ps5DebugStateDetailPaneContent(
     ) {
         BoxWithConstraints {
             val columns = calculateDebugStateColumns(maxWidth)
+            val gridState = rememberLazyGridState()
+            val reorderableState =
+                rememberReorderableLazyGridState(gridState) { from, to ->
+                    onMoveCard(from.index, to.index)
+                }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(columns),
+                state = gridState,
                 modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
             ) {
                 items(uiState.cardOrder, key = { it.name }) { cardKey ->
-                    DebugStateCard(
-                        cardKey = cardKey,
-                        uiState = uiState,
-                        enabled = cardKey in uiState.enabledCardKeys,
-                        modifier = Modifier.padding(KoDriverSpacing.small),
-                    )
+                    ReorderableItem(reorderableState, key = cardKey.name) {
+                        DebugStateCard(
+                            cardKey = cardKey,
+                            uiState = uiState,
+                            enabled = cardKey in uiState.enabledCardKeys,
+                            modifier = Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle(),
+                        )
+                    }
                 }
             }
         }

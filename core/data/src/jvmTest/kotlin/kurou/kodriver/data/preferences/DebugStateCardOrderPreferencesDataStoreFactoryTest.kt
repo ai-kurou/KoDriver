@@ -24,6 +24,9 @@ class DebugStateCardOrderPreferencesDataStoreFactoryTest {
             val dataStore = createDebugStateCardOrderPreferencesDataStore(tempDir.absolutePath, Simulator.LmuWindows)
             dataStore.updateData { it.copy(cardOrder = listOf("SESSION")) }
 
+            val gt7Store = createDebugStateCardOrderPreferencesDataStore(tempDir.absolutePath, Simulator.Gt7Ps5)
+            gt7Store.updateData { it.copy(cardOrder = listOf("CURRENT_LAP")) }
+            assertTrue(tempDir.resolve("debug_state_card_order_preferences_gt7_ps5.pb").exists())
             assertTrue(tempDir.resolve("debug_state_card_order_preferences_lmu_windows.pb").exists())
         }
 }
