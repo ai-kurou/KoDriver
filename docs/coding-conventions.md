@@ -5,6 +5,7 @@
 - 共有メモリのパースロジックは `internal object XxxMapper` に隔離し、ドメイン層には持ち込まない。
 - `core:data` は `kotlinMultiplatform` プラグイン（JVM + Android ターゲット）を使用する。JVM 実装は `src/jvmMain/kotlin`、Android 実装は `src/androidMain/kotlin` に置く。
 - LMU Windows共有メモリ固有の実装はJVM専用の `core:lmu-windows-data` に置き、`core:data` へ依存させない。
+- モジュール間の依存（`projects.*`）は `implementation(projects.xxx)` で宣言し、`api(projects.xxx)` は使わない。`api` は依存先を利用側へ推移的に公開するため、`moduleGraphAssert` が禁止している依存（例: `app:*App` → `core:domain`）が見かけ上の経路で成立したり、不要な依存が利用側のコンパイルクラスパスへ広がったりする。依存先の型が必要なモジュールは、自身の `build.gradle.kts` で明示的に宣言する。
 - `@Preview` 関数は実体の `@Composable` と同一ファイルに記述する。`@Preview` のインポートは `androidx.compose.ui.tooling.preview.Preview` を使う（`org.jetbrains.compose.ui.tooling.preview.Preview` は commonMain で解決されないため使用不可）。
 - `@Preview` 関数名は末尾を `Preview` で終える（例: `XxxScreenPreview`）こと。detekt の `UnusedPrivateMember`（`config/detekt/detekt.yml`）は `@Preview` にアノテーション除外設定が無いため、`allowedNames: '.*Preview'` という命名規則ベースの除外で対応している。この命名から外れると、IDEプレビュー/スクリーンショットテストからのみ呼び出される `@Preview` 関数が未使用コードとして detekt に検出される。
 - 文字スタイルは `MaterialTheme.typography.*` を参照し、`fontSize` / `FontWeight` を Composable 内で直接指定しない。アプリ全体のタイポグラフィは `:core:designsystem` の `KoDriverTypography` で一元管理する。等幅・数値表示は `:core:designsystem` の `koDriverMonospaceTextStyle()` / `koDriverNumericTextStyle()` を使い、`FontFamily` を feature で直接指定しない。
