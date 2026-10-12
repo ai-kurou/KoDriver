@@ -33,11 +33,6 @@ import org.koin.compose.viewmodel.koinViewModel
 private val NarratorOverlayBackgroundColor = Color(0xFFEDEDED)
 
 /**
- * オーバーレイHUDの文字色（黄色系）。ゲーム画面上での視認性を優先した固定色とする。
- */
-private val NarratorOverlayTextColor = Color(0xFFFFC107)
-
-/**
  * 透明な背景でも文字を読みやすくする黒い影。ゲーム画面上の視認性を優先し、アプリテーマに依存しない固定色とする。
  */
 private val NarratorOverlayTextShadow =
@@ -72,7 +67,7 @@ internal fun NarratorOverlayContent(
         ) {
             Text(
                 text = uiState.latestTelemetryLog?.narratedText.orEmpty(),
-                color = NarratorOverlayTextColor,
+                color = Color(uiState.overlayTextColor),
                 style = narratorOverlayTextStyle(uiState.overlayTextSize),
                 textAlign = TextAlign.Center,
             )
