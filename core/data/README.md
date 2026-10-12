@@ -61,4 +61,4 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 
 LMU のデバッグ専用の現在値読み上げホットキーは `ReadoutHotkeyPreferencesRepository` が
 `lmu_windows_readout_hotkey_preferences.pb` に仮想キーコードを保存する。既定値は domain の F1 定数を参照する。
-Desktop・Android 両方で設定 Repository を登録し、Android の `HotkeyRepository` は設定の取得・保存と `Unsupported` 状態を提供する。
+Desktop・Android 両方で設定 Repository を登録し、Android の `HotkeyRepository` は `Unsupported` 状態のみを提供する。

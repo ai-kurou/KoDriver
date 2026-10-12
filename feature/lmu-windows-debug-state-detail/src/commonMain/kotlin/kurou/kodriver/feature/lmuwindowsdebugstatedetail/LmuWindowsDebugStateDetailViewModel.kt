@@ -92,7 +92,10 @@ internal class LmuWindowsDebugStateDetailViewModel(
     fun selectHotkey(virtualKeyCode: Int) {
         hotkeyCheckJob?.cancel()
         _hotkeyCheckState.update { HotkeyCheckState.Idle }
-        viewModelScope.launch { hotkeyUseCases.saveVirtualKeyCode(virtualKeyCode) }
+        viewModelScope.launch {
+            hotkeyUseCases.saveVirtualKeyCode(virtualKeyCode)
+            hotkeyUseCases.retryRegistration()
+        }
     }
 
     fun checkHotkey() {

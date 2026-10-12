@@ -73,7 +73,7 @@ internal fun androidDataModuleLmuWindows(context: Context): Module =
             createReadoutHotkeyPreferencesRepository(context.filesDir.absolutePath)
         }
         includes(androidDataModuleLmuWindowsPreferences(context))
-        single<HotkeyRepository> { UnsupportedHotkeyRepository(get()) }
+        single<HotkeyRepository> { UnsupportedHotkeyRepository() }
         single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(serverIpRepository = get(), client = get()) }
         single<LmuWindowsFlagRepository> {
             WebSocketLmuWindowsFlagRepository(

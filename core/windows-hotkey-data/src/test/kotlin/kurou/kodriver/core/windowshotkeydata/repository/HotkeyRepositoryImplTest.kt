@@ -47,9 +47,8 @@ class HotkeyRepositoryImplTest {
             testScheduler.runCurrent()
             assertEquals(emptyList(), latePresses)
             assertEquals(HotkeyRegistrationState.Registered, repository.registrationStateStream().first())
-            repository.saveVirtualKeyCode(0x41)
+            preferences.saveVirtualKeyCode(0x41)
             testScheduler.runCurrent()
-            assertEquals(0x41, repository.observeVirtualKeyCode().first())
             assertEquals(listOf(GlobalHotkey(7, 0x70), GlobalHotkey(7, 0x41)), source.requested)
             assertEquals(listOf(GlobalHotkey(7, 0x70)), source.released)
             assertEquals(1, source.activeRegistrations)
@@ -57,6 +56,50 @@ class HotkeyRepositoryImplTest {
             testScheduler.runCurrent()
             assertEquals(listOf(Unit, Unit), presses)
             assertEquals(listOf(Unit), latePresses)
+        }
+
+    @Test
+    fun `競合後は同じキーでも再試行で再登録され登録済みでは再登録しない`() =
+        runTest {
+            val source = RecordingSource(HotkeyRegistrationState.Conflict)
+            val repository = HotkeyRepositoryImpl(source, RecordingPreferences(), backgroundScope)
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                repository.registrationStateStream().collect { }
+            }
+            testScheduler.runCurrent()
+            repository.retryRegistration()
+            testScheduler.runCurrent()
+            assertEquals(listOf(GlobalHotkey(7, 0x70), GlobalHotkey(7, 0x70)), source.requested)
+            val registered = RecordingSource()
+            val other = HotkeyRepositoryImpl(registered, RecordingPreferences(), backgroundScope)
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                other.registrationStateStream().collect { }
+            }
+            testScheduler.runCurrent()
+            other.retryRegistration()
+            testScheduler.runCurrent()
+            assertEquals(listOf(GlobalHotkey(7, 0x70)), registered.requested)
+        }
+
+    @Test
+    fun `最後の購読者が抜けると状態を登録中へ戻す`() =
+        runTest {
+            val repository = HotkeyRepositoryImpl(RecordingSource(), RecordingPreferences(), backgroundScope)
+            val collector =
+                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                    repository.registrationStateStream().collect { }
+                }
+            testScheduler.runCurrent()
+            assertEquals(HotkeyRegistrationState.Registered, repository.registrationStateStream().first())
+            collector.cancel()
+            testScheduler.runCurrent()
+            val states = mutableListOf<HotkeyRegistrationState>()
+            val second =
+                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                    repository.registrationStateStream().collect { states.add(it) }
+                }
+            assertEquals(HotkeyRegistrationState.Registering, states.first())
+            second.cancel()
         }
 
     @Test

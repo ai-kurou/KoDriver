@@ -29,6 +29,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
@@ -96,7 +97,9 @@ class LmuWindowsDebugStateDetailModuleTest {
                 modules(
                     lmuWindowsDebugStateDetailModule,
                     module {
-                        single<HotkeyRepository> { FakeReadoutHotkeyRepository() }
+                        single { FakeReadoutHotkeyRepository() }
+                        single<HotkeyRepository> { get<FakeReadoutHotkeyRepository>() }
+                        single<ReadoutHotkeyPreferencesRepository> { get<FakeReadoutHotkeyRepository>() }
                         single<DebugReadoutRequestRepository> { debugRequestRepository }
                         single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
                             debugStateCardOrderPreferencesRepository

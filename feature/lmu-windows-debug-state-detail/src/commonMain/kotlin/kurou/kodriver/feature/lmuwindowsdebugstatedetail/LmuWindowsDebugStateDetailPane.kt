@@ -1,9 +1,9 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -111,48 +111,57 @@ fun LmuWindowsDebugStateDetailPaneContent(
         BoxWithConstraints {
             val columns = calculateDebugStateColumns(maxWidth)
             val gridState = rememberLazyGridState()
+            val showHotkey = uiState.readoutHotkey.registrationState != HotkeyRegistrationState.Unsupported
+            val fixedItemCount = if (showHotkey) 2 else 1
             val reorderableState =
                 rememberReorderableLazyGridState(gridState) { from, to ->
-                    onMoveCard(from.index, to.index)
+                    if (from.index >= fixedItemCount && to.index >= fixedItemCount) {
+                        onMoveCard(from.index - fixedItemCount, to.index - fixedItemCount)
+                    }
                 }
-            Column {
-                DebugReadoutRequestCard(
-                    readoutItemKeyValues = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).map { it.value },
-                    selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
-                    text = uiState.debugReadoutText,
-                    onReadoutItemSelected = onReadoutItemSelected,
-                    onTextChange = onDebugReadoutTextChange,
-                    onReadout = onRequestReadout,
-                    modifier = Modifier.padding(KoDriverSpacing.small),
-                )
-                if (uiState.readoutHotkey.registrationState != HotkeyRegistrationState.Unsupported) {
-                    ReadoutHotkeyCard(
-                        state = uiState.readoutHotkey,
-                        onKeySelected = onHotkeySelected,
-                        onCheck = onCheckHotkey,
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(columns),
+                state = gridState,
+                modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
+            ) {
+                item(key = DEBUG_READOUT_REQUEST_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
+                    DebugReadoutRequestCard(
+                        readoutItemKeyValues = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).map { it.value },
+                        selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
+                        text = uiState.debugReadoutText,
+                        onReadoutItemSelected = onReadoutItemSelected,
+                        onTextChange = onDebugReadoutTextChange,
+                        onReadout = onRequestReadout,
                         modifier = Modifier.padding(KoDriverSpacing.small),
                     )
                 }
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(columns),
-                    state = gridState,
-                    modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
-                ) {
-                    items(uiState.cardOrder, key = { it.name }) { cardKey ->
-                        ReorderableItem(reorderableState, key = cardKey.name) {
-                            DebugStateCard(
-                                cardKey = cardKey,
-                                uiState = uiState,
-                                enabled = cardKey in uiState.enabledCardKeys,
-                                modifier = Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle(),
-                            )
-                        }
+                if (showHotkey) {
+                    item(key = READOUT_HOTKEY_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
+                        ReadoutHotkeyCard(
+                            state = uiState.readoutHotkey,
+                            onKeySelected = onHotkeySelected,
+                            onCheck = onCheckHotkey,
+                            modifier = Modifier.padding(KoDriverSpacing.small),
+                        )
+                    }
+                }
+                items(uiState.cardOrder, key = { it.name }) { cardKey ->
+                    ReorderableItem(reorderableState, key = cardKey.name) {
+                        DebugStateCard(
+                            cardKey = cardKey,
+                            uiState = uiState,
+                            enabled = cardKey in uiState.enabledCardKeys,
+                            modifier = Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle(),
+                        )
                     }
                 }
             }
         }
     }
 }
+
+private const val DEBUG_READOUT_REQUEST_ITEM_KEY = "debugReadoutRequest"
+private const val READOUT_HOTKEY_ITEM_KEY = "readoutHotkey"
 
 private val debugStateCardTitles: Map<LmuWindowsDebugStateCardKey, StringResource> =
     mapOf(

@@ -196,6 +196,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                         .readoutHotkey.registrationState,
                 )
                 viewModel.selectHotkey(0x41)
+                assertEquals(1, hotkeyRepository.retryCount)
                 assertEquals(
                     0x41,
                     viewModel.uiState

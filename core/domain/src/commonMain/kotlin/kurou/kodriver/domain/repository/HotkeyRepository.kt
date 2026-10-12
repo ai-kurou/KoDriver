@@ -4,9 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 
 interface HotkeyRepository {
-    fun observeVirtualKeyCode(): Flow<Int>
-
-    suspend fun saveVirtualKeyCode(virtualKeyCode: Int)
+    suspend fun retryRegistration()
 
     fun registrationStateStream(): Flow<HotkeyRegistrationState>
 

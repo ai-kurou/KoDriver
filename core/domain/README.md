@@ -56,6 +56,6 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 
 `DebugReadoutRequest` と `DebugReadoutRequestRepository`、送信・購読用の `RequestDebugReadoutUseCase` / `ObserveDebugReadoutRequestUseCase` を提供する。`ReadoutItemKey.topLevelEntriesOf(simulator)` は一覧項目だけを entries 順に返す。`DebugReadoutText` は入力文言を置換せず音声経路へ渡すイベントで、本文の再解決には copy を使う。
 
-`HotkeyRepository` は LMU の現在値読み上げキーの取得・更新、登録状態と押下の Flow を提供する。
+`HotkeyRepository` は登録状態と押下の Flow、競合後の再試行を提供する。キーの取得・保存は `ReadoutHotkeyPreferencesRepository` が担う。
 永続化は `ReadoutHotkeyPreferencesRepository`、既定 F1 と固定修飾キーは `ReadoutHotkeyDefaults.kt` に定義する。
 ホットキー設定と登録状態の UseCase はデバッグペインで使用し、`ObserveReadoutHotkeyUseCase` の押下通知は従来どおり Narrator で使用する。

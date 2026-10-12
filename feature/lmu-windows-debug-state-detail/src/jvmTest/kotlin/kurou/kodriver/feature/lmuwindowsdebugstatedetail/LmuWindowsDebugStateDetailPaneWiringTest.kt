@@ -170,7 +170,7 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
     }
 
     @Test
-    fun `ホットキー固定カードはグリッド外でキー選択と動作確認をViewModelへ通知する`() {
+    fun `ホットキーカードはグリッド内でキー選択と動作確認をViewModelへ通知する`() {
         val state =
             MutableStateFlow(
                 LmuWindowsDebugStateDetailUiState(
@@ -194,7 +194,7 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
             }
             val card = rule.onNodeWithTag("readout_hotkey_card").fetchSemanticsNode().boundsInRoot
             val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).fetchSemanticsNode().boundsInRoot
-            assertEquals(true, card.bottom <= grid.top)
+            assertEquals(true, card.top >= grid.top && card.bottom <= grid.bottom)
             rule.onNodeWithTag("readout_hotkey_key").performClick()
             rule.onNodeWithText("キーを押してください").assertIsDisplayed()
             rule.onNodeWithTag("readout_hotkey_key").performKeyInput {
@@ -214,7 +214,7 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
     }
 
     @Test
-    fun `固定カードはグリッドの上にあり項目選択と入力と送信をViewModelへ通知する`() {
+    fun `読み上げ要求カードはグリッド内にあり項目選択と入力と送信をViewModelへ通知する`() {
         val keys = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows)
         val state = MutableStateFlow(LmuWindowsDebugStateDetailUiState())
         excludeRecords { viewModel.uiState }
@@ -239,7 +239,7 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
             }
             val card = rule.onNodeWithTag("debug_readout_request_card").fetchSemanticsNode().boundsInRoot
             val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).fetchSemanticsNode().boundsInRoot
-            assertEquals(true, card.bottom <= grid.top)
+            assertEquals(true, card.top >= grid.top && card.bottom <= grid.bottom)
             rule.onNodeWithTag("debug_readout_request_item").performClick()
             rule.onNodeWithTag("debug_readout_item_${keys.last().value}").performClick()
             rule.onNodeWithTag("debug_readout_request_text").performTextReplacement("入力 {laps}")

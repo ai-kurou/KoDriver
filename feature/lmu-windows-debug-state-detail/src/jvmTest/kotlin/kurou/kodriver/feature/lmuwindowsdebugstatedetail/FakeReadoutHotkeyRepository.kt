@@ -7,12 +7,17 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_HOTKEY_VIRTUAL_KEY_CODE_DEFAULT
 import kurou.kodriver.domain.repository.HotkeyRepository
+import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyRegistrationStateUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyVirtualKeyCodeUseCase
+import kurou.kodriver.domain.usecase.RetryReadoutHotkeyRegistrationUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutHotkeyVirtualKeyCodeUseCase
 
-internal class FakeReadoutHotkeyRepository : HotkeyRepository {
+internal class FakeReadoutHotkeyRepository :
+    HotkeyRepository,
+    ReadoutHotkeyPreferencesRepository {
+    var retryCount = 0
     val key = MutableStateFlow(LMU_WINDOWS_READOUT_HOTKEY_VIRTUAL_KEY_CODE_DEFAULT)
     val registration = MutableStateFlow<HotkeyRegistrationState>(HotkeyRegistrationState.Unsupported)
     val presses = MutableSharedFlow<Unit>()
@@ -21,6 +26,10 @@ internal class FakeReadoutHotkeyRepository : HotkeyRepository {
 
     override suspend fun saveVirtualKeyCode(virtualKeyCode: Int) {
         key.update { virtualKeyCode }
+    }
+
+    override suspend fun retryRegistration() {
+        retryCount++
     }
 
     override fun registrationStateStream(): Flow<HotkeyRegistrationState> = registration
@@ -33,5 +42,6 @@ internal class FakeReadoutHotkeyRepository : HotkeyRepository {
             SaveReadoutHotkeyVirtualKeyCodeUseCase(this),
             ObserveReadoutHotkeyRegistrationStateUseCase(this),
             ObserveReadoutHotkeyUseCase(this),
+            RetryReadoutHotkeyRegistrationUseCase(this),
         )
 }

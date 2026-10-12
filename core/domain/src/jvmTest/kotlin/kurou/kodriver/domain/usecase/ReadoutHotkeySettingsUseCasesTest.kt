@@ -12,16 +12,18 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.repository.HotkeyRepository
+import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ReadoutHotkeySettingsUseCasesTest {
     private val repository: HotkeyRepository = mockk()
+    private val preferences: ReadoutHotkeyPreferencesRepository = mockk()
 
     @Test
     fun `キーの取得と保存と登録状態をRepositoryへ委譲する`() =
         runTest {
-            every { repository.observeVirtualKeyCode() } returns flowOf(0x70)
+            every { preferences.observeVirtualKeyCode() } returns flowOf(0x70)
             val states =
                 listOf(
                     HotkeyRegistrationState.Unsupported,
@@ -31,14 +33,17 @@ class ReadoutHotkeySettingsUseCasesTest {
                     HotkeyRegistrationState.Failed(5),
                 )
             every { repository.registrationStateStream() } returns flowOf(*states.toTypedArray())
-            coEvery { repository.saveVirtualKeyCode(0x41) } returns Unit
-            assertEquals(0x70, ObserveReadoutHotkeyVirtualKeyCodeUseCase(repository)().first())
+            coEvery { preferences.saveVirtualKeyCode(0x41) } returns Unit
+            coEvery { repository.retryRegistration() } returns Unit
+            assertEquals(0x70, ObserveReadoutHotkeyVirtualKeyCodeUseCase(preferences)().first())
             assertEquals(states, ObserveReadoutHotkeyRegistrationStateUseCase(repository)().toList())
             assertEquals(5, (states.last() as HotkeyRegistrationState.Failed).errorCode)
-            SaveReadoutHotkeyVirtualKeyCodeUseCase(repository)(0x41)
-            verify(exactly = 1) { repository.observeVirtualKeyCode() }
+            SaveReadoutHotkeyVirtualKeyCodeUseCase(preferences)(0x41)
+            RetryReadoutHotkeyRegistrationUseCase(repository)()
+            verify(exactly = 1) { preferences.observeVirtualKeyCode() }
             verify(exactly = 1) { repository.registrationStateStream() }
-            coVerify(exactly = 1) { repository.saveVirtualKeyCode(0x41) }
-            confirmVerified(repository)
+            coVerify(exactly = 1) { preferences.saveVirtualKeyCode(0x41) }
+            coVerify(exactly = 1) { repository.retryRegistration() }
+            confirmVerified(repository, preferences)
         }
 }

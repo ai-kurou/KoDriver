@@ -8,12 +8,14 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
@@ -34,23 +36,27 @@ class HotkeyRepositoryImpl(
     scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
 ) : HotkeyRepository {
     private val registrationState = MutableStateFlow<HotkeyRegistrationState>(HotkeyRegistrationState.Registering)
+    private val retryCount = MutableStateFlow(0)
 
     // 押下は replay しない。状態の購読も同じ共有登録を維持する。
     private val events =
-        preferences
-            .observeVirtualKeyCode()
+        combine(preferences.observeVirtualKeyCode(), retryCount) { key, retry -> key to retry }
             .distinctUntilChanged()
-            .flatMapLatest { key ->
+            .flatMapLatest { (key, _) ->
                 source
                     .observe(GlobalHotkey(LMU_WINDOWS_READOUT_HOTKEY_MODIFIERS, key))
                     .onStart { emit(GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Registering)) }
             }.onEach { event ->
                 if (event is GlobalHotkeyEvent.Registration) registrationState.update { event.state }
-            }.shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
+            }.onCompletion { registrationState.update { HotkeyRegistrationState.Registering } }
+            .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
-    override fun observeVirtualKeyCode(): Flow<Int> = preferences.observeVirtualKeyCode()
-
-    override suspend fun saveVirtualKeyCode(virtualKeyCode: Int) = preferences.saveVirtualKeyCode(virtualKeyCode)
+    override suspend fun retryRegistration() {
+        val state = registrationState.value
+        if (state is HotkeyRegistrationState.Conflict || state is HotkeyRegistrationState.Failed) {
+            retryCount.update { it + 1 }
+        }
+    }
 
     override fun hotkeyPressStream(): Flow<Unit> = events.filterIsInstance<GlobalHotkeyEvent.Pressed>().map { Unit }
 

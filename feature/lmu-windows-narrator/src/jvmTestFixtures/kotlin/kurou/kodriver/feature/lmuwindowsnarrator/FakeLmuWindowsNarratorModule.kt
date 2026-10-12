@@ -11,7 +11,6 @@ import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_HOTKEY_VIRTUAL_KEY_CODE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
@@ -407,9 +406,7 @@ class FakeLmuWindowsVehicleClassBrakeWearPreferencesRepository : LmuWindowsVehic
 }
 
 class FakeHotkeyRepository : HotkeyRepository {
-    override fun observeVirtualKeyCode(): Flow<Int> = flowOf(LMU_WINDOWS_READOUT_HOTKEY_VIRTUAL_KEY_CODE_DEFAULT)
-
-    override suspend fun saveVirtualKeyCode(virtualKeyCode: Int) = Unit
+    override suspend fun retryRegistration() = Unit
 
     override fun registrationStateStream(): Flow<HotkeyRegistrationState> = flowOf(HotkeyRegistrationState.Unsupported)
 

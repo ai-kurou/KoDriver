@@ -7,6 +7,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyVirtualKeyCodeUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.usecase.RetryReadoutHotkeyRegistrationUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutHotkeyVirtualKeyCodeUseCase
 import org.koin.core.module.dsl.viewModel
@@ -33,6 +34,7 @@ val lmuWindowsDebugStateDetailModule =
                 SaveReadoutHotkeyVirtualKeyCodeUseCase(get()),
                 ObserveReadoutHotkeyRegistrationStateUseCase(get()),
                 ObserveReadoutHotkeyUseCase(get()),
+                RetryReadoutHotkeyRegistrationUseCase(get()),
             )
         }
 
