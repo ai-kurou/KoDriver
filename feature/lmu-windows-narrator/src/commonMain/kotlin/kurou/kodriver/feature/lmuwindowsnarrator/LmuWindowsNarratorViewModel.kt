@@ -144,6 +144,9 @@ internal data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
 )
 
+// 共有メモリは短周期で届くため、これを超えて更新がなければ切断・セッション終了とみなす。
+private const val HOTKEY_VIRTUAL_ENERGY_MAX_AGE_MS = 5_000L
+
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 @Suppress("LongParameterList")
 internal class LmuWindowsNarratorViewModel(
@@ -546,8 +549,9 @@ internal class LmuWindowsNarratorViewModel(
                 brakeWearUseCases.observeBrakeWear().filterNotNull()
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
-    // replay なしの共有 Flow を再購読せず、共有前に最新値を保持する。切り替え時は破棄する。
+    // replay なしの共有 Flow を再購読せず、共有前に最新値と受信時刻を保持する。切り替え時は破棄する。
     private var latestVirtualEnergy: LmuWindowsVirtualEnergyData? = null
+    private var latestVirtualEnergyReceivedAtMs: Long = 0L
 
     private val virtualEnergyFlow =
         selectedSimulator
@@ -556,7 +560,10 @@ internal class LmuWindowsNarratorViewModel(
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
                 remainingVirtualEnergyUseCases
                     .observeRemainingVirtualEnergy()
-                    .onEach { latestVirtualEnergy = it }
+                    .onEach {
+                        latestVirtualEnergy = it
+                        latestVirtualEnergyReceivedAtMs = currentTimeMs()
+                    }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     @Suppress("UnusedPrivateProperty")
@@ -683,6 +690,8 @@ internal class LmuWindowsNarratorViewModel(
                 if (selectedSimulator.value !is Simulator.LmuWindows) return@onEach
                 val remainingVirtualEnergy = latestVirtualEnergy ?: return@onEach
                 val observedAtMs = currentTimeMs()
+                // セッション終了や切断後は新しい値が流れないため、古い残量は読み上げない。
+                if (observedAtMs - latestVirtualEnergyReceivedAtMs > HOTKEY_VIRTUAL_ENERGY_MAX_AGE_MS) return@onEach
                 val state = narratorState
                 val settings = currentSettings
                 val decision =

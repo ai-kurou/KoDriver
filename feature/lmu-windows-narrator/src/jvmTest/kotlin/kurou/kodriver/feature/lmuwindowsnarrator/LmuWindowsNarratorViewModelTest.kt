@@ -2410,6 +2410,28 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `最後の残量受信から一定時間が経過したホットキーは読み上げない`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val hotkey = Channel<Unit>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            var fakeTime = 0L
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                hotkeyChannel = hotkey,
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
+                currentTimeMs = { fakeTime },
+            )
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            fakeTime = 5_001L
+            hotkey.send(Unit)
+
+            assertEquals(emptyList(), spoken)
+        }
+
+    @Test
     fun `データ未受信のホットキーは何もしない`() =
         runTest(testDispatcher) {
             val hotkey = Channel<Unit>(Channel.UNLIMITED)
