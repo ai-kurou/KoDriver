@@ -20,8 +20,10 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kotlin.test.AfterTest
@@ -40,6 +42,8 @@ class TelemetryLogListViewModelDeleteTest {
     private val dispatcher = StandardTestDispatcher()
 
     private val repository: TelemetryLogRepository = mockk()
+    private val simulatorRepository: SimulatorPreferencesRepository = mockk()
+    private val selectedSimulator = MutableStateFlow<Simulator>(Simulator.LmuWindows)
 
     private val logsFlow = MutableStateFlow(emptyList<TelemetryLog>())
 
@@ -58,7 +62,9 @@ class TelemetryLogListViewModelDeleteTest {
             observeSortedTelemetryLogs =
                 ObserveSortedTelemetryLogsUseCase(
                     ObserveTelemetryLogsUseCase(repository),
+                    ObserveSelectedSimulatorUseCase(simulatorRepository),
                 ),
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
             deleteTelemetryLog = DeleteTelemetryLogUseCase(repository),
         )
@@ -67,6 +73,7 @@ class TelemetryLogListViewModelDeleteTest {
     fun `onDeleteClickで削除対象のログIDを保持する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             val viewModel = createViewModel()
 
             viewModel.onDeleteClick(1L)
@@ -80,6 +87,7 @@ class TelemetryLogListViewModelDeleteTest {
     fun `onDeleteDismissで削除対象のログIDを解除する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             val viewModel = createViewModel()
 
             viewModel.onDeleteClick(1L)
@@ -95,6 +103,7 @@ class TelemetryLogListViewModelDeleteTest {
     fun `onDeleteConfirmで削除対象のログIDを解除してdeleteTelemetryLogを実行する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             coEvery { repository.deleteTelemetryLog(1L) } answers { logsFlow.update { emptyList() } }
             val viewModel = createViewModel()
 
@@ -117,7 +126,9 @@ class TelemetryLogListViewModelDeleteTest {
     fun `ace_windowsのログもonDeleteConfirmで削除できる`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             coEvery { repository.deleteTelemetryLog(1L) } answers { logsFlow.update { emptyList() } }
+            selectedSimulator.update { Simulator.AceWindows }
             val viewModel = createViewModel()
 
             logsFlow.update {
@@ -141,6 +152,7 @@ class TelemetryLogListViewModelDeleteTest {
     fun `deleteTelemetryLogが失敗するとdeleteSucceededがfalseになる`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             coEvery { repository.deleteTelemetryLog(1L) } throws IllegalStateException("削除に失敗しました")
             val viewModel = createViewModel()
 
@@ -160,6 +172,7 @@ class TelemetryLogListViewModelDeleteTest {
     fun `pendingDeleteLogIdがnullの状態でonDeleteConfirmを呼んでもdeleteTelemetryLogは実行されない`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             val viewModel = createViewModel()
 
             viewModel.onDeleteConfirm()
@@ -173,6 +186,7 @@ class TelemetryLogListViewModelDeleteTest {
     fun `consumeDeleteResultでdeleteSucceededをnullに戻す`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             coEvery { repository.deleteTelemetryLog(1L) } answers { logsFlow.update { emptyList() } }
             val viewModel = createViewModel()
 

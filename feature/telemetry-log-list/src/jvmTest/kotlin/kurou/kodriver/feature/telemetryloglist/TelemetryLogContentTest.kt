@@ -317,14 +317,33 @@ class TelemetryLogContentTest {
         var confirmed = false
         rule.setContent {
             TelemetryLogContentScaffold(
-                uiState = previewTelemetryLogListUiState.copy(showResetConfirmDialog = true),
+                uiState =
+                    previewTelemetryLogListUiState.copy(
+                        selectedSimulator = Simulator.AceWindows,
+                        showResetConfirmDialog = true,
+                    ),
                 onResetConfirm = { confirmed = true },
             )
         }
 
+        val body =
+            "Assetto Corsa EVO（Windows版）のテレメトリログがすべて削除されます。" +
+                "他のシミュレーターのログは削除されません。この操作は元に戻せません。"
+        rule.onNodeWithText(body).assertExists()
         rule.onNodeWithText("削除する").performClick()
 
         assertTrue(confirmed)
+    }
+
+    @Test
+    fun `選択中シミュレーターがnullの場合はリセット確認ダイアログを表示しない`() {
+        rule.setContent {
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(showResetConfirmDialog = true),
+            )
+        }
+
+        rule.onNodeWithText("データベースをリセットしますか？").assertDoesNotExist()
     }
 
     @Test
@@ -332,7 +351,11 @@ class TelemetryLogContentTest {
         var dismissed = false
         rule.setContent {
             TelemetryLogContentScaffold(
-                uiState = previewTelemetryLogListUiState.copy(showResetConfirmDialog = true),
+                uiState =
+                    previewTelemetryLogListUiState.copy(
+                        selectedSimulator = Simulator.AceWindows,
+                        showResetConfirmDialog = true,
+                    ),
                 onResetDismiss = { dismissed = true },
             )
         }
