@@ -710,21 +710,27 @@ private fun OtherListItem(
             Modifier
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
-                .clickable {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    handleOtherListItemClick(
-                        item = item,
-                        uiState = uiState,
-                        onOverlayVisibleChange = onOverlayVisibleChange,
-                        onKeepScreenOnChange = onKeepScreenOnChange,
-                        onDynamicColorEnabledChange = onDynamicColorEnabledChange,
-                        onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
-                        onStartupEnabledChange = onStartupEnabledChange,
-                        openAccessLocalNetworkPermissionSettings = openAccessLocalNetworkPermissionSettings,
-                        openTtsSettings = openTtsSettings,
-                        onItemClick = onItemClick,
-                    )
-                },
+                .then(
+                    if (item == OtherListItemType.OverlayTextColor) {
+                        Modifier
+                    } else {
+                        Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            handleOtherListItemClick(
+                                item = item,
+                                uiState = uiState,
+                                onOverlayVisibleChange = onOverlayVisibleChange,
+                                onKeepScreenOnChange = onKeepScreenOnChange,
+                                onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                                onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
+                                onStartupEnabledChange = onStartupEnabledChange,
+                                openAccessLocalNetworkPermissionSettings = openAccessLocalNetworkPermissionSettings,
+                                openTtsSettings = openTtsSettings,
+                                onItemClick = onItemClick,
+                            )
+                        }
+                    },
+                ),
     )
 }
 
@@ -743,7 +749,7 @@ private fun handleOtherListItemClick(
 ) {
     when (item) {
         OtherListItemType.OverlayTextColor -> {
-            // 詳細ペインは未実装のため、タップしても何もしない。
+            // 詳細ペインは未実装で clickable を付けないため、この分岐には到達しない。
         }
 
         OtherListItemType.OverlayVisible -> {

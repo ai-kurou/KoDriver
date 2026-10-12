@@ -1,12 +1,15 @@
 package kurou.kodriver.feature.otherlist
 
 import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -36,7 +39,8 @@ class OtherListPaneOverlayTest {
 
         rule.onNodeWithText("オーバーレイ設定").assertIsDisplayed()
         rule.onNode(hasText("文字サイズ") and hasText("中")).assertIsDisplayed().assertIsNotSelected()
-        rule.onNode(hasText("文字色") and hasText("#FFC107")).assertIsDisplayed().assertIsNotSelected()
+        rule.onNodeWithText("文字色").assertIsDisplayed().assertHasNoClickAction()
+        rule.onNodeWithText("#FFC107").assertIsDisplayed()
         rule.onNode(hasText("背景の透明度") and hasText("50%")).assertIsDisplayed().assertIsNotSelected()
         verify(exactly = 0) { onItemClick(OtherListItemType.OverlayTextSize) }
         verify(exactly = 0) { onItemClick(OtherListItemType.OverlayBackgroundOpacity) }
@@ -127,14 +131,13 @@ class OtherListPaneOverlayTest {
     }
 
     @Test
-    fun `文字色をクリックしても選択を通知しない`() {
+    fun `文字色にはクリック操作がなくタップしても選択を通知しない`() {
         setPane(OtherListUiState(items = listOf(OtherListItemType.OverlayTextColor)))
 
         rule
             .onNodeWithText("文字色")
-            .assertHasClickAction()
-            .performClick()
-            .assertIsNotSelected()
+            .assertHasNoClickAction()
+            .performTouchInput { click() }
 
         verify(exactly = 0) { onItemClick(OtherListItemType.OverlayTextColor) }
         confirmVerified(onItemClick)
@@ -149,7 +152,8 @@ class OtherListPaneOverlayTest {
             ),
         )
 
-        rule.onNode(hasText("文字色") and hasText("#123ABC")).assertIsDisplayed()
+        rule.onNodeWithText("文字色").assertIsDisplayed().assertHasNoClickAction()
+        rule.onNodeWithText("#123ABC").assertIsDisplayed()
         confirmVerified(onItemClick)
     }
 
