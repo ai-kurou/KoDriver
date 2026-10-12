@@ -2,13 +2,16 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -21,6 +24,8 @@ internal class LmuWindowsDebugStateDetailViewModel(
     lmuWindowsUseCases: LmuWindowsDebugStateUseCases,
     cardOrderUseCases: DebugStateCardOrderUseCases,
     private val requestDebugReadout: RequestDebugReadoutUseCase,
+    private val hotkeyUseCases: ReadoutHotkeyUseCases,
+    private val hotkeyCheckTimeoutMs: Long = 10_000L,
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
     private val sideBySideTickIntervalMs: Long = SIDE_BY_SIDE_TICK_INTERVAL_MS,
 ) : ViewModel() {
@@ -29,6 +34,16 @@ internal class LmuWindowsDebugStateDetailViewModel(
             ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).first(),
         )
     private val _debugReadoutText = MutableStateFlow("")
+    private val _hotkeyCheckState = MutableStateFlow(HotkeyCheckState.Idle)
+    private var hotkeyCheckJob: Job? = null
+    private val _hotkey =
+        combine(
+            hotkeyUseCases.observeVirtualKeyCode(),
+            hotkeyUseCases.observeRegistrationState(),
+            _hotkeyCheckState,
+        ) { key, registration, check ->
+            ReadoutHotkeyUiState(key, registration, check)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ReadoutHotkeyUiState())
 
     private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
     private val saveCardOrder = cardOrderUseCases::saveKeys
@@ -64,10 +79,39 @@ internal class LmuWindowsDebugStateDetailViewModel(
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsDebugStateDetailUiState())
 
-    val uiState: StateFlow<LmuWindowsDebugStateDetailUiState> =
+    private val _detailState: StateFlow<LmuWindowsDebugStateDetailUiState> =
         combine(_header, lmuWindowsSource.state, _selectedReadoutItemKey, _debugReadoutText) { header, lmu, key, text ->
             header.copy(lmuWindows = lmu, selectedReadoutItemKey = key, debugReadoutText = text)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsDebugStateDetailUiState())
+
+    val uiState: StateFlow<LmuWindowsDebugStateDetailUiState> =
+        combine(_detailState, _hotkey) { detail, hotkey ->
+            detail.copy(readoutHotkey = hotkey)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsDebugStateDetailUiState())
+
+    fun selectHotkey(virtualKeyCode: Int) {
+        hotkeyCheckJob?.cancel()
+        _hotkeyCheckState.update { HotkeyCheckState.Idle }
+        viewModelScope.launch { hotkeyUseCases.saveVirtualKeyCode(virtualKeyCode) }
+    }
+
+    fun checkHotkey() {
+        hotkeyCheckJob?.cancel()
+        _hotkeyCheckState.update { HotkeyCheckState.Waiting }
+        hotkeyCheckJob =
+            viewModelScope.launch {
+                val detected = withTimeoutOrNull(hotkeyCheckTimeoutMs) { hotkeyUseCases.observePress().first() }
+                _hotkeyCheckState.update {
+                    if (detected !=
+                        null
+                    ) {
+                        HotkeyCheckState.Detected
+                    } else {
+                        HotkeyCheckState.TimedOut
+                    }
+                }
+            }
+    }
 
     fun selectReadoutItem(value: String) {
         val key = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).find { it.value == value } ?: return

@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -95,6 +96,7 @@ class LmuWindowsDebugStateDetailModuleTest {
                 modules(
                     lmuWindowsDebugStateDetailModule,
                     module {
+                        single<HotkeyRepository> { FakeReadoutHotkeyRepository() }
                         single<DebugReadoutRequestRepository> { debugRequestRepository }
                         single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
                             debugStateCardOrderPreferencesRepository
@@ -119,6 +121,7 @@ class LmuWindowsDebugStateDetailModuleTest {
             assertNotNull(koin.get<LmuWindowsDebugStateUseCases>())
             assertNotNull(koin.get<RequestDebugReadoutUseCase>())
             assertNotNull(koin.get<DebugStateCardOrderUseCases>())
+            assertNotNull(koin.get<ReadoutHotkeyUseCases>())
             assertNotNull(koin.get<ObserveLmuWindowsRaceFlagsUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsVirtualEnergyUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsUseCase>())

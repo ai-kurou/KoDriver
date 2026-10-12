@@ -80,11 +80,13 @@ LMUブレーキ摩耗警告では一覧の `BrakeWear.Root` と詳細の `Warnin
 
 自由文言TTSの本文と詳細画面の試聴は`SpeakTextUseCase`を通し、呼び出し時点の保存済み音声ID・読み上げ速度・声の高さを使う。音声IDを明示した試聴でも速度と声の高さは保存値を使用する。`TextToSpeechRepository.speak(text, queue, volume, voiceId, speed, pitch)`の`speed`・`pitch`はともに既定1.0、範囲0.5〜2.0で、Android・Windows実装で範囲外を制限する。開始音のWAVには速度・声の高さを適用しない。
 
-## LMU の F9 現在値読み上げ
+## LMU の現在値読み上げホットキー
 
-SimHub Control Mapper が送る F9（VK `0x78`）で残りバーチャルエナジーの現在値を読み上げる。
+LMU Windows デバッグ状態詳細ペインで設定したホットキーで残りバーチャルエナジーの現在値を読み上げる。
+既定は `Ctrl + Alt + Shift + F1`（VK `0x70`）。修飾キーは固定で、末尾の F1〜F12・A〜Z・0〜9 を選択して保存する。
+SimHub Control Mapper 側も、デバッグペインと同じ組み合わせを送るように設定する。
 既存の `RemainingVirtualEnergy.Root` / `RemainingVirtualEnergy.WarningReadout` スイッチに従う。
-ホットキーは固定で、設定 UI や追加の設定項目は不要。データ未受信時は何もしない。
+この設定はデバッグ専用のテスト段階。登録結果（競合・エラーコード）と最大10秒の動作確認を表示する。データ未受信時は何もしない。
 Android と非 Windows ではホットキー押下を通知しない。
 
 ## デバッグ読み上げの例外

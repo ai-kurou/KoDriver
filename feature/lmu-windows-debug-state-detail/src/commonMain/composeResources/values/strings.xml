@@ -88,4 +88,15 @@
     <string name="debug_state_brake_wear_fr">FR %1$s</string>
     <string name="debug_state_brake_wear_rl">RL %1$s</string>
     <string name="debug_state_brake_wear_rr">RR %1$s</string>
+    <string name="readout_hotkey_title">現在値読み上げホットキー（デバッグ）</string>
+    <string name="readout_hotkey_key">末尾のキー</string>
+    <string name="readout_hotkey_prompt">キーを押してください</string>
+    <string name="readout_hotkey_registering">登録中</string>
+    <string name="readout_hotkey_registered">登録済み</string>
+    <string name="readout_hotkey_conflict">他のアプリが使用中のため登録できません</string>
+    <string name="readout_hotkey_failed">登録に失敗しました（エラーコード: %1$d）</string>
+    <string name="readout_hotkey_check">動作確認</string>
+    <string name="readout_hotkey_waiting">ホットキーを押してください（最大10秒）</string>
+    <string name="readout_hotkey_detected">検出しました</string>
+    <string name="readout_hotkey_timed_out">検出されませんでした</string>
 </resources>

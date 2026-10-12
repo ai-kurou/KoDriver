@@ -27,6 +27,7 @@ internal val defaultDebugStateCardOrder =
 
 data class LmuWindowsDebugStateDetailUiState(
     val selectedReadoutItemKey: ReadoutItemKey = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).first(),
+    val readoutHotkey: ReadoutHotkeyUiState = ReadoutHotkeyUiState(),
     val debugReadoutText: String = "",
     val lmuWindows: LmuWindowsDebugState = LmuWindowsDebugState(),
     val enabledCardKeys: Set<LmuWindowsDebugStateCardKey> = setOf(LmuWindowsDebugStateCardKey.SIMULATOR),

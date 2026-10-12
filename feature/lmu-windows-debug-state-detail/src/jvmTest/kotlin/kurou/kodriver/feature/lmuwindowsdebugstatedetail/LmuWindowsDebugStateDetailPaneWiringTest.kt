@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -10,8 +11,10 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.unit.dp
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -26,6 +29,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -160,6 +164,50 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
             verify(atLeast = 1) { viewModel.uiState }
             verify(exactly = 0) { onBack() }
             confirmVerified(viewModel, onBack)
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
+    fun `ホットキー固定カードはグリッド外でキー選択と動作確認をViewModelへ通知する`() {
+        val state =
+            MutableStateFlow(
+                LmuWindowsDebugStateDetailUiState(
+                    readoutHotkey = ReadoutHotkeyUiState(registrationState = HotkeyRegistrationState.Registered),
+                ),
+            )
+        excludeRecords { viewModel.uiState }
+        every { viewModel.uiState } returns state
+        every { viewModel.selectHotkey(0x71) } answers {
+            state.update { it.copy(readoutHotkey = it.readoutHotkey.copy(virtualKeyCode = 0x71)) }
+        }
+        every { viewModel.checkHotkey() } answers {
+            state.update { it.copy(readoutHotkey = it.readoutHotkey.copy(checkState = HotkeyCheckState.Waiting)) }
+        }
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent {
+                KoDriverTheme {
+                    LmuWindowsDebugStateDetailPane(false, {}, Modifier.requiredSize(1560.dp, 1080.dp))
+                }
+            }
+            val card = rule.onNodeWithTag("readout_hotkey_card").fetchSemanticsNode().boundsInRoot
+            val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).fetchSemanticsNode().boundsInRoot
+            assertEquals(true, card.bottom <= grid.top)
+            rule.onNodeWithTag("readout_hotkey_key").performClick()
+            rule.onNodeWithText("キーを押してください").assertIsDisplayed()
+            rule.onNodeWithTag("readout_hotkey_key").performKeyInput {
+                pressKey(Key.ShiftLeft)
+                pressKey(Key.Enter)
+                pressKey(Key.F2)
+            }
+            rule.onNodeWithText("Ctrl + Alt + Shift + F2").assertIsDisplayed()
+            rule.onNodeWithText("動作確認").performClick()
+            rule.onNodeWithText("ホットキーを押してください（最大10秒）").assertIsDisplayed()
+            verify(exactly = 1) { viewModel.selectHotkey(0x71) }
+            verify(exactly = 1) { viewModel.checkHotkey() }
+            confirmVerified(viewModel)
         } finally {
             stopKoin()
         }

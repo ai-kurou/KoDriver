@@ -20,6 +20,7 @@ import kurou.kodriver.core.designsystem.DebugReadoutRequestCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
@@ -81,6 +82,8 @@ fun LmuWindowsDebugStateDetailPane(
         onReadoutItemSelected = viewModel::selectReadoutItem,
         onDebugReadoutTextChange = viewModel::updateDebugReadoutText,
         onRequestReadout = viewModel::requestReadout,
+        onHotkeySelected = viewModel::selectHotkey,
+        onCheckHotkey = viewModel::checkHotkey,
         modifier = modifier,
     )
 }
@@ -94,6 +97,8 @@ fun LmuWindowsDebugStateDetailPaneContent(
     onReadoutItemSelected: (String) -> Unit = {},
     onDebugReadoutTextChange: (String) -> Unit = {},
     onRequestReadout: () -> Unit = {},
+    onHotkeySelected: (Int) -> Unit = {},
+    onCheckHotkey: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     DetailPaneScaffold(
@@ -120,6 +125,14 @@ fun LmuWindowsDebugStateDetailPaneContent(
                     onReadout = onRequestReadout,
                     modifier = Modifier.padding(KoDriverSpacing.small),
                 )
+                if (uiState.readoutHotkey.registrationState != HotkeyRegistrationState.Unsupported) {
+                    ReadoutHotkeyCard(
+                        state = uiState.readoutHotkey,
+                        onKeySelected = onHotkeySelected,
+                        onCheck = onCheckHotkey,
+                        modifier = Modifier.padding(KoDriverSpacing.small),
+                    )
+                }
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columns),
                     state = gridState,

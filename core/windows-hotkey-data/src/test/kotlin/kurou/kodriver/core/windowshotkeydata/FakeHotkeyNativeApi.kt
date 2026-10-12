@@ -5,7 +5,7 @@ import kotlinx.coroutines.runBlocking
 import java.util.concurrent.LinkedBlockingQueue
 
 internal class FakeHotkeyNativeApi(
-    private val registrationResult: Boolean = true,
+    private val registrationResult: Int = 0,
     private val messageFailure: Exception? = null,
     private val preparationFailure: Exception? = null,
     private val quitFailure: Exception? = null,
@@ -27,7 +27,7 @@ internal class FakeHotkeyNativeApi(
         return THREAD_ID
     }
 
-    override fun register(hotkey: GlobalHotkey): Boolean {
+    override fun register(hotkey: GlobalHotkey): Int {
         registeredHotkey = hotkey
         registrationThread = Thread.currentThread()
         registered.complete(Unit)

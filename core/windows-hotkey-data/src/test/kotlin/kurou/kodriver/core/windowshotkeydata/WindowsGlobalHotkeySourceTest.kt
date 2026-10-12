@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -17,29 +18,49 @@ import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class WindowsGlobalHotkeySourceTest {
-    private val hotkey = GlobalHotkey(virtualKeyCode = GlobalHotkey.VK_F13)
+    private val hotkey = GlobalHotkey(virtualKeyCode = 0x7C)
 
     @Test
-    fun `非 Windows では API を生成せず通知なしで完了する`() =
+    fun `非 Windows では API を生成せず非対応状態を通知する`() =
         runTest {
             val source = WindowsGlobalHotkeySource.create("Linux") { error("Native API must not be loaded") }
 
-            assertEquals(emptyList(), source.observe(hotkey).toList())
-            assertEquals(emptyList(), WindowsGlobalHotkeySource.create("macOS").observe(hotkey).toList())
+            assertEquals(
+                listOf(GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Unsupported)),
+                source.observe(hotkey).toList(),
+            )
+            assertEquals(
+                listOf(GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Unsupported)),
+                WindowsGlobalHotkeySource.create("macOS").observe(hotkey).toList(),
+            )
             assertTrue(WindowsGlobalHotkeySource.create("Windows 11") is WindowsGlobalHotkeySource)
         }
 
     @Test
-    fun `登録失敗時は通知なしで完了し解除しない`() =
+    fun `登録競合時はエラー状態を通知して解除しない`() =
         runTest {
-            val fake = FakeHotkeyNativeApi(registrationResult = false)
+            val fake = FakeHotkeyNativeApi(registrationResult = 1409)
             val source = WindowsGlobalHotkeySource.create("wInDoWs 11") { fake }
 
-            assertEquals(emptyList(), source.observe(hotkey).toList())
+            assertEquals(
+                listOf(GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Conflict)),
+                source.observe(hotkey).toList(),
+            )
             assertEquals(hotkey, fake.registeredHotkey)
             assertEquals(0, fake.unregisterCount)
             assertEquals(emptyList(), fake.quitThreadIds)
             assertFalse(requireNotNull(fake.registrationThread).isAlive)
+        }
+
+    @Test
+    fun `登録失敗時はエラーコードを通知する`() =
+        runTest {
+            val fake = FakeHotkeyNativeApi(registrationResult = 5)
+            assertEquals(
+                listOf(GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Failed(5))),
+                WindowsGlobalHotkeySource(fake).observe(hotkey).toList(),
+            )
+            assertEquals(0, fake.unregisterCount)
         }
 
     @Test
@@ -49,13 +70,20 @@ class WindowsGlobalHotkeySourceTest {
             val requested = hotkey.copy(modifiers = 2)
             val flow = WindowsGlobalHotkeySource(fake).observe(requested)
             assertEquals(null, fake.registeredHotkey)
-            val result = async { flow.take(2).toList() }
+            val result = async { flow.take(3).toList() }
             fake.registered.await()
             fake.send(HotkeyMessage(0, HOTKEY_ID))
             fake.send(HotkeyMessage(WM_HOTKEY, HOTKEY_ID + 1))
             repeat(2) { fake.send(HotkeyMessage(WM_HOTKEY, HOTKEY_ID)) }
 
-            assertEquals(listOf(Unit, Unit), result.await())
+            assertEquals(
+                listOf(
+                    GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Registered),
+                    GlobalHotkeyEvent.Pressed,
+                    GlobalHotkeyEvent.Pressed,
+                ),
+                result.await(),
+            )
             assertEquals(requested, fake.registeredHotkey)
             assertEquals(listOf(FakeHotkeyNativeApi.THREAD_ID), fake.quitThreadIds)
             assertEquals(1, fake.unregisterCount)
@@ -88,7 +116,10 @@ class WindowsGlobalHotkeySourceTest {
             val fake = FakeHotkeyNativeApi()
             fake.finish()
 
-            assertEquals(emptyList(), WindowsGlobalHotkeySource(fake).observe(hotkey).toList())
+            assertEquals(
+                listOf(GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Registered)),
+                WindowsGlobalHotkeySource(fake).observe(hotkey).toList(),
+            )
             assertEquals(1, fake.unregisterCount)
             assertEquals(emptyList(), fake.quitThreadIds)
             assertFalse(requireNotNull(fake.registrationThread).isAlive)
