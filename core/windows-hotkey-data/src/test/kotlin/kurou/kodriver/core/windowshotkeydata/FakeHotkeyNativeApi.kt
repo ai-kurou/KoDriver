@@ -8,6 +8,7 @@ internal class FakeHotkeyNativeApi(
     private val registrationResult: Boolean = true,
     private val messageFailure: Exception? = null,
     private val preparationFailure: Exception? = null,
+    private val quitFailure: Exception? = null,
 ) : HotkeyNativeApi {
     private val messages = LinkedBlockingQueue<HotkeyMessage>()
     val registered = CompletableDeferred<Unit>()
@@ -46,6 +47,7 @@ internal class FakeHotkeyNativeApi(
 
     override fun postQuit(threadId: Int) {
         quitThreadIds.add(threadId)
+        quitFailure?.let { throw it }
         finish()
     }
 

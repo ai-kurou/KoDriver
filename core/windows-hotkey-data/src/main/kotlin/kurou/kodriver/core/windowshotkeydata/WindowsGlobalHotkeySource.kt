@@ -16,6 +16,8 @@ import kotlin.concurrent.thread
 /**
  * 購読ごとに専用スレッドを作り、登録と解除を同じスレッドで行う。
  * キャンセル時はキューの準備を待って WM_QUIT を投稿し、解除とスレッドの終了を待つ。
+ * スレッドは daemon にして、キャンセルされないままアプリが終了しても JVM の終了を妨げない。
+ * WM_QUIT の投稿に失敗した場合は Sentry へ送り、終了しないスレッドを待たずに戻る。
  */
 class WindowsGlobalHotkeySource internal constructor(
     private val nativeApi: HotkeyNativeApi,
@@ -26,7 +28,7 @@ class WindowsGlobalHotkeySource internal constructor(
             val lifecycleLock = Any()
             var finished = false
             val messageThread =
-                thread(name = "KoDriver-global-hotkey") {
+                thread(name = "KoDriver-global-hotkey", isDaemon = true) {
                     var registered = false
                     try {
                         val threadId = nativeApi.prepareMessageQueue()
@@ -58,10 +60,18 @@ class WindowsGlobalHotkeySource internal constructor(
             } finally {
                 withContext(NonCancellable + Dispatchers.IO) {
                     val threadId = ready.await()
-                    synchronized(lifecycleLock) {
-                        if (threadId != null && !finished) nativeApi.postQuit(threadId)
-                    }
-                    messageThread.join()
+                    val quitPosted =
+                        synchronized(lifecycleLock) {
+                            if (threadId == null || finished) {
+                                true
+                            } else {
+                                runCatching { nativeApi.postQuit(threadId) }
+                                    .onFailure { Sentry.captureException(it) }
+                                    .isSuccess
+                            }
+                        }
+                    // WM_QUIT を投稿できないとスレッドは終了しないため、join せず daemon スレッドに任せる。
+                    if (quitPosted) messageThread.join()
                 }
             }
         }.buffer(Channel.UNLIMITED)

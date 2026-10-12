@@ -158,4 +158,38 @@ class WindowsGlobalHotkeySourceTest {
             assertSame(fake.registrationThread, fake.unregisterThread)
             assertFalse(requireNotNull(fake.registrationThread).isAlive)
         }
+
+    @Test
+    fun `メッセージスレッドは daemon スレッドで動く`() =
+        runTest {
+            val fake = FakeHotkeyNativeApi()
+            val collection = launch { WindowsGlobalHotkeySource(fake).observe(hotkey).collect() }
+
+            fake.registered.await()
+            val messageThread = requireNotNull(fake.registrationThread)
+            val isDaemon = messageThread.isDaemon
+            collection.cancelAndJoin()
+
+            assertTrue(isDaemon)
+        }
+
+    @Test
+    fun `WM_QUIT の投稿に失敗してもキャンセルは完了し例外を握りつぶす`() =
+        runTest {
+            val fake = FakeHotkeyNativeApi(quitFailure = IllegalStateException("PostThreadMessage failed"))
+            val collection = launch { WindowsGlobalHotkeySource(fake).observe(hotkey).collect() }
+
+            fake.registered.await()
+            collection.cancelAndJoin()
+
+            val messageThread = requireNotNull(fake.registrationThread)
+            assertTrue(collection.isCancelled)
+            assertEquals(listOf(FakeHotkeyNativeApi.THREAD_ID), fake.quitThreadIds)
+            assertEquals(0, fake.unregisterCount)
+            assertTrue(messageThread.isAlive)
+
+            fake.finish()
+            messageThread.join()
+            assertEquals(1, fake.unregisterCount)
+        }
 }
