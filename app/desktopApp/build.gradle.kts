@@ -17,6 +17,7 @@ dependencies {
     implementation(projects.core.deviceVolumeData)
     implementation(projects.core.textToSpeechData)
     implementation(projects.core.windowsStartupData)
+    implementation(projects.core.windowsHotkeyData)
     implementation(projects.server)
 
     implementation(compose.desktop.currentOs)

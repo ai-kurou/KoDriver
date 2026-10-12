@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_D
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -65,6 +66,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.TyreTemperatureReadoutInput
@@ -118,6 +120,7 @@ internal data class TyreWearUseCases(
 
 internal data class RemainingVirtualEnergyUseCases(
     val observeRemainingVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
+    val observeReadoutHotkey: ObserveReadoutHotkeyUseCase,
     val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
 )
 
@@ -543,11 +546,17 @@ internal class LmuWindowsNarratorViewModel(
                 brakeWearUseCases.observeBrakeWear().filterNotNull()
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
+    // replay なしの共有 Flow を再購読せず、共有前に最新値を保持する。切り替え時は破棄する。
+    private var latestVirtualEnergy: LmuWindowsVirtualEnergyData? = null
+
     private val virtualEnergyFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
+                latestVirtualEnergy = null
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-                remainingVirtualEnergyUseCases.observeRemainingVirtualEnergy()
+                remainingVirtualEnergyUseCases
+                    .observeRemainingVirtualEnergy()
+                    .onEach { latestVirtualEnergy = it }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     @Suppress("UnusedPrivateProperty")
@@ -646,6 +655,38 @@ internal class LmuWindowsNarratorViewModel(
                 val settings = currentSettings
                 val decision =
                     narratorUseCases.determineReadout.determineRemainingVirtualEnergy(
+                        state = state,
+                        data = remainingVirtualEnergy,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processRemainingVirtualEnergy(
+                    remainingVirtualEnergy = remainingVirtualEnergy,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val readoutHotkeyJob =
+        remainingVirtualEnergyUseCases
+            .observeReadoutHotkey()
+            .onEach {
+                if (selectedSimulator.value !is Simulator.LmuWindows) return@onEach
+                val remainingVirtualEnergy = latestVirtualEnergy ?: return@onEach
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
                         state = state,
                         data = remainingVirtualEnergy,
                         settings = settings,

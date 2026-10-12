@@ -39,6 +39,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
+import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -70,6 +71,7 @@ import org.koin.dsl.module
  */
 val fakeLmuWindowsNarratorModule =
     module {
+        single<HotkeyRepository> { FakeHotkeyRepository() }
         single<LmuWindowsVehicleApproachRepository> { FakeLmuWindowsVehicleApproachRepository() }
         single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
         single<LmuWindowsRepository> { FakeLmuWindowsRepository() }
@@ -400,4 +402,8 @@ class FakeLmuWindowsVehicleClassBrakeWearPreferencesRepository :
     override suspend fun saveReadoutText(text: String) {
         this.text.update { text }
     }
+}
+
+class FakeHotkeyRepository : HotkeyRepository {
+    override fun hotkeyPressStream(): Flow<Unit> = emptyFlow()
 }

@@ -21,6 +21,7 @@ import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.core.lmuwindowsrestapidata.lmuWindowsRestApiDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
+import kurou.kodriver.core.windowshotkeydata.windowsHotkeyDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.AnonymousUserId
 import kurou.kodriver.data.desktopDataModule
@@ -80,6 +81,7 @@ fun main() {
                                             deviceVolumeDataModule,
                                             textToSpeechDataModule,
                                             windowsStartupDataModule,
+                                            windowsHotkeyDataModule,
                                         ) +
                                             featureModules +
                                             listOf(module { single(named("appVersion")) { APP_VERSION } }),

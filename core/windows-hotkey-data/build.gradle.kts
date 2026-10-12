@@ -4,6 +4,9 @@ plugins {
 }
 
 dependencies {
+    implementation(projects.core.domain)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
     implementation(libs.jna)
     implementation(libs.jna.platform)
     implementation(platform(libs.sentry.bom))

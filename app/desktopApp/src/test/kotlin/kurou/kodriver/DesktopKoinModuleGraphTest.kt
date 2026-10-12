@@ -6,6 +6,7 @@ import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsrestapidata.lmuWindowsRestApiDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
+import kurou.kodriver.core.windowshotkeydata.windowsHotkeyDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
@@ -174,6 +175,8 @@ class DesktopKoinModuleGraphTest {
                 featureModules +
                 listOf(
                     fakeLmuWindowsNarratorModule,
+                    // Source は生成時にネイティブ API を呼ばないため実際のホットキーバインドを検証する。
+                    windowsHotkeyDataModule,
                     module {
                         single(named("appVersion")) { "test" }
                         single<ServerIpPreferencesRepository> {

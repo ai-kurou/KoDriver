@@ -4,7 +4,9 @@ Windowsグローバルホットキーを検出するJVM専用のI/O基盤です�
 `GlobalHotkey` で修飾キーと仮想キーコード（F13 は `GlobalHotkey.VK_F13`）を指定し、
 `WindowsGlobalHotkeySource.create()` が返す `GlobalHotkeySource.observe()` から押下ごとに `Unit` を受け取ります。
 非Windows環境ではネイティブAPIを読み込まず、Flowは通知せず即座に完了します。
-ドメイン層やアプリ、DIへの接続はこのモジュールには含めません。
+`HotkeyRepositoryImpl` は修飾キーなしの F9（`GlobalHotkey.VK_F9 = 0x78`）を固定で監視します。
+`windowsHotkeyDataModule` がドメインの `HotkeyRepository` をデスクトップアプリに提供します。
+SimHub Control Mapper から F9 を送ると、LMU の残りバーチャルエナジー現在値を読み上げます。
 
 Flowの購読中だけ専用メッセージループスレッドで `RegisterHotKey` / `GetMessage` を実行します。
 `MOD_NOREPEAT` で長押しによる連続通知を防ぎます。登録に失敗した場合はSentryへ記録し、通知せず完了します。
