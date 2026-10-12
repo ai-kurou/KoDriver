@@ -13,6 +13,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
@@ -20,6 +21,7 @@ import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -1127,6 +1129,51 @@ class Gt7Ps5NarratorEventProcessorTest {
                     "",
                     NarrationOutcome.SKIPPED,
                     match { it.isNotEmpty() },
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `デバッグ要求はキュー設定を使い入力本文と状態設定をログに保存する`() =
+        runTest {
+            val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root
+            val request = DebugReadoutRequest(Simulator.Gt7Ps5, key, " 入力 {laps} ")
+            val event = DebugReadoutText(key, request.text)
+            val telemetryJson = slot<String>()
+            every { ttsEngine.speak(event, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    request.text,
+                    NarrationOutcome.QUEUED,
+                    capture(telemetryJson),
+                )
+            } just Runs
+            val context = logContext
+            createProcessor().processDebugReadout(
+                request = request,
+                readoutOrder = emptyList(),
+                queueEnabledStates = mapOf(key to true),
+                observedAtMs = 100L,
+                logContext = context,
+            )
+            val json = Json.parseToJsonElement(telemetryJson.captured).jsonObject
+            assertEquals(setOf("state", "settings", "observedAtMs", "debugReadout"), json.keys)
+            assertEquals("true", json.getValue("debugReadout").toString())
+            assertEquals("100", json.getValue("observedAtMs").toString())
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(event, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    request.text,
+                    NarrationOutcome.QUEUED,
+                    telemetryJson.captured,
                 )
             }
             confirmVerified(ttsEngine, telemetryLogRepository)

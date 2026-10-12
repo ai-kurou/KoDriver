@@ -29,3 +29,13 @@ sealed interface ReadoutTextEvent : SpeechEvent {
 
     fun withResolvedText(text: String): ReadoutTextEvent
 }
+
+/** 入力文言を置換せず、通常の音声エンジン経路へ渡すイベント。 */
+data class DebugReadoutText(
+    override val readoutItemKey: ReadoutItemKey,
+    override val resolvedText: String,
+) : ReadoutTextEvent {
+    override val narratedText: String get() = resolvedText
+
+    override fun withResolvedText(text: String): DebugReadoutText = copy(resolvedText = text)
+}

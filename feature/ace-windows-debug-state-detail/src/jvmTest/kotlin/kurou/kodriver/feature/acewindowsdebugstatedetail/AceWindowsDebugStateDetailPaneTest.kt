@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
@@ -58,6 +60,7 @@ class AceWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 AceWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                     uiState = AceWindowsDebugStateDetailUiState(),
                     canNavigateBack = true,
                     onBack = {},
@@ -86,6 +89,7 @@ class AceWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 AceWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                     uiState =
                         AceWindowsDebugStateDetailUiState(
                             cardOrder =

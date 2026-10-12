@@ -16,12 +16,17 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.DebugReadoutRequest
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
+import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
@@ -31,6 +36,8 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5DebugStateDetailViewModelTest {
+    private val requestDebugReadout: RequestDebugReadoutUseCase = mockk(relaxUnitFun = true)
+
     private val observeTelemetry: ObserveGt7Ps5UseCase = mockk()
     private val observeVehicleClass: ObserveGt7Ps5VehicleClassUseCase = mockk()
 
@@ -44,6 +51,7 @@ class Gt7Ps5DebugStateDetailViewModelTest {
                 ResolveDebugStateCardOrderUseCase(),
                 SaveDebugStateCardOrderUseCase(cardOrderRepository),
             ),
+            requestDebugReadout = requestDebugReadout,
         )
 
     @Before
@@ -63,6 +71,25 @@ class Gt7Ps5DebugStateDetailViewModelTest {
             every { observeVehicleClass() } returns emptyFlow()
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
+            val keys = ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5)
+            assertEquals(keys.first(), viewModel.uiState.first().selectedReadoutItemKey)
+            viewModel.requestReadout()
+            viewModel.updateDebugReadoutText(" \n\t ")
+            viewModel.requestReadout()
+            viewModel.selectReadoutItem("unknown")
+            viewModel.selectReadoutItem(Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled.value)
+            val otherSimulator = Simulator.entries.first { it != Simulator.Gt7Ps5 }
+            viewModel.selectReadoutItem(ReadoutItemKey.topLevelEntriesOf(otherSimulator).first().value)
+            assertEquals(keys.first(), viewModel.uiState.first().selectedReadoutItemKey)
+            viewModel.selectReadoutItem(keys.last().value)
+            viewModel.updateDebugReadoutText("入力 {laps}")
+            viewModel.requestReadout()
+            val inputState = viewModel.uiState.first { it.debugReadoutText == "入力 {laps}" }
+            assertEquals(keys.last(), inputState.selectedReadoutItemKey)
+            coVerify(exactly = 1) {
+                requestDebugReadout(DebugReadoutRequest(Simulator.Gt7Ps5, keys.last(), "入力 {laps}"))
+            }
+
             val state = viewModel.uiState.first()
 
             assertEquals(Gt7Ps5DebugState(), state.gt7Ps5)
@@ -81,7 +108,7 @@ class Gt7Ps5DebugStateDetailViewModelTest {
             verify(exactly = 1) { observeTelemetry() }
             verify(exactly = 1) { observeVehicleClass() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-            confirmVerified(observeTelemetry, observeVehicleClass, cardOrderRepository)
+            confirmVerified(observeTelemetry, observeVehicleClass, cardOrderRepository, requestDebugReadout)
         }
 
     @Test

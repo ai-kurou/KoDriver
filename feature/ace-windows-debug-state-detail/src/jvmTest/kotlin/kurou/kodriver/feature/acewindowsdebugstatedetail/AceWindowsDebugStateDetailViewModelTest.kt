@@ -21,12 +21,16 @@ import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
@@ -43,6 +47,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
@@ -53,6 +58,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions", "LongMethod")
 class AceWindowsDebugStateDetailViewModelTest {
+    private val requestDebugReadout: RequestDebugReadoutUseCase = mockk(relaxUnitFun = true)
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val fuelRepository: AceWindowsFuelRepository = mockk()
@@ -84,6 +91,7 @@ class AceWindowsDebugStateDetailViewModelTest {
 
     private fun createViewModel() =
         AceWindowsDebugStateDetailViewModel(
+            requestDebugReadout = requestDebugReadout,
             aceWindowsUseCases =
                 AceWindowsDebugStateUseCases(
                     observeFuel = ObserveAceWindowsFuelUseCase(fuelRepository),
@@ -117,6 +125,25 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
+            val keys = ReadoutItemKey.topLevelEntriesOf(Simulator.AceWindows)
+            assertEquals(keys.first(), viewModel.uiState.first().selectedReadoutItemKey)
+            viewModel.requestReadout()
+            viewModel.updateDebugReadoutText(" \n\t ")
+            viewModel.requestReadout()
+            viewModel.selectReadoutItem("unknown")
+            viewModel.selectReadoutItem(AceWindowsReadoutItemKey.MyBestLap.DetailEnabled.value)
+            val otherSimulator = Simulator.entries.first { it != Simulator.AceWindows }
+            viewModel.selectReadoutItem(ReadoutItemKey.topLevelEntriesOf(otherSimulator).first().value)
+            assertEquals(keys.first(), viewModel.uiState.first().selectedReadoutItemKey)
+            viewModel.selectReadoutItem(keys.last().value)
+            viewModel.updateDebugReadoutText("入力 {laps}")
+            viewModel.requestReadout()
+            val inputState = viewModel.uiState.first { it.debugReadoutText == "入力 {laps}" }
+            assertEquals(keys.last(), inputState.selectedReadoutItemKey)
+            coVerify(exactly = 1) {
+                requestDebugReadout(DebugReadoutRequest(Simulator.AceWindows, keys.last(), "入力 {laps}"))
+            }
+
             testScheduler.runCurrent()
 
             val state = viewModel.uiState.first()
@@ -133,6 +160,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
+                requestDebugReadout,
                 fuelRepository,
                 flagRepository,
                 statusRepository,

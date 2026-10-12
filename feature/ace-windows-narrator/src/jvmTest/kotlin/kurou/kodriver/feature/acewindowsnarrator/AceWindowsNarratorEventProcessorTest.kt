@@ -30,6 +30,7 @@ import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
@@ -43,6 +44,7 @@ import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
@@ -2006,6 +2008,51 @@ class AceWindowsNarratorEventProcessorTest {
                 )
             }
             verify(exactly = 0) { ttsEngine.speak(AceWindowsRemainingFuelLapsWarning(20), false) }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `デバッグ要求はキュー設定を使い入力本文と状態設定をログに保存する`() =
+        runTest {
+            val key = AceWindowsReadoutItemKey.MyBestLap.Root
+            val request = DebugReadoutRequest(Simulator.AceWindows, key, " 入力 {laps} ")
+            val event = DebugReadoutText(key, request.text)
+            val telemetryJson = slot<String>()
+            every { ttsEngine.speak(event, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    key,
+                    request.text,
+                    NarrationOutcome.QUEUED,
+                    capture(telemetryJson),
+                )
+            } just Runs
+            val context = logContext()
+            createProcessor().processDebugReadout(
+                request = request,
+                readoutOrder = emptyList(),
+                queueEnabledStates = mapOf(key to true),
+                observedAtMs = 100L,
+                logContext = context,
+            )
+            val json = Json.parseToJsonElement(telemetryJson.captured).jsonObject
+            assertEquals(setOf("state", "settings", "observedAtMs", "debugReadout"), json.keys)
+            assertEquals("true", json.getValue("debugReadout").toString())
+            assertEquals("100", json.getValue("observedAtMs").toString())
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(event, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    key,
+                    request.text,
+                    NarrationOutcome.QUEUED,
+                    telemetryJson.captured,
+                )
+            }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 

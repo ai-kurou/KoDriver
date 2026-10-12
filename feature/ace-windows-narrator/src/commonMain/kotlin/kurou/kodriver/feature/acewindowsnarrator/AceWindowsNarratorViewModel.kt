@@ -34,6 +34,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStat
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
@@ -96,6 +97,7 @@ internal class AceWindowsNarratorViewModel(
     private val eventProcessor: AceWindowsNarratorEventProcessor,
     private val determineAceWindowsNarratorReadout: DetermineAceWindowsNarratorReadoutUseCase =
         DetermineAceWindowsNarratorReadoutUseCase(),
+    observeDebugReadoutRequest: ObserveDebugReadoutRequestUseCase,
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
     private val selectedSimulator =
@@ -220,6 +222,22 @@ internal class AceWindowsNarratorViewModel(
                     vehicleApproachUseCases.observeVehicleApproach()
                 }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    @Suppress("UnusedPrivateProperty")
+    private val debugReadoutRequestJob =
+        observeDebugReadoutRequest()
+            .onEach { request ->
+                if (request.simulator == Simulator.AceWindows) {
+                    val state = narratorState
+                    eventProcessor.processDebugReadout(
+                        request = request,
+                        readoutOrder = readoutOrder.value,
+                        queueEnabledStates = queueEnabledStates.value,
+                        observedAtMs = currentTimeMs(),
+                        logContext = AceWindowsTelemetryLogContext(state, currentSettings, state),
+                    )
+                }
+            }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob =

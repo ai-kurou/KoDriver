@@ -3,6 +3,7 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
+import kurou.kodriver.data.debugreadout.InMemoryDebugReadoutRequestRepository
 import kurou.kodriver.data.device.AndroidAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
@@ -36,6 +37,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
@@ -81,6 +83,7 @@ private val Context.hapticFeedbackEnabledDataStore by preferencesDataStore("hapt
  */
 fun androidDataModule(context: Context) =
     module {
+        single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<Context> { context }
 
         // 設定永続化（DataStore。ファイルは context.filesDir 配下）

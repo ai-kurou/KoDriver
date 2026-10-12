@@ -11,9 +11,11 @@ import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -34,6 +36,34 @@ internal class Gt7Ps5NarratorEventProcessor(
     private val readoutText: suspend (SpeechEvent) -> String?,
 ) {
     private val previousTelemetry = mutableMapOf<ReadoutItemKey, Gt7Ps5TelemetryData>()
+
+    /** 判定・テンプレート置換を通さず、通常の優先度・音声・ログ経路で処理する。 */
+    suspend fun processDebugReadout(
+        request: DebugReadoutRequest,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: Gt7Ps5TelemetryLogContext,
+    ) {
+        val event = DebugReadoutText(request.readoutItemKey, request.text)
+        val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
+        val outcome =
+            if (text == null) {
+                NarrationOutcome.SKIPPED
+            } else {
+                speakWithPriority(event.withResolvedText(text), readoutOrder, queueEnabledStates)
+            }
+        saveTelemetryLogSafely(
+            createdAt = observedAtMs,
+            readoutItemKey = event.readoutItemKey,
+            narratedText = text.orEmpty(),
+            narrationOutcome = outcome,
+            telemetryJson =
+                """{"state":${logContext.state.toJsonString()},""" +
+                    """"settings":${logContext.settings.toJsonString()},""" +
+                    """"observedAtMs":$observedAtMs,"debugReadout":true}""",
+        )
+    }
 
     suspend fun process(
         sourceKey: ReadoutItemKey,

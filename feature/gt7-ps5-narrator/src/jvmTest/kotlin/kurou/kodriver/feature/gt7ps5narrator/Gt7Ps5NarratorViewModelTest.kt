@@ -2,6 +2,7 @@
 
 package kurou.kodriver.feature.gt7ps5narrator
 
+import androidx.lifecycle.viewModelScope
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -13,6 +14,7 @@ import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +24,10 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
@@ -30,6 +36,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -38,6 +45,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
@@ -46,6 +54,7 @@ import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
@@ -66,6 +75,9 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions")
 class Gt7Ps5NarratorViewModelTest {
+    private val debugRequests = MutableSharedFlow<DebugReadoutRequest>()
+    private val debugRequestRepository: DebugReadoutRequestRepository = mockk()
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val telemetryRepository: Gt7Ps5Repository = mockk()
@@ -105,7 +117,9 @@ class Gt7Ps5NarratorViewModelTest {
         readoutText: suspend (SpeechEvent) -> String? = { it.narratedText },
     ): Gt7Ps5NarratorViewModel {
         every { telemetryRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
+        every { debugRequestRepository.observeRequests() } returns debugRequests
         return Gt7Ps5NarratorViewModel(
+            observeDebugReadoutRequest = ObserveDebugReadoutRequestUseCase(debugRequestRepository),
             myBestLapUseCases =
                 MyBestLapUseCases(
                     observeGt7Ps5 = ObserveGt7Ps5UseCase(telemetryRepository),
@@ -1230,6 +1244,85 @@ class Gt7Ps5NarratorViewModelTest {
                 )
             }
             confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `デバッグ要求は未受信かつ項目無効でも読み上げ他シミュレーターと空白は読み上げない`() =
+        runTest(testDispatcher) {
+            val key = ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5).first()
+            val request = DebugReadoutRequest(Simulator.Gt7Ps5, key, "入力 {laps}")
+            val spokenJson = slot<String>()
+            val skippedJson = slot<String>()
+            stubReadoutDefaults(enabledOverrides = mapOf(key to false))
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(DebugReadoutText(key, request.text), false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    request.text,
+                    NarrationOutcome.SPOKEN,
+                    capture(spokenJson),
+                )
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(skippedJson),
+                )
+            } just Runs
+            val viewModel =
+                createViewModel(
+                    telemetryChannel = Channel(Channel.UNLIMITED),
+                    ttsEngine = ttsEngine,
+                    currentTimeMs = { 123L },
+                )
+            try {
+                Simulator.entries.filter { it != Simulator.Gt7Ps5 }.forEach { simulator ->
+                    debugRequests.emit(request.copy(simulator = simulator))
+                }
+                debugRequests.emit(request)
+                debugRequests.emit(request.copy(text = " \n\t "))
+                val json = Json.parseToJsonElement(spokenJson.captured).jsonObject
+                assertEquals("true", json.getValue("debugReadout").jsonPrimitive.content)
+                assertEquals("123", json.getValue("observedAtMs").jsonPrimitive.content)
+                assertEquals(true, json.containsKey("state"))
+                assertEquals(true, json.containsKey("settings"))
+                assertEquals(setOf("state", "settings", "observedAtMs", "debugReadout"), json.keys)
+                assertEquals(spokenJson.captured, skippedJson.captured)
+                verify(exactly = 1) { debugRequestRepository.observeRequests() }
+                verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+                verify(exactly = 1) { ttsEngine.speak(DebugReadoutText(key, request.text), false) }
+                verify(exactly = 0) { ttsEngine.speak(DebugReadoutText(key, " \n\t "), false) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        123L,
+                        Simulator.Gt7Ps5,
+                        key,
+                        request.text,
+                        NarrationOutcome.SPOKEN,
+                        spokenJson.captured,
+                    )
+                }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        123L,
+                        Simulator.Gt7Ps5,
+                        key,
+                        "",
+                        NarrationOutcome.SKIPPED,
+                        skippedJson.captured,
+                    )
+                }
+                confirmVerified(debugRequestRepository, ttsEngine, telemetryLogRepository)
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
         }
 }
 

@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.DebugReadoutRequest
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kotlin.time.Clock
 
 private const val SIDE_BY_SIDE_TICK_INTERVAL_MS = 100L
@@ -16,9 +20,16 @@ private const val SIDE_BY_SIDE_TICK_INTERVAL_MS = 100L
 internal class LmuWindowsDebugStateDetailViewModel(
     lmuWindowsUseCases: LmuWindowsDebugStateUseCases,
     cardOrderUseCases: DebugStateCardOrderUseCases,
+    private val requestDebugReadout: RequestDebugReadoutUseCase,
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
     private val sideBySideTickIntervalMs: Long = SIDE_BY_SIDE_TICK_INTERVAL_MS,
 ) : ViewModel() {
+    private val _selectedReadoutItemKey =
+        MutableStateFlow<ReadoutItemKey>(
+            ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).first(),
+        )
+    private val _debugReadoutText = MutableStateFlow("")
+
     private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
     private val saveCardOrder = cardOrderUseCases::saveKeys
     private val _receivedCardKeys = MutableStateFlow(setOf(LmuWindowsDebugStateCardKey.SIMULATOR))
@@ -54,9 +65,25 @@ internal class LmuWindowsDebugStateDetailViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsDebugStateDetailUiState())
 
     val uiState: StateFlow<LmuWindowsDebugStateDetailUiState> =
-        combine(_header, lmuWindowsSource.state) { header, lmu ->
-            header.copy(lmuWindows = lmu)
+        combine(_header, lmuWindowsSource.state, _selectedReadoutItemKey, _debugReadoutText) { header, lmu, key, text ->
+            header.copy(lmuWindows = lmu, selectedReadoutItemKey = key, debugReadoutText = text)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsDebugStateDetailUiState())
+
+    fun selectReadoutItem(value: String) {
+        val key = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).find { it.value == value } ?: return
+        _selectedReadoutItemKey.update { key }
+    }
+
+    fun updateDebugReadoutText(text: String) {
+        _debugReadoutText.update { text }
+    }
+
+    fun requestReadout() {
+        val text = _debugReadoutText.value
+        if (text.isBlank()) return
+        val request = DebugReadoutRequest(Simulator.LmuWindows, _selectedReadoutItemKey.value, text)
+        viewModelScope.launch { requestDebugReadout(request) }
+    }
 
     fun moveCard(
         fromIndex: Int,

@@ -22,6 +22,7 @@ import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
@@ -30,6 +31,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -40,6 +42,8 @@ import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsDebugStateDetailModuleTest {
+    private val debugRequestRepository: DebugReadoutRequestRepository = mockk()
+
     private val aceWindowsBestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
     private val aceWindowsFlagRepository: AceWindowsFlagRepository = mockk()
     private val aceWindowsFuelRepository: AceWindowsFuelRepository = mockk()
@@ -75,6 +79,7 @@ class AceWindowsDebugStateDetailModuleTest {
                 modules(
                     aceWindowsDebugStateDetailModule,
                     module {
+                        single<DebugReadoutRequestRepository> { debugRequestRepository }
                         single<AceWindowsBestLapTimeRepository> { aceWindowsBestLapTimeRepository }
                         single<AceWindowsFlagRepository> { aceWindowsFlagRepository }
                         single<AceWindowsFuelRepository> { aceWindowsFuelRepository }
@@ -91,6 +96,7 @@ class AceWindowsDebugStateDetailModuleTest {
                 )
             }.koin
         try {
+            assertNotNull(koin.get<RequestDebugReadoutUseCase>())
             assertNotNull(koin.get<DebugStateCardOrderUseCases>())
             assertNotNull(koin.get<AceWindowsDebugStateUseCases>())
             assertNotNull(koin.get<ObserveAceWindowsFuelUseCase>())

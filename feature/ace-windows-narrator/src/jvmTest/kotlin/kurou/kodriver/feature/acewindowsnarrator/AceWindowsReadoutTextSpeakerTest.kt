@@ -27,7 +27,10 @@ import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
@@ -924,5 +927,23 @@ class AceWindowsReadoutTextSpeakerTest {
                 observeRedYellowStripes,
                 observeVehicleApproach,
             )
+        }
+
+    @Test
+    fun `デバッグ要求の本文はテンプレート置換せずTTSで再生する`() =
+        runTest {
+            val key = ReadoutItemKey.topLevelEntriesOf(Simulator.AceWindows).first()
+            val event = DebugReadoutText(key, "入力 {laps}")
+            assertTrue(isAceWindowsCustomSpeakEvent(event))
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText(event.resolvedText, volume = 42) } just Runs
+
+            assertEquals(event.resolvedText, speaker.readoutText(event))
+            speaker(event, 42)
+            assertNull(speaker.readoutText(event.copy(resolvedText = " ")))
+            speaker(event.copy(resolvedText = " "), 42)
+            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 1) { speakText(event.resolvedText, volume = 42) }
+            confirmVerified(checkAvailable, speakText)
         }
 }
