@@ -19,11 +19,9 @@ digraph G {
   ":core:text-to-speech-data" [label=":core:text-to-speech-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-startup-data" [label=":core:windows-startup-data", fillcolor="#BBDEFB", color="#1E88E5"]
-  ":feature:ace-windows-*" [label="feature:ace-windows-*\n9 modules", fillcolor="#C8E6C9", color="#43A047"]
-  ":feature:gt7-ps5-*" [label="feature:gt7-ps5-*\n7 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":feature:lmu-windows-*" [label="feature:lmu-windows-*\n13 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":server" [label=":server", fillcolor="#F8BBD0", color="#D81B60"]
-  "feature" [label="feature\n20 modules", fillcolor="#C8E6C9", color="#43A047"]
+  "feature" [label="feature\n36 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":app:androidApp" -> ":app:androidBenchmark"
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:data"
@@ -42,8 +40,6 @@ digraph G {
   ":app:desktopApp" -> ":core:text-to-speech-data"
   ":app:desktopApp" -> ":core:windows-startup-data"
   ":app:desktopApp" -> ":server"
-  ":app:shared" -> ":feature:ace-windows-*"
-  ":app:shared" -> ":feature:gt7-ps5-*"
   ":app:shared" -> ":feature:lmu-windows-*"
   ":app:shared" -> "feature"
   ":app:webApp" -> ":app:shared"
@@ -57,16 +53,11 @@ digraph G {
   ":core:lmu-windows-rest-api-data" -> ":core:domain"
   ":core:text-to-speech-data" -> ":core:domain"
   ":core:windows-startup-data" -> ":core:domain"
-  ":feature:ace-windows-*" -> ":core:designsystem"
-  ":feature:ace-windows-*" -> ":core:domain"
-  ":feature:ace-windows-*" -> ":core:narrator"
-  ":feature:gt7-ps5-*" -> ":core:designsystem"
-  ":feature:gt7-ps5-*" -> ":core:domain"
-  ":feature:gt7-ps5-*" -> ":core:narrator"
   ":feature:lmu-windows-*" -> ":core:designsystem"
   ":feature:lmu-windows-*" -> ":core:domain"
   ":feature:lmu-windows-*" -> ":core:narrator"
   ":server" -> ":core:domain"
   "feature" -> ":core:designsystem"
   "feature" -> ":core:domain"
+  "feature" -> ":core:narrator"
 }
