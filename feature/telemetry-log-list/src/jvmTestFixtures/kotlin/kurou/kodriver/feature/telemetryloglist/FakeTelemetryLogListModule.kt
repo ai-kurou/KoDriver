@@ -69,8 +69,8 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
         )
     }
 
-    override suspend fun deleteAllTelemetryLogs() {
-        emit(emptyList())
+    override suspend fun deleteTelemetryLogsBySimulator(simulator: Simulator) {
+        logs.update { logs -> logs.filterNot { it.simulator == simulator } }
     }
 
     override suspend fun deleteTelemetryLog(id: Long) {

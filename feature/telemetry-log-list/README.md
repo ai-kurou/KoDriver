@@ -1,6 +1,6 @@
 # telemetry-log-list
 
-記録済みテレメトリログの一覧画面を提供する feature モジュール。
+記録済みテレメトリログの一覧画面を提供する feature モジュール。一覧は選択中のシミュレーターのログのみを表示する。
 
 ## 主要なファイルの役割
 
@@ -8,7 +8,7 @@
 - `TelemetryLogListViewModel.kt`: ログ一覧・選択中ログ・削除確認ダイアログ表示状態などを `StateFlow` で公開する。
 - `ObserveSortedTelemetryLogsUseCase.kt`: `:core:domain` の `ObserveTelemetryLogsUseCase` を作成日時の降順にソートして提供する、この feature 固有のUseCase。
 - `TelemetryLogListModule.kt`: この feature の Koin モジュール定義。
-- `TelemetryLogDeleteConfirmDialog.kt` / `TelemetryLogResetConfirmDialog.kt`: 個別削除・全件リセット時の確認ダイアログ。
+- `TelemetryLogDeleteConfirmDialog.kt` / `TelemetryLogResetConfirmDialog.kt`: 個別削除・選択中シミュレーターのログのみ削除するリセット時の確認ダイアログ。
 - `ReadoutItemDisplayName.kt`: ログに紐づく `ReadoutItemKey` の表示名変換。
 - `ErrorCapture.kt`: プラットフォームごとのエラーレポート送信（expect/actual）。
 

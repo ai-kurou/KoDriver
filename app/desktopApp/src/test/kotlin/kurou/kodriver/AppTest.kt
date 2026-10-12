@@ -325,9 +325,10 @@ class AppTest {
     @Test
     fun `ログタブにログがない場合は空状態を表示する`() {
         setContent()
+        selectSimulator("Le Mans Ultimate（Windows版）")
 
         clickItem("ログ")
-        waitUntilDisplayed("ログはまだありません")
+        waitUntilDisplayed("Le Mans Ultimate（Windows版）のログはまだありません")
         waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
     }
 
@@ -350,6 +351,7 @@ class AppTest {
             ),
         )
         setContent()
+        selectSimulator("Le Mans Ultimate（Windows版）")
 
         clickItem("ログ")
 
@@ -381,6 +383,7 @@ class AppTest {
             ),
         )
         setContent()
+        selectSimulator("Le Mans Ultimate（Windows版）")
 
         clickItem("ログ")
         clickItem("フラッグ")
@@ -411,6 +414,7 @@ class AppTest {
             ),
         )
         setContent()
+        selectSimulator("Le Mans Ultimate（Windows版）")
 
         clickItem("ログ")
         clickItem("フラッグ")

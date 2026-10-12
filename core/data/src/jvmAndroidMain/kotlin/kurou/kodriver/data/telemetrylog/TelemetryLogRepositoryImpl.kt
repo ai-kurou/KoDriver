@@ -29,6 +29,7 @@ internal class TelemetryLogRepositoryImpl(
             } else {
                 dao
                     .observePreviousTelemetryLog(
+                        simulatorId = current.simulatorId,
                         createdAt = current.createdAt,
                         id = current.id,
                     ).map { previous ->
@@ -62,8 +63,8 @@ internal class TelemetryLogRepositoryImpl(
         )
     }
 
-    override suspend fun deleteAllTelemetryLogs() {
-        dao.deleteAll()
+    override suspend fun deleteTelemetryLogsBySimulator(simulator: Simulator) {
+        dao.deleteBySimulator(simulator.id)
     }
 
     override suspend fun deleteTelemetryLog(id: Long) {

@@ -36,7 +36,7 @@ kotlin.sourceSets.main {
 }
 
 dependencies {
-    api(projects.core.domain)
+    implementation(projects.core.domain)
     implementation(libs.logback)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
