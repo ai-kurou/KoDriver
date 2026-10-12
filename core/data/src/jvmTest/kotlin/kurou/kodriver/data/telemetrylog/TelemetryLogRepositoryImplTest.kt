@@ -316,6 +316,47 @@ class TelemetryLogRepositoryImplTest {
         }
 
     @Test
+    fun `observeTelemetryLogDetailは他シミュレーターの直前ログを除外して同一シミュレーターのログをpreviousに返す`() =
+        runTest {
+            val current = telemetryLogEntity(id = 3L, createdAt = 3000L)
+            val other = telemetryLogEntity(id = 2L, createdAt = 2000L, simulator = Simulator.AceWindows)
+            val previous = telemetryLogEntity(id = 1L, createdAt = 1000L)
+            val dao =
+                FakeTelemetryLogDao(
+                    initialLogs = listOf(previous, other, current),
+                )
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertEquals(
+                TelemetryLogDetail(
+                    current = current.toDomainLog(),
+                    previous = previous.toDomainLog(),
+                ),
+                repository.observeTelemetryLogDetail(3L).first(),
+            )
+        }
+
+    @Test
+    fun `observeTelemetryLogDetailは他シミュレーターにのみ古いログがある場合previousにnullを返す`() =
+        runTest {
+            val current = telemetryLogEntity(id = 2L, createdAt = 2000L)
+            val other = telemetryLogEntity(id = 1L, createdAt = 1000L, simulator = Simulator.AceWindows)
+            val dao =
+                FakeTelemetryLogDao(
+                    initialLogs = listOf(other, current),
+                )
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertEquals(
+                TelemetryLogDetail(
+                    current = current.toDomainLog(),
+                    previous = null,
+                ),
+                repository.observeTelemetryLogDetail(2L).first(),
+            )
+        }
+
+    @Test
     fun `observeTelemetryLogDetailは指定idのログがない場合nullを返す`() =
         runTest {
             val dao =
@@ -351,13 +392,17 @@ private class FakeTelemetryLogDao(
         }
 
     override fun observePreviousTelemetryLog(
+        simulatorId: String,
         createdAt: Long,
         id: Long,
     ): Flow<TelemetryLogEntity?> =
         logs.map { logs ->
-            logs
-                .filter { it.createdAt < createdAt || (it.createdAt == createdAt && it.id < id) }
-                .maxWithOrNull(compareBy<TelemetryLogEntity> { it.createdAt }.thenBy { it.id })
+            val candidates =
+                logs.filter {
+                    it.simulatorId == simulatorId &&
+                        (it.createdAt < createdAt || (it.createdAt == createdAt && it.id < id))
+                }
+            candidates.maxWithOrNull(compareBy<TelemetryLogEntity> { it.createdAt }.thenBy { it.id })
         }
 
     override suspend fun insert(log: TelemetryLogEntity) {

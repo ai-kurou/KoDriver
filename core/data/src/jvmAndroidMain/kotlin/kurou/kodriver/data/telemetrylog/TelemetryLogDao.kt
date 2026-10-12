@@ -32,12 +32,13 @@ internal interface TelemetryLogDao {
     @Query(
         """
         SELECT * FROM telemetry_logs
-        WHERE createdAt < :createdAt OR (createdAt = :createdAt AND id < :id)
+        WHERE simulatorId = :simulatorId AND (createdAt < :createdAt OR (createdAt = :createdAt AND id < :id))
         ORDER BY createdAt DESC, id DESC
         LIMIT 1
         """,
     )
     fun observePreviousTelemetryLog(
+        simulatorId: String,
         createdAt: Long,
         id: Long,
     ): Flow<TelemetryLogEntity?>
