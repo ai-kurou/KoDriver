@@ -10,6 +10,7 @@ digraph G {
   ":core:lmu-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:lmu-windows-rest-api-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:text-to-speech-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:windows-hotkey-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:windows-startup-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":server" [fillcolor="#F8BBD0", color="#D81B60", penwidth=1]
   ":app:desktopApp" -> ":app:shared"
@@ -21,5 +22,6 @@ digraph G {
   ":app:desktopApp" -> ":core:device-volume-data"
   ":app:desktopApp" -> ":core:text-to-speech-data"
   ":app:desktopApp" -> ":core:windows-startup-data"
+  ":app:desktopApp" -> ":core:windows-hotkey-data"
   ":app:desktopApp" -> ":server"
 }

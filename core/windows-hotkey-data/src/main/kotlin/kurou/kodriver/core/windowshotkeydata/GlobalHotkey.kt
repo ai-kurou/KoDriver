@@ -6,6 +6,7 @@ data class GlobalHotkey(
     val virtualKeyCode: Int,
 ) {
     companion object {
+        const val VK_F9 = 0x78
         const val VK_F13 = 0x7C
     }
 }

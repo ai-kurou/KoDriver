@@ -30,6 +30,7 @@ import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
@@ -79,6 +80,7 @@ import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
+import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
@@ -134,6 +136,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -205,6 +208,8 @@ class LmuWindowsNarratorViewModelTest {
 
     private val vehicleClassBrakeWearPreferencesRepository:
         LmuWindowsVehicleClassBrakeWearPreferencesRepository = mockk(relaxUnitFun = true)
+
+    private val hotkeyRepository: HotkeyRepository = mockk()
 
     private val virtualEnergyRepository: LmuWindowsVirtualEnergyRepository = mockk(relaxUnitFun = true)
 
@@ -286,6 +291,11 @@ class LmuWindowsNarratorViewModelTest {
             MutableStateFlow(enabledOverrides)
         every { readoutPreferencesRepository.observeReadoutOrder(Simulator.LmuWindows.id) } returns
             MutableStateFlow(orderOverride)
+        // シミュレーター切り替えのテスト用に、LMU 以外の購読も解決できるようにする
+        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            MutableStateFlow(emptyMap())
+        every { readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id) } returns
+            MutableStateFlow(orderOverride)
         every { flagRepository.flagStream() } returns flagChannel.receiveAsFlow()
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
         every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -348,6 +358,7 @@ class LmuWindowsNarratorViewModelTest {
         brakeTemperatureChannel: Channel<LmuWindowsBrakeTemperatureData> = Channel(Channel.UNLIMITED),
         brakeWearChannel: Channel<LmuWindowsBrakeWearData?> = Channel(Channel.UNLIMITED),
         remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData> = Channel(Channel.UNLIMITED),
+        hotkeyChannel: Channel<Unit> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -378,6 +389,7 @@ class LmuWindowsNarratorViewModelTest {
         pitTimingVirtualEnergyLapsThreshold: Int = 3,
         pitTimingTyreWearLapsThreshold: Int = 3,
         simulator: Simulator = Simulator.LmuWindows,
+        selectedSimulatorFlow: MutableStateFlow<Simulator>? = null,
         currentTimeMs: () -> Long = { 0L },
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         pitTimingEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -416,6 +428,11 @@ class LmuWindowsNarratorViewModelTest {
             queueEnabledOverrides = queueEnabledOverrides,
             pitTimingEnabledOverrides = pitTimingEnabledOverrides,
         )
+
+        selectedSimulatorFlow?.let {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns it
+        }
+        every { hotkeyRepository.hotkeyPressStream() } returns hotkeyChannel.receiveAsFlow()
 
         return LmuWindowsNarratorViewModel(
             vehicleApproachUseCases =
@@ -510,6 +527,7 @@ class LmuWindowsNarratorViewModelTest {
             remainingVirtualEnergyUseCases =
                 RemainingVirtualEnergyUseCases(
                     observeRemainingVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
+                    observeReadoutHotkey = ObserveReadoutHotkeyUseCase(hotkeyRepository),
                     observeThresholdPercentage =
                         ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(
                             remainingVirtualEnergyPreferencesRepository,
@@ -2349,6 +2367,181 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":123""")
             assertContains(log.telemetryJson, """"finalState":{""")
+        }
+
+    @Test
+    fun `ホットキーは最新残量を繰り返し読み上げ警告状態を変えない`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val hotkey = Channel<Unit>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val events = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                hotkeyChannel = hotkey,
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
+                readoutTextOverride = {
+                    events.add(it)
+                    "現在値"
+                },
+                currentTimeMs = { 123L },
+            )
+            stubTelemetryLogSave(logs, 123L, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            hotkey.send(Unit)
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.2))
+            hotkey.send(Unit)
+            hotkey.send(Unit)
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.2))
+
+            assertEquals(
+                listOf(80, 20, 20),
+                events.filterIsInstance<LmuWindowsRemainingVirtualEnergyCurrentValue>().map { it.percentage },
+            )
+            assertEquals(4, events.size)
+            assertEquals(4, spoken.size)
+            assertEquals(4, logs.size)
+            assertEquals(123L, logs.last().createdAt)
+            assertContains(logs.last().telemetryJson, "\"remainingRatio\":0.2")
+            assertContains(logs.last().telemetryJson, "\"finalState\":")
+        }
+
+    @Test
+    fun `最後の残量受信から一定時間が経過したホットキーは読み上げない`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val hotkey = Channel<Unit>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            var fakeTime = 0L
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                hotkeyChannel = hotkey,
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
+                currentTimeMs = { fakeTime },
+            )
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            fakeTime = 5_001L
+            hotkey.send(Unit)
+
+            assertEquals(emptyList(), spoken)
+        }
+
+    @Test
+    fun `データ未受信のホットキーは何もしない`() =
+        runTest(testDispatcher) {
+            val hotkey = Channel<Unit>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(hotkeyChannel = hotkey, ttsEngine = mockTts(spoken))
+
+            hotkey.send(Unit)
+
+            assertEquals(emptyList(), spoken)
+        }
+
+    @Test
+    fun `残量スイッチが無効ならホットキーでも読み上げない`() =
+        runTest(testDispatcher) {
+            val disabledKeys =
+                listOf(
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
+                )
+            for (disabledKey in disabledKeys) {
+                val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+                val hotkey = Channel<Unit>(Channel.UNLIMITED)
+                val spoken = mutableListOf<SpeechEvent>()
+                createViewModel(
+                    remainingVirtualEnergyChannel = energy,
+                    hotkeyChannel = hotkey,
+                    ttsEngine = mockTts(spoken),
+                    enabledOverrides = mapOf(disabledKey to false),
+                )
+
+                energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+                hotkey.send(Unit)
+
+                assertEquals(emptyList(), spoken)
+            }
+        }
+
+    @Test
+    fun `他のシミュレーターではホットキーを無視する`() =
+        runTest(testDispatcher) {
+            val hotkey = Channel<Unit>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                hotkeyChannel = hotkey,
+                ttsEngine = mockTts(spoken),
+                simulator = Simulator.Gt7Ps5,
+            )
+
+            hotkey.send(Unit)
+
+            assertEquals(emptyList(), spoken)
+        }
+
+    @Test
+    fun `シミュレーター切り替え後は古い残量を読み上げない`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val hotkey = Channel<Unit>(Channel.UNLIMITED)
+            val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                hotkeyChannel = hotkey,
+                selectedSimulatorFlow = selected,
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
+            )
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            selected.value = Simulator.Gt7Ps5
+            hotkey.send(Unit)
+            selected.value = Simulator.LmuWindows
+            hotkey.send(Unit)
+            assertEquals(emptyList(), spoken)
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.7))
+            hotkey.send(Unit)
+            assertEquals(1, spoken.size)
+        }
+
+    @Test
+    fun `ホットキーの読み上げは既存のキュー設定に従う`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val hotkey = Channel<Unit>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val queued = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spoken)
+            every { ttsEngine.speak(capture(queued), queue = true) } just Runs
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                hotkeyChannel = hotkey,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
+                queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
+            )
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            hotkey.send(Unit)
+
+            assertEquals(emptyList(), spoken)
+            assertEquals(
+                listOf<SpeechEvent>(
+                    LmuWindowsRemainingVirtualEnergyCurrentValue(
+                        percentage = 80,
+                        resolvedText = LmuWindowsRemainingVirtualEnergyCurrentValue(80).narratedText,
+                    ),
+                ),
+                queued,
+            )
         }
 
     // --- ピットタイミング ---

@@ -58,6 +58,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
@@ -137,7 +138,7 @@ val lmuWindowsNarratorModule: Module =
         factory { TyreWearUseCases(get(), get()) }
         factory { BrakeTemperatureUseCases(get(), get()) }
         factory { BrakeWearUseCases(get(), get()) }
-        factory { RemainingVirtualEnergyUseCases(get(), get()) }
+        factory { RemainingVirtualEnergyUseCases(get(), get(), get()) }
         factory { PitTimingUseCases(get(), get(), get()) }
         factory {
             LmuWindowsNarratorEventProcessor(
@@ -149,6 +150,7 @@ val lmuWindowsNarratorModule: Module =
 
         // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
         factory { DetermineLmuWindowsNarratorReadoutUseCase() }
+        factory { ObserveReadoutHotkeyUseCase(get()) }
         factory { SaveTelemetryLogUseCase(get()) }
         factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsMyBestLapReadoutTextUseCase(get()) }

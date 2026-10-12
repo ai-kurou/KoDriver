@@ -20,7 +20,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:device-volume-data` | 端末（OS）のマスター音量取得・設定のリポジトリ実装 | [図](graphs/core-device-volume-data.svg) |
 | `:core:text-to-speech-data` | OS標準の音声合成（Windows SAPI / Android TextToSpeech）と音声設定の起動のリポジトリ実装 | [図](graphs/core-text-to-speech-data.svg) |
 | `:core:windows-startup-data` | OS起動時のKoDriver自動起動設定（Windowsレジストリ）のリポジトリ実装 | [図](graphs/core-windows-startup-data.svg) |
-| `:core:windows-hotkey-data` | Windowsグローバルホットキーの検出・Flow配信基盤 | [図](graphs/core-windows-hotkey-data.svg) |
+| `:core:windows-hotkey-data` | Windowsグローバルホットキーの検出・F9固定のHotkeyRepository・Koinバインド（domain依存） | [図](graphs/core-windows-hotkey-data.svg) |
 | `:core:windows-shared-memory` | Windows共有メモリI/Oの汎用基盤（`lmu-windows-data` / `ace-windows-data` が共通利用） | [図](graphs/core-windows-shared-memory.svg) |
 | `:core:designsystem` | アプリ全体で共有する Composable コンポーネント | [図](graphs/core-designsystem.svg) |
 | `:core:narrator` | 開始音のWAV再生・TTS読み上げ制御の共通基盤（lmu/gt7/ace の各narrator featureが共通利用） | [図](graphs/core-narrator.svg) |
@@ -76,6 +76,11 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:server` | デスクトップアプリと同一プロセスで起動する Ktor サーバー。`/ws/<Simulator.id>/<feature>` WebSocket で共有メモリ・LMU REST API 由来の走行情報を配信する | [図](graphs/server.svg) |
 
 LMU のブレーキ摩耗は `:core:lmu-windows-rest-api-data` がデスクトップ版で取得し、`:server` の `/ws/lmu_windows/brake_wear` から配信する。Android 版は `:core:data` の WebSocket Repository で受信し、共通の残量計算・Narrator に渡す。取得失敗時の `null` も配信する。
+
+F9 の読み上げホットキーは `:core:windows-hotkey-data` → `:core:domain` の
+`HotkeyRepository` / `ObserveReadoutHotkeyUseCase` → `:feature:lmu-windows-narrator` に配線する。
+デスクトップの composition root が `windowsHotkeyDataModule` を登録し、Android の `:core:data` は
+空 Flow の Repository を提供する。モジュール依存図は Gradle から CI で再生成する。
 
 ## モジュール一覧の更新漏れ防止
 
