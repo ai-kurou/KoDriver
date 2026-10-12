@@ -1,5 +1,0 @@
-digraph G {
-  ":server" -> ":core"
-  ":feature:other-detail" -> ":core"
-  ":feature:readout" -> ":core"
-}
