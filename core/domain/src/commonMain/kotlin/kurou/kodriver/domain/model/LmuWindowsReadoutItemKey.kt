@@ -146,4 +146,40 @@ sealed interface LmuWindowsReadoutItemKey : ReadoutItemKey {
             override val value = "lmu_windows_brake_wear_warning_readout"
         }
     }
+
+    companion object {
+        /** 既存保存値の復元対象となる全キー。新しいキーを追加した場合はここにも追加する。 */
+        val entries: List<LmuWindowsReadoutItemKey> by lazy {
+            listOf(
+                VehicleApproach.Root,
+                VehicleApproach.Sustained,
+                VehicleApproach.StartReadout,
+                Flag.Root,
+                Flag.BlueFlag,
+                Flag.SectorYellowFlag,
+                Flag.FullCourseYellow,
+                Flag.RedFlag,
+                VehicleDamage.Root,
+                VehicleDamage.Overheat,
+                VehicleDamage.PartDetached,
+                VehicleDamage.TyreDetached,
+                TyreTemperature.Root,
+                TyreTemperature.OverheatWarning,
+                TyreTemperature.LowWarning,
+                PitTiming.Root,
+                PitTiming.VirtualEnergy,
+                PitTiming.TyreWear,
+                RemainingVirtualEnergy.Root,
+                RemainingVirtualEnergy.WarningReadout,
+                TyreWear.Root,
+                TyreWear.WarningReadout,
+                BrakeTemperature.Root,
+                BrakeTemperature.WarningReadout,
+                BrakeWear.Root,
+                BrakeWear.WarningReadout,
+                MyBestLap.Root,
+                MyBestLap.DetailEnabled,
+            )
+        }
+    }
 }

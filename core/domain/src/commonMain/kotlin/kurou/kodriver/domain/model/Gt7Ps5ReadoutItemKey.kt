@@ -48,4 +48,20 @@ sealed interface Gt7Ps5ReadoutItemKey : ReadoutItemKey {
             override val value = "gt7_ps5_tyre_temperature_overheat_warning"
         }
     }
+
+    companion object {
+        /** 既存保存値の復元対象となる全キー。新しいキーを追加した場合はここにも追加する。 */
+        val entries: List<Gt7Ps5ReadoutItemKey> by lazy {
+            listOf(
+                MyBestLap.Root,
+                MyBestLap.DetailEnabled,
+                RemainingFuelLaps.Root,
+                RemainingFuelLaps.DetailEnabled,
+                RemainingFuel.Root,
+                RemainingFuel.DetailEnabled,
+                TyreTemperature.Root,
+                TyreTemperature.OverheatWarning,
+            )
+        }
+    }
 }

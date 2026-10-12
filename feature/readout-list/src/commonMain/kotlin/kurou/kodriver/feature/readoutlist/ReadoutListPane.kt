@@ -111,6 +111,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector =
         is LmuWindowsReadoutItemKey -> lmuWindowsItemIcon(itemId)
         is Gt7Ps5ReadoutItemKey -> gt7Ps5ItemIcon(itemId)
         is AceWindowsReadoutItemKey -> aceWindowsItemIcon(itemId)
+        else -> error("Unsupported readout item key: $itemId")
     }
 
 private fun readoutItemIndex(

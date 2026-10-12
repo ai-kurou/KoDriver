@@ -6,6 +6,111 @@ import kotlin.test.assertNull
 
 class ReadoutItemKeyTest {
     @Test
+    fun `LMUのentriesは全キーを既存の順序で網羅する`() {
+        assertEquals(
+            listOf(
+                LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.VehicleApproach.Sustained,
+                LmuWindowsReadoutItemKey.VehicleApproach.StartReadout,
+                LmuWindowsReadoutItemKey.Flag.Root,
+                LmuWindowsReadoutItemKey.Flag.BlueFlag,
+                LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
+                LmuWindowsReadoutItemKey.Flag.FullCourseYellow,
+                LmuWindowsReadoutItemKey.Flag.RedFlag,
+                LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Overheat,
+                LmuWindowsReadoutItemKey.VehicleDamage.PartDetached,
+                LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached,
+                LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
+                LmuWindowsReadoutItemKey.TyreTemperature.LowWarning,
+                LmuWindowsReadoutItemKey.PitTiming.Root,
+                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy,
+                LmuWindowsReadoutItemKey.PitTiming.TyreWear,
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
+                LmuWindowsReadoutItemKey.TyreWear.Root,
+                LmuWindowsReadoutItemKey.TyreWear.WarningReadout,
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                LmuWindowsReadoutItemKey.BrakeTemperature.WarningReadout,
+                LmuWindowsReadoutItemKey.BrakeWear.Root,
+                LmuWindowsReadoutItemKey.BrakeWear.WarningReadout,
+                LmuWindowsReadoutItemKey.MyBestLap.Root,
+                LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
+            ),
+            LmuWindowsReadoutItemKey.entries,
+        )
+    }
+
+    @Test
+    fun `GT7のentriesは全キーを既存の順序で網羅する`() {
+        assertEquals(
+            listOf(
+                Gt7Ps5ReadoutItemKey.MyBestLap.Root,
+                Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled,
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
+                Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled,
+                Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
+                Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning,
+            ),
+            Gt7Ps5ReadoutItemKey.entries,
+        )
+    }
+
+    @Test
+    fun `ACEのentriesは全キーを既存の順序で網羅する`() {
+        assertEquals(
+            listOf(
+                AceWindowsReadoutItemKey.VehicleApproach.Root,
+                AceWindowsReadoutItemKey.VehicleApproach.StartReadout,
+                AceWindowsReadoutItemKey.Flag.Root,
+                AceWindowsReadoutItemKey.Flag.WhiteFlag,
+                AceWindowsReadoutItemKey.Flag.GreenFlag,
+                AceWindowsReadoutItemKey.Flag.RedFlag,
+                AceWindowsReadoutItemKey.Flag.BlueFlag,
+                AceWindowsReadoutItemKey.Flag.YellowFlag,
+                AceWindowsReadoutItemKey.Flag.BlackFlag,
+                AceWindowsReadoutItemKey.Flag.BlackWhiteFlag,
+                AceWindowsReadoutItemKey.Flag.CheckeredFlag,
+                AceWindowsReadoutItemKey.Flag.OrangeCircleFlag,
+                AceWindowsReadoutItemKey.Flag.RedYellowStripesFlag,
+                AceWindowsReadoutItemKey.RemainingFuel.Root,
+                AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled,
+                AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
+                AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled,
+                AceWindowsReadoutItemKey.TyreTemperature.Root,
+                AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
+                AceWindowsReadoutItemKey.MyBestLap.Root,
+                AceWindowsReadoutItemKey.MyBestLap.DetailEnabled,
+            ),
+            AceWindowsReadoutItemKey.entries,
+        )
+    }
+
+    @Test
+    fun `entriesはLMUとGT7とACEのentriesを順に連結した一覧と一致する`() {
+        assertEquals(
+            LmuWindowsReadoutItemKey.entries + Gt7Ps5ReadoutItemKey.entries + AceWindowsReadoutItemKey.entries,
+            ReadoutItemKey.entries,
+        )
+    }
+
+    @Test
+    fun `entriesのvalueに重複がない`() {
+        val values = ReadoutItemKey.entries.map { it.value }
+        assertEquals(values.size, values.toSet().size)
+    }
+
+    @Test
+    fun `fromValueは全entriesのキーを復元する`() {
+        ReadoutItemKey.entries.forEach { key ->
+            assertEquals(key, ReadoutItemKey.fromValue(key.value))
+        }
+    }
+
+    @Test
     fun `fromValue はLMUとGT7のキーに一致するキーを返す`() {
         assertEquals(
             LmuWindowsReadoutItemKey.VehicleApproach.Root,

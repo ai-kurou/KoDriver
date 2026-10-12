@@ -118,4 +118,5 @@ private fun ReadoutItemKey.simulator(): Simulator =
         is LmuWindowsReadoutItemKey -> Simulator.LmuWindows
         is Gt7Ps5ReadoutItemKey -> Simulator.Gt7Ps5
         is AceWindowsReadoutItemKey -> Simulator.AceWindows
+        else -> error("Unsupported readout item key: $this")
     }
