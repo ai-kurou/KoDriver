@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +36,12 @@ private val NarratorOverlayBackgroundColor = Color(0xFFEDEDED)
  * オーバーレイHUDの文字色（黄色系）。ゲーム画面上での視認性を優先した固定色とする。
  */
 private val NarratorOverlayTextColor = Color(0xFFFFC107)
+
+/**
+ * 透明な背景でも文字を読みやすくする黒い影。ゲーム画面上の視認性を優先し、アプリテーマに依存しない固定色とする。
+ */
+private val NarratorOverlayTextShadow =
+    Shadow(color = Color.Black.copy(alpha = 0.8f), offset = Offset(2f, 2f), blurRadius = 4f)
 
 /**
  * NarratorOverlayContent を提供する公開関数。
@@ -73,7 +81,7 @@ internal fun NarratorOverlayContent(
 }
 
 @Composable
-private fun narratorOverlayTextStyle(overlayTextSize: OverlayTextSize): TextStyle =
+internal fun narratorOverlayTextStyle(overlayTextSize: OverlayTextSize): TextStyle =
     when (overlayTextSize) {
         OverlayTextSize.EXTRA_SMALL -> MaterialTheme.typography.titleLarge.copy(fontSize = 14.sp, lineHeight = 18.2.sp)
         OverlayTextSize.SMALL -> MaterialTheme.typography.titleLarge.copy(fontSize = 18.sp, lineHeight = 23.4.sp)
@@ -82,7 +90,7 @@ private fun narratorOverlayTextStyle(overlayTextSize: OverlayTextSize): TextStyl
         OverlayTextSize.EXTRA_LARGE -> MaterialTheme.typography.titleLarge.copy(fontSize = 36.sp, lineHeight = 46.8.sp)
         OverlayTextSize.HUGE -> MaterialTheme.typography.titleLarge.copy(fontSize = 48.sp, lineHeight = 62.4.sp)
         OverlayTextSize.MAXIMUM -> MaterialTheme.typography.titleLarge.copy(fontSize = 64.sp, lineHeight = 83.2.sp)
-    }
+    }.copy(shadow = NarratorOverlayTextShadow)
 
 @Preview(showBackground = true)
 @Composable

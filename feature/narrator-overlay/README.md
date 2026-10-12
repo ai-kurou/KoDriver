@@ -12,6 +12,7 @@ TelemetryLog に記録された最新の読み上げ内容をライブ購読し�
 共通）が常時最前面・タスクバー非表示の専用ウィンドウにホストする（`app:shared` の `NarratorOverlayScreen`
 経由）。ウィンドウのドラッグ移動・リサイズ、初期表示位置・サイズについては
 `app/desktopApp/src/main/kotlin/kurou/kodriver/NarratorOverlayWindow.kt` を参照。
+文字にはテーマに依存しない黒い影を付け、背景が透明な場合の視認性を高める。
 文字サイズはその他タブの「オーバーレイ設定」から極小〜最大の7段階で選択する（中がデフォルト）。
 サイズと保存IDの対応は [other-overlay-text-size-detail](../other-overlay-text-size-detail/README.md) を参照。
 表示ON/OFFはその他タブの「オーバーレイ設定」→「オーバーレイを表示」で切り替える。設定は
