@@ -254,14 +254,22 @@ class TelemetryLogListViewModelTest {
         }
 
     @Test
-    fun `resetDatabaseに成功するとisResettingがfalseに戻りresetSucceededがtrueになる`() =
+    fun `resetDatabaseは選択中のAceWindowsを渡して削除し成功状態を返す`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
             every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
+            coEvery { repository.deleteTelemetryLogsBySimulator(Simulator.AceWindows) } answers {
+                logsFlow.update { logs -> logs.filterNot { it.simulator == Simulator.AceWindows } }
+            }
             val viewModel = createViewModel()
+            selectedSimulator.update { Simulator.AceWindows }
 
-            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
+            logsFlow.update {
+                listOf(
+                    telemetryLog(id = 1, createdAt = 100, simulator = Simulator.AceWindows),
+                    telemetryLog(id = 2, createdAt = 200),
+                )
+            }
             viewModel.uiState.first { it.logs.isNotEmpty() }
 
             viewModel.resetDatabase()
@@ -269,8 +277,9 @@ class TelemetryLogListViewModelTest {
             val state = viewModel.uiState.first { it.resetSucceeded != null && it.logs.isEmpty() }
             assertEquals(true, state.resetSucceeded)
             assertFalse(state.isResetting)
+            assertEquals(listOf(telemetryLog(id = 2, createdAt = 200)), logsFlow.first())
             verify(exactly = 1) { repository.observeTelemetryLogs() }
-            coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.AceWindows) }
             confirmVerified(repository)
         }
 
@@ -279,7 +288,8 @@ class TelemetryLogListViewModelTest {
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
             every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            coEvery { repository.deleteAllTelemetryLogs() } throws IllegalStateException("削除に失敗しました")
+            coEvery { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) } throws
+                IllegalStateException("削除に失敗しました")
             val viewModel = createViewModel()
 
             viewModel.resetDatabase()
@@ -288,7 +298,7 @@ class TelemetryLogListViewModelTest {
             assertEquals(false, state.resetSucceeded)
             assertFalse(state.isResetting)
             verify(exactly = 1) { repository.observeTelemetryLogs() }
-            coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) }
             confirmVerified(repository)
         }
 
@@ -327,7 +337,9 @@ class TelemetryLogListViewModelTest {
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
             every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
+            coEvery { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) } answers {
+                logsFlow.update { emptyList() }
+            }
             val viewModel = createViewModel()
 
             logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
@@ -341,7 +353,7 @@ class TelemetryLogListViewModelTest {
             assertFalse(state.showResetConfirmDialog)
             assertEquals(true, state.resetSucceeded)
             verify(exactly = 1) { repository.observeTelemetryLogs() }
-            coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) }
             confirmVerified(repository)
         }
 
@@ -350,7 +362,9 @@ class TelemetryLogListViewModelTest {
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
             every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
+            coEvery { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) } answers {
+                logsFlow.update { emptyList() }
+            }
             val viewModel = createViewModel()
 
             viewModel.resetDatabase()
@@ -360,7 +374,7 @@ class TelemetryLogListViewModelTest {
 
             assertNull(viewModel.uiState.first { it.resetSucceeded == null && !it.isResetting }.resetSucceeded)
             verify(exactly = 1) { repository.observeTelemetryLogs() }
-            coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) }
             confirmVerified(repository)
         }
 }

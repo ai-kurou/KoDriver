@@ -24,7 +24,7 @@ interface TelemetryLogRepository {
         telemetryJson: String,
     )
 
-    suspend fun deleteAllTelemetryLogs()
+    suspend fun deleteTelemetryLogsBySimulator(simulator: Simulator)
 
     suspend fun deleteTelemetryLog(id: Long)
 }

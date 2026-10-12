@@ -20,6 +20,7 @@ class TelemetryLogResetConfirmDialogScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
                             TelemetryLogResetConfirmDialog(
+                                simulatorName = "Assetto Corsa EVO",
                                 onConfirm = {},
                                 onDismiss = {},
                             )

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -22,7 +23,7 @@ import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
  */
 class TelemetryLogListViewModel internal constructor(
     observeSortedTelemetryLogs: ObserveSortedTelemetryLogsUseCase,
-    observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+    private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,
     private val deleteTelemetryLog: DeleteTelemetryLogUseCase,
 ) : ViewModel() {
@@ -89,7 +90,7 @@ class TelemetryLogListViewModel internal constructor(
             _resetState.update { it.copy(isResetting = true, resetSucceeded = null) }
             val succeeded =
                 try {
-                    resetTelemetryLogDatabase()
+                    resetTelemetryLogDatabase(observeSelectedSimulator().first())
                     true
                 } catch (e: CancellationException) {
                     throw e

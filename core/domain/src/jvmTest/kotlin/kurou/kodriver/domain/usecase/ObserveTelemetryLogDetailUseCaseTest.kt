@@ -80,8 +80,10 @@ private fun createTelemetryLogRepository(
             logs.update { it + log.copy(id = nextId) }
         }
     }
-    coEvery { repository.deleteAllTelemetryLogs() } answers {
-        logs.update { emptyList() }
+    listOf(Simulator.Gt7Ps5, Simulator.LmuWindows).forEach { simulator ->
+        coEvery { repository.deleteTelemetryLogsBySimulator(simulator) } answers {
+            logs.update { current -> current.filterNot { it.simulator == simulator } }
+        }
     }
     return repository
 }

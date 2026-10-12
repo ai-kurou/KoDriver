@@ -46,8 +46,8 @@ internal interface TelemetryLogDao {
     @Insert
     suspend fun insert(log: TelemetryLogEntity)
 
-    @Query("DELETE FROM telemetry_logs")
-    suspend fun deleteAll()
+    @Query("DELETE FROM telemetry_logs WHERE simulatorId = :simulatorId")
+    suspend fun deleteBySimulator(simulatorId: String)
 
     @Query("DELETE FROM telemetry_logs WHERE id = :id")
     suspend fun delete(id: Long)
