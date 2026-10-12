@@ -18,9 +18,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.HorizontalDivider
@@ -315,7 +315,7 @@ private fun OtherListItemTrailingIcon(
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,
         OtherListItemType.OverlayTextSize,
-        -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+        -> Icon(imageVector = Icons.Outlined.UnfoldMore, contentDescription = null)
 
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
