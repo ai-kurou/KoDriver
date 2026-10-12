@@ -21,6 +21,9 @@
 # 両アプリのビルド・デスクトップ統合テスト）
 ./gradlew preSubmitChecks
 
+# メモリ削減のため org.gradle.workers.max=2・Kotlin in-process・Gradleヒープ2GBに設定しており、その分実行時間は延びる。
+# メモリに余裕がある環境では -Dorg.gradle.workers.max=N や ~/.gradle/gradle.properties で上書きできる。
+
 # 静的解析とモジュール依存関係の検証
 ./gradlew detekt assertModuleGraph
 
