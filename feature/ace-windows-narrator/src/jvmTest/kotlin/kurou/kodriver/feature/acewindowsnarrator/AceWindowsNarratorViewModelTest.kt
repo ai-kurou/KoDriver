@@ -611,7 +611,7 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `フラグが変化すると読み上げる`() =
+    fun `フラッグが変化すると読み上げる`() =
         runTest(testDispatcher) {
             val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
             val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
@@ -652,7 +652,7 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `フラグ項目が無効のときは読み上げない`() =
+    fun `フラッグ項目が無効のときは読み上げない`() =
         runTest(testDispatcher) {
             val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
             val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
@@ -683,7 +683,7 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `個別のフラグ項目が無効のときは読み上げない`() =
+    fun `個別のフラッグ項目が無効のときは読み上げない`() =
         runTest(testDispatcher) {
             val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
             val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)

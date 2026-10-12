@@ -424,7 +424,7 @@ private fun buildMyBestLapTelemetryLogJson(
     )
 
 /**
- * ACE のフラグ判定入力（[AceWindowsFlagData]）は判定ロジック（
+ * ACE のフラッグ判定入力（[AceWindowsFlagData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineFlag]）と
  * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。

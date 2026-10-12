@@ -961,7 +961,7 @@ class LmuWindowsNarratorViewModelTest {
     // --- 優先度 ---
 
     @Test
-    fun `フラグ読み上げ中に車両接近イベントが来ても読み上げない`() =
+    fun `フラッグ読み上げ中に車両接近イベントが来ても読み上げない`() =
         runTest(testDispatcher) {
             var fakeTime = 0L
             val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
@@ -1010,7 +1010,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `車両接近読み上げ中にフラグイベントが来ると読み上げを停止して割り込む`() =
+    fun `車両接近読み上げ中にフラッグイベントが来ると読み上げを停止して割り込む`() =
         runTest(testDispatcher) {
             val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()

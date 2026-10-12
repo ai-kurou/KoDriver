@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 
 class DetermineActiveRaceFlagsTest {
     @Test
-    fun `アクティブなフラグがない場合は空リストを返す`() {
+    fun `アクティブなフラッグがない場合は空リストを返す`() {
         val raceFlags = sampleRaceFlags()
 
         assertEquals(emptyList(), determineActiveRaceFlags(raceFlags))

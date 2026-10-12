@@ -551,7 +551,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `フラグが変化すると対応するイベントを読み上げる`() {
+    fun `フラッグが変化すると対応するイベントを読み上げる`() {
         val state = AceWindowsNarratorState(previousFlag = AceWindowsFlagType.NO_FLAG)
 
         val decision =
@@ -566,7 +566,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `フラグが変化しなければ読み上げない`() {
+    fun `フラッグが変化しなければ読み上げない`() {
         val state = AceWindowsNarratorState(previousFlag = AceWindowsFlagType.BLUE_FLAG)
 
         val decision =
@@ -580,7 +580,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `フラグ項目全体が無効なら読み上げない`() {
+    fun `フラッグ項目全体が無効なら読み上げない`() {
         val state = AceWindowsNarratorState(previousFlag = AceWindowsFlagType.NO_FLAG)
 
         val decision =
@@ -595,7 +595,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `個別のフラグ項目が無効なら読み上げない`() {
+    fun `個別のフラッグ項目が無効なら読み上げない`() {
         val state = AceWindowsNarratorState(previousFlag = AceWindowsFlagType.NO_FLAG)
 
         val decision =
@@ -639,7 +639,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `各フラグ種別に対応するイベントを読み上げる`() {
+    fun `各フラッグ種別に対応するイベントを読み上げる`() {
         val expected =
             mapOf(
                 AceWindowsFlagType.WHITE_FLAG to AceWindowsWhiteFlag(),

@@ -191,7 +191,7 @@ class AceWindowsDebugStateDetailViewModelTest {
         }
 
     @Test
-    fun `フラグの受信だけで対応カードを有効にして状態を反映する`() =
+    fun `フラッグの受信だけで対応カードを有効にして状態を反映する`() =
         runTest {
             val flow = MutableSharedFlow<AceWindowsFlagData>()
             every { fuelRepository.fuelStream() } returns emptyFlow()

@@ -652,7 +652,7 @@ private fun buildPitTimingTelemetryLogJson(
         "}"
 
 /**
- * フラグ判定入力（[LmuWindowsRaceFlagsData]）は判定ロジック（
+ * フラッグ判定入力（[LmuWindowsRaceFlagsData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineRaceFlags]）と
  * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。

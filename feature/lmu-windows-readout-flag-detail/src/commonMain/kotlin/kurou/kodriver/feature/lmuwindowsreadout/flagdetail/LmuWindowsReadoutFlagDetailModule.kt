@@ -22,7 +22,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
- * フラグアナウンス詳細設定（lmu-windows-readout-flag-detail feature）の Koin モジュール。
+ * フラッグアナウンス詳細設定（lmu-windows-readout-flag-detail feature）の Koin モジュール。
  *
  * 提供: LmuWindowsReadoutFlagDetailViewModel と、それが使うドメイン UseCase。
  * 音声・速度・高さ設定監視用の ObserveVoiceUseCase・ObserveVoiceSpeedUseCase・ObserveVoicePitchUseCase を提供し、
