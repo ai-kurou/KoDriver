@@ -25,6 +25,8 @@ import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.repository.HotkeyRepository
+import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
@@ -69,6 +71,17 @@ import kotlin.test.assertNotNull
  *   Desktop 構成にも含まれ、グラフ検証のためにここで補う。
  */
 class DesktopKoinModuleGraphTest {
+    @Test
+    fun `ホットキーと永続化RepositoryをDesktop構成から解決できる`() {
+        val application = koinApplication { modules(desktopDataModule, windowsHotkeyDataModule) }
+        try {
+            assertNotNull(application.koin.get<ReadoutHotkeyPreferencesRepository>())
+            assertNotNull(application.koin.get<HotkeyRepository>())
+        } finally {
+            application.close()
+        }
+    }
+
     @Test
     fun `全シミュレーターのカード順序Repositoryを名前付きで解決できる`() {
         val application = koinApplication { modules(desktopDataModule) }

@@ -19,8 +19,11 @@ internal class JnaHotkeyNativeApi : HotkeyNativeApi {
         return Kernel32.INSTANCE.GetCurrentThreadId()
     }
 
-    override fun register(hotkey: GlobalHotkey): Boolean =
-        User32.INSTANCE.RegisterHotKey(null, HOTKEY_ID, hotkey.modifiers or MOD_NOREPEAT, hotkey.virtualKeyCode)
+    override fun register(hotkey: GlobalHotkey): Int {
+        val registered =
+            User32.INSTANCE.RegisterHotKey(null, HOTKEY_ID, hotkey.modifiers or MOD_NOREPEAT, hotkey.virtualKeyCode)
+        return if (registered) 0 else Kernel32.INSTANCE.GetLastError()
+    }
 
     override fun nextMessage(): HotkeyMessage? {
         val message = MSG()

@@ -4,9 +4,4 @@ package kurou.kodriver.core.windowshotkeydata
 data class GlobalHotkey(
     val modifiers: Int = 0,
     val virtualKeyCode: Int,
-) {
-    companion object {
-        const val VK_F9 = 0x78
-        const val VK_F13 = 0x7C
-    }
-}
+)

@@ -1,8 +1,7 @@
 package kurou.kodriver.data
 
 import android.content.Context
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
+import kurou.kodriver.data.hotkey.UnsupportedHotkeyRepository
 import kurou.kodriver.data.preferences.LmuWindowsPitTimingPreferencesRepositories
 import kurou.kodriver.data.preferences.LmuWindowsTyreTemperaturePreferencesRepositories
 import kurou.kodriver.data.preferences.LmuWindowsVehicleApproachPreferencesRepositories
@@ -19,6 +18,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeTemperat
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
+import kurou.kodriver.data.preferences.createReadoutHotkeyPreferencesRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsBrakeWearRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsFlagRepository
@@ -60,6 +60,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePre
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -68,8 +69,11 @@ import org.koin.dsl.module
  */
 internal fun androidDataModuleLmuWindows(context: Context): Module =
     module {
+        single<ReadoutHotkeyPreferencesRepository> {
+            createReadoutHotkeyPreferencesRepository(context.filesDir.absolutePath)
+        }
         includes(androidDataModuleLmuWindowsPreferences(context))
-        single<HotkeyRepository> { NoOpHotkeyRepository() }
+        single<HotkeyRepository> { UnsupportedHotkeyRepository() }
         single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(serverIpRepository = get(), client = get()) }
         single<LmuWindowsFlagRepository> {
             WebSocketLmuWindowsFlagRepository(
@@ -172,7 +176,3 @@ private fun androidDataModuleLmuWindowsPreferences(context: Context): Module =
             get<LmuWindowsPitTimingPreferencesRepositories>().readoutText
         }
     }
-
-private class NoOpHotkeyRepository : HotkeyRepository {
-    override fun hotkeyPressStream(): Flow<Unit> = emptyFlow()
-}

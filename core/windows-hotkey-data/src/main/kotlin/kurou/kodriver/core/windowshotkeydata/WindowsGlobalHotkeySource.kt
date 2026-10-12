@@ -9,8 +9,9 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kotlin.concurrent.thread
 
 /**
@@ -22,7 +23,7 @@ import kotlin.concurrent.thread
 class WindowsGlobalHotkeySource internal constructor(
     private val nativeApi: HotkeyNativeApi,
 ) : GlobalHotkeySource {
-    override fun observe(hotkey: GlobalHotkey): Flow<Unit> =
+    override fun observe(hotkey: GlobalHotkey): Flow<GlobalHotkeyEvent> =
         callbackFlow {
             val ready = CompletableDeferred<Int?>()
             val lifecycleLock = Any()
@@ -32,16 +33,27 @@ class WindowsGlobalHotkeySource internal constructor(
                     var registered = false
                     try {
                         val threadId = nativeApi.prepareMessageQueue()
-                        registered = nativeApi.register(hotkey)
+                        val errorCode = nativeApi.register(hotkey)
+                        registered = errorCode == 0
                         if (!registered) {
-                            Sentry.captureMessage("WindowsGlobalHotkeySource: RegisterHotKey failed for '$hotkey'")
+                            val state =
+                                if (errorCode == 1409) {
+                                    HotkeyRegistrationState.Conflict
+                                } else {
+                                    HotkeyRegistrationState.Failed(errorCode)
+                                }
+                            trySend(GlobalHotkeyEvent.Registration(state))
+                            Sentry.captureMessage(
+                                "WindowsGlobalHotkeySource: RegisterHotKey failed for '$hotkey': $errorCode",
+                            )
                             return@thread
                         }
+                        trySend(GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Registered))
                         ready.complete(threadId)
                         while (true) {
                             val message = nativeApi.nextMessage() ?: break
                             if (message.message == WM_HOTKEY && message.hotkeyId == HOTKEY_ID) {
-                                trySend(Unit)
+                                trySend(GlobalHotkeyEvent.Pressed)
                             }
                         }
                     } catch (e: Exception) {
@@ -65,9 +77,13 @@ class WindowsGlobalHotkeySource internal constructor(
                             if (threadId == null || finished) {
                                 true
                             } else {
-                                runCatching { nativeApi.postQuit(threadId) }
-                                    .onFailure { Sentry.captureException(it) }
-                                    .isSuccess
+                                try {
+                                    nativeApi.postQuit(threadId)
+                                    true
+                                } catch (e: Exception) {
+                                    Sentry.captureException(e)
+                                    false
+                                }
                             }
                         }
                     // WM_QUIT を投稿できないとスレッドは終了しないため、join せず daemon スレッドに任せる。
@@ -89,7 +105,8 @@ class WindowsGlobalHotkeySource internal constructor(
                 WindowsGlobalHotkeySource(nativeApiFactory())
             } else {
                 object : GlobalHotkeySource {
-                    override fun observe(hotkey: GlobalHotkey): Flow<Unit> = emptyFlow()
+                    override fun observe(hotkey: GlobalHotkey): Flow<GlobalHotkeyEvent> =
+                        flowOf(GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Unsupported))
                 }
             }
     }

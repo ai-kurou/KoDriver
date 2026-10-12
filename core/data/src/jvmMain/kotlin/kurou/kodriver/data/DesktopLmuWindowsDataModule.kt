@@ -16,6 +16,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeTemperat
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
+import kurou.kodriver.data.preferences.createReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -32,6 +33,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePr
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -40,6 +42,9 @@ import org.koin.dsl.module
  */
 internal fun desktopDataModuleLmuWindows(): Module =
     module {
+        single<ReadoutHotkeyPreferencesRepository> {
+            createReadoutHotkeyPreferencesRepository(kodriverDirectory)
+        }
         single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
             createLmuWindowsVehicleApproachThresholdsPreferencesRepository(directory = kodriverDirectory)
         }

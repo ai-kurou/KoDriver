@@ -4,7 +4,8 @@ package kurou.kodriver.core.windowshotkeydata
 internal interface HotkeyNativeApi {
     fun prepareMessageQueue(): Int
 
-    fun register(hotkey: GlobalHotkey): Boolean
+    /** 成功は 0、失敗は GetLastError のエラーコードを返す。 */
+    fun register(hotkey: GlobalHotkey): Int
 
     fun nextMessage(): HotkeyMessage?
 
