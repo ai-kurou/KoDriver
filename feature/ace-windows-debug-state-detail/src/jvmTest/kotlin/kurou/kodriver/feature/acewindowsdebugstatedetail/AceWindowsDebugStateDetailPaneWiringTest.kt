@@ -28,7 +28,6 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
-import kurou.kodriver.domain.model.DebugStateCardKey
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -63,7 +62,7 @@ class AceWindowsDebugStateDetailPaneWiringTest {
 
     @Test
     fun `PaneはKoinの状態を表示しカード移動と戻る操作を通知する`() {
-        val cardOrder = listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.VEHICLE_LOCATION)
+        val cardOrder = listOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.VEHICLE_LOCATION)
         val state =
             MutableStateFlow(
                 AceWindowsDebugStateDetailUiState(
@@ -132,7 +131,7 @@ class AceWindowsDebugStateDetailPaneWiringTest {
     fun `Paneは状態の更新を表示し戻れない場合は戻る操作を隠す`() {
         val state =
             MutableStateFlow(
-                AceWindowsDebugStateDetailUiState(cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION)),
+                AceWindowsDebugStateDetailUiState(cardOrder = listOf(AceWindowsDebugStateCardKey.VEHICLE_LOCATION)),
             )
         excludeRecords { viewModel.uiState }
         every { viewModel.uiState } returns state
@@ -151,7 +150,11 @@ class AceWindowsDebugStateDetailPaneWiringTest {
                         AceWindowsDebugState(
                             status = AceWindowsStatusData(AceWindowsStatusType.LIVE, AceWindowsCarLocation.PITLANE),
                         ),
-                    enabledCardKeys = setOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.VEHICLE_LOCATION),
+                    enabledCardKeys =
+                        setOf(
+                            AceWindowsDebugStateCardKey.SIMULATOR,
+                            AceWindowsDebugStateCardKey.VEHICLE_LOCATION,
+                        ),
                 )
             }
             rule.onNodeWithText("PitLane（ピットレーン）").assertIsDisplayed()

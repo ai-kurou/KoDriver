@@ -6,7 +6,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
-import kurou.kodriver.domain.model.DebugStateCardKey
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -23,7 +22,7 @@ class FlagInfoContentTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FLAG_INFO),
+                            cardOrder = listOf(AceWindowsDebugStateCardKey.FLAG_INFO),
                             aceWindows =
                                 AceWindowsDebugState(
                                     flag = null,
@@ -62,7 +61,7 @@ class FlagInfoContentTest {
                     AceWindowsDebugStateDetailPaneContent(
                         uiState =
                             AceWindowsDebugStateDetailUiState(
-                                cardOrder = listOf(DebugStateCardKey.FLAG_INFO),
+                                cardOrder = listOf(AceWindowsDebugStateCardKey.FLAG_INFO),
                                 aceWindows =
                                     AceWindowsDebugState(
                                         flag = AceWindowsFlagData(flag = flag),

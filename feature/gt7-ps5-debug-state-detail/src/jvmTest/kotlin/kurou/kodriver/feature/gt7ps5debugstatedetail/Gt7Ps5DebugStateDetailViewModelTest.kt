@@ -13,7 +13,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
@@ -48,15 +47,15 @@ class Gt7Ps5DebugStateDetailViewModelTest {
             val state = viewModel.uiState.first()
 
             assertEquals(Gt7Ps5DebugState(), state.gt7Ps5)
-            assertEquals(setOf(DebugStateCardKey.SIMULATOR), state.enabledCardKeys)
+            assertEquals(setOf(Gt7Ps5DebugStateCardKey.SIMULATOR), state.enabledCardKeys)
             assertEquals(
                 listOf(
-                    DebugStateCardKey.SIMULATOR,
-                    DebugStateCardKey.VEHICLE_CLASS,
-                    DebugStateCardKey.CURRENT_LAP,
-                    DebugStateCardKey.BEST_LAP,
-                    DebugStateCardKey.TYRE_TEMPERATURE,
-                    DebugStateCardKey.FUEL_CONSUMPTION,
+                    Gt7Ps5DebugStateCardKey.SIMULATOR,
+                    Gt7Ps5DebugStateCardKey.VEHICLE_CLASS,
+                    Gt7Ps5DebugStateCardKey.CURRENT_LAP,
+                    Gt7Ps5DebugStateCardKey.BEST_LAP,
+                    Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE,
+                    Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION,
                 ),
                 state.cardOrder,
             )
@@ -82,7 +81,7 @@ class Gt7Ps5DebugStateDetailViewModelTest {
             vehicleClass.emit(category)
             val classState = viewModel.uiState.first { it.gt7Ps5.vehicleClass == category }
             assertEquals(
-                setOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.VEHICLE_CLASS),
+                setOf(Gt7Ps5DebugStateCardKey.SIMULATOR, Gt7Ps5DebugStateCardKey.VEHICLE_CLASS),
                 classState.enabledCardKeys,
             )
             assertEquals(null, classState.gt7Ps5.telemetry)
@@ -121,7 +120,7 @@ class Gt7Ps5DebugStateDetailViewModelTest {
             telemetry.emit(sampleGt7Ps5Telemetry())
             val state = viewModel.uiState.first { it.gt7Ps5.telemetry != null }
 
-            assertEquals(gt7Ps5SupportedCardKeys - DebugStateCardKey.VEHICLE_CLASS, state.enabledCardKeys)
+            assertEquals(gt7Ps5SupportedCardKeys - Gt7Ps5DebugStateCardKey.VEHICLE_CLASS, state.enabledCardKeys)
             assertEquals(null, state.gt7Ps5.vehicleClass)
             verify(exactly = 1) { observeTelemetry() }
             verify(exactly = 1) { observeVehicleClass() }

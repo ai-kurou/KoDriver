@@ -5,7 +5,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
-import kurou.kodriver.domain.model.DebugStateCardKey
 import org.junit.Rule
 import org.junit.Test
 
@@ -20,7 +19,7 @@ class DebugStateBestLapCardTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                            cardOrder = listOf(AceWindowsDebugStateCardKey.BEST_LAP),
                             aceWindows =
                                 AceWindowsDebugState(
                                     bestLapTime = sampleAceWindowsBestLapTime(bestLapTimeMs = 95_123),
@@ -44,7 +43,7 @@ class DebugStateBestLapCardTest {
                     AceWindowsDebugStateDetailPaneContent(
                         uiState =
                             AceWindowsDebugStateDetailUiState(
-                                cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                                cardOrder = listOf(AceWindowsDebugStateCardKey.BEST_LAP),
                                 aceWindows =
                                     AceWindowsDebugState(
                                         bestLapTime = sampleAceWindowsBestLapTime(bestLapTimeMs = bestLapTimeMs),
@@ -68,7 +67,7 @@ class DebugStateBestLapCardTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                            cardOrder = listOf(AceWindowsDebugStateCardKey.BEST_LAP),
                             aceWindows =
                                 AceWindowsDebugState(
                                     bestLapTime = null,

@@ -6,7 +6,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.DebugStateCardKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -33,9 +32,9 @@ class DebugStateCardOrderPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `ブレーキ残量を含む全カードの順序を保存して読み出せる`() =
+    fun `未知名を含む文字列の順序をそのまま保存して読み出せる`() =
         runTest {
-            val order = DebugStateCardKey.entries.reversed()
+            val order = listOf("BRAKE_WEAR", "BEST_LAP", "REMOVED_KEY", "SIMULATOR")
             repository.saveCardOrder(order)
 
             assertEquals(order, repository.observeCardOrder().first())
@@ -46,26 +45,26 @@ class DebugStateCardOrderPreferencesRepositoryImplTest {
         runTest {
             assertEquals(emptyList(), repository.observeCardOrder().first())
 
-            repository.saveCardOrder(listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR))
+            repository.saveCardOrder(listOf("SESSION", "SIMULATOR"))
             assertEquals(
-                listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR),
+                listOf("SESSION", "SIMULATOR"),
                 repository.observeCardOrder().first(),
             )
 
-            repository.saveCardOrder(listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.SESSION))
+            repository.saveCardOrder(listOf("SIMULATOR", "SESSION"))
             assertEquals(
-                listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.SESSION),
+                listOf("SIMULATOR", "SESSION"),
                 repository.observeCardOrder().first(),
             )
         }
 
     @Test
-    fun `存在しないキー名は無視される`() =
+    fun `旧データの未知名もそのまま読み出す`() =
         runTest {
             dataStore.updateData { it.copy(cardOrder = listOf("SESSION", "REMOVED_KEY", "SIMULATOR")) }
 
             assertEquals(
-                listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR),
+                listOf("SESSION", "REMOVED_KEY", "SIMULATOR"),
                 repository.observeCardOrder().first(),
             )
         }

@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
@@ -20,7 +19,7 @@ internal data class Gt7Ps5DebugStateUseCases(
 internal class Gt7Ps5DebugStateSource(
     scope: CoroutineScope,
     useCases: Gt7Ps5DebugStateUseCases,
-    markCardsReceived: (Set<DebugStateCardKey>) -> Unit,
+    markCardsReceived: (Set<Gt7Ps5DebugStateCardKey>) -> Unit,
 ) {
     private val telemetry: StateFlow<Gt7Ps5TelemetryData?> =
         useCases
@@ -28,10 +27,10 @@ internal class Gt7Ps5DebugStateSource(
             .onEach {
                 markCardsReceived(
                     setOf(
-                        DebugStateCardKey.CURRENT_LAP,
-                        DebugStateCardKey.BEST_LAP,
-                        DebugStateCardKey.TYRE_TEMPERATURE,
-                        DebugStateCardKey.FUEL_CONSUMPTION,
+                        Gt7Ps5DebugStateCardKey.CURRENT_LAP,
+                        Gt7Ps5DebugStateCardKey.BEST_LAP,
+                        Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE,
+                        Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION,
                     ),
                 )
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
@@ -40,7 +39,7 @@ internal class Gt7Ps5DebugStateSource(
         useCases
             .observeVehicleClass()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.VEHICLE_CLASS))
+                markCardsReceived(setOf(Gt7Ps5DebugStateCardKey.VEHICLE_CLASS))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
     val state: StateFlow<Gt7Ps5DebugState> =

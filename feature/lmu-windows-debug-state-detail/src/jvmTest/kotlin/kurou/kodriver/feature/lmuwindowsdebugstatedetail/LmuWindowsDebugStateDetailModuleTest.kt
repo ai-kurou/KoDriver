@@ -14,7 +14,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
@@ -139,7 +138,7 @@ class LmuWindowsDebugStateDetailModuleTest {
     @Test
     fun `カード順序の保存はLMU用Repositoryだけに届く`() =
         runTest {
-            val order = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
+            val order = listOf("SESSION", "SIMULATOR")
             coEvery { debugStateCardOrderPreferencesRepository.saveCardOrder(order) } returns Unit
             val koin =
                 koinApplication {

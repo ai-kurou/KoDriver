@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -24,7 +23,7 @@ class DebugStateGamePhaseCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.GAME_PHASE),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.GAME_PHASE),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     raceFlags = null,
@@ -63,7 +62,7 @@ class DebugStateGamePhaseCardTest {
                     LmuWindowsDebugStateDetailPaneContent(
                         uiState =
                             LmuWindowsDebugStateDetailUiState(
-                                cardOrder = listOf(DebugStateCardKey.GAME_PHASE),
+                                cardOrder = listOf(LmuWindowsDebugStateCardKey.GAME_PHASE),
                                 lmuWindows =
                                     LmuWindowsDebugState(
                                         raceFlags = sampleRaceFlags(gamePhase = gamePhase),

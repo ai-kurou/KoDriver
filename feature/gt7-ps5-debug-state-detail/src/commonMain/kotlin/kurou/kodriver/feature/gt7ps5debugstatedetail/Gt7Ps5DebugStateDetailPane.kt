@@ -17,7 +17,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.debug_state_current_lap_title
@@ -64,7 +63,7 @@ fun Gt7Ps5DebugStateDetailPane(
 }
 
 @Composable
-fun Gt7Ps5DebugStateDetailPaneContent(
+internal fun Gt7Ps5DebugStateDetailPaneContent(
     uiState: Gt7Ps5DebugStateDetailUiState,
     canNavigateBack: Boolean,
     onBack: () -> Unit,
@@ -96,29 +95,29 @@ fun Gt7Ps5DebugStateDetailPaneContent(
     }
 }
 
-private val debugStateCardTitles: Map<DebugStateCardKey, StringResource> =
+private val debugStateCardTitles: Map<Gt7Ps5DebugStateCardKey, StringResource> =
     mapOf(
-        DebugStateCardKey.SIMULATOR to Res.string.debug_state_simulator_info_title,
-        DebugStateCardKey.VEHICLE_CLASS to Res.string.debug_state_vehicle_class_title,
-        DebugStateCardKey.CURRENT_LAP to Res.string.debug_state_current_lap_title,
-        DebugStateCardKey.BEST_LAP to Res.string.debug_state_best_lap_title,
-        DebugStateCardKey.TYRE_TEMPERATURE to Res.string.debug_state_tyre_temperature_title,
-        DebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
+        Gt7Ps5DebugStateCardKey.SIMULATOR to Res.string.debug_state_simulator_info_title,
+        Gt7Ps5DebugStateCardKey.VEHICLE_CLASS to Res.string.debug_state_vehicle_class_title,
+        Gt7Ps5DebugStateCardKey.CURRENT_LAP to Res.string.debug_state_current_lap_title,
+        Gt7Ps5DebugStateCardKey.BEST_LAP to Res.string.debug_state_best_lap_title,
+        Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE to Res.string.debug_state_tyre_temperature_title,
+        Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
     )
 
-private val debugStateCardContents: Map<DebugStateCardKey, @Composable (Gt7Ps5DebugStateDetailUiState) -> Unit> =
+private val debugStateCardContents: Map<Gt7Ps5DebugStateCardKey, @Composable (Gt7Ps5DebugStateDetailUiState) -> Unit> =
     mapOf(
-        DebugStateCardKey.SIMULATOR to { SimulatorInfoContent() },
-        DebugStateCardKey.VEHICLE_CLASS to { uiState -> VehicleClassContent(uiState.gt7Ps5.vehicleClass) },
-        DebugStateCardKey.CURRENT_LAP to { uiState -> CurrentLapContent(uiState.gt7Ps5.telemetry) },
-        DebugStateCardKey.BEST_LAP to { uiState -> BestLapContent(uiState.gt7Ps5.telemetry) },
-        DebugStateCardKey.TYRE_TEMPERATURE to { uiState -> TyreTemperatureContent(uiState.gt7Ps5.telemetry) },
-        DebugStateCardKey.FUEL_CONSUMPTION to { uiState -> FuelConsumptionContent(uiState.gt7Ps5.telemetry) },
+        Gt7Ps5DebugStateCardKey.SIMULATOR to { SimulatorInfoContent() },
+        Gt7Ps5DebugStateCardKey.VEHICLE_CLASS to { uiState -> VehicleClassContent(uiState.gt7Ps5.vehicleClass) },
+        Gt7Ps5DebugStateCardKey.CURRENT_LAP to { uiState -> CurrentLapContent(uiState.gt7Ps5.telemetry) },
+        Gt7Ps5DebugStateCardKey.BEST_LAP to { uiState -> BestLapContent(uiState.gt7Ps5.telemetry) },
+        Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE to { uiState -> TyreTemperatureContent(uiState.gt7Ps5.telemetry) },
+        Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION to { uiState -> FuelConsumptionContent(uiState.gt7Ps5.telemetry) },
     )
 
 @Composable
 private fun DebugStateCard(
-    cardKey: DebugStateCardKey,
+    cardKey: Gt7Ps5DebugStateCardKey,
     uiState: Gt7Ps5DebugStateDetailUiState,
     enabled: Boolean,
     modifier: Modifier = Modifier,

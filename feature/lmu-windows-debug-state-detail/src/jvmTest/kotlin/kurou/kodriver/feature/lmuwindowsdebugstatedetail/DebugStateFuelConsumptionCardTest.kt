@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -29,7 +28,7 @@ class DebugStateFuelConsumptionCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     virtualEnergy =
@@ -58,7 +57,7 @@ class DebugStateFuelConsumptionCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     virtualEnergy =
@@ -85,7 +84,7 @@ class DebugStateFuelConsumptionCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     virtualEnergy = null,

@@ -26,7 +26,6 @@ import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
@@ -122,7 +121,7 @@ class AceWindowsDebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(setOf(DebugStateCardKey.SIMULATOR), state.enabledCardKeys)
+            assertEquals(setOf(AceWindowsDebugStateCardKey.SIMULATOR), state.enabledCardKeys)
             assertEquals(AceWindowsDebugState(), state.aceWindows)
             assertEquals(defaultDebugStateCardOrder, state.cardOrder)
             verify(exactly = 1) { fuelRepository.fuelStream() }
@@ -167,7 +166,10 @@ class AceWindowsDebugStateDetailViewModelTest {
             val state = viewModel.uiState.first()
 
             assertEquals(data, state.aceWindows.fuel)
-            assertEquals(setOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FUEL_CONSUMPTION), state.enabledCardKeys)
+            assertEquals(
+                setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.FUEL_CONSUMPTION),
+                state.enabledCardKeys,
+            )
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -210,7 +212,10 @@ class AceWindowsDebugStateDetailViewModelTest {
             val state = viewModel.uiState.first()
 
             assertEquals(data, state.aceWindows.flag)
-            assertEquals(setOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FLAG_INFO), state.enabledCardKeys)
+            assertEquals(
+                setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.FLAG_INFO),
+                state.enabledCardKeys,
+            )
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -253,7 +258,10 @@ class AceWindowsDebugStateDetailViewModelTest {
             val state = viewModel.uiState.first()
 
             assertEquals(data, state.aceWindows.status)
-            assertEquals(setOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.VEHICLE_LOCATION), state.enabledCardKeys)
+            assertEquals(
+                setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.VEHICLE_LOCATION),
+                state.enabledCardKeys,
+            )
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -297,7 +305,7 @@ class AceWindowsDebugStateDetailViewModelTest {
 
             assertEquals(data, state.aceWindows.tyreCarcassTemperature)
             assertEquals(
-                setOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
+                setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
                 state.enabledCardKeys,
             )
             verify(exactly = 1) { fuelRepository.fuelStream() }
@@ -343,7 +351,7 @@ class AceWindowsDebugStateDetailViewModelTest {
 
             assertEquals(data, state.aceWindows.vehicleApproach)
             assertEquals(
-                setOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                 state.enabledCardKeys,
             )
             verify(exactly = 1) { fuelRepository.fuelStream() }
@@ -388,7 +396,10 @@ class AceWindowsDebugStateDetailViewModelTest {
             val state = viewModel.uiState.first()
 
             assertEquals(data, state.aceWindows.bestLapTime)
-            assertEquals(setOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.BEST_LAP), state.enabledCardKeys)
+            assertEquals(
+                setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.BEST_LAP),
+                state.enabledCardKeys,
+            )
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -431,7 +442,10 @@ class AceWindowsDebugStateDetailViewModelTest {
             val state = viewModel.uiState.first()
 
             assertEquals(data, state.aceWindows.remainingFuelLaps)
-            assertEquals(setOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FUEL_CONSUMPTION), state.enabledCardKeys)
+            assertEquals(
+                setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.FUEL_CONSUMPTION),
+                state.enabledCardKeys,
+            )
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -528,18 +542,18 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
             val persisted =
-                MutableStateFlow(listOf(DebugStateCardKey.BEST_LAP, DebugStateCardKey.VEHICLE_CLASS))
+                MutableStateFlow(listOf("BEST_LAP", "VEHICLE_CLASS"))
             every { cardOrderRepository.observeCardOrder() } returns persisted
             val viewModel = createViewModel()
             viewModel.uiState.first()
             testScheduler.runCurrent()
 
             assertEquals(
-                listOf(DebugStateCardKey.BEST_LAP) +
-                    defaultDebugStateCardOrder.filter { it != DebugStateCardKey.BEST_LAP },
+                listOf(AceWindowsDebugStateCardKey.BEST_LAP) +
+                    defaultDebugStateCardOrder.filter { it != AceWindowsDebugStateCardKey.BEST_LAP },
                 viewModel.uiState.first().cardOrder,
             )
-            persisted.update { defaultDebugStateCardOrder.reversed() }
+            persisted.update { defaultDebugStateCardOrder.reversed().map { it.name } }
             testScheduler.runCurrent()
             assertEquals(defaultDebugStateCardOrder.reversed(), viewModel.uiState.first().cardOrder)
             verify(exactly = 1) { fuelRepository.fuelStream() }
@@ -572,7 +586,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
-            val persisted = MutableStateFlow(emptyList<DebugStateCardKey>())
+            val persisted = MutableStateFlow(emptyList<String>())
             every { cardOrderRepository.observeCardOrder() } returns persisted
             val viewModel = createViewModel()
             viewModel.uiState.first()
@@ -582,7 +596,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             viewModel.moveCard(0, 2)
             testScheduler.runCurrent()
             assertEquals(expected, viewModel.uiState.first().cardOrder)
-            persisted.update { defaultDebugStateCardOrder.reversed() }
+            persisted.update { defaultDebugStateCardOrder.reversed().map { it.name } }
             testScheduler.runCurrent()
             assertEquals(expected, viewModel.uiState.first().cardOrder)
             verify(exactly = 1) { fuelRepository.fuelStream() }
@@ -593,7 +607,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-            coVerify(exactly = 1) { cardOrderRepository.saveCardOrder(expected) }
+            coVerify(exactly = 1) { cardOrderRepository.saveCardOrder(expected.map { it.name }) }
             confirmVerified(
                 fuelRepository,
                 flagRepository,

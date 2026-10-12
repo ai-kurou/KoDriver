@@ -5,7 +5,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.BrakeThicknessMeters
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
 import kurou.kodriver.domain.model.WheelIndex
@@ -34,7 +33,7 @@ class DebugStateBrakeWearCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.BRAKE_WEAR),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.BRAKE_WEAR),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     brakeWear =

@@ -22,11 +22,10 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
-import kurou.kodriver.domain.model.DebugStateCardKey
 
 @Composable
 internal fun DebugStateCardFrame(
-    cardKey: DebugStateCardKey,
+    cardKey: LmuWindowsDebugStateCardKey,
     title: String,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
@@ -34,20 +33,21 @@ internal fun DebugStateCardFrame(
     val colors = MaterialTheme.colorScheme
     val accent =
         when (cardKey) {
-            DebugStateCardKey.SIMULATOR, DebugStateCardKey.VEHICLE_CLASS,
-            DebugStateCardKey.VEHICLE_LOCATION,
+            LmuWindowsDebugStateCardKey.SIMULATOR, LmuWindowsDebugStateCardKey.VEHICLE_CLASS,
+            LmuWindowsDebugStateCardKey.VEHICLE_LOCATION,
             -> {
                 colors.primary
             }
 
-            DebugStateCardKey.TYRE_TEMPERATURE, DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
-            DebugStateCardKey.BRAKE_TEMPERATURE, DebugStateCardKey.BRAKE_WEAR, DebugStateCardKey.TYRE_WEAR,
-            DebugStateCardKey.VEHICLE_DAMAGE,
+            LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE, LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+            LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE,
+            LmuWindowsDebugStateCardKey.BRAKE_WEAR, LmuWindowsDebugStateCardKey.TYRE_WEAR,
+            LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE,
             -> {
                 colors.error
             }
 
-            DebugStateCardKey.FUEL_CONSUMPTION, DebugStateCardKey.PIT_TIMING_REMAINING_LAPS -> {
+            LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION, LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS -> {
                 KoDriverExtendedColors.current.onWarningContainer
             }
 
@@ -105,24 +105,25 @@ internal fun DebugStateCardFrame(
 
 private val debugStateCardSymbols =
     mapOf(
-        DebugStateCardKey.SIMULATOR to "🎮",
-        DebugStateCardKey.VEHICLE_CLASS to "🏎",
-        DebugStateCardKey.VEHICLE_LOCATION to "⌖",
-        DebugStateCardKey.FLAG_INFO to "⚑",
-        DebugStateCardKey.GAME_PHASE to "🚦",
-        DebugStateCardKey.SESSION to "◷",
-        DebugStateCardKey.YELLOW_FLAG_STATE to "⚠",
-        DebugStateCardKey.CURRENT_LAP to "⏱",
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES to "↔",
-        DebugStateCardKey.BEST_LAP to "🏆",
-        DebugStateCardKey.TYRE_TEMPERATURE to "🔥",
-        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to "◎",
-        DebugStateCardKey.BRAKE_TEMPERATURE to "◉",
-        DebugStateCardKey.BRAKE_WEAR to "◒",
-        DebugStateCardKey.TYRE_WEAR to "◴",
-        DebugStateCardKey.FUEL_CONSUMPTION to "⛽",
-        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to "⚒",
-        DebugStateCardKey.VEHICLE_DAMAGE to "💥",
+        LmuWindowsDebugStateCardKey.SIMULATOR to "🎮",
+        LmuWindowsDebugStateCardKey.VEHICLE_CLASS to "🏎",
+        LmuWindowsDebugStateCardKey.VEHICLE_LOCATION to "⌖",
+        LmuWindowsDebugStateCardKey.FLAG_INFO to "⚑",
+        LmuWindowsDebugStateCardKey.GAME_PHASE to "🚦",
+        LmuWindowsDebugStateCardKey.SESSION to "◷",
+        LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE to "⚠",
+        LmuWindowsDebugStateCardKey.CURRENT_LAP to "⏱",
+        LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to "↔",
+        LmuWindowsDebugStateCardKey.BEST_LAP to "🏆",
+        LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE to "🔥",
+        LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to "◎",
+        LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE to "◉",
+        LmuWindowsDebugStateCardKey.BRAKE_WEAR to "◒",
+        LmuWindowsDebugStateCardKey.TYRE_WEAR to "◴",
+        LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION to "⛽",
+        LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS to "⚒",
+        LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE to "💥",
     )
 
-internal fun debugStateCardSymbol(cardKey: DebugStateCardKey): String = debugStateCardSymbols.getValue(cardKey)
+internal fun debugStateCardSymbol(cardKey: LmuWindowsDebugStateCardKey): String =
+    debugStateCardSymbols.getValue(cardKey)

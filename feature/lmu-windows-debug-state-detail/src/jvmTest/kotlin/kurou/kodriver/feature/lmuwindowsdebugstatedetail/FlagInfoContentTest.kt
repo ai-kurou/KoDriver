@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -26,7 +25,7 @@ class FlagInfoContentTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FLAG_INFO),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.FLAG_INFO),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     raceFlags = null,
@@ -48,7 +47,7 @@ class FlagInfoContentTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FLAG_INFO),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.FLAG_INFO),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     raceFlags = sampleRaceFlags(),
@@ -70,7 +69,7 @@ class FlagInfoContentTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FLAG_INFO),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.FLAG_INFO),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     raceFlags = sampleRaceFlags(playerFlag = PrimaryFlag.BLUE),

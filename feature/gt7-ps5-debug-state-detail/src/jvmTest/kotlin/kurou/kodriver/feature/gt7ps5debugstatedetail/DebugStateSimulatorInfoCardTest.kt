@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import org.junit.Rule
 import org.junit.Test
 
@@ -19,7 +18,7 @@ class DebugStateSimulatorInfoCardTest {
                 Gt7Ps5DebugStateDetailPaneContent(
                     uiState =
                         Gt7Ps5DebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.SIMULATOR),
+                            cardOrder = listOf(Gt7Ps5DebugStateCardKey.SIMULATOR),
                         ),
                     canNavigateBack = true,
                     onBack = {},

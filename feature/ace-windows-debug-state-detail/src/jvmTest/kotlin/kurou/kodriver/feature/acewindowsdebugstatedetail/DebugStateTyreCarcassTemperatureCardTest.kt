@@ -6,7 +6,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +32,7 @@ class DebugStateTyreCarcassTemperatureCardTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
+                            cardOrder = listOf(AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
                             aceWindows =
                                 AceWindowsDebugState(
                                     tyreCarcassTemperature =

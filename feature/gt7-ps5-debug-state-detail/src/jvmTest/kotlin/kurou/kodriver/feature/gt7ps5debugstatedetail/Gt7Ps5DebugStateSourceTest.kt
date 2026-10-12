@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
@@ -21,7 +20,7 @@ import kotlin.test.assertEquals
 class Gt7Ps5DebugStateSourceTest {
     private val observeTelemetry: ObserveGt7Ps5UseCase = mockk()
     private val observeVehicleClass: ObserveGt7Ps5VehicleClassUseCase = mockk()
-    private val markCardsReceived: (Set<DebugStateCardKey>) -> Unit = mockk()
+    private val markCardsReceived: (Set<Gt7Ps5DebugStateCardKey>) -> Unit = mockk()
 
     @Test
     fun `Sourceは各UseCaseを一度購読し受信ごとに対応カードだけ通知する`() =
@@ -30,12 +29,12 @@ class Gt7Ps5DebugStateSourceTest {
             val vehicleClass = MutableSharedFlow<Gt7Ps5VehicleClassData>()
             val telemetryKeys =
                 setOf(
-                    DebugStateCardKey.CURRENT_LAP,
-                    DebugStateCardKey.BEST_LAP,
-                    DebugStateCardKey.TYRE_TEMPERATURE,
-                    DebugStateCardKey.FUEL_CONSUMPTION,
+                    Gt7Ps5DebugStateCardKey.CURRENT_LAP,
+                    Gt7Ps5DebugStateCardKey.BEST_LAP,
+                    Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE,
+                    Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION,
                 )
-            val vehicleClassKeys = setOf(DebugStateCardKey.VEHICLE_CLASS)
+            val vehicleClassKeys = setOf(Gt7Ps5DebugStateCardKey.VEHICLE_CLASS)
             every { observeTelemetry() } returns telemetry
             every { observeVehicleClass() } returns vehicleClass
             every { markCardsReceived(telemetryKeys) } returns Unit

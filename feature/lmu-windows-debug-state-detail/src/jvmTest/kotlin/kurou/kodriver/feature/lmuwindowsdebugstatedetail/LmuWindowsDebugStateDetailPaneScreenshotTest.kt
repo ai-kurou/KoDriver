@@ -11,7 +11,6 @@ import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
@@ -186,8 +185,8 @@ class LmuWindowsDebugStateDetailPaneScreenshotTest {
                             LmuWindowsDebugStateDetailPaneContent(
                                 uiState =
                                     LmuWindowsDebugStateDetailUiState(
-                                        cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
-                                        enabledCardKeys = setOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                                        cardOrder = listOf(LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                                        enabledCardKeys = setOf(LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                                         lmuWindows =
                                             LmuWindowsDebugState(
                                                 vehicleApproach = sampleVehicleApproach,

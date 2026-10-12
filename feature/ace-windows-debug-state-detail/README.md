@@ -12,13 +12,15 @@ ACE Windows 専用のデバッグ状態画面。シミュレーター、車両�
 
 ## 主要ファイル
 
-- `AceWindowsDebugStateDetailPane.kt`: ViewModel を取得する Pane と、状態・操作を受け取る公開 PaneContent。画面幅に合わせて1〜3列に切り替える。
+- `AceWindowsDebugStateDetailPane.kt`: ViewModel を取得する Pane と、状態・操作を受け取るinternal な PaneContent。画面幅に合わせて1〜3列に切り替える。
 - `AceWindowsDebugStateDetailViewModel.kt` / `AceWindowsDebugStateDetailUiState.kt`: ACE 状態、受信済みカード、カード順序を管理する。シミュレーターカードは常に ACE を表示し、有効にする。
 - `AceWindowsDebugStateSource.kt` / `AceWindowsDebugState.kt`: ACE の UseCase 購読、状態の集約、受信済みカードの通知。
 - `AceWindowsDebugStateCards.kt` / `DebugState*Card.kt`: ACE 専用のカード表示。フレーム、未取得表示、温度・ラップタイム等の整形ヘルパーも同梱する。
 - `AceWindowsDebugStateDetailModule.kt` / `AceWindowsDebugStateModule.kt`: ViewModel と UseCase の Koin 定義。利用側が必要な Repository を登録する。
 
 ## カード順序と未取得表示
+
+カードキーは feature 専用の `AceWindowsDebugStateCardKey` に定義する。`DebugStateCardOrderUseCases` で保存名と enum を変換し、未知の保存名を除外する。保存名は従来と同じ enum の `name` を使用する。
 
 ドメイン層の Observe / Resolve / Save UseCase を使用し、保存済み順序を優先して不足カードを既定順で補完する。ACE 非対応カードは保存済み順序から除外する。
 

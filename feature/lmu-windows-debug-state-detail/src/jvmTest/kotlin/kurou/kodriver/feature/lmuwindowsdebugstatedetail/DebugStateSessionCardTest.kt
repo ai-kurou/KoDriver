@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import org.junit.Rule
@@ -21,7 +20,7 @@ class DebugStateSessionCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.SESSION),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.SESSION),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     virtualEnergy = null,
@@ -59,7 +58,7 @@ class DebugStateSessionCardTest {
                     LmuWindowsDebugStateDetailPaneContent(
                         uiState =
                             LmuWindowsDebugStateDetailUiState(
-                                cardOrder = listOf(DebugStateCardKey.SESSION),
+                                cardOrder = listOf(LmuWindowsDebugStateCardKey.SESSION),
                                 lmuWindows =
                                     LmuWindowsDebugState(
                                         virtualEnergy =
