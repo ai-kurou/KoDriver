@@ -860,9 +860,6 @@ private fun OtherListPanePreview() {
 }
 
 private val centeredListItemMinHeight = 56.dp
-private val centeredListItemHorizontalPadding = 16.dp
-private val centeredListItemVerticalPadding = 8.dp
-private val centeredListItemContentSpacing = 16.dp
 
 /**
  * M3 の ListItem 相当の見た目で、先頭・末尾のアイコンを常に縦中央に揃える一覧項目。
@@ -887,11 +884,11 @@ private fun CenteredListItem(
                 .background(containerColor)
                 .heightIn(min = centeredListItemMinHeight)
                 .padding(
-                    horizontal = centeredListItemHorizontalPadding,
-                    vertical = centeredListItemVerticalPadding,
+                    horizontal = KoDriverSpacing.large,
+                    vertical = KoDriverSpacing.small,
                 ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(centeredListItemContentSpacing),
+        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.large),
     ) {
         CompositionLocalProvider(LocalContentColor provides iconColor) {
             Box { leadingContent() }
