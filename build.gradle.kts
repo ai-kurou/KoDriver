@@ -42,6 +42,8 @@ fun BaseYarnRootExtension.configureDependencyResolutions() {
     resolution("webpack-dev-server", "6.0.0")
     resolution("webpack", "5.111.1")
     resolution("webpack-cli", "7.2.3")
+    resolution("compression", "1.8.2")
+    resolution("source-map-js", "1.2.2")
     resolution("ws", "8.22.0")
 }
 
