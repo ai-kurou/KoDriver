@@ -58,12 +58,12 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-windows-readout-brake-temperature-detail` | ブレーキ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-brake-temperature-detail.svg) |
 | `:feature:lmu-windows-readout-brake-wear-detail` | ブレーキ摩耗アナウンスの詳細設定 UI（有効スイッチ・読み上げ文言・車両クラス別の残量閾値） | [図](graphs/feature-lmu-windows-readout-brake-wear-detail.svg) |
 | `:feature:lmu-windows-readout-pit-timing-detail` | ピットタイミングアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-pit-timing-detail.svg) |
+| `:feature:gt7-ps5-auto-readout-my-best-lap-detail` | GT7 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-auto-readout-my-best-lap-detail.svg) |
+| `:feature:gt7-ps5-auto-readout-remaining-fuel-detail` | GT7 燃料残量アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-auto-readout-remaining-fuel-detail.svg) |
+| `:feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail` | GT7 燃料残り周回数アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-auto-readout-remaining-fuel-laps-detail.svg) |
+| `:feature:gt7-ps5-auto-readout-tyre-temperature-detail` | GT7 タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-auto-readout-tyre-temperature-detail.svg) |
 | `:feature:gt7-ps5-connection` | GT7 PS5 との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-gt7-ps5-connection.svg) |
 | `:feature:gt7-ps5-narrator` | GT7 PS5 向け WAV開始音・OS標準TTS本文の音声再生とアナウンス制御を担当する | [図](graphs/feature-gt7-ps5-narrator.svg) |
-| `:feature:gt7-ps5-readout-my-best-lap-detail` | GT7 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-readout-my-best-lap-detail.svg) |
-| `:feature:gt7-ps5-readout-remaining-fuel-detail` | GT7 燃料残量アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-readout-remaining-fuel-detail.svg) |
-| `:feature:gt7-ps5-readout-remaining-fuel-laps-detail` | GT7 燃料残り周回数アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-readout-remaining-fuel-laps-detail.svg) |
-| `:feature:gt7-ps5-readout-tyre-temperature-detail` | GT7 タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-readout-tyre-temperature-detail.svg) |
 | `:feature:ace-windows-connection` | ACE (Assetto Corsa EVO) との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-ace-windows-connection.svg) |
 | `:feature:ace-windows-narrator` | ACE (Assetto Corsa EVO) 向け WAV開始音・OS標準TTS本文の音声再生とアナウンス制御を担当する | [図](graphs/feature-ace-windows-narrator.svg) |
 | `:feature:ace-windows-readout-remaining-fuel-detail` | ACE 燃料残量アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-remaining-fuel-detail.svg) |
