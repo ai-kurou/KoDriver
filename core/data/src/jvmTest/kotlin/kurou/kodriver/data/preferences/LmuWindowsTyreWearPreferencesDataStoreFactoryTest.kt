@@ -21,6 +21,6 @@ class LmuWindowsTyreWearPreferencesDataStoreFactoryTest {
             val dataStore = createLmuWindowsTyreWearPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(thresholdPercentage = 50) }
 
-            assertTrue(tempDir.resolve("lmu_windows_tyre_wear_preferences.pb").exists())
+            assertTrue(tempDir.resolve("lmu_windows_auto_tyre_wear_preferences.pb").exists())
         }
 }

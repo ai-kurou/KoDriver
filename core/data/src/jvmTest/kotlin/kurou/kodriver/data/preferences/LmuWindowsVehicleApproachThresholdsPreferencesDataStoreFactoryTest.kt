@@ -23,6 +23,6 @@ class LmuWindowsVehicleApproachThresholdsPreferencesDataStoreFactoryTest {
             val dataStore = createLmuWindowsVehicleApproachThresholdsPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(longitudinalThresholdMeters = 20.0) }
 
-            assertTrue(tempDir.resolve("lmu_windows_vehicle_approach_thresholds_preferences.pb").exists())
+            assertTrue(tempDir.resolve("lmu_windows_auto_vehicle_approach_thresholds_preferences.pb").exists())
         }
 }

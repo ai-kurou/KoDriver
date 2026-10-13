@@ -23,6 +23,6 @@ class AceWindowsVehicleApproachPreferencesDataStoreFactoryTest {
             val dataStore = createAceWindowsVehicleApproachPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(thresholdMeters = 7.0) }
 
-            assertTrue(tempDir.resolve("ace_windows_vehicle_approach_preferences.pb").exists())
+            assertTrue(tempDir.resolve("ace_windows_auto_vehicle_approach_preferences.pb").exists())
         }
 }

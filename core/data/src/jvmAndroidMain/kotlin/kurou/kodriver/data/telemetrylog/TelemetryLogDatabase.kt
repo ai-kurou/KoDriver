@@ -10,7 +10,7 @@ import androidx.sqlite.execSQL
 
 @Database(
     entities = [TelemetryLogEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false,
 )
 @ConstructedBy(TelemetryLogDatabaseConstructor::class)
@@ -84,5 +84,39 @@ internal val TELEMETRY_LOG_MIGRATION_3_4 =
             )
             connection.execSQL("DROP TABLE telemetry_logs")
             connection.execSQL("ALTER TABLE telemetry_logs_new RENAME TO telemetry_logs")
+        }
+    }
+
+/**
+ * 自動読み上げの保存キー変更に伴うデータ移行。シミュレーター接頭辞の直後に auto_ を追加し、
+ * 既存ログを ReadoutItemKey で復元できるようにする。変更済みのキーはそのまま保持する。
+ */
+internal val TELEMETRY_LOG_MIGRATION_4_5 =
+    object : Migration(4, 5) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                """
+                UPDATE telemetry_logs
+                SET readoutItemKey = 'lmu_windows_auto_' || substr(readoutItemKey, length('lmu_windows_') + 1)
+                WHERE substr(readoutItemKey, 1, 12) = 'lmu_windows_'
+                    AND substr(readoutItemKey, 1, 17) != 'lmu_windows_auto_'
+                """.trimIndent(),
+            )
+            connection.execSQL(
+                """
+                UPDATE telemetry_logs
+                SET readoutItemKey = 'ace_windows_auto_' || substr(readoutItemKey, length('ace_windows_') + 1)
+                WHERE substr(readoutItemKey, 1, 12) = 'ace_windows_'
+                    AND substr(readoutItemKey, 1, 17) != 'ace_windows_auto_'
+                """.trimIndent(),
+            )
+            connection.execSQL(
+                """
+                UPDATE telemetry_logs
+                SET readoutItemKey = 'gt7_ps5_auto_' || substr(readoutItemKey, length('gt7_ps5_') + 1)
+                WHERE substr(readoutItemKey, 1, 8) = 'gt7_ps5_'
+                    AND substr(readoutItemKey, 1, 13) != 'gt7_ps5_auto_'
+                """.trimIndent(),
+            )
         }
     }

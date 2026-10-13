@@ -7,6 +7,6 @@ internal fun createAceWindowsFlagReadoutTextPreferencesDataStore(
 ): DataStore<AceWindowsFlagReadoutTextPreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "ace_windows_flag_readout_text_preferences.pb",
+        fileName = "ace_windows_auto_flag_readout_text_preferences.pb",
         serializer = AceWindowsFlagReadoutTextPreferencesSerializer,
     )

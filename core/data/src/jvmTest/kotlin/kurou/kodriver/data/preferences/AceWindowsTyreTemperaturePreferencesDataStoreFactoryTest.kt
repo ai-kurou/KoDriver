@@ -23,6 +23,6 @@ class AceWindowsTyreTemperaturePreferencesDataStoreFactoryTest {
             val dataStore = createAceWindowsTyreTemperaturePreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(highThresholdCelsius = 100) }
 
-            assertTrue(tempDir.resolve("ace_windows_tyre_temperature_preferences.pb").exists())
+            assertTrue(tempDir.resolve("ace_windows_auto_tyre_temperature_preferences.pb").exists())
         }
 }

@@ -67,7 +67,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
-private val Context.readoutDataStore by preferencesDataStore("readout_preferences")
+private val Context.readoutDataStore by preferencesDataStore("auto_readout_preferences")
 private val Context.serverIpDataStore by preferencesDataStore("server_ip_preferences")
 private val Context.keepScreenOnDataStore by preferencesDataStore("keep_screen_on_preferences")
 private val Context.dynamicColorDataStore by preferencesDataStore("dynamic_color_preferences")

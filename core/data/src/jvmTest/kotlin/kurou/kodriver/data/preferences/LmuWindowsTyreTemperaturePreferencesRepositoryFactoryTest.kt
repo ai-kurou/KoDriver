@@ -33,7 +33,7 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
                     overheatReadoutText = "過熱の保存文言",
                     coldReadoutText = "",
                 )
-            tempDir.resolve("lmu_windows_tyre_temperature_preferences.pb").outputStream().use {
+            tempDir.resolve("lmu_windows_auto_tyre_temperature_preferences.pb").outputStream().use {
                 LmuWindowsTyreTemperaturePreferencesSerializer.writeTo(original, it)
             }
             val repositories = createLmuWindowsTyreTemperaturePreferencesRepository(tempDir.absolutePath)

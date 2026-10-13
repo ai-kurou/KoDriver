@@ -17,12 +17,12 @@ class ReadoutItemKeyMapSerializerTest {
         val json = Json.encodeToString(ReadoutItemKeyMapSerializer, map)
 
         val root = Json.parseToJsonElement(json).jsonObject
-        assertEquals(true, root["lmu_windows_flag"]!!.jsonPrimitive.boolean)
+        assertEquals(true, root["lmu_windows_auto_flag"]!!.jsonPrimitive.boolean)
     }
 
     @Test
     fun `デシリアライズ時にvalueからReadoutItemKeyへ復元する`() {
-        val json = """{"lmu_windows_flag":true}"""
+        val json = """{"lmu_windows_auto_flag":true}"""
 
         val map: Map<ReadoutItemKey, Boolean> = Json.decodeFromString(ReadoutItemKeyMapSerializer, json)
 

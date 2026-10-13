@@ -20,6 +20,6 @@ class Gt7Ps5MyBestLapPreferencesDataStoreFactoryTest {
             val dataStore = createGt7Ps5MyBestLapPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(voiceType = "casual") }
 
-            assertTrue(tempDir.resolve("gt7_ps5_my_best_lap_preferences.pb").exists())
+            assertTrue(tempDir.resolve("gt7_ps5_auto_my_best_lap_preferences.pb").exists())
         }
 }

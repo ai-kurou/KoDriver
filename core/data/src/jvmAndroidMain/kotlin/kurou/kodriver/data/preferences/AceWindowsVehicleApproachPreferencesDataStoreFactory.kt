@@ -7,6 +7,6 @@ internal fun createAceWindowsVehicleApproachPreferencesDataStore(
 ): DataStore<AceWindowsVehicleApproachPreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "ace_windows_vehicle_approach_preferences.pb",
+        fileName = "ace_windows_auto_vehicle_approach_preferences.pb",
         serializer = AceWindowsVehicleApproachPreferencesSerializer,
     )

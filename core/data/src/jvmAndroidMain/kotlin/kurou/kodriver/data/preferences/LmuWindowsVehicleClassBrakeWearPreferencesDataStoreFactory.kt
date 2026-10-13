@@ -7,6 +7,6 @@ internal fun createLmuWindowsVehicleClassBrakeWearPreferencesDataStore(
 ): DataStore<LmuWindowsVehicleClassBrakeWearPreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "lmu_windows_vehicle_class_brake_wear_preferences.pb",
+        fileName = "lmu_windows_auto_vehicle_class_brake_wear_preferences.pb",
         serializer = LmuWindowsVehicleClassBrakeWearPreferencesSerializer,
     )

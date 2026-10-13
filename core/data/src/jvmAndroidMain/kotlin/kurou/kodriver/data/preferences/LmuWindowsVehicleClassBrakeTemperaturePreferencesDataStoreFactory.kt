@@ -7,6 +7,6 @@ internal fun createLmuWindowsVehicleClassBrakeTemperaturePreferencesDataStore(
 ): DataStore<LmuWindowsVehicleClassBrakeTemperaturePreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "lmu_windows_vehicle_class_brake_temperature_preferences.pb",
+        fileName = "lmu_windows_auto_vehicle_class_brake_temperature_preferences.pb",
         serializer = LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializer,
     )

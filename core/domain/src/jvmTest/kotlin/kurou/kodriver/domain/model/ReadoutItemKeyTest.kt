@@ -9,91 +9,91 @@ class ReadoutItemKeyTest {
     fun `fromValue はLMUとGT7のキーに一致するキーを返す`() {
         assertEquals(
             LmuWindowsReadoutItemKey.VehicleApproach.Root,
-            ReadoutItemKey.fromValue("lmu_windows_vehicle_approach"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_vehicle_approach"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.VehicleApproach.Sustained,
-            ReadoutItemKey.fromValue("lmu_windows_vehicle_approach_sustained"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_vehicle_approach_sustained"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.VehicleApproach.StartReadout,
-            ReadoutItemKey.fromValue("lmu_windows_vehicle_approach_start_readout"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_vehicle_approach_start_readout"),
         )
-        assertEquals(LmuWindowsReadoutItemKey.Flag.Root, ReadoutItemKey.fromValue("lmu_windows_flag"))
+        assertEquals(LmuWindowsReadoutItemKey.Flag.Root, ReadoutItemKey.fromValue("lmu_windows_auto_flag"))
         assertEquals(
             LmuWindowsReadoutItemKey.VehicleDamage.Root,
-            ReadoutItemKey.fromValue("lmu_windows_vehicle_damage"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_vehicle_damage"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.TyreTemperature.Root,
-            ReadoutItemKey.fromValue("lmu_windows_tyre_temperature"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_tyre_temperature"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
-            ReadoutItemKey.fromValue("lmu_windows_tyre_temperature_overheat_warning"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_tyre_temperature_overheat_warning"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.TyreTemperature.LowWarning,
-            ReadoutItemKey.fromValue("lmu_windows_tyre_temperature_low_warning"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_tyre_temperature_low_warning"),
         )
-        assertEquals(LmuWindowsReadoutItemKey.MyBestLap.Root, ReadoutItemKey.fromValue("lmu_windows_my_best_lap"))
+        assertEquals(LmuWindowsReadoutItemKey.MyBestLap.Root, ReadoutItemKey.fromValue("lmu_windows_auto_my_best_lap"))
         assertEquals(
             LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
-            ReadoutItemKey.fromValue("lmu_windows_my_best_lap_detail_enabled"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_my_best_lap_detail_enabled"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
-            ReadoutItemKey.fromValue("lmu_windows_remaining_virtual_energy"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_remaining_virtual_energy"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
-            ReadoutItemKey.fromValue("lmu_windows_remaining_virtual_energy_warning_readout"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_remaining_virtual_energy_warning_readout"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.TyreWear.Root,
-            ReadoutItemKey.fromValue("lmu_windows_tyre_wear"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_tyre_wear"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.TyreWear.WarningReadout,
-            ReadoutItemKey.fromValue("lmu_windows_tyre_wear_warning_readout"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_tyre_wear_warning_readout"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.PitTiming.Root,
-            ReadoutItemKey.fromValue("lmu_windows_pit_timing"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_pit_timing"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.BrakeTemperature.Root,
-            ReadoutItemKey.fromValue("lmu_windows_brake_temperature"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_brake_temperature"),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.BrakeTemperature.WarningReadout,
-            ReadoutItemKey.fromValue("lmu_windows_brake_temperature_warning_readout"),
+            ReadoutItemKey.fromValue("lmu_windows_auto_brake_temperature_warning_readout"),
         )
-        assertEquals(LmuWindowsReadoutItemKey.BrakeWear.Root, ReadoutItemKey.fromValue("lmu_windows_brake_wear"))
-        assertEquals(Gt7Ps5ReadoutItemKey.MyBestLap.Root, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
+        assertEquals(LmuWindowsReadoutItemKey.BrakeWear.Root, ReadoutItemKey.fromValue("lmu_windows_auto_brake_wear"))
+        assertEquals(Gt7Ps5ReadoutItemKey.MyBestLap.Root, ReadoutItemKey.fromValue("gt7_ps5_auto_my_best_lap"))
         assertEquals(
             Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled,
-            ReadoutItemKey.fromValue("gt7_ps5_my_best_lap_detail_enabled"),
+            ReadoutItemKey.fromValue("gt7_ps5_auto_my_best_lap_detail_enabled"),
         )
         assertEquals(
             Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
-            ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel_laps"),
+            ReadoutItemKey.fromValue("gt7_ps5_auto_remaining_fuel_laps"),
         )
         assertEquals(
             Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled,
-            ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel_laps_detail_enabled"),
+            ReadoutItemKey.fromValue("gt7_ps5_auto_remaining_fuel_laps_detail_enabled"),
         )
         assertEquals(
             Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
-            ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel"),
+            ReadoutItemKey.fromValue("gt7_ps5_auto_remaining_fuel"),
         )
         assertEquals(
             Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled,
-            ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel_detail_enabled"),
+            ReadoutItemKey.fromValue("gt7_ps5_auto_remaining_fuel_detail_enabled"),
         )
         assertEquals(
             Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
-            ReadoutItemKey.fromValue("gt7_ps5_tyre_temperature"),
+            ReadoutItemKey.fromValue("gt7_ps5_auto_tyre_temperature"),
         )
     }
 
@@ -101,66 +101,81 @@ class ReadoutItemKeyTest {
     fun `fromValue はACEのキーに一致するキーを返す`() {
         assertEquals(
             AceWindowsReadoutItemKey.RemainingFuel.Root,
-            ReadoutItemKey.fromValue("ace_windows_remaining_fuel"),
+            ReadoutItemKey.fromValue("ace_windows_auto_remaining_fuel"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled,
-            ReadoutItemKey.fromValue("ace_windows_remaining_fuel_detail_enabled"),
+            ReadoutItemKey.fromValue("ace_windows_auto_remaining_fuel_detail_enabled"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.Flag.Root,
-            ReadoutItemKey.fromValue("ace_windows_flag"),
+            ReadoutItemKey.fromValue("ace_windows_auto_flag"),
         )
-        assertEquals(AceWindowsReadoutItemKey.Flag.WhiteFlag, ReadoutItemKey.fromValue("ace_windows_white_flag"))
-        assertEquals(AceWindowsReadoutItemKey.Flag.GreenFlag, ReadoutItemKey.fromValue("ace_windows_green_flag"))
-        assertEquals(AceWindowsReadoutItemKey.Flag.RedFlag, ReadoutItemKey.fromValue("ace_windows_red_flag"))
-        assertEquals(AceWindowsReadoutItemKey.Flag.BlueFlag, ReadoutItemKey.fromValue("ace_windows_blue_flag"))
-        assertEquals(AceWindowsReadoutItemKey.Flag.YellowFlag, ReadoutItemKey.fromValue("ace_windows_yellow_flag"))
-        assertEquals(AceWindowsReadoutItemKey.Flag.BlackFlag, ReadoutItemKey.fromValue("ace_windows_black_flag"))
+        assertEquals(AceWindowsReadoutItemKey.Flag.WhiteFlag, ReadoutItemKey.fromValue("ace_windows_auto_white_flag"))
+        assertEquals(AceWindowsReadoutItemKey.Flag.GreenFlag, ReadoutItemKey.fromValue("ace_windows_auto_green_flag"))
+        assertEquals(AceWindowsReadoutItemKey.Flag.RedFlag, ReadoutItemKey.fromValue("ace_windows_auto_red_flag"))
+        assertEquals(AceWindowsReadoutItemKey.Flag.BlueFlag, ReadoutItemKey.fromValue("ace_windows_auto_blue_flag"))
+        assertEquals(AceWindowsReadoutItemKey.Flag.YellowFlag, ReadoutItemKey.fromValue("ace_windows_auto_yellow_flag"))
+        assertEquals(AceWindowsReadoutItemKey.Flag.BlackFlag, ReadoutItemKey.fromValue("ace_windows_auto_black_flag"))
         assertEquals(
             AceWindowsReadoutItemKey.Flag.BlackWhiteFlag,
-            ReadoutItemKey.fromValue("ace_windows_black_white_flag"),
+            ReadoutItemKey.fromValue("ace_windows_auto_black_white_flag"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.Flag.CheckeredFlag,
-            ReadoutItemKey.fromValue("ace_windows_checkered_flag"),
+            ReadoutItemKey.fromValue("ace_windows_auto_checkered_flag"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.Flag.OrangeCircleFlag,
-            ReadoutItemKey.fromValue("ace_windows_orange_circle_flag"),
+            ReadoutItemKey.fromValue("ace_windows_auto_orange_circle_flag"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.Flag.RedYellowStripesFlag,
-            ReadoutItemKey.fromValue("ace_windows_red_yellow_stripes_flag"),
+            ReadoutItemKey.fromValue("ace_windows_auto_red_yellow_stripes_flag"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.TyreTemperature.Root,
-            ReadoutItemKey.fromValue("ace_windows_tyre_temperature"),
+            ReadoutItemKey.fromValue("ace_windows_auto_tyre_temperature"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.VehicleApproach.Root,
-            ReadoutItemKey.fromValue("ace_windows_vehicle_approach"),
+            ReadoutItemKey.fromValue("ace_windows_auto_vehicle_approach"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.VehicleApproach.StartReadout,
-            ReadoutItemKey.fromValue("ace_windows_vehicle_approach_start_readout"),
+            ReadoutItemKey.fromValue("ace_windows_auto_vehicle_approach_start_readout"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.MyBestLap.Root,
-            ReadoutItemKey.fromValue("ace_windows_my_best_lap"),
+            ReadoutItemKey.fromValue("ace_windows_auto_my_best_lap"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.MyBestLap.DetailEnabled,
-            ReadoutItemKey.fromValue("ace_windows_my_best_lap_detail_enabled"),
+            ReadoutItemKey.fromValue("ace_windows_auto_my_best_lap_detail_enabled"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
-            ReadoutItemKey.fromValue("ace_windows_remaining_fuel_laps"),
+            ReadoutItemKey.fromValue("ace_windows_auto_remaining_fuel_laps"),
         )
         assertEquals(
             AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled,
-            ReadoutItemKey.fromValue("ace_windows_remaining_fuel_laps_detail_enabled"),
+            ReadoutItemKey.fromValue("ace_windows_auto_remaining_fuel_laps_detail_enabled"),
         )
+    }
+
+    @Test
+    fun `全キーのvalueは一意でfromValueから復元できる`() {
+        val entries = ReadoutItemKey.entries
+
+        assertEquals(entries.size, entries.map { it.value }.distinct().size)
+        entries.forEach { key -> assertEquals(key, ReadoutItemKey.fromValue(key.value)) }
+    }
+
+    @Test
+    fun `auto導入前のvalueは復元しない`() {
+        ReadoutItemKey.entries.forEach { key ->
+            assertNull(ReadoutItemKey.fromValue(key.value.replace("_auto_", "_")))
+        }
     }
 
     @Test

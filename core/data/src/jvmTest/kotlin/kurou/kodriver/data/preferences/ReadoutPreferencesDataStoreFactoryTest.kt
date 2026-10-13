@@ -22,6 +22,6 @@ class ReadoutPreferencesDataStoreFactoryTest {
                 prefs.copy(simulatorStates = prefs.simulatorStates + ("lmu_windows" to SimulatorReadoutState()))
             }
 
-            assertTrue(tempDir.resolve("readout_preferences.pb").exists())
+            assertTrue(tempDir.resolve("auto_readout_preferences.pb").exists())
         }
 }

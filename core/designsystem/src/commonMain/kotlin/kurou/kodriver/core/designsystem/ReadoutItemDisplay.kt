@@ -38,41 +38,70 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 private fun aceFlagDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "ace_windows_white_flag" -> stringResource(Res.string.readout_item_ace_white_flag)
-        "ace_windows_green_flag" -> stringResource(Res.string.readout_item_ace_green_flag)
-        "ace_windows_blue_flag" -> stringResource(Res.string.readout_item_ace_blue_flag)
-        "ace_windows_yellow_flag" -> stringResource(Res.string.readout_item_ace_yellow_flag)
-        "ace_windows_black_flag" -> stringResource(Res.string.readout_item_ace_black_flag)
-        "ace_windows_black_white_flag" -> stringResource(Res.string.readout_item_ace_black_white_flag)
-        "ace_windows_checkered_flag" -> stringResource(Res.string.readout_item_ace_checkered_flag)
-        "ace_windows_orange_circle_flag" -> stringResource(Res.string.readout_item_ace_orange_circle_flag)
-        "ace_windows_red_yellow_stripes_flag" -> stringResource(Res.string.readout_item_ace_red_yellow_stripes_flag)
-        else -> null
+        "ace_windows_auto_white_flag" -> {
+            stringResource(Res.string.readout_item_ace_white_flag)
+        }
+
+        "ace_windows_auto_green_flag" -> {
+            stringResource(Res.string.readout_item_ace_green_flag)
+        }
+
+        "ace_windows_auto_blue_flag" -> {
+            stringResource(Res.string.readout_item_ace_blue_flag)
+        }
+
+        "ace_windows_auto_yellow_flag" -> {
+            stringResource(Res.string.readout_item_ace_yellow_flag)
+        }
+
+        "ace_windows_auto_black_flag" -> {
+            stringResource(Res.string.readout_item_ace_black_flag)
+        }
+
+        "ace_windows_auto_black_white_flag" -> {
+            stringResource(Res.string.readout_item_ace_black_white_flag)
+        }
+
+        "ace_windows_auto_checkered_flag" -> {
+            stringResource(Res.string.readout_item_ace_checkered_flag)
+        }
+
+        "ace_windows_auto_orange_circle_flag" -> {
+            stringResource(Res.string.readout_item_ace_orange_circle_flag)
+        }
+
+        "ace_windows_auto_red_yellow_stripes_flag" -> {
+            stringResource(Res.string.readout_item_ace_red_yellow_stripes_flag)
+        }
+
+        else -> {
+            null
+        }
     }
 
 @Composable
 private fun flagDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "lmu_windows_flag", "ace_windows_flag" -> stringResource(Res.string.readout_item_flag)
-        "lmu_windows_blue_flag" -> stringResource(Res.string.readout_item_blue_flag)
-        "lmu_windows_sector_yellow_flag" -> stringResource(Res.string.readout_item_sector_yellow_flag)
-        "lmu_windows_full_course_yellow" -> stringResource(Res.string.readout_item_full_course_yellow)
-        "lmu_windows_red_flag", "ace_windows_red_flag" -> stringResource(Res.string.readout_item_red_flag)
+        "lmu_windows_auto_flag", "ace_windows_auto_flag" -> stringResource(Res.string.readout_item_flag)
+        "lmu_windows_auto_blue_flag" -> stringResource(Res.string.readout_item_blue_flag)
+        "lmu_windows_auto_sector_yellow_flag" -> stringResource(Res.string.readout_item_sector_yellow_flag)
+        "lmu_windows_auto_full_course_yellow" -> stringResource(Res.string.readout_item_full_course_yellow)
+        "lmu_windows_auto_red_flag", "ace_windows_auto_red_flag" -> stringResource(Res.string.readout_item_red_flag)
         else -> aceFlagDisplayName(readoutItemKeyValue)
     }
 
 @Composable
 private fun vehicleApproachDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "lmu_windows_vehicle_approach", "ace_windows_vehicle_approach" -> {
+        "lmu_windows_auto_vehicle_approach", "ace_windows_auto_vehicle_approach" -> {
             stringResource(Res.string.readout_item_vehicle_approach)
         }
 
-        "lmu_windows_vehicle_approach_sustained" -> {
+        "lmu_windows_auto_vehicle_approach_sustained" -> {
             stringResource(Res.string.readout_item_vehicle_approach_sustained)
         }
 
-        "lmu_windows_vehicle_approach_start_readout" -> {
+        "lmu_windows_auto_vehicle_approach_start_readout" -> {
             stringResource(Res.string.readout_item_vehicle_approach_start_readout)
         }
 
@@ -84,15 +113,15 @@ private fun vehicleApproachDisplayName(readoutItemKeyValue: String): String? =
 @Composable
 private fun tyreTemperatureDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "lmu_windows_tyre_temperature", "gt7_ps5_tyre_temperature", "ace_windows_tyre_temperature" -> {
+        "lmu_windows_auto_tyre_temperature", "gt7_ps5_auto_tyre_temperature", "ace_windows_auto_tyre_temperature" -> {
             stringResource(Res.string.readout_item_tyre_temperature)
         }
 
-        "lmu_windows_tyre_temperature_overheat_warning" -> {
+        "lmu_windows_auto_tyre_temperature_overheat_warning" -> {
             stringResource(Res.string.readout_item_tyre_overheat_warning)
         }
 
-        "lmu_windows_tyre_temperature_low_warning" -> {
+        "lmu_windows_auto_tyre_temperature_low_warning" -> {
             stringResource(Res.string.readout_item_tyre_low_warning)
         }
 
@@ -104,9 +133,9 @@ private fun tyreTemperatureDisplayName(readoutItemKeyValue: String): String? =
 @Composable
 private fun vehicleDamageDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "lmu_windows_vehicle_damage" -> stringResource(Res.string.readout_item_vehicle_damage)
-        "lmu_windows_overheat" -> stringResource(Res.string.readout_item_overheat)
-        "lmu_windows_part_detached" -> stringResource(Res.string.readout_item_part_detached)
+        "lmu_windows_auto_vehicle_damage" -> stringResource(Res.string.readout_item_vehicle_damage)
+        "lmu_windows_auto_overheat" -> stringResource(Res.string.readout_item_overheat)
+        "lmu_windows_auto_part_detached" -> stringResource(Res.string.readout_item_part_detached)
         else -> null
     }
 
@@ -114,11 +143,11 @@ private fun vehicleDamageDisplayName(readoutItemKeyValue: String): String? =
 @Composable
 private fun lmuStandaloneDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "lmu_windows_pit_timing" -> stringResource(Res.string.readout_item_pit_timing)
-        "lmu_windows_remaining_virtual_energy" -> stringResource(Res.string.readout_item_remaining_virtual_energy)
-        "lmu_windows_tyre_wear" -> stringResource(Res.string.readout_item_tyre_wear)
-        "lmu_windows_brake_temperature" -> stringResource(Res.string.readout_item_brake_temperature)
-        "lmu_windows_brake_wear" -> stringResource(Res.string.readout_item_brake_wear)
+        "lmu_windows_auto_pit_timing" -> stringResource(Res.string.readout_item_pit_timing)
+        "lmu_windows_auto_remaining_virtual_energy" -> stringResource(Res.string.readout_item_remaining_virtual_energy)
+        "lmu_windows_auto_tyre_wear" -> stringResource(Res.string.readout_item_tyre_wear)
+        "lmu_windows_auto_brake_temperature" -> stringResource(Res.string.readout_item_brake_temperature)
+        "lmu_windows_auto_brake_wear" -> stringResource(Res.string.readout_item_brake_wear)
         else -> null
     }
 
@@ -126,15 +155,15 @@ private fun lmuStandaloneDisplayName(readoutItemKeyValue: String): String? =
 @Composable
 private fun bestLapAndFuelDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "lmu_windows_my_best_lap", "gt7_ps5_my_best_lap", "ace_windows_my_best_lap" -> {
+        "lmu_windows_auto_my_best_lap", "gt7_ps5_auto_my_best_lap", "ace_windows_auto_my_best_lap" -> {
             stringResource(Res.string.readout_item_my_best_lap)
         }
 
-        "gt7_ps5_remaining_fuel_laps", "ace_windows_remaining_fuel_laps" -> {
+        "gt7_ps5_auto_remaining_fuel_laps", "ace_windows_auto_remaining_fuel_laps" -> {
             stringResource(Res.string.readout_item_remaining_fuel_laps)
         }
 
-        "gt7_ps5_remaining_fuel", "ace_windows_remaining_fuel" -> {
+        "gt7_ps5_auto_remaining_fuel", "ace_windows_auto_remaining_fuel" -> {
             stringResource(Res.string.readout_item_remaining_fuel)
         }
 

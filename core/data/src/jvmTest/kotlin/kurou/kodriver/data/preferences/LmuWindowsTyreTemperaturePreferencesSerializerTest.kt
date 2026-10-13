@@ -29,7 +29,7 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
         runTest {
             val original =
                 LmuWindowsTyreTemperaturePreferences(
-                    enabledStates = mapOf("lmu_windows_tyre_temperature_overheat_warning" to false),
+                    enabledStates = mapOf("lmu_windows_auto_tyre_temperature_overheat_warning" to false),
                     lowWarningPhases = mapOf(5 to true),
                     overheatReadoutText = "タイヤが過熱しています",
                     coldReadoutText = "タイヤが冷えています",
@@ -75,7 +75,7 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
         runTest {
             val original =
                 LmuWindowsTyreTemperaturePreferences(
-                    enabledStates = mapOf("lmu_windows_tyre_temperature_overheat_warning" to false),
+                    enabledStates = mapOf("lmu_windows_auto_tyre_temperature_overheat_warning" to false),
                     lowWarningPhases = mapOf(5 to true),
                     overheatReadoutText = "タイヤが過熱しています",
                     coldReadoutText = "",
@@ -96,7 +96,7 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
         runTest {
             val original =
                 LmuWindowsTyreTemperaturePreferences(
-                    enabledStates = mapOf("lmu_windows_tyre_temperature_overheat_warning" to false),
+                    enabledStates = mapOf("lmu_windows_auto_tyre_temperature_overheat_warning" to false),
                     lowWarningPhases = mapOf(5 to true),
                     overheatReadoutText = "タイヤ過熱注意",
                     coldReadoutText = "",

@@ -7,6 +7,6 @@ internal fun createAceWindowsRemainingFuelPreferencesDataStore(
 ): DataStore<AceWindowsRemainingFuelPreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "ace_windows_remaining_fuel_preferences.pb",
+        fileName = "ace_windows_auto_remaining_fuel_preferences.pb",
         serializer = AceWindowsRemainingFuelPreferencesSerializer,
     )

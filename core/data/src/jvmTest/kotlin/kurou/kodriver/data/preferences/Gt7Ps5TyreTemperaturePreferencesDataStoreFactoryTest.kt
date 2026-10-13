@@ -23,6 +23,6 @@ class Gt7Ps5TyreTemperaturePreferencesDataStoreFactoryTest {
             val dataStore = createGt7Ps5TyreTemperaturePreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(highThresholdCelsius = 105) }
 
-            assertTrue(tempDir.resolve("gt7_ps5_tyre_temperature_preferences.pb").exists())
+            assertTrue(tempDir.resolve("gt7_ps5_auto_tyre_temperature_preferences.pb").exists())
         }
 }

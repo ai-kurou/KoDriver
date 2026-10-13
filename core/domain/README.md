@@ -47,14 +47,14 @@ GT7の燃料残り周回数・燃料残量・タイヤ温度・自己ベスト�
 `LmuWindowsPitTimingPreferencesRepository` は予想残り周回数・読み上げ有効状態、
 `LmuWindowsPitTimingReadoutTextPreferencesRepository` は予告・直前の読み上げ文言を扱う。
 Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStoreを共有する。
-既存の保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
+フィールド・ProtoNumberは維持する。保存ファイル名の `auto_` 導入時は設定を意図的に初期化し、旧ファイルの移行は行わない。
 
 ## LMUタイヤ温度設定
 
 `LmuWindowsTyreTemperaturePreferencesRepository` は有効状態・低温警告対象フェーズ、
 `LmuWindowsTyreTemperatureReadoutTextPreferencesRepository` は過熱・低温警告の文言を扱う。
 Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共有する。
-保存ファイルと現行フィールドのProtoNumberを維持するため、設定移行は不要。廃止したProtoNumber 1は再利用しない。
+現行フィールドのProtoNumberは維持する。保存ファイル名の `auto_` 導入時は設定を意図的に初期化し、旧ファイルの移行は行わない。廃止したProtoNumber 1は再利用しない。
 
 オーバーレイ文字色は ARGB の Long として保存し、`OVERLAY_TEXT_COLOR_DEFAULT`（`0xFFFFC107L`）を既定値とする。`ObserveOverlayTextColorUseCase` は保存値を配信し、`SaveOverlayTextColorUseCase` は選択したARGB値をRepositoryへ保存する。
 

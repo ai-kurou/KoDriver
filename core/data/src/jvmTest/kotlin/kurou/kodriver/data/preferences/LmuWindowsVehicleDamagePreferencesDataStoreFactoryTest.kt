@@ -23,6 +23,6 @@ class LmuWindowsVehicleDamagePreferencesDataStoreFactoryTest {
             val dataStore = createLmuWindowsVehicleDamagePreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(enabledStates = mapOf("overheat" to true)) }
 
-            assertTrue(tempDir.resolve("lmu_windows_vehicle_damage_preferences.pb").exists())
+            assertTrue(tempDir.resolve("lmu_windows_auto_vehicle_damage_preferences.pb").exists())
         }
 }
