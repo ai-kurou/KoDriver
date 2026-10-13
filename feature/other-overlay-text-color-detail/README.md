@@ -9,6 +9,9 @@ ARGB Longを保存する。選択時は保存せずナレーターオーバー�
 保存済みのプリセット以外の色は変更せず保持し、スウォッチは未選択として表示する。
 JVMの操作・ViewModel・配線・スクリーンショットテストと、実DataStoreを使わないFake moduleを提供する。
 
+ダイアログ破棄時は `DisposableEffect` から `onPreviewStopped()` を呼び、プレビューと未保存の選択を解除する。
+確定中は解除せず、保存完了（失敗を含む）までプレビューを維持する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

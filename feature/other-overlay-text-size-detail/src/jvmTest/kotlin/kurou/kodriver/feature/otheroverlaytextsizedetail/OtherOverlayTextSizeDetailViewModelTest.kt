@@ -165,6 +165,37 @@ class OtherOverlayTextSizeDetailViewModelTest {
         }
 
     @Test
+    fun `onPreviewStoppedを呼ぶとpendingOverlayTextSizeを保存済み値に戻す`() =
+        runTest(dispatcher) {
+            every { repository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every { repository.setPreviewOverlayTextSize(null) } answers {
+                overlayTextSizeFlow.update { OverlayTextSize.MEDIUM }
+            }
+            val viewModel = createViewModel()
+
+            every { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) } answers {
+                overlayTextSizeFlow.update { OverlayTextSize.LARGE }
+            }
+
+            viewModel.onPendingOverlayTextSizeSelected(OverlayTextSize.LARGE)
+            viewModel.onPreviewStopped()
+
+            assertEquals(
+                OtherOverlayTextSizeDetailUiState(
+                    selectedOverlayTextSize = OverlayTextSize.MEDIUM,
+                    pendingOverlayTextSize = OverlayTextSize.MEDIUM,
+                ),
+                viewModel.uiState.first(),
+            )
+            assertEquals(OverlayTextSize.MEDIUM, overlayTextSizeFlow.first())
+            verify(exactly = 1) { repository.observeOverlayTextSize() }
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) }
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(null) }
+            coVerify(exactly = 0) { repository.saveOverlayTextSize(OverlayTextSize.LARGE) }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `リポジトリのオーバーレイ文字サイズが変わるとselectedOverlayTextSizeに反映される`() =
         runTest(dispatcher) {
             every { repository.observeOverlayTextSize() } returns overlayTextSizeFlow
@@ -195,9 +226,13 @@ class OtherOverlayTextSizeDetailViewModelTest {
 
             viewModel.onPendingOverlayTextSizeSelected(OverlayTextSize.LARGE)
             viewModel.onConfirm()
+            viewModel.onPreviewStopped()
+
+            assertEquals(OverlayTextSize.LARGE, viewModel.uiState.first().pendingOverlayTextSize)
 
             verify(exactly = 0) { repository.setPreviewOverlayTextSize(null) }
             saved.complete(Unit)
+            assertEquals(OverlayTextSize.MEDIUM, viewModel.uiState.first().pendingOverlayTextSize)
 
             verify(exactly = 1) { repository.observeOverlayTextSize() }
             verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) }
@@ -264,6 +299,63 @@ class OtherOverlayTextSizeDetailViewModelTest {
             verify(exactly = 1) { repository.observeOverlayTextSize() }
             verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) }
             verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.SMALL) }
+            coVerify(exactly = 1) { repository.saveOverlayTextSize(OverlayTextSize.LARGE) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `先行保存中の離脱通知は後続プレビューを解除せず保存完了後の離脱で解除できる`() =
+        runTest(dispatcher) {
+            every { repository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) } returns Unit
+            every { repository.setPreviewOverlayTextSize(OverlayTextSize.SMALL) } returns Unit
+            every { repository.setPreviewOverlayTextSize(null) } returns Unit
+            val saved = CompletableDeferred<Unit>()
+            coEvery { repository.saveOverlayTextSize(OverlayTextSize.LARGE) } coAnswers { saved.await() }
+            val viewModel = createViewModel()
+
+            viewModel.onPendingOverlayTextSizeSelected(OverlayTextSize.LARGE)
+            viewModel.onConfirm()
+            viewModel.onPendingOverlayTextSizeSelected(OverlayTextSize.SMALL)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { repository.setPreviewOverlayTextSize(null) }
+            saved.complete(Unit)
+
+            assertEquals(OverlayTextSize.SMALL, viewModel.uiState.first().pendingOverlayTextSize)
+            verify(exactly = 0) { repository.setPreviewOverlayTextSize(null) }
+            viewModel.onPreviewStopped()
+            assertEquals(OverlayTextSize.MEDIUM, viewModel.uiState.first().pendingOverlayTextSize)
+            verify(exactly = 1) { repository.observeOverlayTextSize() }
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) }
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.SMALL) }
+            coVerify(exactly = 1) { repository.saveOverlayTextSize(OverlayTextSize.LARGE) }
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(null) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `保存中に破棄して離脱した後の選択は先行保存の完了で重複解除されない`() =
+        runTest(dispatcher) {
+            every { repository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) } returns Unit
+            every { repository.setPreviewOverlayTextSize(OverlayTextSize.SMALL) } returns Unit
+            every { repository.setPreviewOverlayTextSize(null) } returns Unit
+            val saved = CompletableDeferred<Unit>()
+            coEvery { repository.saveOverlayTextSize(OverlayTextSize.LARGE) } coAnswers { saved.await() }
+            val viewModel = createViewModel()
+
+            viewModel.onPendingOverlayTextSizeSelected(OverlayTextSize.LARGE)
+            viewModel.onConfirm()
+            viewModel.onDismiss()
+            viewModel.onPreviewStopped()
+            viewModel.onPendingOverlayTextSizeSelected(OverlayTextSize.SMALL)
+            saved.complete(Unit)
+
+            assertEquals(OverlayTextSize.SMALL, viewModel.uiState.first().pendingOverlayTextSize)
+            verify(exactly = 1) { repository.observeOverlayTextSize() }
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) }
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.SMALL) }
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(null) }
             coVerify(exactly = 1) { repository.saveOverlayTextSize(OverlayTextSize.LARGE) }
             confirmVerified(repository)
         }

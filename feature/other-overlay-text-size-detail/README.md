@@ -20,6 +20,9 @@ OKで初めて保存し、保存完了後にプレビューを解除する。キ
 プレビューを解除して保存値に戻す。`selectedOverlayTextSize` はプレビュー込みの適用中のサイズ、
 `pendingOverlayTextSize` はダイアログでの選択値を表す。
 
+ダイアログ破棄時は `DisposableEffect` から `onPreviewStopped()` を呼び、プレビューと未保存の選択を解除する。
+確定中は解除せず、保存完了（失敗を含む）までプレビューを維持する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
