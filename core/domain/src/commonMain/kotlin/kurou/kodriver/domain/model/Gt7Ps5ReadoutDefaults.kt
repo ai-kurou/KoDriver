@@ -4,7 +4,7 @@ package kurou.kodriver.domain.model
  * GT7 の読み上げ有効状態。一覧画面と Narrator が共有する。
  * 新しい TopLevel は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。
  */
-val GT7_PS5_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+val GT7_PS5_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true,

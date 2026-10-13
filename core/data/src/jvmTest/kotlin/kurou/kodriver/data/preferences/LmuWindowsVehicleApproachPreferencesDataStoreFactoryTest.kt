@@ -18,7 +18,7 @@ class LmuWindowsVehicleApproachPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `lmu_windows_vehicle_approach_preferences設定が正しいファイルに書き込まれる`() =
+    fun `lmu_windows_auto_vehicle_approach_preferences設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createLmuWindowsVehicleApproachPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(skipFirstLap = false) }

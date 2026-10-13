@@ -9,7 +9,7 @@ class AutoReadoutPreferencesDefaultsTest {
     fun `LMUのデフォルト定数にはLMUキーのみが含まれる`() {
         val defaults =
             listOf(
-                LMU_WINDOWS_READOUT_ENABLED_STATE_DEFAULT,
+                LMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT,
                 LMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT,
                 LMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT,
             )
@@ -24,7 +24,7 @@ class AutoReadoutPreferencesDefaultsTest {
     fun `GT7のデフォルト定数にはGT7キーのみが含まれる`() {
         val defaults =
             listOf(
-                GT7_PS5_READOUT_ENABLED_STATE_DEFAULT,
+                GT7_PS5_AUTO_READOUT_ENABLED_STATE_DEFAULT,
                 GT7_PS5_READOUT_START_SOUND_ENABLED_STATE_DEFAULT,
                 GT7_PS5_QUEUE_ENABLED_STATE_DEFAULT,
             )
@@ -39,7 +39,7 @@ class AutoReadoutPreferencesDefaultsTest {
     fun `ACEのデフォルト定数にはACEキーのみが含まれる`() {
         val defaults =
             listOf(
-                ACE_WINDOWS_READOUT_ENABLED_STATE_DEFAULT,
+                ACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT,
                 ACE_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT,
                 ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT,
             )

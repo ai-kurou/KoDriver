@@ -5,9 +5,9 @@ package kurou.kodriver.domain.model
 // listPaneに表示される ReadoutItemKey は必ずここに列挙すること（省略＝デフォルトtrue、ではない）。
 val READOUT_ENABLED_STATE_DEFAULT: Map<Simulator, Map<ReadoutItemKey, Boolean>> =
     mapOf(
-        Simulator.LmuWindows to LMU_WINDOWS_READOUT_ENABLED_STATE_DEFAULT,
-        Simulator.Gt7Ps5 to GT7_PS5_READOUT_ENABLED_STATE_DEFAULT,
-        Simulator.AceWindows to ACE_WINDOWS_READOUT_ENABLED_STATE_DEFAULT,
+        Simulator.LmuWindows to LMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT,
+        Simulator.Gt7Ps5 to GT7_PS5_AUTO_READOUT_ENABLED_STATE_DEFAULT,
+        Simulator.AceWindows to ACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT,
     )
 
 // [READOUT_ENABLED_STATE_DEFAULT] を ReadoutItemKey 単位にフラット化したもの。
