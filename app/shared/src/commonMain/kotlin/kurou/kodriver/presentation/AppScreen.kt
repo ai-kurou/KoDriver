@@ -45,6 +45,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,6 +83,7 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.LmuWindowsDebugStateDet
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
+import kurou.kodriver.feature.manualreadoutlist.ManualReadoutListPane
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
@@ -198,11 +200,12 @@ private fun AppDestinationContent(
     destination: AppDestination,
     autoReadoutContent: @Composable () -> Unit,
     telemetryLogContent: @Composable () -> Unit,
+    manualReadoutContent: @Composable () -> Unit,
     otherContent: @Composable () -> Unit,
 ) {
     when (destination) {
         AppDestination.AutoReadout -> autoReadoutContent()
-        AppDestination.ManualReadout -> Unit
+        AppDestination.ManualReadout -> manualReadoutContent()
         AppDestination.Log -> telemetryLogContent()
         AppDestination.More -> otherContent()
     }
@@ -438,6 +441,11 @@ fun AppScreen(
             },
         )
     },
+    manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit = { selectedSimulatorId ->
+        key(selectedSimulatorId) {
+            ManualReadoutListPane(simulatorName = appScreenPrimarySimulatorLabel(selectedSimulatorId))
+        }
+    },
     otherContent: @Composable (
         scrollToTopRequest: Int,
         selectedSimulatorId: String,
@@ -542,6 +550,7 @@ fun AppScreen(
         telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
         otherListScrollToTopRequest = otherListScrollToTopRequest,
         telemetryLogContent = telemetryLogContent,
+        manualReadoutContent = manualReadoutContent,
         otherContent = otherContent,
     )
 }
@@ -615,6 +624,7 @@ internal fun AppScreenContent(
     autoReadoutListScrollToTopRequest: Int = 0,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit = { _, _ -> },
     telemetryLogListScrollToTopRequest: Int = 0,
+    manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit = {},
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit = { _, _ -> },
     otherListScrollToTopRequest: Int = 0,
 ) {
@@ -656,6 +666,7 @@ internal fun AppScreenContent(
                 autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
                 telemetryLogContent = telemetryLogContent,
                 telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
+                manualReadoutContent = manualReadoutContent,
                 otherContent = otherContent,
                 otherListScrollToTopRequest = otherListScrollToTopRequest,
             )
@@ -684,6 +695,7 @@ private fun AppScreenScaffold(
     autoReadoutListScrollToTopRequest: Int,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit,
     telemetryLogListScrollToTopRequest: Int,
+    manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit,
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit,
     otherListScrollToTopRequest: Int,
 ) {
@@ -717,7 +729,6 @@ private fun AppScreenScaffold(
                         label = { Text(dest.label()) },
                         selected = navigationState.current == dest,
                         onClick = {
-                            if (dest == AppDestination.ManualReadout) return@NavigationSuiteItem
                             haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                             navigationState.handleTabClick(dest) { reselected ->
                                 when (reselected) {
@@ -798,6 +809,7 @@ private fun AppScreenScaffold(
                                 onFeedbackClickWithTabSwitch ?: {},
                             )
                         },
+                        manualReadoutContent = { manualReadoutContent(selectedSimulatorId) },
                         otherContent = { otherContent(otherListScrollToTopRequest, selectedSimulatorId) },
                     )
                 }

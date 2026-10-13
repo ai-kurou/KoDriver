@@ -2,6 +2,7 @@ package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -19,15 +20,30 @@ class ManualReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `セットがまだない空状態を表示する`() {
+    fun `選択中のシミュレーター名を含む空状態を表示する`() {
         rule.setContent {
             KoDriverTheme {
-                ManualReadoutListPane()
+                ManualReadoutListPane(simulatorName = "LMU")
             }
         }
 
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
-        rule.onNodeWithText("手動読み上げのセットはまだありません").assertIsDisplayed()
+        rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertIsDisplayed()
+    }
+
+    @Test
+    fun `シミュレーター名を変更すると空状態の文言を更新する`() {
+        val simulatorName = mutableStateOf("LMU")
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPane(simulatorName = simulatorName.value)
+            }
+        }
+
+        rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertIsDisplayed()
+        rule.runOnIdle { simulatorName.value = "ACE" }
+        rule.onNodeWithText("ACEの手動読み上げセットはまだありません").assertIsDisplayed()
+        rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertDoesNotExist()
     }
 
     @Test
@@ -35,7 +51,7 @@ class ManualReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                    ManualReadoutListPane()
+                    ManualReadoutListPane(simulatorName = "LMU")
                 }
             }
         }

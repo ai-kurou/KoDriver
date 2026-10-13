@@ -253,16 +253,17 @@ class MainActivityTest {
     }
 
     @Test
-    fun `ログタブにログがない場合は空状態を表示する`() {
+    fun `ログと手動タブにセットやログがない場合は空状態を表示する`() {
         launchActivity()
         selectSimulator("Le Mans Ultimate（Windows版）")
 
         clickItem("ログ")
         waitUntilDisplayed("Le Mans Ultimate（Windows版）のログはまだありません")
         waitUntilDisplayed("手動")
-        clickItem("手動")
-        waitUntilDisplayed("Le Mans Ultimate（Windows版）のログはまだありません")
         waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
+        clickItem("手動")
+        waitUntilDisplayed("LMUの手動読み上げセットはまだありません")
+        waitUntilDisplayed("手動読み上げについて")
     }
 
     @Test

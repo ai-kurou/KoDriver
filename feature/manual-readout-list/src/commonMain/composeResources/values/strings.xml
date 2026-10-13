@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="manual_readout_list_empty_title">手動読み上げのセットはまだありません</string>
+    <string name="manual_readout_list_empty_title">%1$sの手動読み上げセットはまだありません</string>
     <string name="manual_readout_hint_label">手動読み上げについて</string>
     <string name="manual_readout_hint_help_description">手動読み上げの説明を表示</string>
     <string name="manual_readout_hint_readout_title">読み上げ</string>
