@@ -4,6 +4,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import kurou.kodriver.feature.desktopsplash.generated.resources.Res
+import kurou.kodriver.feature.desktopsplash.generated.resources.desktop_splash_error_close
+import kurou.kodriver.feature.desktopsplash.generated.resources.desktop_splash_error_title
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * 起動時の初期化に失敗したことを通知するダイアログ。
@@ -22,11 +26,11 @@ fun DesktopSplashErrorDialog(
 ) {
     AlertDialog(
         onDismissRequest = onConfirm,
-        title = { Text("起動に失敗しました") },
+        title = { Text(stringResource(Res.string.desktop_splash_error_title)) },
         text = { Text(message) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("閉じる")
+                Text(stringResource(Res.string.desktop_splash_error_close))
             }
         },
     )
