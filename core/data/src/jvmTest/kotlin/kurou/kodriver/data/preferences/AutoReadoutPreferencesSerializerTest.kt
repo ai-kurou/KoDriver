@@ -11,20 +11,21 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalSerializationApi::class)
-class ReadoutPreferencesSerializerTest {
+class AutoReadoutPreferencesSerializerTest {
     @Test
     fun `正常なバイト列をデシリアライズできる`() =
         runTest {
             val original =
-                ReadoutPreferences(
+                AutoReadoutPreferences(
                     simulatorStates =
                         mapOf(
-                            "lmu_windows" to SimulatorReadoutState(enabledStates = mapOf("vehicle_approach" to true)),
+                            "lmu_windows" to
+                                SimulatorAutoReadoutState(enabledStates = mapOf("vehicle_approach" to true)),
                         ),
                 )
-            val bytes = ProtoBuf.encodeToByteArray(ReadoutPreferences.serializer(), original)
+            val bytes = ProtoBuf.encodeToByteArray(AutoReadoutPreferences.serializer(), original)
 
-            val result = ReadoutPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
+            val result = AutoReadoutPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
 
             assertEquals(original, result)
         }
@@ -35,7 +36,7 @@ class ReadoutPreferencesSerializerTest {
             val invalidBytes = byteArrayOf(0xFF.toByte(), 0xFE.toByte(), 0x00, 0x01)
 
             assertFailsWith<CorruptionException> {
-                ReadoutPreferencesSerializer.readFrom(ByteArrayInputStream(invalidBytes))
+                AutoReadoutPreferencesSerializer.readFrom(ByteArrayInputStream(invalidBytes))
             }
         }
 
@@ -43,11 +44,11 @@ class ReadoutPreferencesSerializerTest {
     fun `writeToしたバイト列をreadFromで復元できる`() =
         runTest {
             val original =
-                ReadoutPreferences(
+                AutoReadoutPreferences(
                     simulatorStates =
                         mapOf(
                             "lmu_windows" to
-                                SimulatorReadoutState(
+                                SimulatorAutoReadoutState(
                                     enabledStates =
                                         mapOf(
                                             "vehicle_approach" to true,
@@ -58,9 +59,9 @@ class ReadoutPreferencesSerializerTest {
                         ),
                 )
             val output = ByteArrayOutputStream()
-            ReadoutPreferencesSerializer.writeTo(original, output)
+            AutoReadoutPreferencesSerializer.writeTo(original, output)
 
-            val result = ReadoutPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
+            val result = AutoReadoutPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
 
             assertEquals(original, result)
         }

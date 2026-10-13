@@ -191,7 +191,7 @@ internal fun AutoReadoutContent(
                         rootItemName = autoReadoutItemDisplayName(selectedItem.id),
                         canNavigateBack = navigator.canNavigateBack(),
                         onBack = { navigateBack() },
-                        rootEnabled = uiState.readoutEnabledStates.readoutEnabled(selectedItem.id),
+                        rootEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(selectedItem.id),
                         onEnableRoot = { onReadoutEnabledChanged(selectedItem.id, true) },
                         content = { detailContent(selectedItem) },
                     )

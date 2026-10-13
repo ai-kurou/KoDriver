@@ -6,7 +6,7 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-class ReadoutPreferencesDataStoreFactoryTest {
+class AutoReadoutPreferencesDataStoreFactoryTest {
     private val tempDir = Files.createTempDirectory("kodriver_readout_factory_test").toFile()
 
     @AfterTest
@@ -17,9 +17,9 @@ class ReadoutPreferencesDataStoreFactoryTest {
     @Test
     fun `readout設定が正しいファイルに書き込まれる`() =
         runTest {
-            val dataStore = createReadoutPreferencesDataStore(tempDir.absolutePath)
+            val dataStore = createAutoReadoutPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { prefs ->
-                prefs.copy(simulatorStates = prefs.simulatorStates + ("lmu_windows" to SimulatorReadoutState()))
+                prefs.copy(simulatorStates = prefs.simulatorStates + ("lmu_windows" to SimulatorAutoReadoutState()))
             }
 
             assertTrue(tempDir.resolve("auto_readout_preferences.pb").exists())

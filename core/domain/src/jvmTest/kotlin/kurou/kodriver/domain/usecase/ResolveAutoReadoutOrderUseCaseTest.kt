@@ -4,8 +4,8 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ResolveReadoutOrderUseCaseTest {
-    private val useCase = ResolveReadoutOrderUseCase()
+class ResolveAutoReadoutOrderUseCaseTest {
+    private val useCase = ResolveAutoReadoutOrderUseCase()
 
     private val flag = LmuWindowsReadoutItemKey.Flag.Root
     private val myBestLap = LmuWindowsReadoutItemKey.MyBestLap.Root

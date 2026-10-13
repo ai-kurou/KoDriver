@@ -42,7 +42,7 @@ val ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     )
 
 /** 一覧画面の TopLevel 項目と Narrator が共有する読み上げ順序の初期値。 */
-internal fun aceWindowsDefaultReadoutOrder(): List<ReadoutItemKey> =
+internal fun aceWindowsDefaultAutoReadoutOrder(): List<ReadoutItemKey> =
     ReadoutItemKey.entries
         .filterIsInstance<AceWindowsReadoutItemKey.TopLevel>()
         .sortedBy { key -> aceWindowsOrderIndex(key) }

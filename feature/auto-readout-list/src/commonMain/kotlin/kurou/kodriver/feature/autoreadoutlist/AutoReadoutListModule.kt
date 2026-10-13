@@ -1,14 +1,14 @@
 package kurou.kodriver.feature.autoreadoutlist
 
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -19,7 +19,7 @@ import org.koin.dsl.module
  * 提供: AutoReadoutListViewModel、この feature 内で定義した UseCase 集約 data class
  *   （SimulatorUseCases / AutoReadoutOrderUseCases / AutoReadoutEnabledUseCases / QueueUseCases /
  *   StartSoundUseCases）、それらが束ねる各ドメイン UseCase。
- * 消費（get で解決）: SimulatorPreferencesRepository・ReadoutPreferencesRepository・
+ * 消費（get で解決）: SimulatorPreferencesRepository・AutoReadoutPreferencesRepository・
  *   QueuePreferencesRepository・ReadoutStartSoundEnabledPreferencesRepository（いずれも :core:data で登録）。
  */
 val autoReadoutListModule =
@@ -36,11 +36,11 @@ val autoReadoutListModule =
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { ObserveSelectedSimulatorUseCase(get()) }
-        factory { ObserveReadoutEnabledStatesUseCase(get()) }
-        factory { SaveReadoutEnabledStateUseCase(get()) }
-        factory { ObserveReadoutOrderUseCase(get()) }
-        factory { ResolveReadoutOrderUseCase() }
-        factory { SaveReadoutOrderUseCase(get()) }
+        factory { ObserveAutoReadoutEnabledStatesUseCase(get()) }
+        factory { SaveAutoReadoutEnabledStateUseCase(get()) }
+        factory { ObserveAutoReadoutOrderUseCase(get()) }
+        factory { ResolveAutoReadoutOrderUseCase() }
+        factory { SaveAutoReadoutOrderUseCase(get()) }
         factory { ObserveQueueEnabledStatesUseCase(get()) }
         factory { SaveQueueEnabledStateUseCase(get()) }
         factory { ObserveReadoutStartSoundEnabledStatesUseCase(get()) }

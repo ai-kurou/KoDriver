@@ -21,17 +21,17 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DE
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -46,7 +46,7 @@ class LmuWindowsAutoReadoutTyreWearDetailViewModelTest {
 
     private val repository: LmuWindowsTyreWearPreferencesRepository = mockk()
 
-    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+    private val autoReadoutPreferencesRepository: AutoReadoutPreferencesRepository = mockk()
 
     private val stopSpeech: StopSpeechUseCase = mockk()
     private val playSpeechEvent: PlaySpeechEventUseCase = mockk()
@@ -74,10 +74,10 @@ class LmuWindowsAutoReadoutTyreWearDetailViewModelTest {
                         ObserveLmuWindowsTyreWearThresholdPercentageUseCase(repository),
                     saveThresholdPercentage =
                         SaveLmuWindowsTyreWearThresholdPercentageUseCase(repository),
-                    observeReadoutEnabledStates =
-                        ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                    saveReadoutEnabledState =
-                        SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                    observeAutoReadoutEnabledStates =
+                        ObserveAutoReadoutEnabledStatesUseCase(autoReadoutPreferencesRepository),
+                    saveAutoReadoutEnabledState =
+                        SaveAutoReadoutEnabledStateUseCase(autoReadoutPreferencesRepository),
                     observeText = ObserveLmuWindowsTyreWearReadoutTextUseCase(repository),
                     saveText = SaveLmuWindowsTyreWearReadoutTextUseCase(repository),
                 ),
@@ -108,9 +108,11 @@ class LmuWindowsAutoReadoutTyreWearDetailViewModelTest {
             )
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
-            confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
+            confirmVerified(repository, autoReadoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -127,10 +129,12 @@ class LmuWindowsAutoReadoutTyreWearDetailViewModelTest {
             assertEquals(50, viewModel.uiState.first().thresholdPercentage)
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
-            confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
+            confirmVerified(repository, autoReadoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -152,10 +156,12 @@ class LmuWindowsAutoReadoutTyreWearDetailViewModelTest {
             )
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(DEFAULT_THRESHOLD) }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
-            confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
+            confirmVerified(repository, autoReadoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -164,7 +170,7 @@ class LmuWindowsAutoReadoutTyreWearDetailViewModelTest {
             stubReadout()
             every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
             coEvery {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                autoReadoutPreferencesRepository.saveAutoReadoutEnabledState(
                     Simulator.LmuWindows.id,
                     LmuWindowsReadoutItemKey.TyreWear.WarningReadout,
                     false,
@@ -181,20 +187,22 @@ class LmuWindowsAutoReadoutTyreWearDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().enabled)
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                autoReadoutPreferencesRepository.saveAutoReadoutEnabledState(
                     Simulator.LmuWindows.id,
                     LmuWindowsReadoutItemKey.TyreWear.WarningReadout,
                     false,
                 )
             }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
-            confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
+            confirmVerified(repository, autoReadoutPreferencesRepository, stopSpeech)
         }
 
     private fun stubReadout(available: Boolean = true) {
-        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns
+        every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id) } returns
             enabledStatesFlow
         every { repository.observeReadoutText() } returns textFlow
         coEvery { checkAvailable() } returns available
@@ -368,10 +376,12 @@ class LmuWindowsAutoReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             confirmVerified(
                 repository,
-                readoutPreferencesRepository,
+                autoReadoutPreferencesRepository,
                 playSpeechEvent,
                 observeVolume,
                 checkAvailable,

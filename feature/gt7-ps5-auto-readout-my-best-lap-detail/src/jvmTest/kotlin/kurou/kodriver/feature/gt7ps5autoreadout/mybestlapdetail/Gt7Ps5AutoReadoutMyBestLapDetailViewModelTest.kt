@@ -21,15 +21,15 @@ import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5MyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -42,7 +42,7 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
 
     private val repository: Gt7Ps5MyBestLapPreferencesRepository = mockk()
 
-    private val enabledRepository: ReadoutPreferencesRepository = mockk()
+    private val enabledRepository: AutoReadoutPreferencesRepository = mockk()
 
     private val speakText: SpeakTextUseCase = mockk()
     private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
@@ -64,8 +64,8 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
         Gt7Ps5AutoReadoutMyBestLapDetailViewModel(
             myBestLapUseCases =
                 MyBestLapUseCases(
-                    observeEnabledStates = ObserveReadoutEnabledStatesUseCase(enabledRepository),
-                    saveEnabledState = SaveReadoutEnabledStateUseCase(enabledRepository),
+                    observeEnabledStates = ObserveAutoReadoutEnabledStatesUseCase(enabledRepository),
+                    saveEnabledState = SaveAutoReadoutEnabledStateUseCase(enabledRepository),
                 ),
             readout =
                 MyBestLapReadoutUseCases(
@@ -84,12 +84,12 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns false
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
             } returns MutableStateFlow(emptyMap())
             val viewModel = createViewModel()
 
             assertEquals(Gt7Ps5AutoReadoutMyBestLapDetailUiState(), viewModel.uiState.first())
-            verify(exactly = 1) { enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            verify(exactly = 1) { enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) }
             verify(exactly = 1) { repository.observeReadoutText() }
             confirmVerified(repository, enabledRepository)
         }
@@ -100,9 +100,9 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns false
             val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-            every { enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns enabledStatesFlow
+            every { enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns enabledStatesFlow
             coEvery {
-                enabledRepository.saveReadoutEnabledState(
+                enabledRepository.saveAutoReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
                     Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled,
                     false,
@@ -115,9 +115,9 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
             viewModel.onEnabledChanged(false)
 
             assertEquals(false, viewModel.uiState.first().enabled)
-            verify(exactly = 1) { enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            verify(exactly = 1) { enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) }
             coVerify(exactly = 1) {
-                enabledRepository.saveReadoutEnabledState(
+                enabledRepository.saveAutoReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
                     Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled,
                     false,
@@ -131,7 +131,7 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
     fun `文言の監視と保存をUiStateに反映する`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -144,7 +144,7 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
             assertEquals("更新{laptime}", viewModel.uiState.first().readoutText)
             verify(exactly = 1) { repository.observeReadoutText() }
             coVerify(exactly = 1) { repository.saveReadoutText("更新{laptime}") }
-            verify(exactly = 1) { enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            verify(exactly = 1) { enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) }
             confirmVerified(repository, enabledRepository)
         }
 
@@ -152,7 +152,7 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
     fun `サンプルタイムに置換して開始音の後に試聴する`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -174,7 +174,7 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
     fun `空白文言では音量を取得せず試聴しない`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -189,7 +189,7 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
     fun `TTS利用不可を反映し試聴しない`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns false
@@ -206,7 +206,7 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
     fun `音量ゼロ以下では開始音も本文も試聴しない`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -227,7 +227,7 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
     fun `ペインを離れると開始音待機中の試聴を停止する`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -249,7 +249,7 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
     fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true

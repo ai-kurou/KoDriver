@@ -7,10 +7,10 @@ import kurou.kodriver.data.debugreadout.InMemoryDebugReadoutRequestRepository
 import kurou.kodriver.data.device.AndroidAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
+import kurou.kodriver.data.preferences.AndroidAutoReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.AndroidHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.AndroidKeepScreenOnEnabledRepository
-import kurou.kodriver.data.preferences.AndroidReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidServerIpPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
@@ -36,6 +36,7 @@ import kurou.kodriver.data.websocket.createWebSocketHttpClient
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
@@ -51,7 +52,6 @@ import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
@@ -90,8 +90,8 @@ fun androidDataModule(context: Context) =
         single<SimulatorPreferencesRepository> {
             AndroidSimulatorPreferencesRepository(context.simulatorDataStore)
         }
-        single<ReadoutPreferencesRepository> {
-            AndroidReadoutPreferencesRepository(context.readoutDataStore)
+        single<AutoReadoutPreferencesRepository> {
+            AndroidAutoReadoutPreferencesRepository(context.readoutDataStore)
         }
         single<QueuePreferencesRepository> {
             createQueuePreferencesRepository(context.filesDir.absolutePath)

@@ -45,15 +45,17 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
@@ -61,11 +63,9 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUs
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -90,7 +90,7 @@ class Gt7Ps5NarratorViewModelTest {
 
     private val simulatorPreferencesRepository: SimulatorPreferencesRepository = mockk()
 
-    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+    private val autoReadoutPreferencesRepository: AutoReadoutPreferencesRepository = mockk()
 
     private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
@@ -128,11 +128,12 @@ class Gt7Ps5NarratorViewModelTest {
                 SimulatorUseCases(ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository)),
             readoutListUseCases =
                 ReadoutListUseCases(
-                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                    observeReadoutOrder =
-                        ObserveResolvedReadoutOrderUseCase(
-                            ObserveReadoutOrderUseCase(readoutPreferencesRepository),
-                            ResolveReadoutOrderUseCase(),
+                    observeAutoReadoutEnabledStates =
+                        ObserveAutoReadoutEnabledStatesUseCase(autoReadoutPreferencesRepository),
+                    observeAutoReadoutOrder =
+                        ObserveResolvedAutoReadoutOrderUseCase(
+                            ObserveAutoReadoutOrderUseCase(autoReadoutPreferencesRepository),
+                            ResolveAutoReadoutOrderUseCase(),
                         ),
                     observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
                 ),
@@ -879,10 +880,10 @@ class Gt7Ps5NarratorViewModelTest {
             every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
             // enabledStatesはまだ何も流れてこない（DataStoreの初回読み込み中を模す）状態にする。
             every {
-                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
             } returns MutableSharedFlow()
             every {
-                readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
+                autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.Gt7Ps5.id)
             } returns MutableStateFlow(listOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root))
             every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
             every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(0)
@@ -911,10 +912,10 @@ class Gt7Ps5NarratorViewModelTest {
             assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) {
-                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
             }
             verify(exactly = 1) {
-                readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
+                autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.Gt7Ps5.id)
             }
             verify(exactly = 1) { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() }
             verify(exactly = 1) { remainingFuelPreferencesRepository.observeThresholdPercentage() }
@@ -933,7 +934,7 @@ class Gt7Ps5NarratorViewModelTest {
             }
             confirmVerified(
                 simulatorPreferencesRepository,
-                readoutPreferencesRepository,
+                autoReadoutPreferencesRepository,
                 remainingFuelLapsPreferencesRepository,
                 remainingFuelPreferencesRepository,
                 tyreTemperaturePreferencesRepository,
@@ -943,7 +944,7 @@ class Gt7Ps5NarratorViewModelTest {
         }
 
     /**
-     * simulator/enabledStates/readoutOrder/fuelThresholdの標準スタブをまとめて設定する。
+     * simulator/enabledStates/autoReadoutOrder/fuelThresholdの標準スタブをまとめて設定する。
      * ViewModelがコンストラクタ内で即座にFlowを購読・combineするため、必ず [createViewModel] の前に呼ぶこと。
      */
     @Suppress("LongParameterList")
@@ -959,10 +960,10 @@ class Gt7Ps5NarratorViewModelTest {
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(simulator)
         every {
-            readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+            autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
         } returns MutableStateFlow(enabledOverrides)
         every {
-            readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
+            autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.Gt7Ps5.id)
         } returns MutableStateFlow(orderOverride)
         every {
             remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps()

@@ -21,6 +21,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
@@ -28,8 +29,7 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUs
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -43,8 +43,8 @@ internal data class SimulatorUseCases(
 )
 
 internal data class ReadoutListUseCases(
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val observeReadoutOrder: ObserveResolvedReadoutOrderUseCase,
+    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val observeAutoReadoutOrder: ObserveResolvedAutoReadoutOrderUseCase,
     val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
 )
 
@@ -87,17 +87,17 @@ internal class Gt7Ps5NarratorViewModel(
         combine(
             selectedSimulator
                 .flatMapLatest { simulator ->
-                    readoutListUseCases.observeReadoutEnabledStates(simulator.id)
+                    readoutListUseCases.observeAutoReadoutEnabledStates(simulator.id)
                 },
             tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
         ) { readoutStates, tyreTemperatureStates ->
             readoutStates + tyreTemperatureStates
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
-    private val readoutOrder =
+    private val autoReadoutOrder =
         selectedSimulator
             .flatMapLatest { simulator ->
-                readoutListUseCases.observeReadoutOrder(simulator)
+                readoutListUseCases.observeAutoReadoutOrder(simulator)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。
@@ -141,7 +141,7 @@ internal class Gt7Ps5NarratorViewModel(
                     val state = narratorState
                     eventProcessor.processDebugReadout(
                         request = request,
-                        readoutOrder = readoutOrder.value,
+                        autoReadoutOrder = autoReadoutOrder.value,
                         queueEnabledStates = queueEnabledStates.value,
                         observedAtMs = currentTimeMs(),
                         logContext = Gt7Ps5TelemetryLogContext(state, currentSettings, state),
@@ -167,7 +167,7 @@ internal class Gt7Ps5NarratorViewModel(
                     sourceKey = Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     telemetry = telemetry,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -198,7 +198,7 @@ internal class Gt7Ps5NarratorViewModel(
                     sourceKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                     telemetry = telemetry,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -228,7 +228,7 @@ internal class Gt7Ps5NarratorViewModel(
                     sourceKey = Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
                     telemetry = telemetry,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -258,7 +258,7 @@ internal class Gt7Ps5NarratorViewModel(
                     sourceKey = Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
                     telemetry = telemetry,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =

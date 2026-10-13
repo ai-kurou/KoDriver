@@ -9,7 +9,7 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ReadoutPreferencesRepositoryFactoryTest {
+class AutoReadoutPreferencesRepositoryFactoryTest {
     private val tempDir = Files.createTempDirectory("kodriver_readout_repo_test").toFile()
 
     @AfterTest
@@ -20,12 +20,12 @@ class ReadoutPreferencesRepositoryFactoryTest {
     @Test
     fun `readout設定が正しいファイルに書き込まれる`() =
         runTest {
-            val repository = createReadoutPreferencesRepository(tempDir.absolutePath)
-            repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
+            val repository = createAutoReadoutPreferencesRepository(tempDir.absolutePath)
+            repository.saveAutoReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleApproach.Root to true),
-                repository.observeReadoutEnabledStates("lmu_windows").first(),
+                repository.observeAutoReadoutEnabledStates("lmu_windows").first(),
             )
         }
 }

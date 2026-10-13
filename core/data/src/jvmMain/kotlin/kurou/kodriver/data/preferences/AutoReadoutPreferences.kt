@@ -6,13 +6,13 @@ import kotlinx.serialization.protobuf.ProtoNumber
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
-internal data class ReadoutPreferences(
-    @ProtoNumber(1) val simulatorStates: Map<String, SimulatorReadoutState> = emptyMap(),
+internal data class AutoReadoutPreferences(
+    @ProtoNumber(1) val simulatorStates: Map<String, SimulatorAutoReadoutState> = emptyMap(),
 )
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
-internal data class SimulatorReadoutState(
+internal data class SimulatorAutoReadoutState(
     @ProtoNumber(1) val enabledStates: Map<String, Boolean> = emptyMap(),
     @ProtoNumber(2) val itemOrder: List<String> = emptyList(),
 )

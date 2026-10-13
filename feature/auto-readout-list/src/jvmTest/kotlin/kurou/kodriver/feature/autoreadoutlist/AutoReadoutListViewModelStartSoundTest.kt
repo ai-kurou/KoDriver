@@ -18,8 +18,8 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kotlin.test.AfterTest
@@ -33,7 +33,7 @@ class AutoReadoutListViewModelStartSoundTest {
 
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
-    private val readoutRepository: ReadoutPreferencesRepository = mockk()
+    private val readoutRepository: AutoReadoutPreferencesRepository = mockk()
 
     private val queueRepository: QueuePreferencesRepository = mockk()
 
@@ -53,9 +53,9 @@ class AutoReadoutListViewModelStartSoundTest {
     fun `読み上げ開始音のデフォルト値にRepositoryの永続化済み状態がマージされて表示される`() =
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator>(Simulator.LmuWindows)
-            every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
+            every { readoutRepository.observeAutoReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
-            every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
+            every { readoutRepository.observeAutoReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns
                 MutableStateFlow(mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to false))
@@ -67,8 +67,8 @@ class AutoReadoutListViewModelStartSoundTest {
             assertEquals(false, state.startSoundEnabledStates[LmuWindowsReadoutItemKey.VehicleApproach.Root])
             assertEquals(true, state.startSoundEnabledStates[LmuWindowsReadoutItemKey.TyreWear.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
-            verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
+            verify(exactly = 1) { readoutRepository.observeAutoReadoutEnabledStates("lmu_windows") }
+            verify(exactly = 1) { readoutRepository.observeAutoReadoutOrder("lmu_windows") }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
             verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
             confirmVerified(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
@@ -78,9 +78,9 @@ class AutoReadoutListViewModelStartSoundTest {
     fun `onStartSoundEnabledChangedで読み上げ開始音のON_OFF状態がRepositoryに保存される`() =
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator>(Simulator.LmuWindows)
-            every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
+            every { readoutRepository.observeAutoReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
-            every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
+            every { readoutRepository.observeAutoReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             val startSoundEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns startSoundEnabledFlow
@@ -102,8 +102,8 @@ class AutoReadoutListViewModelStartSoundTest {
                 startSoundRepository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
             }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
-            verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
+            verify(exactly = 1) { readoutRepository.observeAutoReadoutEnabledStates("lmu_windows") }
+            verify(exactly = 1) { readoutRepository.observeAutoReadoutOrder("lmu_windows") }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
             verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
             confirmVerified(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
@@ -113,9 +113,9 @@ class AutoReadoutListViewModelStartSoundTest {
     fun `ブレーキ摩耗のonStartSoundEnabledChangedで読み上げ開始音のON_OFF状態がRepositoryに保存される`() =
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator>(Simulator.LmuWindows)
-            every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
+            every { readoutRepository.observeAutoReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
-            every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
+            every { readoutRepository.observeAutoReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             val startSoundEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns startSoundEnabledFlow
@@ -137,8 +137,8 @@ class AutoReadoutListViewModelStartSoundTest {
                 startSoundRepository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.BrakeWear.Root, false)
             }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
-            verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
+            verify(exactly = 1) { readoutRepository.observeAutoReadoutEnabledStates("lmu_windows") }
+            verify(exactly = 1) { readoutRepository.observeAutoReadoutOrder("lmu_windows") }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
             verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
             confirmVerified(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)

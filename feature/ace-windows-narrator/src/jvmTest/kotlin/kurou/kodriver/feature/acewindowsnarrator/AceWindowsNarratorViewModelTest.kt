@@ -71,9 +71,9 @@ import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
@@ -89,13 +89,13 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStat
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -121,7 +121,7 @@ class AceWindowsNarratorViewModelTest {
 
     private val simulatorPreferencesRepository: SimulatorPreferencesRepository = mockk()
 
-    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+    private val autoReadoutPreferencesRepository: AutoReadoutPreferencesRepository = mockk()
 
     private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
@@ -199,11 +199,12 @@ class AceWindowsNarratorViewModelTest {
                 SimulatorUseCases(ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository)),
             readoutListUseCases =
                 ReadoutListUseCases(
-                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                    observeReadoutOrder =
-                        ObserveResolvedReadoutOrderUseCase(
-                            ObserveReadoutOrderUseCase(readoutPreferencesRepository),
-                            ResolveReadoutOrderUseCase(),
+                    observeAutoReadoutEnabledStates =
+                        ObserveAutoReadoutEnabledStatesUseCase(autoReadoutPreferencesRepository),
+                    observeAutoReadoutOrder =
+                        ObserveResolvedAutoReadoutOrderUseCase(
+                            ObserveAutoReadoutOrderUseCase(autoReadoutPreferencesRepository),
+                            ResolveAutoReadoutOrderUseCase(),
                         ),
                     observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
                 ),
@@ -515,7 +516,7 @@ class AceWindowsNarratorViewModelTest {
     }
 
     /**
-     * simulator/enabledStates/readoutOrder/thresholdの標準スタブをまとめて設定する。
+     * simulator/enabledStates/autoReadoutOrder/thresholdの標準スタブをまとめて設定する。
      * ViewModelがコンストラクタ内で即座にFlowを購読・combineするため、必ず [createViewModel] の前に呼ぶこと。
      */
     @Suppress("LongParameterList")
@@ -537,10 +538,10 @@ class AceWindowsNarratorViewModelTest {
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(selectedSimulator)
         every {
-            readoutPreferencesRepository.observeReadoutEnabledStates(selectedSimulator.id)
+            autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(selectedSimulator.id)
         } returns MutableStateFlow(enabledOverrides)
         every {
-            readoutPreferencesRepository.observeReadoutOrder(selectedSimulator.id)
+            autoReadoutPreferencesRepository.observeAutoReadoutOrder(selectedSimulator.id)
         } returns MutableStateFlow(orderOverride)
         every {
             remainingFuelPreferencesRepository.observeThresholdPercentage()

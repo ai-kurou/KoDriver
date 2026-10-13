@@ -13,12 +13,12 @@ import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsMyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
@@ -27,8 +27,8 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * 自己ベストラップ更新の有効/無効・文言はいずれも DataStore に永続化される。
  */
 internal data class MyBestLapUseCases(
-    val observeEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val saveEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val saveEnabledState: SaveAutoReadoutEnabledStateUseCase,
 )
 
 internal data class MyBestLapReadoutUseCases(
