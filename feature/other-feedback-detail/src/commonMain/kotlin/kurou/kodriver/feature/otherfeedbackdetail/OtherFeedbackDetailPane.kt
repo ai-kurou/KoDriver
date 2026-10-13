@@ -1,6 +1,5 @@
 package kurou.kodriver.feature.otherfeedbackdetail
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -322,11 +323,16 @@ private fun FeedbackTypeOption(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onTypeSelectedWithHaptic),
+                .selectable(
+                    selected = type == selectedType,
+                    role = Role.RadioButton,
+                    onClick = onTypeSelectedWithHaptic,
+                ),
     ) {
         RadioButton(
             selected = type == selectedType,
-            onClick = onTypeSelectedWithHaptic,
+            onClick = null,
+            modifier = Modifier.size(48.dp),
         )
         Text(label)
     }
