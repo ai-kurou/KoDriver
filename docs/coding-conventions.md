@@ -11,6 +11,7 @@
 - 文字スタイルは `MaterialTheme.typography.*` を参照し、`fontSize` / `FontWeight` を Composable 内で直接指定しない。アプリ全体のタイポグラフィは `:core:designsystem` の `KoDriverTypography` で一元管理する。等幅・数値表示は `:core:designsystem` の `koDriverMonospaceTextStyle()` / `koDriverNumericTextStyle()` を使い、`FontFamily` を feature で直接指定しない。
 - 角丸は `MaterialTheme.shapes.*` を参照し、`RoundedCornerShape` を Composable 内で直接指定しない。アプリ全体の角丸は `:core:designsystem` の `KoDriverShapes` で一元管理する。
 - 余白（padding・Spacer・`Arrangement.spacedBy`）のうち 4/8/12/16/24dp の値は、Composable 内で dp を直接指定せず `:core:designsystem` の `KoDriverSpacing`（`app:shared` では `AppSpacing`）を参照する。アイコンサイズ等「余白ではない」寸法は対象外。
+- list/detail 構成の画面の一覧ペインの初期幅は `:core:designsystem` の `KoDriverListPaneWidth`（400.dp）を参照する。`app:shared` は `:core:*` に依存できないため `AppPaneWidth` に同値を別定義しており、変更する場合は両方を同期させる。デバッグ状態詳細画面の `NARROW_WIDTH_UPPER_BOUND` は別の意味の境界値なので共用しない。
 - `MaterialTheme.colorScheme` にロールがない拡張カラー（警告色等）は、色を直接 `Color(0x...)` で書かず `:core:designsystem` の `KoDriverExtendedColors.current`（`app:shared` では `AppExtendedColors.current`）を参照する。ライト/ダークの値は `ExtendedColors.kt`（`app:shared` では `AppExtendedColors.kt`）に定義し、`KoDriverTheme`/`AppTheme` が `CompositionLocalProvider` で配布する。ただし、ゲーム画面に重ねるオーバーレイ（`NarratorOverlayContent` 等）のようにアプリテーマ（ライト/ダーク）から独立させる必要のある固定色は、その理由を KDoc に書いたうえで `private val` として直接定義してよい。テーマのカラーパレット定義（`AppTheme.kt` 等）も対象外。
 
 ## 見出しのタイポグラフィ階層

@@ -12,6 +12,7 @@ Android / Desktop / Web の各 `app` から共通利用される、アプリ全�
 - `TtsUnavailableBanner.kt` / `TtsUnavailableDialog.kt`: 接続バナーの下に、TTS利用不可の間だけ赤い警告バナーを表示する。起動・復帰時に再判定し、バナーのタップで原因別の案内を開く。「その他」と同じインストール先・設定を開き、案内を閉じてもバナーから再表示できる。利用可能になるとバナーと案内を非表示にする。
 - `VersionMismatchBottomSheet.kt` / `VersionMismatchBottomSheetContent.kt`: アプリとサーバーのバージョン不一致時に表示するボトムシート。
 - `AppTheme.kt` / `AppThemeMode.kt`: アプリ全体のテーマ（ダイナミックカラー等）適用。プラットフォームごとの実装は `AppTheme.android.kt` 等の expect/actual で分離。
+- `AppPaneWidth.kt`: list/detail 構成の画面の一覧ペインの初期幅（400.dp）。`:core:*` への依存禁止により `:core:designsystem` の `KoDriverListPaneWidth` と同値を別定義しているため、幅を変更する場合は両方を同期させる。
 - `DesktopSplashHost.kt`: デスクトップアプリのスプラッシュ画面ホスト。
 - `KeepScreenOnEffect.kt` / `KeepScreenOnModifier.*.kt`: 画面の自動スリープ抑止。
 - `PredictiveBack.kt`: Android の予測的戻るジェスチャー対応。
