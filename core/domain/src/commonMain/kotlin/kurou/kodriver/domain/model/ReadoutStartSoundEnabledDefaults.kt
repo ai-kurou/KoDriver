@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.model
 
-// readout-list（ReadoutListViewModel）が参照するデフォルト値。
+// auto-readout-list（AutoReadoutListViewModel）が参照するデフォルト値。
 // 車両接近アナウンスは接近車両ごとに頻繁に再生されるため開始音をデフォルトOFFとし、
 // それ以外の ReadoutItemKey.TopLevel はデフォルトONとする。
 // 新しい ReadoutItemKey.TopLevel を追加した場合は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。

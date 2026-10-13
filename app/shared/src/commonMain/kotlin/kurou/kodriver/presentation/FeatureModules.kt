@@ -9,6 +9,7 @@ import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.aceWindowsRe
 import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.aceWindowsReadoutRemainingFuelLapsDetailModule
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.aceWindowsReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.aceWindowsReadoutVehicleApproachDetailModule
+import kurou.kodriver.feature.autoreadoutlist.autoReadoutListModule
 import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
 import kurou.kodriver.feature.gt7ps5debugstatedetail.gt7Ps5DebugStateDetailModule
 import kurou.kodriver.feature.gt7ps5narrator.gt7Ps5NarratorModule
@@ -45,7 +46,6 @@ import kurou.kodriver.feature.othervoicedetail.otherVoiceDetailModule
 import kurou.kodriver.feature.othervoicepitchdetail.otherVoicePitchDetailModule
 import kurou.kodriver.feature.othervoicespeeddetail.otherVoiceSpeedDetailModule
 import kurou.kodriver.feature.othervolumedetail.otherVolumeDetailModule
-import kurou.kodriver.feature.readoutlist.readoutListModule
 import kurou.kodriver.feature.serverconnection.serverConnectionModule
 import kurou.kodriver.feature.telemetrylogdetail.telemetryLogDetailModule
 import kurou.kodriver.feature.telemetryloglist.telemetryLogListModule
@@ -86,7 +86,7 @@ val featureModules: List<Module> =
         otherVoicePitchDetailModule,
         otherVoiceSpeedDetailModule,
         otherVoiceDetailModule,
-        readoutListModule,
+        autoReadoutListModule,
         telemetryLogListModule,
         telemetryLogDetailModule,
         lmuWindowsReadoutVehicleApproachDetailModule,

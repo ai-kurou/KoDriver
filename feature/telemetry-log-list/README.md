@@ -4,12 +4,12 @@
 
 ## 主要なファイルの役割
 
-- `TelemetryLogListPane.kt` / `TelemetryLogContent.kt`: 一覧画面のUI。`TelemetryLogContent.kt` は `ReadoutContent.kt`（`feature:readout-list`）・`OtherContent.kt`（`app:shared`）と同様に `Material3 Adaptive` の `ListDetailPaneScaffold` と `TelemetryLogNavigationState`（Navigation 3の `NavBackStack`）を組み合わせるパターンを使う（詳細は `docs/list-detail-navigation-pattern.md` を参照）。
+- `TelemetryLogListPane.kt` / `TelemetryLogContent.kt`: 一覧画面のUI。`TelemetryLogContent.kt` は `AutoReadoutContent.kt`（`feature:auto-readout-list`）・`OtherContent.kt`（`app:shared`）と同様に `Material3 Adaptive` の `ListDetailPaneScaffold` と `TelemetryLogNavigationState`（Navigation 3の `NavBackStack`）を組み合わせるパターンを使う（詳細は `docs/list-detail-navigation-pattern.md` を参照）。
 - `TelemetryLogListViewModel.kt`: ログ一覧・選択中ログ・削除確認ダイアログ表示状態などを `StateFlow` で公開する。
 - `ObserveSortedTelemetryLogsUseCase.kt`: `:core:domain` の `ObserveTelemetryLogsUseCase` を作成日時の降順にソートして提供する、この feature 固有のUseCase。
 - `TelemetryLogListModule.kt`: この feature の Koin モジュール定義。
 - `TelemetryLogDeleteConfirmDialog.kt` / `TelemetryLogResetConfirmDialog.kt`: 個別削除・選択中シミュレーターのログのみ削除するリセット時の確認ダイアログ。
-- `ReadoutItemDisplayName.kt`: ログに紐づく `ReadoutItemKey` の表示名変換。
+- `AutoReadoutItemDisplayName.kt`: ログに紐づく `ReadoutItemKey` の表示名変換。
 - `ErrorCapture.kt`: プラットフォームごとのエラーレポート送信（expect/actual）。
 
 ## 読み上げ結果（NarrationOutcome）の表示
@@ -25,7 +25,7 @@
 
 4つの値は `:core:narrator` の `speakWithPriority` が分岐する4経路と1対1に対応する。`SPOKEN` は「キュー再生が無効で、再生中の読み上げがなかったためそのまま読み上げた」ケースで、キュー再生を無効にしている場合はこれが最も多い。`INTERRUPTED` は再生中の読み上げを実際に止めた場合のみを指す。
 
-`SKIPPED` は「読み上げ条件は整ったが、キュー再生が無効で優先度に負けたため読み上げされなかった」ことを表す。実際には音が鳴っていないため、`feature:readout-list` の OFF 項目と同じ減光表現（アルファ 0.38）を使い、読み上げ済みの行と区別する。
+`SKIPPED` は「読み上げ条件は整ったが、キュー再生が無効で優先度に負けたため読み上げされなかった」ことを表す。実際には音が鳴っていないため、`feature:auto-readout-list` の OFF 項目と同じ減光表現（アルファ 0.38）を使い、読み上げ済みの行と区別する。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

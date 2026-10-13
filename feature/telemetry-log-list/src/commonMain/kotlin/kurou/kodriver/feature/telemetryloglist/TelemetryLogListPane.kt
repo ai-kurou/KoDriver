@@ -516,7 +516,7 @@ private fun Long.floorMod(other: Long): Long = ((this % other) + other) % other
 /**
  * 読み上げされなかった（[NarrationOutcome.SKIPPED]）項目の前景色を減光する。
  *
- * `ReadoutListPane` の OFF 項目と同じ扱いにし、読み上げ済みの項目と一目で区別できるようにする。
+ * `AutoReadoutListPane` の OFF 項目と同じ扱いにし、読み上げ済みの項目と一目で区別できるようにする。
  */
 internal fun Color.applySkippedAlpha(narrationOutcome: NarrationOutcome): Color =
     if (narrationOutcome == NarrationOutcome.SKIPPED) copy(alpha = SKIPPED_CONTENT_ALPHA) else this

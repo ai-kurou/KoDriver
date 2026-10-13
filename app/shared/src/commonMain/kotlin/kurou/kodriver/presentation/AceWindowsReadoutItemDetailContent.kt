@@ -7,32 +7,32 @@ import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsRe
 import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.AceWindowsReadoutRemainingFuelLapsDetailPane
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.AceWindowsReadoutTyreTemperatureDetailPane
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.AceWindowsReadoutVehicleApproachDetailPane
-import kurou.kodriver.feature.readoutlist.AceWindowsReadoutListItemType
+import kurou.kodriver.feature.autoreadoutlist.AceWindowsAutoReadoutListItemType
 
 @Composable
-internal fun AceWindowsReadoutItemDetailContent(itemType: AceWindowsReadoutListItemType) {
+internal fun AceWindowsReadoutItemDetailContent(itemType: AceWindowsAutoReadoutListItemType) {
     when (itemType) {
-        AceWindowsReadoutListItemType.Flag -> {
+        AceWindowsAutoReadoutListItemType.Flag -> {
             AceWindowsReadoutFlagDetailPane()
         }
 
-        AceWindowsReadoutListItemType.TyreTemperature -> {
+        AceWindowsAutoReadoutListItemType.TyreTemperature -> {
             AceWindowsReadoutTyreTemperatureDetailPane()
         }
 
-        AceWindowsReadoutListItemType.RemainingFuel -> {
+        AceWindowsAutoReadoutListItemType.RemainingFuel -> {
             AceWindowsReadoutRemainingFuelDetailPane()
         }
 
-        AceWindowsReadoutListItemType.RemainingFuelLaps -> {
+        AceWindowsAutoReadoutListItemType.RemainingFuelLaps -> {
             AceWindowsReadoutRemainingFuelLapsDetailPane()
         }
 
-        AceWindowsReadoutListItemType.VehicleApproach -> {
+        AceWindowsAutoReadoutListItemType.VehicleApproach -> {
             AceWindowsReadoutVehicleApproachDetailPane()
         }
 
-        AceWindowsReadoutListItemType.MyBestLap -> {
+        AceWindowsAutoReadoutListItemType.MyBestLap -> {
             AceWindowsReadoutMyBestLapDetailPane()
         }
     }

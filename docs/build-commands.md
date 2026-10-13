@@ -47,8 +47,8 @@ GitHub Actions ワークフローの一覧・詳細な挙動・権限設計は [
 作業中に個別のチェックを素早く回したい場合は、以下も利用できる（完了報告前の `preSubmitChecks` 実行は省略不可）。
 
 ```bash
-# 変更したモジュールのテストだけを実行（例: feature:readout-list を変更した場合）
-./gradlew :feature:readout-list:jvmTest
+# 変更したモジュールのテストだけを実行（例: feature:auto-readout-list を変更した場合）
+./gradlew :feature:auto-readout-list:jvmTest
 
 # server モジュールを変更した場合
 ./gradlew :server:test

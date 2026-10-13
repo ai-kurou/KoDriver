@@ -23,7 +23,7 @@ body:
     attributes:
       label: 対象モジュール・ファイル
       description: >-
-        変更対象のモジュール（例: `feature:readout-list`）や具体的なファイルパスを記載してください。
+        変更対象のモジュール（例: `feature:auto-readout-list`）や具体的なファイルパスを記載してください。
         範囲が広い場合は、まず着手してほしい箇所を優先順位付きで書いてください。
       placeholder: |
         例: feature:other-volume-detail の VolumeDetailPane.kt

@@ -70,6 +70,12 @@ import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.acewindowsdebugstatedetail.AceWindowsDebugStateDetailPane
+import kurou.kodriver.feature.autoreadoutlist.AceWindowsAutoReadoutListItemType
+import kurou.kodriver.feature.autoreadoutlist.AutoReadoutContent
+import kurou.kodriver.feature.autoreadoutlist.AutoReadoutListItemType
+import kurou.kodriver.feature.autoreadoutlist.AutoReadoutListViewModel
+import kurou.kodriver.feature.autoreadoutlist.Gt7Ps5AutoReadoutListItemType
+import kurou.kodriver.feature.autoreadoutlist.LmuWindowsAutoReadoutListItemType
 import kurou.kodriver.feature.gt7ps5debugstatedetail.Gt7Ps5DebugStateDetailPane
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.LmuWindowsDebugStateDetailPane
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
@@ -88,12 +94,6 @@ import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDet
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
-import kurou.kodriver.feature.readoutlist.AceWindowsReadoutListItemType
-import kurou.kodriver.feature.readoutlist.Gt7Ps5ReadoutListItemType
-import kurou.kodriver.feature.readoutlist.LmuWindowsReadoutListItemType
-import kurou.kodriver.feature.readoutlist.ReadoutContent
-import kurou.kodriver.feature.readoutlist.ReadoutListItemType
-import kurou.kodriver.feature.readoutlist.ReadoutListViewModel
 import kurou.kodriver.feature.telemetrylogdetail.TelemetryLogDetailContent
 import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
 import kurou.kodriver.feature.telemetryloglist.TelemetryLogListViewModel
@@ -410,13 +410,13 @@ private fun DefaultOtherContent(
 @Composable
 fun AppScreen(
     viewModel: AppScreenViewModel = koinViewModel(),
-    readoutListViewModel: ReadoutListViewModel = koinViewModel(),
+    autoReadoutListViewModel: AutoReadoutListViewModel = koinViewModel(),
     telemetryLogListViewModel: TelemetryLogListViewModel = koinViewModel(),
     otherListViewModel: OtherListViewModel = koinViewModel(),
     backHandler: AppBackHandler = { _, _, _ -> },
     onDarkThemeChanged: (Boolean) -> Unit = {},
     readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
-        ReadoutContent(
+        AutoReadoutContent(
             backHandler = backHandler,
             scrollToTopRequest = scrollToTopRequest,
             detailContent = { itemType -> ReadoutItemDetailContent(itemType) },
@@ -450,10 +450,10 @@ fun AppScreen(
     val bannerUiState = rememberConnectionBannerUiState()
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
-    val readoutListUiState by readoutListViewModel.uiState.collectAsState()
+    val autoReadoutListUiState by autoReadoutListViewModel.uiState.collectAsState()
     val telemetryLogListUiState by telemetryLogListViewModel.uiState.collectAsState()
     val otherListUiState by otherListViewModel.uiState.collectAsStateWithLifecycle()
-    var readoutListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
+    var autoReadoutListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
     var telemetryLogListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
     var otherListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
 
@@ -473,7 +473,7 @@ fun AppScreen(
 
     SimulatorChangeScrollToTopEffect(
         selectedSimulatorId = uiState.selectedSimulatorId,
-        requestScrollToTop = { readoutListScrollToTopRequest++ },
+        requestScrollToTop = { autoReadoutListScrollToTopRequest++ },
     )
 
     AppNarratorEffects()
@@ -515,9 +515,9 @@ fun AppScreen(
         onFeedbackClick = { telemetryLogId -> otherListViewModel.selectFeedbackItem(telemetryLogId) },
         onReadoutTabReselected = {
             handleTabReselected(
-                selectedItem = readoutListUiState.selectedItem,
-                clearSelectedItem = readoutListViewModel::clearSelectedItem,
-                requestScrollToTop = { readoutListScrollToTopRequest++ },
+                selectedItem = autoReadoutListUiState.selectedItem,
+                clearSelectedItem = autoReadoutListViewModel::clearSelectedItem,
+                requestScrollToTop = { autoReadoutListScrollToTopRequest++ },
             )
         },
         onLogTabReselected = {
@@ -535,7 +535,7 @@ fun AppScreen(
             )
         },
         readoutContent = readoutContent,
-        readoutListScrollToTopRequest = readoutListScrollToTopRequest,
+        autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
         telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
         otherListScrollToTopRequest = otherListScrollToTopRequest,
         telemetryLogContent = telemetryLogContent,
@@ -609,7 +609,7 @@ internal fun AppScreenContent(
     onLogTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
     readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
-    readoutListScrollToTopRequest: Int = 0,
+    autoReadoutListScrollToTopRequest: Int = 0,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit = { _, _ -> },
     telemetryLogListScrollToTopRequest: Int = 0,
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit = { _, _ -> },
@@ -650,7 +650,7 @@ internal fun AppScreenContent(
                 onLogTabReselected = onLogTabReselected,
                 onOtherTabReselected = onOtherTabReselected,
                 readoutContent = readoutContent,
-                readoutListScrollToTopRequest = readoutListScrollToTopRequest,
+                autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
                 telemetryLogContent = telemetryLogContent,
                 telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
                 otherContent = otherContent,
@@ -678,7 +678,7 @@ private fun AppScreenScaffold(
     onLogTabReselected: () -> Unit,
     onOtherTabReselected: () -> Unit,
     readoutContent: @Composable (scrollToTopRequest: Int) -> Unit,
-    readoutListScrollToTopRequest: Int,
+    autoReadoutListScrollToTopRequest: Int,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit,
     telemetryLogListScrollToTopRequest: Int,
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit,
@@ -786,7 +786,7 @@ private fun AppScreenScaffold(
                 ) { destination ->
                     AppDestinationContent(
                         destination = destination,
-                        readoutContent = { readoutContent(readoutListScrollToTopRequest) },
+                        readoutContent = { readoutContent(autoReadoutListScrollToTopRequest) },
                         telemetryLogContent = {
                             telemetryLogContent(
                                 telemetryLogListScrollToTopRequest,
@@ -829,11 +829,11 @@ internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
     }
 
 @Composable
-internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
+internal fun ReadoutItemDetailContent(itemType: AutoReadoutListItemType) {
     when (itemType) {
-        is LmuWindowsReadoutListItemType -> LmuWindowsReadoutItemDetailContent(itemType)
-        is Gt7Ps5ReadoutListItemType -> Gt7Ps5ReadoutItemDetailContent(itemType)
-        is AceWindowsReadoutListItemType -> AceWindowsReadoutItemDetailContent(itemType)
+        is LmuWindowsAutoReadoutListItemType -> LmuWindowsReadoutItemDetailContent(itemType)
+        is Gt7Ps5AutoReadoutListItemType -> Gt7Ps5ReadoutItemDetailContent(itemType)
+        is AceWindowsAutoReadoutListItemType -> AceWindowsReadoutItemDetailContent(itemType)
     }
 }
 

@@ -22,7 +22,7 @@
 - listPane などの一覧単体: `360.dp x 1080.dp`
 - detailPane などの詳細単体: `1560.dp x 1080.dp`
 - list/detail などアプリ全体・2ペイン構成: `720.dp x 640.dp` または `840.dp x 640.dp`
-  - `840.dp x 640.dp`: `ReadoutContent`/`OtherContent`/`TelemetryLogContent` など、ナビゲーション用 chrome（NavigationRail 等）を含まない feature の `XxxContent` 単体をキャプチャする場合。2ペイン部分の表示確認に幅を丸ごと使う。
+  - `840.dp x 640.dp`: `AutoReadoutContent`/`OtherContent`/`TelemetryLogContent` など、ナビゲーション用 chrome（NavigationRail 等）を含まない feature の `XxxContent` 単体をキャプチャする場合。2ペイン部分の表示確認に幅を丸ごと使う。
   - `720.dp x 640.dp`: `AppScreenContent` など、NavigationRail を含むアプリ全体の画面をキャプチャする場合。ボックス内に NavigationRail 自体の幅も含まれるため、2ペイン部分に使える幅は `840.dp` より狭くなる。
 - `AppScreenContent` の `NavigationSuiteType.NavigationBar`（スマホ縦画面・1ペイン）をキャプチャする場合: `360.dp x 640.dp`
 - ダイアログ・ボトムシート表示用のホスト: `480.dp x 320.dp`

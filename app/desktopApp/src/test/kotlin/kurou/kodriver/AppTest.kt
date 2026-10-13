@@ -28,6 +28,7 @@ import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.feature.autoreadoutlist.fakeAutoReadoutListModule
 import kurou.kodriver.feature.gt7ps5narrator.fakeGt7Ps5DataModule
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.feature.main.fakeMainModule
@@ -38,7 +39,6 @@ import kurou.kodriver.feature.otherreadoutstartsounddetail.fakeOtherReadoutStart
 import kurou.kodriver.feature.otherthemedetail.fakeOtherThemeDetailModule
 import kurou.kodriver.feature.othervoicedetail.fakeOtherVoiceDetailModule
 import kurou.kodriver.feature.othervolumedetail.fakeOtherVolumeDetailModule
-import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import kurou.kodriver.presentation.AppScreen
@@ -72,7 +72,7 @@ class AppTest {
                         listOf(
                             fakeGt7Ps5DataModule,
                             fakeLmuWindowsNarratorModule,
-                            fakeReadoutListModule,
+                            fakeAutoReadoutListModule,
                             fakeTelemetryLogListModule,
                             fakeMainModule,
                             fakeOtherThemeDetailModule,
