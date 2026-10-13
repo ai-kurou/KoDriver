@@ -838,7 +838,7 @@ internal fun ReadoutItemDetailContent(itemType: AutoReadoutListItemType) {
     when (itemType) {
         is LmuWindowsAutoReadoutListItemType -> LmuWindowsReadoutItemDetailContent(itemType)
         is Gt7Ps5AutoReadoutListItemType -> Gt7Ps5AutoReadoutItemDetailContent(itemType)
-        is AceWindowsAutoReadoutListItemType -> AceWindowsReadoutItemDetailContent(itemType)
+        is AceWindowsAutoReadoutListItemType -> AceWindowsAutoReadoutItemDetailContent(itemType)
     }
 }
 

@@ -66,12 +66,12 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:gt7-ps5-narrator` | GT7 PS5 向け WAV開始音・OS標準TTS本文の音声再生とアナウンス制御を担当する | [図](graphs/feature-gt7-ps5-narrator.svg) |
 | `:feature:ace-windows-connection` | ACE (Assetto Corsa EVO) との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-ace-windows-connection.svg) |
 | `:feature:ace-windows-narrator` | ACE (Assetto Corsa EVO) 向け WAV開始音・OS標準TTS本文の音声再生とアナウンス制御を担当する | [図](graphs/feature-ace-windows-narrator.svg) |
-| `:feature:ace-windows-readout-remaining-fuel-detail` | ACE 燃料残量アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-remaining-fuel-detail.svg) |
-| `:feature:ace-windows-readout-flag-detail` | ACE フラッグアナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-flag-detail.svg) |
-| `:feature:ace-windows-readout-tyre-temperature-detail` | ACE タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-tyre-temperature-detail.svg) |
-| `:feature:ace-windows-readout-vehicle-approach-detail` | ACE 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-vehicle-approach-detail.svg) |
-| `:feature:ace-windows-readout-my-best-lap-detail` | ACE 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-my-best-lap-detail.svg) |
-| `:feature:ace-windows-readout-remaining-fuel-laps-detail` | ACE 燃料残り周回数アナウンスの詳細設定 UI（有効/無効・閾値・リセット・試聴。設定は Narrator の読み上げ判定に反映） | [図](graphs/feature-ace-windows-readout-remaining-fuel-laps-detail.svg) |
+| `:feature:ace-windows-auto-readout-remaining-fuel-detail` | ACE 燃料残量アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-auto-readout-remaining-fuel-detail.svg) |
+| `:feature:ace-windows-auto-readout-flag-detail` | ACE フラッグアナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-auto-readout-flag-detail.svg) |
+| `:feature:ace-windows-auto-readout-tyre-temperature-detail` | ACE タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-auto-readout-tyre-temperature-detail.svg) |
+| `:feature:ace-windows-auto-readout-vehicle-approach-detail` | ACE 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-auto-readout-vehicle-approach-detail.svg) |
+| `:feature:ace-windows-auto-readout-my-best-lap-detail` | ACE 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-auto-readout-my-best-lap-detail.svg) |
+| `:feature:ace-windows-auto-readout-remaining-fuel-laps-detail` | ACE 燃料残り周回数アナウンスの詳細設定 UI（有効/無効・閾値・リセット・試聴。設定は Narrator の読み上げ判定に反映） | [図](graphs/feature-ace-windows-auto-readout-remaining-fuel-laps-detail.svg) |
 | `:feature:telemetry-log-list` | テレメトリログの一覧表示 UI | [図](graphs/feature-telemetry-log-list.svg) |
 | `:feature:telemetry-log-detail` | テレメトリログの詳細表示 UI | [図](graphs/feature-telemetry-log-detail.svg) |
 | `:feature:narrator-overlay` | TelemetryLog の最新の読み上げ内容をライブ購読して表示するオーバーレイ | [図](graphs/feature-narrator-overlay.svg) |
