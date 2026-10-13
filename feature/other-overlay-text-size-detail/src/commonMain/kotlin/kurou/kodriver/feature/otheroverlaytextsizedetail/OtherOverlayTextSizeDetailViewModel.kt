@@ -23,6 +23,7 @@ class OtherOverlayTextSizeDetailViewModel internal constructor(
     private val saveOverlayTextSize: SaveOverlayTextSizeUseCase,
 ) : ViewModel() {
     private var selectionRequest = 0
+    private var confirmingRequest: Int? = null
 
     private val pendingOverlayTextSize = MutableStateFlow<OverlayTextSize?>(null)
 
@@ -43,6 +44,7 @@ class OtherOverlayTextSizeDetailViewModel internal constructor(
     internal fun onConfirm() {
         val overlayTextSize = pendingOverlayTextSize.value ?: return
         val request = ++selectionRequest
+        confirmingRequest = request
         viewModelScope.launch {
             try {
                 saveOverlayTextSize(overlayTextSize)
@@ -51,6 +53,7 @@ class OtherOverlayTextSizeDetailViewModel internal constructor(
             } catch (_: Exception) {
                 // 保存に失敗しても未保存のサイズを表示し続けず、保存済みの設定へ戻す。
             } finally {
+                if (confirmingRequest == request) confirmingRequest = null
                 // 保存中に選び直された場合は、後続の選択のプレビューを解除しない。
                 if (selectionRequest == request) {
                     previewOverlayTextSize(null)
@@ -63,6 +66,16 @@ class OtherOverlayTextSizeDetailViewModel internal constructor(
     override fun onCleared() {
         previewOverlayTextSize(null)
         super.onCleared()
+    }
+
+    /**
+     * ダイアログが破棄されたときに、未保存のプレビューを解除して保存値へ戻す。
+     * 確定した選択が保存中の間は、保存完了時に解除するためプレビューと選択値を維持する。
+     * 保存中に選び直された場合は、未保存のプレビューと選択値を解除する。
+     */
+    internal fun onPreviewStopped() {
+        if (confirmingRequest != null && confirmingRequest == selectionRequest) return
+        onDismiss()
     }
 
     internal fun onDismiss() {

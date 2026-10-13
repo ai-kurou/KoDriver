@@ -74,6 +74,28 @@ class OtherOverlayTextColorDetailViewModelTest {
         }
 
     @Test
+    fun `onPreviewStoppedで未保存の選択とプレビューを解除して保存値へ戻す`() =
+        runTest(dispatcher) {
+            every { repository.observeOverlayTextColor() } returns flow
+            every { repository.setPreviewOverlayTextColor(0xFFFF0000L) } answers { flow.update { 0xFFFF0000L } }
+            every { repository.setPreviewOverlayTextColor(null) } answers { flow.update { 0xFFFFFFFFL } }
+            val viewModel = createViewModel()
+            assertEquals(OtherOverlayTextColorDetailUiState(), viewModel.uiState.first())
+            flow.update { 0xFFFFFFFFL }
+            assertEquals(0xFFFFFFFFL, viewModel.uiState.first().pendingOverlayTextColor)
+            viewModel.onPendingOverlayTextColorSelected(0xFFFF0000L)
+            assertEquals(0xFFFF0000L, viewModel.uiState.first().pendingOverlayTextColor)
+            assertEquals(0xFFFF0000L, viewModel.uiState.first().selectedOverlayTextColor)
+            viewModel.onPreviewStopped()
+            assertEquals(0xFFFFFFFFL, viewModel.uiState.first().pendingOverlayTextColor)
+            coVerify(exactly = 0) { repository.saveOverlayTextColor(0xFFFF0000L) }
+            verify(exactly = 1) { repository.observeOverlayTextColor() }
+            verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFF0000L) }
+            verify(exactly = 1) { repository.setPreviewOverlayTextColor(null) }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `未選択のOKでは保存しない`() =
         runTest(dispatcher) {
             every { repository.observeOverlayTextColor() } returns flow
@@ -173,6 +195,32 @@ class OtherOverlayTextColorDetailViewModelTest {
         }
 
     @Test
+    fun `保存中に選び直して離脱すると保存値へ戻り先行保存の完了で重複解除されない`() =
+        runTest(dispatcher) {
+            every { repository.observeOverlayTextColor() } returns flow
+            every { repository.setPreviewOverlayTextColor(null) } returns Unit
+            val saved = CompletableDeferred<Unit>()
+            coEvery { repository.saveOverlayTextColor(0xFFFFFFFFL) } coAnswers { saved.await() }
+            every { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) } returns Unit
+            every { repository.setPreviewOverlayTextColor(0xFFFF0000L) } returns Unit
+            val viewModel = createViewModel()
+            viewModel.onPendingOverlayTextColorSelected(0xFFFFFFFFL)
+            viewModel.onConfirm()
+            viewModel.onPendingOverlayTextColorSelected(0xFFFF0000L)
+            viewModel.onPreviewStopped()
+            assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, viewModel.uiState.first().pendingOverlayTextColor)
+            verify(exactly = 1) { repository.setPreviewOverlayTextColor(null) }
+            saved.complete(Unit)
+            assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, viewModel.uiState.first().pendingOverlayTextColor)
+            coVerify(exactly = 1) { repository.saveOverlayTextColor(0xFFFFFFFFL) }
+            verify(exactly = 1) { repository.observeOverlayTextColor() }
+            verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) }
+            verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFF0000L) }
+            verify(exactly = 1) { repository.setPreviewOverlayTextColor(null) }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `保存が完了するまでプレビューを解除しない`() =
         runTest(dispatcher) {
             every { repository.observeOverlayTextColor() } returns flow
@@ -184,9 +232,13 @@ class OtherOverlayTextColorDetailViewModelTest {
 
             viewModel.onPendingOverlayTextColorSelected(0xFFFFFFFFL)
             viewModel.onConfirm()
+            viewModel.onPreviewStopped()
+
+            assertEquals(0xFFFFFFFFL, viewModel.uiState.first().pendingOverlayTextColor)
 
             verify(exactly = 0) { repository.setPreviewOverlayTextColor(null) }
             saved.complete(Unit)
+            assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, viewModel.uiState.first().pendingOverlayTextColor)
 
             verify(exactly = 1) { repository.observeOverlayTextColor() }
             verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) }
@@ -238,6 +290,33 @@ class OtherOverlayTextColorDetailViewModelTest {
             coVerify(exactly = 0) { repository.saveOverlayTextColor(0xFFFF0000L) }
             verify(exactly = 1) { repository.observeOverlayTextColor() }
             verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFF0000L) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `保存中に破棄して離脱した後の選択は先行保存の完了で重複解除されない`() =
+        runTest(dispatcher) {
+            every { repository.observeOverlayTextColor() } returns flow
+            every { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) } returns Unit
+            every { repository.setPreviewOverlayTextColor(0xFFFF0000L) } returns Unit
+            every { repository.setPreviewOverlayTextColor(null) } returns Unit
+            val saved = CompletableDeferred<Unit>()
+            coEvery { repository.saveOverlayTextColor(0xFFFFFFFFL) } coAnswers { saved.await() }
+            val viewModel = createViewModel()
+
+            viewModel.onPendingOverlayTextColorSelected(0xFFFFFFFFL)
+            viewModel.onConfirm()
+            viewModel.onDismiss()
+            viewModel.onPreviewStopped()
+            viewModel.onPendingOverlayTextColorSelected(0xFFFF0000L)
+            saved.complete(Unit)
+
+            assertEquals(0xFFFF0000L, viewModel.uiState.first().pendingOverlayTextColor)
+            verify(exactly = 1) { repository.observeOverlayTextColor() }
+            verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) }
+            verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFF0000L) }
+            verify(exactly = 2) { repository.setPreviewOverlayTextColor(null) }
+            coVerify(exactly = 1) { repository.saveOverlayTextColor(0xFFFFFFFFL) }
             confirmVerified(repository)
         }
 }
