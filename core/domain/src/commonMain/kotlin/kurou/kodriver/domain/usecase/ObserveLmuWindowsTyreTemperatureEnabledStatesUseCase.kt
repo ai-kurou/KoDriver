@@ -6,7 +6,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 
-// detailPane（LmuWindowsReadoutTyreTemperatureDetailViewModel）・Narrator（LmuWindowsNarratorViewModel）が
+// detailPane（LmuWindowsAutoReadoutTyreTemperatureDetailViewModel）・Narrator（LmuWindowsNarratorViewModel）が
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val tyreTemperatureEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(

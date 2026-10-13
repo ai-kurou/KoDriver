@@ -6,7 +6,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 
-// detailPane（LmuWindowsReadoutPitTimingDetailViewModel）・Narrator（LmuWindowsNarratorViewModel）が
+// detailPane（LmuWindowsAutoReadoutPitTimingDetailViewModel）・Narrator（LmuWindowsNarratorViewModel）が
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val pitTimingEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(

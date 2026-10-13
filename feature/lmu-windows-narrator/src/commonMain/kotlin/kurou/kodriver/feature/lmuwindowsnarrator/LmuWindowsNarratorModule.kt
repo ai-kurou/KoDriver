@@ -97,7 +97,7 @@ import org.koin.dsl.module
  * VoicePreferencesRepository・VoiceSpeedPreferencesRepository・VoicePitchPreferencesRepository（:core:data）を消費する。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）、unqualified の CheckTextToSpeechAvailableUseCase
- *   （:feature:lmu-windows-readout-flag-detail が登録。TTSが実際に利用可能かどうかは
+ *   （:feature:lmu-windows-auto-readout-flag-detail が登録。TTSが実際に利用可能かどうかは
  *   試聴用途と共有しても問題ないため named では区別しない）。
  * 音声系は GT7 と区別するため named(Simulator.LmuWindows.id) で登録している。
  */
@@ -194,7 +194,7 @@ val lmuWindowsNarratorModule: Module =
         includes(platformSoundModule(named(Simulator.LmuWindows.id)))
 
         // フラッグ・車両接近開始時の本文をOS標準TTSのみで読み上げるフック。unqualified の SpeakTextUseCase / 各フラッグの Observe…ReadoutTextUseCase は
-        // feature:lmu-windows-readout-flag-detail が試聴用に別途定義しているため、
+        // feature:lmu-windows-auto-readout-flag-detail が試聴用に別途定義しているため、
         // 同じ型を二重定義しないよう named(Simulator.LmuWindows.id) で区別する。
         factory(named(Simulator.LmuWindows.id)) {
             SpeakTextUseCase(

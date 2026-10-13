@@ -10,7 +10,7 @@ const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_UNKNOWN_DEF
 
 /**
  * 車両クラスごとの残量警告閾値のデフォルト値（%）。現時点では全クラス共通の20%を既定値とし、
- * クラスごとの個別最適値はユーザーが `feature:lmu-windows-readout-brake-wear-detail` から調整する。
+ * クラスごとの個別最適値はユーザーが `feature:lmu-windows-auto-readout-brake-wear-detail` から調整する。
  */
 fun lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault(vehicleClass: LmuWindowsVehicleClassData): Int =
     when (vehicleClass) {

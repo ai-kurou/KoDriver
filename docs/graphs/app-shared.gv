@@ -23,19 +23,19 @@ digraph G {
   ":feature:gt7-ps5-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-brake-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-brake-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-pit-timing-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-remaining-virtual-energy-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-tyre-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-vehicle-damage-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-brake-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-brake-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-pit-timing-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-remaining-virtual-energy-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-tyre-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-vehicle-damage-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-console-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -87,16 +87,16 @@ digraph G {
   ":app:shared" -> ":feature:telemetry-log-list"
   ":app:shared" -> ":feature:telemetry-log-detail"
   ":app:shared" -> ":feature:auto-readout-list"
-  ":app:shared" -> ":feature:lmu-windows-readout-vehicle-approach-detail"
-  ":app:shared" -> ":feature:lmu-windows-readout-flag-detail"
-  ":app:shared" -> ":feature:lmu-windows-readout-my-best-lap-detail"
-  ":app:shared" -> ":feature:lmu-windows-readout-vehicle-damage-detail"
-  ":app:shared" -> ":feature:lmu-windows-readout-tyre-temperature-detail"
-  ":app:shared" -> ":feature:lmu-windows-readout-pit-timing-detail"
-  ":app:shared" -> ":feature:lmu-windows-readout-remaining-virtual-energy-detail"
-  ":app:shared" -> ":feature:lmu-windows-readout-tyre-wear-detail"
-  ":app:shared" -> ":feature:lmu-windows-readout-brake-temperature-detail"
-  ":app:shared" -> ":feature:lmu-windows-readout-brake-wear-detail"
+  ":app:shared" -> ":feature:lmu-windows-auto-readout-vehicle-approach-detail"
+  ":app:shared" -> ":feature:lmu-windows-auto-readout-flag-detail"
+  ":app:shared" -> ":feature:lmu-windows-auto-readout-my-best-lap-detail"
+  ":app:shared" -> ":feature:lmu-windows-auto-readout-vehicle-damage-detail"
+  ":app:shared" -> ":feature:lmu-windows-auto-readout-tyre-temperature-detail"
+  ":app:shared" -> ":feature:lmu-windows-auto-readout-pit-timing-detail"
+  ":app:shared" -> ":feature:lmu-windows-auto-readout-remaining-virtual-energy-detail"
+  ":app:shared" -> ":feature:lmu-windows-auto-readout-tyre-wear-detail"
+  ":app:shared" -> ":feature:lmu-windows-auto-readout-brake-temperature-detail"
+  ":app:shared" -> ":feature:lmu-windows-auto-readout-brake-wear-detail"
   ":app:shared" -> ":feature:gt7-ps5-auto-readout-my-best-lap-detail"
   ":app:shared" -> ":feature:gt7-ps5-auto-readout-remaining-fuel-detail"
   ":app:shared" -> ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail"
