@@ -6,6 +6,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
@@ -220,7 +222,21 @@ private fun AppNavIcon(
     showBadge: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    BadgedBox(badge = { if (showBadge) Badge() }) {
+    BadgedBox(
+        badge = {
+            AnimatedVisibility(
+                visible = showBadge,
+                enter =
+                    scaleIn(animationSpec = tween(durationMillis = 300)) +
+                        fadeIn(animationSpec = tween(durationMillis = 300)),
+                exit =
+                    scaleOut(animationSpec = tween(durationMillis = 200)) +
+                        fadeOut(animationSpec = tween(durationMillis = 200)),
+            ) {
+                Badge()
+            }
+        },
+    ) {
         Icon(dest.icon, contentDescription = dest.label(), modifier = modifier)
     }
 }
