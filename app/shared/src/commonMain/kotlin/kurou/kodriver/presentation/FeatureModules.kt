@@ -1,14 +1,14 @@
 package kurou.kodriver.presentation
 
+import kurou.kodriver.feature.acewindowsautoreadout.flagdetail.aceWindowsAutoReadoutFlagDetailModule
+import kurou.kodriver.feature.acewindowsautoreadout.mybestlapdetail.aceWindowsAutoReadoutMyBestLapDetailModule
+import kurou.kodriver.feature.acewindowsautoreadout.remainingfueldetail.aceWindowsAutoReadoutRemainingFuelDetailModule
+import kurou.kodriver.feature.acewindowsautoreadout.remainingfuellapsdetail.aceWindowsAutoReadoutRemainingFuelLapsDetailModule
+import kurou.kodriver.feature.acewindowsautoreadout.tyretemperaturedetail.aceWindowsAutoReadoutTyreTemperatureDetailModule
+import kurou.kodriver.feature.acewindowsautoreadout.vehicleapproachdetail.aceWindowsAutoReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.acewindowsconnection.aceWindowsConnectionModule
 import kurou.kodriver.feature.acewindowsdebugstatedetail.aceWindowsDebugStateDetailModule
 import kurou.kodriver.feature.acewindowsnarrator.aceWindowsNarratorModule
-import kurou.kodriver.feature.acewindowsreadout.flagdetail.aceWindowsReadoutFlagDetailModule
-import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.aceWindowsReadoutMyBestLapDetailModule
-import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.aceWindowsReadoutRemainingFuelDetailModule
-import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.aceWindowsReadoutRemainingFuelLapsDetailModule
-import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.aceWindowsReadoutTyreTemperatureDetailModule
-import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.aceWindowsReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.autoreadoutlist.autoReadoutListModule
 import kurou.kodriver.feature.gt7ps5autoreadout.mybestlapdetail.gt7Ps5AutoReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.gt7ps5autoreadout.remainingfueldetail.gt7Ps5AutoReadoutRemainingFuelDetailModule
@@ -103,11 +103,11 @@ val featureModules: List<Module> =
         lmuWindowsReadoutBrakeTemperatureDetailModule,
         lmuWindowsReadoutBrakeWearDetailModule,
         lmuWindowsReadoutPitTimingDetailModule,
-        aceWindowsReadoutRemainingFuelDetailModule,
-        aceWindowsReadoutFlagDetailModule,
-        aceWindowsReadoutTyreTemperatureDetailModule,
-        aceWindowsReadoutVehicleApproachDetailModule,
-        aceWindowsReadoutMyBestLapDetailModule,
-        aceWindowsReadoutRemainingFuelLapsDetailModule,
+        aceWindowsAutoReadoutRemainingFuelDetailModule,
+        aceWindowsAutoReadoutFlagDetailModule,
+        aceWindowsAutoReadoutTyreTemperatureDetailModule,
+        aceWindowsAutoReadoutVehicleApproachDetailModule,
+        aceWindowsAutoReadoutMyBestLapDetailModule,
+        aceWindowsAutoReadoutRemainingFuelLapsDetailModule,
         narratorOverlayModule,
     )
