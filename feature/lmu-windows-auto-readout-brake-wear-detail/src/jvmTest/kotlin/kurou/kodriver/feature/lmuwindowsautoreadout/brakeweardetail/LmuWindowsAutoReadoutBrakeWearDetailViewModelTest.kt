@@ -22,19 +22,19 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearSelectionUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeWearSelectionUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -47,7 +47,7 @@ class LmuWindowsAutoReadoutBrakeWearDetailViewModelTest {
 
     private val vehicleClassRepository: LmuWindowsVehicleClassBrakeWearPreferencesRepository = mockk()
 
-    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+    private val autoReadoutPreferencesRepository: AutoReadoutPreferencesRepository = mockk()
 
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val observeVolume: ObserveSoundVolumeUseCase = mockk()
@@ -82,8 +82,8 @@ class LmuWindowsAutoReadoutBrakeWearDetailViewModelTest {
                     saveVehicleClassSelection =
                         SaveLmuWindowsVehicleClassBrakeWearSelectionUseCase(vehicleClassRepository),
                 ),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+            observeAutoReadoutEnabledStates = ObserveAutoReadoutEnabledStatesUseCase(autoReadoutPreferencesRepository),
+            saveAutoReadoutEnabledState = SaveAutoReadoutEnabledStateUseCase(autoReadoutPreferencesRepository),
             readout = BrakeWearReadoutUseCases(playSpeechEvent, stopSpeech, checkAvailable, observeVolume),
         )
 
@@ -109,8 +109,10 @@ class LmuWindowsAutoReadoutBrakeWearDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeLowThresholdPercent() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
+            confirmVerified(vehicleClassRepository, autoReadoutPreferencesRepository)
         }
 
     @Test
@@ -138,11 +140,13 @@ class LmuWindowsAutoReadoutBrakeWearDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeLowThresholdPercent() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveLowThresholdPercent(LmuWindowsVehicleClassData.Gte, 20)
             }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+            confirmVerified(vehicleClassRepository, autoReadoutPreferencesRepository)
         }
 
     @Test
@@ -170,11 +174,13 @@ class LmuWindowsAutoReadoutBrakeWearDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeLowThresholdPercent() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveLowThresholdPercent(LmuWindowsVehicleClassData.Gt3, 20)
             }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+            confirmVerified(vehicleClassRepository, autoReadoutPreferencesRepository)
         }
 
     @Test
@@ -196,9 +202,11 @@ class LmuWindowsAutoReadoutBrakeWearDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeLowThresholdPercent() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) { vehicleClassRepository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte) }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+            confirmVerified(vehicleClassRepository, autoReadoutPreferencesRepository)
         }
 
     @Test
@@ -209,7 +217,7 @@ class LmuWindowsAutoReadoutBrakeWearDetailViewModelTest {
             every { vehicleClassRepository.observeSelectedVehicleClass() } returns
                 MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
             coEvery {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                autoReadoutPreferencesRepository.saveAutoReadoutEnabledState(
                     Simulator.LmuWindows.id,
                     LmuWindowsReadoutItemKey.BrakeWear.WarningReadout,
                     false,
@@ -227,19 +235,21 @@ class LmuWindowsAutoReadoutBrakeWearDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeLowThresholdPercent() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                autoReadoutPreferencesRepository.saveAutoReadoutEnabledState(
                     Simulator.LmuWindows.id,
                     LmuWindowsReadoutItemKey.BrakeWear.WarningReadout,
                     false,
                 )
             }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+            confirmVerified(vehicleClassRepository, autoReadoutPreferencesRepository)
         }
 
     private fun stubReadout(available: Boolean = true) {
-        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns
+        every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id) } returns
             enabledStatesFlow
         every { vehicleClassRepository.observeReadoutText() } returns textFlow
         coEvery { checkAvailable() } returns available

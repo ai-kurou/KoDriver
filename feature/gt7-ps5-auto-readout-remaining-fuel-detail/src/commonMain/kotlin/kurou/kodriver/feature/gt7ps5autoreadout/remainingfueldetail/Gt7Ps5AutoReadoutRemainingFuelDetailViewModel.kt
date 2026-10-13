@@ -14,21 +14,21 @@ import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal data class RemainingFuelUseCases(
     val observeThresholdPercentage: ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase,
     val saveThresholdPercentage: SaveGt7Ps5RemainingFuelThresholdPercentageUseCase,
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val saveAutoReadoutEnabledState: SaveAutoReadoutEnabledStateUseCase,
 )
 
 internal data class RemainingFuelReadoutUseCases(
@@ -56,7 +56,7 @@ internal class Gt7Ps5AutoReadoutRemainingFuelDetailViewModel(
     val uiState: StateFlow<Gt7Ps5AutoReadoutRemainingFuelDetailUiState> =
         combine(
             remainingFuelUseCases.observeThresholdPercentage(),
-            remainingFuelUseCases.observeReadoutEnabledStates(Simulator.Gt7Ps5.id),
+            remainingFuelUseCases.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id),
             readout.observeText(),
             preview.textToSpeechAvailable,
         ) { thresholdPercentage, enabledStates, text, available ->
@@ -99,7 +99,7 @@ internal class Gt7Ps5AutoReadoutRemainingFuelDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            remainingFuelUseCases.saveReadoutEnabledState(
+            remainingFuelUseCases.saveAutoReadoutEnabledState(
                 Simulator.Gt7Ps5.id,
                 Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled,
                 enabled,

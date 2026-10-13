@@ -9,7 +9,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
  * - 保存済み順序のうちデフォルト順序に存在しない項目（削除済み項目）は除外する
  * - デフォルト順序にあり保存済み順序にない項目（新規項目）は末尾に補完する
  */
-class ResolveReadoutOrderUseCase {
+class ResolveAutoReadoutOrderUseCase {
     operator fun invoke(
         persistedOrder: List<ReadoutItemKey>,
         defaultOrder: List<ReadoutItemKey>,

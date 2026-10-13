@@ -38,13 +38,13 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutText
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
@@ -52,7 +52,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
-import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -130,10 +130,10 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveAceWindowsVehicleApproachUseCase(get()) }
         factory { ObserveAceWindowsVehicleApproachEnabledStatesUseCase(get()) }
         factory { AceWindowsVehicleApproachThresholdsUseCases(get()) }
-        factory { ObserveReadoutEnabledStatesUseCase(get()) }
-        factory { ObserveReadoutOrderUseCase(get()) }
-        factory { ResolveReadoutOrderUseCase() }
-        factory { ObserveResolvedReadoutOrderUseCase(get(), get()) }
+        factory { ObserveAutoReadoutEnabledStatesUseCase(get()) }
+        factory { ObserveAutoReadoutOrderUseCase(get()) }
+        factory { ResolveAutoReadoutOrderUseCase() }
+        factory { ObserveResolvedAutoReadoutOrderUseCase(get(), get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 

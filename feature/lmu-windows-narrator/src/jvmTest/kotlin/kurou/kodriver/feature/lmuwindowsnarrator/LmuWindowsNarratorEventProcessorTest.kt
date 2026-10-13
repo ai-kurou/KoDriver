@@ -195,7 +195,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 4.0),
                 events = emptyList(),
-                readoutOrder = emptyList(),
+                autoReadoutOrder = emptyList(),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -203,7 +203,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(LmuWindowsCarLeft()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -253,7 +253,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor().processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(LmuWindowsCarLeft()),
-                readoutOrder = listOf(readoutItemKey),
+                autoReadoutOrder = listOf(readoutItemKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = observedAtMs,
                 logContext = logContext(),
@@ -297,7 +297,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processTyreWear(
                 tyreWear = tyreWear(frontLeft = 0.9),
                 events = emptyList(),
-                readoutOrder = emptyList(),
+                autoReadoutOrder = emptyList(),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -305,7 +305,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processTyreWear(
                 tyreWear = tyreWear(frontLeft = 0.4),
                 events = listOf(LmuWindowsTyreWearWarning(50)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -368,7 +368,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processBrakeTemperature(
                 brakeTemperature = brakeTemperature(frontLeft = 600.0),
                 events = emptyList(),
-                readoutOrder = emptyList(),
+                autoReadoutOrder = emptyList(),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -376,7 +376,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processBrakeTemperature(
                 brakeTemperature = brakeTemperature(frontLeft = 950.0),
                 events = listOf(LmuWindowsBrakeOverheat(700)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.BrakeTemperature.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.BrakeTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -445,7 +445,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         remainingRatio = LmuWindowsVirtualEnergyRatio(0.8),
                     ),
                 events = emptyList(),
-                readoutOrder = emptyList(),
+                autoReadoutOrder = emptyList(),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -456,7 +456,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         remainingRatio = LmuWindowsVirtualEnergyRatio(0.3),
                     ),
                 events = listOf(LmuWindowsRemainingVirtualEnergyWarning(50)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -511,7 +511,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.GREEN),
                 events = emptyList(),
-                readoutOrder = emptyList(),
+                autoReadoutOrder = emptyList(),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -519,7 +519,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = listOf(LmuWindowsBlueFlag()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -565,7 +565,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor().processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = listOf(LmuWindowsBlueFlag()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -609,7 +609,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor().processMyBestLap(
                 telemetry = fakeTelemetryData(),
                 events = listOf(LmuWindowsMyBestLap(83_456L)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -655,7 +655,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor().processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(LmuWindowsOverheating()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -700,7 +700,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = false),
                 events = emptyList(),
-                readoutOrder = emptyList(),
+                autoReadoutOrder = emptyList(),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -708,7 +708,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(LmuWindowsOverheating()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -757,7 +757,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processTyreDetached(
                 tyreDetached = tyreDetached(),
                 events = emptyList(),
-                readoutOrder = emptyList(),
+                autoReadoutOrder = emptyList(),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -765,7 +765,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
                 events = listOf(LmuWindowsTyreDetached()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -833,7 +833,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
                 events = listOf(LmuWindowsPitTimingWarning(laps = 2, source = PitTimingSource.TyreWear)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = pitTimingLogContext(),
@@ -906,7 +906,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     listOf(
                         LmuWindowsPitTimingWarning(laps = 2, source = PitTimingSource.VirtualEnergy),
                     ),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = pitTimingLogContext(),
@@ -964,7 +964,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
                 events = listOf(LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = pitTimingLogContext(),
@@ -1001,7 +1001,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
                 events = listOf(LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = pitTimingLogContext(),
@@ -1042,7 +1042,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(),
                 events = listOf(newEvent),
-                readoutOrder =
+                autoReadoutOrder =
                     listOf(
                         currentKey,
                         newEvent.readoutItemKey,
@@ -1090,7 +1090,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(),
                 events = listOf(newEvent),
-                readoutOrder = listOf(currentKey, newEvent.readoutItemKey),
+                autoReadoutOrder = listOf(currentKey, newEvent.readoutItemKey),
                 queueEnabledStates = mapOf(newEvent.readoutItemKey to true),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1134,7 +1134,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(),
                 events = listOf(newEvent),
-                readoutOrder = listOf(newEvent.readoutItemKey, currentKey),
+                autoReadoutOrder = listOf(newEvent.readoutItemKey, currentKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1191,7 +1191,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 4.0),
                 events = listOf(LmuWindowsCarLeft()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -1199,7 +1199,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(LmuWindowsCarLeft()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -1254,7 +1254,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "後続に譲ってください" }.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = listOf(LmuWindowsBlueFlag()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1291,7 +1291,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = listOf(LmuWindowsBlueFlag()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1328,7 +1328,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "後続に譲ってください" }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(LmuWindowsCarRight()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1365,7 +1365,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(LmuWindowsCarRight()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1404,7 +1404,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "後続に譲ってください" }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(LmuWindowsCarLeftSustained()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1443,7 +1443,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(LmuWindowsCarLeftSustained()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1482,7 +1482,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "後続に譲ってください" }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(LmuWindowsCarRightSustained()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1521,7 +1521,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(LmuWindowsCarRightSustained()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1559,7 +1559,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         remainingRatio = LmuWindowsVirtualEnergyRatio(0.3),
                     ),
                 events = listOf(LmuWindowsRemainingVirtualEnergyWarning(50)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1595,7 +1595,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processTyreWear(
                 tyreWear = tyreWear(frontLeft = 0.3),
                 events = listOf(LmuWindowsTyreWearWarning(50)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1631,7 +1631,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processBrakeTemperature(
                 brakeTemperature = brakeTemperature(frontLeft = 950.0),
                 events = listOf(LmuWindowsBrakeOverheat(700)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.BrakeTemperature.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.BrakeTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1677,7 +1677,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(LmuWindowsTyreOverheat(100)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1729,7 +1729,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(LmuWindowsTyreOverheat(100)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1781,7 +1781,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(LmuWindowsTyreOverheat(100)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1835,7 +1835,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(LmuWindowsTyreCold(60)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1887,7 +1887,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(LmuWindowsTyreCold(60)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1939,7 +1939,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(LmuWindowsTyreCold(60)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -2005,7 +2005,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = events,
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root, key),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root, key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 200L,
                 logContext =
@@ -2068,7 +2068,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "カスタム" }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(LmuWindowsOverheating()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2105,7 +2105,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { " " }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(LmuWindowsOverheating()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2142,7 +2142,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(LmuWindowsOverheating()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2181,7 +2181,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "カスタム" }.processMyBestLap(
                 telemetry = fakeTelemetryData(bestLapTimeMs = 83_456L),
                 events = listOf(LmuWindowsMyBestLap(83_456L)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2218,7 +2218,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { " " }.processMyBestLap(
                 telemetry = fakeTelemetryData(bestLapTimeMs = 83_456L),
                 events = listOf(LmuWindowsMyBestLap(83_456L)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2255,7 +2255,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processMyBestLap(
                 telemetry = fakeTelemetryData(bestLapTimeMs = 83_456L),
                 events = listOf(LmuWindowsMyBestLap(83_456L)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2294,7 +2294,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "カスタム" }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(LmuWindowsPartDetached()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2331,7 +2331,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { " " }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(LmuWindowsPartDetached()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2368,7 +2368,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(LmuWindowsPartDetached()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2407,7 +2407,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "カスタム" }.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
                 events = listOf(LmuWindowsTyreDetached()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2444,7 +2444,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { " " }.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
                 events = listOf(LmuWindowsTyreDetached()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2481,7 +2481,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
                 events = listOf(LmuWindowsTyreDetached()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2542,7 +2542,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = events.take(2),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2550,7 +2550,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
                 events = events.takeLast(1),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2621,7 +2621,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processMyBestLap(
                 telemetry = fakeTelemetryData(bestLapTimeMs = 83_456L),
                 events = events,
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2695,7 +2695,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = events,
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2775,7 +2775,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(),
                 events = events,
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2855,7 +2855,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
                 events = events,
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 200L,
                 logContext = pitTimingLogContext(),
@@ -2914,7 +2914,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { " \t\n" }.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = listOf(LmuWindowsBlueFlag()),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2978,7 +2978,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processRaceFlags(
                 raceFlags = raceFlags(PrimaryFlag.BLUE),
                 events = listOf(failedEvent, nextEvent),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -2986,7 +2986,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processRaceFlags(
                 raceFlags = raceFlags(PrimaryFlag.GREEN),
                 events = listOf(nextEvent),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -3043,7 +3043,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     processor.processRaceFlags(
                         raceFlags = raceFlags(PrimaryFlag.BLUE),
                         events = listOf(event, LmuWindowsRedFlag()),
-                        readoutOrder = listOf(key),
+                        autoReadoutOrder = listOf(key),
                         queueEnabledStates = emptyMap(),
                         observedAtMs = 100L,
                         logContext = logContext(),
@@ -3090,7 +3090,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processBrakeWear(
                 brakeWear = brakeWear(frontLeft = 50),
                 events = emptyList(),
-                readoutOrder = emptyList(),
+                autoReadoutOrder = emptyList(),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -3098,7 +3098,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processBrakeWear(
                 brakeWear = brakeWear(frontLeft = 18),
                 events = listOf(LmuWindowsBrakeWearLow(20)),
-                readoutOrder = listOf(LmuWindowsReadoutItemKey.BrakeWear.Root),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.BrakeWear.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -3167,7 +3167,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val context = logContext()
             createProcessor().processDebugReadout(
                 request = request,
-                readoutOrder = emptyList(),
+                autoReadoutOrder = emptyList(),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 100L,
                 logContext = context,

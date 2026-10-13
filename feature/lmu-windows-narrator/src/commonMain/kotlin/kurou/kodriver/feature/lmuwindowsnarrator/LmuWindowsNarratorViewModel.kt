@@ -38,6 +38,7 @@ import kurou.kodriver.domain.model.resolveLmuWindowsVehicleClassTyreTemperatureH
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
@@ -66,9 +67,8 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStates
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.TyreTemperatureReadoutInput
 import kotlin.time.Clock
@@ -96,8 +96,8 @@ internal data class SimulatorUseCases(
 )
 
 internal data class ReadoutListUseCases(
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val observeReadoutOrder: ObserveResolvedReadoutOrderUseCase,
+    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val observeAutoReadoutOrder: ObserveResolvedAutoReadoutOrderUseCase,
     val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
 )
 
@@ -185,7 +185,7 @@ internal class LmuWindowsNarratorViewModel(
             listOf(
                 selectedSimulator
                     .flatMapLatest { simulator ->
-                        readoutListUseCases.observeReadoutEnabledStates(simulator.id)
+                        readoutListUseCases.observeAutoReadoutEnabledStates(simulator.id)
                     },
                 flagUseCases.observeFlagEnabledStates(),
                 vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
@@ -198,10 +198,10 @@ internal class LmuWindowsNarratorViewModel(
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     // index が小さいほど優先度が高い（リスト上位 = 高優先）
-    private val readoutOrder =
+    private val autoReadoutOrder =
         selectedSimulator
             .flatMapLatest { simulator ->
-                readoutListUseCases.observeReadoutOrder(simulator)
+                readoutListUseCases.observeAutoReadoutOrder(simulator)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。
@@ -339,7 +339,7 @@ internal class LmuWindowsNarratorViewModel(
                     val state = narratorState
                     eventProcessor.processDebugReadout(
                         request = request,
-                        readoutOrder = readoutOrder.value,
+                        autoReadoutOrder = autoReadoutOrder.value,
                         queueEnabledStates = queueEnabledStates.value,
                         observedAtMs = currentTimeMs(),
                         logContext = LmuWindowsTelemetryLogContext(state, currentSettings, state),
@@ -364,7 +364,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processMyBestLap(
                     telemetry = telemetry,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -397,7 +397,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processVehicleApproach(
                     vehicleApproach = vehicleApproach,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -429,7 +429,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processVehicleDamage(
                     vehicleDamage = vehicleDamage,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -461,7 +461,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processTyreDetached(
                     tyreDetached = tyreDetached,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -490,7 +490,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processRaceFlags(
                     raceFlags = raceFlags,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -533,7 +533,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processTyreTemperature(
                     input = input,
                     events = overheatDecision.events + lowDecision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -601,7 +601,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processBrakeTemperature(
                     brakeTemperature = brakeTemperature,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -630,7 +630,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processBrakeWear(
                     brakeWear = brakeWear,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -659,7 +659,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processTyreWear(
                     tyreWear = tyreWear,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -688,7 +688,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processRemainingVirtualEnergy(
                     remainingVirtualEnergy = remainingVirtualEnergy,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -722,7 +722,7 @@ internal class LmuWindowsNarratorViewModel(
                 eventProcessor.processRemainingVirtualEnergy(
                     remainingVirtualEnergy = remainingVirtualEnergy,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -781,7 +781,7 @@ internal class LmuWindowsNarratorViewModel(
                             tyreWear = tyreWear,
                         ),
                     events = pitTimingEvents,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =

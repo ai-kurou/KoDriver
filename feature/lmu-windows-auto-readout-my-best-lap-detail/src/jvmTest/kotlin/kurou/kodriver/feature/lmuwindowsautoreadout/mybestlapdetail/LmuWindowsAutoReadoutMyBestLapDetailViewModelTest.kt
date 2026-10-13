@@ -21,15 +21,15 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsMyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -42,7 +42,7 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
 
     private val repository: LmuWindowsMyBestLapPreferencesRepository = mockk()
 
-    private val enabledRepository: ReadoutPreferencesRepository = mockk()
+    private val enabledRepository: AutoReadoutPreferencesRepository = mockk()
 
     private val speakText: SpeakTextUseCase = mockk()
     private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
@@ -64,8 +64,8 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
         LmuWindowsAutoReadoutMyBestLapDetailViewModel(
             myBestLapUseCases =
                 MyBestLapUseCases(
-                    observeEnabledStates = ObserveReadoutEnabledStatesUseCase(enabledRepository),
-                    saveEnabledState = SaveReadoutEnabledStateUseCase(enabledRepository),
+                    observeEnabledStates = ObserveAutoReadoutEnabledStatesUseCase(enabledRepository),
+                    saveEnabledState = SaveAutoReadoutEnabledStateUseCase(enabledRepository),
                 ),
             readout =
                 MyBestLapReadoutUseCases(
@@ -84,12 +84,12 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns false
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
             } returns MutableStateFlow(emptyMap())
             val viewModel = createViewModel()
 
             assertEquals(LmuWindowsAutoReadoutMyBestLapDetailUiState(), viewModel.uiState.first())
-            verify(exactly = 1) { enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) { enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id) }
             verify(exactly = 1) { repository.observeReadoutText() }
             confirmVerified(repository, enabledRepository)
         }
@@ -100,9 +100,10 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns false
             val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-            every { enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns enabledStatesFlow
+            every { enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id) } returns
+                enabledStatesFlow
             coEvery {
-                enabledRepository.saveReadoutEnabledState(
+                enabledRepository.saveAutoReadoutEnabledState(
                     Simulator.LmuWindows.id,
                     LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
                     false,
@@ -115,9 +116,9 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
             viewModel.onEnabledChanged(false)
 
             assertEquals(false, viewModel.uiState.first().enabled)
-            verify(exactly = 1) { enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) { enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) {
-                enabledRepository.saveReadoutEnabledState(
+                enabledRepository.saveAutoReadoutEnabledState(
                     Simulator.LmuWindows.id,
                     LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
                     false,
@@ -131,7 +132,7 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
     fun `文言の監視と保存をUiStateに反映する`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -144,7 +145,7 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
             assertEquals("更新{laptime}", viewModel.uiState.first().readoutText)
             verify(exactly = 1) { repository.observeReadoutText() }
             coVerify(exactly = 1) { repository.saveReadoutText("更新{laptime}") }
-            verify(exactly = 1) { enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) { enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id) }
             confirmVerified(repository, enabledRepository)
         }
 
@@ -152,7 +153,7 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
     fun `サンプルタイムに置換して開始音の後に試聴する`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -178,7 +179,7 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
     fun `空白文言では音量を取得せず試聴しない`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -193,7 +194,7 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
     fun `TTS利用不可を反映し試聴しない`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns false
@@ -210,7 +211,7 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
     fun `音量ゼロ以下では開始音も本文も試聴しない`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -231,7 +232,7 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
     fun `ペインを離れると開始音待機中の試聴を停止する`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -253,7 +254,7 @@ class LmuWindowsAutoReadoutMyBestLapDetailViewModelTest {
     fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
         runTest {
             every {
-                enabledRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id)
+                enabledRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
             } returns MutableStateFlow(emptyMap())
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true

@@ -15,7 +15,7 @@ class NarratorPriorityTest {
             speakWithPriority(
                 eventKey = "new",
                 currentKey = { "current" },
-                readoutOrder = listOf("new", "current"),
+                autoReadoutOrder = listOf("new", "current"),
                 queueEnabled = true,
                 speak = { queue -> spokenQueue = queue },
                 stop = { stopped = true },
@@ -35,7 +35,7 @@ class NarratorPriorityTest {
             speakWithPriority(
                 eventKey = "new",
                 currentKey = { null },
-                readoutOrder = listOf("new"),
+                autoReadoutOrder = listOf("new"),
                 queueEnabled = false,
                 speak = { queue -> spokenQueue = queue },
                 stop = { stopped = true },
@@ -55,7 +55,7 @@ class NarratorPriorityTest {
             speakWithPriority(
                 eventKey = "low",
                 currentKey = { "high" },
-                readoutOrder = listOf("high", "low"),
+                autoReadoutOrder = listOf("high", "low"),
                 queueEnabled = false,
                 speak = { spoken = true },
                 stop = { stopped = true },
@@ -75,7 +75,7 @@ class NarratorPriorityTest {
             speakWithPriority(
                 eventKey = "same",
                 currentKey = { "same" },
-                readoutOrder = listOf("same", "other"),
+                autoReadoutOrder = listOf("same", "other"),
                 queueEnabled = false,
                 speak = { spoken = true },
                 stop = { stopped = true },
@@ -95,7 +95,7 @@ class NarratorPriorityTest {
             speakWithPriority(
                 eventKey = "high",
                 currentKey = { "low" },
-                readoutOrder = listOf("high", "low"),
+                autoReadoutOrder = listOf("high", "low"),
                 queueEnabled = false,
                 speak = { queue -> spokenQueue = queue },
                 stop = { stopped = true },
@@ -107,7 +107,7 @@ class NarratorPriorityTest {
     }
 
     @Test
-    fun `readoutOrderに含まれないキーは最も優先度が低いものとして扱う`() {
+    fun `autoReadoutOrderに含まれないキーは最も優先度が低いものとして扱う`() {
         var spoken = false
         var stopped = false
 
@@ -115,7 +115,7 @@ class NarratorPriorityTest {
             speakWithPriority(
                 eventKey = "unknown",
                 currentKey = { "current" },
-                readoutOrder = listOf("current"),
+                autoReadoutOrder = listOf("current"),
                 queueEnabled = false,
                 speak = { spoken = true },
                 stop = { stopped = true },
@@ -127,7 +127,7 @@ class NarratorPriorityTest {
     }
 
     @Test
-    fun `再生中のキーがreadoutOrderに含まれない場合は新しいイベントを優先して読み上げる`() {
+    fun `再生中のキーがautoReadoutOrderに含まれない場合は新しいイベントを優先して読み上げる`() {
         var spokenQueue: Boolean? = null
         var stopped = false
 
@@ -135,7 +135,7 @@ class NarratorPriorityTest {
             speakWithPriority(
                 eventKey = "new",
                 currentKey = { "unknown" },
-                readoutOrder = listOf("new"),
+                autoReadoutOrder = listOf("new"),
                 queueEnabled = false,
                 speak = { queue -> spokenQueue = queue },
                 stop = { stopped = true },

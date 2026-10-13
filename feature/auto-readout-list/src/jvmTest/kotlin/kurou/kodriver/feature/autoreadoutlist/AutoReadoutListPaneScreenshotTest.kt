@@ -23,12 +23,12 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import org.junit.Test
 
 class AutoReadoutListPaneScreenshotTest {
-    private val repository: ReadoutPreferencesRepository = mockk()
+    private val repository: AutoReadoutPreferencesRepository = mockk()
 
     @Test
     fun `デフォルト`() =
@@ -55,8 +55,8 @@ class AutoReadoutListPaneScreenshotTest {
     @Test
     fun `lmu_windows選択`() =
         composeScreenshotTest {
-            every { repository.observeReadoutEnabledStates("lmu_windows") } returns MutableStateFlow(emptyMap())
-            val enabledStates = observeReadoutEnabledStates("lmu_windows")
+            every { repository.observeAutoReadoutEnabledStates("lmu_windows") } returns MutableStateFlow(emptyMap())
+            val enabledStates = observeAutoReadoutEnabledStates("lmu_windows")
 
             setContent {
                 KoDriverTheme {
@@ -67,7 +67,7 @@ class AutoReadoutListPaneScreenshotTest {
                                     AutoReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
                                         items = AutoReadoutListItemType.defaultOrder(Simulator.LmuWindows),
-                                        readoutEnabledStates = enabledStates,
+                                        autoReadoutEnabledStates = enabledStates,
                                     ),
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
@@ -80,15 +80,15 @@ class AutoReadoutListPaneScreenshotTest {
                 }
             }
             onRoot().captureRoboImage()
-            verify(exactly = 1) { repository.observeReadoutEnabledStates("lmu_windows") }
+            verify(exactly = 1) { repository.observeAutoReadoutEnabledStates("lmu_windows") }
             confirmVerified(repository)
         }
 
     @Test
     fun `gt7_ps5選択`() =
         composeScreenshotTest {
-            every { repository.observeReadoutEnabledStates("gt7_ps5") } returns MutableStateFlow(emptyMap())
-            val enabledStates = observeReadoutEnabledStates("gt7_ps5")
+            every { repository.observeAutoReadoutEnabledStates("gt7_ps5") } returns MutableStateFlow(emptyMap())
+            val enabledStates = observeAutoReadoutEnabledStates("gt7_ps5")
 
             setContent {
                 KoDriverTheme {
@@ -99,7 +99,7 @@ class AutoReadoutListPaneScreenshotTest {
                                     AutoReadoutListUiState(
                                         selectedSimulator = Simulator.Gt7Ps5,
                                         items = AutoReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
-                                        readoutEnabledStates = enabledStates,
+                                        autoReadoutEnabledStates = enabledStates,
                                     ),
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
@@ -112,7 +112,7 @@ class AutoReadoutListPaneScreenshotTest {
                 }
             }
             onRoot().captureRoboImage()
-            verify(exactly = 1) { repository.observeReadoutEnabledStates("gt7_ps5") }
+            verify(exactly = 1) { repository.observeAutoReadoutEnabledStates("gt7_ps5") }
             confirmVerified(repository)
         }
 
@@ -145,8 +145,8 @@ class AutoReadoutListPaneScreenshotTest {
     @Test
     fun `リストを下にスクロールすると先頭へ戻るボタンを表示する`() =
         composeScreenshotTest {
-            every { repository.observeReadoutEnabledStates("lmu_windows") } returns MutableStateFlow(emptyMap())
-            val enabledStates = observeReadoutEnabledStates("lmu_windows")
+            every { repository.observeAutoReadoutEnabledStates("lmu_windows") } returns MutableStateFlow(emptyMap())
+            val enabledStates = observeAutoReadoutEnabledStates("lmu_windows")
             val items = AutoReadoutListItemType.defaultOrder(Simulator.LmuWindows)
             var lastItemText = ""
 
@@ -161,7 +161,7 @@ class AutoReadoutListPaneScreenshotTest {
                                     AutoReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
                                         items = items,
-                                        readoutEnabledStates = enabledStates,
+                                        autoReadoutEnabledStates = enabledStates,
                                     ),
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
@@ -177,7 +177,7 @@ class AutoReadoutListPaneScreenshotTest {
             waitForIdle()
 
             onRoot().captureRoboImage()
-            verify(exactly = 1) { repository.observeReadoutEnabledStates("lmu_windows") }
+            verify(exactly = 1) { repository.observeAutoReadoutEnabledStates("lmu_windows") }
             confirmVerified(repository)
         }
 
@@ -209,7 +209,7 @@ class AutoReadoutListPaneScreenshotTest {
                                         selectedSimulator = Simulator.LmuWindows,
                                         items = AutoReadoutListItemType.defaultOrder(Simulator.LmuWindows),
                                         selectedItem = LmuWindowsAutoReadoutListItemType.Flag,
-                                        readoutEnabledStates =
+                                        autoReadoutEnabledStates =
                                             mapOf(
                                                 LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
                                                 LmuWindowsReadoutItemKey.Flag.Root to true,
@@ -245,7 +245,7 @@ class AutoReadoutListPaneScreenshotTest {
                                         selectedSimulator = Simulator.LmuWindows,
                                         items = AutoReadoutListItemType.defaultOrder(Simulator.LmuWindows),
                                         selectedItem = LmuWindowsAutoReadoutListItemType.Flag,
-                                        readoutEnabledStates =
+                                        autoReadoutEnabledStates =
                                             mapOf(
                                                 LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
                                                 LmuWindowsReadoutItemKey.Flag.Root to true,
@@ -268,6 +268,6 @@ class AutoReadoutListPaneScreenshotTest {
             onRoot().captureRoboImage()
         }
 
-    private fun observeReadoutEnabledStates(simulator: String): Map<ReadoutItemKey, Boolean> =
-        runBlocking { ObserveReadoutEnabledStatesUseCase(repository)(simulator).first() }
+    private fun observeAutoReadoutEnabledStates(simulator: String): Map<ReadoutItemKey, Boolean> =
+        runBlocking { ObserveAutoReadoutEnabledStatesUseCase(repository)(simulator).first() }
 }

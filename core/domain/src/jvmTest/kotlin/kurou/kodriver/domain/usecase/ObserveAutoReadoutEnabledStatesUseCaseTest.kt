@@ -15,19 +15,21 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-private fun createReadoutPreferencesRepository(repository: ReadoutPreferencesRepository): ReadoutPreferencesRepository {
+private fun createAutoReadoutPreferencesRepository(
+    repository: AutoReadoutPreferencesRepository,
+): AutoReadoutPreferencesRepository {
     val enabledStates = MutableStateFlow<Map<String, Map<ReadoutItemKey, Boolean>>>(emptyMap())
     val order = MutableStateFlow<Map<String, List<ReadoutItemKey>>>(emptyMap())
     listOf("lmu_windows", "gt7_ps5", "ace_windows", "rFactor 2").forEach { simulator ->
-        every { repository.observeReadoutEnabledStates(simulator) } answers {
+        every { repository.observeAutoReadoutEnabledStates(simulator) } answers {
             enabledStates.map { it[simulator] ?: emptyMap() }
         }
-        every { repository.observeReadoutOrder(simulator) } answers {
+        every { repository.observeAutoReadoutOrder(simulator) } answers {
             order.map { it[simulator] ?: emptyList() }
         }
     }
@@ -36,7 +38,7 @@ private fun createReadoutPreferencesRepository(repository: ReadoutPreferencesRep
         Triple("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, false),
         Triple("rFactor 2", LmuWindowsReadoutItemKey.VehicleApproach.Root, false),
     ).forEach { (simulator, key, enabled) ->
-        coEvery { repository.saveReadoutEnabledState(simulator, key, enabled) } answers {
+        coEvery { repository.saveAutoReadoutEnabledState(simulator, key, enabled) } answers {
             enabledStates.update { all -> all + (simulator to ((all[simulator] ?: emptyMap()) + (key to enabled))) }
         }
     }
@@ -55,32 +57,32 @@ private fun createReadoutPreferencesRepository(repository: ReadoutPreferencesRep
             ),
         "rFactor 2" to listOf(LmuWindowsReadoutItemKey.Flag.Root),
     ).forEach { (simulator, newOrder) ->
-        coEvery { repository.saveReadoutOrder(simulator, newOrder) } answers {
+        coEvery { repository.saveAutoReadoutOrder(simulator, newOrder) } answers {
             order.update { all -> all + (simulator to newOrder) }
         }
     }
     return repository
 }
 
-class ObserveReadoutEnabledStatesUseCaseTest {
-    private val repository: ReadoutPreferencesRepository = mockk()
+class ObserveAutoReadoutEnabledStatesUseCaseTest {
+    private val repository: AutoReadoutPreferencesRepository = mockk()
 
     @Test
     fun `初期値はデフォルト定義のない未知のシミュレーターでは空Mapを返す`() =
         runTest {
-            val repo = createReadoutPreferencesRepository(repository)
-            val useCase = ObserveReadoutEnabledStatesUseCase(repo)
+            val repo = createAutoReadoutPreferencesRepository(repository)
+            val useCase = ObserveAutoReadoutEnabledStatesUseCase(repo)
 
             assertTrue(useCase("rFactor 2").first().isEmpty())
-            verify(exactly = 1) { repo.observeReadoutEnabledStates("rFactor 2") }
+            verify(exactly = 1) { repo.observeAutoReadoutEnabledStates("rFactor 2") }
             confirmVerified(repo)
         }
 
     @Test
     fun `lmu_windowsは保存済みの値がなくてもデフォルト値が反映される`() =
         runTest {
-            val repo = createReadoutPreferencesRepository(repository)
-            val useCase = ObserveReadoutEnabledStatesUseCase(repo)
+            val repo = createAutoReadoutPreferencesRepository(repository)
+            val useCase = ObserveAutoReadoutEnabledStatesUseCase(repo)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
@@ -97,15 +99,15 @@ class ObserveReadoutEnabledStatesUseCaseTest {
                 ),
                 useCase("lmu_windows").first(),
             )
-            verify(exactly = 1) { repo.observeReadoutEnabledStates("lmu_windows") }
+            verify(exactly = 1) { repo.observeAutoReadoutEnabledStates("lmu_windows") }
             confirmVerified(repo)
         }
 
     @Test
     fun `gt7_ps5は保存済みの値がなくてもデフォルトのtrueが反映される`() =
         runTest {
-            val repo = createReadoutPreferencesRepository(repository)
-            val useCase = ObserveReadoutEnabledStatesUseCase(repo)
+            val repo = createAutoReadoutPreferencesRepository(repository)
+            val useCase = ObserveAutoReadoutEnabledStatesUseCase(repo)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
@@ -116,15 +118,15 @@ class ObserveReadoutEnabledStatesUseCaseTest {
                 ),
                 useCase("gt7_ps5").first(),
             )
-            verify(exactly = 1) { repo.observeReadoutEnabledStates("gt7_ps5") }
+            verify(exactly = 1) { repo.observeAutoReadoutEnabledStates("gt7_ps5") }
             confirmVerified(repo)
         }
 
     @Test
     fun `ace_windowsは保存済みの値がなくてもデフォルトのtrueが反映される`() =
         runTest {
-            val repo = createReadoutPreferencesRepository(repository)
-            val useCase = ObserveReadoutEnabledStatesUseCase(repo)
+            val repo = createAutoReadoutPreferencesRepository(repository)
+            val useCase = ObserveAutoReadoutEnabledStatesUseCase(repo)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
@@ -137,18 +139,18 @@ class ObserveReadoutEnabledStatesUseCaseTest {
                 ),
                 useCase("ace_windows").first(),
             )
-            verify(exactly = 1) { repo.observeReadoutEnabledStates("ace_windows") }
+            verify(exactly = 1) { repo.observeAutoReadoutEnabledStates("ace_windows") }
             confirmVerified(repo)
         }
 
     @Test
     fun `保存済みの値はデフォルトより優先され・シミュレーターごとに独立している`() =
         runTest {
-            val repo = createReadoutPreferencesRepository(repository)
-            val useCase = ObserveReadoutEnabledStatesUseCase(repo)
+            val repo = createAutoReadoutPreferencesRepository(repository)
+            val useCase = ObserveAutoReadoutEnabledStatesUseCase(repo)
 
-            repo.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true)
-            repo.saveReadoutEnabledState("rFactor 2", LmuWindowsReadoutItemKey.VehicleApproach.Root, false)
+            repo.saveAutoReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true)
+            repo.saveAutoReadoutEnabledState("rFactor 2", LmuWindowsReadoutItemKey.VehicleApproach.Root, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
@@ -170,13 +172,13 @@ class ObserveReadoutEnabledStatesUseCaseTest {
                 useCase("rFactor 2").first(),
             )
             coVerify(exactly = 1) {
-                repo.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true)
+                repo.saveAutoReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true)
             }
             coVerify(exactly = 1) {
-                repo.saveReadoutEnabledState("rFactor 2", LmuWindowsReadoutItemKey.VehicleApproach.Root, false)
+                repo.saveAutoReadoutEnabledState("rFactor 2", LmuWindowsReadoutItemKey.VehicleApproach.Root, false)
             }
-            verify(exactly = 1) { repo.observeReadoutEnabledStates("lmu_windows") }
-            verify(exactly = 1) { repo.observeReadoutEnabledStates("rFactor 2") }
+            verify(exactly = 1) { repo.observeAutoReadoutEnabledStates("lmu_windows") }
+            verify(exactly = 1) { repo.observeAutoReadoutEnabledStates("rFactor 2") }
             confirmVerified(repo)
         }
 }

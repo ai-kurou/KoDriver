@@ -23,16 +23,16 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -45,7 +45,7 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
 
     private val repository: AceWindowsRemainingFuelPreferencesRepository = mockk()
 
-    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+    private val autoReadoutPreferencesRepository: AutoReadoutPreferencesRepository = mockk()
 
     private val speakText: SpeakTextUseCase = mockk()
     private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
@@ -73,10 +73,10 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
                         ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
                     saveThresholdPercentage =
                         SaveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
-                    observeReadoutEnabledStates =
-                        ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                    saveReadoutEnabledState =
-                        SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                    observeAutoReadoutEnabledStates =
+                        ObserveAutoReadoutEnabledStatesUseCase(autoReadoutPreferencesRepository),
+                    saveAutoReadoutEnabledState =
+                        SaveAutoReadoutEnabledStateUseCase(autoReadoutPreferencesRepository),
                 ),
             readout =
                 RemainingFuelReadoutUseCases(
@@ -92,7 +92,7 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -111,14 +111,16 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
             )
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
-            confirmVerified(repository, readoutPreferencesRepository)
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id)
+            }
+            confirmVerified(repository, autoReadoutPreferencesRepository)
         }
 
     @Test
     fun `onThresholdChangedを呼ぶとuiStateのthresholdPercentageが更新される`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -132,15 +134,17 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
             assertEquals(30, viewModel.uiState.first().thresholdPercentage)
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id)
+            }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
-            confirmVerified(repository, readoutPreferencesRepository)
+            confirmVerified(repository, autoReadoutPreferencesRepository)
         }
 
     @Test
     fun `onThresholdResetを呼ぶとthresholdPercentageがデフォルト値30に戻る`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -154,21 +158,23 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
             assertEquals(30, viewModel.uiState.first().thresholdPercentage)
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id)
+            }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
-            confirmVerified(repository, readoutPreferencesRepository)
+            confirmVerified(repository, autoReadoutPreferencesRepository)
         }
 
     @Test
     fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
             every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
             coEvery {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                autoReadoutPreferencesRepository.saveAutoReadoutEnabledState(
                     Simulator.AceWindows.id,
                     AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled,
                     false,
@@ -185,21 +191,23 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().enabled)
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id)
+            }
             coVerify(exactly = 1) {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                autoReadoutPreferencesRepository.saveAutoReadoutEnabledState(
                     Simulator.AceWindows.id,
                     AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled,
                     false,
                 )
             }
-            confirmVerified(repository, readoutPreferencesRepository)
+            confirmVerified(repository, autoReadoutPreferencesRepository)
         }
 
     @Test
     fun `文言の監視と保存をUiStateに反映する`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -218,7 +226,7 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
     @Test
     fun `現在の閾値に置換して開始音の後に試聴する`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -254,7 +262,7 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
     @Test
     fun `空白文言では音量を取得せず試聴しない`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -269,7 +277,7 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
     @Test
     fun `TTS利用不可を反映し試聴しない`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns false
@@ -286,7 +294,7 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
     @Test
     fun `音量ゼロ以下では開始音も本文も試聴しない`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -307,7 +315,7 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
     @Test
     fun `ペインを離れると開始音待機中の試聴を停止する`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
@@ -336,7 +344,7 @@ class AceWindowsAutoReadoutRemainingFuelDetailViewModelTest {
     @Test
     fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true

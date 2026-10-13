@@ -7,6 +7,7 @@ import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.JvmKeepScreenOnEnabledRepository
+import kurou.kodriver.data.preferences.createAutoReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
@@ -16,7 +17,6 @@ import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepositor
 import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
-import kurou.kodriver.data.preferences.createReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createSimulatorPreferencesRepository
@@ -30,6 +30,7 @@ import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
@@ -45,7 +46,6 @@ import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -78,8 +78,8 @@ val desktopDataModule =
         single<SimulatorPreferencesRepository> {
             createSimulatorPreferencesRepository(directory = kodriverDirectory)
         }
-        single<ReadoutPreferencesRepository> {
-            createReadoutPreferencesRepository(directory = kodriverDirectory)
+        single<AutoReadoutPreferencesRepository> {
+            createAutoReadoutPreferencesRepository(directory = kodriverDirectory)
         }
         single<QueuePreferencesRepository> {
             createQueuePreferencesRepository(directory = kodriverDirectory)

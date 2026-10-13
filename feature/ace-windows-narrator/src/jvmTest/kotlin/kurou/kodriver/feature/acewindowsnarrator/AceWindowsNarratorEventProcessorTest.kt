@@ -86,7 +86,7 @@ class AceWindowsNarratorEventProcessorTest {
             createProcessor().processRemainingFuel(
                 fuel = fuel(20.0),
                 events = listOf(AceWindowsRemainingFuelWarning(20)),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -183,7 +183,7 @@ class AceWindowsNarratorEventProcessorTest {
             processor.processRemainingFuel(
                 fuel = fuel(20.0),
                 events = listOf(AceWindowsRemainingFuelWarning(20)),
-                readoutOrder = listOf(currentKey, otherKey),
+                autoReadoutOrder = listOf(currentKey, otherKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -226,7 +226,7 @@ class AceWindowsNarratorEventProcessorTest {
             processor.processRemainingFuel(
                 fuel = fuel(20.0),
                 events = listOf(AceWindowsRemainingFuelWarning(20)),
-                readoutOrder = listOf(currentKey, key),
+                autoReadoutOrder = listOf(currentKey, key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -273,7 +273,7 @@ class AceWindowsNarratorEventProcessorTest {
             processor.processRemainingFuel(
                 fuel = fuel(20.0),
                 events = listOf(AceWindowsRemainingFuelWarning(20)),
-                readoutOrder = listOf(key, currentKey),
+                autoReadoutOrder = listOf(key, currentKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -318,7 +318,7 @@ class AceWindowsNarratorEventProcessorTest {
             createProcessor().processRemainingFuel(
                 fuel = fuel(20.0),
                 events = listOf(AceWindowsRemainingFuelWarning(20)),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -364,7 +364,7 @@ class AceWindowsNarratorEventProcessorTest {
             createProcessor().processRemainingFuel(
                 fuel = fuel(Double.NaN),
                 events = listOf(AceWindowsRemainingFuelWarning(20)),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -410,7 +410,7 @@ class AceWindowsNarratorEventProcessorTest {
             processor.processRemainingFuel(
                 fuel = fuel(20.0),
                 events = emptyList(),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -418,7 +418,7 @@ class AceWindowsNarratorEventProcessorTest {
             processor.processRemainingFuel(
                 fuel = fuel(80.0),
                 events = listOf(AceWindowsRemainingFuelWarning(20)),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -465,7 +465,7 @@ class AceWindowsNarratorEventProcessorTest {
             createProcessor().processMyBestLap(
                 bestLapTime = bestLapTime(89_000),
                 events = listOf(event),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -574,7 +574,7 @@ class AceWindowsNarratorEventProcessorTest {
                 createProcessor(readoutText).processMyBestLap(
                     bestLapTime = bestLapTime(89_000),
                     events = listOf(event),
-                    readoutOrder = listOf(key),
+                    autoReadoutOrder = listOf(key),
                     queueEnabledStates = emptyMap(),
                     observedAtMs = 0L,
                     logContext = logContext(),
@@ -616,7 +616,7 @@ class AceWindowsNarratorEventProcessorTest {
             createProcessor().processRemainingFuelLaps(
                 remainingFuelLaps = remainingFuelLaps(2.5f),
                 events = listOf(AceWindowsRemainingFuelLapsWarning(2)),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -721,7 +721,7 @@ class AceWindowsNarratorEventProcessorTest {
             createProcessor().processFlag(
                 flag = flag(AceWindowsFlagType.BLUE_FLAG),
                 events = listOf(AceWindowsBlueFlag()),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -819,7 +819,7 @@ class AceWindowsNarratorEventProcessorTest {
             createProcessor().processTyreTemperature(
                 tyreCarcassTemperature = tyreCarcassTemperature(110.0f),
                 events = listOf(AceWindowsTyreOverheat(110)),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1150,7 +1150,7 @@ class AceWindowsNarratorEventProcessorTest {
             processor.processFlag(
                 flag = flag(AceWindowsFlagType.BLUE_FLAG),
                 events = listOf(failedEvent, nextEvent),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -1158,7 +1158,7 @@ class AceWindowsNarratorEventProcessorTest {
             processor.processFlag(
                 flag = flag(AceWindowsFlagType.RED_FLAG),
                 events = listOf(nextEvent),
-                readoutOrder = listOf(key),
+                autoReadoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -1215,7 +1215,7 @@ class AceWindowsNarratorEventProcessorTest {
                     processor.processFlag(
                         flag = flag(AceWindowsFlagType.BLUE_FLAG),
                         events = listOf(event, AceWindowsRedFlag()),
-                        readoutOrder = listOf(key),
+                        autoReadoutOrder = listOf(key),
                         queueEnabledStates = emptyMap(),
                         observedAtMs = 100L,
                         logContext = logContext(),
@@ -2032,7 +2032,7 @@ class AceWindowsNarratorEventProcessorTest {
             val context = logContext()
             createProcessor().processDebugReadout(
                 request = request,
-                readoutOrder = emptyList(),
+                autoReadoutOrder = emptyList(),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 100L,
                 logContext = context,

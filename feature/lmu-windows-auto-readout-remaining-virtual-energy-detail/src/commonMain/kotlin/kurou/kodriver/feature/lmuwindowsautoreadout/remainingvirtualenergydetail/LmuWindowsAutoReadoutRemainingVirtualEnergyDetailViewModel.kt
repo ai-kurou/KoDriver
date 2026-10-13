@@ -14,21 +14,21 @@ import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadout
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal data class RemainingVirtualEnergyUseCases(
     val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
     val saveThresholdPercentage: SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val saveAutoReadoutEnabledState: SaveAutoReadoutEnabledStateUseCase,
 )
 
 internal data class RemainingVirtualEnergyReadoutUseCases(
@@ -56,7 +56,7 @@ internal class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailViewModel(
     val uiState: StateFlow<LmuWindowsAutoReadoutRemainingVirtualEnergyDetailUiState> =
         combine(
             remainingVirtualEnergyUseCases.observeThresholdPercentage(),
-            remainingVirtualEnergyUseCases.observeReadoutEnabledStates(Simulator.LmuWindows.id),
+            remainingVirtualEnergyUseCases.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
             readout.observeText(),
             preview.textToSpeechAvailable,
         ) { thresholdPercentage, enabledStates, text, available ->
@@ -99,7 +99,7 @@ internal class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            remainingVirtualEnergyUseCases.saveReadoutEnabledState(
+            remainingVirtualEnergyUseCases.saveAutoReadoutEnabledState(
                 Simulator.LmuWindows.id,
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
                 enabled,

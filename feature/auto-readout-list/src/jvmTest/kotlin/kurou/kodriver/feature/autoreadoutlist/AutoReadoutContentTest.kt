@@ -86,7 +86,7 @@ class AutoReadoutContentTest {
                                 LmuWindowsReadoutItemKey.TyreTemperature.Root,
                                 LmuWindowsReadoutItemKey.MyBestLap.Root,
                             ),
-                        readoutEnabledStates =
+                        autoReadoutEnabledStates =
                             mapOf(
                                 LmuWindowsReadoutItemKey.Flag.Root to true,
                                 LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
@@ -126,7 +126,7 @@ class AutoReadoutContentTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
-                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
+                        autoReadoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
                         selectedItem = LmuWindowsAutoReadoutListItemType.TyreWear,
                     ),
                 onMove = { _, _ -> },
@@ -155,7 +155,7 @@ class AutoReadoutContentTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
-                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
+                        autoReadoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
                         selectedItem = selectedItem,
                     ),
                 onMove = { _, _ -> },
@@ -191,7 +191,7 @@ class AutoReadoutContentTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
-                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
+                        autoReadoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
                         selectedItem = selectedItem,
                     ),
                 onMove = { _, _ -> },
@@ -240,7 +240,7 @@ class AutoReadoutContentTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
-                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
+                        autoReadoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
                         selectedItem = LmuWindowsAutoReadoutListItemType.TyreTemperature,
                     ),
                 onMove = { _, _ -> },
@@ -269,7 +269,7 @@ class AutoReadoutContentTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
-                        readoutEnabledStates =
+                        autoReadoutEnabledStates =
                             mapOf(
                                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false,
                             ),
@@ -302,7 +302,7 @@ class AutoReadoutContentTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.AceWindows,
                         items = listOf(AceWindowsReadoutItemKey.RemainingFuel.Root),
-                        readoutEnabledStates = mapOf(AceWindowsReadoutItemKey.RemainingFuel.Root to true),
+                        autoReadoutEnabledStates = mapOf(AceWindowsReadoutItemKey.RemainingFuel.Root to true),
                         selectedItem = AceWindowsAutoReadoutListItemType.RemainingFuel,
                     ),
                 onMove = { _, _ -> },
@@ -331,7 +331,7 @@ class AutoReadoutContentTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.Gt7Ps5,
                         items = listOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root),
-                        readoutEnabledStates = mapOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true),
+                        autoReadoutEnabledStates = mapOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true),
                     ),
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
@@ -374,7 +374,7 @@ class AutoReadoutContentTest {
                                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
                                 Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                             ),
-                        readoutEnabledStates =
+                        autoReadoutEnabledStates =
                             mapOf(
                                 Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,
                                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true,
@@ -416,7 +416,7 @@ class AutoReadoutContentTest {
                                 LmuWindowsReadoutItemKey.TyreTemperature.Root,
                                 LmuWindowsReadoutItemKey.Flag.Root,
                             ),
-                        readoutEnabledStates =
+                        autoReadoutEnabledStates =
                             mapOf(
                                 LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
                                 LmuWindowsReadoutItemKey.Flag.Root to true,
@@ -467,7 +467,7 @@ class AutoReadoutContentTest {
                                 LmuWindowsReadoutItemKey.TyreTemperature.Root,
                                 LmuWindowsReadoutItemKey.Flag.Root,
                             ),
-                        readoutEnabledStates =
+                        autoReadoutEnabledStates =
                             mapOf(
                                 LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
                                 LmuWindowsReadoutItemKey.Flag.Root to true,
@@ -521,7 +521,7 @@ class AutoReadoutContentTest {
                                 LmuWindowsReadoutItemKey.TyreTemperature.Root,
                                 LmuWindowsReadoutItemKey.Flag.Root,
                             ),
-                        readoutEnabledStates =
+                        autoReadoutEnabledStates =
                             mapOf(
                                 LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
                                 LmuWindowsReadoutItemKey.Flag.Root to true,
@@ -588,7 +588,7 @@ class AutoReadoutContentTest {
                         AutoReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
                             items = items,
-                            readoutEnabledStates = items.associateWith { true },
+                            autoReadoutEnabledStates = items.associateWith { true },
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -636,7 +636,7 @@ class AutoReadoutContentTest {
                         AutoReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
                             items = items,
-                            readoutEnabledStates = items.associateWith { true },
+                            autoReadoutEnabledStates = items.associateWith { true },
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },

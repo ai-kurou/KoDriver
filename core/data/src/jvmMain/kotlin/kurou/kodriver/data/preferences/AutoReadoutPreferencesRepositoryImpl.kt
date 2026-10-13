@@ -3,45 +3,45 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 
-internal class ReadoutPreferencesRepositoryImpl(
-    private val dataStore: DataStore<ReadoutPreferences>,
-) : ReadoutPreferencesRepository {
-    override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
+internal class AutoReadoutPreferencesRepositoryImpl(
+    private val dataStore: DataStore<AutoReadoutPreferences>,
+) : AutoReadoutPreferencesRepository {
+    override fun observeAutoReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.observeProperty { prefs ->
             prefs.simulatorStates
-                .getOrElse(simulator) { SimulatorReadoutState() }
+                .getOrElse(simulator) { SimulatorAutoReadoutState() }
                 .enabledStates
                 .toReadoutItemKeyMap()
         }
 
-    override suspend fun saveReadoutEnabledState(
+    override suspend fun saveAutoReadoutEnabledState(
         simulator: String,
         key: ReadoutItemKey,
         enabled: Boolean,
     ) {
         dataStore.saveProperty(enabled) { prefs, value ->
-            val current = prefs.simulatorStates[simulator] ?: SimulatorReadoutState()
+            val current = prefs.simulatorStates[simulator] ?: SimulatorAutoReadoutState()
             val newState = current.copy(enabledStates = current.enabledStates + (key.value to value))
             prefs.copy(simulatorStates = prefs.simulatorStates + (simulator to newState))
         }
     }
 
-    override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
+    override fun observeAutoReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
         dataStore.observeProperty { prefs ->
             prefs.simulatorStates
-                .getOrElse(simulator) { SimulatorReadoutState() }
+                .getOrElse(simulator) { SimulatorAutoReadoutState() }
                 .itemOrder
                 .mapNotNull(ReadoutItemKey::fromValue)
         }
 
-    override suspend fun saveReadoutOrder(
+    override suspend fun saveAutoReadoutOrder(
         simulator: String,
         order: List<ReadoutItemKey>,
     ) {
         dataStore.saveProperty(order) { prefs, value ->
-            val current = prefs.simulatorStates[simulator] ?: SimulatorReadoutState()
+            val current = prefs.simulatorStates[simulator] ?: SimulatorAutoReadoutState()
             val newState = current.copy(itemOrder = value.map { it.value })
             prefs.copy(simulatorStates = prefs.simulatorStates + (simulator to newState))
         }

@@ -16,16 +16,16 @@ import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThr
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 internal data class BrakeTemperatureUseCases(
@@ -46,8 +46,8 @@ internal data class BrakeTemperatureReadoutUseCases(
 
 internal class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModel(
     private val brakeTemperatureUseCases: BrakeTemperatureUseCases,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    private val saveAutoReadoutEnabledState: SaveAutoReadoutEnabledStateUseCase,
     readout: BrakeTemperatureReadoutUseCases,
 ) : ViewModel() {
     private val previewHelper =
@@ -66,7 +66,7 @@ internal class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModel(
         combine(
             brakeTemperatureUseCases.observeVehicleClassHighThreshold(),
             brakeTemperatureUseCases.observeVehicleClassSelection(),
-            observeReadoutEnabledStates(Simulator.LmuWindows.id),
+            observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
             brakeTemperatureUseCases.observeText(),
             previewHelper.textToSpeechAvailable,
         ) { vehicleClassHighThresholdCelsius, selectedVehicleClass, enabledStates, text, available ->
@@ -129,7 +129,7 @@ internal class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(
+            saveAutoReadoutEnabledState(
                 Simulator.LmuWindows.id,
                 LmuWindowsReadoutItemKey.BrakeTemperature.WarningReadout,
                 enabled,

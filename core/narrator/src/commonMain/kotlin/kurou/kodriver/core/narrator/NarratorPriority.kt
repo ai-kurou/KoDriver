@@ -11,13 +11,13 @@ package kurou.kodriver.core.narrator
  * 処理は次の4経路に分岐する。キュー追加・通常再生・割り込み再生・読み上げなしがそれぞれ1経路ずつ対応する。
  *
  * 1. キュー再生（[queueEnabled]）が有効: 優先度判定をせず `speak(queue = true)` でキューへ追加する。
- * 2. キュー再生が無効で、再生中のイベント（[currentKey]）があり、優先度が負けた（[readoutOrder] のインデックスが
+ * 2. キュー再生が無効で、再生中のイベント（[currentKey]）があり、優先度が負けた（[autoReadoutOrder] のインデックスが
  *    新しいイベントのほうが大きいか等しい）: [speak] も [stop] も呼ばず、読み上げない。
  * 3. キュー再生が無効で、再生中のイベントがあり、優先度が勝った: [stop] で現在の再生を止めてから
  *    `speak(queue = false)` で割り込み再生する。
  * 4. キュー再生が無効で、再生中のイベントがない: [stop] を呼ばず `speak(queue = false)` でそのまま読み上げる。
  *
- * [readoutOrder] に含まれないキーは最も優先度が低いものとして扱う。
+ * [autoReadoutOrder] に含まれないキーは最も優先度が低いものとして扱う。
  * [currentKey] はキュー再生が有効な場合には呼び出し不要なため、遅延評価できるよう関数で受け取る。
  *
  * **戻り値の `Boolean` だけでは上の4経路を区別できない**（経路1・3・4がいずれも true になる）。テレメトリログへ
@@ -32,7 +32,7 @@ package kurou.kodriver.core.narrator
 fun <KEY> speakWithPriority(
     eventKey: KEY,
     currentKey: () -> KEY?,
-    readoutOrder: List<KEY>,
+    autoReadoutOrder: List<KEY>,
     queueEnabled: Boolean,
     speak: (queue: Boolean) -> Unit,
     stop: () -> Unit,
@@ -43,8 +43,8 @@ fun <KEY> speakWithPriority(
     }
     val current = currentKey()
     if (current != null) {
-        val currentIndex = readoutOrder.indexOf(current).takeIf { it != -1 } ?: Int.MAX_VALUE
-        val newIndex = readoutOrder.indexOf(eventKey).takeIf { it != -1 } ?: Int.MAX_VALUE
+        val currentIndex = autoReadoutOrder.indexOf(current).takeIf { it != -1 } ?: Int.MAX_VALUE
+        val newIndex = autoReadoutOrder.indexOf(eventKey).takeIf { it != -1 } ?: Int.MAX_VALUE
         if (newIndex >= currentIndex) return false
         stop()
     }

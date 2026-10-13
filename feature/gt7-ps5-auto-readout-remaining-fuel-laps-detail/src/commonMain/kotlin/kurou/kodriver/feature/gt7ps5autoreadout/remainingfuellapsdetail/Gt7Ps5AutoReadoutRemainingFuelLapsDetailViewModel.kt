@@ -14,23 +14,23 @@ import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal data class RemainingFuelLapsUseCases(
     val observeRemainingFuelLaps: ObserveGt7Ps5RemainingFuelLapsUseCase,
     val saveRemainingFuelLaps: SaveGt7Ps5RemainingFuelLapsUseCase,
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val saveAutoReadoutEnabledState: SaveAutoReadoutEnabledStateUseCase,
 )
 
 internal data class RemainingFuelLapsReadoutUseCases(
@@ -60,7 +60,7 @@ internal class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModel(
     val uiState: StateFlow<Gt7Ps5AutoReadoutRemainingFuelLapsDetailUiState> =
         combine(
             remainingFuelLapsUseCases.observeRemainingFuelLaps(),
-            remainingFuelLapsUseCases.observeReadoutEnabledStates(Simulator.Gt7Ps5.id),
+            remainingFuelLapsUseCases.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id),
             readout.observeText(),
             readout.observeEmptyText(),
             preview.textToSpeechAvailable,
@@ -120,7 +120,7 @@ internal class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            remainingFuelLapsUseCases.saveReadoutEnabledState(
+            remainingFuelLapsUseCases.saveAutoReadoutEnabledState(
                 Simulator.Gt7Ps5.id,
                 Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled,
                 enabled,

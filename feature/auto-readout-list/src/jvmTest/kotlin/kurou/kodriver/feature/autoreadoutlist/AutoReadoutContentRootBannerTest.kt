@@ -46,7 +46,7 @@ class AutoReadoutContentRootBannerTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
-                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to false),
+                        autoReadoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to false),
                         selectedItem = LmuWindowsAutoReadoutListItemType.TyreTemperature,
                     ),
                 onMove = { _, _ -> },
@@ -77,7 +77,7 @@ class AutoReadoutContentRootBannerTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
-                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
+                        autoReadoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
                         selectedItem = LmuWindowsAutoReadoutListItemType.TyreTemperature,
                     ),
                 onMove = { _, _ -> },
@@ -102,7 +102,7 @@ class AutoReadoutContentRootBannerTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
-                        readoutEnabledStates = emptyMap(),
+                        autoReadoutEnabledStates = emptyMap(),
                         selectedItem = LmuWindowsAutoReadoutListItemType.TyreTemperature,
                     ),
                 onMove = { _, _ -> },
@@ -127,7 +127,7 @@ class AutoReadoutContentRootBannerTest {
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
-                        readoutEnabledStates = emptyMap(),
+                        autoReadoutEnabledStates = emptyMap(),
                         selectedItem = LmuWindowsAutoReadoutListItemType.VehicleDamage,
                     ),
                 onMove = { _, _ -> },

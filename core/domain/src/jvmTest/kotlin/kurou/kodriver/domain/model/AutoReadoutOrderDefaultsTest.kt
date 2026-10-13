@@ -3,10 +3,10 @@ package kurou.kodriver.domain.model
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ReadoutOrderDefaultsTest {
+class AutoReadoutOrderDefaultsTest {
     @Test
     fun `LMUのデフォルト順序はフラッグが先頭で自己ベストが末尾`() {
-        val order = defaultReadoutOrder(Simulator.LmuWindows)
+        val order = defaultAutoReadoutOrder(Simulator.LmuWindows)
 
         assertEquals(LmuWindowsReadoutItemKey.Flag.Root, order.first())
         assertEquals(LmuWindowsReadoutItemKey.MyBestLap.Root, order.last())
@@ -31,7 +31,7 @@ class ReadoutOrderDefaultsTest {
                 Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
                 Gt7Ps5ReadoutItemKey.MyBestLap.Root,
             ),
-            defaultReadoutOrder(Simulator.Gt7Ps5),
+            defaultAutoReadoutOrder(Simulator.Gt7Ps5),
         )
     }
 
@@ -46,7 +46,7 @@ class ReadoutOrderDefaultsTest {
                 AceWindowsReadoutItemKey.TyreTemperature.Root,
                 AceWindowsReadoutItemKey.MyBestLap.Root,
             ),
-            defaultReadoutOrder(Simulator.AceWindows),
+            defaultAutoReadoutOrder(Simulator.AceWindows),
         )
     }
 }
