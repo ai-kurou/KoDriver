@@ -243,13 +243,18 @@ class MainActivityTest {
     }
 
     @Test
-    fun `アプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
-        launchActivity()
-        clickItem("その他")
-        scrollToItem("Android版KoDriverバージョン")
-        repeat(5) { clickItem("Android版KoDriverバージョン") }
-        waitUntilDisplayed("デバッグ状態")
-        navigateBack()
+    fun `LMU選択時にアプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
+        assertDebugStateScreen("Le Mans Ultimate（Windows版）")
+    }
+
+    @Test
+    fun `GT7選択時にアプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
+        assertDebugStateScreen("Gran Turismo 7（PS5）")
+    }
+
+    @Test
+    fun `ACE選択時にアプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
+        assertDebugStateScreen("Assetto Corsa EVO（Windows版）")
     }
 
     @Test
@@ -328,6 +333,24 @@ class MainActivityTest {
     // Desktop版(AppTest.kt)には「選択済みのログを再タップするとログ一覧に戻る」テストが存在するが、
     // Androidのコンパクト幅では詳細表示中は一覧ペインが画面上に存在せず、
     // 選択済み一覧項目の再タップを再現できないため移植していない。
+
+    private fun assertDebugStateScreen(simulatorName: String) {
+        launchActivity()
+        selectSimulator(simulatorName)
+        clickItem("その他")
+        scrollToItem("Android版KoDriverバージョン")
+        repeat(5) { clickItem("Android版KoDriverバージョン") }
+        waitUntilDisplayed("デバッグ状態")
+        // 各Paneに固定されたシミュレーター名をグリッド内で探し、ナビ項目だけで成功するのを防ぐ。
+        scrollToItem(simulatorName)
+        waitUntilDisplayed(simulatorName)
+        listOf(
+            "Le Mans Ultimate（Windows版）",
+            "Gran Turismo 7（PS5）",
+            "Assetto Corsa EVO（Windows版）",
+        ).filter { it != simulatorName }.forEach { waitUntilNotDisplayed(it) }
+        navigateBack()
+    }
 
     private fun launchActivity() {
         scenario = ActivityScenario.launch(MainActivity::class.java)
