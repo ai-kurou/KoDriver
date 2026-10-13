@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
@@ -25,6 +26,36 @@ class ManualReadoutListPaneScreenshotTest {
                 }
             }
 
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `ヘルプボトムシートホットキーあり`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                            ManualReadoutHintSheetContent(showHotkeyHint = true)
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `ヘルプボトムシートホットキーなし`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                            ManualReadoutHintSheetContent(showHotkeyHint = false)
+                        }
+                    }
+                }
+            }
             onRoot().captureRoboImage()
         }
 }
