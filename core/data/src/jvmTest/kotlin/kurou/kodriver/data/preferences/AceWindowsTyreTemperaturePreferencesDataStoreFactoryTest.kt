@@ -18,7 +18,7 @@ class AceWindowsTyreTemperaturePreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `ace_windows_tyre_temperature_preferences設定が正しいファイルに書き込まれる`() =
+    fun `ace_windows_auto_tyre_temperature_preferences設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createAceWindowsTyreTemperaturePreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(highThresholdCelsius = 100) }

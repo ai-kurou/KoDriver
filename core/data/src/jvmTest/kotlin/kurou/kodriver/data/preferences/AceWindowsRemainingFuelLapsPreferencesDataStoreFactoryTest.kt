@@ -18,7 +18,7 @@ class AceWindowsRemainingFuelLapsPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `ace_windows_remaining_fuel_laps_preferences設定が正しいファイルに書き込まれる`() =
+    fun `ace_windows_auto_remaining_fuel_laps_preferences設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createAceWindowsRemainingFuelLapsPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(thresholdLaps = 5) }

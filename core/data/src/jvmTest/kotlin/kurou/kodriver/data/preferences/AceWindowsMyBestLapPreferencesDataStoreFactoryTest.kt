@@ -15,7 +15,7 @@ class AceWindowsMyBestLapPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `ace_windows_my_best_lap_preferences設定が正しいファイルに書き込まれる`() =
+    fun `ace_windows_auto_my_best_lap_preferences設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createAceWindowsMyBestLapPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(voiceType = "casual") }
