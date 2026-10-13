@@ -28,7 +28,7 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
                     skipFirstLap = true,
                     startLeftReadoutText = "左注意",
                     startRightReadoutText = "",
-                    enabledStates = mapOf("lmu_windows_vehicle_approach_sustained" to false),
+                    enabledStates = mapOf("lmu_windows_auto_vehicle_approach_sustained" to false),
                     sustainedLeftReadoutText = "左継続",
                     sustainedRightReadoutText = "",
                 )

@@ -7,6 +7,6 @@ internal fun createGt7Ps5RemainingFuelPreferencesDataStore(
 ): DataStore<Gt7Ps5RemainingFuelPreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "gt7_ps5_remaining_fuel_preferences.pb",
+        fileName = "gt7_ps5_auto_remaining_fuel_preferences.pb",
         serializer = Gt7Ps5RemainingFuelPreferencesSerializer,
     )

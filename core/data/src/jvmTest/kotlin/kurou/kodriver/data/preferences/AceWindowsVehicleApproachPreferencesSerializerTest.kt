@@ -27,7 +27,7 @@ class AceWindowsVehicleApproachPreferencesSerializerTest {
                 AceWindowsVehicleApproachPreferences(
                     thresholdMeters = 7.0,
                     readoutText = "周囲に注意",
-                    enabledStates = mapOf("ace_windows_vehicle_approach_start_readout" to false),
+                    enabledStates = mapOf("ace_windows_auto_vehicle_approach_start_readout" to false),
                 )
             val output = ByteArrayOutputStream()
             AceWindowsVehicleApproachPreferencesSerializer.writeTo(original, output)

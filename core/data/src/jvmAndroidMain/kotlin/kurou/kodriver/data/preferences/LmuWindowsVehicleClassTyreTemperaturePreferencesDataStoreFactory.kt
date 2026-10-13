@@ -7,6 +7,6 @@ internal fun createLmuWindowsVehicleClassTyreTemperaturePreferencesDataStore(
 ): DataStore<LmuWindowsVehicleClassTyreTemperaturePreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "lmu_windows_vehicle_class_tyre_temperature_preferences.pb",
+        fileName = "lmu_windows_auto_vehicle_class_tyre_temperature_preferences.pb",
         serializer = LmuWindowsVehicleClassTyreTemperaturePreferencesSerializer,
     )

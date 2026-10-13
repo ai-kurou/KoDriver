@@ -93,7 +93,7 @@ class TelemetryLogRepositoryFactoryTest {
                 )
                 connection.execSQL(
                     "INSERT INTO telemetry_logs (createdAt, simulatorId, readoutItemKey, telemetryJson) " +
-                        "VALUES (2000, 'lmu_windows', 'lmu_windows_flag', '{}')",
+                        "VALUES (2000, 'lmu_windows', 'lmu_windows_auto_flag', '{}')",
                 )
                 connection.execSQL("PRAGMA user_version = 1")
             } finally {

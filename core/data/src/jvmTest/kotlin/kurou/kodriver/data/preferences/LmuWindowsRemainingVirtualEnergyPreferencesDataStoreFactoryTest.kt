@@ -21,6 +21,6 @@ class LmuWindowsRemainingVirtualEnergyPreferencesDataStoreFactoryTest {
             val dataStore = createLmuWindowsRemainingVirtualEnergyPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(thresholdPercentage = 50) }
 
-            assertTrue(tempDir.resolve("lmu_windows_remaining_virtual_energy_preferences.pb").exists())
+            assertTrue(tempDir.resolve("lmu_windows_auto_remaining_virtual_energy_preferences.pb").exists())
         }
 }

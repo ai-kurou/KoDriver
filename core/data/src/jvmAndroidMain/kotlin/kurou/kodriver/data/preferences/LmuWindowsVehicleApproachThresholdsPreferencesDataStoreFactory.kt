@@ -7,6 +7,6 @@ internal fun createLmuWindowsVehicleApproachThresholdsPreferencesDataStore(
 ): DataStore<LmuWindowsVehicleApproachThresholdsPreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "lmu_windows_vehicle_approach_thresholds_preferences.pb",
+        fileName = "lmu_windows_auto_vehicle_approach_thresholds_preferences.pb",
         serializer = LmuWindowsVehicleApproachThresholdsPreferencesSerializer,
     )

@@ -7,6 +7,6 @@ internal fun createLmuWindowsRemainingVirtualEnergyPreferencesDataStore(
 ): DataStore<LmuWindowsRemainingVirtualEnergyPreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "lmu_windows_remaining_virtual_energy_preferences.pb",
+        fileName = "lmu_windows_auto_remaining_virtual_energy_preferences.pb",
         serializer = LmuWindowsRemainingVirtualEnergyPreferencesSerializer,
     )

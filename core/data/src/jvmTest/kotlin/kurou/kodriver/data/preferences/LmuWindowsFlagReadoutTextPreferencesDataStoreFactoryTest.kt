@@ -21,6 +21,6 @@ class LmuWindowsFlagReadoutTextPreferencesDataStoreFactoryTest {
             val dataStore = createLmuWindowsFlagReadoutTextPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(sectorYellowFlagText = "イエロー、注意") }
 
-            assertTrue(tempDir.resolve("lmu_windows_flag_readout_text_preferences.pb").exists())
+            assertTrue(tempDir.resolve("lmu_windows_auto_flag_readout_text_preferences.pb").exists())
         }
 }

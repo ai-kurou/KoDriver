@@ -23,6 +23,6 @@ class LmuWindowsVehicleClassBrakeWearPreferencesDataStoreFactoryTest {
             val dataStore = createLmuWindowsVehicleClassBrakeWearPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(lowThresholdPercentByVehicleClass = mapOf("GTE" to 35)) }
 
-            assertTrue(tempDir.resolve("lmu_windows_vehicle_class_brake_wear_preferences.pb").exists())
+            assertTrue(tempDir.resolve("lmu_windows_auto_vehicle_class_brake_wear_preferences.pb").exists())
         }
 }

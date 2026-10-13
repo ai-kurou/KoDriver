@@ -23,6 +23,6 @@ class AceWindowsRemainingFuelLapsPreferencesDataStoreFactoryTest {
             val dataStore = createAceWindowsRemainingFuelLapsPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(thresholdLaps = 5) }
 
-            assertTrue(tempDir.resolve("ace_windows_remaining_fuel_laps_preferences.pb").exists())
+            assertTrue(tempDir.resolve("ace_windows_auto_remaining_fuel_laps_preferences.pb").exists())
         }
 }
