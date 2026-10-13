@@ -67,16 +67,24 @@ TARGETS="$(printf '%s\n' "$SNAPSHOT" | CLEANUP_WORKTREE="$WORKTREE" awk '
   }
 ')"
 
+process_identity() {
+  # PID再利用で別プロセスを終了しないよう、開始時刻とコマンドの組で同一性を判定する。
+  ps -o lstart=,command= -p "$1" 2>/dev/null
+}
+
 PIDS=()
-COMMANDS=()
+IDENTITIES=()
 ROOTS=()
 TOTAL=0
 ROOT_COUNT=0
 while IFS=$'\t' read -r pid root command; do
   [ -n "$pid" ] || continue
-  PIDS[$TOTAL]="$pid"
-  COMMANDS[$TOTAL]="$command"
-  ROOTS[$TOTAL]="$root"
+  identity="$(process_identity "$pid")" || continue
+  # スナップショット後に別コマンドへ置き換わったPIDは対象にしない。
+  case "$identity" in *"$command") ;; *) continue ;; esac
+  PIDS[TOTAL]="$pid"
+  IDENTITIES[TOTAL]="$identity"
+  ROOTS[TOTAL]="$root"
   TOTAL=$((TOTAL + 1))
   ROOT_COUNT=$((ROOT_COUNT + root))
 done <<< "$TARGETS"
@@ -86,14 +94,14 @@ if [ "$DRY_RUN" = true ]; then
   exit 0
 fi
 
-same_command() {
+same_process() {
   local current
-  current="$(ps -o command= -p "${PIDS[$1]}" 2>/dev/null)" || return 1
-  [ "$current" = "${COMMANDS[$1]}" ]
+  current="$(process_identity "${PIDS[$1]}")" || return 1
+  [ "$current" = "${IDENTITIES[$1]}" ]
 }
 
 for ((i = 0; i < TOTAL; i++)); do
-  if same_command "$i"; then
+  if same_process "$i"; then
     kill -TERM "${PIDS[$i]}" 2>/dev/null || true
   fi
 done
@@ -101,27 +109,32 @@ if [ "$TOTAL" -gt 0 ]; then
   sleep 3
 fi
 for ((i = 0; i < TOTAL; i++)); do
-  if same_command "$i"; then
+  if same_process "$i"; then
     kill -KILL "${PIDS[$i]}" 2>/dev/null || true
   fi
 done
 
-# 終了後のスナップショットで、記録したコマンドが残っているかを確認する。
-AFTER="$(ps -axo pid=,command=)"
+# KILLは消滅を待たないため、上限付きで終了を待ってから集計する。
+for ((attempt = 0; attempt < 10; attempt++)); do
+  alive=false
+  for ((i = 0; i < TOTAL; i++)); do
+    if same_process "$i"; then alive=true; break; fi
+  done
+  [ "$alive" = true ] || break
+  sleep 0.5
+done
+
 ENDED_ROOTS=0
 ENDED_TOTAL=0
 for ((i = 0; i < TOTAL; i++)); do
-  if ! printf '%s\n' "$AFTER" | CLEANUP_COMMAND="${COMMANDS[$i]}" awk -v pid="${PIDS[$i]}" '
-    $1 == pid {
-      sub(/^[[:space:]]*[0-9]+[[:space:]]+/, "")
-      if ($0 == ENVIRON["CLEANUP_COMMAND"]) found = 1
-    }
-    END { exit !found }
-  '; then
+  if ! same_process "$i"; then
     ENDED_TOTAL=$((ENDED_TOTAL + 1))
     ENDED_ROOTS=$((ENDED_ROOTS + ROOTS[i]))
   fi
 done
-REMAINING="$(ps -axo command= | awk '/codex/ { count++ } END { print count + 0 }')"
+# このスクリプト自身や集計用awkを数えないよう、パターンは環境変数で渡し自PIDを除外する。
+REMAINING="$(ps -axo pid=,command= | \
+  CODEX_PATTERN='openai-codex/codex/|/codex app-server|codex-darwin-|/bin/codex( |$)' \
+  awk -v self="$$" '$1 != self && $0 ~ ENVIRON["CODEX_PATTERN"] { count++ } END { print count + 0 }')"
 printf '終了ルート数: %d、終了総数: %d、残存 codex プロセス数: %d\n' \
   "$ENDED_ROOTS" "$ENDED_TOTAL" "$REMAINING"
