@@ -1,0 +1,119 @@
+package kurou.kodriver.feature.lmuwindowsautoreadout.tyreweardetail
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
+import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
+
+internal data class TyreWearUseCases(
+    val observeThresholdPercentage: ObserveLmuWindowsTyreWearThresholdPercentageUseCase,
+    val saveThresholdPercentage: SaveLmuWindowsTyreWearThresholdPercentageUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeText: ObserveLmuWindowsTyreWearReadoutTextUseCase,
+    val saveText: SaveLmuWindowsTyreWearReadoutTextUseCase,
+)
+
+internal data class TyreWearReadoutUseCases(
+    val playSpeechEvent: PlaySpeechEventUseCase,
+    val stopSpeech: StopSpeechUseCase,
+    val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
+)
+
+internal class LmuWindowsAutoReadoutTyreWearDetailViewModel(
+    private val tyreWearUseCases: TyreWearUseCases,
+    readout: TyreWearReadoutUseCases,
+) : ViewModel() {
+    private val previewHelper =
+        ReadoutSpeechEventPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playSpeechEvent,
+            readout.stopSpeech,
+        )
+
+    /** 詳細ペインを離れると試聴を止める。 */
+    fun onPreviewStopped() = previewHelper.stop()
+
+    val uiState: StateFlow<LmuWindowsAutoReadoutTyreWearDetailUiState> =
+        combine(
+            tyreWearUseCases.observeThresholdPercentage(),
+            tyreWearUseCases.observeReadoutEnabledStates(Simulator.LmuWindows.id),
+            tyreWearUseCases.observeText(),
+            previewHelper.textToSpeechAvailable,
+        ) { thresholdPercentage, enabledStates, text, available ->
+            LmuWindowsAutoReadoutTyreWearDetailUiState(
+                thresholdPercentage = thresholdPercentage,
+                readoutText = text,
+                isTextToSpeechAvailable = available,
+                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreWear.WarningReadout),
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LmuWindowsAutoReadoutTyreWearDetailUiState(),
+        )
+
+    fun onReadoutTextChanged(text: String) {
+        viewModelScope.launch { tyreWearUseCases.saveText(text) }
+    }
+
+    /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
+    fun onReadoutTextPreviewClicked(text: String) {
+        val percentage = uiState.value.thresholdPercentage
+        val formattedText = formatLmuWindowsTyreWearReadoutText(text, percentage)
+        viewModelScope.launch {
+            previewHelper.preview(
+                formattedText,
+                LmuWindowsTyreWearWarning(
+                    percentage = percentage,
+                    resolvedText = formattedText,
+                ),
+            )
+        }
+    }
+
+    fun onThresholdChanged(percentage: Int) {
+        viewModelScope.launch { tyreWearUseCases.saveThresholdPercentage(percentage) }
+    }
+
+    fun onThresholdReset() {
+        viewModelScope.launch {
+            tyreWearUseCases.saveThresholdPercentage(
+                LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT,
+            )
+        }
+    }
+
+    fun onEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            tyreWearUseCases.saveReadoutEnabledState(
+                Simulator.LmuWindows.id,
+                LmuWindowsReadoutItemKey.TyreWear.WarningReadout,
+                enabled,
+            )
+        }
+    }
+}

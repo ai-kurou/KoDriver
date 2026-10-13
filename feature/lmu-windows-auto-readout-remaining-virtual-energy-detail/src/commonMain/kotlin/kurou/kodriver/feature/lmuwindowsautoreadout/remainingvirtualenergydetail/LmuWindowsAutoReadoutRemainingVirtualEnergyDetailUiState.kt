@@ -1,0 +1,11 @@
+package kurou.kodriver.feature.lmuwindowsautoreadout.remainingvirtualenergydetail
+
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
+
+internal data class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailUiState(
+    val thresholdPercentage: Int = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT,
+    val readoutText: String = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT,
+    val isTextToSpeechAvailable: Boolean = false,
+    val enabled: Boolean = true,
+)

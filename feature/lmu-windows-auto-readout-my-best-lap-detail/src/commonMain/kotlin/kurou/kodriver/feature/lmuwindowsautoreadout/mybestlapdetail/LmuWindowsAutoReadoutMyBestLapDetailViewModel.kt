@@ -1,0 +1,99 @@
+package kurou.kodriver.feature.lmuwindowsautoreadout.mybestlapdetail
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
+import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsMyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
+
+/**
+ * LMU 自己ベストラップアナウンス詳細設定の ViewModel。
+ *
+ * 自己ベストラップ更新の有効/無効・文言はいずれも DataStore に永続化される。
+ */
+internal data class MyBestLapUseCases(
+    val observeEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
+internal data class MyBestLapReadoutUseCases(
+    val observeText: ObserveLmuWindowsMyBestLapReadoutTextUseCase,
+    val saveText: SaveLmuWindowsMyBestLapReadoutTextUseCase,
+    val speakText: SpeakTextUseCase,
+    val playStartSoundForKey: PlayStartSoundForKeyUseCase,
+    val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
+)
+
+internal class LmuWindowsAutoReadoutMyBestLapDetailViewModel(
+    private val myBestLapUseCases: MyBestLapUseCases,
+    private val readout: MyBestLapReadoutUseCases,
+) : ViewModel() {
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playStartSoundForKey,
+            readout.speakText,
+        )
+
+    val uiState: StateFlow<LmuWindowsAutoReadoutMyBestLapDetailUiState> =
+        combine(
+            myBestLapUseCases.observeEnabledStates(Simulator.LmuWindows.id),
+            readout.observeText(),
+            preview.textToSpeechAvailable,
+        ) { states, text, available ->
+            LmuWindowsAutoReadoutMyBestLapDetailUiState(
+                enabled = states.readoutEnabled(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled),
+                readoutText = text,
+                isTextToSpeechAvailable = available,
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LmuWindowsAutoReadoutMyBestLapDetailUiState(),
+        )
+
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
+    fun onEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            myBestLapUseCases.saveEnabledState(
+                Simulator.LmuWindows.id,
+                LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
+                enabled,
+            )
+        }
+    }
+
+    fun onReadoutTextChanged(text: String) {
+        viewModelScope.launch { readout.saveText(text) }
+    }
+
+    /** サンプルタイムに置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
+    fun onReadoutTextPreviewClicked(text: String) {
+        val formattedText = formatLmuWindowsMyBestLapReadoutText(text, 83_456L)
+        previewText(formattedText)
+    }
+
+    private fun previewText(text: String) {
+        preview.onPreviewClicked(text, LmuWindowsReadoutItemKey.MyBestLap.Root)
+    }
+}

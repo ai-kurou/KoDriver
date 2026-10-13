@@ -6,7 +6,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
-// detailPane（LmuWindowsReadoutVehicleApproachDetailViewModel）・Narrator（LmuWindowsNarratorViewModel）が
+// detailPane（LmuWindowsAutoReadoutVehicleApproachDetailViewModel）・Narrator（LmuWindowsNarratorViewModel）が
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val vehicleApproachEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(

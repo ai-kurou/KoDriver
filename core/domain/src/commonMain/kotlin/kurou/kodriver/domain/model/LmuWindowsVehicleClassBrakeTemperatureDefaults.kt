@@ -10,7 +10,7 @@ const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNK
 
 /**
  * 車両クラスごとの過熱警告閾値のデフォルト値（摂氏）。現時点では全クラス共通の800℃を既定値とし、
- * クラスごとの個別最適値はユーザーが `feature:lmu-windows-readout-brake-temperature-detail` から調整する。
+ * クラスごとの個別最適値はユーザーが `feature:lmu-windows-auto-readout-brake-temperature-detail` から調整する。
  */
 fun lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(vehicleClass: LmuWindowsVehicleClassData): Int =
     when (vehicleClass) {
