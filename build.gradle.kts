@@ -42,6 +42,8 @@ fun BaseYarnRootExtension.configureDependencyResolutions() {
     resolution("webpack-dev-server", "6.0.0")
     resolution("webpack", "5.111.1")
     resolution("webpack-cli", "7.2.3")
+    resolution("compression", "1.8.2")
+    resolution("source-map-js", "1.2.2")
     resolution("ws", "8.22.0")
 }
 
@@ -584,7 +586,7 @@ dependencies {
     kover(project(":feature:other-voice-speed-detail"))
     kover(project(":feature:other-voice-pitch-detail"))
     kover(project(":feature:other-feedback-detail"))
-    kover(project(":feature:readout-list"))
+    kover(project(":feature:auto-readout-list"))
     kover(project(":feature:lmu-windows-readout-vehicle-approach-detail"))
     kover(project(":feature:lmu-windows-readout-flag-detail"))
     kover(project(":feature:lmu-windows-readout-my-best-lap-detail"))
@@ -651,7 +653,7 @@ dependencies {
     dokka(project(":feature:other-voice-speed-detail"))
     dokka(project(":feature:other-voice-pitch-detail"))
     dokka(project(":feature:other-feedback-detail"))
-    dokka(project(":feature:readout-list"))
+    dokka(project(":feature:auto-readout-list"))
     dokka(project(":feature:lmu-windows-readout-vehicle-approach-detail"))
     dokka(project(":feature:lmu-windows-readout-flag-detail"))
     dokka(project(":feature:lmu-windows-readout-my-best-lap-detail"))

@@ -1,6 +1,6 @@
 # コーディング規約
 
-- Compose の状態管理は `StateFlow` + `ViewModel`（`ReadoutListViewModel` を参照）。
+- Compose の状態管理は `StateFlow` + `ViewModel`（`AutoReadoutListViewModel` を参照）。
 - `LmuWindowsRepository.telemetryStream()` は `Flow<LmuWindowsTelemetryData>` を emit する cold flow として実装する。ポーリング間隔デフォルトは 16ms（`LmuWindowsSharedMemorySource` の `pollingIntervalMs`、≈60fps）。
 - 共有メモリのパースロジックは `internal object XxxMapper` に隔離し、ドメイン層には持ち込まない。
 - `core:data` は `kotlinMultiplatform` プラグイン（JVM + Android ターゲット）を使用する。JVM 実装は `src/jvmMain/kotlin`、Android 実装は `src/androidMain/kotlin` に置く。
@@ -19,7 +19,7 @@ ListPane・DetailPane の見出しは、画面の階層（見出し → セク�
 
 | 階層 | スタイル | 色 |
 |---|---|---|
-| ListPane のページ見出し（例: `ReadoutListPane` の「読み上げ優先度」） | `titleMedium` | `onSurface` |
+| ListPane のページ見出し（例: `AutoReadoutListPane` の「読み上げ優先度」） | `titleMedium` | `onSurface` |
 | DetailPane のセクション見出し（`DetailPaneSubtitle`） | `titleSmall` | `primary` |
 | カード・項目のタイトル（`DetailPaneCard` 等） | `bodyLarge` | `onSurface` |
 

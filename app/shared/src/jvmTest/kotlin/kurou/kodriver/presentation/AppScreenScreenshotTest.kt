@@ -27,10 +27,10 @@ import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.buildlogic.screenshottest.singlePaneDirective
+import kurou.kodriver.feature.autoreadoutlist.AutoReadoutContent
+import kurou.kodriver.feature.autoreadoutlist.autoReadoutListModule
+import kurou.kodriver.feature.autoreadoutlist.fakeAutoReadoutListModule
 import kurou.kodriver.feature.otherlist.OtherListUiState
-import kurou.kodriver.feature.readoutlist.ReadoutContent
-import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
-import kurou.kodriver.feature.readoutlist.readoutListModule
 import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.telemetryLogListModule
@@ -54,9 +54,9 @@ class AppScreenScreenshotTest {
             startKoin {
                 modules(
                     listOf(
-                        fakeReadoutListModule,
+                        fakeAutoReadoutListModule,
                         fakeTelemetryLogListModule,
-                        readoutListModule,
+                        autoReadoutListModule,
                         telemetryLogListModule,
                     ),
                 )
@@ -87,7 +87,7 @@ class AppScreenScreenshotTest {
                             ),
                         hasAppUpdate = true,
                         readoutContent = {
-                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                            AutoReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
                 }
@@ -169,7 +169,7 @@ class AppScreenScreenshotTest {
                             ),
                         hasAppUpdate = true,
                         readoutContent = {
-                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                            AutoReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
                 }
@@ -197,7 +197,7 @@ class AppScreenScreenshotTest {
                             ),
                         hasAppUpdate = true,
                         readoutContent = {
-                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                            AutoReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
                 }
@@ -279,7 +279,7 @@ class AppScreenScreenshotTest {
                             ),
                         hasAppUpdate = true,
                         readoutContent = {
-                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                            AutoReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
                 }
@@ -307,7 +307,7 @@ class AppScreenScreenshotTest {
                             ),
                         hasAppUpdate = false,
                         readoutContent = {
-                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                            AutoReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
                 }

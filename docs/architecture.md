@@ -46,7 +46,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-volume-detail` | その他画面の読み上げ音量設定詳細 | [図](graphs/feature-other-volume-detail.svg) |
 | `:feature:other-voice-detail` | その他画面の読み上げ音声設定詳細 | [図](graphs/feature-other-voice-detail.svg) |
 | `:feature:other-feedback-detail` | その他画面のフィードバック送信詳細 | [図](graphs/feature-other-feedback-detail.svg) |
-| `:feature:readout-list` | アナウンス項目の一覧表示・有効/無効の切り替え・優先度のドラッグ&リオーダー | [図](graphs/feature-readout-list.svg) |
+| `:feature:auto-readout-list` | アナウンス項目の一覧表示・有効/無効の切り替え・優先度のドラッグ&リオーダー | [図](graphs/feature-auto-readout-list.svg) |
 | `:feature:lmu-windows-readout-flag-detail` | フラッグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-flag-detail.svg) |
 | `:feature:lmu-windows-readout-my-best-lap-detail` | LMU 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-my-best-lap-detail.svg) |
 | `:feature:lmu-windows-readout-vehicle-approach-detail` | 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-vehicle-approach-detail.svg) |
