@@ -41,7 +41,7 @@ class AppScreenManualReadoutTabTest {
             )
         }
 
-        val labels = listOf("自動読み上げ", "手動読み上げ", "ログ", "その他")
+        val labels = listOf("自動", "手動", "ログ", "その他")
         labels.forEach { rule.onNodeWithText(it).assertIsDisplayed() }
         val bounds = labels.map { rule.onNodeWithText(it).fetchSemanticsNode().boundsInRoot }
         bounds.zipWithNext().forEach { (previous, next) ->
@@ -53,18 +53,18 @@ class AppScreenManualReadoutTabTest {
         }
 
         listOf(
-            "自動読み上げ" to "読み上げ画面",
+            "自動" to "読み上げ画面",
             "ログ" to "ログ画面",
             "その他" to "その他画面",
         ).forEach { (label, content) ->
-            if (label != "自動読み上げ") {
+            if (label != "自動") {
                 rule.onNodeWithText(label).performClick()
                 rule.waitForIdle()
             }
             repeat(2) {
-                rule.onNodeWithText("手動読み上げ").performClick()
+                rule.onNodeWithText("手動").performClick()
                 rule.waitForIdle()
-                rule.onNodeWithText("手動読み上げ").assertIsNotSelected()
+                rule.onNodeWithText("手動").assertIsNotSelected()
                 rule.onNodeWithText(label).assertIsSelected()
                 rule.onNodeWithText(content).assertIsDisplayed()
             }

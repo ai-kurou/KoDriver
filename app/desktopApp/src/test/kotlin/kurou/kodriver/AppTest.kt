@@ -263,7 +263,7 @@ class AppTest {
         selectSimulator("Gran Turismo 7（PS5）")
         waitUntilDisplayed("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         clickItem("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
-        clickItem("自動読み上げ")
+        clickItem("自動")
     }
 
     @Test
@@ -329,8 +329,8 @@ class AppTest {
 
         clickItem("ログ")
         waitUntilDisplayed("Le Mans Ultimate（Windows版）のログはまだありません")
-        waitUntilDisplayed("手動読み上げ")
-        clickItem("手動読み上げ")
+        waitUntilDisplayed("手動")
+        clickItem("手動")
         waitUntilDisplayed("Le Mans Ultimate（Windows版）のログはまだありません")
         waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
     }

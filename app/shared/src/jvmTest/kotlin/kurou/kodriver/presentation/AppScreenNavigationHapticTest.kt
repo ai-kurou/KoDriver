@@ -37,13 +37,13 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動読み上げ", "ログ", "その他").forEachIndexed { index, label ->
+        listOf("自動", "ログ", "その他").forEachIndexed { index, label ->
             if (index > 0) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
             }
             repeat(2) {
-                rule.onNode(hasText("手動読み上げ")).performClick()
+                rule.onNode(hasText("手動")).performClick()
                 rule.waitForIdle()
             }
             assertEquals(List(index) { HapticFeedbackType.ContextClick }, haptic.performedTypes)
@@ -62,7 +62,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動読み上げ", "ログ", "その他").forEach { label ->
+        listOf("自動", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -120,7 +120,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動読み上げ", "ログ", "その他").forEach { label ->
+        listOf("自動", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -168,7 +168,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動読み上げ", "ログ", "その他").forEach { label ->
+        listOf("自動", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -226,7 +226,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動読み上げ", "ログ", "その他").forEach { label ->
+        listOf("自動", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
