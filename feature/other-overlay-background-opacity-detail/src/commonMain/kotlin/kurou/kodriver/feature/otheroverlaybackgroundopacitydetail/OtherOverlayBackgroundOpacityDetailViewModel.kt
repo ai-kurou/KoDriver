@@ -51,6 +51,12 @@ internal class OtherOverlayBackgroundOpacityDetailViewModel(
         }
     }
 
+    /** ペインが破棄されたときに、未保存のプレビューを解除して保存値へ戻す。 */
+    fun onPreviewStopped() {
+        selectionRequest++
+        previewOverlayBackgroundOpacity(null)
+    }
+
     override fun onCleared() {
         previewOverlayBackgroundOpacity(null)
         super.onCleared()

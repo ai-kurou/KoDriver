@@ -120,6 +120,28 @@ class OtherOverlayBackgroundOpacityDetailViewModelTest {
         }
 
     @Test
+    fun `ペイン破棄でプレビューを解除し先行保存の完了で解除を重複させない`() =
+        runTest(testDispatcher) {
+            every { repository.observeOverlayBackgroundOpacity() } returns opacityFlow
+            every { repository.setPreviewOverlayBackgroundOpacity(80) } returns Unit
+            every { repository.setPreviewOverlayBackgroundOpacity(null) } returns Unit
+            val saved = CompletableDeferred<Unit>()
+            coEvery { repository.saveOverlayBackgroundOpacity(80) } coAnswers { saved.await() }
+            val viewModel = createViewModel()
+
+            viewModel.onOpacityPreview(80)
+            viewModel.onOpacityChanged(80)
+            viewModel.onPreviewStopped()
+            saved.complete(Unit)
+
+            verify(exactly = 1) { repository.observeOverlayBackgroundOpacity() }
+            verify(exactly = 1) { repository.setPreviewOverlayBackgroundOpacity(80) }
+            coVerify(exactly = 1) { repository.saveOverlayBackgroundOpacity(80) }
+            verify(exactly = 1) { repository.setPreviewOverlayBackgroundOpacity(null) }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `ViewModel破棄でプレビューを解除する`() =
         runTest(testDispatcher) {
             every { repository.observeOverlayBackgroundOpacity() } returns opacityFlow
