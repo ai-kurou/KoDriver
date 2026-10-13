@@ -1,6 +1,6 @@
 # list/detail ペイン切り替えの Navigation 3 パターン
 
-`ReadoutContent.kt`（`feature:readout-list`）・`OtherContent.kt`（`app:shared`）・`TelemetryLogContent.kt`（`feature:telemetry-log-list`）は、`Material3 Adaptive` の `ListDetailPaneScaffold` と並行して、Navigation 3 の `NavBackStack<NavKey>` を「現在どちらのペインを表示しているか」の状態として保持する共通パターンを使う。新しく list/detail 構成の画面を追加する場合は、これらの実装（`XxxNavigationState.kt` とその `XxxNavigationStateTest.kt`）を参照すること。
+`AutoReadoutContent.kt`（`feature:auto-readout-list`）・`OtherContent.kt`（`app:shared`）・`TelemetryLogContent.kt`（`feature:telemetry-log-list`）は、`Material3 Adaptive` の `ListDetailPaneScaffold` と並行して、Navigation 3 の `NavBackStack<NavKey>` を「現在どちらのペインを表示しているか」の状態として保持する共通パターンを使う。新しく list/detail 構成の画面を追加する場合は、これらの実装（`XxxNavigationState.kt` とその `XxxNavigationStateTest.kt`）を参照すること。
 
 - `internal enum class XxxPaneDestination : NavKey { List, Detail }` でペインの宛先を定義する。
 - `internal class XxxNavigationState(val backStack: NavBackStack<NavKey>)` が `current`（`backStack.lastOrNull() as? XxxPaneDestination ?: XxxPaneDestination.List`）と `navigateTo(destination)`（現在と異なる場合のみ `clear()` してから `add()` する置き換え）を提供する。

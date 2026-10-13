@@ -6,7 +6,7 @@ Android / Desktop / Web の各 `app` から共通利用される、アプリ全�
 
 - `AppScreen.kt` / `AppScreenEffects.kt`: アプリ全体のトップレベル画面（ボトムナビゲーション、コネクションバナー等の配置）と副作用処理。
 - `AppNavigationState.kt`: アプリ全体のトップレベルナビゲーション状態。
-- `OtherContent.kt` / `OtherNavigationState.kt`: 「その他」タブの list/detail 画面。`ReadoutContent.kt`（`feature:readout-list`）と同様に `Material3 Adaptive` の `ListDetailPaneScaffold` と Navigation 3 の `NavBackStack` を組み合わせるパターンを使う（詳細は `docs/list-detail-navigation-pattern.md` を参照）。
+- `OtherContent.kt` / `OtherNavigationState.kt`: 「その他」タブの list/detail 画面。`AutoReadoutContent.kt`（`feature:auto-readout-list`）と同様に `Material3 Adaptive` の `ListDetailPaneScaffold` と Navigation 3 の `NavBackStack` を組み合わせるパターンを使う（詳細は `docs/list-detail-navigation-pattern.md` を参照）。
 - `FeatureModules.kt`: `:feature:*` 各モジュールの Koin モジュールを束ねた `featureModules` リスト。新しい feature モジュールを追加した際はここに追記する。
 - `ConnectionBanner.kt` / `ConnectionBannerContent.kt` / `ConnectionBannerNavigation.kt` / `ConnectionBannerSnackbarMessage.kt`: シミュレーター接続状態を示すバナーの表示・タップ時の遷移先解決・Snackbarメッセージ。
 - `TtsUnavailableBanner.kt` / `TtsUnavailableDialog.kt`: 接続バナーの下に、TTS利用不可の間だけ赤い警告バナーを表示する。起動・復帰時に再判定し、バナーのタップで原因別の案内を開く。「その他」と同じインストール先・設定を開き、案内を閉じてもバナーから再表示できる。利用可能になるとバナーと案内を非表示にする。

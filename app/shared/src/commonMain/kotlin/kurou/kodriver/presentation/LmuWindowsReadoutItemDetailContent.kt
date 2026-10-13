@@ -1,6 +1,7 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.runtime.Composable
+import kurou.kodriver.feature.autoreadoutlist.LmuWindowsAutoReadoutListItemType
 import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.LmuWindowsReadoutBrakeTemperatureDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.LmuWindowsReadoutBrakeWearDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
@@ -11,48 +12,47 @@ import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.LmuWindows
 import kurou.kodriver.feature.lmuwindowsreadout.tyreweardetail.LmuWindowsReadoutTyreWearDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
-import kurou.kodriver.feature.readoutlist.LmuWindowsReadoutListItemType
 
 @Composable
-internal fun LmuWindowsReadoutItemDetailContent(itemType: LmuWindowsReadoutListItemType) {
+internal fun LmuWindowsReadoutItemDetailContent(itemType: LmuWindowsAutoReadoutListItemType) {
     when (itemType) {
-        LmuWindowsReadoutListItemType.VehicleApproach -> {
+        LmuWindowsAutoReadoutListItemType.VehicleApproach -> {
             LmuWindowsReadoutVehicleApproachDetailPane()
         }
 
-        LmuWindowsReadoutListItemType.Flag -> {
+        LmuWindowsAutoReadoutListItemType.Flag -> {
             LmuWindowsReadoutFlagDetailPane()
         }
 
-        LmuWindowsReadoutListItemType.VehicleDamage -> {
+        LmuWindowsAutoReadoutListItemType.VehicleDamage -> {
             LmuWindowsReadoutVehicleDamageDetailPane()
         }
 
-        LmuWindowsReadoutListItemType.TyreTemperature -> {
+        LmuWindowsAutoReadoutListItemType.TyreTemperature -> {
             LmuWindowsReadoutTyreTemperatureDetailPane()
         }
 
-        LmuWindowsReadoutListItemType.PitTiming -> {
+        LmuWindowsAutoReadoutListItemType.PitTiming -> {
             LmuWindowsReadoutPitTimingDetailPane()
         }
 
-        LmuWindowsReadoutListItemType.RemainingVirtualEnergy -> {
+        LmuWindowsAutoReadoutListItemType.RemainingVirtualEnergy -> {
             LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
         }
 
-        LmuWindowsReadoutListItemType.TyreWear -> {
+        LmuWindowsAutoReadoutListItemType.TyreWear -> {
             LmuWindowsReadoutTyreWearDetailPane()
         }
 
-        LmuWindowsReadoutListItemType.BrakeTemperature -> {
+        LmuWindowsAutoReadoutListItemType.BrakeTemperature -> {
             LmuWindowsReadoutBrakeTemperatureDetailPane()
         }
 
-        LmuWindowsReadoutListItemType.BrakeWear -> {
+        LmuWindowsAutoReadoutListItemType.BrakeWear -> {
             LmuWindowsReadoutBrakeWearDetailPane()
         }
 
-        LmuWindowsReadoutListItemType.MyBestLap -> {
+        LmuWindowsAutoReadoutListItemType.MyBestLap -> {
             LmuWindowsReadoutMyBestLapDetailPane()
         }
     }
