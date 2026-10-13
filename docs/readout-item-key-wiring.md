@@ -1,7 +1,7 @@
 # ReadoutItemKey の配線（listPane / detailPane と Narrator の読み上げ判定の一致）
 
 
-自動読み上げの保存キーとシミュレーター別DataStoreファイル名は、`lmu_windows_` / `ace_windows_` / `gt7_ps5_` の直後に `auto_` を置く。共通の一覧設定は `auto_readout_preferences.pb` に保存する。`auto_` 導入時はユーザー了承のもと設定を意図的に初期化し、旧値・旧ファイルの移行は行わない。開始音・ホットキーなど自動読み上げ以外の設定ファイル名は変更しない。
+自動読み上げの保存キーとシミュレーター別DataStoreファイル名は、`lmu_windows_` / `ace_windows_` / `gt7_ps5_` の直後に `auto_` を置く。共通の一覧設定は Desktop では `auto_readout_preferences.pb`、Android では `auto_readout_preferences.preferences_pb` に保存する。`auto_` 導入時はユーザー了承のもと設定を意図的に初期化し、設定の旧値・旧ファイルの移行は行わない。テレメトリログは Room の 4→5 マイグレーションで旧キーを新キーへ変換して保持する。開始音・ホットキーなど自動読み上げ以外の設定ファイル名は変更しない。
 `ReadoutItemKey` は、読み上げ一覧画面（listPane）のトップレベルの項目スイッチと、各機能の詳細画面（detailPane）内のサブトグルの両方で使われる共通のキー空間である。listPane のスイッチは「その項目を Narrator で読み上げるかどうか」に一致する仕様であり、detailPane のサブトグルは「その項目内のどのイベントを読み上げるか」を絞り込む仕様である。
 
 `ReadoutItemKey` を新設・変更する際は、以下の両方を必ず確認すること。

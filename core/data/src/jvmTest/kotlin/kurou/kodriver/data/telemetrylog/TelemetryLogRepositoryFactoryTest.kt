@@ -77,7 +77,7 @@ class TelemetryLogRepositoryFactoryTest {
         }
 
     @Test
-    fun `バージョン1のDBファイルを開くとマイグレーションで既存ログを保持する`() =
+    fun `バージョン1のDBファイルを最新へ移行すると旧キーのログを新キーで読み取れる`() =
         runTest {
             val directory = Files.createTempDirectory("kodriver_telemetry_log_migration_test").toFile()
             val dbFile = directory.resolve("telemetry_logs.db")
@@ -93,7 +93,7 @@ class TelemetryLogRepositoryFactoryTest {
                 )
                 connection.execSQL(
                     "INSERT INTO telemetry_logs (createdAt, simulatorId, readoutItemKey, telemetryJson) " +
-                        "VALUES (2000, 'lmu_windows', 'lmu_windows_auto_flag', '{}')",
+                        "VALUES (2000, 'lmu_windows', 'lmu_windows_flag', '{}')",
                 )
                 connection.execSQL("PRAGMA user_version = 1")
             } finally {
