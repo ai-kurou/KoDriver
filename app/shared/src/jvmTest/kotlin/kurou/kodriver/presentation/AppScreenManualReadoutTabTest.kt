@@ -32,10 +32,10 @@ class AppScreenManualReadoutTabTest {
         rule.setContent {
             AppScreenContent(
                 layoutType = layoutType,
-                onReadoutTabReselected = { reselectedCount++ },
+                onAutoReadoutTabReselected = { reselectedCount++ },
                 onLogTabReselected = { reselectedCount++ },
                 onOtherTabReselected = { reselectedCount++ },
-                readoutContent = { Text("読み上げ画面") },
+                autoReadoutContent = { Text("読み上げ画面") },
                 telemetryLogContent = { _, _ -> Text("ログ画面") },
                 otherContent = { _, _ -> Text("その他画面") },
             )
