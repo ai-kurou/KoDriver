@@ -7,6 +7,6 @@ internal fun createLmuWindowsVehicleDamagePreferencesDataStore(
 ): DataStore<LmuWindowsVehicleDamagePreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "lmu_windows_vehicle_damage_preferences.pb",
+        fileName = "lmu_windows_auto_vehicle_damage_preferences.pb",
         serializer = LmuWindowsVehicleDamagePreferencesSerializer,
     )

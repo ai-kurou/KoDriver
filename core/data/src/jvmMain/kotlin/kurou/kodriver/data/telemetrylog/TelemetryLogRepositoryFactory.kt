@@ -20,6 +20,7 @@ fun createTelemetryLogRepository(directory: String): TelemetryLogRepository {
                 TELEMETRY_LOG_MIGRATION_1_2,
                 TELEMETRY_LOG_MIGRATION_2_3,
                 TELEMETRY_LOG_MIGRATION_3_4,
+                TELEMETRY_LOG_MIGRATION_4_5,
             )
             // マイグレーション未対応のテーブルのみを破棄する。true にすると
             // 将来他のテーブルを追加した際、無関係なテーブルまで巻き添えで

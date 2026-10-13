@@ -92,7 +92,7 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
                     tyreWearReadoutText = "タイヤ予告",
                     tyreWearImminentReadoutText = "タイヤ直前",
                 )
-            tempDir.resolve("lmu_windows_pit_timing_preferences.pb").outputStream().use {
+            tempDir.resolve("lmu_windows_auto_pit_timing_preferences.pb").outputStream().use {
                 LmuWindowsPitTimingPreferencesSerializer.writeTo(original, it)
             }
             val repositories = createLmuWindowsPitTimingPreferencesRepository(tempDir.absolutePath)

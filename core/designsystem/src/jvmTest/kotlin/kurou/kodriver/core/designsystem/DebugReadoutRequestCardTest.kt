@@ -26,10 +26,10 @@ class DebugReadoutRequestCardTest {
         var sent = ""
         rule.setContent {
             KoDriverTheme {
-                var key by remember { mutableStateOf("gt7_ps5_my_best_lap") }
+                var key by remember { mutableStateOf("gt7_ps5_auto_my_best_lap") }
                 var text by remember { mutableStateOf("") }
                 DebugReadoutRequestCard(
-                    readoutItemKeyValues = listOf("gt7_ps5_my_best_lap", "gt7_ps5_remaining_fuel"),
+                    readoutItemKeyValues = listOf("gt7_ps5_auto_my_best_lap", "gt7_ps5_auto_remaining_fuel"),
                     selectedReadoutItemKeyValue = key,
                     text = text,
                     onReadoutItemSelected = {
@@ -44,7 +44,7 @@ class DebugReadoutRequestCardTest {
         rule.onNodeWithText("読み上げ").assertIsNotEnabled()
         rule.onNodeWithTag("debug_readout_request_item").performClick()
         rule.onNodeWithText("燃料残量").performClick()
-        assertEquals("gt7_ps5_remaining_fuel", selected)
+        assertEquals("gt7_ps5_auto_remaining_fuel", selected)
         rule.onNodeWithTag("debug_readout_request_text").performTextReplacement(" ")
         rule.onNodeWithText("読み上げ").assertIsNotEnabled()
         rule.onNodeWithTag("debug_readout_request_text").performTextReplacement("入力 {laps}")

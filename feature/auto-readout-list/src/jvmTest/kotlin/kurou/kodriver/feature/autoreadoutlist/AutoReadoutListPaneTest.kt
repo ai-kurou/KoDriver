@@ -496,7 +496,7 @@ class AutoReadoutListPaneTest {
             }
         }
 
-        rule.onNodeWithTag("autoReadoutListQueueBlankTouchTarget:lmu_windows_vehicle_approach").performClick()
+        rule.onNodeWithTag("autoReadoutListQueueBlankTouchTarget:lmu_windows_auto_vehicle_approach").performClick()
 
         assertEquals(listOf<ReadoutItemKey>(LmuWindowsReadoutItemKey.VehicleApproach.Root), clicked)
     }

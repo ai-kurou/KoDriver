@@ -7,6 +7,6 @@ internal fun createAceWindowsTyreTemperaturePreferencesDataStore(
 ): DataStore<AceWindowsTyreTemperaturePreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "ace_windows_tyre_temperature_preferences.pb",
+        fileName = "ace_windows_auto_tyre_temperature_preferences.pb",
         serializer = AceWindowsTyreTemperaturePreferencesSerializer,
     )

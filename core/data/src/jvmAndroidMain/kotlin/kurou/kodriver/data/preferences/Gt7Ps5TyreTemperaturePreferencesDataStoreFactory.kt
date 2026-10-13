@@ -7,6 +7,6 @@ internal fun createGt7Ps5TyreTemperaturePreferencesDataStore(
 ): DataStore<Gt7Ps5TyreTemperaturePreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "gt7_ps5_tyre_temperature_preferences.pb",
+        fileName = "gt7_ps5_auto_tyre_temperature_preferences.pb",
         serializer = Gt7Ps5TyreTemperaturePreferencesSerializer,
     )

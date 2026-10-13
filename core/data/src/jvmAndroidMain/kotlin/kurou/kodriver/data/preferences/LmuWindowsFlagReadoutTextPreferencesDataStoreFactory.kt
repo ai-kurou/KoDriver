@@ -7,6 +7,6 @@ internal fun createLmuWindowsFlagReadoutTextPreferencesDataStore(
 ): DataStore<FlagReadoutTextPreferences> =
     preferencesDataStore(
         directory = directory,
-        fileName = "lmu_windows_flag_readout_text_preferences.pb",
+        fileName = "lmu_windows_auto_flag_readout_text_preferences.pb",
         serializer = FlagReadoutTextPreferencesSerializer,
     )

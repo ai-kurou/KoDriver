@@ -21,6 +21,6 @@ class AceWindowsFlagReadoutTextPreferencesDataStoreFactoryTest {
             val dataStore = createAceWindowsFlagReadoutTextPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(checkeredFlagText = "チェッカー、完走") }
 
-            assertTrue(tempDir.resolve("ace_windows_flag_readout_text_preferences.pb").exists())
+            assertTrue(tempDir.resolve("ace_windows_auto_flag_readout_text_preferences.pb").exists())
         }
 }

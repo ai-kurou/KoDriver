@@ -21,6 +21,6 @@ class LmuWindowsMyBestLapPreferencesDataStoreFactoryTest {
             val dataStore = createLmuWindowsMyBestLapPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(lmuWindowsReadoutText = "更新{laptime}") }
 
-            assertTrue(tempDir.resolve("lmu_windows_my_best_lap_preferences.pb").exists())
+            assertTrue(tempDir.resolve("lmu_windows_auto_my_best_lap_preferences.pb").exists())
         }
 }

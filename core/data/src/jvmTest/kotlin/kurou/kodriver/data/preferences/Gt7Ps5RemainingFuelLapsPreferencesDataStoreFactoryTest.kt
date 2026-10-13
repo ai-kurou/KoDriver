@@ -23,6 +23,6 @@ class Gt7Ps5RemainingFuelLapsPreferencesDataStoreFactoryTest {
             val dataStore = createGt7Ps5RemainingFuelLapsPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(remainingFuelLaps = 5) }
 
-            assertTrue(tempDir.resolve("gt7_ps5_remaining_fuel_laps_preferences.pb").exists())
+            assertTrue(tempDir.resolve("gt7_ps5_auto_remaining_fuel_laps_preferences.pb").exists())
         }
 }

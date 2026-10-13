@@ -23,6 +23,6 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesDataStoreFactoryTest {
             val dataStore = createLmuWindowsVehicleClassTyreTemperaturePreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(highThresholdCelsiusByVehicleClass = mapOf("GTE" to 100)) }
 
-            assertTrue(tempDir.resolve("lmu_windows_vehicle_class_tyre_temperature_preferences.pb").exists())
+            assertTrue(tempDir.resolve("lmu_windows_auto_vehicle_class_tyre_temperature_preferences.pb").exists())
         }
 }

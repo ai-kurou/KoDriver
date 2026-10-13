@@ -20,6 +20,6 @@ class AceWindowsMyBestLapPreferencesDataStoreFactoryTest {
             val dataStore = createAceWindowsMyBestLapPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(voiceType = "casual") }
 
-            assertTrue(tempDir.resolve("ace_windows_my_best_lap_preferences.pb").exists())
+            assertTrue(tempDir.resolve("ace_windows_auto_my_best_lap_preferences.pb").exists())
         }
 }

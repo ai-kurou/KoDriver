@@ -23,6 +23,6 @@ class LmuWindowsVehicleApproachPreferencesDataStoreFactoryTest {
             val dataStore = createLmuWindowsVehicleApproachPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(skipFirstLap = false) }
 
-            assertTrue(tempDir.resolve("lmu_windows_vehicle_approach_preferences.pb").exists())
+            assertTrue(tempDir.resolve("lmu_windows_auto_vehicle_approach_preferences.pb").exists())
         }
 }

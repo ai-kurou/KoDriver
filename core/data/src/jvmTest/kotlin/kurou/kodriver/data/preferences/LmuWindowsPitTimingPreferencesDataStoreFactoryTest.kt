@@ -23,6 +23,6 @@ class LmuWindowsPitTimingPreferencesDataStoreFactoryTest {
             val dataStore = createLmuWindowsPitTimingPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(virtualEnergyLaps = 5) }
 
-            assertTrue(tempDir.resolve("lmu_windows_pit_timing_preferences.pb").exists())
+            assertTrue(tempDir.resolve("lmu_windows_auto_pit_timing_preferences.pb").exists())
         }
 }
