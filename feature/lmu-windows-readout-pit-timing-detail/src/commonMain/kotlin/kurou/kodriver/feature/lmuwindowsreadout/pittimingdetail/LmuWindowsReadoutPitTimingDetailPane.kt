@@ -112,8 +112,8 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
     onTyreWearTextChanged: (String) -> Unit = {},
     onVirtualEnergyImminentTextChanged: (String) -> Unit = {},
     onTyreWearImminentTextChanged: (String) -> Unit = {},
-    onVirtualEnergyTextPreviewClicked: (String) -> Unit = {},
-    onTyreWearTextPreviewClicked: (String) -> Unit = {},
+    onVirtualEnergyTextPreviewClicked: (String, Int) -> Unit = { _, _ -> },
+    onTyreWearTextPreviewClicked: (String, Int) -> Unit = { _, _ -> },
     onVirtualEnergyImminentTextPreviewClicked: (String) -> Unit = {},
     onTyreWearImminentTextPreviewClicked: (String) -> Unit = {},
     modifier: Modifier = Modifier,
@@ -149,7 +149,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         available = uiState.isTextToSpeechAvailable,
                         onTextChanged = onVirtualEnergyTextChanged,
                         onImminentTextChanged = onVirtualEnergyImminentTextChanged,
-                        onPreviewClick = onVirtualEnergyTextPreviewClicked,
+                        onPreviewClick = { onVirtualEnergyTextPreviewClicked(it, uiState.virtualEnergyLaps) },
                         onImminentPreviewClick = onVirtualEnergyImminentTextPreviewClicked,
                     )
                     HorizontalDivider(
@@ -198,7 +198,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         available = uiState.isTextToSpeechAvailable,
                         onTextChanged = onTyreWearTextChanged,
                         onImminentTextChanged = onTyreWearImminentTextChanged,
-                        onPreviewClick = onTyreWearTextPreviewClicked,
+                        onPreviewClick = { onTyreWearTextPreviewClicked(it, uiState.tyreWearLaps) },
                         onImminentPreviewClick = onTyreWearImminentTextPreviewClicked,
                     )
                     HorizontalDivider(

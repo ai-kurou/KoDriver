@@ -257,22 +257,22 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         }
 
     @Test
-    fun `通常は5周に置換し切迫時は入力のまま開始音の後に試聴する`() =
+    fun `通常は渡した1周に置換し切迫時は入力のまま開始音の後に試聴する`() =
         runTest {
             stubRepository()
             every { observeVolume() } returns MutableStateFlow(60)
             coEvery { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) } returns Unit
-            coEvery { speakText("残り5周", volume = 60) } returns Unit
+            coEvery { speakText("残り1周", volume = 60) } returns Unit
             coEvery { speakText("必ず{laps}", volume = 60) } returns Unit
             val viewModel = createViewModel()
-            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
+            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周", laps = 1)
             viewModel.onVirtualEnergyImminentTextPreviewClicked("必ず{laps}")
             coVerify(exactly = 2) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
-            coVerify(exactly = 1) { speakText("残り5周", volume = 60) }
+            coVerify(exactly = 1) { speakText("残り1周", volume = 60) }
             coVerify(exactly = 1) { speakText("必ず{laps}", volume = 60) }
             coVerifyOrder {
                 playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root)
-                speakText("残り5周", volume = 60)
+                speakText("残り1周", volume = 60)
                 playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root)
                 speakText("必ず{laps}", volume = 60)
             }
@@ -285,7 +285,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         runTest {
             stubRepository()
             val viewModel = createViewModel()
-            viewModel.onVirtualEnergyTextPreviewClicked(" ")
+            viewModel.onVirtualEnergyTextPreviewClicked(" ", laps = 1)
             viewModel.onVirtualEnergyImminentTextPreviewClicked("")
             verify(exactly = 0) { observeVolume() }
             coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
@@ -299,7 +299,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             stubRepository(available = false)
             val viewModel = createViewModel()
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
-            viewModel.onVirtualEnergyTextPreviewClicked("注意")
+            viewModel.onVirtualEnergyTextPreviewClicked("注意", laps = 1)
             viewModel.onVirtualEnergyImminentTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
             coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
@@ -314,7 +314,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             val volume = MutableStateFlow(0)
             every { observeVolume() } returns volume
             val viewModel = createViewModel()
-            viewModel.onVirtualEnergyTextPreviewClicked("注意")
+            viewModel.onVirtualEnergyTextPreviewClicked("注意", laps = 1)
             volume.update { -1 }
             viewModel.onVirtualEnergyImminentTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
@@ -348,22 +348,22 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         }
 
     @Test
-    fun `タイヤ摩耗の通常は5周に置換し切迫時は入力のまま開始音の後に試聴する`() =
+    fun `タイヤ摩耗の通常は渡した3周に置換し切迫時は入力のまま開始音の後に試聴する`() =
         runTest {
             stubRepository()
             every { observeVolume() } returns MutableStateFlow(60)
             coEvery { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) } returns Unit
-            coEvery { speakText("残り5周", volume = 60) } returns Unit
+            coEvery { speakText("残り3周", volume = 60) } returns Unit
             coEvery { speakText("必ず{laps}", volume = 60) } returns Unit
             val viewModel = createViewModel()
-            viewModel.onTyreWearTextPreviewClicked("残り{laps}周")
+            viewModel.onTyreWearTextPreviewClicked("残り{laps}周", laps = 3)
             viewModel.onTyreWearImminentTextPreviewClicked("必ず{laps}")
             coVerify(exactly = 2) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
-            coVerify(exactly = 1) { speakText("残り5周", volume = 60) }
+            coVerify(exactly = 1) { speakText("残り3周", volume = 60) }
             coVerify(exactly = 1) { speakText("必ず{laps}", volume = 60) }
             coVerifyOrder {
                 playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root)
-                speakText("残り5周", volume = 60)
+                speakText("残り3周", volume = 60)
                 playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root)
                 speakText("必ず{laps}", volume = 60)
             }
@@ -390,11 +390,11 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             val pendingStartSound = CompletableDeferred<Unit>()
             coEvery { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) } coAnswers
                 { pendingStartSound.await() }
-            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
+            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周", laps = 1)
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
             coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
-            coVerify(exactly = 0) { speakText("残り5周", volume = 60) }
+            coVerify(exactly = 0) { speakText("残り1周", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
         }
@@ -408,11 +408,11 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             val pendingStartSound = CompletableDeferred<Unit>()
             coEvery { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) } coAnswers
                 { pendingStartSound.await() }
-            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
-            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
+            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周", laps = 1)
+            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周", laps = 1)
             pendingStartSound.complete(Unit)
             coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
-            coVerify(exactly = 0) { speakText("残り5周", volume = 60) }
+            coVerify(exactly = 0) { speakText("残り1周", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
         }

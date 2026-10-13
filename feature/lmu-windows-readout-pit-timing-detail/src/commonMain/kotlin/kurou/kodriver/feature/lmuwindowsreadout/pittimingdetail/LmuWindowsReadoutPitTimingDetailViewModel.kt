@@ -29,8 +29,6 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingVirtualEnergyLapsUse
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
-private const val PIT_TIMING_PREVIEW_LAPS = 5
-
 internal data class PitTimingUseCases(
     val observeVirtualEnergyLaps: ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
     val observeTyreWearLaps: ObserveLmuWindowsPitTimingTyreWearLapsUseCase,
@@ -135,8 +133,11 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
         viewModelScope.launch { readout.saveImminentText(text) }
     }
 
-    fun onVirtualEnergyTextPreviewClicked(text: String) {
-        playReadoutPreview(formatLmuWindowsPitTimingReadoutText(text, PIT_TIMING_PREVIEW_LAPS))
+    fun onVirtualEnergyTextPreviewClicked(
+        text: String,
+        laps: Int,
+    ) {
+        playReadoutPreview(formatLmuWindowsPitTimingReadoutText(text, laps))
     }
 
     fun onVirtualEnergyImminentTextPreviewClicked(text: String) {
@@ -151,8 +152,11 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
         viewModelScope.launch { readout.saveTyreWearImminentText(text) }
     }
 
-    fun onTyreWearTextPreviewClicked(text: String) {
-        playReadoutPreview(formatLmuWindowsPitTimingReadoutText(text, PIT_TIMING_PREVIEW_LAPS))
+    fun onTyreWearTextPreviewClicked(
+        text: String,
+        laps: Int,
+    ) {
+        playReadoutPreview(formatLmuWindowsPitTimingReadoutText(text, laps))
     }
 
     fun onTyreWearImminentTextPreviewClicked(text: String) {
