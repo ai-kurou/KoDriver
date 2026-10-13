@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="manual_readout_list_empty_title">手動読み上げのセットはまだありません</string>
+    <string name="manual_readout_hint_label">手動読み上げについて</string>
+    <string name="manual_readout_hint_help_description">手動読み上げの説明を表示</string>
+    <string name="manual_readout_hint_readout_title">読み上げ</string>
+    <string name="manual_readout_hint_readout_description">自動読み上げのON/OFFに関係なく読み上げます。自動読み上げの「読み上げ済み」の状態は変わりません。</string>
+    <string name="manual_readout_hint_queue_title">順番待ち</string>
+    <string name="manual_readout_hint_queue_description">読み上げ中のときや自動読み上げと重なったときは、キューの最後に並んで順番に読み上げます。</string>
+    <string name="manual_readout_hint_no_data_title">データがないとき</string>
+    <string name="manual_readout_hint_no_data_description">読み上げる値がない項目は「データがありません」と読み上げます。</string>
+    <string name="manual_readout_hint_hotkey_title">ホットキー</string>
+    <string name="manual_readout_hint_hotkey_description">Ctrl + Alt + Shift と数字または英字キーの組み合わせで、セットを読み上げられます。</string>
 </resources>
