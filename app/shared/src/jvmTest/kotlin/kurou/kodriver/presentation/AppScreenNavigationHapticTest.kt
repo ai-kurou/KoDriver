@@ -17,16 +17,16 @@ class AppScreenNavigationHapticTest {
     val rule = createComposeRule()
 
     @Test
-    fun `NavigationBarの手動読み上げタブはタップしても振動しない`() {
-        assertManualReadoutTabDoesNotPerformHapticFeedback(NavigationSuiteType.NavigationBar)
+    fun `NavigationBarの手動読み上げタブは選択と再タップで振動する`() {
+        assertManualReadoutTabPerformsHapticFeedback(NavigationSuiteType.NavigationBar)
     }
 
     @Test
-    fun `NavigationRailの手動読み上げタブはタップしても振動しない`() {
-        assertManualReadoutTabDoesNotPerformHapticFeedback(NavigationSuiteType.NavigationRail)
+    fun `NavigationRailの手動読み上げタブは選択と再タップで振動する`() {
+        assertManualReadoutTabPerformsHapticFeedback(NavigationSuiteType.NavigationRail)
     }
 
-    private fun assertManualReadoutTabDoesNotPerformHapticFeedback(layoutType: NavigationSuiteType) {
+    private fun assertManualReadoutTabPerformsHapticFeedback(layoutType: NavigationSuiteType) {
         val haptic = FakeHapticFeedback()
         rule.setContent {
             CompositionLocalProvider(LocalHapticFeedback provides haptic) {
@@ -46,7 +46,7 @@ class AppScreenNavigationHapticTest {
                 rule.onNode(hasText("手動")).performClick()
                 rule.waitForIdle()
             }
-            assertEquals(List(index) { HapticFeedbackType.ContextClick }, haptic.performedTypes)
+            assertEquals(List(index * 3 + 2) { HapticFeedbackType.ContextClick }, haptic.performedTypes)
         }
     }
 
@@ -62,7 +62,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動", "ログ", "その他").forEach { label ->
+        listOf("自動", "手動", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -71,6 +71,8 @@ class AppScreenNavigationHapticTest {
 
         assertEquals(
             listOf(
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
@@ -120,7 +122,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動", "ログ", "その他").forEach { label ->
+        listOf("自動", "手動", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -168,7 +170,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動", "ログ", "その他").forEach { label ->
+        listOf("自動", "手動", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -177,6 +179,8 @@ class AppScreenNavigationHapticTest {
 
         assertEquals(
             listOf(
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
@@ -226,7 +230,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動", "ログ", "その他").forEach { label ->
+        listOf("自動", "手動", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()

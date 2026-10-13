@@ -18,12 +18,12 @@ class AppScreenManualReadoutTabTest {
     val rule = createComposeRule()
 
     @Test
-    fun `NavigationBarの手動読み上げタブは自動読み上げとログの間に表示されタップしても画面が変わらない`() {
+    fun `NavigationBarの手動読み上げタブは自動読み上げとログの間に表示され選択と再選択で手動画面を表示する`() {
         assertManualReadoutTab(NavigationSuiteType.NavigationBar)
     }
 
     @Test
-    fun `NavigationRailの手動読み上げタブは自動読み上げとログの間に表示されタップしても画面が変わらない`() {
+    fun `NavigationRailの手動読み上げタブは自動読み上げとログの間に表示され選択と再選択で手動画面を表示する`() {
         assertManualReadoutTab(NavigationSuiteType.NavigationRail)
     }
 
@@ -36,6 +36,7 @@ class AppScreenManualReadoutTabTest {
                 onLogTabReselected = { reselectedCount++ },
                 onOtherTabReselected = { reselectedCount++ },
                 autoReadoutContent = { Text("読み上げ画面") },
+                manualReadoutContent = { Text("手動画面") },
                 telemetryLogContent = { _, _ -> Text("ログ画面") },
                 otherContent = { _, _ -> Text("その他画面") },
             )
@@ -64,9 +65,10 @@ class AppScreenManualReadoutTabTest {
             repeat(2) {
                 rule.onNodeWithText("手動").performClick()
                 rule.waitForIdle()
-                rule.onNodeWithText("手動").assertIsNotSelected()
-                rule.onNodeWithText(label).assertIsSelected()
-                rule.onNodeWithText(content).assertIsDisplayed()
+                rule.onNodeWithText("手動").assertIsSelected()
+                rule.onNodeWithText(label).assertIsNotSelected()
+                rule.onNodeWithText(content).assertDoesNotExist()
+                rule.onNodeWithText("手動画面").assertIsDisplayed()
             }
         }
         assertEquals(0, reselectedCount)

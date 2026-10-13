@@ -51,7 +51,10 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ManualReadoutListPane(modifier: Modifier = Modifier) {
+fun ManualReadoutListPane(
+    simulatorName: String,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
         ManualReadoutHintRow(modifier = Modifier.padding(horizontal = KoDriverSpacing.small))
         Box(
@@ -59,7 +62,7 @@ fun ManualReadoutListPane(modifier: Modifier = Modifier) {
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = stringResource(Res.string.manual_readout_list_empty_title),
+                text = stringResource(Res.string.manual_readout_list_empty_title, simulatorName),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
