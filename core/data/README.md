@@ -71,3 +71,9 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 LMU のデバッグ専用の現在値読み上げホットキーは `ReadoutHotkeyPreferencesRepository` が
 `lmu_windows_readout_hotkey_preferences.pb` に仮想キーコードを保存する。既定値は domain の F1 定数を参照する。
 Desktop・Android 両方で設定 Repository を登録し、Android の `HotkeyRepository` は `Unsupported` 状態のみを提供する。
+
+## 手動読み上げセット
+
+`ManualReadoutSetPreferencesRepository` は手動読み上げセットを
+`manual_readout_set_preferences_${simulator.id}.pb` にシミュレーターごとに保存する。
+Desktop／Android とも `named(simulator.id)` で登録し、セット識別子と項目キーの順序を保持する。

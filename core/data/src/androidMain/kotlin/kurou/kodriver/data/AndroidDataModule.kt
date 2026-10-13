@@ -16,6 +16,7 @@ import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
+import kurou.kodriver.data.preferences.createManualReadoutSetPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextColorPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
@@ -46,6 +47,7 @@ import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
@@ -114,8 +116,14 @@ private fun androidDataModuleMisc(context: Context) =
         single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
             createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath, Simulator.LmuWindows)
         }
+        single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+            createManualReadoutSetPreferencesRepository(context.filesDir.absolutePath, Simulator.LmuWindows)
+        }
         single<DebugStateCardOrderPreferencesRepository>(named(Simulator.AceWindows.id)) {
             createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath, Simulator.AceWindows)
+        }
+        single<ManualReadoutSetPreferencesRepository>(named(Simulator.AceWindows.id)) {
+            createManualReadoutSetPreferencesRepository(context.filesDir.absolutePath, Simulator.AceWindows)
         }
         single<SoundVolumePreferencesRepository> {
             createSoundVolumePreferencesRepository(context.filesDir.absolutePath)

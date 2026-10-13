@@ -26,6 +26,7 @@ import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
+import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
@@ -88,6 +89,18 @@ class DesktopKoinModuleGraphTest {
         try {
             Simulator.entries.forEach { simulator ->
                 assertNotNull(application.koin.get<DebugStateCardOrderPreferencesRepository>(named(simulator.id)))
+            }
+        } finally {
+            application.close()
+        }
+    }
+
+    @Test
+    fun `全シミュレーターの読み上げセットRepositoryを名前付きで解決できる`() {
+        val application = koinApplication { modules(desktopDataModule) }
+        try {
+            Simulator.entries.forEach { simulator ->
+                assertNotNull(application.koin.get<ManualReadoutSetPreferencesRepository>(named(simulator.id)))
             }
         } finally {
             application.close()
