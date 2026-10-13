@@ -383,8 +383,8 @@ tasks.register("generateModuleGraphImages") {
         fullGvFile.writeText(
             buildString {
                 appendLine("digraph G {")
-                appendLine("  rankdir=TB")
-                appendLine("  graph [ranksep=1.2, nodesep=0.6]")
+                appendLine("  rankdir=LR")
+                appendLine("  graph [ranksep=1.0, nodesep=0.3]")
                 appendLine("  node [shape=box, style=\"rounded,filled\"]")
                 overviewNodes.forEach { node ->
                     val category = if (node == featureGroup) ":feature:x" else node
