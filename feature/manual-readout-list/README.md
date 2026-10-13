@@ -9,6 +9,7 @@
 - `src/commonMain/composeResources/values/strings.xml`: 見出し・説明シート・空状態の表示文言。
 - `ManualReadoutListPaneTest.kt`: 見出し・空状態・ヘルプの表示とホットキー説明の表示分岐を確認する JVM テスト。
 - `ManualReadoutListPaneScreenshotTest.kt`: 見出し付きの空状態と説明シート（ホットキーあり・なし）を確認する Desktop/JVM 向けスクリーンショットテスト。
+- `ManualReadoutHintSheetContentScreenshotTest.kt`: Android 版の説明シート（ホットキーの説明なし）を確認する Android 向けスクリーンショットテスト。Desktop 版と表示内容が異なるため追加している。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
