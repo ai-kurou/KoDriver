@@ -23,10 +23,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
+import kurou.kodriver.core.designsystem.KoDriverListPaneWidth
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
@@ -133,7 +133,7 @@ internal fun AutoReadoutContent(
     }
     val paneExpansionState =
         rememberPaneExpansionState(
-            anchors = listOf(PaneExpansionAnchor.Offset.fromStart(400.dp)),
+            anchors = listOf(PaneExpansionAnchor.Offset.fromStart(KoDriverListPaneWidth)),
             initialAnchoredIndex = 0,
         )
 

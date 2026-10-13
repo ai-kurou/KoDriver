@@ -18,7 +18,7 @@ class LmuWindowsVehicleDamagePreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `lmu_windows_vehicle_damage_preferences設定が正しいファイルに書き込まれる`() =
+    fun `lmu_windows_auto_vehicle_damage_preferences設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createLmuWindowsVehicleDamagePreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(enabledStates = mapOf("overheat" to true)) }

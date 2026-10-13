@@ -18,7 +18,7 @@ class Gt7Ps5TyreTemperaturePreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `gt7_ps5_tyre_temperature_preferences設定が正しいファイルに書き込まれる`() =
+    fun `gt7_ps5_auto_tyre_temperature_preferences設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createGt7Ps5TyreTemperaturePreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(highThresholdCelsius = 105) }

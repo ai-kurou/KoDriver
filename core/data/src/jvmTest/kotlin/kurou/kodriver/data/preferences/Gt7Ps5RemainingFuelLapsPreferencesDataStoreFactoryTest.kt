@@ -18,7 +18,7 @@ class Gt7Ps5RemainingFuelLapsPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `gt7_ps5_remaining_fuel_laps_preferences設定が正しいファイルに書き込まれる`() =
+    fun `gt7_ps5_auto_remaining_fuel_laps_preferences設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createGt7Ps5RemainingFuelLapsPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(remainingFuelLaps = 5) }

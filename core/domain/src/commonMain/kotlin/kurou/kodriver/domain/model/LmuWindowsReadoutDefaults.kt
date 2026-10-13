@@ -4,7 +4,7 @@ package kurou.kodriver.domain.model
  * LMU の読み上げ有効状態。一覧画面と Narrator が共有する。
  * 新しい TopLevel は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。
  */
-val LMU_WINDOWS_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+val LMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         LmuWindowsReadoutItemKey.Flag.Root to true,
         LmuWindowsReadoutItemKey.TyreTemperature.Root to true,

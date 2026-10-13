@@ -18,7 +18,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `lmu_windows_vehicle_approach_thresholds_preferences設定が正しいファイルに書き込まれる`() =
+    fun `lmu_windows_auto_vehicle_approach_thresholds_preferences設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createLmuWindowsVehicleApproachThresholdsPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(longitudinalThresholdMeters = 20.0) }

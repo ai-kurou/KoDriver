@@ -4,7 +4,7 @@ package kurou.kodriver.domain.model
  * ACE の読み上げ有効状態。一覧画面と Narrator が共有する。
  * 新しい TopLevel は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。
  */
-val ACE_WINDOWS_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+val ACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         AceWindowsReadoutItemKey.Flag.Root to true,
         AceWindowsReadoutItemKey.VehicleApproach.Root to true,

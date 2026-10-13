@@ -40,6 +40,13 @@
 - `app:shared` は `moduleGraphAssert` で `core:.*` への依存が禁止されているため、`AppSpacing.kt` に同じ余白値を複製している。余白の値を変更する場合は両方を同期させる。
 - 4dp グリッドから外れる半端な余白値（18dp・6dp・3dp・10dp 等）の統一は本トークン化のスコープ外（[#1560](https://github.com/ai-kurou/KoDriver/issues/1560) 参照）。
 
+## 一覧ペインの初期幅
+
+list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWidth.kt` の `KoDriverListPaneWidth`（400.dp）で定義し、`PaneExpansionAnchor.Offset.fromStart` に渡す。
+
+- `app:shared` は `:core:*` に依存できないため、`AppPaneWidth.kt` に同値を別定義している。幅を変更する場合は両方を同期させる。
+- デバッグ状態詳細画面の `NARROW_WIDTH_UPPER_BOUND` は表示列数を切り替える境界値であり、この初期幅とは別の定義として扱う。
+
 ## 文言入力の状態
 
 - `PendingTextState.kt` の `rememberPendingText` は非同期保存中の入力を保持し、保存側UseCaseと同じ `trim().take(MAX)` に正規化した保存値が一致すると保存待ちを解除する。文字数上限は呼び出し側から渡す。
