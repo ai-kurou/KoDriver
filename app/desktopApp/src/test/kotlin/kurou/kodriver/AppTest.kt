@@ -263,7 +263,7 @@ class AppTest {
         selectSimulator("Gran Turismo 7（PS5）")
         waitUntilDisplayed("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         clickItem("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
-        clickItem("ルール")
+        clickItem("自動読み上げ")
     }
 
     @Test
