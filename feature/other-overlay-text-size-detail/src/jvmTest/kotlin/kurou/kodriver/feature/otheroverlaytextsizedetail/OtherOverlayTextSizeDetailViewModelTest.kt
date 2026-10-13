@@ -304,7 +304,7 @@ class OtherOverlayTextSizeDetailViewModelTest {
         }
 
     @Test
-    fun `先行保存中の離脱通知は後続プレビューを解除せず保存完了後の離脱で解除できる`() =
+    fun `保存中に選び直して離脱すると保存値へ戻り先行保存の完了で重複解除されない`() =
         runTest(dispatcher) {
             every { repository.observeOverlayTextSize() } returns overlayTextSizeFlow
             every { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) } returns Unit
@@ -318,12 +318,10 @@ class OtherOverlayTextSizeDetailViewModelTest {
             viewModel.onConfirm()
             viewModel.onPendingOverlayTextSizeSelected(OverlayTextSize.SMALL)
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { repository.setPreviewOverlayTextSize(null) }
+            assertEquals(OverlayTextSize.MEDIUM, viewModel.uiState.first().pendingOverlayTextSize)
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(null) }
             saved.complete(Unit)
 
-            assertEquals(OverlayTextSize.SMALL, viewModel.uiState.first().pendingOverlayTextSize)
-            verify(exactly = 0) { repository.setPreviewOverlayTextSize(null) }
-            viewModel.onPreviewStopped()
             assertEquals(OverlayTextSize.MEDIUM, viewModel.uiState.first().pendingOverlayTextSize)
             verify(exactly = 1) { repository.observeOverlayTextSize() }
             verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) }
@@ -355,7 +353,7 @@ class OtherOverlayTextSizeDetailViewModelTest {
             verify(exactly = 1) { repository.observeOverlayTextSize() }
             verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) }
             verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.SMALL) }
-            verify(exactly = 1) { repository.setPreviewOverlayTextSize(null) }
+            verify(exactly = 2) { repository.setPreviewOverlayTextSize(null) }
             coVerify(exactly = 1) { repository.saveOverlayTextSize(OverlayTextSize.LARGE) }
             confirmVerified(repository)
         }
