@@ -2,7 +2,7 @@ appId: kurou.kodriver
 ---
 - launchApp
 - extendedWaitUntil:
-    visible: "ルール"
+    visible: "自動読み上げ"
     timeout: 30000
 - tapOn: "LMU"
 - tapOn: "Gran Turismo 7（PS5）"
@@ -13,5 +13,5 @@ appId: kurou.kodriver
 - assertVisible: "Assetto Corsa EVO（Windows版）のログはまだありません"
 - tapOn: "その他"
 - assertVisible: "Windows版KoDriverへ接続するIPアドレス"
-- tapOn: "ルール"
+- tapOn: "自動読み上げ"
 - assertNotVisible: "Windows版KoDriverへ接続するIPアドレス"

@@ -28,7 +28,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("ルール", "ログ", "その他").forEach { label ->
+        listOf("自動読み上げ", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -86,7 +86,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("ルール", "ログ", "その他").forEach { label ->
+        listOf("自動読み上げ", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -134,7 +134,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("ルール", "ログ", "その他").forEach { label ->
+        listOf("自動読み上げ", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -192,7 +192,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("ルール", "ログ", "その他").forEach { label ->
+        listOf("自動読み上げ", "ログ", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
