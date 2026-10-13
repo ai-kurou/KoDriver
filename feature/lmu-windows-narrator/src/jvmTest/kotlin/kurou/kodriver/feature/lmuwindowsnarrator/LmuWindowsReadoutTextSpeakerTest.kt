@@ -21,6 +21,7 @@ import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
@@ -114,6 +115,51 @@ class LmuWindowsReadoutTextSpeakerTest {
             checkTextToSpeechAvailable,
             speakText,
         )
+
+    @Test
+    fun `現在のエナジー残量は警告設定を取得せず固定文言で読み上げる`() =
+        runTest {
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("バーチャルエナジー残量は42パーセント", volume = VOLUME) } just Runs
+            speaker(LmuWindowsRemainingVirtualEnergyCurrentValue(42), VOLUME)
+            verify(exactly = 0) { observeRemainingText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("バーチャルエナジー残量は42パーセント", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `現在のエナジー残量は解決済み本文を読み上げる`() =
+        runTest {
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("解決済み", volume = VOLUME) } just Runs
+            speaker(LmuWindowsRemainingVirtualEnergyCurrentValue(42, resolvedText = "解決済み"), VOLUME)
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `現在のエナジー残量のTTS利用不可では読み上げない`() =
+        runTest {
+            coEvery { checkTextToSpeechAvailable() } returns false
+            assertNull(speaker.readoutText(LmuWindowsRemainingVirtualEnergyCurrentValue(42)))
+            speaker(LmuWindowsRemainingVirtualEnergyCurrentValue(42), VOLUME)
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText("バーチャルエナジー残量は42パーセント", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `現在のエナジー残量の解決済み本文が空白ならTTSを確認せず読み上げない`() =
+        runTest {
+            val event = LmuWindowsRemainingVirtualEnergyCurrentValue(42, resolvedText = " ")
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
 
     @Test
     fun `残量警告はイベントの設定閾値を文言に置換して読み上げる`() =

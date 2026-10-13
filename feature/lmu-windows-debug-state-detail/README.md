@@ -39,3 +39,17 @@ Desktop のスクリーンショットテスト（`LmuWindowsDebugStateDetailPan
 並べ替えグリッドの上の固定カードで、このペインのシミュレーターの TopLevel 読み上げ項目と自由文言を指定する。既定選択は先頭項目で、空白のみでは送信できず、送信後も入力を保持する。固定カードはグリッド外なのでカード順序とドラッグのインデックスには影響しない。
 
 ViewModel は `RequestDebugReadoutUseCase` から要求を送信し、Narrator が項目スイッチやテレメトリ受信に依存せず処理する。文言のテンプレート置換は行わない。利用側は `DebugReadoutRequestRepository` を登録する。
+
+## 現在値読み上げホットキー（デバッグ専用・テスト段階）
+
+「デバッグ読み上げ」と同じくグリッド外の固定カードで設定する。並べ替え対象には含めない。
+`Ctrl + Alt + Shift` は固定で、既定の末尾キーは F1。入力欄にフォーカスして F1〜F12・A〜Z・0〜9 を押すと保存する。
+SimHub Control Mapper 側も同じ組み合わせに設定する。ACE は対象外。Android・非 Windows は `Unsupported` となりカードを隠す。
+
+登録済み・他アプリとの競合・登録失敗のエラーコードを表示し、動作確認で最大10秒間だけ実際の押下を待つ。
+検出・タイムアウトを UiState へ反映する。再確認時は前の待機をキャンセルし、キー選択時も待機を解除する。
+待機時間は ViewModel の `hotkeyCheckTimeoutMs` で注入する。UseCase は domain に置き、`ReadoutHotkeyUseCases` で束ねる。
+既存の Narrator と ReadoutItemKey のスイッチ判定は変更しない。
+
+キー変換、設定保存、登録状態、動作確認、Pane のコールバック配線をユニットテストで検証する。
+スクリーンショットは Desktop の固定カード表示を1ケース追加し、ゴールデンPNGは CI に任せる。

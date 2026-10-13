@@ -235,6 +235,18 @@ data class LmuWindowsRemainingVirtualEnergyWarning(
     override fun withResolvedText(text: String): LmuWindowsRemainingVirtualEnergyWarning = copy(resolvedText = text)
 }
 
+/** バーチャルエナジーの現在の残量（%）を読み上げるイベント。 */
+data class LmuWindowsRemainingVirtualEnergyCurrentValue(
+    val percentage: Int,
+    override val resolvedText: String? = null,
+) : ReadoutTextEvent {
+    override val readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+    override val narratedText = "バーチャルエナジー残量は${percentage}パーセント"
+
+    override fun withResolvedText(text: String): LmuWindowsRemainingVirtualEnergyCurrentValue =
+        copy(resolvedText = text)
+}
+
 data class LmuWindowsMyBestLap(
     val lapTimeMs: Long,
     override val resolvedText: String? = null,

@@ -11,6 +11,7 @@ import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
@@ -156,6 +157,28 @@ private val sampleVehicleApproach =
 private val sampleSideBySideDurations = LmuWindowsSideBySideDurations(leftMillis = 3_400, rightMillis = 12_800)
 
 class LmuWindowsDebugStateDetailPaneScreenshotTest {
+    @Test
+    fun `現在値読み上げホットキー固定カードを表示する`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        LmuWindowsDebugStateDetailPaneContent(
+                            uiState =
+                                LmuWindowsDebugStateDetailUiState(
+                                    readoutHotkey =
+                                        ReadoutHotkeyUiState(registrationState = HotkeyRegistrationState.Registered),
+                                ),
+                            canNavigateBack = true,
+                            onBack = {},
+                            modifier = Modifier.requiredSize(1560.dp, 1080.dp),
+                        )
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
     @Test
     fun `デフォルト データ未取得`() =
         composeScreenshotTest {

@@ -16,6 +16,7 @@ import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
@@ -75,6 +76,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [LmuWindowsCarRight] : 右車両接近開始
  * - [LmuWindowsCarLeftSustained] : 左車両接近継続
  * - [LmuWindowsCarRightSustained] : 右車両接近継続
+ * - [LmuWindowsRemainingVirtualEnergyCurrentValue] : 現在の残量の固定文言
  * - [LmuWindowsRemainingVirtualEnergyWarning] : 設定した残量閾値の警告
  * - [LmuWindowsOverheating] : オーバーヒート
  * - [LmuWindowsPartDetached] : 部品脱落
@@ -171,6 +173,10 @@ internal class LmuWindowsReadoutTextSpeaker(
 
             is LmuWindowsMyBestLap -> {
                 myBestLapText(event)
+            }
+
+            is LmuWindowsRemainingVirtualEnergyCurrentValue -> {
+                event.narratedText
             }
 
             is LmuWindowsPitTimingWarning -> {

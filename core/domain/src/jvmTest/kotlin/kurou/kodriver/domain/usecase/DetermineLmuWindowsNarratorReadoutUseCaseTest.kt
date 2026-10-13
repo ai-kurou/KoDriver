@@ -13,6 +13,7 @@ import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
@@ -1726,6 +1727,45 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(true, decision.state.brakeOverheating)
+    }
+
+    @Test
+    fun `現在のエナジー残量は閾値や警告済み状態に関係なく四捨五入して毎回読み上げる`() {
+        listOf(false, true).forEach { warned ->
+            val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = warned)
+            listOf(0.0 to 0, 0.424 to 42, 0.425 to 43, 1.0 to 100).forEach { (ratio, percentage) ->
+                repeat(2) {
+                    val decision =
+                        useCase.determineRemainingVirtualEnergyCurrentValue(
+                            state = state,
+                            data = remainingVirtualEnergy(remainingRatio = ratio),
+                            settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
+                        )
+
+                    assertEquals(listOf(LmuWindowsRemainingVirtualEnergyCurrentValue(percentage)), decision.events)
+                    assertEquals(state, decision.state)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `現在のエナジー残量は一覧または詳細スイッチが無効なら読み上げず状態を維持する`() {
+        listOf(
+            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
+        ).forEach { key ->
+            val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
+            val decision =
+                useCase.determineRemainingVirtualEnergyCurrentValue(
+                    state = state,
+                    data = remainingVirtualEnergy(remainingRatio = 0.4),
+                    settings = settings(enabledStates = allEnabledStates + (key to false)),
+                )
+
+            assertEquals(emptyList<SpeechEvent>(), decision.events)
+            assertEquals(state, decision.state)
+        }
     }
 
     @Test

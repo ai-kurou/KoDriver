@@ -545,6 +545,7 @@ kover {
                 classes("*PreviewKt")
                 classes("*PreviewKt\$*")
                 classes("*PreviewParameterProvider")
+                classes("kurou.kodriver.core.windowshotkeydata.JnaHotkeyNativeApi")
             }
         }
     }
@@ -560,6 +561,7 @@ dependencies {
     kover(project(":core:device-volume-data"))
     kover(project(":core:text-to-speech-data"))
     kover(project(":core:windows-startup-data"))
+    kover(project(":core:windows-hotkey-data"))
     kover(project(":core:windows-shared-memory"))
     kover(project(":core:designsystem"))
     kover(project(":core:narrator"))
@@ -626,6 +628,7 @@ dependencies {
     dokka(project(":core:device-volume-data"))
     dokka(project(":core:text-to-speech-data"))
     dokka(project(":core:windows-startup-data"))
+    dokka(project(":core:windows-hotkey-data"))
     dokka(project(":core:windows-shared-memory"))
     dokka(project(":core:designsystem"))
     dokka(project(":core:narrator"))

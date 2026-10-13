@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
+import androidx.lifecycle.viewModelScope
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -7,10 +8,12 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -18,6 +21,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugReadoutRequest
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
@@ -84,6 +88,8 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions", "LongMethod")
 class LmuWindowsDebugStateDetailViewModelTest {
+    private val hotkeyRepository = FakeReadoutHotkeyRepository()
+
     private val requestDebugReadout: RequestDebugReadoutUseCase = mockk(relaxUnitFun = true)
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -129,6 +135,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
         sideBySideTickIntervalMs: Long = 100L,
     ) = LmuWindowsDebugStateDetailViewModel(
         requestDebugReadout = requestDebugReadout,
+        hotkeyUseCases = hotkeyRepository.useCases(),
+        hotkeyCheckTimeoutMs = 1_000L,
         currentTimeMs = currentTimeMs,
         sideBySideTickIntervalMs = sideBySideTickIntervalMs,
         lmuWindowsUseCases =
@@ -154,6 +162,107 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 saveCardOrder = SaveDebugStateCardOrderUseCase(cardOrderRepository),
             ),
     )
+
+    @Test
+    fun `ホットキーの設定と状態を表示し動作確認の検出とタイムアウトと再待機を扱う`() =
+        runTest {
+            every { flagRepository.flagStream() } returns emptyFlow()
+            every { virtualEnergyRepository.virtualEnergyStream() } returns emptyFlow()
+            every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
+            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
+            every { brakeWearRepository.brakeWearStream() } returns emptyFlow()
+            every { vehicleClassRepository.vehicleClassStream() } returns emptyFlow()
+            every { lmuWindowsPitStatusRepository.pitStatusStream() } returns emptyFlow()
+            every { vehicleDamageRepository.vehicleDamageStream() } returns emptyFlow()
+            every { tyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+            val collection =
+                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect { } }
+            try {
+                assertEquals(
+                    0x70,
+                    viewModel.uiState
+                        .first()
+                        .readoutHotkey.virtualKeyCode,
+                )
+                hotkeyRepository.registration.update { HotkeyRegistrationState.Registered }
+                assertEquals(
+                    HotkeyRegistrationState.Registered,
+                    viewModel.uiState
+                        .first()
+                        .readoutHotkey.registrationState,
+                )
+                viewModel.selectHotkey(0x41)
+                assertEquals(1, hotkeyRepository.retryCount)
+                assertEquals(
+                    0x41,
+                    viewModel.uiState
+                        .first()
+                        .readoutHotkey.virtualKeyCode,
+                )
+                hotkeyRepository.presses.emit(Unit)
+                assertEquals(
+                    HotkeyCheckState.Idle,
+                    viewModel.uiState
+                        .first()
+                        .readoutHotkey.checkState,
+                )
+                viewModel.checkHotkey()
+                assertEquals(
+                    HotkeyCheckState.Waiting,
+                    viewModel.uiState
+                        .first()
+                        .readoutHotkey.checkState,
+                )
+                testScheduler.advanceTimeBy(999)
+                hotkeyRepository.presses.emit(Unit)
+                assertEquals(
+                    HotkeyCheckState.Detected,
+                    viewModel.uiState
+                        .first()
+                        .readoutHotkey.checkState,
+                )
+                viewModel.checkHotkey()
+                testScheduler.advanceTimeBy(1_000)
+                testScheduler.runCurrent()
+                assertEquals(
+                    HotkeyCheckState.TimedOut,
+                    viewModel.uiState
+                        .first()
+                        .readoutHotkey.checkState,
+                )
+                viewModel.checkHotkey()
+                testScheduler.advanceTimeBy(500)
+                viewModel.checkHotkey()
+                testScheduler.advanceTimeBy(500)
+                assertEquals(
+                    HotkeyCheckState.Waiting,
+                    viewModel.uiState
+                        .first()
+                        .readoutHotkey.checkState,
+                )
+                viewModel.selectHotkey(0x7B)
+                testScheduler.advanceTimeBy(1_000)
+                assertEquals(
+                    HotkeyCheckState.Idle,
+                    viewModel.uiState
+                        .first()
+                        .readoutHotkey.checkState,
+                )
+                assertEquals(
+                    0x7B,
+                    viewModel.uiState
+                        .first()
+                        .readoutHotkey.virtualKeyCode,
+                )
+            } finally {
+                collection.cancel()
+                viewModel.viewModelScope.cancel()
+            }
+        }
 
     @Test
     fun `未受信でもシミュレーターカードは常に有効になる`() =
