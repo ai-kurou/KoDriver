@@ -47,16 +47,16 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-voice-detail` | その他画面の読み上げ音声設定詳細 | [図](graphs/feature-other-voice-detail.svg) |
 | `:feature:other-feedback-detail` | その他画面のフィードバック送信詳細 | [図](graphs/feature-other-feedback-detail.svg) |
 | `:feature:auto-readout-list` | アナウンス項目の一覧表示・有効/無効の切り替え・優先度のドラッグ&リオーダー | [図](graphs/feature-auto-readout-list.svg) |
-| `:feature:lmu-windows-readout-flag-detail` | フラッグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-flag-detail.svg) |
-| `:feature:lmu-windows-readout-my-best-lap-detail` | LMU 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-my-best-lap-detail.svg) |
-| `:feature:lmu-windows-readout-vehicle-approach-detail` | 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-vehicle-approach-detail.svg) |
-| `:feature:lmu-windows-readout-vehicle-damage-detail` | 車両故障アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-vehicle-damage-detail.svg) |
-| `:feature:lmu-windows-readout-tyre-temperature-detail` | タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-tyre-temperature-detail.svg) |
-| `:feature:lmu-windows-readout-remaining-virtual-energy-detail` | バーチャルエナジー残量アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-remaining-virtual-energy-detail.svg) |
-| `:feature:lmu-windows-readout-tyre-wear-detail` | タイヤ摩耗アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-tyre-wear-detail.svg) |
-| `:feature:lmu-windows-readout-brake-temperature-detail` | ブレーキ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-brake-temperature-detail.svg) |
-| `:feature:lmu-windows-readout-brake-wear-detail` | ブレーキ摩耗アナウンスの詳細設定 UI（有効スイッチ・読み上げ文言・車両クラス別の残量閾値） | [図](graphs/feature-lmu-windows-readout-brake-wear-detail.svg) |
-| `:feature:lmu-windows-readout-pit-timing-detail` | ピットタイミングアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-pit-timing-detail.svg) |
+| `:feature:lmu-windows-auto-readout-flag-detail` | フラッグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-flag-detail.svg) |
+| `:feature:lmu-windows-auto-readout-my-best-lap-detail` | LMU 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-my-best-lap-detail.svg) |
+| `:feature:lmu-windows-auto-readout-vehicle-approach-detail` | 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-vehicle-approach-detail.svg) |
+| `:feature:lmu-windows-auto-readout-vehicle-damage-detail` | 車両故障アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-vehicle-damage-detail.svg) |
+| `:feature:lmu-windows-auto-readout-tyre-temperature-detail` | タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-tyre-temperature-detail.svg) |
+| `:feature:lmu-windows-auto-readout-remaining-virtual-energy-detail` | バーチャルエナジー残量アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-remaining-virtual-energy-detail.svg) |
+| `:feature:lmu-windows-auto-readout-tyre-wear-detail` | タイヤ摩耗アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-tyre-wear-detail.svg) |
+| `:feature:lmu-windows-auto-readout-brake-temperature-detail` | ブレーキ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-brake-temperature-detail.svg) |
+| `:feature:lmu-windows-auto-readout-brake-wear-detail` | ブレーキ摩耗アナウンスの詳細設定 UI（有効スイッチ・読み上げ文言・車両クラス別の残量閾値） | [図](graphs/feature-lmu-windows-auto-readout-brake-wear-detail.svg) |
+| `:feature:lmu-windows-auto-readout-pit-timing-detail` | ピットタイミングアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-pit-timing-detail.svg) |
 | `:feature:gt7-ps5-auto-readout-my-best-lap-detail` | GT7 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-auto-readout-my-best-lap-detail.svg) |
 | `:feature:gt7-ps5-auto-readout-remaining-fuel-detail` | GT7 燃料残量アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-auto-readout-remaining-fuel-detail.svg) |
 | `:feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail` | GT7 燃料残り周回数アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-auto-readout-remaining-fuel-laps-detail.svg) |

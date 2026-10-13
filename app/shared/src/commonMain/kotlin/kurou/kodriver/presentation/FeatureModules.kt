@@ -17,19 +17,19 @@ import kurou.kodriver.feature.gt7ps5autoreadout.tyretemperaturedetail.gt7Ps5Auto
 import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
 import kurou.kodriver.feature.gt7ps5debugstatedetail.gt7Ps5DebugStateDetailModule
 import kurou.kodriver.feature.gt7ps5narrator.gt7Ps5NarratorModule
+import kurou.kodriver.feature.lmuwindowsautoreadout.braketemperaturedetail.lmuWindowsAutoReadoutBrakeTemperatureDetailModule
+import kurou.kodriver.feature.lmuwindowsautoreadout.brakeweardetail.lmuWindowsAutoReadoutBrakeWearDetailModule
+import kurou.kodriver.feature.lmuwindowsautoreadout.flagdetail.lmuWindowsAutoReadoutFlagDetailModule
+import kurou.kodriver.feature.lmuwindowsautoreadout.mybestlapdetail.lmuWindowsAutoReadoutMyBestLapDetailModule
+import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.lmuWindowsAutoReadoutPitTimingDetailModule
+import kurou.kodriver.feature.lmuwindowsautoreadout.remainingvirtualenergydetail.lmuWindowsAutoReadoutRemainingVirtualEnergyDetailModule
+import kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail.lmuWindowsAutoReadoutTyreTemperatureDetailModule
+import kurou.kodriver.feature.lmuwindowsautoreadout.tyreweardetail.lmuWindowsAutoReadoutTyreWearDetailModule
+import kurou.kodriver.feature.lmuwindowsautoreadout.vehicleapproachdetail.lmuWindowsAutoReadoutVehicleApproachDetailModule
+import kurou.kodriver.feature.lmuwindowsautoreadout.vehicledamagedetail.lmuWindowsAutoReadoutVehicleDamageDetailModule
 import kurou.kodriver.feature.lmuwindowsconnection.lmuWindowsConnectionModule
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.lmuWindowsDebugStateDetailModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuWindowsNarratorModule
-import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.lmuWindowsReadoutBrakeTemperatureDetailModule
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.lmuWindowsReadoutBrakeWearDetailModule
-import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.lmuWindowsReadoutFlagDetailModule
-import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.lmuWindowsReadoutMyBestLapDetailModule
-import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.lmuWindowsReadoutPitTimingDetailModule
-import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.lmuWindowsReadoutRemainingVirtualEnergyDetailModule
-import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.lmuWindowsReadoutTyreTemperatureDetailModule
-import kurou.kodriver.feature.lmuwindowsreadout.tyreweardetail.lmuWindowsReadoutTyreWearDetailModule
-import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.lmuWindowsReadoutVehicleApproachDetailModule
-import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.lmuWindowsReadoutVehicleDamageDetailModule
 import kurou.kodriver.feature.main.mainModule
 import kurou.kodriver.feature.main.mainPlatformModule
 import kurou.kodriver.feature.narratoroverlay.narratorOverlayModule
@@ -93,16 +93,16 @@ val featureModules: List<Module> =
         autoReadoutListModule,
         telemetryLogListModule,
         telemetryLogDetailModule,
-        lmuWindowsReadoutVehicleApproachDetailModule,
-        lmuWindowsReadoutFlagDetailModule,
-        lmuWindowsReadoutMyBestLapDetailModule,
-        lmuWindowsReadoutVehicleDamageDetailModule,
-        lmuWindowsReadoutTyreTemperatureDetailModule,
-        lmuWindowsReadoutRemainingVirtualEnergyDetailModule,
-        lmuWindowsReadoutTyreWearDetailModule,
-        lmuWindowsReadoutBrakeTemperatureDetailModule,
-        lmuWindowsReadoutBrakeWearDetailModule,
-        lmuWindowsReadoutPitTimingDetailModule,
+        lmuWindowsAutoReadoutVehicleApproachDetailModule,
+        lmuWindowsAutoReadoutFlagDetailModule,
+        lmuWindowsAutoReadoutMyBestLapDetailModule,
+        lmuWindowsAutoReadoutVehicleDamageDetailModule,
+        lmuWindowsAutoReadoutTyreTemperatureDetailModule,
+        lmuWindowsAutoReadoutRemainingVirtualEnergyDetailModule,
+        lmuWindowsAutoReadoutTyreWearDetailModule,
+        lmuWindowsAutoReadoutBrakeTemperatureDetailModule,
+        lmuWindowsAutoReadoutBrakeWearDetailModule,
+        lmuWindowsAutoReadoutPitTimingDetailModule,
         aceWindowsAutoReadoutRemainingFuelDetailModule,
         aceWindowsAutoReadoutFlagDetailModule,
         aceWindowsAutoReadoutTyreTemperatureDetailModule,

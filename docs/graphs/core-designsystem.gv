@@ -18,18 +18,18 @@ digraph G {
   ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-brake-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-brake-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-pit-timing-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-remaining-virtual-energy-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-tyre-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-vehicle-damage-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-brake-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-brake-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-pit-timing-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-remaining-virtual-energy-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-tyre-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-readout-vehicle-damage-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-console-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -64,18 +64,18 @@ digraph G {
   ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" -> ":core:designsystem"
   ":feature:gt7-ps5-debug-state-detail" -> ":core:designsystem"
   ":feature:gt7-ps5-narrator" -> ":core:designsystem"
+  ":feature:lmu-windows-auto-readout-brake-temperature-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-auto-readout-brake-wear-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-auto-readout-flag-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-auto-readout-my-best-lap-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-auto-readout-pit-timing-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-auto-readout-remaining-virtual-energy-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-auto-readout-tyre-temperature-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-auto-readout-tyre-wear-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-auto-readout-vehicle-approach-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-auto-readout-vehicle-damage-detail" -> ":core:designsystem"
   ":feature:lmu-windows-debug-state-detail" -> ":core:designsystem"
   ":feature:lmu-windows-narrator" -> ":core:designsystem"
-  ":feature:lmu-windows-readout-brake-temperature-detail" -> ":core:designsystem"
-  ":feature:lmu-windows-readout-brake-wear-detail" -> ":core:designsystem"
-  ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
-  ":feature:lmu-windows-readout-my-best-lap-detail" -> ":core:designsystem"
-  ":feature:lmu-windows-readout-pit-timing-detail" -> ":core:designsystem"
-  ":feature:lmu-windows-readout-remaining-virtual-energy-detail" -> ":core:designsystem"
-  ":feature:lmu-windows-readout-tyre-temperature-detail" -> ":core:designsystem"
-  ":feature:lmu-windows-readout-tyre-wear-detail" -> ":core:designsystem"
-  ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:designsystem"
-  ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:designsystem"
   ":feature:main" -> ":core:designsystem"
   ":feature:narrator-overlay" -> ":core:designsystem"
   ":feature:other-console-ip-detail" -> ":core:designsystem"

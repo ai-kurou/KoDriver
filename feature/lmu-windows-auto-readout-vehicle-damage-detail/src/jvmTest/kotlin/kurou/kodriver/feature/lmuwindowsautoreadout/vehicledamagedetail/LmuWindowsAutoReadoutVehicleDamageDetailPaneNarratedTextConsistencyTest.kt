@@ -1,0 +1,37 @@
+package kurou.kodriver.feature.lmuwindowsautoreadout.vehicledamagedetail
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import kurou.kodriver.domain.engine.LmuWindowsOverheating
+import kurou.kodriver.domain.engine.LmuWindowsPartDetached
+import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
+import org.junit.Rule
+import org.junit.Test
+
+/** 既定文言とイベントの narratedText が一致することを確認する。 */
+class LmuWindowsAutoReadoutVehicleDamageDetailPaneNarratedTextConsistencyTest {
+    @get:Rule
+    val rule = createComposeRule()
+
+    @Test
+    fun `入力欄の既定文言がSpeechEventのnarratedTextと一致する`() {
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
+                    uiState = LmuWindowsAutoReadoutVehicleDamageDetailUiState(isTextToSpeechAvailable = true),
+                )
+            }
+        }
+
+        listOf(
+            LmuWindowsOverheating().narratedText,
+            LmuWindowsPartDetached().narratedText,
+            LmuWindowsTyreDetached().narratedText,
+        ).forEach { narratedText ->
+            rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText, substring = true)
+        }
+    }
+}
