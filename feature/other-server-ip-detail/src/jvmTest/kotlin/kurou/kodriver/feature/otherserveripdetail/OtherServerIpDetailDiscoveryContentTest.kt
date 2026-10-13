@@ -174,11 +174,13 @@ class OtherServerIpDetailDiscoveryContentTest {
         }
 
         val radioRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
-        rule.onNodeWithText("DESKTOP-ABC (192.168.1.50)")
+        rule
+            .onNodeWithText("DESKTOP-ABC (192.168.1.50)")
             .assert(radioRole)
             .assertHeightIsEqualTo(48.dp)
             .assertIsSelected()
-        rule.onNodeWithText("DESKTOP-XYZ (192.168.1.60)")
+        rule
+            .onNodeWithText("DESKTOP-XYZ (192.168.1.60)")
             .assert(radioRole)
             .assertHeightIsEqualTo(48.dp)
             .assertIsNotSelected()

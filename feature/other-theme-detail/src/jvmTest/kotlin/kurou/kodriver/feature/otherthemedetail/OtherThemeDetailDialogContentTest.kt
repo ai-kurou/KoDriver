@@ -109,11 +109,13 @@ class OtherThemeDetailDialogContentTest {
         }
 
         val radioRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
-        rule.onNodeWithText("システムに従う")
+        rule
+            .onNodeWithText("システムに従う")
             .assert(radioRole)
             .assertHeightIsEqualTo(48.dp)
             .assertIsSelected()
-        rule.onNodeWithText("ダーク")
+        rule
+            .onNodeWithText("ダーク")
             .assert(radioRole)
             .assertHeightIsEqualTo(48.dp)
             .assertIsNotSelected()

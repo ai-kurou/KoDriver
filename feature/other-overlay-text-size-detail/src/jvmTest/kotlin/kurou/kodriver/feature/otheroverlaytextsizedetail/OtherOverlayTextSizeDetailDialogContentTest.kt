@@ -121,11 +121,13 @@ class OtherOverlayTextSizeDetailDialogContentTest {
         }
 
         val radioRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
-        rule.onNodeWithText("中")
+        rule
+            .onNodeWithText("中")
             .assert(radioRole)
             .assertHeightIsEqualTo(48.dp)
             .assertIsSelected()
-        rule.onNodeWithText("大")
+        rule
+            .onNodeWithText("大")
             .assert(radioRole)
             .assertHeightIsEqualTo(48.dp)
             .assertIsNotSelected()

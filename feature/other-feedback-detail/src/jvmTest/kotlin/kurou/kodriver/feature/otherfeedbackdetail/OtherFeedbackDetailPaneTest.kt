@@ -306,7 +306,7 @@ class OtherFeedbackDetailPaneTest {
 
     @Test
     fun `選択行がラジオボタンのroleと選択状態を公開しクリックで一度だけ選択と触感を更新する`() {
-        var selected by mutableStateOf(FeedbackType.BugReport)
+        var selected by mutableStateOf<FeedbackType>(FeedbackType.BugReport)
         val selections = mutableListOf<FeedbackType>()
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
@@ -324,11 +324,13 @@ class OtherFeedbackDetailPaneTest {
         }
 
         val radioRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
-        rule.onNodeWithText("不具合")
+        rule
+            .onNodeWithText("不具合")
             .assert(radioRole)
             .assertHeightIsEqualTo(48.dp)
             .assertIsSelected()
-        rule.onNodeWithText("改善要望")
+        rule
+            .onNodeWithText("改善要望")
             .assert(radioRole)
             .assertHeightIsEqualTo(48.dp)
             .assertIsNotSelected()
@@ -337,7 +339,7 @@ class OtherFeedbackDetailPaneTest {
         verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         rule.onNodeWithText("改善要望").assertIsSelected().performClick()
 
-        assertEquals(listOf(FeedbackType.FeatureRequest, FeedbackType.FeatureRequest), selections)
+        assertEquals(listOf<FeedbackType>(FeedbackType.FeatureRequest, FeedbackType.FeatureRequest), selections)
         verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(haptic)
     }

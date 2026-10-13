@@ -96,11 +96,13 @@ class OtherReadoutStartSoundDetailDialogContentTest {
         }
 
         val radioRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
-        rule.onNodeWithText("Formula無線")
+        rule
+            .onNodeWithText("Formula無線")
             .assert(radioRole)
             .assertHeightIsEqualTo(48.dp)
             .assertIsSelected()
-        rule.onNodeWithText("電子ノイズ")
+        rule
+            .onNodeWithText("電子ノイズ")
             .assert(radioRole)
             .assertHeightIsEqualTo(48.dp)
             .assertIsNotSelected()
