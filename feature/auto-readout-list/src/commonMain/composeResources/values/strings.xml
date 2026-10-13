@@ -1,6 +1,7 @@
 <resources>
     <string name="drag_handle">ドラッグして並び替え</string>
     <string name="priority_hint_order">高 ▲　▼ 低</string>
+    <string name="priority_hint_title">優先度</string>
     <string name="priority_hint_label">読み上げ優先度</string>
     <string name="priority_hint_description">一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。</string>
     <string name="queue_hint_description">キューアイコンがONの項目は、優先順位に関係なく、割り込まずに順番待ちします。優先度が高い項目でも、キューがONなら順番待ちになります。</string>
