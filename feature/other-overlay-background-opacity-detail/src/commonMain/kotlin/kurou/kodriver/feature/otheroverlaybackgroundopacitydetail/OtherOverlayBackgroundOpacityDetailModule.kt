@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otheroverlaybackgroundopacitydetail
 
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.usecase.PreviewOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayBackgroundOpacityUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -16,5 +17,6 @@ val otherOverlayBackgroundOpacityDetailModule =
         viewModelOf(::OtherOverlayBackgroundOpacityDetailViewModel)
 
         factory { ObserveOverlayBackgroundOpacityUseCase(get()) }
+        factory { PreviewOverlayBackgroundOpacityUseCase(get()) }
         factory { SaveOverlayBackgroundOpacityUseCase(get()) }
     }

@@ -12,6 +12,12 @@
 一時値を渡す。`null` で解除し、`ObserveOverlayTextColorUseCase` はプレビュー優先の現在値を配信する。
 永続化は `SaveOverlayTextColorUseCase` が担当する。
 
+## オーバーレイ背景透明度のプレビュー
+
+`PreviewOverlayBackgroundOpacityUseCase` は `OverlayBackgroundOpacityPreferencesRepository.setPreviewOverlayBackgroundOpacity` に
+一時値を渡す。文字サイズと同様に `null` で解除し、`ObserveOverlayBackgroundOpacityUseCase` はプレビュー優先の現在値を配信する。
+永続化は `SaveOverlayBackgroundOpacityUseCase` が担当する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,9 +37,13 @@ fun OtherOverlayBackgroundOpacityDetailPane(
 ) {
     val viewModel: OtherOverlayBackgroundOpacityDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onPreviewStopped() }
+    }
     OtherOverlayBackgroundOpacityDetailPaneContent(
         uiState = uiState,
         onOpacityChanged = viewModel::onOpacityChanged,
+        onOpacityPreview = viewModel::onOpacityPreview,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -55,6 +60,7 @@ fun OtherOverlayBackgroundOpacityDetailPaneContent(
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
+    onOpacityPreview: (Int) -> Unit = {},
 ) {
     val opacityLabel = stringResource(Res.string.opacity_label)
 
@@ -78,6 +84,7 @@ fun OtherOverlayBackgroundOpacityDetailPaneContent(
                 value = uiState.opacity.toFloat(),
                 valueRange = 0f..100f,
                 labelFormatter = { opacityLabel.formatSliderLabel(it.roundToInt()) },
+                onValueChange = { onOpacityPreview(it.roundToInt()) },
                 onValueChangeFinished = { onOpacityChanged(it.roundToInt()) },
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
                 steps = 99,
