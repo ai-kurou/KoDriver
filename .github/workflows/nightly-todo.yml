@@ -67,6 +67,8 @@ jobs:
           ページ送り・日時判定・いいね数など、同ドキュメントの共通ルールも遵守してください。
           火曜のカバレッジ確認では ./gradlew koverXmlReport、水曜の静的解析では ./gradlew detekt と ./gradlew ktlintCheck を別々に実行してください。
           Gradleの通常のビルド成果物・レポート生成は許可されていますが、ソースや設定の変更・自動整形は行いません。
+          Gradleコマンドは run_in_background を使わずフォアグラウンドで実行し、Bashのtimeoutには上限の600000を指定してください。
+          MonitorやoutputファイルのcatによるポーリングはdontAsk環境で拒否されるため行わないでください。
           改善案は対象コードを読んで適用可能性を確認し、gh issue list --state all --searchで重複を確認します。
           必要ならgh issue viewで本文を確認し、重複がなければgh issue createで日本語のIssueをラベルなしで起票します。
           このバッチはユーザーが承認したIssue起票の自動処理です。起票の追加確認は不要です。
