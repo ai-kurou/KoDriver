@@ -18,6 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -124,6 +127,9 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
         stringResource(Res.string.pit_timing_virtual_energy_laps_help_icon_content_description)
     val tyreWearHelpIconContentDescription =
         stringResource(Res.string.pit_timing_tyre_wear_laps_help_icon_content_description)
+    // 保存値がuiStateへ反映される前でも、スライダーに表示中の周回数で試聴する。
+    var virtualEnergyLaps by remember(uiState.virtualEnergyLaps) { mutableIntStateOf(uiState.virtualEnergyLaps) }
+    var tyreWearLaps by remember(uiState.tyreWearLaps) { mutableIntStateOf(uiState.tyreWearLaps) }
 
     Column(
         modifier =
@@ -149,7 +155,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         available = uiState.isTextToSpeechAvailable,
                         onTextChanged = onVirtualEnergyTextChanged,
                         onImminentTextChanged = onVirtualEnergyImminentTextChanged,
-                        onPreviewClick = { onVirtualEnergyTextPreviewClicked(it, uiState.virtualEnergyLaps) },
+                        onPreviewClick = { onVirtualEnergyTextPreviewClicked(it, virtualEnergyLaps) },
                         onImminentPreviewClick = onVirtualEnergyImminentTextPreviewClicked,
                     )
                     HorizontalDivider(
@@ -172,10 +178,14 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         value = uiState.virtualEnergyLaps.toFloat(),
                         valueRange = MINIMUM_PIT_TIMING_LAPS..MAXIMUM_PIT_TIMING_LAPS,
                         labelFormatter = { sliderLabel.formatSliderLabel(it.roundToInt()) },
-                        onValueChangeFinished = { onVirtualEnergyLapsChanged(it.roundToInt()) },
+                        onValueChangeFinished = {
+                            virtualEnergyLaps = it.roundToInt()
+                            onVirtualEnergyLapsChanged(virtualEnergyLaps)
+                        },
                         steps = 3,
                         defaultValue = LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT.toFloat(),
                         onResetToDefault = {
+                            virtualEnergyLaps = LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
                             onVirtualEnergyLapsChanged(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT)
                         },
                         resetContentDescription = resetToDefaultLabel,
@@ -198,7 +208,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         available = uiState.isTextToSpeechAvailable,
                         onTextChanged = onTyreWearTextChanged,
                         onImminentTextChanged = onTyreWearImminentTextChanged,
-                        onPreviewClick = { onTyreWearTextPreviewClicked(it, uiState.tyreWearLaps) },
+                        onPreviewClick = { onTyreWearTextPreviewClicked(it, tyreWearLaps) },
                         onImminentPreviewClick = onTyreWearImminentTextPreviewClicked,
                     )
                     HorizontalDivider(
@@ -221,10 +231,14 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         value = uiState.tyreWearLaps.toFloat(),
                         valueRange = MINIMUM_PIT_TIMING_LAPS..MAXIMUM_PIT_TIMING_LAPS,
                         labelFormatter = { sliderLabel.formatSliderLabel(it.roundToInt()) },
-                        onValueChangeFinished = { onTyreWearLapsChanged(it.roundToInt()) },
+                        onValueChangeFinished = {
+                            tyreWearLaps = it.roundToInt()
+                            onTyreWearLapsChanged(tyreWearLaps)
+                        },
                         steps = 3,
                         defaultValue = LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT.toFloat(),
                         onResetToDefault = {
+                            tyreWearLaps = LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
                             onTyreWearLapsChanged(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT)
                         },
                         resetContentDescription = resetToDefaultLabel,
