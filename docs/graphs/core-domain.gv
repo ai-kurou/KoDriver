@@ -11,15 +11,15 @@ digraph G {
   ":core:text-to-speech-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:windows-hotkey-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:windows-startup-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":feature:ace-windows-auto-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:desktop-splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -72,15 +72,15 @@ digraph G {
   ":core:text-to-speech-data" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:domain"
   ":core:windows-startup-data" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-flag-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-my-best-lap-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-remaining-fuel-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-remaining-fuel-laps-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-tyre-temperature-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:ace-windows-connection" -> ":core:domain"
   ":feature:ace-windows-debug-state-detail" -> ":core:domain"
   ":feature:ace-windows-narrator" -> ":core:domain"
-  ":feature:ace-windows-readout-flag-detail" -> ":core:domain"
-  ":feature:ace-windows-readout-my-best-lap-detail" -> ":core:domain"
-  ":feature:ace-windows-readout-remaining-fuel-detail" -> ":core:domain"
-  ":feature:ace-windows-readout-remaining-fuel-laps-detail" -> ":core:domain"
-  ":feature:ace-windows-readout-tyre-temperature-detail" -> ":core:domain"
-  ":feature:ace-windows-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:auto-readout-list" -> ":core:domain"
   ":feature:desktop-splash" -> ":core:domain"
   ":feature:gt7-ps5-auto-readout-my-best-lap-detail" -> ":core:domain"

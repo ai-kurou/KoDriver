@@ -5,15 +5,15 @@ digraph G {
   ":app:desktopApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=2.5]
   ":app:webApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
+  ":feature:ace-windows-auto-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:desktop-splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -101,11 +101,11 @@ digraph G {
   ":app:shared" -> ":feature:gt7-ps5-auto-readout-remaining-fuel-detail"
   ":app:shared" -> ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail"
   ":app:shared" -> ":feature:gt7-ps5-auto-readout-tyre-temperature-detail"
-  ":app:shared" -> ":feature:ace-windows-readout-remaining-fuel-detail"
-  ":app:shared" -> ":feature:ace-windows-readout-flag-detail"
-  ":app:shared" -> ":feature:ace-windows-readout-tyre-temperature-detail"
-  ":app:shared" -> ":feature:ace-windows-readout-vehicle-approach-detail"
-  ":app:shared" -> ":feature:ace-windows-readout-my-best-lap-detail"
-  ":app:shared" -> ":feature:ace-windows-readout-remaining-fuel-laps-detail"
+  ":app:shared" -> ":feature:ace-windows-auto-readout-remaining-fuel-detail"
+  ":app:shared" -> ":feature:ace-windows-auto-readout-flag-detail"
+  ":app:shared" -> ":feature:ace-windows-auto-readout-tyre-temperature-detail"
+  ":app:shared" -> ":feature:ace-windows-auto-readout-vehicle-approach-detail"
+  ":app:shared" -> ":feature:ace-windows-auto-readout-my-best-lap-detail"
+  ":app:shared" -> ":feature:ace-windows-auto-readout-remaining-fuel-laps-detail"
   ":app:webApp" -> ":app:shared"
 }
