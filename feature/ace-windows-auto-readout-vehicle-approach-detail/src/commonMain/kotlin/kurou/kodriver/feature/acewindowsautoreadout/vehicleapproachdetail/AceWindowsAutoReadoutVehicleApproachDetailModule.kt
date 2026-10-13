@@ -1,0 +1,45 @@
+package kurou.kodriver.feature.acewindowsautoreadout.vehicleapproachdetail
+
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
+
+/**
+ * 車両接近アナウンス詳細設定（ace-windows-auto-readout-vehicle-approach-detail feature）の Koin モジュール。
+ *
+ * 提供: AceWindowsAutoReadoutVehicleApproachDetailViewModel と、それが使うドメイン UseCase。
+ * 消費（get で解決）: AceWindowsVehicleApproachPreferencesRepository（:core:data）、試聴用の
+ *   named(Simulator.AceWindows.id) のTTS・開始音UseCase（:feature:ace-windows-narrator で登録）。
+ */
+val aceWindowsAutoReadoutVehicleApproachDetailModule =
+    module {
+        // 試聴用TTS・開始音は ACE narrator の登録を解決する。
+        viewModel {
+            AceWindowsAutoReadoutVehicleApproachDetailViewModel(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(),
+            )
+        }
+
+        factoryOf(::AceWindowsVehicleApproachThresholdsUseCases)
+        factoryOf(::ObserveAceWindowsVehicleApproachEnabledStatesUseCase)
+        factoryOf(::SaveAceWindowsVehicleApproachEnabledStateUseCase)
+        factoryOf(::ObserveAceWindowsVehicleApproachReadoutTextUseCase)
+        factoryOf(::SaveAceWindowsVehicleApproachReadoutTextUseCase)
+        factoryOf(::ObserveSoundVolumeUseCase)
+    }

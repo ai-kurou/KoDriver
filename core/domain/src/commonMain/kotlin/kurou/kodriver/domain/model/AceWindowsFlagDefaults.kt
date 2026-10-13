@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.model
 
-// detailPane（AceWindowsReadoutFlagDetailViewModel）・Narrator（AceWindowsNarratorViewModel）が
+// detailPane（AceWindowsAutoReadoutFlagDetailViewModel）・Narrator（AceWindowsNarratorViewModel）が
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 val ACE_WINDOWS_FLAG_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
