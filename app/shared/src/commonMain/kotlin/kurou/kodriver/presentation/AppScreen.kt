@@ -837,7 +837,7 @@ internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
 internal fun ReadoutItemDetailContent(itemType: AutoReadoutListItemType) {
     when (itemType) {
         is LmuWindowsAutoReadoutListItemType -> LmuWindowsReadoutItemDetailContent(itemType)
-        is Gt7Ps5AutoReadoutListItemType -> Gt7Ps5ReadoutItemDetailContent(itemType)
+        is Gt7Ps5AutoReadoutListItemType -> Gt7Ps5AutoReadoutItemDetailContent(itemType)
         is AceWindowsAutoReadoutListItemType -> AceWindowsReadoutItemDetailContent(itemType)
     }
 }

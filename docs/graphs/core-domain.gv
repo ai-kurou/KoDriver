@@ -22,13 +22,13 @@ digraph G {
   ":feature:ace-windows-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:desktop-splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:gt7-ps5-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:gt7-ps5-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:gt7-ps5-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:gt7-ps5-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:gt7-ps5-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:gt7-ps5-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -83,13 +83,13 @@ digraph G {
   ":feature:ace-windows-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:auto-readout-list" -> ":core:domain"
   ":feature:desktop-splash" -> ":core:domain"
+  ":feature:gt7-ps5-auto-readout-my-best-lap-detail" -> ":core:domain"
+  ":feature:gt7-ps5-auto-readout-remaining-fuel-detail" -> ":core:domain"
+  ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail" -> ":core:domain"
+  ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" -> ":core:domain"
   ":feature:gt7-ps5-connection" -> ":core:domain"
   ":feature:gt7-ps5-debug-state-detail" -> ":core:domain"
   ":feature:gt7-ps5-narrator" -> ":core:domain"
-  ":feature:gt7-ps5-readout-my-best-lap-detail" -> ":core:domain"
-  ":feature:gt7-ps5-readout-remaining-fuel-detail" -> ":core:domain"
-  ":feature:gt7-ps5-readout-remaining-fuel-laps-detail" -> ":core:domain"
-  ":feature:gt7-ps5-readout-tyre-temperature-detail" -> ":core:domain"
   ":feature:lmu-windows-connection" -> ":core:domain"
   ":feature:lmu-windows-debug-state-detail" -> ":core:domain"
   ":feature:lmu-windows-narrator" -> ":core:domain"

@@ -10,13 +10,13 @@ import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.aceWindo
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.aceWindowsReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.aceWindowsReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.autoreadoutlist.autoReadoutListModule
+import kurou.kodriver.feature.gt7ps5autoreadout.mybestlapdetail.gt7Ps5AutoReadoutMyBestLapDetailModule
+import kurou.kodriver.feature.gt7ps5autoreadout.remainingfueldetail.gt7Ps5AutoReadoutRemainingFuelDetailModule
+import kurou.kodriver.feature.gt7ps5autoreadout.remainingfuellapsdetail.gt7Ps5AutoReadoutRemainingFuelLapsDetailModule
+import kurou.kodriver.feature.gt7ps5autoreadout.tyretemperaturedetail.gt7Ps5AutoReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
 import kurou.kodriver.feature.gt7ps5debugstatedetail.gt7Ps5DebugStateDetailModule
 import kurou.kodriver.feature.gt7ps5narrator.gt7Ps5NarratorModule
-import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.gt7Ps5ReadoutMyBestLapDetailModule
-import kurou.kodriver.feature.gt7ps5readout.remainingfueldetail.gt7Ps5ReadoutRemainingFuelDetailModule
-import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.gt7Ps5ReadoutRemainingFuelLapsDetailModule
-import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.gt7Ps5ReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.lmuwindowsconnection.lmuWindowsConnectionModule
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.lmuWindowsDebugStateDetailModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuWindowsNarratorModule
@@ -64,6 +64,10 @@ val featureModules: List<Module> =
         mainModule,
         mainPlatformModule,
         lmuWindowsConnectionModule,
+        gt7Ps5AutoReadoutMyBestLapDetailModule,
+        gt7Ps5AutoReadoutRemainingFuelDetailModule,
+        gt7Ps5AutoReadoutRemainingFuelLapsDetailModule,
+        gt7Ps5AutoReadoutTyreTemperatureDetailModule,
         gt7Ps5ConnectionModule,
         aceWindowsConnectionModule,
         serverConnectionModule,
@@ -99,10 +103,6 @@ val featureModules: List<Module> =
         lmuWindowsReadoutBrakeTemperatureDetailModule,
         lmuWindowsReadoutBrakeWearDetailModule,
         lmuWindowsReadoutPitTimingDetailModule,
-        gt7Ps5ReadoutMyBestLapDetailModule,
-        gt7Ps5ReadoutRemainingFuelDetailModule,
-        gt7Ps5ReadoutRemainingFuelLapsDetailModule,
-        gt7Ps5ReadoutTyreTemperatureDetailModule,
         aceWindowsReadoutRemainingFuelDetailModule,
         aceWindowsReadoutFlagDetailModule,
         aceWindowsReadoutTyreTemperatureDetailModule,

@@ -1,6 +1,6 @@
 digraph G {
-  rankdir=TB
-  graph [ranksep=1.2, nodesep=0.6]
+  rankdir=LR
+  graph [ranksep=1.0, nodesep=0.3]
   node [shape=box, style="rounded,filled"]
   ":app:androidApp" [label=":app:androidApp", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:androidBenchmark" [label=":app:androidBenchmark", fillcolor="#FFE0B2", color="#FB8C00"]
