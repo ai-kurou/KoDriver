@@ -6,7 +6,7 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
 
-// detailPane（AceWindowsReadoutTyreTemperatureDetailViewModel）・Narrator（AceWindowsNarratorViewModel）が
+// detailPane（AceWindowsAutoReadoutTyreTemperatureDetailViewModel）・Narrator（AceWindowsNarratorViewModel）が
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val tyreTemperatureEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(
