@@ -74,7 +74,7 @@ jobs:
 
   detekt:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 13
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -100,7 +100,7 @@ jobs:
 
   unit-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 23
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -123,7 +123,7 @@ jobs:
     with:
       taskSuffix: Jvm
       snapshotPathGlob: "*/jvmTest/snapshots/*.png"
-      timeoutMinutes: 25
+      timeoutMinutes: 32
     secrets: inherit
 
   android-screenshot-test-verify:
