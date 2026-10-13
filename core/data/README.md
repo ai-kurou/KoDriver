@@ -25,6 +25,13 @@ Android は `androidDataModule(context)`、Desktop は `desktopDataModule` が�
 `null` で解除すると最新の保存値へ戻る。Android／DesktopのDataModuleはRepositoryを `single` 登録し、
 設定ダイアログとオーバーレイが同じ一時値を共有する。
 
+## オーバーレイ背景透明度のプレビュー
+
+`OverlayBackgroundOpacityPreferencesRepositoryImpl` も文字サイズと同様に、保存値のFlowとメモリ上の
+nullable な `MutableStateFlow<Int?>` を `combine` し、プレビュー値を優先して配信する。
+プレビューはDataStoreへ書き込まず、`null` で解除すると最新の保存値へ戻る。
+Android／DesktopのDataModuleはRepositoryを `single` 登録し、設定ペインとオーバーレイで一時値を共有する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

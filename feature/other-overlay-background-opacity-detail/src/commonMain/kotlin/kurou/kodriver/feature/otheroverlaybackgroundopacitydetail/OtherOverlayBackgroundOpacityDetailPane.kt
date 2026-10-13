@@ -39,6 +39,7 @@ fun OtherOverlayBackgroundOpacityDetailPane(
     OtherOverlayBackgroundOpacityDetailPaneContent(
         uiState = uiState,
         onOpacityChanged = viewModel::onOpacityChanged,
+        onOpacityPreview = viewModel::onOpacityPreview,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -55,6 +56,7 @@ fun OtherOverlayBackgroundOpacityDetailPaneContent(
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
+    onOpacityPreview: (Int) -> Unit = {},
 ) {
     val opacityLabel = stringResource(Res.string.opacity_label)
 
@@ -78,6 +80,7 @@ fun OtherOverlayBackgroundOpacityDetailPaneContent(
                 value = uiState.opacity.toFloat(),
                 valueRange = 0f..100f,
                 labelFormatter = { opacityLabel.formatSliderLabel(it.roundToInt()) },
+                onValueChange = { onOpacityPreview(it.roundToInt()) },
                 onValueChangeFinished = { onOpacityChanged(it.roundToInt()) },
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
                 steps = 99,
