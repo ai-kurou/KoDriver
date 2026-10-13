@@ -13,7 +13,7 @@ class AppNavigationStateTest {
     val rule = createComposeRule()
 
     @Test
-    fun `rememberAppNavigationStateはデフォルトでReadoutを初期値とする`() {
+    fun `rememberAppNavigationStateはデフォルトでAutoReadoutを初期値とする`() {
         lateinit var navigationState: AppNavigationState
 
         rule.setContent {
@@ -21,7 +21,7 @@ class AppNavigationStateTest {
         }
 
         rule.runOnIdle {
-            assertEquals(AppDestination.Readout, navigationState.current)
+            assertEquals(AppDestination.AutoReadout, navigationState.current)
         }
     }
 
@@ -63,7 +63,7 @@ class AppNavigationStateTest {
 
     @Test
     fun `navigateToを呼ぶとcurrentが切り替わる`() {
-        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.Readout))
+        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.AutoReadout))
 
         state.navigateTo(AppDestination.More)
 
@@ -72,18 +72,18 @@ class AppNavigationStateTest {
 
     @Test
     fun `現在の宛先と同じタブをhandleTabClickするとonReselectedが呼ばれcurrentは変わらない`() {
-        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.Readout))
+        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.AutoReadout))
         var reselected: AppDestination? = null
 
-        state.handleTabClick(AppDestination.Readout) { reselected = it }
+        state.handleTabClick(AppDestination.AutoReadout) { reselected = it }
 
-        assertEquals(AppDestination.Readout, reselected)
-        assertEquals(AppDestination.Readout, state.current)
+        assertEquals(AppDestination.AutoReadout, reselected)
+        assertEquals(AppDestination.AutoReadout, state.current)
     }
 
     @Test
     fun `別のタブをhandleTabClickするとonReselectedは呼ばれずcurrentが切り替わる`() {
-        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.Readout))
+        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.AutoReadout))
         var reselected: AppDestination? = null
 
         state.handleTabClick(AppDestination.Log) { reselected = it }
@@ -94,11 +94,11 @@ class AppNavigationStateTest {
 
     @Test
     fun `現在の宛先と同じ宛先をnavigateToしてもcurrentは変わらない`() {
-        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.Readout))
+        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.AutoReadout))
 
-        state.navigateTo(AppDestination.Readout)
+        state.navigateTo(AppDestination.AutoReadout)
 
-        assertEquals(AppDestination.Readout, state.current)
+        assertEquals(AppDestination.AutoReadout, state.current)
     }
 
     @Test

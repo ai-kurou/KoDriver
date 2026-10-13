@@ -66,10 +66,10 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.app.shared.generated.resources.Res
+import kurou.kodriver.app.shared.generated.resources.nav_auto_readout
 import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_manual_readout
 import kurou.kodriver.app.shared.generated.resources.nav_more
-import kurou.kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.acewindowsdebugstatedetail.AceWindowsDebugStateDetailPane
 import kurou.kodriver.feature.autoreadoutlist.AceWindowsAutoReadoutListItemType
 import kurou.kodriver.feature.autoreadoutlist.AutoReadoutContent
@@ -196,12 +196,12 @@ internal fun ConnectionBannerNavigationTarget.toOtherListItemType(): OtherListIt
 @Composable
 private fun AppDestinationContent(
     destination: AppDestination,
-    readoutContent: @Composable () -> Unit,
+    autoReadoutContent: @Composable () -> Unit,
     telemetryLogContent: @Composable () -> Unit,
     otherContent: @Composable () -> Unit,
 ) {
     when (destination) {
-        AppDestination.Readout -> readoutContent()
+        AppDestination.AutoReadout -> autoReadoutContent()
         AppDestination.ManualReadout -> Unit
         AppDestination.Log -> telemetryLogContent()
         AppDestination.More -> otherContent()
@@ -211,7 +211,7 @@ private fun AppDestinationContent(
 @Composable
 private fun AppDestination.label(): String =
     when (this) {
-        AppDestination.Readout -> stringResource(Res.string.nav_readout)
+        AppDestination.AutoReadout -> stringResource(Res.string.nav_auto_readout)
         AppDestination.ManualReadout -> stringResource(Res.string.nav_manual_readout)
         AppDestination.Log -> stringResource(Res.string.nav_log)
         AppDestination.More -> stringResource(Res.string.nav_more)
@@ -418,7 +418,7 @@ fun AppScreen(
     otherListViewModel: OtherListViewModel = koinViewModel(),
     backHandler: AppBackHandler = { _, _, _ -> },
     onDarkThemeChanged: (Boolean) -> Unit = {},
-    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
+    autoReadoutContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
         AutoReadoutContent(
             backHandler = backHandler,
             scrollToTopRequest = scrollToTopRequest,
@@ -516,7 +516,7 @@ fun AppScreen(
                 onSelectOtherItem = otherListViewModel::selectItem,
             ),
         onFeedbackClick = { telemetryLogId -> otherListViewModel.selectFeedbackItem(telemetryLogId) },
-        onReadoutTabReselected = {
+        onAutoReadoutTabReselected = {
             handleTabReselected(
                 selectedItem = autoReadoutListUiState.selectedItem,
                 clearSelectedItem = autoReadoutListViewModel::clearSelectedItem,
@@ -537,7 +537,7 @@ fun AppScreen(
                 requestScrollToTop = { otherListScrollToTopRequest++ },
             )
         },
-        readoutContent = readoutContent,
+        autoReadoutContent = autoReadoutContent,
         autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
         telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
         otherListScrollToTopRequest = otherListScrollToTopRequest,
@@ -608,10 +608,10 @@ internal fun AppScreenContent(
     onSimulatorSelected: (String) -> Unit = {},
     onBannerTap: (() -> Unit)? = null,
     onFeedbackClick: ((Long) -> Unit)? = null,
-    onReadoutTabReselected: () -> Unit = {},
+    onAutoReadoutTabReselected: () -> Unit = {},
     onLogTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
-    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
+    autoReadoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     autoReadoutListScrollToTopRequest: Int = 0,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit = { _, _ -> },
     telemetryLogListScrollToTopRequest: Int = 0,
@@ -649,10 +649,10 @@ internal fun AppScreenContent(
                 navigationState = navigationState,
                 onBannerTapWithTabSwitch = onBannerTapWithTabSwitch,
                 onFeedbackClickWithTabSwitch = onFeedbackClickWithTabSwitch,
-                onReadoutTabReselected = onReadoutTabReselected,
+                onAutoReadoutTabReselected = onAutoReadoutTabReselected,
                 onLogTabReselected = onLogTabReselected,
                 onOtherTabReselected = onOtherTabReselected,
-                readoutContent = readoutContent,
+                autoReadoutContent = autoReadoutContent,
                 autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
                 telemetryLogContent = telemetryLogContent,
                 telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
@@ -677,10 +677,10 @@ private fun AppScreenScaffold(
     navigationState: AppNavigationState,
     onBannerTapWithTabSwitch: (() -> Unit)?,
     onFeedbackClickWithTabSwitch: ((Long) -> Unit)?,
-    onReadoutTabReselected: () -> Unit,
+    onAutoReadoutTabReselected: () -> Unit,
     onLogTabReselected: () -> Unit,
     onOtherTabReselected: () -> Unit,
-    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit,
+    autoReadoutContent: @Composable (scrollToTopRequest: Int) -> Unit,
     autoReadoutListScrollToTopRequest: Int,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit,
     telemetryLogListScrollToTopRequest: Int,
@@ -721,7 +721,7 @@ private fun AppScreenScaffold(
                             haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                             navigationState.handleTabClick(dest) { reselected ->
                                 when (reselected) {
-                                    AppDestination.Readout -> onReadoutTabReselected()
+                                    AppDestination.AutoReadout -> onAutoReadoutTabReselected()
                                     AppDestination.ManualReadout -> Unit
                                     AppDestination.Log -> onLogTabReselected()
                                     AppDestination.More -> onOtherTabReselected()
@@ -791,7 +791,7 @@ private fun AppScreenScaffold(
                 ) { destination ->
                     AppDestinationContent(
                         destination = destination,
-                        readoutContent = { readoutContent(autoReadoutListScrollToTopRequest) },
+                        autoReadoutContent = { autoReadoutContent(autoReadoutListScrollToTopRequest) },
                         telemetryLogContent = {
                             telemetryLogContent(
                                 telemetryLogListScrollToTopRequest,

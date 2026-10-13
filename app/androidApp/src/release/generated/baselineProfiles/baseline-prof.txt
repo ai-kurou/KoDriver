@@ -25020,13 +25020,13 @@ SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->getLmu_c
 SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->getLmu_disconnected(Lkurou/kodriver/app/shared/generated/resources/Res$string;)Lorg/jetbrains/compose/resources/StringResource;
 SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->getNav_log(Lkurou/kodriver/app/shared/generated/resources/Res$string;)Lorg/jetbrains/compose/resources/StringResource;
 SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->getNav_more(Lkurou/kodriver/app/shared/generated/resources/Res$string;)Lorg/jetbrains/compose/resources/StringResource;
-SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->getNav_readout(Lkurou/kodriver/app/shared/generated/resources/Res$string;)Lorg/jetbrains/compose/resources/StringResource;
+SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->getNav_auto_readout(Lkurou/kodriver/app/shared/generated/resources/Res$string;)Lorg/jetbrains/compose/resources/StringResource;
 SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->getTts_engine_title(Lkurou/kodriver/app/shared/generated/resources/Res$string;)Lorg/jetbrains/compose/resources/StringResource;
 SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->lmu_connected_delegate$lambda$0()Lorg/jetbrains/compose/resources/StringResource;
 SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->lmu_disconnected_delegate$lambda$0()Lorg/jetbrains/compose/resources/StringResource;
 SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->nav_log_delegate$lambda$0()Lorg/jetbrains/compose/resources/StringResource;
 SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->nav_more_delegate$lambda$0()Lorg/jetbrains/compose/resources/StringResource;
-SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->nav_readout_delegate$lambda$0()Lorg/jetbrains/compose/resources/StringResource;
+SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->nav_auto_readout_delegate$lambda$0()Lorg/jetbrains/compose/resources/StringResource;
 SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt;->tts_engine_title_delegate$lambda$0()Lorg/jetbrains/compose/resources/StringResource;
 Lkurou/kodriver/app/shared/generated/resources/String0_commonMainKt$$ExternalSyntheticLambda0;
 SPLkurou/kodriver/app/shared/generated/resources/String0_commonMainKt$$ExternalSyntheticLambda0;-><init>()V

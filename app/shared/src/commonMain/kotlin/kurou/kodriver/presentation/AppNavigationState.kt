@@ -15,7 +15,7 @@ import androidx.navigation3.runtime.NavKey
 internal enum class AppDestination(
     val icon: ImageVector,
 ) : NavKey {
-    Readout(Icons.Default.HeadsetMic),
+    AutoReadout(Icons.Default.HeadsetMic),
     ManualReadout(Icons.Default.TouchApp),
     Log(Icons.Default.Description),
     More(Icons.Default.MoreHoriz),
@@ -30,7 +30,7 @@ internal class AppNavigationState(
     val backStack: NavBackStack<NavKey>,
 ) {
     val current: AppDestination
-        get() = backStack.lastOrNull() as? AppDestination ?: AppDestination.Readout
+        get() = backStack.lastOrNull() as? AppDestination ?: AppDestination.AutoReadout
 
     fun navigateTo(destination: AppDestination) {
         if (current != destination) {
@@ -61,5 +61,5 @@ internal val AppNavigationStateSaver: Saver<AppNavigationState, String> =
     )
 
 @Composable
-internal fun rememberAppNavigationState(initial: AppDestination = AppDestination.Readout): AppNavigationState =
+internal fun rememberAppNavigationState(initial: AppDestination = AppDestination.AutoReadout): AppNavigationState =
     rememberSaveable(saver = AppNavigationStateSaver) { AppNavigationState(NavBackStack(initial)) }
