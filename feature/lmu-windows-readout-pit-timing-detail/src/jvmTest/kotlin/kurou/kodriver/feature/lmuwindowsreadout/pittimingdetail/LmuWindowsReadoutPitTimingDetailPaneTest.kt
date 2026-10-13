@@ -243,7 +243,7 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
     fun `スイッチOFFでも通常と切迫時の文言を編集し入力中の文言を試聴できる`() {
         val changed = mutableListOf<String>()
         val imminentChanged = mutableListOf<String>()
-        val previews = mutableListOf<String>()
+        val previews = mutableListOf<Pair<String, Int>>()
         val imminentPreviews = mutableListOf<String>()
         rule.setContent {
             KoDriverTheme {
@@ -251,11 +251,12 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
                     uiState =
                         LmuWindowsReadoutPitTimingDetailUiState(
                             virtualEnergyEnabled = false,
+                            virtualEnergyLaps = 1,
                             isTextToSpeechAvailable = true,
                         ),
                     onVirtualEnergyTextChanged = { changed += it },
                     onVirtualEnergyImminentTextChanged = { imminentChanged += it },
-                    onVirtualEnergyTextPreviewClicked = { previews += it },
+                    onVirtualEnergyTextPreviewClicked = { text, laps -> previews += text to laps },
                     onVirtualEnergyImminentTextPreviewClicked = { imminentPreviews += it },
                 )
             }
@@ -269,7 +270,7 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
         rule.onAllNodes(hasSetTextAction())[1].performScrollTo().performTextReplacement("必ず{laps}")
         rule.onAllNodesWithContentDescription("入力した文言を再生")[1].performScrollTo().performClick()
         assertEquals(listOf("あ".repeat(30)), changed)
-        assertEquals(changed, previews)
+        assertEquals(listOf("あ".repeat(30) to 1), previews)
         assertEquals(listOf("必ず{laps}"), imminentChanged)
         assertEquals(imminentChanged, imminentPreviews)
     }
@@ -334,7 +335,7 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
     fun `タイヤ摩耗のスイッチOFFでも通常と切迫時の文言を編集し入力中の文言を試聴できる`() {
         val changed = mutableListOf<String>()
         val imminentChanged = mutableListOf<String>()
-        val previews = mutableListOf<String>()
+        val previews = mutableListOf<Pair<String, Int>>()
         val imminentPreviews = mutableListOf<String>()
         rule.setContent {
             KoDriverTheme {
@@ -342,11 +343,12 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
                     uiState =
                         LmuWindowsReadoutPitTimingDetailUiState(
                             tyreWearEnabled = false,
+                            tyreWearLaps = 3,
                             isTextToSpeechAvailable = true,
                         ),
                     onTyreWearTextChanged = { changed += it },
                     onTyreWearImminentTextChanged = { imminentChanged += it },
-                    onTyreWearTextPreviewClicked = { previews += it },
+                    onTyreWearTextPreviewClicked = { text, laps -> previews += text to laps },
                     onTyreWearImminentTextPreviewClicked = { imminentPreviews += it },
                 )
             }
@@ -360,7 +362,7 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
         rule.onAllNodes(hasSetTextAction())[3].performScrollTo().performTextReplacement("必ず{laps}")
         rule.onAllNodesWithContentDescription("入力した文言を再生")[3].performScrollTo().performClick()
         assertEquals(listOf("あ".repeat(30)), changed)
-        assertEquals(changed, previews)
+        assertEquals(listOf("あ".repeat(30) to 3), previews)
         assertEquals(listOf("必ず{laps}"), imminentChanged)
         assertEquals(imminentChanged, imminentPreviews)
     }
