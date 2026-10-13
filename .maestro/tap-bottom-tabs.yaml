@@ -9,7 +9,11 @@ appId: kurou.kodriver
 - tapOn: "GT7"
 - scroll
 - tapOn: "Assetto Corsa EVO（Windows版）"
+- assertVisible: "手動読み上げ"
+- tapOn: "手動読み上げ"
 - tapOn: "ログ"
+- assertVisible: "Assetto Corsa EVO（Windows版）のログはまだありません"
+- tapOn: "手動読み上げ"
 - assertVisible: "Assetto Corsa EVO（Windows版）のログはまだありません"
 - tapOn: "その他"
 - assertVisible: "Windows版KoDriverへ接続するIPアドレス"

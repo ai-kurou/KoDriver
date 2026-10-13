@@ -67,6 +67,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_log
+import kurou.kodriver.app.shared.generated.resources.nav_manual_readout
 import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.acewindowsdebugstatedetail.AceWindowsDebugStateDetailPane
@@ -201,6 +202,7 @@ private fun AppDestinationContent(
 ) {
     when (destination) {
         AppDestination.Readout -> readoutContent()
+        AppDestination.ManualReadout -> Unit
         AppDestination.Log -> telemetryLogContent()
         AppDestination.More -> otherContent()
     }
@@ -210,6 +212,7 @@ private fun AppDestinationContent(
 private fun AppDestination.label(): String =
     when (this) {
         AppDestination.Readout -> stringResource(Res.string.nav_readout)
+        AppDestination.ManualReadout -> stringResource(Res.string.nav_manual_readout)
         AppDestination.Log -> stringResource(Res.string.nav_log)
         AppDestination.More -> stringResource(Res.string.nav_more)
     }
@@ -714,10 +717,12 @@ private fun AppScreenScaffold(
                         label = { Text(dest.label()) },
                         selected = navigationState.current == dest,
                         onClick = {
+                            if (dest == AppDestination.ManualReadout) return@NavigationSuiteItem
                             haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                             navigationState.handleTabClick(dest) { reselected ->
                                 when (reselected) {
                                     AppDestination.Readout -> onReadoutTabReselected()
+                                    AppDestination.ManualReadout -> Unit
                                     AppDestination.Log -> onLogTabReselected()
                                     AppDestination.More -> onOtherTabReselected()
                                 }
