@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="manual_readout_list_empty_title">手動読み上げのセットはまだありません</string>
+</resources>
