@@ -27514,7 +27514,7 @@ SPLkurou/kodriver/domain/model/AceWindowsFlagDefaultsKt;->getACE_WINDOWS_FLAG_EN
 Lkurou/kodriver/domain/model/AceWindowsReadoutDefaultsKt;
 SPLkurou/kodriver/domain/model/AceWindowsReadoutDefaultsKt;-><clinit>()V
 SPLkurou/kodriver/domain/model/AceWindowsReadoutDefaultsKt;->getACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT()Ljava/util/Map;
-SPLkurou/kodriver/domain/model/AceWindowsReadoutDefaultsKt;->getACE_WINDOWS_READOUT_ENABLED_STATE_DEFAULT()Ljava/util/Map;
+SPLkurou/kodriver/domain/model/AceWindowsReadoutDefaultsKt;->getACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT()Ljava/util/Map;
 SPLkurou/kodriver/domain/model/AceWindowsReadoutDefaultsKt;->getACE_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT()Ljava/util/Map;
 Lkurou/kodriver/domain/model/AceWindowsReadoutItemKey;
 Lkurou/kodriver/domain/model/AceWindowsReadoutItemKey$Flag;
@@ -27631,7 +27631,7 @@ SPLkurou/kodriver/domain/model/Gt7Ps5FuelUnit$Companion;-><init>(Lkotlin/jvm/int
 Lkurou/kodriver/domain/model/Gt7Ps5ReadoutDefaultsKt;
 SPLkurou/kodriver/domain/model/Gt7Ps5ReadoutDefaultsKt;-><clinit>()V
 SPLkurou/kodriver/domain/model/Gt7Ps5ReadoutDefaultsKt;->getGT7_PS5_QUEUE_ENABLED_STATE_DEFAULT()Ljava/util/Map;
-SPLkurou/kodriver/domain/model/Gt7Ps5ReadoutDefaultsKt;->getGT7_PS5_READOUT_ENABLED_STATE_DEFAULT()Ljava/util/Map;
+SPLkurou/kodriver/domain/model/Gt7Ps5ReadoutDefaultsKt;->getGT7_PS5_AUTO_READOUT_ENABLED_STATE_DEFAULT()Ljava/util/Map;
 SPLkurou/kodriver/domain/model/Gt7Ps5ReadoutDefaultsKt;->getGT7_PS5_READOUT_START_SOUND_ENABLED_STATE_DEFAULT()Ljava/util/Map;
 Lkurou/kodriver/domain/model/Gt7Ps5ReadoutItemKey;
 Lkurou/kodriver/domain/model/Gt7Ps5ReadoutItemKey$MyBestLap;
@@ -27675,7 +27675,7 @@ Lkurou/kodriver/domain/model/LmuWindowsReadoutDefaultsKt;
 SPLkurou/kodriver/domain/model/LmuWindowsReadoutDefaultsKt;-><clinit>()V
 SPLkurou/kodriver/domain/model/LmuWindowsReadoutDefaultsKt;->access$lmuWindowsOrderIndex(Lkurou/kodriver/domain/model/LmuWindowsReadoutItemKey$TopLevel;)I
 SPLkurou/kodriver/domain/model/LmuWindowsReadoutDefaultsKt;->getLMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT()Ljava/util/Map;
-SPLkurou/kodriver/domain/model/LmuWindowsReadoutDefaultsKt;->getLMU_WINDOWS_READOUT_ENABLED_STATE_DEFAULT()Ljava/util/Map;
+SPLkurou/kodriver/domain/model/LmuWindowsReadoutDefaultsKt;->getLMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT()Ljava/util/Map;
 SPLkurou/kodriver/domain/model/LmuWindowsReadoutDefaultsKt;->getLMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT()Ljava/util/Map;
 SPLkurou/kodriver/domain/model/LmuWindowsReadoutDefaultsKt;->lmuWindowsDefaultAutoReadoutOrder()Ljava/util/List;
 SPLkurou/kodriver/domain/model/LmuWindowsReadoutDefaultsKt;->lmuWindowsOrderIndex(Lkurou/kodriver/domain/model/LmuWindowsReadoutItemKey$TopLevel;)I
