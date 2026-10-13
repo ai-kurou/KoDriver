@@ -97,6 +97,7 @@ import kurou.kodriver.feature.readoutlist.generated.resources.drag_handle
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_label
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_order
+import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_title
 import kurou.kodriver.feature.readoutlist.generated.resources.queue_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.queue_toggle_description
 import kurou.kodriver.feature.readoutlist.generated.resources.scroll_to_top
@@ -169,27 +170,73 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
 
 @Composable
 internal fun PriorityHintSheetContent(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
-        Text(
-            text = stringResource(Res.string.priority_hint_description),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
+    Column(
+        modifier =
+            modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = KoDriverSpacing.large)
+                .padding(bottom = KoDriverSpacing.extraLarge),
+        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+    ) {
+        PriorityHintSheetRow(
+            icon = Icons.Filled.DragIndicator,
+            title = stringResource(Res.string.priority_hint_title),
+            description = stringResource(Res.string.priority_hint_description),
         )
-        Text(
-            text = stringResource(Res.string.queue_hint_description),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = KoDriverSpacing.large).padding(top = KoDriverSpacing.small),
+        PriorityHintSheetRow(
+            icon = Icons.AutoMirrored.Filled.PlaylistAdd,
+            title = stringResource(Res.string.queue_toggle_description),
+            description = stringResource(Res.string.queue_hint_description),
         )
-        Text(
-            text = stringResource(Res.string.start_sound_hint_description),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier =
-                Modifier
-                    .padding(horizontal = KoDriverSpacing.large)
-                    .padding(top = KoDriverSpacing.small, bottom = KoDriverSpacing.extraLarge),
+        PriorityHintSheetRow(
+            icon = Icons.Filled.NotificationsActive,
+            title = stringResource(Res.string.start_sound_toggle_description),
+            description = stringResource(Res.string.start_sound_hint_description),
+        )
+    }
+}
+
+@Composable
+private fun PriorityHintSheetRow(
+    icon: ImageVector,
+    title: String,
+    description: String,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium)) {
+        PriorityHintIconBadge(icon = icon)
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PriorityHintIconBadge(icon: ImageVector) {
+    Box(
+        modifier =
+            Modifier
+                .clip(MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(KoDriverSpacing.small),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(24.dp),
         )
     }
 }

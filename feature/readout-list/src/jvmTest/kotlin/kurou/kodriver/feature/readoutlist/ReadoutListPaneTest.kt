@@ -80,6 +80,9 @@ class ReadoutListPaneTest {
             "一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。"
         rule.onNodeWithContentDescription(priorityDescription).performClick()
 
+        rule.onNodeWithText("優先度").assertIsDisplayed()
+        rule.onNodeWithText("キュー").assertIsDisplayed()
+        rule.onNodeWithText("開始音").assertIsDisplayed()
         rule.onNodeWithText(priorityDescription).assertIsDisplayed()
         rule
             .onNodeWithText(
