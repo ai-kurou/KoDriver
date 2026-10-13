@@ -50,7 +50,7 @@ internal class AceWindowsNarratorEventProcessor(
     /** 判定・テンプレート置換を通さず、通常の優先度・音声・ログ経路で処理する。 */
     suspend fun processDebugReadout(
         request: DebugReadoutRequest,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
@@ -61,7 +61,7 @@ internal class AceWindowsNarratorEventProcessor(
             if (text == null) {
                 NarrationOutcome.SKIPPED
             } else {
-                speakWithPriority(event.withResolvedText(text), readoutOrder, queueEnabledStates)
+                speakWithPriority(event.withResolvedText(text), autoReadoutOrder, queueEnabledStates)
             }
         saveTelemetryLogSafely(
             createdAt = observedAtMs,
@@ -78,7 +78,7 @@ internal class AceWindowsNarratorEventProcessor(
     suspend fun processMyBestLap(
         bestLapTime: AceWindowsBestLapTimeData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
@@ -91,7 +91,7 @@ internal class AceWindowsNarratorEventProcessor(
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
-                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
+                    speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -115,7 +115,7 @@ internal class AceWindowsNarratorEventProcessor(
     suspend fun processFlag(
         flag: AceWindowsFlagData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
@@ -128,7 +128,7 @@ internal class AceWindowsNarratorEventProcessor(
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
-                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
+                    speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -152,7 +152,7 @@ internal class AceWindowsNarratorEventProcessor(
     suspend fun processRemainingFuel(
         fuel: AceWindowsFuelData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
@@ -165,7 +165,7 @@ internal class AceWindowsNarratorEventProcessor(
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
-                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
+                    speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -189,7 +189,7 @@ internal class AceWindowsNarratorEventProcessor(
     suspend fun processRemainingFuelLaps(
         remainingFuelLaps: AceWindowsRemainingFuelLapsData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
@@ -202,7 +202,7 @@ internal class AceWindowsNarratorEventProcessor(
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
-                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
+                    speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -226,7 +226,7 @@ internal class AceWindowsNarratorEventProcessor(
     suspend fun processTyreTemperature(
         tyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
@@ -239,7 +239,7 @@ internal class AceWindowsNarratorEventProcessor(
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
-                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
+                    speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -263,7 +263,7 @@ internal class AceWindowsNarratorEventProcessor(
     suspend fun processVehicleApproach(
         vehicleApproach: AceWindowsVehicleApproachData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
@@ -276,7 +276,7 @@ internal class AceWindowsNarratorEventProcessor(
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
-                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
+                    speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -305,7 +305,7 @@ internal class AceWindowsNarratorEventProcessor(
      */
     private fun speakWithPriority(
         event: SpeechEvent,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
     ): NarrationOutcome {
         var wasQueued: Boolean? = null
@@ -314,7 +314,7 @@ internal class AceWindowsNarratorEventProcessor(
             speakWithPriority(
                 eventKey = event.readoutItemKey,
                 currentKey = { ttsEngine.currentReadoutItemKey },
-                readoutOrder = readoutOrder,
+                autoReadoutOrder = autoReadoutOrder,
                 queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
                 speak = { queue ->
                     wasQueued = queue

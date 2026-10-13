@@ -34,10 +34,10 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStat
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -78,8 +78,8 @@ internal data class SimulatorUseCases(
 )
 
 internal data class ReadoutListUseCases(
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val observeReadoutOrder: ObserveResolvedReadoutOrderUseCase,
+    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val observeAutoReadoutOrder: ObserveResolvedAutoReadoutOrderUseCase,
     val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
 )
 
@@ -108,7 +108,7 @@ internal class AceWindowsNarratorViewModel(
     private val listEnabledStates =
         selectedSimulator
             .flatMapLatest { simulator ->
-                readoutListUseCases.observeReadoutEnabledStates(simulator.id)
+                readoutListUseCases.observeAutoReadoutEnabledStates(simulator.id)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     // listPane（listEnabledStates）とdetailPane（flagEnabledStates・tyreTemperatureEnabledStates）を統合した、
@@ -123,10 +123,10 @@ internal class AceWindowsNarratorViewModel(
             readoutStates + flagStates + tyreTemperatureStates + vehicleApproachStates
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
-    private val readoutOrder =
+    private val autoReadoutOrder =
         selectedSimulator
             .flatMapLatest { simulator ->
-                readoutListUseCases.observeReadoutOrder(simulator)
+                readoutListUseCases.observeAutoReadoutOrder(simulator)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。
@@ -231,7 +231,7 @@ internal class AceWindowsNarratorViewModel(
                     val state = narratorState
                     eventProcessor.processDebugReadout(
                         request = request,
-                        readoutOrder = readoutOrder.value,
+                        autoReadoutOrder = autoReadoutOrder.value,
                         queueEnabledStates = queueEnabledStates.value,
                         observedAtMs = currentTimeMs(),
                         logContext = AceWindowsTelemetryLogContext(state, currentSettings, state),
@@ -256,7 +256,7 @@ internal class AceWindowsNarratorViewModel(
                 eventProcessor.processMyBestLap(
                     bestLapTime = bestLapTime,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -285,7 +285,7 @@ internal class AceWindowsNarratorViewModel(
                 eventProcessor.processRemainingFuel(
                     fuel = fuel,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -314,7 +314,7 @@ internal class AceWindowsNarratorViewModel(
                 eventProcessor.processRemainingFuelLaps(
                     remainingFuelLaps = remainingFuelLaps,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -343,7 +343,7 @@ internal class AceWindowsNarratorViewModel(
                 eventProcessor.processFlag(
                     flag = flag,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -372,7 +372,7 @@ internal class AceWindowsNarratorViewModel(
                 eventProcessor.processTyreTemperature(
                     tyreCarcassTemperature = tyreCarcassTemperature,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =
@@ -401,7 +401,7 @@ internal class AceWindowsNarratorViewModel(
                 eventProcessor.processVehicleApproach(
                     vehicleApproach = vehicleApproach,
                     events = decision.events,
-                    readoutOrder = readoutOrder.value,
+                    autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,
                     observedAtMs = observedAtMs,
                     logContext =

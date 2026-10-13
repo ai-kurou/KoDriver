@@ -14,15 +14,15 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
 
 private data class LocalOrderState(
@@ -31,7 +31,7 @@ private data class LocalOrderState(
 )
 
 private data class EnabledStates(
-    val readoutEnabledStates: Map<ReadoutItemKey, Boolean>,
+    val autoReadoutEnabledStates: Map<ReadoutItemKey, Boolean>,
     val queueEnabledStates: Map<ReadoutItemKey, Boolean>,
     val startSoundEnabledStates: Map<ReadoutItemKey, Boolean>,
 )
@@ -41,14 +41,14 @@ data class SimulatorUseCases(
 )
 
 data class AutoReadoutOrderUseCases(
-    val observeReadoutOrder: ObserveReadoutOrderUseCase,
-    val resolveReadoutOrder: ResolveReadoutOrderUseCase,
-    val saveReadoutOrder: SaveReadoutOrderUseCase,
+    val observeAutoReadoutOrder: ObserveAutoReadoutOrderUseCase,
+    val resolveAutoReadoutOrder: ResolveAutoReadoutOrderUseCase,
+    val saveAutoReadoutOrder: SaveAutoReadoutOrderUseCase,
 )
 
 data class AutoReadoutEnabledUseCases(
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val saveAutoReadoutEnabledState: SaveAutoReadoutEnabledStateUseCase,
 )
 
 data class QueueUseCases(
@@ -83,14 +83,14 @@ class AutoReadoutListViewModel(
     private val _persistedOrder: StateFlow<List<ReadoutItemKey>> =
         _selectedSimulator
             .flatMapLatest { simulator ->
-                autoReadoutOrderUseCases.observeReadoutOrder(simulator.id)
+                autoReadoutOrderUseCases.observeAutoReadoutOrder(simulator.id)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
+    private val _autoReadoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
         _selectedSimulator
             .flatMapLatest { simulator ->
-                autoReadoutEnabledUseCases.observeReadoutEnabledStates(simulator.id)
+                autoReadoutEnabledUseCases.observeAutoReadoutEnabledStates(simulator.id)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val _queueEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
@@ -116,17 +116,20 @@ class AutoReadoutListViewModel(
             if (local.simulator == selected) {
                 local.items
             } else {
-                autoReadoutOrderUseCases.resolveReadoutOrder(persistedOrder = persisted, defaultOrder = defaultItems)
+                autoReadoutOrderUseCases.resolveAutoReadoutOrder(
+                    persistedOrder = persisted,
+                    defaultOrder = defaultItems,
+                )
             }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _enabledStates: StateFlow<EnabledStates> =
         combine(
-            _readoutEnabledStates,
+            _autoReadoutEnabledStates,
             _queueEnabledStates,
             _startSoundEnabledStates,
-        ) { readoutEnabledStates, queueEnabledStates, startSoundEnabledStates ->
-            EnabledStates(readoutEnabledStates, queueEnabledStates, startSoundEnabledStates)
+        ) { autoReadoutEnabledStates, queueEnabledStates, startSoundEnabledStates ->
+            EnabledStates(autoReadoutEnabledStates, queueEnabledStates, startSoundEnabledStates)
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -143,7 +146,7 @@ class AutoReadoutListViewModel(
             AutoReadoutListUiState(
                 selectedSimulator = selected,
                 items = items,
-                readoutEnabledStates = enabledStates.readoutEnabledStates,
+                autoReadoutEnabledStates = enabledStates.autoReadoutEnabledStates,
                 queueEnabledStates = enabledStates.queueEnabledStates,
                 startSoundEnabledStates = enabledStates.startSoundEnabledStates,
                 selectedItem = selectedItem?.takeIf { it.belongsTo(selected) },
@@ -165,7 +168,7 @@ class AutoReadoutListViewModel(
                 .also { it.add(toIndex, it.removeAt(fromIndex)) }
         _localOrder.update { LocalOrderState(selected, newItems) }
         viewModelScope.launch {
-            autoReadoutOrderUseCases.saveReadoutOrder(selected.id, newItems)
+            autoReadoutOrderUseCases.saveAutoReadoutOrder(selected.id, newItems)
         }
     }
 
@@ -185,7 +188,7 @@ class AutoReadoutListViewModel(
     ) {
         val simulator = _selectedSimulator.value
         viewModelScope.launch {
-            autoReadoutEnabledUseCases.saveReadoutEnabledState(simulator.id, key, enabled)
+            autoReadoutEnabledUseCases.saveAutoReadoutEnabledState(simulator.id, key, enabled)
         }
     }
 

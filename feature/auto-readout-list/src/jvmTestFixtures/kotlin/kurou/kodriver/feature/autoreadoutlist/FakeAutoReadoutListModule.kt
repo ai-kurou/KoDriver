@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import org.koin.dsl.module
@@ -21,7 +21,7 @@ import org.koin.dsl.module
 val fakeAutoReadoutListModule =
     module {
         single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
-        single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }
+        single<AutoReadoutPreferencesRepository> { FakeAutoReadoutPreferencesRepositoryImpl() }
         single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
             FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl()
         }
@@ -106,14 +106,14 @@ private class FakeReadoutStartSoundEnabledPreferencesRepositoryImpl : ReadoutSta
     }
 }
 
-private class FakeReadoutPreferencesRepositoryImpl : ReadoutPreferencesRepository {
+private class FakeAutoReadoutPreferencesRepositoryImpl : AutoReadoutPreferencesRepository {
     private val enabledStates = MutableStateFlow<Map<String, Map<ReadoutItemKey, Boolean>>>(emptyMap())
     private val orders = MutableStateFlow<Map<String, List<ReadoutItemKey>>>(emptyMap())
 
-    override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
+    override fun observeAutoReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         enabledStates.map { it[simulator] ?: emptyMap() }
 
-    override suspend fun saveReadoutEnabledState(
+    override suspend fun saveAutoReadoutEnabledState(
         simulator: String,
         key: ReadoutItemKey,
         enabled: Boolean,
@@ -124,13 +124,13 @@ private class FakeReadoutPreferencesRepositoryImpl : ReadoutPreferencesRepositor
         }
     }
 
-    override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
+    override fun observeAutoReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
         orders.map {
             it[simulator]
                 ?: emptyList()
         }
 
-    override suspend fun saveReadoutOrder(
+    override suspend fun saveAutoReadoutOrder(
         simulator: String,
         order: List<ReadoutItemKey>,
     ) {

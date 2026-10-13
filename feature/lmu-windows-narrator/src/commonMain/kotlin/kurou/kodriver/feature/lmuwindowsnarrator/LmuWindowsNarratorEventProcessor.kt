@@ -74,14 +74,14 @@ internal class LmuWindowsNarratorEventProcessor(
     /** 判定・テンプレート置換を通さず、通常の優先度・音声・ログ経路で処理する。 */
     suspend fun processDebugReadout(
         request: DebugReadoutRequest,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         processEvents(
             events = listOf(DebugReadoutText(request.readoutItemKey, request.text)),
-            readoutOrder = readoutOrder,
+            autoReadoutOrder = autoReadoutOrder,
             queueEnabledStates = queueEnabledStates,
             observedAtMs = observedAtMs,
         ) {
@@ -94,13 +94,13 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processMyBestLap(
         telemetry: LmuWindowsTelemetryData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousTelemetry
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildTelemetryLogJson(
                 state = logContext.state,
                 previous = previous,
@@ -116,13 +116,13 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processVehicleApproach(
         vehicleApproach: LmuWindowsVehicleApproachData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousVehicleApproach
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildTelemetryLogJson(
                 state = logContext.state,
                 previous = previous,
@@ -138,13 +138,13 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processVehicleDamage(
         vehicleDamage: LmuWindowsVehicleDamageData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousVehicleDamage
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildTelemetryLogJson(
                 state = logContext.state,
                 previous = previous,
@@ -160,13 +160,13 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processTyreDetached(
         tyreDetached: LmuWindowsTyreDetachedData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousTyreDetached
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildTelemetryLogJson(
                 state = logContext.state,
                 previous = previous,
@@ -182,13 +182,13 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processRaceFlags(
         raceFlags: LmuWindowsRaceFlagsData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousRaceFlags
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildTelemetryLogJson(
                 state = logContext.state,
                 previous = previous,
@@ -204,13 +204,13 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processTyreWear(
         tyreWear: LmuWindowsTyreWearData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousTyreWear
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildTelemetryLogJson(
                 state = logContext.state,
                 previous = previous,
@@ -226,13 +226,13 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processBrakeTemperature(
         brakeTemperature: LmuWindowsBrakeTemperatureData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousBrakeTemperature
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildTelemetryLogJson(
                 state = logContext.state,
                 previous = previous,
@@ -248,13 +248,13 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processBrakeWear(
         brakeWear: LmuWindowsBrakeWearRemainingData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousBrakeWear
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildTelemetryLogJson(
                 state = logContext.state,
                 previous = previous,
@@ -270,13 +270,13 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processRemainingVirtualEnergy(
         remainingVirtualEnergy: LmuWindowsVirtualEnergyData,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousRemainingVirtualEnergy
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildTelemetryLogJson(
                 state = logContext.state,
                 previous = previous,
@@ -292,12 +292,12 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processTyreTemperature(
         input: TyreTemperatureReadoutInput,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTyreTemperatureLogContext,
     ) {
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildTelemetryLogJson(
                 state = logContext.state,
                 input = input,
@@ -312,12 +312,12 @@ internal class LmuWindowsNarratorEventProcessor(
     suspend fun processPitTiming(
         snapshot: LmuWindowsPitTimingSnapshot,
         events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsPitTimingLogContext,
     ) {
-        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
             buildPitTimingTelemetryLogJson(
                 state = logContext.state,
                 telemetry = snapshot.telemetry,
@@ -333,7 +333,7 @@ internal class LmuWindowsNarratorEventProcessor(
     /** 本文の確定・優先度つき再生・ログ保存を全LMUイベントで共有する。 */
     private suspend fun <E : SpeechEvent> processEvents(
         events: List<E>,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         telemetryJson: () -> String,
@@ -345,7 +345,7 @@ internal class LmuWindowsNarratorEventProcessor(
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
-                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
+                    speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -365,7 +365,7 @@ internal class LmuWindowsNarratorEventProcessor(
      */
     private fun speakWithPriority(
         event: SpeechEvent,
-        readoutOrder: List<ReadoutItemKey>,
+        autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
     ): NarrationOutcome {
         var wasQueued: Boolean? = null
@@ -374,7 +374,7 @@ internal class LmuWindowsNarratorEventProcessor(
             speakWithPriority(
                 eventKey = event.readoutItemKey,
                 currentKey = { ttsEngine.currentReadoutItemKey },
-                readoutOrder = readoutOrder,
+                autoReadoutOrder = autoReadoutOrder,
                 queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
                 speak = { queue ->
                     wasQueued = queue

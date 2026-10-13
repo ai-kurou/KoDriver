@@ -54,7 +54,7 @@ val LMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     )
 
 /** 一覧画面の TopLevel 項目と Narrator が共有する読み上げ順序の初期値。 */
-internal fun lmuWindowsDefaultReadoutOrder(): List<ReadoutItemKey> =
+internal fun lmuWindowsDefaultAutoReadoutOrder(): List<ReadoutItemKey> =
     ReadoutItemKey.entries
         .filterIsInstance<LmuWindowsReadoutItemKey.TopLevel>()
         .sortedBy { key -> lmuWindowsOrderIndex(key) }

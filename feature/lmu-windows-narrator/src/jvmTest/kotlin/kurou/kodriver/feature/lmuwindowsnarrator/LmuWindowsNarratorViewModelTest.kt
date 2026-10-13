@@ -88,6 +88,7 @@ import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
@@ -113,10 +114,11 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
@@ -145,12 +147,10 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStates
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -191,7 +191,7 @@ class LmuWindowsNarratorViewModelTest {
 
     private val simulatorPreferencesRepository: SimulatorPreferencesRepository = mockk(relaxUnitFun = true)
 
-    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk(relaxUnitFun = true)
+    private val autoReadoutPreferencesRepository: AutoReadoutPreferencesRepository = mockk(relaxUnitFun = true)
 
     private val flagRepository: LmuWindowsFlagRepository = mockk(relaxUnitFun = true)
 
@@ -300,14 +300,14 @@ class LmuWindowsNarratorViewModelTest {
             MutableStateFlow(vehicleDamageEnabledOverrides)
         every { tyreDetachedRepository.tyreDetachedStream() } returns tyreDetachedChannel.receiveAsFlow()
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(simulator)
-        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns
+        every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id) } returns
             MutableStateFlow(enabledOverrides)
-        every { readoutPreferencesRepository.observeReadoutOrder(Simulator.LmuWindows.id) } returns
+        every { autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.LmuWindows.id) } returns
             MutableStateFlow(orderOverride)
         // シミュレーター切り替えのテスト用に、LMU 以外の購読も解決できるようにする
-        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+        every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
             MutableStateFlow(emptyMap())
-        every { readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id) } returns
+        every { autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.Gt7Ps5.id) } returns
             MutableStateFlow(orderOverride)
         every { flagRepository.flagStream() } returns flagChannel.receiveAsFlow()
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
@@ -481,11 +481,12 @@ class LmuWindowsNarratorViewModelTest {
                 SimulatorUseCases(ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository)),
             readoutListUseCases =
                 ReadoutListUseCases(
-                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                    observeReadoutOrder =
-                        ObserveResolvedReadoutOrderUseCase(
-                            ObserveReadoutOrderUseCase(readoutPreferencesRepository),
-                            ResolveReadoutOrderUseCase(),
+                    observeAutoReadoutEnabledStates =
+                        ObserveAutoReadoutEnabledStatesUseCase(autoReadoutPreferencesRepository),
+                    observeAutoReadoutOrder =
+                        ObserveResolvedAutoReadoutOrderUseCase(
+                            ObserveAutoReadoutOrderUseCase(autoReadoutPreferencesRepository),
+                            ResolveAutoReadoutOrderUseCase(),
                         ),
                     observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
                 ),

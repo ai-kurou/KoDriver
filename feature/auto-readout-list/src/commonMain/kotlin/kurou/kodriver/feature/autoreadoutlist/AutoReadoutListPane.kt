@@ -320,7 +320,7 @@ internal fun AutoReadoutListPane(
                         label = "cardContainerColor",
                     )
                     val itemName = autoReadoutItemDisplayName(item)
-                    val readoutEnabled = uiState.readoutEnabledStates.readoutEnabled(item)
+                    val readoutEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(item)
                     AutoReadoutListItemCard(
                         item = item,
                         index = index,

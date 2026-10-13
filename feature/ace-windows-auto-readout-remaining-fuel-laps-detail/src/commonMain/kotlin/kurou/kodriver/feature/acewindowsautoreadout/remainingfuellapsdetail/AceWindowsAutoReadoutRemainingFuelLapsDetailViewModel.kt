@@ -17,20 +17,20 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelLapsThresholdUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal data class RemainingFuelLapsUseCases(
     val observeThreshold: ObserveAceWindowsRemainingFuelLapsThresholdUseCase,
     val saveThreshold: SaveAceWindowsRemainingFuelLapsThresholdUseCase,
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val saveAutoReadoutEnabledState: SaveAutoReadoutEnabledStateUseCase,
 )
 
 internal data class RemainingFuelLapsReadoutUseCases(
@@ -60,7 +60,7 @@ internal class AceWindowsAutoReadoutRemainingFuelLapsDetailViewModel(
     val uiState: StateFlow<AceWindowsAutoReadoutRemainingFuelLapsDetailUiState> =
         combine(
             remainingFuelLapsUseCases.observeThreshold(),
-            remainingFuelLapsUseCases.observeReadoutEnabledStates(Simulator.AceWindows.id),
+            remainingFuelLapsUseCases.observeAutoReadoutEnabledStates(Simulator.AceWindows.id),
             readout.observeText(),
             readout.observeEmptyText(),
             preview.textToSpeechAvailable,
@@ -116,7 +116,7 @@ internal class AceWindowsAutoReadoutRemainingFuelLapsDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            remainingFuelLapsUseCases.saveReadoutEnabledState(
+            remainingFuelLapsUseCases.saveAutoReadoutEnabledState(
                 Simulator.AceWindows.id,
                 AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled,
                 enabled,

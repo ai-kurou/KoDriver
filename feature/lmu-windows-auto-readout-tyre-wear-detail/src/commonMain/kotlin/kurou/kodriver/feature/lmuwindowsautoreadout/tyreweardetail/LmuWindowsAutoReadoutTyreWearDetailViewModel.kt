@@ -15,21 +15,21 @@ import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 internal data class TyreWearUseCases(
     val observeThresholdPercentage: ObserveLmuWindowsTyreWearThresholdPercentageUseCase,
     val saveThresholdPercentage: SaveLmuWindowsTyreWearThresholdPercentageUseCase,
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val saveAutoReadoutEnabledState: SaveAutoReadoutEnabledStateUseCase,
     val observeText: ObserveLmuWindowsTyreWearReadoutTextUseCase,
     val saveText: SaveLmuWindowsTyreWearReadoutTextUseCase,
 )
@@ -60,7 +60,7 @@ internal class LmuWindowsAutoReadoutTyreWearDetailViewModel(
     val uiState: StateFlow<LmuWindowsAutoReadoutTyreWearDetailUiState> =
         combine(
             tyreWearUseCases.observeThresholdPercentage(),
-            tyreWearUseCases.observeReadoutEnabledStates(Simulator.LmuWindows.id),
+            tyreWearUseCases.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
             tyreWearUseCases.observeText(),
             previewHelper.textToSpeechAvailable,
         ) { thresholdPercentage, enabledStates, text, available ->
@@ -109,7 +109,7 @@ internal class LmuWindowsAutoReadoutTyreWearDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            tyreWearUseCases.saveReadoutEnabledState(
+            tyreWearUseCases.saveAutoReadoutEnabledState(
                 Simulator.LmuWindows.id,
                 LmuWindowsReadoutItemKey.TyreWear.WarningReadout,
                 enabled,

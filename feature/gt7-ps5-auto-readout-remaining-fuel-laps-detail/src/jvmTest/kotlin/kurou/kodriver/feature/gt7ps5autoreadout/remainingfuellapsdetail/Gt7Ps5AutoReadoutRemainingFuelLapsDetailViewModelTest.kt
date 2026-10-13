@@ -23,19 +23,19 @@ import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFA
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -48,7 +48,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
 
     private val repository: Gt7Ps5RemainingFuelLapsPreferencesRepository = mockk()
 
-    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+    private val autoReadoutPreferencesRepository: AutoReadoutPreferencesRepository = mockk()
 
     private val speakText: SpeakTextUseCase = mockk()
     private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
@@ -78,10 +78,10 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
                         ObserveGt7Ps5RemainingFuelLapsUseCase(repository),
                     saveRemainingFuelLaps =
                         SaveGt7Ps5RemainingFuelLapsUseCase(repository),
-                    observeReadoutEnabledStates =
-                        ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                    saveReadoutEnabledState =
-                        SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                    observeAutoReadoutEnabledStates =
+                        ObserveAutoReadoutEnabledStatesUseCase(autoReadoutPreferencesRepository),
+                    saveAutoReadoutEnabledState =
+                        SaveAutoReadoutEnabledStateUseCase(autoReadoutPreferencesRepository),
                 ),
             readout =
                 RemainingFuelLapsReadoutUseCases(
@@ -99,7 +99,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -120,14 +120,16 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeEmptyReadoutText() }
             verify(exactly = 1) { repository.observeRemainingFuelLaps() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
-            confirmVerified(repository, readoutPreferencesRepository)
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
+            }
+            confirmVerified(repository, autoReadoutPreferencesRepository)
         }
 
     @Test
     fun `onRemainingFuelLapsChangedを呼ぶとuiStateのremainingFuelLapsが更新される`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -143,15 +145,17 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeEmptyReadoutText() }
             verify(exactly = 1) { repository.observeRemainingFuelLaps() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
+            }
             coVerify(exactly = 1) { repository.saveRemainingFuelLaps(3) }
-            confirmVerified(repository, readoutPreferencesRepository)
+            confirmVerified(repository, autoReadoutPreferencesRepository)
         }
 
     @Test
     fun `onResetRemainingFuelLapsを呼ぶとremainingFuelLapsがデフォルト値3に戻る`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -167,22 +171,24 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeEmptyReadoutText() }
             verify(exactly = 1) { repository.observeRemainingFuelLaps() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
+            }
             coVerify(exactly = 1) { repository.saveRemainingFuelLaps(3) }
-            confirmVerified(repository, readoutPreferencesRepository)
+            confirmVerified(repository, autoReadoutPreferencesRepository)
         }
 
     @Test
     fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
             coEvery { checkAvailable() } returns true
             every { repository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
             coEvery {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                autoReadoutPreferencesRepository.saveAutoReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
                     Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled,
                     false,
@@ -200,21 +206,23 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeEmptyReadoutText() }
             verify(exactly = 1) { repository.observeRemainingFuelLaps() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
+            }
             coVerify(exactly = 1) {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                autoReadoutPreferencesRepository.saveAutoReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
                     Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled,
                     false,
                 )
             }
-            confirmVerified(repository, readoutPreferencesRepository)
+            confirmVerified(repository, autoReadoutPreferencesRepository)
         }
 
     @Test
     fun `文言の監視と保存をUiStateに反映する`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -235,7 +243,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `保存値と異なっても画面に表示中の閾値に置換して開始音の後に試聴する`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -273,7 +281,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `空白文言では音量を取得せず試聴しない`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -291,7 +299,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `TTS利用不可を反映し試聴しない`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -310,7 +318,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `音量ゼロ以下では開始音も本文も試聴しない`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -333,7 +341,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `燃料なし用の文言を保存して反映する`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -354,7 +362,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `燃料なし用の文言は置換せず開始音の後に試聴する`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -377,7 +385,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `ペインを離れると開始音待機中の試聴を停止する`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow
@@ -407,7 +415,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
         runTest {
-            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
                 enabledStatesFlow
             every { repository.observeReadoutText() } returns textFlow
             every { repository.observeEmptyReadoutText() } returns emptyTextFlow

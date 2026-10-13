@@ -16,16 +16,16 @@ import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPe
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearSelectionUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeWearSelectionUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 internal data class BrakeWearUseCases(
@@ -46,8 +46,8 @@ internal data class BrakeWearReadoutUseCases(
 
 internal class LmuWindowsAutoReadoutBrakeWearDetailViewModel(
     private val brakeWearUseCases: BrakeWearUseCases,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    private val saveAutoReadoutEnabledState: SaveAutoReadoutEnabledStateUseCase,
     readout: BrakeWearReadoutUseCases,
 ) : ViewModel() {
     private val previewHelper =
@@ -66,7 +66,7 @@ internal class LmuWindowsAutoReadoutBrakeWearDetailViewModel(
         combine(
             brakeWearUseCases.observeVehicleClassLowThreshold(),
             brakeWearUseCases.observeVehicleClassSelection(),
-            observeReadoutEnabledStates(Simulator.LmuWindows.id),
+            observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
             brakeWearUseCases.observeText(),
             previewHelper.textToSpeechAvailable,
         ) { vehicleClassLowThresholdPercent, selectedVehicleClass, enabledStates, text, available ->
@@ -132,7 +132,7 @@ internal class LmuWindowsAutoReadoutBrakeWearDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(
+            saveAutoReadoutEnabledState(
                 Simulator.LmuWindows.id,
                 LmuWindowsReadoutItemKey.BrakeWear.WarningReadout,
                 enabled,

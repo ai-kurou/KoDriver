@@ -10,6 +10,8 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
@@ -22,11 +24,9 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUs
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
@@ -34,7 +34,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
-import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -95,10 +95,10 @@ val gt7Ps5NarratorModule: Module =
         factory { DetermineGt7Ps5NarratorReadoutUseCase() }
         factory { SaveTelemetryLogUseCase(get()) }
         factory { ObserveGt7Ps5UseCase(get()) }
-        factory { ObserveReadoutEnabledStatesUseCase(get()) }
-        factory { ObserveReadoutOrderUseCase(get()) }
-        factory { ResolveReadoutOrderUseCase() }
-        factory { ObserveResolvedReadoutOrderUseCase(get(), get()) }
+        factory { ObserveAutoReadoutEnabledStatesUseCase(get()) }
+        factory { ObserveAutoReadoutOrderUseCase(get()) }
+        factory { ResolveAutoReadoutOrderUseCase() }
+        factory { ObserveResolvedAutoReadoutOrderUseCase(get(), get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
         factory { ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(get()) }

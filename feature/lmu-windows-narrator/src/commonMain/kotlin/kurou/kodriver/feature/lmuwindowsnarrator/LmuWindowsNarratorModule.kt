@@ -9,6 +9,8 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
@@ -58,12 +60,10 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedR
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
@@ -71,7 +71,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
-import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -160,10 +160,10 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
         factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
-        factory { ObserveReadoutEnabledStatesUseCase(get()) }
-        factory { ObserveReadoutOrderUseCase(get()) }
-        factory { ResolveReadoutOrderUseCase() }
-        factory { ObserveResolvedReadoutOrderUseCase(get(), get()) }
+        factory { ObserveAutoReadoutEnabledStatesUseCase(get()) }
+        factory { ObserveAutoReadoutOrderUseCase(get()) }
+        factory { ResolveAutoReadoutOrderUseCase() }
+        factory { ObserveResolvedAutoReadoutOrderUseCase(get(), get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }

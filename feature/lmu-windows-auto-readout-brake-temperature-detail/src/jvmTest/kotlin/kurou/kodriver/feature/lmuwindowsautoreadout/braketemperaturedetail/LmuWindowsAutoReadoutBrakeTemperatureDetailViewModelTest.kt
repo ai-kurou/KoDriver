@@ -22,19 +22,19 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -47,7 +47,7 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
 
     private val vehicleClassRepository: LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository = mockk()
 
-    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+    private val autoReadoutPreferencesRepository: AutoReadoutPreferencesRepository = mockk()
 
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val observeVolume: ObserveSoundVolumeUseCase = mockk()
@@ -82,8 +82,8 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
                     saveVehicleClassSelection =
                         SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase(vehicleClassRepository),
                 ),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+            observeAutoReadoutEnabledStates = ObserveAutoReadoutEnabledStatesUseCase(autoReadoutPreferencesRepository),
+            saveAutoReadoutEnabledState = SaveAutoReadoutEnabledStateUseCase(autoReadoutPreferencesRepository),
             readout = BrakeTemperatureReadoutUseCases(playSpeechEvent, stopSpeech, checkAvailable, observeVolume),
         )
 
@@ -109,9 +109,11 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.BrakeTemperature.Root) }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
+            confirmVerified(vehicleClassRepository, autoReadoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -139,12 +141,14 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, 800)
             }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.BrakeTemperature.Root) }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
+            confirmVerified(vehicleClassRepository, autoReadoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -172,12 +176,14 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 800)
             }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.BrakeTemperature.Root) }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
+            confirmVerified(vehicleClassRepository, autoReadoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -199,10 +205,12 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) { vehicleClassRepository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte) }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.BrakeTemperature.Root) }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
+            confirmVerified(vehicleClassRepository, autoReadoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -213,7 +221,7 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
             every { vehicleClassRepository.observeSelectedVehicleClass() } returns
                 MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
             coEvery {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                autoReadoutPreferencesRepository.saveAutoReadoutEnabledState(
                     Simulator.LmuWindows.id,
                     LmuWindowsReadoutItemKey.BrakeTemperature.WarningReadout,
                     false,
@@ -231,20 +239,22 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             coVerify(exactly = 1) {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                autoReadoutPreferencesRepository.saveAutoReadoutEnabledState(
                     Simulator.LmuWindows.id,
                     LmuWindowsReadoutItemKey.BrakeTemperature.WarningReadout,
                     false,
                 )
             }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.BrakeTemperature.Root) }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
+            confirmVerified(vehicleClassRepository, autoReadoutPreferencesRepository, stopSpeech)
         }
 
     private fun stubReadout(available: Boolean = true) {
-        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns
+        every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id) } returns
             enabledStatesFlow
         every { vehicleClassRepository.observeReadoutText() } returns textFlow
         coEvery { checkAvailable() } returns available
@@ -415,10 +425,12 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            verify(exactly = 1) {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            }
             confirmVerified(
                 vehicleClassRepository,
-                readoutPreferencesRepository,
+                autoReadoutPreferencesRepository,
                 playSpeechEvent,
                 observeVolume,
                 checkAvailable,

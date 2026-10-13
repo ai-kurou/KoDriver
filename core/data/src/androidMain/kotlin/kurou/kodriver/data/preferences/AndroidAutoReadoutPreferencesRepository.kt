@@ -9,11 +9,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 
-internal class AndroidReadoutPreferencesRepository(
+internal class AndroidAutoReadoutPreferencesRepository(
     private val dataStore: DataStore<Preferences>,
-) : ReadoutPreferencesRepository {
+) : AutoReadoutPreferencesRepository {
     private fun enabledKey(
         simulator: String,
         key: ReadoutItemKey,
@@ -21,7 +21,7 @@ internal class AndroidReadoutPreferencesRepository(
 
     private fun orderKey(simulator: String) = stringPreferencesKey("${simulator}_order")
 
-    override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
+    override fun observeAutoReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.data.fallbackOnReadError(emptyPreferences()).map { prefs ->
             val prefix = "${simulator}_"
             val suffix = "_enabled"
@@ -34,7 +34,7 @@ internal class AndroidReadoutPreferencesRepository(
                 .toMap()
         }
 
-    override suspend fun saveReadoutEnabledState(
+    override suspend fun saveAutoReadoutEnabledState(
         simulator: String,
         key: ReadoutItemKey,
         enabled: Boolean,
@@ -42,7 +42,7 @@ internal class AndroidReadoutPreferencesRepository(
         dataStore.edit { it[enabledKey(simulator, key)] = enabled }
     }
 
-    override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
+    override fun observeAutoReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
         dataStore.data.fallbackOnReadError(emptyPreferences()).map { prefs ->
             prefs[orderKey(simulator)]
                 ?.split(",")
@@ -51,7 +51,7 @@ internal class AndroidReadoutPreferencesRepository(
                 ?: emptyList()
         }
 
-    override suspend fun saveReadoutOrder(
+    override suspend fun saveAutoReadoutOrder(
         simulator: String,
         order: List<ReadoutItemKey>,
     ) {

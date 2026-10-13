@@ -4,7 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ReadoutPreferencesDefaultsTest {
+class AutoReadoutPreferencesDefaultsTest {
     @Test
     fun `LMUのデフォルト定数にはLMUキーのみが含まれる`() {
         val defaults =

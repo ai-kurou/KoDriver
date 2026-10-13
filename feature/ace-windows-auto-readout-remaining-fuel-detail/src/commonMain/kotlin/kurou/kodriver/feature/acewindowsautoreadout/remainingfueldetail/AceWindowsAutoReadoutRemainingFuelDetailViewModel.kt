@@ -16,19 +16,19 @@ import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal data class RemainingFuelUseCases(
     val observeThresholdPercentage: ObserveAceWindowsRemainingFuelThresholdPercentageUseCase,
     val saveThresholdPercentage: SaveAceWindowsRemainingFuelThresholdPercentageUseCase,
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
+    val saveAutoReadoutEnabledState: SaveAutoReadoutEnabledStateUseCase,
 )
 
 internal data class RemainingFuelReadoutUseCases(
@@ -56,7 +56,7 @@ internal class AceWindowsAutoReadoutRemainingFuelDetailViewModel(
     val uiState: StateFlow<AceWindowsAutoReadoutRemainingFuelDetailUiState> =
         combine(
             remainingFuelUseCases.observeThresholdPercentage(),
-            remainingFuelUseCases.observeReadoutEnabledStates(Simulator.AceWindows.id),
+            remainingFuelUseCases.observeAutoReadoutEnabledStates(Simulator.AceWindows.id),
             readout.observeText(),
             preview.textToSpeechAvailable,
         ) { thresholdPercentage, enabledStates, text, available ->
@@ -98,7 +98,7 @@ internal class AceWindowsAutoReadoutRemainingFuelDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            remainingFuelUseCases.saveReadoutEnabledState(
+            remainingFuelUseCases.saveAutoReadoutEnabledState(
                 Simulator.AceWindows.id,
                 AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled,
                 enabled,

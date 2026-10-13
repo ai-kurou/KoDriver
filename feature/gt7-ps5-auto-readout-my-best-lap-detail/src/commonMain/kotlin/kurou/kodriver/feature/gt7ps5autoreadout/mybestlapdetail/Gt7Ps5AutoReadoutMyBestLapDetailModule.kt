@@ -2,11 +2,11 @@ package kurou.kodriver.feature.gt7ps5autoreadout.mybestlapdetail
 
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5MyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -39,6 +39,6 @@ val gt7Ps5AutoReadoutMyBestLapDetailModule =
         factoryOf(::CheckTextToSpeechAvailableUseCase)
         factoryOf(::ObserveSoundVolumeUseCase)
         factory { MyBestLapUseCases(get(), get()) }
-        factoryOf(::ObserveReadoutEnabledStatesUseCase)
-        factoryOf(::SaveReadoutEnabledStateUseCase)
+        factoryOf(::ObserveAutoReadoutEnabledStatesUseCase)
+        factoryOf(::SaveAutoReadoutEnabledStateUseCase)
     }

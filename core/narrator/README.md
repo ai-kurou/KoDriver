@@ -44,7 +44,7 @@ Js / WasmJs では例外文字列とスタックトレースを `console.error` 
 | 3 | キュー再生が無効・再生中のイベントあり・優先度が勝った | `stop()` してから `speak(queue = false)` | `INTERRUPTED` |
 | 4 | キュー再生が無効・再生中のイベントなし | `stop()` せず `speak(queue = false)` | `SPOKEN` |
 
-`readoutOrder` に含まれないキーは最も優先度が低いものとして扱います。
+`autoReadoutOrder` に含まれないキーは最も優先度が低いものとして扱います。
 
 **戻り値の `Boolean` だけでは4経路を区別できません**（経路1・3・4がいずれも `true` になります）。テレメトリログへ
 保存する `NarrationOutcome` のように4経路を区別したい呼び出し側は、`speak` に渡された `queue` の値と `stop` が
