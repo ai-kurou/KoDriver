@@ -76,7 +76,7 @@ class AppScreenContentTest {
                     ),
                 ttsUnavailableGuidance = TtsUnavailableGuidance.EngineMissing,
                 onTtsAction = { actionCount++ },
-                readoutContent = { Text("読み上げ画面") },
+                autoReadoutContent = { Text("読み上げ画面") },
                 otherContent = { _, _ -> Text("その他画面") },
             )
         }
@@ -125,7 +125,7 @@ class AppScreenContentTest {
     }
 
     @Test
-    fun `自動読み上げタブを再タップするとonReadoutTabReselectedが呼ばれる`() {
+    fun `自動読み上げタブを再タップするとonAutoReadoutTabReselectedが呼ばれる`() {
         var readoutReselectedCount = 0
         var logReselectedCount = 0
         var otherReselectedCount = 0
@@ -133,7 +133,7 @@ class AppScreenContentTest {
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
-                onReadoutTabReselected = { readoutReselectedCount++ },
+                onAutoReadoutTabReselected = { readoutReselectedCount++ },
                 onLogTabReselected = { logReselectedCount++ },
                 onOtherTabReselected = { otherReselectedCount++ },
             )
@@ -156,7 +156,7 @@ class AppScreenContentTest {
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
-                onReadoutTabReselected = { readoutReselectedCount++ },
+                onAutoReadoutTabReselected = { readoutReselectedCount++ },
                 onLogTabReselected = { logReselectedCount++ },
                 onOtherTabReselected = { otherReselectedCount++ },
             )
@@ -183,7 +183,7 @@ class AppScreenContentTest {
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
-                onReadoutTabReselected = { readoutReselectedCount++ },
+                onAutoReadoutTabReselected = { readoutReselectedCount++ },
                 onLogTabReselected = { logReselectedCount++ },
                 onOtherTabReselected = { otherReselectedCount++ },
             )
@@ -210,7 +210,7 @@ class AppScreenContentTest {
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
-                onReadoutTabReselected = { readoutReselectedCount++ },
+                onAutoReadoutTabReselected = { readoutReselectedCount++ },
                 onLogTabReselected = { logReselectedCount++ },
                 onOtherTabReselected = { otherReselectedCount++ },
             )

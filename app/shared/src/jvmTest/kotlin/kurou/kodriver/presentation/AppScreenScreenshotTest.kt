@@ -86,7 +86,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        readoutContent = {
+                        autoReadoutContent = {
                             AutoReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
@@ -168,7 +168,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        readoutContent = {
+                        autoReadoutContent = {
                             AutoReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
@@ -196,7 +196,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        readoutContent = {
+                        autoReadoutContent = {
                             AutoReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
@@ -278,7 +278,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        readoutContent = {
+                        autoReadoutContent = {
                             AutoReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
@@ -306,7 +306,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = false,
-                        readoutContent = {
+                        autoReadoutContent = {
                             AutoReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
