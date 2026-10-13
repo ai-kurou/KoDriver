@@ -6,7 +6,7 @@ import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 
-// detailPane（Gt7Ps5ReadoutTyreTemperatureDetailViewModel）・Narrator（Gt7Ps5NarratorViewModel）が
+// detailPane（Gt7Ps5AutoReadoutTyreTemperatureDetailViewModel）・Narrator（Gt7Ps5NarratorViewModel）が
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val tyreTemperatureEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(

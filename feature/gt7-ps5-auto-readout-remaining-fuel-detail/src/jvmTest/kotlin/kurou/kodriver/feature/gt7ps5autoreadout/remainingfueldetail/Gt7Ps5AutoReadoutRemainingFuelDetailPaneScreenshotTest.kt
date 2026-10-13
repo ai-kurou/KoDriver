@@ -1,0 +1,55 @@
+package kurou.kodriver.feature.gt7ps5autoreadout.remainingfueldetail
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.dp
+import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
+import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
+import kurou.kodriver.core.designsystem.KoDriverTheme
+import org.junit.Test
+
+class Gt7Ps5AutoReadoutRemainingFuelDetailPaneScreenshotTest {
+    @Test
+    fun `デフォルト`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            Gt7Ps5AutoReadoutRemainingFuelDetailPaneContent(
+                                uiState =
+                                    Gt7Ps5AutoReadoutRemainingFuelDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `編集済み文言のリセットボタン表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            Gt7Ps5AutoReadoutRemainingFuelDetailPaneContent(
+                                uiState =
+                                    Gt7Ps5AutoReadoutRemainingFuelDetailUiState(
+                                        readoutText = "燃料残り{percent}%です",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+}
