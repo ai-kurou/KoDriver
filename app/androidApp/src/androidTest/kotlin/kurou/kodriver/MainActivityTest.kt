@@ -259,6 +259,9 @@ class MainActivityTest {
 
         clickItem("ログ")
         waitUntilDisplayed("Le Mans Ultimate（Windows版）のログはまだありません")
+        waitUntilDisplayed("手動")
+        clickItem("手動")
+        waitUntilDisplayed("Le Mans Ultimate（Windows版）のログはまだありません")
         waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
     }
 

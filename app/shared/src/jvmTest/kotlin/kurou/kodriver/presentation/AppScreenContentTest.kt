@@ -139,7 +139,7 @@ class AppScreenContentTest {
             )
         }
 
-        rule.onNode(hasText("自動読み上げ")).performClick()
+        rule.onNode(hasText("自動")).performClick()
         rule.waitForIdle()
 
         assertEquals(1, readoutReselectedCount)
@@ -218,7 +218,7 @@ class AppScreenContentTest {
 
         rule.onNode(hasText("その他")).performClick()
         rule.waitForIdle()
-        rule.onNode(hasText("自動読み上げ")).performClick()
+        rule.onNode(hasText("自動")).performClick()
         rule.waitForIdle()
 
         assertEquals(0, readoutReselectedCount)
