@@ -1,11 +1,22 @@
 package kurou.kodriver.feature.otherfeedbackdetail
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -15,6 +26,12 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.dp
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
@@ -27,6 +44,8 @@ import kotlin.test.assertEquals
 class OtherFeedbackDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    private val haptic: HapticFeedback = mockk()
 
     @Test
     fun `本文を入力して送信できる`() {
@@ -283,5 +302,43 @@ class OtherFeedbackDetailPaneTest {
         rule.onNode(hasContentDescription("戻る")).performClick()
 
         assertEquals(1, backCount)
+    }
+
+    @Test
+    fun `選択行がラジオボタンのroleと選択状態を公開しクリックで一度だけ選択と触感を更新する`() {
+        var selected by mutableStateOf(FeedbackType.BugReport)
+        val selections = mutableListOf<FeedbackType>()
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherFeedbackDetailPaneContent(
+                        uiState = OtherFeedbackDetailUiState(type = selected),
+                        onTypeSelected = {
+                            selected = it
+                            selections.add(it)
+                        },
+                    )
+                }
+            }
+        }
+
+        val radioRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
+        rule.onNodeWithText("不具合")
+            .assert(radioRole)
+            .assertHeightIsEqualTo(48.dp)
+            .assertIsSelected()
+        rule.onNodeWithText("改善要望")
+            .assert(radioRole)
+            .assertHeightIsEqualTo(48.dp)
+            .assertIsNotSelected()
+            .performClick()
+        rule.onNodeWithText("不具合").assertIsNotSelected()
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        rule.onNodeWithText("改善要望").assertIsSelected().performClick()
+
+        assertEquals(listOf(FeedbackType.FeatureRequest, FeedbackType.FeatureRequest), selections)
+        verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 }
