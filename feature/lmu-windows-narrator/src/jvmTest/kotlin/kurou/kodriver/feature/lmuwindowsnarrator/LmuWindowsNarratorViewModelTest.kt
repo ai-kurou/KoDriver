@@ -18,6 +18,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -76,6 +77,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.ManualReadoutRequest
+import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
@@ -116,6 +118,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
+import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -150,6 +153,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStates
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
@@ -227,6 +231,7 @@ class LmuWindowsNarratorViewModelTest {
         LmuWindowsVehicleClassBrakeWearPreferencesRepository = mockk(relaxUnitFun = true)
 
     private val manualRequestRepository: ManualReadoutRequestRepository = mockk()
+    private val manualSetRepository: ManualReadoutSetPreferencesRepository = mockk()
 
     private val hotkeyRepository: HotkeyRepository = mockk()
 
@@ -379,6 +384,8 @@ class LmuWindowsNarratorViewModelTest {
         remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData> = Channel(Channel.UNLIMITED),
         hotkeyChannel: Channel<Unit> = Channel(Channel.UNLIMITED),
         manualRequestChannel: Channel<ManualReadoutRequest> = Channel(Channel.UNLIMITED),
+        manualSets: List<ManualReadoutSet> =
+            listOf(ManualReadoutSet("set-1", listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value))),
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -454,6 +461,7 @@ class LmuWindowsNarratorViewModelTest {
         }
         every { hotkeyRepository.hotkeyPressStream() } returns hotkeyChannel.receiveAsFlow()
         every { manualRequestRepository.observeRequests() } returns manualRequestChannel.receiveAsFlow()
+        every { manualSetRepository.observeSets() } returns flowOf(manualSets)
 
         every { debugRequestRepository.observeRequests() } returns debugRequests
         return LmuWindowsNarratorViewModel(
@@ -553,6 +561,7 @@ class LmuWindowsNarratorViewModelTest {
                     observeRemainingVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
                     observeReadoutHotkey = ObserveReadoutHotkeyUseCase(hotkeyRepository),
                     observeManualReadoutRequests = ObserveManualReadoutRequestsUseCase(manualRequestRepository),
+                    observeManualReadoutSets = ObserveManualReadoutSetsUseCase(manualSetRepository),
                     observeThresholdPercentage =
                         ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(
                             remainingVirtualEnergyPreferencesRepository,
@@ -2610,6 +2619,34 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `対象セットに残量項目が含まれる場合のみ手動依頼を読み上げる`() =
+        runTest(testDispatcher) {
+            val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("target", listOf(key)), ManualReadoutSet("empty")),
+                currentTimeMs = { 123L },
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false),
+            )
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "empty"))
+            assertEquals(emptyList(), spoken)
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "missing"))
+            assertEquals(emptyList(), spoken)
+            stubTelemetryLogSave(mutableListOf(), 123L, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "target"))
+            assertEquals(
+                listOf(80),
+                spoken.filterIsInstance<LmuWindowsRemainingVirtualEnergyCurrentValue>().map { it.percentage },
+            )
+        }
+
+    @Test
     fun `データ未受信の手動依頼は何もしない`() =
         runTest(testDispatcher) {
             val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
@@ -2819,10 +2856,10 @@ class LmuWindowsNarratorViewModelTest {
             )
             energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
             fakeTime = 5_000L
-            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "empty-set"))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
             assertEquals(1, spoken.size)
             fakeTime = 5_001L
-            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "another-set"))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
             assertEquals(1, spoken.size)
         }
 

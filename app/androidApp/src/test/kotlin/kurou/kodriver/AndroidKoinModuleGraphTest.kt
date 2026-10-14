@@ -46,7 +46,8 @@ class AndroidKoinModuleGraphTest {
                 featureModules +
                 listOf(module { single(named("appVersion")) { "test" } }),
         ) {
-            // 開始音ダイアログ・手動読み上げ一覧の ViewModel が要求する選択中のシミュレーター ID。
+            // 開始音ダイアログ・手動読み上げ一覧/詳細のシミュレーター ID。
+            // 詳細の setId にも同じ String を注入し、存在しないセットとして解決する。
             withInstance("lmu_windows")
         }
     }

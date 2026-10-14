@@ -14,6 +14,9 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(libs.compose.material.icons.extended)
+            implementation(libs.compose.material3.adaptive.layout)
+            implementation(libs.compose.material3.adaptive.navigation)
+            implementation(libs.navigation3.ui)
         }
         jvmTest.dependencies {
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))

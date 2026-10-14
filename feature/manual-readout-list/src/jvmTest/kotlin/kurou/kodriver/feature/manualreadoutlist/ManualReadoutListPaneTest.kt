@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -46,8 +45,6 @@ class ManualReadoutListPaneTest {
             }
         }
 
-        rule.onNodeWithText("セット 1").assertHasNoClickAction()
-        rule.onNodeWithText("セット 2").assertHasNoClickAction()
         rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsEnabled().performClick()
         rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsEnabled().performClick()
         rule.runOnIdle { assertEquals(listOf("empty-set", "filled-set"), requestedSets) }
@@ -75,9 +72,9 @@ class ManualReadoutListPaneTest {
 
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
         rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertDoesNotExist()
-        rule.onNodeWithText("セット 1").assertIsDisplayed().assertHasNoClickAction()
+        rule.onNodeWithText("セット 1").assertIsDisplayed()
         rule.onNodeWithText("項目なし").assertIsDisplayed()
-        rule.onNodeWithText("セット 2").assertIsDisplayed().assertHasNoClickAction()
+        rule.onNodeWithText("セット 2").assertIsDisplayed()
         rule.onNodeWithText("2項目").assertIsDisplayed()
         rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsDisplayed().assertIsNotEnabled()
         rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsDisplayed().assertIsNotEnabled()
@@ -188,5 +185,29 @@ class ManualReadoutListPaneTest {
         rule
             .onNodeWithText("Ctrl + Alt + Shift と数字または英字キーの組み合わせで、セットを読み上げられます。")
             .assertDoesNotExist()
+    }
+
+    @Test
+    fun `行タップは詳細を開き読み上げボタンは詳細を開かない`() {
+        val selected = mutableListOf<String>()
+        val requested = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState = ManualReadoutListUiState(canReadSets = true, sets = listOf(ManualReadoutSet("set-1"))),
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = { requested.add(it) },
+                    onSetClick = { selected.add(it) },
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
+        rule.runOnIdle { assertEquals(emptyList(), selected) }
+        rule.onNodeWithText("セット 1").performClick()
+        rule.runOnIdle {
+            assertEquals(listOf("set-1"), selected)
+            assertEquals(listOf("set-1"), requested)
+        }
     }
 }

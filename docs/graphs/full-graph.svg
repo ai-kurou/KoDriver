@@ -212,7 +212,7 @@
 <title>feature</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M652,-604.66C652,-604.66 577,-604.66 577,-604.66 571,-604.66 565,-598.66 565,-592.66 565,-592.66 565,-578.66 565,-578.66 565,-572.66 571,-566.66 577,-566.66 577,-566.66 652,-566.66 652,-566.66 658,-566.66 664,-572.66 664,-578.66 664,-578.66 664,-592.66 664,-592.66 664,-598.66 658,-604.66 652,-604.66"/>
 <text text-anchor="middle" x="614.5" y="-589.46" font-family="Times,serif" font-size="14.00">feature</text>
-<text text-anchor="middle" x="614.5" y="-574.46" font-family="Times,serif" font-size="14.00">51 modules</text>
+<text text-anchor="middle" x="614.5" y="-574.46" font-family="Times,serif" font-size="14.00">52 modules</text>
 </g>
 <!-- :app:shared&#45;&gt;feature -->
 <g id="edge20" class="edge">

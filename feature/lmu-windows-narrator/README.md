@@ -58,7 +58,10 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 
 `RemainingVirtualEnergyUseCases` に束ねた `ObserveManualReadoutRequestsUseCase` を独立した Job で購読する。
 依頼の `simulatorId` が `Simulator.LmuWindows.id` で、選択中のシミュレーターも LMU の場合だけ処理する。
-現段階では `setId` とセットの `itemKeys` に関係なく仮想エネルギー残量を読み上げる。
+同じ UseCase 群の `ObserveManualReadoutSetsUseCase` は `named(Simulator.LmuWindows.id)` の Repository を参照する。
+依頼ごとに保存済みセットを取得し、`setId` に対応するセットの `itemKeys` に
+`LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value` が含まれる場合のみ残量を読み上げる。
+セットが見つからない場合や項目が含まれない場合は何もしない。
 F9 と共通の `readRemainingVirtualEnergyCurrentValue` が、最新値と受信から5秒以内の鮮度を確認し、
 手動専用の `determineManualRemainingVirtualEnergyCurrentValue` → `processRemainingVirtualEnergy` へ渡す。
 手動は自動読み上げスイッチを無視し、ユーザーのキュー設定に関係なく常にキューの末尾に並ぶ。

@@ -38,6 +38,7 @@ digraph G {
   ":feature:lmu-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:manual-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:manual-readout-set-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-console-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-feedback-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -89,6 +90,7 @@ digraph G {
   ":app:shared" -> ":feature:telemetry-log-detail"
   ":app:shared" -> ":feature:auto-readout-list"
   ":app:shared" -> ":feature:manual-readout-list"
+  ":app:shared" -> ":feature:manual-readout-set-detail"
   ":app:shared" -> ":feature:lmu-windows-auto-readout-vehicle-approach-detail"
   ":app:shared" -> ":feature:lmu-windows-auto-readout-flag-detail"
   ":app:shared" -> ":feature:lmu-windows-auto-readout-my-best-lap-detail"

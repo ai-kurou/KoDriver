@@ -1,9 +1,13 @@
 package kurou.kodriver.feature.manualreadoutlist
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -11,6 +15,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -68,6 +73,68 @@ class ManualReadoutListPaneWiringTest {
     private val requestRepository: ManualReadoutRequestRepository = mockk()
     private val lmuRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val gt7Repository: ManualReadoutSetPreferencesRepository = mockk()
+
+    @Test
+    fun `Contentはシミュレーター切替と離脱時に選択を解除して再表示では一覧を表示する`() {
+        every { lmuRepository.observeSets() } returns flowOf(listOf(ManualReadoutSet("lmu-set")))
+        every { gt7Repository.observeSets() } returns flowOf(listOf(ManualReadoutSet("gt7-set")))
+        val owner =
+            object : ViewModelStoreOwner {
+                override val viewModelStore = ViewModelStore()
+            }
+        var simulatorId by mutableStateOf(Simulator.LmuWindows.id)
+        var showContent by mutableStateOf(true)
+        startKoin {
+            modules(
+                manualReadoutListModule,
+                module {
+                    single<ManualReadoutRequestRepository> { requestRepository }
+                    single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) { lmuRepository }
+                    single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) { gt7Repository }
+                },
+            )
+        }
+        try {
+            rule.setContent {
+                CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
+                    KoDriverTheme {
+                        Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                            if (showContent) {
+                                ManualReadoutContent(
+                                    simulatorId = simulatorId,
+                                    simulatorName = simulatorId,
+                                    detailContent = { id, _, _ -> Text("詳細 $id") },
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            rule.onNodeWithText("セット 1").performClick()
+            rule.onNodeWithText("詳細 lmu-set").assertExists()
+            rule.runOnIdle { simulatorId = Simulator.Gt7Ps5.id }
+            rule.waitForIdle()
+            rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
+            rule.onNodeWithText("セット 1").performClick()
+            rule.onNodeWithText("詳細 gt7-set").assertExists()
+            rule.runOnIdle { simulatorId = Simulator.LmuWindows.id }
+            rule.waitForIdle()
+            rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
+            rule.onNodeWithText("セット 1").performClick()
+            rule.onNodeWithText("詳細 lmu-set").assertExists()
+            rule.runOnIdle { showContent = false }
+            rule.waitForIdle()
+            rule.runOnIdle { showContent = true }
+            rule.waitForIdle()
+            rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
+            rule.onNodeWithText("セット 1").assertIsDisplayed()
+        } finally {
+            rule.runOnIdle { showContent = false }
+            rule.waitForIdle()
+            rule.runOnIdle { owner.viewModelStore.clear() }
+            stopKoin()
+        }
+    }
 
     @Test
     fun `同じViewModelStoreOwnerでシミュレーターを切り替えると対応するセットの空状態を表示する`() {

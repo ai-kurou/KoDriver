@@ -2,8 +2,9 @@ package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ManualReadoutRequest
@@ -26,14 +27,28 @@ internal class ManualReadoutListViewModel(
 ) : ViewModel() {
     private val canReadSets = simulatorId == Simulator.LmuWindows.id
 
+    private val selectedSetId = MutableStateFlow<String?>(null)
+
     val uiState =
-        observeManualReadoutSets()
-            .map { ManualReadoutListUiState(sets = it, canReadSets = canReadSets) }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5_000),
-                ManualReadoutListUiState(canReadSets = canReadSets),
+        combine(observeManualReadoutSets(), selectedSetId) { sets, selectedId ->
+            ManualReadoutListUiState(
+                sets = sets,
+                canReadSets = canReadSets,
+                selectedSetId = selectedId?.takeIf { id -> sets.any { it.id == id } },
             )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            ManualReadoutListUiState(canReadSets = canReadSets),
+        )
+
+    fun selectSet(setId: String) {
+        selectedSetId.value = setId
+    }
+
+    fun clearSelectedSet() {
+        selectedSetId.value = null
+    }
 
     fun readSet(setId: String) {
         viewModelScope.launch { requestManualReadout(ManualReadoutRequest(simulatorId, setId)) }
