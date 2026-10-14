@@ -13,10 +13,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,6 +50,7 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_queue_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_readout_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_readout_title
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_add_set
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_empty_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -63,34 +66,48 @@ fun ManualReadoutListPane(
     val viewModel: ManualReadoutListViewModel =
         koinViewModel(key = simulatorId, parameters = { parametersOf(simulatorId) })
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ManualReadoutListPaneContent(uiState = uiState, simulatorName = simulatorName, modifier = modifier)
+    ManualReadoutListPaneContent(
+        uiState = uiState,
+        simulatorName = simulatorName,
+        onAddSet = viewModel::addSet,
+        modifier = modifier,
+    )
 }
 
 /**
  * 保存済みセットが空なら空状態を表示し、1件以上なら説明見出し行のみ表示する。
- * セットの追加と各セットの行 UI は後続 PR で実装する。
+ * セット追加 FAB は常時表示し、各セットの行 UI は後続 PR で実装する。
  */
 @Composable
 internal fun ManualReadoutListPaneContent(
     uiState: ManualReadoutListUiState,
     simulatorName: String,
+    onAddSet: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
-        ManualReadoutHintRow(modifier = Modifier.padding(horizontal = KoDriverSpacing.small))
-        if (uiState.sets.isEmpty()) {
-            Box(
-                modifier = Modifier.weight(1f).fillMaxSize().padding(KoDriverSpacing.extraLarge),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = stringResource(Res.string.manual_readout_list_empty_title, simulatorName),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                )
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
+            ManualReadoutHintRow(modifier = Modifier.padding(horizontal = KoDriverSpacing.small))
+            if (uiState.sets.isEmpty()) {
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxSize().padding(KoDriverSpacing.extraLarge),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = stringResource(Res.string.manual_readout_list_empty_title, simulatorName),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
+        ExtendedFloatingActionButton(
+            onClick = onAddSet,
+            icon = { Icon(imageVector = Icons.Filled.Add, contentDescription = null) },
+            text = { Text(stringResource(Res.string.manual_readout_list_add_set)) },
+            modifier = Modifier.align(Alignment.BottomEnd).padding(KoDriverSpacing.large),
+        )
     }
 }
 

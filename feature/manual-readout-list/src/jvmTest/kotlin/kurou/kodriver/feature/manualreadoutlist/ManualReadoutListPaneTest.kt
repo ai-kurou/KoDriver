@@ -15,18 +15,20 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class ManualReadoutListPaneTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `保存済みセットがあると説明見出し行のみ表示する`() {
+    fun `保存済みセットがあると説明見出し行と追加FABを表示する`() {
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
                     uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet(id = "set-1"))),
                     simulatorName = "LMU",
+                    onAddSet = {},
                 )
             }
         }
@@ -34,21 +36,26 @@ class ManualReadoutListPaneTest {
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
         rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertDoesNotExist()
         rule.onNodeWithText("set-1").assertDoesNotExist()
+        rule.onNodeWithText("セットを追加", useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test
-    fun `選択中のシミュレーター名を含む空状態を表示する`() {
+    fun `選択中のシミュレーター名を含む空状態で追加FABをクリックするとコールバックを呼ぶ`() {
+        var addSetCount = 0
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
                     uiState = ManualReadoutListUiState(),
                     simulatorName = "LMU",
+                    onAddSet = { addSetCount++ },
                 )
             }
         }
 
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
         rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertIsDisplayed()
+        rule.onNodeWithText("セットを追加", useUnmergedTree = true).assertIsDisplayed().performClick()
+        rule.runOnIdle { assertEquals(1, addSetCount) }
     }
 
     @Test
@@ -59,6 +66,7 @@ class ManualReadoutListPaneTest {
                 ManualReadoutListPaneContent(
                     uiState = ManualReadoutListUiState(),
                     simulatorName = simulatorName.value,
+                    onAddSet = {},
                 )
             }
         }
@@ -77,6 +85,7 @@ class ManualReadoutListPaneTest {
                     ManualReadoutListPaneContent(
                         uiState = ManualReadoutListUiState(),
                         simulatorName = "LMU",
+                        onAddSet = {},
                     )
                 }
             }

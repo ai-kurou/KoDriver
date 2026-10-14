@@ -23,6 +23,7 @@ class ManualReadoutListPaneScreenshotTest {
                             ManualReadoutListPaneContent(
                                 uiState = ManualReadoutListUiState(),
                                 simulatorName = "LMU",
+                                onAddSet = {},
                             )
                         }
                     }
