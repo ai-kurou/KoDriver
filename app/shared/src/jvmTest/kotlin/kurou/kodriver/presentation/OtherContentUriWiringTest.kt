@@ -1,0 +1,151 @@
+package kurou.kodriver.presentation
+
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.otherlist.OtherListUiState
+import kurou.kodriver.feature.otherlist.OtherListViewModel
+import org.junit.Rule
+import org.junit.Test
+import org.junit.rules.ExternalResource
+import org.junit.rules.RuleChain
+import org.junit.rules.TestRule
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalMaterial3AdaptiveApi::class)
+class OtherContentUriWiringTest {
+    private val rule = createComposeRule()
+
+    @get:Rule
+    val rules: TestRule =
+        RuleChain
+            .outerRule(
+                object : ExternalResource() {
+                    override fun before() {
+                        Dispatchers.setMain(UnconfinedTestDispatcher())
+                    }
+
+                    override fun after() {
+                        Dispatchers.resetMain()
+                    }
+                },
+            ).around(rule)
+
+    private val viewModel: OtherListViewModel = mockk()
+    private val uriHandler: UriHandler = mockk()
+
+    @Test
+    fun `GitHubレポジトリリンクをクリックするとGitHubレポジトリのURLが開かれる`() {
+        every { viewModel.uiState } returns
+            MutableStateFlow(OtherListUiState(items = listOf(OtherListItemType.GitHubRepository)))
+        every { viewModel.checkUpdate() } returns Unit
+        every { viewModel.checkStartupEnabled() } returns Unit
+        every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { uriHandler.openUri("https://github.com/ai-kurou/KoDriver") } returns Unit
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent {
+                CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+                    AppTheme {
+                        OtherContent()
+                    }
+                }
+            }
+            rule.onNodeWithText("GitHubレポジトリ").performClick()
+
+            verify(exactly = 1) { uriHandler.openUri("https://github.com/ai-kurou/KoDriver") }
+            verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.checkUpdate() }
+            verify(exactly = 1) { viewModel.checkStartupEnabled() }
+            verify(exactly = 1) { viewModel.checkAccessLocalNetworkPermission() }
+            confirmVerified(viewModel, uriHandler)
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
+    fun `リリースページリンクをクリックするとリリースページのURLが開かれる`() {
+        every { viewModel.uiState } returns
+            MutableStateFlow(OtherListUiState(items = listOf(OtherListItemType.ReleasePage)))
+        every { viewModel.checkUpdate() } returns Unit
+        every { viewModel.checkStartupEnabled() } returns Unit
+        every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { uriHandler.openUri("https://github.com/ai-kurou/KoDriver/releases") } returns Unit
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent {
+                CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+                    AppTheme {
+                        OtherContent()
+                    }
+                }
+            }
+            rule.onNodeWithText("リリースページ").performClick()
+
+            verify(exactly = 1) { uriHandler.openUri("https://github.com/ai-kurou/KoDriver/releases") }
+            verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.checkUpdate() }
+            verify(exactly = 1) { viewModel.checkStartupEnabled() }
+            verify(exactly = 1) { viewModel.checkAccessLocalNetworkPermission() }
+            confirmVerified(viewModel, uriHandler)
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
+    fun `音声合成アプリリンクをクリックすると音声合成アプリのURLが開かれる`() {
+        every { viewModel.uiState } returns
+            MutableStateFlow(OtherListUiState(items = listOf(OtherListItemType.TtsEngineMissing)))
+        every { viewModel.checkUpdate() } returns Unit
+        every { viewModel.checkStartupEnabled() } returns Unit
+        every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every {
+            uriHandler.openUri(
+                "https://play.google.com/store/apps/details?id=com.google.android.tts",
+            )
+        } returns Unit
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent {
+                CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+                    AppTheme {
+                        OtherContent()
+                    }
+                }
+            }
+            rule.onNodeWithText("音声合成アプリをインストール").performClick()
+
+            verify(exactly = 1) {
+                uriHandler.openUri(
+                    "https://play.google.com/store/apps/details?id=com.google.android.tts",
+                )
+            }
+            verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.checkUpdate() }
+            verify(exactly = 1) { viewModel.checkStartupEnabled() }
+            verify(exactly = 1) { viewModel.checkAccessLocalNetworkPermission() }
+            confirmVerified(viewModel, uriHandler)
+        } finally {
+            stopKoin()
+        }
+    }
+}
