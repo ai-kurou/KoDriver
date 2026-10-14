@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -24,6 +25,35 @@ class ManualReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `読み上げ可能な一覧のボタンは項目の有無に関係なく対応するセットIDを渡す`() {
+        val requestedSets = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState =
+                        ManualReadoutListUiState(
+                            canReadSets = true,
+                            sets =
+                                listOf(
+                                    ManualReadoutSet(id = "empty-set"),
+                                    ManualReadoutSet(id = "filled-set", itemKeys = listOf("SESSION")),
+                                ),
+                        ),
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = { requestedSets.add(it) },
+                )
+            }
+        }
+
+        rule.onNodeWithText("セット 1").assertHasNoClickAction()
+        rule.onNodeWithText("セット 2").assertHasNoClickAction()
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsEnabled().performClick()
+        rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsEnabled().performClick()
+        rule.runOnIdle { assertEquals(listOf("empty-set", "filled-set"), requestedSets) }
+    }
+
+    @Test
     fun `複数の保存済みセットのタイトルと項目数と無効な読み上げボタンを表示する`() {
         rule.setContent {
             KoDriverTheme {
@@ -38,6 +68,7 @@ class ManualReadoutListPaneTest {
                         ),
                     simulatorName = "LMU",
                     onAddSet = {},
+                    onReadSet = {},
                 )
             }
         }
@@ -62,6 +93,7 @@ class ManualReadoutListPaneTest {
                     uiState = ManualReadoutListUiState(),
                     simulatorName = "LMU",
                     onAddSet = { addSetCount++ },
+                    onReadSet = {},
                 )
             }
         }
@@ -81,6 +113,7 @@ class ManualReadoutListPaneTest {
                     uiState = ManualReadoutListUiState(),
                     simulatorName = simulatorName.value,
                     onAddSet = {},
+                    onReadSet = {},
                 )
             }
         }
@@ -100,6 +133,7 @@ class ManualReadoutListPaneTest {
                         uiState = ManualReadoutListUiState(),
                         simulatorName = "LMU",
                         onAddSet = {},
+                        onReadSet = {},
                     )
                 }
             }

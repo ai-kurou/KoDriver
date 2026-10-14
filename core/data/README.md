@@ -77,3 +77,10 @@ Desktop・Android 両方で設定 Repository を登録し、Android の `HotkeyR
 `ManualReadoutSetPreferencesRepository` は手動読み上げセットを
 `manual_readout_set_preferences_${simulator.id}.pb` にシミュレーターごとに保存する。
 Desktop／Android とも `named(simulator.id)` で登録し、セット識別子と項目キーの順序を保持する。
+
+## 手動読み上げ依頼
+
+`InMemoryManualReadoutRequestRepository` は `jvmAndroidMain` の共通実装で、Android / Desktop の
+DataModule にシングルトンとして登録する。`MutableSharedFlow` の追加バッファは64件で、
+満杯なら `emit` が待機し、購読中の Narrator へ連続依頼を順番通り届ける。
+依頼は永続化せず、購読開始前・終了後の依頼を再配信しない。

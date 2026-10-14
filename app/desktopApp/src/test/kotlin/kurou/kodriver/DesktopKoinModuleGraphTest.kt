@@ -26,6 +26,7 @@ import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
+import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
@@ -48,6 +49,7 @@ import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import org.koin.test.check.checkKoinModules
 import kotlin.test.assertNotNull
+import kotlin.test.assertSame
 
 /**
  * Main.kt の composition root（desktopDataModule + 各 :core:*data モジュール + featureModules +
@@ -72,6 +74,17 @@ import kotlin.test.assertNotNull
  *   Desktop 構成にも含まれ、グラフ検証のためにここで補う。
  */
 class DesktopKoinModuleGraphTest {
+    @Test
+    fun `手動読み上げ依頼RepositoryをDesktop構成からシングルトンとして解決できる`() {
+        val application = koinApplication { modules(desktopDataModule) }
+        try {
+            val repository = application.koin.get<ManualReadoutRequestRepository>()
+            assertSame(repository, application.koin.get<ManualReadoutRequestRepository>())
+        } finally {
+            application.close()
+        }
+    }
+
     @Test
     fun `ホットキーと永続化RepositoryをDesktop構成から解決できる`() {
         val application = koinApplication { modules(desktopDataModule, windowsHotkeyDataModule) }

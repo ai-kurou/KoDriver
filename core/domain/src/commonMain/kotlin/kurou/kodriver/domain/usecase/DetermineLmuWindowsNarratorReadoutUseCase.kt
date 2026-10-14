@@ -522,20 +522,27 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val shouldAnnounce =
             settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) &&
                 settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout)
-        return LmuWindowsNarratorReadoutDecision(
+        return if (shouldAnnounce) {
+            determineManualRemainingVirtualEnergyCurrentValue(state, data)
+        } else {
+            LmuWindowsNarratorReadoutDecision(state = state, events = emptyList())
+        }
+    }
+
+    /** 自動読み上げスイッチに関係なく現在の残量を読み上げ、警告済み状態を維持する。 */
+    fun determineManualRemainingVirtualEnergyCurrentValue(
+        state: LmuWindowsNarratorState,
+        data: LmuWindowsVirtualEnergyData,
+    ): LmuWindowsNarratorReadoutDecision =
+        LmuWindowsNarratorReadoutDecision(
             state = state,
             events =
-                if (shouldAnnounce) {
-                    listOf(
-                        LmuWindowsRemainingVirtualEnergyCurrentValue(
-                            (data.remainingRatio.value * PERCENTAGE_SCALE).roundToInt(),
-                        ),
-                    )
-                } else {
-                    emptyList()
-                },
+                listOf(
+                    LmuWindowsRemainingVirtualEnergyCurrentValue(
+                        (data.remainingRatio.value * PERCENTAGE_SCALE).roundToInt(),
+                    ),
+                ),
         )
-    }
 
     fun determinePitTimingVirtualEnergy(
         state: LmuWindowsNarratorState,

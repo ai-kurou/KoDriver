@@ -1769,6 +1769,25 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動のエナジー残量はスイッチ設定なしで四捨五入して毎回読み上げ状態を維持する`() {
+        listOf(false, true).forEach { warned ->
+            val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = warned)
+            listOf(0.0 to 0, 0.424 to 42, 0.425 to 43, 1.0 to 100).forEach { (ratio, percentage) ->
+                repeat(2) {
+                    val decision =
+                        useCase.determineManualRemainingVirtualEnergyCurrentValue(
+                            state = state,
+                            data = remainingVirtualEnergy(remainingRatio = ratio),
+                        )
+
+                    assertEquals(listOf(LmuWindowsRemainingVirtualEnergyCurrentValue(percentage)), decision.events)
+                    assertEquals(state, decision.state)
+                }
+            }
+        }
+    }
+
+    @Test
     fun `残量が閾値以下になると RemainingVirtualEnergyWarning を返す`() {
         val decision =
             useCase.determineRemainingVirtualEnergy(

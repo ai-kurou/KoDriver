@@ -53,3 +53,18 @@ ViewModel の独立した Job が `ObserveDebugReadoutRequestUseCase` を購読�
 `DebugReadoutText` の本文は入力をそのまま保持する。通常の文言解決・優先度・キュー・開始音・TTS・安全なログ保存の経路を使い、空白または TTS 利用不可の本文は SKIPPED として記録する。ログの JSON は現在の `state`、`settings`、`observedAtMs` と `debugReadout: true` を含む。ログを購読するオーバーレイは通常の最新読み上げログ経路で表示する。
 
 JVM テストで未受信・項目無効の要求の発話とログ保存、別シミュレーター宛ての要求の無視、空白スキップとテンプレートをそのまま TTS に渡すことを検証する。
+
+## 手動読み上げ依頼
+
+`RemainingVirtualEnergyUseCases` に束ねた `ObserveManualReadoutRequestsUseCase` を独立した Job で購読する。
+依頼の `simulatorId` が `Simulator.LmuWindows.id` で、選択中のシミュレーターも LMU の場合だけ処理する。
+現段階では `setId` とセットの `itemKeys` に関係なく仮想エネルギー残量を読み上げる。
+F9 と共通の `readRemainingVirtualEnergyCurrentValue` が、最新値と受信から5秒以内の鮮度を確認し、
+手動専用の `determineManualRemainingVirtualEnergyCurrentValue` → `processRemainingVirtualEnergy` へ渡す。
+手動は自動読み上げスイッチを無視し、ユーザーのキュー設定に関係なく常にキューの末尾に並ぶ。
+開始音・文言・テレメトリログは既存経路を使い、自動警告の読み上げ済み状態は変えない。
+F9 は従来どおり有効スイッチとキュー設定に従う。
+Android でも WebSocket で受信した値を使う。未受信・鮮度切れでは読み上げず、「データがありません」は後続 PR で対応する。
+
+JVM テストで連続依頼・警告状態の維持・未受信・鮮度の境界・宛先と選択中シミュレーターの照合・
+切り替え後の古い値の破棄・キューとログ、Koin の UseCase 群の解決を確認する。

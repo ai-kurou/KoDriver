@@ -4,5 +4,6 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 
 /** 手動読み上げセット一覧の表示状態。 */
 internal data class ManualReadoutListUiState(
+    val canReadSets: Boolean = false,
     val sets: List<ManualReadoutSet> = emptyList(),
 )

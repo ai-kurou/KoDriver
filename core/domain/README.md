@@ -72,3 +72,6 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 `ObserveManualReadoutSetsUseCase` / `SaveManualReadoutSetsUseCase` は
 `ManualReadoutSetPreferencesRepository` を通じてセット一覧を取得・保存する。
 `AddManualReadoutSetUseCase` は保存済み一覧の末尾へ1セットをアトミックに追加する。
+`ManualReadoutRequest(simulatorId, setId)` は Narrator にセットを読むよう依頼するモデル。
+`RequestManualReadoutUseCase` / `ObserveManualReadoutRequestsUseCase` は
+`ManualReadoutRequestRepository` を通じてアプリ内の依頼を送信・購読する。

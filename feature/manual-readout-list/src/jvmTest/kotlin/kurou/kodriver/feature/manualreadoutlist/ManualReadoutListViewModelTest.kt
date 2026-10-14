@@ -18,10 +18,14 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
+import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -29,6 +33,7 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutListViewModelTest {
+    private val requestRepository: ManualReadoutRequestRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
 
@@ -48,11 +53,13 @@ class ManualReadoutListViewModelTest {
             every { repository.observeSets() } returns MutableStateFlow(emptyList())
             val viewModel =
                 ManualReadoutListViewModel(
+                    simulatorId = Simulator.LmuWindows.id,
+                    requestManualReadout = RequestManualReadoutUseCase(requestRepository),
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                 )
             try {
-                assertEquals(ManualReadoutListUiState(), viewModel.uiState.value)
+                assertEquals(ManualReadoutListUiState(canReadSets = true), viewModel.uiState.value)
                 assertEquals(emptyList(), viewModel.uiState.first().sets)
             } finally {
                 viewModel.viewModelScope.cancel()
@@ -67,6 +74,8 @@ class ManualReadoutListViewModelTest {
             every { repository.observeSets() } returns setsFlow
             val viewModel =
                 ManualReadoutListViewModel(
+                    simulatorId = Simulator.LmuWindows.id,
+                    requestManualReadout = RequestManualReadoutUseCase(requestRepository),
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                 )
@@ -93,6 +102,8 @@ class ManualReadoutListViewModelTest {
             coEvery { repository.addSet(second) } returns Unit
             val viewModel =
                 ManualReadoutListViewModel(
+                    simulatorId = Simulator.LmuWindows.id,
+                    requestManualReadout = RequestManualReadoutUseCase(requestRepository),
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                     generateSetId = { ids.next() },
@@ -123,6 +134,8 @@ class ManualReadoutListViewModelTest {
             coEvery { repository.addSet(second) } returns Unit
             val viewModel =
                 ManualReadoutListViewModel(
+                    simulatorId = Simulator.LmuWindows.id,
+                    requestManualReadout = RequestManualReadoutUseCase(requestRepository),
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                     generateSetId = { ids.next() },
@@ -141,5 +154,34 @@ class ManualReadoutListViewModelTest {
                 collection.cancel()
                 viewModel.viewModelScope.cancel()
             }
+        }
+
+    @Test
+    fun `全シミュレーターの初期状態と購読状態はLMUのみ読み上げ可能で依頼に各IDを渡す`() =
+        runTest(dispatcher) {
+            every { repository.observeSets() } returns MutableStateFlow(emptyList())
+            Simulator.entries.forEach { simulator ->
+                val request = ManualReadoutRequest(simulator.id, "set-1")
+                coEvery { requestRepository.request(request) } returns Unit
+                val viewModel =
+                    ManualReadoutListViewModel(
+                        simulatorId = simulator.id,
+                        requestManualReadout = RequestManualReadoutUseCase(requestRepository),
+                        observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
+                        addManualReadoutSet = AddManualReadoutSetUseCase(repository),
+                    )
+                val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
+                try {
+                    val expected = ManualReadoutListUiState(canReadSets = simulator == Simulator.LmuWindows)
+                    assertEquals(expected, viewModel.uiState.value)
+                    assertEquals(expected, viewModel.uiState.first())
+                    viewModel.readSet("set-1")
+                    coVerify(exactly = 1) { requestRepository.request(request) }
+                } finally {
+                    collection.cancel()
+                    viewModel.viewModelScope.cancel()
+                }
+            }
+            confirmVerified(requestRepository)
         }
 }

@@ -17,8 +17,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -32,6 +34,7 @@ import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutListModuleTest {
+    private val requestRepository: ManualReadoutRequestRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()
     private val lmuRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val gt7Repository: ManualReadoutSetPreferencesRepository = mockk()
@@ -64,6 +67,7 @@ class ManualReadoutListModuleTest {
                     modules(
                         manualReadoutListModule,
                         module {
+                            single<ManualReadoutRequestRepository> { requestRepository }
                             repositories.forEach { (id, repository) ->
                                 single<ManualReadoutSetPreferencesRepository>(named(id)) { repository }
                             }
@@ -79,6 +83,11 @@ class ManualReadoutListModuleTest {
                     try {
                         val state = viewModel.uiState.first { it.sets.isNotEmpty() }
                         assertEquals(listOf(ManualReadoutSet(id = simulator.id)), state.sets)
+                        assertEquals(simulator == Simulator.LmuWindows, state.canReadSets)
+                        val request = ManualReadoutRequest(simulator.id, simulator.id)
+                        coEvery { requestRepository.request(request) } returns Unit
+                        viewModel.readSet(simulator.id)
+                        coVerify(exactly = 1) { requestRepository.request(request) }
                         viewModel.addSet()
                         val saved = addedSet.captured
                         assertEquals(emptyList(), saved.itemKeys)
@@ -97,7 +106,7 @@ class ManualReadoutListModuleTest {
                 repositories.values.forEach { repository ->
                     verify(exactly = 1) { repository.observeSets() }
                 }
-                confirmVerified(lmuRepository, gt7Repository, aceRepository)
+                confirmVerified(lmuRepository, gt7Repository, aceRepository, requestRepository)
             } finally {
                 application.close()
             }
