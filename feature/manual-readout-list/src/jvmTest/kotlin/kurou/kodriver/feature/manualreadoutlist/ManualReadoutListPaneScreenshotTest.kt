@@ -20,7 +20,10 @@ class ManualReadoutListPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
-                            ManualReadoutListPane(simulatorName = "LMU")
+                            ManualReadoutListPaneContent(
+                                uiState = ManualReadoutListUiState(),
+                                simulatorName = "LMU",
+                            )
                         }
                     }
                 }

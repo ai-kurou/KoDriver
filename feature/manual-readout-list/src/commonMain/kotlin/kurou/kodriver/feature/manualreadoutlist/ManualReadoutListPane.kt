@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_help_description
@@ -49,24 +50,46 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_readout_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_empty_title
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
+/** 選択中シミュレーターの手動読み上げセット一覧を表示する。 */
 @Composable
 fun ManualReadoutListPane(
+    simulatorId: String,
+    simulatorName: String,
+    modifier: Modifier = Modifier,
+) {
+    val viewModel: ManualReadoutListViewModel =
+        koinViewModel(key = simulatorId, parameters = { parametersOf(simulatorId) })
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ManualReadoutListPaneContent(uiState = uiState, simulatorName = simulatorName, modifier = modifier)
+}
+
+/**
+ * 保存済みセットが空なら空状態を表示し、1件以上なら説明見出し行のみ表示する。
+ * セットの追加と各セットの行 UI は後続 PR で実装する。
+ */
+@Composable
+internal fun ManualReadoutListPaneContent(
+    uiState: ManualReadoutListUiState,
     simulatorName: String,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
         ManualReadoutHintRow(modifier = Modifier.padding(horizontal = KoDriverSpacing.small))
-        Box(
-            modifier = Modifier.weight(1f).fillMaxSize().padding(KoDriverSpacing.extraLarge),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = stringResource(Res.string.manual_readout_list_empty_title, simulatorName),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-            )
+        if (uiState.sets.isEmpty()) {
+            Box(
+                modifier = Modifier.weight(1f).fillMaxSize().padding(KoDriverSpacing.extraLarge),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = stringResource(Res.string.manual_readout_list_empty_title, simulatorName),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }

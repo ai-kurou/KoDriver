@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Rule
 import org.junit.Test
 
@@ -20,10 +21,29 @@ class ManualReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `保存済みセットがあると説明見出し行のみ表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet(id = "set-1"))),
+                    simulatorName = "LMU",
+                )
+            }
+        }
+
+        rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
+        rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertDoesNotExist()
+        rule.onNodeWithText("set-1").assertDoesNotExist()
+    }
+
+    @Test
     fun `選択中のシミュレーター名を含む空状態を表示する`() {
         rule.setContent {
             KoDriverTheme {
-                ManualReadoutListPane(simulatorName = "LMU")
+                ManualReadoutListPaneContent(
+                    uiState = ManualReadoutListUiState(),
+                    simulatorName = "LMU",
+                )
             }
         }
 
@@ -36,7 +56,10 @@ class ManualReadoutListPaneTest {
         val simulatorName = mutableStateOf("LMU")
         rule.setContent {
             KoDriverTheme {
-                ManualReadoutListPane(simulatorName = simulatorName.value)
+                ManualReadoutListPaneContent(
+                    uiState = ManualReadoutListUiState(),
+                    simulatorName = simulatorName.value,
+                )
             }
         }
 
@@ -51,7 +74,10 @@ class ManualReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                    ManualReadoutListPane(simulatorName = "LMU")
+                    ManualReadoutListPaneContent(
+                        uiState = ManualReadoutListUiState(),
+                        simulatorName = "LMU",
+                    )
                 }
             }
         }
