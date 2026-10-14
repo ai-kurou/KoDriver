@@ -23,6 +23,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DE
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -716,11 +717,11 @@ internal class LmuWindowsNarratorViewModel(
             .observeManualReadoutRequests()
             .onEach { request ->
                 if (request.simulatorId == Simulator.LmuWindows.id) {
-                    readRemainingVirtualEnergyCurrentValue()
+                    readRemainingVirtualEnergyCurrentValue(manual = true)
                 }
             }.launchIn(viewModelScope)
 
-    private suspend fun readRemainingVirtualEnergyCurrentValue() {
+    private suspend fun readRemainingVirtualEnergyCurrentValue(manual: Boolean = false) {
         val remainingVirtualEnergy = latestVirtualEnergy
         if (selectedSimulator.value !is Simulator.LmuWindows || remainingVirtualEnergy == null) return
         val observedAtMs = currentTimeMs()
@@ -729,17 +730,30 @@ internal class LmuWindowsNarratorViewModel(
         val state = narratorState
         val settings = currentSettings
         val decision =
-            narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
-                state = state,
-                data = remainingVirtualEnergy,
-                settings = settings,
-            )
+            if (manual) {
+                narratorUseCases.determineReadout.determineManualRemainingVirtualEnergyCurrentValue(
+                    state = state,
+                    data = remainingVirtualEnergy,
+                )
+            } else {
+                narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
+                    state = state,
+                    data = remainingVirtualEnergy,
+                    settings = settings,
+                )
+            }
+        val currentQueueEnabledStates =
+            if (manual) {
+                queueEnabledStates.value + (LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true)
+            } else {
+                queueEnabledStates.value
+            }
         narratorState = decision.state
         eventProcessor.processRemainingVirtualEnergy(
             remainingVirtualEnergy = remainingVirtualEnergy,
             events = decision.events,
             autoReadoutOrder = autoReadoutOrder.value,
-            queueEnabledStates = queueEnabledStates.value,
+            queueEnabledStates = currentQueueEnabledStates,
             observedAtMs = observedAtMs,
             logContext =
                 LmuWindowsTelemetryLogContext(

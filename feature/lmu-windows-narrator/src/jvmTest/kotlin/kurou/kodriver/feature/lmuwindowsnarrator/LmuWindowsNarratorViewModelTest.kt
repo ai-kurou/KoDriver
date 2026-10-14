@@ -2633,7 +2633,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `残量スイッチが無効なら手動依頼でも読み上げない`() =
+    fun `残量スイッチが無効でも手動依頼は読み上げる`() =
         runTest(testDispatcher) {
             val disabledKeys =
                 listOf(
@@ -2654,17 +2654,16 @@ class LmuWindowsNarratorViewModelTest {
                 energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
                 requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
 
-                assertEquals(emptyList(), spoken)
+                assertEquals(1, spoken.size)
             }
 
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) {
+            verify(exactly = 2) {
                 ttsEngine.speak(
                     LmuWindowsRemainingVirtualEnergyCurrentValue(
                         80,
                         LmuWindowsRemainingVirtualEnergyCurrentValue(80).narratedText,
                     ),
-                    queue = false,
+                    queue = true,
                 )
             }
             confirmVerified(ttsEngine)
@@ -2725,11 +2724,12 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `手動依頼の読み上げは既存のキュー設定に従う`() =
+    fun `キュー設定が無効でも手動依頼はキューへ追加してログを保存する`() =
         runTest(testDispatcher) {
             val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
             val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
             val spoken = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
             val queued = mutableListOf<SpeechEvent>()
             val tts = mockTts(spoken)
             every { ttsEngine.speak(capture(queued), queue = true) } just Runs
@@ -2738,8 +2738,11 @@ class LmuWindowsNarratorViewModelTest {
                 manualRequestChannel = requests,
                 ttsEngine = tts,
                 enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
-                queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
+                queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false),
+                currentTimeMs = { 123L },
             )
+
+            stubTelemetryLogSave(logs, 123L, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
 
             energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
@@ -2754,10 +2757,21 @@ class LmuWindowsNarratorViewModelTest {
                 ),
                 queued,
             )
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(queued.single(), queue = true) }
-            verify(exactly = 0) { ttsEngine.speak(queued.single(), queue = false) }
-            confirmVerified(ttsEngine)
+            val log = logs.single()
+            assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
+            assertContains(log.telemetryJson, "\"remainingRatio\":0.8")
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 123L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    narratedText = queued.single().narratedText,
+                    narrationOutcome = NarrationOutcome.QUEUED,
+                    telemetryJson = log.telemetryJson,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
     @Test

@@ -60,8 +60,10 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 依頼の `simulatorId` が `Simulator.LmuWindows.id` で、選択中のシミュレーターも LMU の場合だけ処理する。
 現段階では `setId` とセットの `itemKeys` に関係なく仮想エネルギー残量を読み上げる。
 F9 と共通の `readRemainingVirtualEnergyCurrentValue` が、最新値と受信から5秒以内の鮮度を確認し、
-`determineRemainingVirtualEnergyCurrentValue` → `processRemainingVirtualEnergy` の既存経路へ渡す。
-開始音・文言・有効スイッチ・キュー設定・テレメトリログは F9 と同じ動作で、自動警告の読み上げ済み状態は変えない。
+手動専用の `determineManualRemainingVirtualEnergyCurrentValue` → `processRemainingVirtualEnergy` へ渡す。
+手動は自動読み上げスイッチを無視し、ユーザーのキュー設定に関係なく常にキューの末尾に並ぶ。
+開始音・文言・テレメトリログは既存経路を使い、自動警告の読み上げ済み状態は変えない。
+F9 は従来どおり有効スイッチとキュー設定に従う。
 Android でも WebSocket で受信した値を使う。未受信・鮮度切れでは読み上げず、「データがありません」は後続 PR で対応する。
 
 JVM テストで連続依頼・警告状態の維持・未受信・鮮度の境界・宛先と選択中シミュレーターの照合・
