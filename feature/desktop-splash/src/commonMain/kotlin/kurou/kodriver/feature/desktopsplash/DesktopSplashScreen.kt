@@ -24,6 +24,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.desktopsplash.generated.resources.Res
 import kurou.kodriver.feature.desktopsplash.generated.resources.app_icon
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 private const val APP_ICON_SIZE_DP = 96
 private const val PROGRESS_INDICATOR_WIDTH_DP = 200
@@ -57,7 +58,7 @@ fun DesktopSplashScreen(
             )
             Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             Text(
-                text = uiState.step.displayName,
+                text = stringResource(uiState.step.displayNameRes),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

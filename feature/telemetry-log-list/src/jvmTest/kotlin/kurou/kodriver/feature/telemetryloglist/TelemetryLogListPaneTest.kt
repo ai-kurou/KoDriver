@@ -2,6 +2,7 @@ package kurou.kodriver.feature.telemetryloglist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
@@ -86,9 +87,13 @@ class TelemetryLogListPaneTest {
 
     @Test
     fun `UTC0時0分0秒はJST9時0分0秒として表示する`() {
-        val text = formatTelemetryLogTime(createdAt = 0L, raceElapsedMs = 0L)
+        rule.setContent {
+            KoDriverTheme {
+                Text(formatTelemetryLogTime(createdAt = 0L, raceElapsedMs = 0L))
+            }
+        }
 
-        assertEquals("09:00:00.000 / レース +00:00:00.000", text)
+        rule.onNodeWithText("09:00:00.000 / レース +00:00:00.000").assertIsDisplayed()
     }
 
     @Test
@@ -96,9 +101,13 @@ class TelemetryLogListPaneTest {
         val millisecondsPerDay = 24 * 60 * 60 * 1_000L
         val fifteenHoursInMillis = 15 * 60 * 60 * 1_000L
 
-        val text = formatTelemetryLogTime(createdAt = fifteenHoursInMillis, raceElapsedMs = 0L)
+        rule.setContent {
+            KoDriverTheme {
+                Text(formatTelemetryLogTime(createdAt = fifteenHoursInMillis, raceElapsedMs = 0L))
+            }
+        }
 
-        assertEquals("00:00:00.000 / レース +00:00:00.000", text)
+        rule.onNodeWithText("00:00:00.000 / レース +00:00:00.000").assertIsDisplayed()
         assertEquals(0L, (fifteenHoursInMillis + 9 * 60 * 60 * 1_000L) % millisecondsPerDay)
     }
 
@@ -106,8 +115,12 @@ class TelemetryLogListPaneTest {
     fun `レース経過時間はcreatedAtとraceStartedAtの差分をそのまま表示する`() {
         val oneHourInMillis = 60 * 60 * 1_000L
 
-        val text = formatTelemetryLogTime(createdAt = oneHourInMillis, raceElapsedMs = oneHourInMillis)
+        rule.setContent {
+            KoDriverTheme {
+                Text(formatTelemetryLogTime(createdAt = oneHourInMillis, raceElapsedMs = oneHourInMillis))
+            }
+        }
 
-        assertEquals("10:00:00.000 / レース +01:00:00.000", text)
+        rule.onNodeWithText("10:00:00.000 / レース +01:00:00.000").assertIsDisplayed()
     }
 }
