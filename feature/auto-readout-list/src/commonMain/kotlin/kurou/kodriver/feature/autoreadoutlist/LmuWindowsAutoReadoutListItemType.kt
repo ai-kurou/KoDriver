@@ -29,6 +29,9 @@ sealed class LmuWindowsAutoReadoutListItemType(
 
     companion object {
         fun fromId(id: ReadoutItemKey): LmuWindowsAutoReadoutListItemType? =
+            if (id is LmuWindowsReadoutItemKey.TopLevel) fromTopLevel(id) else null
+
+        private fun fromTopLevel(id: LmuWindowsReadoutItemKey.TopLevel): LmuWindowsAutoReadoutListItemType =
             when (id) {
                 LmuWindowsReadoutItemKey.VehicleApproach.Root -> VehicleApproach
                 LmuWindowsReadoutItemKey.Flag.Root -> Flag
@@ -40,7 +43,6 @@ sealed class LmuWindowsAutoReadoutListItemType(
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root -> BrakeTemperature
                 LmuWindowsReadoutItemKey.BrakeWear.Root -> BrakeWear
                 LmuWindowsReadoutItemKey.MyBestLap.Root -> MyBestLap
-                else -> null
             }
     }
 }
