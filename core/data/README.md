@@ -76,7 +76,9 @@ Desktop・Android 両方で設定 Repository を登録し、Android の `HotkeyR
 
 `ManualReadoutSetPreferencesRepository` は手動読み上げセットを
 `manual_readout_set_preferences_${simulator.id}.pb` にシミュレーターごとに保存する。
-Desktop／Android とも `named(simulator.id)` で登録し、セット識別子と項目キーの順序を保持する。
+Desktop／Android とも `named(simulator.id)` で登録し、セット識別子・項目キーの順序・項目キーごとの文言テンプレートを保持する。
+文言は `ManualReadoutSetPreference` の protobuf フィールド3に `Map<String, String>` として保存する。
+旧データの文言フィールドがないセットは空 Map として読み込み、Narrator と詳細画面で既定文言を使う。
 
 ## 手動読み上げ依頼
 

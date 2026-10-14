@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
  * そのイベントが発生しない操作をされた場合に入力内容が保存されないまま失われる（実際に発生した不具合）。
  * 1文字ごとに確定することでこの問題を避ける。
  *
+ * [onPreviewClick] が null の場合は再生ボタンを表示しない。
  * 末尾の再生ボタンは、入力中の文言（空欄なら既定の文言）の試聴に使う。
  * [onResetToDefault] を渡すと、その左に既定値へ戻すボタンを配置する。
  * [enabled] が false、[defaultValue] が null、または入力中の文言と同じときは無効・透明にし、それ以外は有効にして表示する。
@@ -59,7 +60,7 @@ fun DetailPaneCardTextField(
     placeholder: String,
     maxLength: Int,
     onValueChangeFinished: (String) -> Unit,
-    onPreviewClick: (String) -> Unit,
+    onPreviewClick: ((String) -> Unit)?,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     selected: Boolean = false,
@@ -138,20 +139,22 @@ fun DetailPaneCardTextField(
                         )
                     }
                 }
-                IconButton(
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        onPreviewClick(text)
-                    },
-                    enabled = enabled,
-                    modifier = Modifier.size(32.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.PlayArrow,
-                        contentDescription = previewContentDescription,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(18.dp),
-                    )
+                if (onPreviewClick != null) {
+                    IconButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            onPreviewClick(text)
+                        },
+                        enabled = enabled,
+                        modifier = Modifier.size(32.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.PlayArrow,
+                            contentDescription = previewContentDescription,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
                 }
             }
         },

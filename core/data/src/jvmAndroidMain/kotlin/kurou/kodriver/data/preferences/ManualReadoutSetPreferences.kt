@@ -15,4 +15,5 @@ internal data class ManualReadoutSetPreferences(
 internal data class ManualReadoutSetPreference(
     @ProtoNumber(1) val id: String = "",
     @ProtoNumber(2) val itemKeys: List<String> = emptyList(),
+    @ProtoNumber(3) val itemTexts: Map<String, String> = emptyMap(),
 )

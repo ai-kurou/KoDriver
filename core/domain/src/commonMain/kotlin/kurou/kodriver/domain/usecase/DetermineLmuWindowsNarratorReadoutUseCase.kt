@@ -40,6 +40,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.roundToInt
 
@@ -533,6 +534,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     fun determineManualRemainingVirtualEnergyCurrentValue(
         state: LmuWindowsNarratorState,
         data: LmuWindowsVirtualEnergyData,
+        textTemplate: String? = null,
     ): LmuWindowsNarratorReadoutDecision =
         LmuWindowsNarratorReadoutDecision(
             state = state,
@@ -540,6 +542,13 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 listOf(
                     LmuWindowsRemainingVirtualEnergyCurrentValue(
                         (data.remainingRatio.value * PERCENTAGE_SCALE).roundToInt(),
+                        resolvedText =
+                            textTemplate?.let {
+                                formatLmuWindowsRemainingVirtualEnergyReadoutText(
+                                    it,
+                                    (data.remainingRatio.value * PERCENTAGE_SCALE).roundToInt(),
+                                )
+                            },
                     ),
                 ),
         )

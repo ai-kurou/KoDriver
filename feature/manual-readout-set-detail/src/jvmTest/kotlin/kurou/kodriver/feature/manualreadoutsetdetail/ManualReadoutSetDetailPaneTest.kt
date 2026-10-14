@@ -1,14 +1,21 @@
 package kurou.kodriver.feature.manualreadoutsetdetail
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.manualReadoutItemKeys
+import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -73,5 +80,59 @@ class ManualReadoutSetDetailPaneTest {
         rule.runOnIdle { state.value = ManualReadoutSetDetailUiState(isLoading = false) }
         rule.onNodeWithText("セットが見つかりません").assertExists()
         rule.onNodeWithText("セットを削除").assertDoesNotExist()
+    }
+
+    @Test
+    fun `選択時だけ文言欄を表示し入力と挿入と警告とリセットと文字数上限を扱う`() {
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        val defaultText = manualReadoutItemTextDefault(key)
+        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val saved = mutableListOf<Pair<String, String>>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onToggleItem = {
+                        state.value =
+                            state.value.copy(
+                                selectedItemKeys = if (it in state.value.selectedItemKeys) emptyList() else listOf(it),
+                            )
+                    },
+                    onDelete = {},
+                    onItemTextChanged = { itemKey, text ->
+                        saved.add(itemKey to text)
+                        state.value = state.value.copy(itemTexts = state.value.itemTexts + (itemKey to text.trim()))
+                    },
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).assertDoesNotExist()
+        rule.onNode(isToggleable()).performClick()
+        rule.onNodeWithText(defaultText).assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("")
+        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
+        rule.onNodeWithText("{percent} を挿入").performClick()
+        rule.onNodeWithText("{percent}").assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("残量{other}%")
+        rule.onNodeWithText("未対応のプレースホルダー: {other}（そのまま読み上げます）").assertExists()
+        rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
+        rule.onNodeWithText(defaultText).assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
+        rule.onNodeWithText("{percent} を挿入").assertIsNotEnabled()
+        rule.onNodeWithText("30/30").assertExists()
+        rule.onNode(isToggleable()).performClick()
+        rule.onNode(hasSetTextAction()).assertDoesNotExist()
+        rule.runOnIdle {
+            assertEquals(
+                listOf(
+                    key to "",
+                    key to "{percent}",
+                    key to "残量{other}%",
+                    key to defaultText,
+                    key to "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH),
+                ),
+                saved,
+            )
+        }
     }
 }
