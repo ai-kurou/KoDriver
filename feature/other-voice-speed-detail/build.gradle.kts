@@ -20,15 +20,6 @@ kotlin {
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.mockk)
         }
-        named("androidHostTest") {
-            dependencies {
-                implementation(libs.kotlin.testJunit)
-                implementation(libs.junit)
-                implementation(libs.roborazzi.compose)
-                implementation(libs.robolectric)
-                implementation(libs.roborazzi.core)
-            }
-        }
     }
 }
 
