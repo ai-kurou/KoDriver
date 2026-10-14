@@ -71,3 +71,4 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 `ManualReadoutSet` はセット識別子と読み上げ項目キーのリストを持つ。
 `ObserveManualReadoutSetsUseCase` / `SaveManualReadoutSetsUseCase` は
 `ManualReadoutSetPreferencesRepository` を通じてセット一覧を取得・保存する。
+`AddManualReadoutSetUseCase` は保存済み一覧の末尾へ1セットをアトミックに追加する。

@@ -3,7 +3,9 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.DataStoreFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ManualReadoutSet
@@ -31,6 +33,47 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
     fun tearDown() {
         tempDir.deleteRecursively()
     }
+
+    @Test
+    fun `空の保存済み一覧へセットを追加できる`() =
+        runTest {
+            val set = ManualReadoutSet("set-1", listOf("SESSION", "REMOVED_KEY"))
+
+            repository.addSet(set)
+
+            assertEquals(listOf(set), repository.observeSets().first())
+        }
+
+    @Test
+    fun `一覧を購読する前に連続追加しても保存済みセットを保持する`() =
+        runTest {
+            val existing = ManualReadoutSet("existing", listOf("SESSION", "REMOVED_KEY", "SIMULATOR"))
+            val first = ManualReadoutSet("first")
+            val second = ManualReadoutSet("second", listOf("BEST_LAP"))
+            repository.saveSets(listOf(existing))
+
+            repository.addSet(first)
+            repository.addSet(second)
+
+            assertEquals(listOf(existing, first, second), repository.observeSets().first())
+        }
+
+    @Test
+    fun `並行追加しても保存済みセットと全追加セットを保持する`() =
+        runTest {
+            val existing = ManualReadoutSet("existing", listOf("SESSION"))
+            val added = (1..10).map { ManualReadoutSet("set-$it", listOf("BEST_LAP")) }
+            repository.saveSets(listOf(existing))
+
+            coroutineScope {
+                added.forEach { set -> launch { repository.addSet(set) } }
+            }
+
+            val saved = repository.observeSets().first()
+            assertEquals(existing, saved.first())
+            assertEquals(added.size + 1, saved.size)
+            assertEquals(added.toSet(), saved.drop(1).toSet())
+        }
 
     @Test
     fun `未知キーを含むセットをそのまま保存して読み出せる`() =

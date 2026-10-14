@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.manualreadoutlist
 
+import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
-import kurou.kodriver.domain.usecase.SaveManualReadoutSetsUseCase
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -12,7 +12,7 @@ val manualReadoutListModule =
         viewModel { (simulatorId: String) ->
             ManualReadoutListViewModel(
                 observeManualReadoutSets = ObserveManualReadoutSetsUseCase(get(named(simulatorId))),
-                saveManualReadoutSets = SaveManualReadoutSetsUseCase(get(named(simulatorId))),
+                addManualReadoutSet = AddManualReadoutSetUseCase(get(named(simulatorId))),
             )
         }
     }

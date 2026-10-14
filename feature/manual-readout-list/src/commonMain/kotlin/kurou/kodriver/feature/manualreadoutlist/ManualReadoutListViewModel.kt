@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
-import kurou.kodriver.domain.usecase.SaveManualReadoutSetsUseCase
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -16,7 +16,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 internal class ManualReadoutListViewModel(
     observeManualReadoutSets: ObserveManualReadoutSetsUseCase,
-    private val saveManualReadoutSets: SaveManualReadoutSetsUseCase,
+    private val addManualReadoutSet: AddManualReadoutSetUseCase,
     private val generateSetId: () -> String = { Uuid.random().toString() },
 ) : ViewModel() {
     val uiState =
@@ -25,7 +25,6 @@ internal class ManualReadoutListViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ManualReadoutListUiState())
 
     fun addSet() {
-        val sets = uiState.value.sets + ManualReadoutSet(id = generateSetId())
-        viewModelScope.launch { saveManualReadoutSets(sets) }
+        viewModelScope.launch { addManualReadoutSet(ManualReadoutSet(id = generateSetId())) }
     }
 }

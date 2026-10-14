@@ -36,7 +36,7 @@ class ManualReadoutListPaneTest {
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
         rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertDoesNotExist()
         rule.onNodeWithText("set-1").assertDoesNotExist()
-        rule.onNodeWithText("セットを追加", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithContentDescription("セットを追加").assertIsDisplayed()
     }
 
     @Test
@@ -54,7 +54,7 @@ class ManualReadoutListPaneTest {
 
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
         rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertIsDisplayed()
-        rule.onNodeWithText("セットを追加", useUnmergedTree = true).assertIsDisplayed().performClick()
+        rule.onNodeWithContentDescription("セットを追加").assertIsDisplayed().performClick()
         rule.runOnIdle { assertEquals(1, addSetCount) }
     }
 

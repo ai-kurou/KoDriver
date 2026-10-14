@@ -104,7 +104,12 @@ internal fun ManualReadoutListPaneContent(
         }
         ExtendedFloatingActionButton(
             onClick = onAddSet,
-            icon = { Icon(imageVector = Icons.Filled.Add, contentDescription = null) },
+            icon = {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(Res.string.manual_readout_list_add_set),
+                )
+            },
             text = { Text(stringResource(Res.string.manual_readout_list_add_set)) },
             modifier = Modifier.align(Alignment.BottomEnd).padding(KoDriverSpacing.large),
         )

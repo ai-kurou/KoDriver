@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.ViewModelStore
@@ -65,8 +66,8 @@ class ManualReadoutListPaneWiringTest {
 
     @Test
     fun `同じViewModelStoreOwnerでシミュレーターを切り替えると対応するセットの空状態を表示する`() {
-        val savedSets = slot<List<ManualReadoutSet>>()
-        coEvery { lmuRepository.saveSets(capture(savedSets)) } returns Unit
+        val addedSet = slot<ManualReadoutSet>()
+        coEvery { lmuRepository.addSet(capture(addedSet)) } returns Unit
         val lmuSets = MutableStateFlow<List<ManualReadoutSet>>(emptyList())
         every { lmuRepository.observeSets() } returns lmuSets
         every { gt7Repository.observeSets() } returns flowOf(listOf(ManualReadoutSet(id = "gt7-set")))
@@ -107,18 +108,17 @@ class ManualReadoutListPaneWiringTest {
                 simulatorId = Simulator.LmuWindows.id
             }
             rule.onNodeWithText("lmu_windowsの手動読み上げセットはまだありません").assertIsDisplayed()
-            rule.onNodeWithText("セットを追加", useUnmergedTree = true).assertIsDisplayed().performClick()
+            rule.onNodeWithContentDescription("セットを追加").assertIsDisplayed().performClick()
             rule.runOnIdle {
-                val saved = savedSets.captured
-                assertEquals(1, saved.size)
-                assertEquals(emptyList(), saved.single().itemKeys)
+                val saved = addedSet.captured
+                assertEquals(emptyList(), saved.itemKeys)
                 assertEquals(
-                    saved.single().id,
+                    saved.id,
                     java.util.UUID
-                        .fromString(saved.single().id)
+                        .fromString(saved.id)
                         .toString(),
                 )
-                coVerify(exactly = 1) { lmuRepository.saveSets(saved) }
+                coVerify(exactly = 1) { lmuRepository.addSet(saved) }
             }
             verify(exactly = 1) { lmuRepository.observeSets() }
             verify(exactly = 1) { gt7Repository.observeSets() }

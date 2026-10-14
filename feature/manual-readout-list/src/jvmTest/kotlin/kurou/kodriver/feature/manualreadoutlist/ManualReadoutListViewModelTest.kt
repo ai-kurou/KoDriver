@@ -20,8 +20,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
+import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
-import kurou.kodriver.domain.usecase.SaveManualReadoutSetsUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -49,7 +49,7 @@ class ManualReadoutListViewModelTest {
             val viewModel =
                 ManualReadoutListViewModel(
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
-                    saveManualReadoutSets = SaveManualReadoutSetsUseCase(repository),
+                    addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                 )
             try {
                 assertEquals(ManualReadoutListUiState(), viewModel.uiState.value)
@@ -68,7 +68,7 @@ class ManualReadoutListViewModelTest {
             val viewModel =
                 ManualReadoutListViewModel(
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
-                    saveManualReadoutSets = SaveManualReadoutSetsUseCase(repository),
+                    addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                 )
             val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
             try {
@@ -82,24 +82,60 @@ class ManualReadoutListViewModelTest {
         }
 
     @Test
-    fun `addSetは既存セットの末尾に新IDの空セットを追加して保存する`() =
+    fun `初回読み込み前の連続追加は一覧状態を使わず各セットを渡す`() =
         runTest(dispatcher) {
-            val sets = listOf(ManualReadoutSet(id = "set-1", itemKeys = listOf("speed")))
-            val expected = sets + ManualReadoutSet(id = "new-set")
+            val sets = listOf(ManualReadoutSet(id = "existing", itemKeys = listOf("SESSION")))
+            val first = ManualReadoutSet(id = "first")
+            val second = ManualReadoutSet(id = "second")
+            val ids = listOf(first.id, second.id).iterator()
             every { repository.observeSets() } returns MutableStateFlow(sets)
-            coEvery { repository.saveSets(expected) } returns Unit
+            coEvery { repository.addSet(first) } returns Unit
+            coEvery { repository.addSet(second) } returns Unit
             val viewModel =
                 ManualReadoutListViewModel(
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
-                    saveManualReadoutSets = SaveManualReadoutSetsUseCase(repository),
-                    generateSetId = { "new-set" },
+                    addManualReadoutSet = AddManualReadoutSetUseCase(repository),
+                    generateSetId = { ids.next() },
+                )
+            try {
+                assertEquals(emptyList(), viewModel.uiState.value.sets)
+                viewModel.addSet()
+                viewModel.addSet()
+                assertEquals(emptyList(), viewModel.uiState.value.sets)
+                verify(exactly = 1) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.addSet(first) }
+                coVerify(exactly = 1) { repository.addSet(second) }
+                confirmVerified(repository)
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `一覧への反映前に連続追加しても新IDの空セットだけをRepositoryに渡す`() =
+        runTest(dispatcher) {
+            val sets = listOf(ManualReadoutSet(id = "set-1", itemKeys = listOf("speed")))
+            val expected = ManualReadoutSet(id = "new-set")
+            val second = ManualReadoutSet(id = "second-set")
+            val ids = listOf(expected.id, second.id).iterator()
+            every { repository.observeSets() } returns MutableStateFlow(sets)
+            coEvery { repository.addSet(expected) } returns Unit
+            coEvery { repository.addSet(second) } returns Unit
+            val viewModel =
+                ManualReadoutListViewModel(
+                    observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
+                    addManualReadoutSet = AddManualReadoutSetUseCase(repository),
+                    generateSetId = { ids.next() },
                 )
             val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
             try {
                 assertEquals(sets, viewModel.uiState.first { it.sets == sets }.sets)
                 viewModel.addSet()
                 verify(exactly = 1) { repository.observeSets() }
-                coVerify(exactly = 1) { repository.saveSets(expected) }
+                viewModel.addSet()
+                assertEquals(sets, viewModel.uiState.value.sets)
+                coVerify(exactly = 1) { repository.addSet(expected) }
+                coVerify(exactly = 1) { repository.addSet(second) }
                 confirmVerified(repository)
             } finally {
                 collection.cancel()
