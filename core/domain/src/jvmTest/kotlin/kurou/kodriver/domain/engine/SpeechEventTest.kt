@@ -29,6 +29,26 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class SpeechEventTest {
     @Test
+    fun `GT7の4型だけがGT7由来の共通マーカーを持つ`() {
+        val events =
+            listOf<ReadoutTextEvent>(
+                Gt7Ps5MyBestLap(83_456),
+                Gt7Ps5RemainingFuelLapsWarning(3),
+                Gt7Ps5RemainingFuelWarning(20),
+                Gt7Ps5TyreOverheat(110),
+            )
+        events.forEach { event ->
+            assertTrue(event is Gt7Ps5SpeechEvent)
+            assertTrue(event.withResolvedText("判定時の本文") is Gt7Ps5SpeechEvent)
+        }
+        listOf<SpeechEvent>(
+            LmuWindowsRedFlag(),
+            AceWindowsRemainingFuelLapsWarning(3),
+            DebugReadoutText(Gt7Ps5ReadoutItemKey.MyBestLap.Root, "入力文言"),
+        ).forEach { assertFalse(it is Gt7Ps5SpeechEvent) }
+    }
+
+    @Test
     fun `ACEイベントだけがACE由来の共通マーカーを持つ`() {
         val events =
             listOf<ReadoutTextEvent>(
