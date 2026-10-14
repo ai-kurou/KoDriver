@@ -112,7 +112,12 @@ class ManualReadoutListPaneWiringTest {
                 val saved = savedSets.captured
                 assertEquals(1, saved.size)
                 assertEquals(emptyList(), saved.single().itemKeys)
-                assertEquals(saved.single().id, java.util.UUID.fromString(saved.single().id).toString())
+                assertEquals(
+                    saved.single().id,
+                    java.util.UUID
+                        .fromString(saved.single().id)
+                        .toString(),
+                )
                 coVerify(exactly = 1) { lmuRepository.saveSets(saved) }
             }
             verify(exactly = 1) { lmuRepository.observeSets() }

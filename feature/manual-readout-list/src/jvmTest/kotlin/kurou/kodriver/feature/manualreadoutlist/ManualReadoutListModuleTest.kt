@@ -84,7 +84,12 @@ class ManualReadoutListModuleTest {
                         assertEquals(state.sets, saved.dropLast(1))
                         assertEquals(emptyList(), saved.last().itemKeys)
                         assertNotEquals(simulator.id, saved.last().id)
-                        assertEquals(saved.last().id, java.util.UUID.fromString(saved.last().id).toString())
+                        assertEquals(
+                            saved.last().id,
+                            java.util.UUID
+                                .fromString(saved.last().id)
+                                .toString(),
+                        )
                         coVerify(exactly = 1) { repository.saveSets(saved) }
                     } finally {
                         viewModel.viewModelScope.cancel()
