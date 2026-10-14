@@ -464,11 +464,13 @@ fun AppScreen(
                 simulatorId = selectedSimulatorId,
                 simulatorName = appScreenPrimarySimulatorLabel(selectedSimulatorId),
                 backHandler = backHandler,
-                detailContent = { setId, onBack ->
+                detailContent = { setId, canNavigateBack, onBack ->
                     ManualReadoutSetDetailContent(
                         simulatorId = selectedSimulatorId,
                         setId = setId,
                         onDeleted = onBack,
+                        canNavigateBack = canNavigateBack,
+                        onBack = onBack,
                     )
                 },
             )

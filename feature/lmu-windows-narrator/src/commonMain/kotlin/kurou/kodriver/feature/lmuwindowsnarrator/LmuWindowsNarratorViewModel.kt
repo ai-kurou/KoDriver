@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -68,6 +69,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStates
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
@@ -125,6 +127,7 @@ internal data class RemainingVirtualEnergyUseCases(
     val observeRemainingVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     val observeReadoutHotkey: ObserveReadoutHotkeyUseCase,
     val observeManualReadoutRequests: ObserveManualReadoutRequestsUseCase,
+    val observeManualReadoutSets: ObserveManualReadoutSetsUseCase,
     val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
 )
 
@@ -717,7 +720,14 @@ internal class LmuWindowsNarratorViewModel(
             .observeManualReadoutRequests()
             .onEach { request ->
                 if (request.simulatorId == Simulator.LmuWindows.id) {
-                    readRemainingVirtualEnergyCurrentValue(manual = true)
+                    val set =
+                        remainingVirtualEnergyUseCases
+                            .observeManualReadoutSets()
+                            .first()
+                            .find { it.id == request.setId }
+                    if (set?.itemKeys?.contains(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value) == true) {
+                        readRemainingVirtualEnergyCurrentValue(manual = true)
+                    }
                 }
             }.launchIn(viewModelScope)
 

@@ -15,6 +15,7 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -42,11 +43,14 @@ fun ManualReadoutContent(
     simulatorName: String,
     modifier: Modifier = Modifier,
     backHandler: AppBackHandler = { _, _, _ -> },
-    detailContent: @Composable (setId: String, onBack: () -> Unit) -> Unit,
+    detailContent: @Composable (setId: String, canNavigateBack: Boolean, onBack: () -> Unit) -> Unit,
 ) {
     val viewModel: ManualReadoutListViewModel =
         koinViewModel(key = simulatorId, parameters = { parametersOf(simulatorId) })
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.clearSelectedSet() }
+    }
     ManualReadoutContentScaffold(
         uiState = uiState,
         simulatorName = simulatorName,
@@ -74,7 +78,7 @@ internal fun ManualReadoutContentScaffold(
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
-    detailContent: @Composable (setId: String, onBack: () -> Unit) -> Unit,
+    detailContent: @Composable (setId: String, canNavigateBack: Boolean, onBack: () -> Unit) -> Unit,
 ) {
     val navigationState =
         rememberManualReadoutNavigationState(
@@ -176,7 +180,7 @@ internal fun ManualReadoutContentScaffold(
             detailPane = {
                 uiState.selectedSetId?.let { setId ->
                     Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
-                        key(setId) { detailContent(setId, navigateBack) }
+                        key(setId) { detailContent(setId, navigator.canNavigateBack(), navigateBack) }
                     }
                 }
             },

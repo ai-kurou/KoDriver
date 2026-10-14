@@ -60,6 +60,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedR
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
@@ -142,7 +143,15 @@ val lmuWindowsNarratorModule: Module =
         factory { TyreWearUseCases(get(), get()) }
         factory { BrakeTemperatureUseCases(get(), get()) }
         factory { BrakeWearUseCases(get(), get()) }
-        factory { RemainingVirtualEnergyUseCases(get(), get(), get(), get()) }
+        factory {
+            RemainingVirtualEnergyUseCases(
+                get(),
+                get(),
+                get(),
+                ObserveManualReadoutSetsUseCase(get(named(Simulator.LmuWindows.id))),
+                get(),
+            )
+        }
         factory { PitTimingUseCases(get(), get(), get()) }
         factory {
             LmuWindowsNarratorEventProcessor(

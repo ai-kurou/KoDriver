@@ -4,6 +4,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.ViewModelStore
@@ -72,6 +73,7 @@ class ManualReadoutSetDetailWiringTest {
                 override val viewModelStore = ViewModelStore()
             }
         var returned = 0
+        var backed = 0
         startKoin {
             modules(
                 manualReadoutSetDetailModule,
@@ -84,11 +86,19 @@ class ManualReadoutSetDetailWiringTest {
             rule.setContent {
                 CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
                     KoDriverTheme {
-                        ManualReadoutSetDetailContent(Simulator.LmuWindows.id, "target", { returned++ })
+                        ManualReadoutSetDetailContent(
+                            simulatorId = Simulator.LmuWindows.id,
+                            setId = "target",
+                            onDeleted = { returned++ },
+                            canNavigateBack = true,
+                            onBack = { backed++ },
+                        )
                     }
                 }
             }
             rule.onNodeWithText("セット 1").assertIsDisplayed()
+            rule.onNodeWithContentDescription("戻る").performClick()
+            rule.runOnIdle { assertEquals(1, backed) }
             rule.onNode(isToggleable()).performClick()
             rule.onNodeWithText("セットを削除").performClick()
             rule.onNodeWithText("削除").performClick()

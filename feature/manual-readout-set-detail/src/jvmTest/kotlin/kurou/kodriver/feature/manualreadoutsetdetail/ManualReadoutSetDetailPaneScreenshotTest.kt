@@ -19,23 +19,34 @@ class ManualReadoutSetDetailPaneScreenshotTest {
     @Test
     fun `項目なし`() = screenshot(emptyList())
 
-    private fun screenshot(keys: List<String>) =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            ManualReadoutSetDetailPane(
-                                uiState = ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = keys),
-                                onToggleItem = {},
-                                onDelete = {},
-                            )
-                        }
+    @Test
+    fun `戻るボタンなし`() = screenshot(listOf("energy"), canNavigateBack = false)
+
+    @Test
+    fun `1ペインで戻るボタンを表示`() = screenshot(listOf("energy"), width = 360, height = 640)
+
+    private fun screenshot(
+        keys: List<String>,
+        canNavigateBack: Boolean = true,
+        width: Int = 1560,
+        height: Int = 1080,
+    ) = composeScreenshotTest {
+        setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(width.dp, height.dp)) {
+                        ManualReadoutSetDetailPane(
+                            uiState = ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = keys),
+                            onToggleItem = {},
+                            onDelete = {},
+                            canNavigateBack = canNavigateBack,
+                        )
                     }
                 }
             }
-            onRoot().captureRoboImage()
         }
+        onRoot().captureRoboImage()
+    }
 
     @Test
     fun `削除ダイアログ`() =

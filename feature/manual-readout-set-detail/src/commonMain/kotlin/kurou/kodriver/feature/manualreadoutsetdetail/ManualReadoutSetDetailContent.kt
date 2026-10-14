@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_cancel
@@ -35,6 +36,8 @@ import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_no_items
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_set_missing
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_set_title
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_title
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -44,6 +47,8 @@ fun ManualReadoutSetDetailContent(
     simulatorId: String,
     setId: String,
     onDeleted: () -> Unit,
+    canNavigateBack: Boolean,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: ManualReadoutSetDetailViewModel =
@@ -57,6 +62,8 @@ fun ManualReadoutSetDetailContent(
         uiState = uiState,
         onToggleItem = viewModel::toggleItem,
         onDelete = viewModel::deleteSet,
+        canNavigateBack = canNavigateBack,
+        onBack = onBack,
         modifier = modifier,
     )
 }
@@ -66,6 +73,8 @@ internal fun ManualReadoutSetDetailPane(
     uiState: ManualReadoutSetDetailUiState,
     onToggleItem: (String) -> Unit,
     onDelete: () -> Unit,
+    canNavigateBack: Boolean = true,
+    onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -78,35 +87,44 @@ internal fun ManualReadoutSetDetailPane(
             onDismiss = { showDeleteDialog = false },
         )
     }
-    Column(
-        modifier = modifier.verticalScroll(rememberScrollState()).padding(KoDriverSpacing.large),
-        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+    val number = uiState.setNumber
+    DetailPaneScaffold(
+        title =
+            if (number != null) {
+                stringResource(Res.string.manual_readout_set_title, number)
+            } else {
+                stringResource(Res.string.manual_readout_title)
+            },
+        canNavigateBack = canNavigateBack,
+        navigateBackContentDescription = stringResource(Res.string.navigate_back),
+        onBack = onBack,
+        modifier = modifier,
     ) {
-        val number = uiState.setNumber
-        if (number != null) {
-            Text(
-                text = stringResource(Res.string.manual_readout_set_title, number),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            if (uiState.availableItemKeys.isEmpty()) {
-                Text(stringResource(Res.string.manual_readout_no_items))
-            }
-            uiState.availableItemKeys.forEach { itemKey ->
-                val itemName = stringResource(Res.string.manual_readout_energy)
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(itemName, modifier = Modifier.weight(1f))
-                    Switch(
-                        checked = itemKey in uiState.selectedItemKeys,
-                        onCheckedChange = { onToggleItem(itemKey) },
-                        modifier = Modifier.semantics { contentDescription = itemName },
-                    )
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()).padding(KoDriverSpacing.large),
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+        ) {
+            if (number != null) {
+                if (uiState.availableItemKeys.isEmpty()) {
+                    Text(stringResource(Res.string.manual_readout_no_items))
                 }
+                uiState.availableItemKeys.forEach { itemKey ->
+                    val itemName = stringResource(Res.string.manual_readout_energy)
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(itemName, modifier = Modifier.weight(1f))
+                        Switch(
+                            checked = itemKey in uiState.selectedItemKeys,
+                            onCheckedChange = { onToggleItem(itemKey) },
+                            modifier = Modifier.semantics { contentDescription = itemName },
+                        )
+                    }
+                }
+                TextButton(onClick = { showDeleteDialog = true }) {
+                    Text(stringResource(Res.string.manual_readout_delete), color = MaterialTheme.colorScheme.error)
+                }
+            } else if (!uiState.isLoading) {
+                Text(stringResource(Res.string.manual_readout_set_missing))
             }
-            TextButton(onClick = { showDeleteDialog = true }) {
-                Text(stringResource(Res.string.manual_readout_delete), color = MaterialTheme.colorScheme.error)
-            }
-        } else if (!uiState.isLoading) {
-            Text(stringResource(Res.string.manual_readout_set_missing))
         }
     }
 }

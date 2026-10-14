@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -15,6 +16,27 @@ import kotlin.test.assertEquals
 class ManualReadoutSetDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `戻るボタンは戻れる場合だけ表示しクリックを通知する`() {
+        val canNavigateBack = mutableStateOf(false)
+        var backed = 0
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = ManualReadoutSetDetailUiState(setNumber = 1),
+                    onToggleItem = {},
+                    onDelete = {},
+                    canNavigateBack = canNavigateBack.value,
+                    onBack = { backed++ },
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("戻る").assertDoesNotExist()
+        rule.runOnIdle { canNavigateBack.value = true }
+        rule.onNodeWithContentDescription("戻る").assertExists().performClick()
+        rule.runOnIdle { assertEquals(1, backed) }
+    }
 
     @Test
     fun `選択と削除確認のキャンセルと確定を通知する`() {
