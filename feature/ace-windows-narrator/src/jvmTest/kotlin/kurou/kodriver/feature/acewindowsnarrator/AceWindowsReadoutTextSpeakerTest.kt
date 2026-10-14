@@ -76,24 +76,33 @@ class AceWindowsReadoutTextSpeakerTest {
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
         AceWindowsReadoutTextSpeaker(
-            observeText,
-            observeWhite,
-            observeGreen,
-            observeRed,
-            observeBlue,
-            observeYellow,
-            observeBlack,
-            observeBlackWhite,
-            observeOrangeCircle,
-            observeRedYellowStripes,
-            observeVehicleApproach,
-            observeTyreOverheat,
-            observeRemainingFuel,
-            observeRemainingFuelLaps,
-            observeEmptyFuelLaps,
-            observeMyBestLap,
-            checkAvailable,
-            speakText,
+            readoutTexts =
+                AceWindowsReadoutTextUseCases(
+                    flag =
+                        AceWindowsFlagReadoutTextUseCases(
+                            checkered = observeText,
+                            white = observeWhite,
+                            green = observeGreen,
+                            red = observeRed,
+                            blue = observeBlue,
+                            yellow = observeYellow,
+                            black = observeBlack,
+                            blackWhite = observeBlackWhite,
+                            orangeCircle = observeOrangeCircle,
+                            redYellowStripes = observeRedYellowStripes,
+                        ),
+                    remainingFuel =
+                        AceWindowsRemainingFuelReadoutTextUseCases(
+                            fuel = observeRemainingFuel,
+                            fuelLaps = observeRemainingFuelLaps,
+                            fuelLapsEmpty = observeEmptyFuelLaps,
+                        ),
+                    vehicleApproach = observeVehicleApproach,
+                    tyreOverheat = observeTyreOverheat,
+                    myBestLap = observeMyBestLap,
+                ),
+            checkTextToSpeechAvailable = checkAvailable,
+            speakText = speakText,
         )
 
     @Test

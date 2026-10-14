@@ -24,22 +24,6 @@ import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
@@ -47,24 +31,8 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * 対象イベント: Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCircle・RedYellowStripes・
  * VehicleApproach・TyreOverheat・RemainingFuelWarning・RemainingFuelLapsWarning・MyBestLap。
  */
-@Suppress("LongParameterList")
 internal class AceWindowsReadoutTextSpeaker(
-    private val observeCheckeredFlagReadoutText: ObserveAceWindowsCheckeredFlagReadoutTextUseCase,
-    private val observeWhiteFlagReadoutText: ObserveAceWindowsWhiteFlagReadoutTextUseCase,
-    private val observeGreenFlagReadoutText: ObserveAceWindowsGreenFlagReadoutTextUseCase,
-    private val observeRedFlagReadoutText: ObserveAceWindowsRedFlagReadoutTextUseCase,
-    private val observeBlueFlagReadoutText: ObserveAceWindowsBlueFlagReadoutTextUseCase,
-    private val observeYellowFlagReadoutText: ObserveAceWindowsYellowFlagReadoutTextUseCase,
-    private val observeBlackFlagReadoutText: ObserveAceWindowsBlackFlagReadoutTextUseCase,
-    private val observeBlackWhiteFlagReadoutText: ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase,
-    private val observeOrangeCircleFlagReadoutText: ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase,
-    private val observeRedYellowStripesFlagReadoutText: ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase,
-    private val observeVehicleApproachReadoutText: ObserveAceWindowsVehicleApproachReadoutTextUseCase,
-    private val observeTyreOverheatReadoutText: ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase,
-    private val observeRemainingFuelReadoutText: ObserveAceWindowsRemainingFuelReadoutTextUseCase,
-    private val observeRemainingFuelLapsReadoutText: ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase,
-    private val observeRemainingFuelLapsEmptyReadoutText: ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase,
-    private val observeMyBestLapReadoutText: ObserveAceWindowsMyBestLapReadoutTextUseCase,
+    private val readoutTexts: AceWindowsReadoutTextUseCases,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -97,28 +65,28 @@ internal class AceWindowsReadoutTextSpeaker(
             } else if (event is AceWindowsTyreOverheat) {
                 event.resolvedText
                     ?: formatAceWindowsTyreTemperatureReadoutText(
-                        observeTyreOverheatReadoutText().first(),
+                        readoutTexts.tyreOverheat().first(),
                         event.celsius,
                     )
             } else if (event is AceWindowsRemainingFuelWarning) {
                 event.resolvedText
                     ?: formatAceWindowsRemainingFuelReadoutText(
-                        observeRemainingFuelReadoutText().first(),
+                        readoutTexts.remainingFuel.fuel().first(),
                         event.percent,
                     )
             } else if (event is AceWindowsRemainingFuelLapsWarning) {
                 event.resolvedText
                     ?: if (event.laps <= 0) {
-                        observeRemainingFuelLapsEmptyReadoutText().first()
+                        readoutTexts.remainingFuel.fuelLapsEmpty().first()
                     } else {
                         formatAceWindowsRemainingFuelLapsReadoutText(
-                            observeRemainingFuelLapsReadoutText().first(),
+                            readoutTexts.remainingFuel.fuelLaps().first(),
                             event.laps,
                         )
                     }
             } else if (event is AceWindowsMyBestLap) {
                 event.resolvedText
-                    ?: formatAceWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
+                    ?: formatAceWindowsMyBestLapReadoutText(readoutTexts.myBestLap().first(), event.lapTimeMs)
             } else {
                 (event as ReadoutTextEvent).resolvedText ?: savedReadoutText(event) ?: return null
             }
@@ -129,47 +97,47 @@ internal class AceWindowsReadoutTextSpeaker(
     private suspend fun savedReadoutText(event: SpeechEvent): String? =
         when (event) {
             is AceWindowsCheckeredFlag -> {
-                observeCheckeredFlagReadoutText().first()
+                readoutTexts.flag.checkered().first()
             }
 
             is AceWindowsWhiteFlag -> {
-                observeWhiteFlagReadoutText().first()
+                readoutTexts.flag.white().first()
             }
 
             is AceWindowsGreenFlag -> {
-                observeGreenFlagReadoutText().first()
+                readoutTexts.flag.green().first()
             }
 
             is AceWindowsRedFlag -> {
-                observeRedFlagReadoutText().first()
+                readoutTexts.flag.red().first()
             }
 
             is AceWindowsBlueFlag -> {
-                observeBlueFlagReadoutText().first()
+                readoutTexts.flag.blue().first()
             }
 
             is AceWindowsYellowFlag -> {
-                observeYellowFlagReadoutText().first()
+                readoutTexts.flag.yellow().first()
             }
 
             is AceWindowsBlackFlag -> {
-                observeBlackFlagReadoutText().first()
+                readoutTexts.flag.black().first()
             }
 
             is AceWindowsBlackWhiteFlag -> {
-                observeBlackWhiteFlagReadoutText().first()
+                readoutTexts.flag.blackWhite().first()
             }
 
             is AceWindowsOrangeCircleFlag -> {
-                observeOrangeCircleFlagReadoutText().first()
+                readoutTexts.flag.orangeCircle().first()
             }
 
             is AceWindowsRedYellowStripesFlag -> {
-                observeRedYellowStripesFlagReadoutText().first()
+                readoutTexts.flag.redYellowStripes().first()
             }
 
             is AceWindowsVehicleApproach -> {
-                observeVehicleApproachReadoutText().first()
+                readoutTexts.vehicleApproach().first()
             }
 
             else -> {
