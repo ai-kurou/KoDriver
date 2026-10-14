@@ -70,30 +70,51 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
         LmuWindowsReadoutTextSpeaker(
-            observeSectorYellow,
-            observeBlue,
-            observeFullCourseYellow,
-            observeRed,
-            observeLeft,
-            observeRight,
-            observeSustainedLeft,
-            observeSustainedRight,
-            observePitTimingVirtualEnergyReadoutText,
-            observePitTimingVirtualEnergyImminentReadoutText,
-            observePitTimingTyreWearReadoutText,
-            observePitTimingTyreWearImminentReadoutText,
-            observeRemainingText,
-            observeBrakeText,
-            observeBrakeWearText,
-            observeTyreWearText,
-            observeTyreOverheatReadoutText,
-            observeTyreColdReadoutText,
-            observeOverheatReadoutText,
-            observePartDetachedReadoutText,
-            observeTyreDetachedReadoutText,
-            observeMyBestLapReadoutText,
-            checkTextToSpeechAvailable,
-            speakText,
+            readoutTexts =
+                LmuWindowsReadoutTextUseCases(
+                    flag =
+                        LmuWindowsFlagReadoutTextUseCases(
+                            sectorYellow = observeSectorYellow,
+                            blue = observeBlue,
+                            fullCourseYellow = observeFullCourseYellow,
+                            red = observeRed,
+                        ),
+                    vehicleApproach =
+                        LmuWindowsVehicleApproachReadoutTextUseCases(
+                            startLeft = observeLeft,
+                            startRight = observeRight,
+                            sustainedLeft = observeSustainedLeft,
+                            sustainedRight = observeSustainedRight,
+                        ),
+                    pitTiming =
+                        LmuWindowsPitTimingReadoutTextUseCases(
+                            virtualEnergy = observePitTimingVirtualEnergyReadoutText,
+                            virtualEnergyImminent = observePitTimingVirtualEnergyImminentReadoutText,
+                            tyreWear = observePitTimingTyreWearReadoutText,
+                            tyreWearImminent = observePitTimingTyreWearImminentReadoutText,
+                        ),
+                    tyre =
+                        LmuWindowsTyreReadoutTextUseCases(
+                            wear = observeTyreWearText,
+                            overheat = observeTyreOverheatReadoutText,
+                            cold = observeTyreColdReadoutText,
+                        ),
+                    vehicleDamage =
+                        LmuWindowsVehicleDamageReadoutTextUseCases(
+                            overheat = observeOverheatReadoutText,
+                            partDetached = observePartDetachedReadoutText,
+                            tyreDetached = observeTyreDetachedReadoutText,
+                        ),
+                    brake =
+                        LmuWindowsBrakeReadoutTextUseCases(
+                            temperature = observeBrakeText,
+                            wear = observeBrakeWearText,
+                        ),
+                    remainingVirtualEnergy = observeRemainingText,
+                    myBestLap = observeMyBestLapReadoutText,
+                ),
+            checkTextToSpeechAvailable = checkTextToSpeechAvailable,
+            speakText = speakText,
         )
 
     private fun confirmAllMocksVerified() {

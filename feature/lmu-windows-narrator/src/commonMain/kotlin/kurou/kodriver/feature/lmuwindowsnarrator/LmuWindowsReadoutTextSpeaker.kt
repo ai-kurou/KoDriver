@@ -34,28 +34,6 @@ import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadout
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
@@ -86,32 +64,8 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [LmuWindowsTyreWearWarning] : 設定した残存率閾値の警告
  * - [LmuWindowsPitTimingWarning] : バーチャルエナジー・タイヤ摩耗由来のピットタイミング
  */
-@Suppress("LongParameterList")
 internal class LmuWindowsReadoutTextSpeaker(
-    private val observeSectorYellowFlagReadoutText: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase,
-    private val observeBlueFlagReadoutText: ObserveLmuWindowsBlueFlagReadoutTextUseCase,
-    private val observeFullCourseYellowFlagReadoutText: ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase,
-    private val observeRedFlagReadoutText: ObserveLmuWindowsRedFlagReadoutTextUseCase,
-    private val observeStartLeftReadoutText: ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase,
-    private val observeStartRightReadoutText: ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase,
-    private val observeSustainedLeftReadoutText: ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase,
-    private val observeSustainedRightReadoutText: ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase,
-    private val observePitTimingVirtualEnergyReadoutText: ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase,
-    private val observePitTimingVirtualEnergyImminentReadoutText:
-        ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase,
-    private val observePitTimingTyreWearReadoutText: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase,
-    private val observePitTimingTyreWearImminentReadoutText:
-        ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase,
-    private val observeRemainingVirtualEnergyReadoutText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase,
-    private val observeBrakeTemperatureReadoutText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase,
-    private val observeBrakeWearReadoutText: ObserveLmuWindowsBrakeWearReadoutTextUseCase,
-    private val observeTyreWearReadoutText: ObserveLmuWindowsTyreWearReadoutTextUseCase,
-    private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase,
-    private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase,
-    private val observeOverheatReadoutText: ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase,
-    private val observePartDetachedReadoutText: ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase,
-    private val observeTyreDetachedReadoutText: ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase,
-    private val observeMyBestLapReadoutText: ObserveLmuWindowsMyBestLapReadoutTextUseCase,
+    private val readoutTexts: LmuWindowsReadoutTextUseCases,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -140,35 +94,35 @@ internal class LmuWindowsReadoutTextSpeaker(
             }
 
             is LmuWindowsYellowFlag -> {
-                observeSectorYellowFlagReadoutText().first()
+                readoutTexts.flag.sectorYellow().first()
             }
 
             is LmuWindowsBlueFlag -> {
-                observeBlueFlagReadoutText().first()
+                readoutTexts.flag.blue().first()
             }
 
             is LmuWindowsFullCourseYellow -> {
-                observeFullCourseYellowFlagReadoutText().first()
+                readoutTexts.flag.fullCourseYellow().first()
             }
 
             is LmuWindowsRedFlag -> {
-                observeRedFlagReadoutText().first()
+                readoutTexts.flag.red().first()
             }
 
             is LmuWindowsCarLeft -> {
-                observeStartLeftReadoutText().first()
+                readoutTexts.vehicleApproach.startLeft().first()
             }
 
             is LmuWindowsCarLeftSustained -> {
-                observeSustainedLeftReadoutText().first()
+                readoutTexts.vehicleApproach.sustainedLeft().first()
             }
 
             is LmuWindowsCarRight -> {
-                observeStartRightReadoutText().first()
+                readoutTexts.vehicleApproach.startRight().first()
             }
 
             is LmuWindowsCarRightSustained -> {
-                observeSustainedRightReadoutText().first()
+                readoutTexts.vehicleApproach.sustainedRight().first()
             }
 
             is LmuWindowsMyBestLap -> {
@@ -192,11 +146,11 @@ internal class LmuWindowsReadoutTextSpeaker(
     private suspend fun thresholdWarningText(event: SpeechEvent): String? =
         when (event) {
             is LmuWindowsTyreOverheat -> {
-                tyreTemperatureText(event.celsius) { observeTyreOverheatReadoutText() }
+                tyreTemperatureText(event.celsius) { readoutTexts.tyre.overheat() }
             }
 
             is LmuWindowsTyreCold -> {
-                tyreTemperatureText(event.celsius) { observeTyreColdReadoutText() }
+                tyreTemperatureText(event.celsius) { readoutTexts.tyre.cold() }
             }
 
             is LmuWindowsRemainingVirtualEnergyWarning -> {
@@ -222,14 +176,14 @@ internal class LmuWindowsReadoutTextSpeaker(
 
     private suspend fun vehicleDamageText(event: SpeechEvent): String? =
         when (event) {
-            is LmuWindowsOverheating -> observeOverheatReadoutText().first()
-            is LmuWindowsPartDetached -> observePartDetachedReadoutText().first()
-            is LmuWindowsTyreDetached -> observeTyreDetachedReadoutText().first()
+            is LmuWindowsOverheating -> readoutTexts.vehicleDamage.overheat().first()
+            is LmuWindowsPartDetached -> readoutTexts.vehicleDamage.partDetached().first()
+            is LmuWindowsTyreDetached -> readoutTexts.vehicleDamage.tyreDetached().first()
             else -> null
         }
 
     private suspend fun myBestLapText(event: LmuWindowsMyBestLap): String =
-        formatLmuWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
+        formatLmuWindowsMyBestLapReadoutText(readoutTexts.myBestLap().first(), event.lapTimeMs)
 
     private suspend fun tyreTemperatureText(
         celsius: Int,
@@ -238,41 +192,41 @@ internal class LmuWindowsReadoutTextSpeaker(
 
     private suspend fun remainingVirtualEnergyText(event: LmuWindowsRemainingVirtualEnergyWarning): String =
         formatLmuWindowsRemainingVirtualEnergyReadoutText(
-            observeRemainingVirtualEnergyReadoutText().first(),
+            readoutTexts.remainingVirtualEnergy().first(),
             event.percentage,
         )
 
     private suspend fun brakeTemperatureText(event: LmuWindowsBrakeOverheat): String =
         formatLmuWindowsBrakeTemperatureReadoutText(
-            observeBrakeTemperatureReadoutText().first(),
+            readoutTexts.brake.temperature().first(),
             event.celsius,
         )
 
     private suspend fun brakeWearText(event: LmuWindowsBrakeWearLow): String =
         formatLmuWindowsBrakeWearReadoutText(
-            observeBrakeWearReadoutText().first(),
+            readoutTexts.brake.wear().first(),
             event.percent,
         )
 
     private suspend fun tyreWearText(event: LmuWindowsTyreWearWarning): String =
         formatLmuWindowsTyreWearReadoutText(
-            observeTyreWearReadoutText().first(),
+            readoutTexts.tyre.wear().first(),
             event.percentage,
         )
 
     private suspend fun pitTimingText(event: LmuWindowsPitTimingWarning): String? {
         if (event.source == PitTimingSource.TyreWear) {
             return if (event.laps <= 0) {
-                observePitTimingTyreWearImminentReadoutText().first()
+                readoutTexts.pitTiming.tyreWearImminent().first()
             } else {
-                formatLmuWindowsPitTimingReadoutText(observePitTimingTyreWearReadoutText().first(), event.laps)
+                formatLmuWindowsPitTimingReadoutText(readoutTexts.pitTiming.tyreWear().first(), event.laps)
             }
         }
         return if (event.laps <= 0) {
-            observePitTimingVirtualEnergyImminentReadoutText().first()
+            readoutTexts.pitTiming.virtualEnergyImminent().first()
         } else {
             formatLmuWindowsPitTimingReadoutText(
-                observePitTimingVirtualEnergyReadoutText().first(),
+                readoutTexts.pitTiming.virtualEnergy().first(),
                 event.laps,
             )
         }
