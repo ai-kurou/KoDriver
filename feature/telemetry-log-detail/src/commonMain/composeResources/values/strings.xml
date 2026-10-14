@@ -1,0 +1,4 @@
+<resources>
+    <string name="telemetry_log_detail_selected">選択したログ</string>
+    <string name="telemetry_log_detail_previous">一つ前のログ</string>
+</resources>

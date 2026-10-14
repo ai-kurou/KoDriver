@@ -91,6 +91,7 @@ import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_skipped_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_time
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -495,10 +496,16 @@ private fun TelemetryLogListItem(
     )
 }
 
+@Composable
 internal fun formatTelemetryLogTime(
     createdAt: Long,
     raceElapsedMs: Long,
-): String = "${formatTimeOfDay(createdAt)} / レース +${formatDuration(raceElapsedMs)}"
+): String =
+    stringResource(
+        Res.string.telemetry_log_time,
+        formatTimeOfDay(createdAt),
+        formatDuration(raceElapsedMs),
+    )
 
 private fun formatTimeOfDay(milliseconds: Long): String {
     val millisInDay = (milliseconds + JST_OFFSET_MILLIS).floorMod(MILLISECONDS_PER_DAY)

@@ -22,4 +22,5 @@
     <string name="telemetry_log_narration_spoken_description">通常再生</string>
     <string name="telemetry_log_narration_interrupted_description">割り込み再生</string>
     <string name="telemetry_log_narration_skipped_description">読み上げなし</string>
+    <string name="telemetry_log_time">%1$s / レース +%2$s</string>
 </resources>

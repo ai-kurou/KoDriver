@@ -49,14 +49,14 @@ private fun TelemetryLogDetail?.toItems(): List<TelemetryLogDetailItemUiState> {
     return buildList {
         add(
             TelemetryLogDetailItemUiState(
-                title = "選択したログ",
+                kind = TelemetryLogDetailItemKind.SELECTED,
                 telemetryJson = current.telemetryJson,
             ),
         )
         previous?.let { log ->
             add(
                 TelemetryLogDetailItemUiState(
-                    title = "一つ前のログ",
+                    kind = TelemetryLogDetailItemKind.PREVIOUS,
                     telemetryJson = log.telemetryJson,
                 ),
             )
