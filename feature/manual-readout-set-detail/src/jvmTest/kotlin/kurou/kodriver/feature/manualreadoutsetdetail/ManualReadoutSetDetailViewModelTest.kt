@@ -39,11 +39,14 @@ import kotlin.test.assertTrue
 class ManualReadoutSetDetailViewModelTest {
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
     private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
+    private val otherRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(dispatcher)
+        every { debugRepository.observeVirtualKeyCode() } returns MutableStateFlow(0x70)
+        every { otherRepository.observeSets() } returns MutableStateFlow(emptyList())
     }
 
     @AfterTest
@@ -59,6 +62,7 @@ class ManualReadoutSetDetailViewModelTest {
             UpdateManualReadoutSetUseCase(repository),
             DeleteManualReadoutSetUseCase(repository),
             ObserveReadoutHotkeyVirtualKeyCodeUseCase(debugRepository),
+            mapOf(Simulator.Gt7Ps5.id to ObserveManualReadoutSetsUseCase(otherRepository)),
         )
 
     @Test
@@ -250,7 +254,10 @@ class ManualReadoutSetDetailViewModelTest {
             try {
                 vm.assignHotkey(0x70)
                 vm.assignHotkey(0x41)
-                assertEquals(ManualReadoutHotkeyConflict.OtherSet(1), vm.uiState.first().hotkeyConflict)
+                assertEquals(
+                    ManualReadoutHotkeyConflict.OtherSet(Simulator.LmuWindows.id, 1),
+                    vm.uiState.first().hotkeyConflict,
+                )
                 vm.assignHotkey(0x42)
                 assertEquals(ManualReadoutHotkeyConflict.DebugHotkey, vm.uiState.first().hotkeyConflict)
                 vm.assignHotkey(0x30)
@@ -264,7 +271,7 @@ class ManualReadoutSetDetailViewModelTest {
                 assertEquals(null, vm.uiState.first().hotkeyVirtualKeyCode)
                 assertEquals(null, vm.uiState.first().hotkeyConflict)
                 verify(exactly = 8) { repository.observeSets() }
-                verify(exactly = 3) { debugRepository.observeVirtualKeyCode() }
+                verify(exactly = 4) { debugRepository.observeVirtualKeyCode() }
                 coVerify(exactly = 1) { repository.updateSet(assigned) }
                 coVerify(exactly = 1) { repository.updateSet(original) }
                 confirmVerified(repository, debugRepository)
@@ -290,9 +297,62 @@ class ManualReadoutSetDetailViewModelTest {
                 vm.clearHotkey()
                 verify(exactly = 3) { repository.observeSets() }
                 coVerify(exactly = 1) { repository.deleteSet("target") }
-                verify(exactly = 0) { debugRepository.observeVirtualKeyCode() }
+                verify(exactly = 1) { debugRepository.observeVirtualKeyCode() }
                 confirmVerified(repository, debugRepository)
             } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `ホットキーは他シミュレーターのセットとの重複も拒否する`() =
+        runTest(dispatcher) {
+            val original = ManualReadoutSet("target")
+            every { repository.observeSets() } returns MutableStateFlow(listOf(original))
+            every { otherRepository.observeSets() } returns
+                MutableStateFlow(
+                    listOf(ManualReadoutSet("gt7-1"), ManualReadoutSet("gt7-2", hotkeyVirtualKeyCode = 0x41)),
+                )
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                vm.assignHotkey(0x41)
+                assertEquals(
+                    ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2),
+                    vm.uiState.first().hotkeyConflict,
+                )
+                assertEquals(null, vm.uiState.first().hotkeyVirtualKeyCode)
+                verify(exactly = 2) { repository.observeSets() }
+                verify(exactly = 1) { otherRepository.observeSets() }
+                confirmVerified(repository, otherRepository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `保存後にデバッグ用ホットキーが同じキーになった場合は重複を表示する`() =
+        runTest(dispatcher) {
+            val debugKey = MutableStateFlow(0x70)
+            every { repository.observeSets() } returns
+                MutableStateFlow(listOf(ManualReadoutSet("target", hotkeyVirtualKeyCode = 0x41)))
+            every { debugRepository.observeVirtualKeyCode() } returns debugKey
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                assertEquals(null, vm.uiState.first().hotkeyConflict)
+                debugKey.value = 0x41
+                assertEquals(ManualReadoutHotkeyConflict.DebugHotkey, vm.uiState.first().hotkeyConflict)
+                vm.assignHotkey(0x41)
+                assertEquals(ManualReadoutHotkeyConflict.DebugHotkey, vm.uiState.first().hotkeyConflict)
+                debugKey.value = 0x42
+                assertEquals(null, vm.uiState.first().hotkeyConflict)
+                verify(exactly = 2) { repository.observeSets() }
+                verify(exactly = 1) { debugRepository.observeVirtualKeyCode() }
+                confirmVerified(repository, debugRepository)
+            } finally {
+                collection.cancel()
                 vm.viewModelScope.cancel()
             }
         }

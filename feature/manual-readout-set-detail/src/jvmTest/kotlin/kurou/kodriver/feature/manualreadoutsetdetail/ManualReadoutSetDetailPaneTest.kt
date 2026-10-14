@@ -175,9 +175,10 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("割り当てを解除").performClick()
         rule.runOnIdle {
             assertEquals(1, cleared)
-            state.value = state.value.copy(hotkeyConflict = ManualReadoutHotkeyConflict.OtherSet(2))
+            state.value =
+                state.value.copy(hotkeyConflict = ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2))
         }
-        rule.onNodeWithText("セット2で使用中のため割り当てできません").assertExists()
+        rule.onNodeWithText("Gran Turismo 7（PS5） のセット2で使用中のため割り当てできません").assertExists()
         rule.runOnIdle { state.value = state.value.copy(hotkeyConflict = ManualReadoutHotkeyConflict.DebugHotkey) }
         rule.onNodeWithText("デバッグ用の読み上げホットキーで使用中のため割り当てできません").assertExists()
         rule.runOnIdle { showHotkey.value = false }

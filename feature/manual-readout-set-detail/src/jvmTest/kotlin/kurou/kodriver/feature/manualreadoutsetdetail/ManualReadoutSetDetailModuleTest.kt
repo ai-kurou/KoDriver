@@ -57,6 +57,7 @@ class ManualReadoutSetDetailModuleTest {
                     Simulator.Gt7Ps5.id to gt7Repository,
                     Simulator.AceWindows.id to aceRepository,
                 )
+            every { debugRepository.observeVirtualKeyCode() } returns flowOf(0x70)
             repositories.forEach { (id, repository) ->
                 every { repository.observeSets() } returns flowOf(listOf(ManualReadoutSet(id = id)))
             }

@@ -67,6 +67,7 @@ class ManualReadoutSetDetailWiringTest {
 
     private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
+    private val otherRepository: ManualReadoutSetPreferencesRepository = mockk()
 
     @Test
     fun `Contentは項目保存と削除と一覧へ戻る通知を配線する`() {
@@ -77,6 +78,7 @@ class ManualReadoutSetDetailWiringTest {
         val reset = edited.copy(itemTexts = mapOf(key to manualReadoutItemTextDefault(key)))
         val sets = MutableStateFlow(listOf(original))
         every { repository.observeSets() } returns sets
+        every { debugRepository.observeVirtualKeyCode() } returns MutableStateFlow(0x70)
         coEvery { repository.updateSet(selected) } answers { sets.value = listOf(selected) }
         coEvery { repository.updateSet(edited) } answers { sets.value = listOf(edited) }
         coEvery { repository.updateSet(reset) } answers { sets.value = listOf(reset) }
@@ -93,6 +95,9 @@ class ManualReadoutSetDetailWiringTest {
                 module {
                     single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) { repository }
+                    Simulator.entries.filter { it != Simulator.LmuWindows }.forEach { simulator ->
+                        single<ManualReadoutSetPreferencesRepository>(named(simulator.id)) { otherRepository }
+                    }
                 },
             )
         }
@@ -144,6 +149,7 @@ class ManualReadoutSetDetailWiringTest {
         val sets = MutableStateFlow(listOf(original))
         every { repository.observeSets() } returns sets
         every { debugRepository.observeVirtualKeyCode() } returns MutableStateFlow(0x70)
+        every { otherRepository.observeSets() } returns MutableStateFlow(emptyList())
         coEvery { repository.updateSet(assigned) } answers { sets.value = listOf(assigned) }
         coEvery { repository.updateSet(original) } answers { sets.value = listOf(original) }
         val owner =
@@ -156,6 +162,9 @@ class ManualReadoutSetDetailWiringTest {
                 module {
                     single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) { repository }
+                    Simulator.entries.filter { it != Simulator.Gt7Ps5 }.forEach { simulator ->
+                        single<ManualReadoutSetPreferencesRepository>(named(simulator.id)) { otherRepository }
+                    }
                 },
             )
         }
@@ -169,7 +178,6 @@ class ManualReadoutSetDetailWiringTest {
                             onDeleted = {},
                             canNavigateBack = false,
                             onBack = {},
-                            showHotkey = true,
                         )
                     }
                 }
@@ -179,10 +187,11 @@ class ManualReadoutSetDetailWiringTest {
             rule.onNodeWithText("割り当てを解除").performClick()
             rule.onNodeWithText("割り当てなし").assertIsDisplayed()
             verify(exactly = 3) { repository.observeSets() }
-            verify(exactly = 1) { debugRepository.observeVirtualKeyCode() }
+            verify(exactly = 2) { debugRepository.observeVirtualKeyCode() }
+            verify(exactly = 2) { otherRepository.observeSets() }
             coVerify(exactly = 1) { repository.updateSet(assigned) }
             coVerify(exactly = 1) { repository.updateSet(original) }
-            confirmVerified(repository, debugRepository)
+            confirmVerified(repository, debugRepository, otherRepository)
         } finally {
             owner.viewModelStore.clear()
             stopKoin()

@@ -16,6 +16,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.testTag
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_clear
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_debug
@@ -59,7 +60,11 @@ internal fun ManualReadoutHotkeyCard(
                 val conflictText =
                     when (val conflict = state.hotkeyConflict) {
                         is ManualReadoutHotkeyConflict.OtherSet -> {
-                            stringResource(Res.string.manual_readout_hotkey_other_set, conflict.setNumber)
+                            stringResource(
+                                Res.string.manual_readout_hotkey_other_set,
+                                simulatorDisplayName(conflict.simulatorId),
+                                conflict.setNumber,
+                            )
                         }
 
                         ManualReadoutHotkeyConflict.DebugHotkey -> {

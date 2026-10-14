@@ -97,7 +97,8 @@ class ManualReadoutSetDetailPaneScreenshotTest {
     fun `ホットキー割り当て済み`() = screenshot(emptyList(), hotkey = 0x41 to null)
 
     @Test
-    fun `ホットキー他セット重複`() = screenshot(emptyList(), hotkey = 0x30 to ManualReadoutHotkeyConflict.OtherSet(2))
+    fun `ホットキー他セット重複`() =
+        screenshot(emptyList(), hotkey = 0x30 to ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2))
 
     @Test
     fun `ホットキーデバッグ重複`() = screenshot(emptyList(), hotkey = null to ManualReadoutHotkeyConflict.DebugHotkey)

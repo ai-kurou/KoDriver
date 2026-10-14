@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutsetdetail
 
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyVirtualKeyCodeUseCase
@@ -18,6 +19,10 @@ val manualReadoutSetDetailModule =
                 updateSet = UpdateManualReadoutSetUseCase(get(named(simulatorId))),
                 observeDebugHotkeyVirtualKeyCode = ObserveReadoutHotkeyVirtualKeyCodeUseCase(get()),
                 deleteSet = DeleteManualReadoutSetUseCase(get(named(simulatorId))),
+                observeOtherSimulatorSets =
+                    Simulator.entries
+                        .filter { it.id != simulatorId }
+                        .associate { it.id to ObserveManualReadoutSetsUseCase(get(named(it.id))) },
             )
         }
     }
