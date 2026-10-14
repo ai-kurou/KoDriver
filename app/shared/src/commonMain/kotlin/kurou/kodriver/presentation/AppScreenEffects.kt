@@ -10,6 +10,7 @@ import kurou.kodriver.feature.acewindowsnarrator.AceWindowsNarratorEffect
 import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
 import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 
 internal fun <T> handleTabReselected(
     selectedItem: T?,
@@ -20,6 +21,20 @@ internal fun <T> handleTabReselected(
         clearSelectedItem()
     } else {
         requestScrollToTop()
+    }
+}
+
+internal fun handleTtsUnavailableAction(
+    guidance: TtsUnavailableGuidance?,
+    openUri: (String) -> Unit,
+    openTtsSettings: () -> Unit,
+    openWindowsSpeechSettings: () -> Unit,
+) {
+    when (guidance) {
+        TtsUnavailableGuidance.EngineMissing -> openUri(TTS_ENGINE_PLAY_STORE_URL)
+        TtsUnavailableGuidance.LanguageDataMissing -> openTtsSettings()
+        TtsUnavailableGuidance.WindowsSpeechUnavailable -> openWindowsSpeechSettings()
+        null -> Unit
     }
 }
 

@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -70,6 +71,83 @@ class AppScreenEffectsTest {
 
         assertEquals(0, clearSelectedItemCount)
         assertEquals(1, requestScrollToTopCount)
+    }
+
+    @Test
+    fun `TTSエンジンがない場合はPlayストアを開く`() {
+        var openedUri: String? = null
+        var openUriCount = 0
+        var openTtsSettingsCount = 0
+        var openWindowsSpeechSettingsCount = 0
+
+        handleTtsUnavailableAction(
+            guidance = TtsUnavailableGuidance.EngineMissing,
+            openUri = {
+                openedUri = it
+                openUriCount++
+            },
+            openTtsSettings = { openTtsSettingsCount++ },
+            openWindowsSpeechSettings = { openWindowsSpeechSettingsCount++ },
+        )
+
+        assertEquals(TTS_ENGINE_PLAY_STORE_URL, openedUri)
+        assertEquals(1, openUriCount)
+        assertEquals(0, openTtsSettingsCount)
+        assertEquals(0, openWindowsSpeechSettingsCount)
+    }
+
+    @Test
+    fun `TTSの言語データがない場合はTTS設定を開く`() {
+        var openUriCount = 0
+        var openTtsSettingsCount = 0
+        var openWindowsSpeechSettingsCount = 0
+
+        handleTtsUnavailableAction(
+            guidance = TtsUnavailableGuidance.LanguageDataMissing,
+            openUri = { openUriCount++ },
+            openTtsSettings = { openTtsSettingsCount++ },
+            openWindowsSpeechSettings = { openWindowsSpeechSettingsCount++ },
+        )
+
+        assertEquals(0, openUriCount)
+        assertEquals(1, openTtsSettingsCount)
+        assertEquals(0, openWindowsSpeechSettingsCount)
+    }
+
+    @Test
+    fun `Windowsの音声が利用できない場合はWindows音声設定を開く`() {
+        var openUriCount = 0
+        var openTtsSettingsCount = 0
+        var openWindowsSpeechSettingsCount = 0
+
+        handleTtsUnavailableAction(
+            guidance = TtsUnavailableGuidance.WindowsSpeechUnavailable,
+            openUri = { openUriCount++ },
+            openTtsSettings = { openTtsSettingsCount++ },
+            openWindowsSpeechSettings = { openWindowsSpeechSettingsCount++ },
+        )
+
+        assertEquals(0, openUriCount)
+        assertEquals(0, openTtsSettingsCount)
+        assertEquals(1, openWindowsSpeechSettingsCount)
+    }
+
+    @Test
+    fun `TTS利用不可の案内がない場合は何も開かない`() {
+        var openUriCount = 0
+        var openTtsSettingsCount = 0
+        var openWindowsSpeechSettingsCount = 0
+
+        handleTtsUnavailableAction(
+            guidance = null,
+            openUri = { openUriCount++ },
+            openTtsSettings = { openTtsSettingsCount++ },
+            openWindowsSpeechSettings = { openWindowsSpeechSettingsCount++ },
+        )
+
+        assertEquals(0, openUriCount)
+        assertEquals(0, openTtsSettingsCount)
+        assertEquals(0, openWindowsSpeechSettingsCount)
     }
 
     @Test
