@@ -12,6 +12,7 @@ import kurou.kodriver.domain.engine.AceWindowsRedFlag
 import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelWarning
+import kurou.kodriver.domain.engine.AceWindowsSpeechEvent
 import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
@@ -146,28 +147,6 @@ internal class AceWindowsReadoutTextSpeaker(
         }
 }
 
-/** 自由文言対象の判定をNarratorと本文再生で共有する。 */
+/** DebugReadoutText と ACE 由来の全イベントを自由文言対象とし、判定をNarratorと本文再生で共有する。 */
 internal fun isAceWindowsCustomSpeakEvent(event: SpeechEvent): Boolean =
-    when (event) {
-        is DebugReadoutText,
-        is AceWindowsWhiteFlag,
-        is AceWindowsGreenFlag,
-        is AceWindowsRedFlag,
-        is AceWindowsBlueFlag,
-        is AceWindowsYellowFlag,
-        is AceWindowsBlackFlag,
-        is AceWindowsBlackWhiteFlag,
-        is AceWindowsOrangeCircleFlag,
-        is AceWindowsRedYellowStripesFlag,
-        is AceWindowsCheckeredFlag,
-        is AceWindowsVehicleApproach,
-        -> true
-
-        is AceWindowsTyreOverheat,
-        is AceWindowsRemainingFuelWarning,
-        is AceWindowsRemainingFuelLapsWarning,
-        is AceWindowsMyBestLap,
-        -> true
-
-        else -> false
-    }
+    event is DebugReadoutText || event is AceWindowsSpeechEvent

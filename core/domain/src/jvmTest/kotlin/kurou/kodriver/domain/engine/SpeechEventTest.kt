@@ -23,9 +23,42 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.PitTimingSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class SpeechEventTest {
+    @Test
+    fun `ACEイベントだけがACE由来の共通マーカーを持つ`() {
+        val events =
+            listOf<ReadoutTextEvent>(
+                AceWindowsRemainingFuelLapsWarning(3),
+                AceWindowsRemainingFuelWarning(20),
+                AceWindowsWhiteFlag(),
+                AceWindowsGreenFlag(),
+                AceWindowsRedFlag(),
+                AceWindowsBlueFlag(),
+                AceWindowsYellowFlag(),
+                AceWindowsBlackFlag(),
+                AceWindowsBlackWhiteFlag(),
+                AceWindowsCheckeredFlag(),
+                AceWindowsOrangeCircleFlag(),
+                AceWindowsRedYellowStripesFlag(),
+                AceWindowsTyreOverheat(110),
+                AceWindowsVehicleApproach(),
+                AceWindowsMyBestLap(83_456),
+            )
+        events.forEach { event ->
+            assertTrue(event is AceWindowsSpeechEvent)
+            assertTrue(event.withResolvedText("判定時の本文") is AceWindowsSpeechEvent)
+        }
+        listOf<SpeechEvent>(
+            LmuWindowsBlueFlag(),
+            Gt7Ps5MyBestLap(83_456),
+            DebugReadoutText(AceWindowsReadoutItemKey.Flag.Root, "入力文言"),
+        ).forEach { assertFalse(it is AceWindowsSpeechEvent) }
+    }
+
     @Test
     fun `全自由文字列イベントは本文を置き換えて型と既定文言とキーを維持する`() {
         val events =
