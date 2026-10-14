@@ -13,6 +13,12 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
             prefs.sets.map { ManualReadoutSet(id = it.id, itemKeys = it.itemKeys) }
         }
 
+    override suspend fun addSet(set: ManualReadoutSet) {
+        dataStore.updateData { prefs ->
+            prefs.copy(sets = prefs.sets + ManualReadoutSetPreference(id = set.id, itemKeys = set.itemKeys))
+        }
+    }
+
     override suspend fun saveSets(sets: List<ManualReadoutSet>) {
         dataStore.saveProperty(sets) { prefs, value ->
             prefs.copy(sets = value.map { ManualReadoutSetPreference(id = it.id, itemKeys = it.itemKeys) })

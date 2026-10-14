@@ -1,9 +1,12 @@
 package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.lifecycle.viewModelScope
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +28,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutListModuleTest {
@@ -69,9 +73,23 @@ class ManualReadoutListModuleTest {
             try {
                 Simulator.entries.forEach { simulator ->
                     val viewModel = application.koin.get<ManualReadoutListViewModel> { parametersOf(simulator.id) }
+                    val addedSet = slot<ManualReadoutSet>()
+                    val repository = repositories.getValue(simulator.id)
+                    coEvery { repository.addSet(capture(addedSet)) } returns Unit
                     try {
                         val state = viewModel.uiState.first { it.sets.isNotEmpty() }
                         assertEquals(listOf(ManualReadoutSet(id = simulator.id)), state.sets)
+                        viewModel.addSet()
+                        val saved = addedSet.captured
+                        assertEquals(emptyList(), saved.itemKeys)
+                        assertNotEquals(simulator.id, saved.id)
+                        assertEquals(
+                            saved.id,
+                            java.util.UUID
+                                .fromString(saved.id)
+                                .toString(),
+                        )
+                        coVerify(exactly = 1) { repository.addSet(saved) }
                     } finally {
                         viewModel.viewModelScope.cancel()
                     }
