@@ -342,7 +342,11 @@ class MainActivityTest {
         repeat(5) { clickItem("Android版KoDriverバージョン") }
         waitUntilDisplayed("デバッグ状態")
         // 各Paneに固定されたシミュレーター名をグリッド内で探し、ナビ項目だけで成功するのを防ぐ。
-        scrollToItem(simulatorName)
+        // 背面の「その他」一覧もスクロール可能なため、グリッドをタグで特定してスクロールする。
+        composeTestRule
+            .onNodeWithTag("debug_state_grid")
+            .performScrollToNode(hasText(simulatorName))
+        composeTestRule.waitForIdle()
         waitUntilDisplayed(simulatorName)
         listOf(
             "Le Mans Ultimate（Windows版）",
