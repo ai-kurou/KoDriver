@@ -1,0 +1,4 @@
+<resources>
+    <string name="desktop_splash_error_title">起動に失敗しました</string>
+    <string name="desktop_splash_error_close">閉じる</string>
+</resources>

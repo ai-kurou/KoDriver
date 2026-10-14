@@ -313,13 +313,18 @@ class AppTest {
     }
 
     @Test
-    fun `アプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
-        setContent()
+    fun `LMU選択時にアプリバージョンを5回連続タップするとLMUのデバッグ状態画面へ遷移する`() {
+        assertDebugStateScreen("Le Mans Ultimate（Windows版）", "ゲームフェーズ (LMUのみ)")
+    }
 
-        clickItem("その他")
-        rule.onNode(hasScrollAction()).performScrollToNode(hasText("Windows版KoDriverバージョン"))
-        repeat(5) { clickItem("Windows版KoDriverバージョン") }
-        waitUntilDisplayed("デバッグ状態")
+    @Test
+    fun `ACE選択時にアプリバージョンを5回連続タップするとACEのデバッグ状態画面へ遷移する`() {
+        assertDebugStateScreen("Assetto Corsa EVO（Windows版）", "車両位置")
+    }
+
+    @Test
+    fun `GT7選択時にアプリバージョンを5回連続タップするとGT7のデバッグ状態画面へ遷移する`() {
+        assertDebugStateScreen("Gran Turismo 7（PS5）", "車両クラス")
     }
 
     @Test
@@ -450,6 +455,28 @@ class AppTest {
         }
 
         waitUntilDisplayed("イエローフラッグ")
+    }
+
+    private fun assertDebugStateScreen(
+        simulatorName: String,
+        simulatorSpecificText: String,
+    ) {
+        setContent()
+        selectSimulator(simulatorName)
+        clickItem("その他")
+        scrollToItem("Windows版KoDriverバージョン")
+        repeat(5) { clickItem("Windows版KoDriverバージョン") }
+        waitUntilDisplayed("デバッグ状態")
+
+        rule.onNodeWithTag("debug_state_grid").performScrollToNode(hasText("選択中のシミュレーター"))
+        waitUntilDisplayed(simulatorName)
+        // カード見出しにはLMUと共通のものがあるため、各Paneが固定表示するシミュレーター名で区別する。
+        listOf("Le Mans Ultimate（Windows版）", "Assetto Corsa EVO（Windows版）", "Gran Turismo 7（PS5）")
+            .filter { it != simulatorName }
+            .forEach { waitUntilNotDisplayed(it) }
+
+        rule.onNodeWithTag("debug_state_grid").performScrollToNode(hasText(simulatorSpecificText))
+        waitUntilDisplayed(simulatorSpecificText)
     }
 
     private fun selectSimulator(simulatorName: String) {
