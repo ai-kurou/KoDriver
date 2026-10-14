@@ -66,7 +66,8 @@ import org.koin.dsl.module
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
  *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / RemainingFuelLapsUseCases /
- *   SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases）、
+ *   SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases /
+ *   AceWindowsFlagReadoutTextUseCases / AceWindowsRemainingFuelReadoutTextUseCases / AceWindowsReadoutTextUseCases）、
  *   それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・
  *   TextToSpeechEngine・SpeakTextUseCase・
@@ -168,24 +169,33 @@ val aceWindowsNarratorModule: Module =
         }
         factory {
             AceWindowsReadoutTextSpeaker(
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
-                get(named(Simulator.AceWindows.id)),
+                readoutTexts =
+                    AceWindowsReadoutTextUseCases(
+                        flag =
+                            AceWindowsFlagReadoutTextUseCases(
+                                checkered = get(named(Simulator.AceWindows.id)),
+                                white = get(named(Simulator.AceWindows.id)),
+                                green = get(named(Simulator.AceWindows.id)),
+                                red = get(named(Simulator.AceWindows.id)),
+                                blue = get(named(Simulator.AceWindows.id)),
+                                yellow = get(named(Simulator.AceWindows.id)),
+                                black = get(named(Simulator.AceWindows.id)),
+                                blackWhite = get(named(Simulator.AceWindows.id)),
+                                orangeCircle = get(named(Simulator.AceWindows.id)),
+                                redYellowStripes = get(named(Simulator.AceWindows.id)),
+                            ),
+                        remainingFuel =
+                            AceWindowsRemainingFuelReadoutTextUseCases(
+                                fuel = get(named(Simulator.AceWindows.id)),
+                                fuelLaps = get(named(Simulator.AceWindows.id)),
+                                fuelLapsEmpty = get(named(Simulator.AceWindows.id)),
+                            ),
+                        vehicleApproach = get(named(Simulator.AceWindows.id)),
+                        tyreOverheat = get(named(Simulator.AceWindows.id)),
+                        myBestLap = get(named(Simulator.AceWindows.id)),
+                    ),
+                checkTextToSpeechAvailable = get(named(Simulator.AceWindows.id)),
+                speakText = get(named(Simulator.AceWindows.id)),
             )
         }
 

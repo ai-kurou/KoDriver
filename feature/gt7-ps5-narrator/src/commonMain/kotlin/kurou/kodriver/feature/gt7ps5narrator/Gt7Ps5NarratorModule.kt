@@ -48,7 +48,7 @@ import org.koin.dsl.module
  *
  * 提供: Gt7Ps5NarratorViewModel、Gt7Ps5NarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
  *   （MyBestLapUseCases / SimulatorUseCases / ReadoutListUseCases / RemainingFuelLapsUseCases / RemainingFuelUseCases /
- *   TyreTemperatureUseCases）、それらが束ねる
+ *   TyreTemperatureUseCases / Gt7Ps5ReadoutTextUseCases）、それらが束ねる
  *   各ドメイン UseCase、および named(Simulator.Gt7Ps5.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine・SpeakTextUseCase・
  *   自己ベストラップ更新・タイヤ過熱・燃料残量・残り周回数文言の Observe UseCase・
@@ -126,11 +126,14 @@ val gt7Ps5NarratorModule: Module =
         }
         factory {
             Gt7Ps5ReadoutTextSpeaker(
-                observeRemainingFuelLapsReadoutText = get(named(Simulator.Gt7Ps5.id)),
-                observeRemainingFuelLapsEmptyReadoutText = get(named(Simulator.Gt7Ps5.id)),
-                observeRemainingFuelReadoutText = get(named(Simulator.Gt7Ps5.id)),
-                observeMyBestLapReadoutText = get(named(Simulator.Gt7Ps5.id)),
-                observeTyreOverheatReadoutText = get(named(Simulator.Gt7Ps5.id)),
+                readoutTexts =
+                    Gt7Ps5ReadoutTextUseCases(
+                        remainingFuelLaps = get(named(Simulator.Gt7Ps5.id)),
+                        remainingFuelLapsEmpty = get(named(Simulator.Gt7Ps5.id)),
+                        remainingFuel = get(named(Simulator.Gt7Ps5.id)),
+                        myBestLap = get(named(Simulator.Gt7Ps5.id)),
+                        tyreOverheat = get(named(Simulator.Gt7Ps5.id)),
+                    ),
                 checkTextToSpeechAvailable = get(named(Simulator.Gt7Ps5.id)),
                 speakText = get(named(Simulator.Gt7Ps5.id)),
             )

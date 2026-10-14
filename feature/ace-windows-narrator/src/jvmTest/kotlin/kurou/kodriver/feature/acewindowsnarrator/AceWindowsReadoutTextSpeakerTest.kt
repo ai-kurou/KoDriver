@@ -28,6 +28,7 @@ import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import kurou.kodriver.domain.engine.DebugReadoutText
+import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -76,24 +77,33 @@ class AceWindowsReadoutTextSpeakerTest {
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
         AceWindowsReadoutTextSpeaker(
-            observeText,
-            observeWhite,
-            observeGreen,
-            observeRed,
-            observeBlue,
-            observeYellow,
-            observeBlack,
-            observeBlackWhite,
-            observeOrangeCircle,
-            observeRedYellowStripes,
-            observeVehicleApproach,
-            observeTyreOverheat,
-            observeRemainingFuel,
-            observeRemainingFuelLaps,
-            observeEmptyFuelLaps,
-            observeMyBestLap,
-            checkAvailable,
-            speakText,
+            readoutTexts =
+                AceWindowsReadoutTextUseCases(
+                    flag =
+                        AceWindowsFlagReadoutTextUseCases(
+                            checkered = observeText,
+                            white = observeWhite,
+                            green = observeGreen,
+                            red = observeRed,
+                            blue = observeBlue,
+                            yellow = observeYellow,
+                            black = observeBlack,
+                            blackWhite = observeBlackWhite,
+                            orangeCircle = observeOrangeCircle,
+                            redYellowStripes = observeRedYellowStripes,
+                        ),
+                    remainingFuel =
+                        AceWindowsRemainingFuelReadoutTextUseCases(
+                            fuel = observeRemainingFuel,
+                            fuelLaps = observeRemainingFuelLaps,
+                            fuelLapsEmpty = observeEmptyFuelLaps,
+                        ),
+                    vehicleApproach = observeVehicleApproach,
+                    tyreOverheat = observeTyreOverheat,
+                    myBestLap = observeMyBestLap,
+                ),
+            checkTextToSpeechAvailable = checkAvailable,
+            speakText = speakText,
         )
 
     @Test
@@ -145,21 +155,38 @@ class AceWindowsReadoutTextSpeakerTest {
             val events =
                 listOf(
                     LmuWindowsBlueFlag(),
+                    Gt7Ps5MyBestLap(83_456),
                 )
             events.forEach { event ->
                 assertFalse(isAceWindowsCustomSpeakEvent(event))
                 assertNull(speaker.readoutText(event))
                 speaker(event, 100)
             }
-            listOf(
-                AceWindowsCheckeredFlag(),
-                AceWindowsOrangeCircleFlag(),
-                AceWindowsRedYellowStripesFlag(),
-            ).forEach { assertTrue(isAceWindowsCustomSpeakEvent(it)) }
             verify(exactly = 0) { observeText() }
             coVerify(exactly = 0) { checkAvailable() }
             confirmVerified(observeText, checkAvailable, speakText)
         }
+
+    @Test
+    fun `全ACEイベントは自由文言対象になる`() {
+        listOf(
+            AceWindowsRemainingFuelLapsWarning(3),
+            AceWindowsRemainingFuelWarning(20),
+            AceWindowsWhiteFlag(),
+            AceWindowsGreenFlag(),
+            AceWindowsRedFlag(),
+            AceWindowsBlueFlag(),
+            AceWindowsYellowFlag(),
+            AceWindowsBlackFlag(),
+            AceWindowsBlackWhiteFlag(),
+            AceWindowsCheckeredFlag(),
+            AceWindowsOrangeCircleFlag(),
+            AceWindowsRedYellowStripesFlag(),
+            AceWindowsTyreOverheat(110),
+            AceWindowsVehicleApproach(),
+            AceWindowsMyBestLap(83_456),
+        ).forEach { assertTrue(isAceWindowsCustomSpeakEvent(it)) }
+    }
 
     @Test
     fun `Whiteは保存文言をそのまま指定音量で読み上げる`() =

@@ -2,6 +2,7 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -43,6 +44,16 @@ class AutoReadoutListItemTypeAceWindowsTest {
     @Test
     fun `ace_windows でシミュレーターに属さないキーは null を返す`() {
         assertNull(AutoReadoutListItemType.fromId(Simulator.AceWindows, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root))
+    }
+
+    @Test
+    fun `ace_windows の非Rootキーは null を返す`() {
+        assertNull(AceWindowsAutoReadoutListItemType.fromId(AceWindowsReadoutItemKey.Flag.WhiteFlag))
+    }
+
+    @Test
+    fun `ace_windows に lmu_windows のRootキーを渡すと null を返す`() {
+        assertNull(AceWindowsAutoReadoutListItemType.fromId(LmuWindowsReadoutItemKey.Flag.Root))
     }
 
     @Test

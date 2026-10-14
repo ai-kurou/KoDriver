@@ -43,11 +43,13 @@ class Gt7Ps5ReadoutTextSpeakerTest {
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
         Gt7Ps5ReadoutTextSpeaker(
-            observeText,
-            observeEmptyText,
-            observeFuelText,
-            observeMyBestLapText,
-            observeTyreText,
+            Gt7Ps5ReadoutTextUseCases(
+                remainingFuelLaps = observeText,
+                remainingFuelLapsEmpty = observeEmptyText,
+                remainingFuel = observeFuelText,
+                myBestLap = observeMyBestLapText,
+                tyreOverheat = observeTyreText,
+            ),
             checkAvailable,
             speakText,
         )

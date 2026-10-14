@@ -28,71 +28,48 @@ import androidx.compose.ui.graphics.vector.ImageVector
 internal fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
     when (itemType) {
         OtherListItemType.AccessLocalNetworkPermission -> Icons.Outlined.Wifi
-
         OtherListItemType.ServerIp -> Icons.Outlined.Computer
-
         OtherListItemType.ConsoleIp -> Icons.Outlined.SportsEsports
+        is OtherListItemType.ReadoutSettings -> otherReadoutSettingsItemLeadingIconVector(itemType)
+        is OtherListItemType.OverlaySettings -> otherOverlaySettingsItemLeadingIconVector(itemType)
+        is OtherListItemType.AppSettings -> otherAppSettingsItemLeadingIconVector(itemType)
+        OtherListItemType.GitHubRepository -> Icons.Outlined.Star
+        OtherListItemType.ReleasePage -> Icons.Outlined.NewReleases
+        OtherListItemType.Feedback -> Icons.Outlined.Feedback
+        OtherListItemType.License -> Icons.Outlined.Description
+        OtherListItemType.DebugState -> Icons.Outlined.Code
+    }
 
-        OtherListItemType.Volume,
-        OtherListItemType.VoiceSpeed,
-        OtherListItemType.VoicePitch,
-        OtherListItemType.ReadoutStartSound,
-        -> otherReadoutSettingsItemLeadingIconVector(itemType)
-
+private fun otherReadoutSettingsItemLeadingIconVector(itemType: OtherListItemType.ReadoutSettings): ImageVector =
+    when (itemType) {
         OtherListItemType.Voice,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.WindowsSpeechUnavailable,
         -> Icons.Outlined.RecordVoiceOver
 
-        OtherListItemType.OverlayVisible,
-        OtherListItemType.OverlayTextSize,
-        OtherListItemType.OverlayTextColor,
-        OtherListItemType.OverlayBackgroundOpacity,
-        -> otherOverlaySettingsItemLeadingIconVector(itemType)
-
-        OtherListItemType.KeepScreenOn,
-        OtherListItemType.Theme,
-        OtherListItemType.DynamicColor,
-        OtherListItemType.HapticFeedback,
-        OtherListItemType.Startup,
-        -> otherAppSettingsItemLeadingIconVector(itemType)
-
-        OtherListItemType.GitHubRepository -> Icons.Outlined.Star
-
-        OtherListItemType.ReleasePage -> Icons.Outlined.NewReleases
-
-        OtherListItemType.Feedback -> Icons.Outlined.Feedback
-
-        OtherListItemType.License -> Icons.Outlined.Description
-
-        OtherListItemType.DebugState -> Icons.Outlined.Code
-    }
-
-private fun otherReadoutSettingsItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
-    when (itemType) {
         OtherListItemType.Volume -> Icons.AutoMirrored.Outlined.VolumeUp
+
         OtherListItemType.VoiceSpeed -> Icons.Outlined.Speed
+
         OtherListItemType.VoicePitch -> Icons.Outlined.GraphicEq
+
         OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
-        else -> error("unexpected item type: $itemType")
     }
 
-private fun otherOverlaySettingsItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
+private fun otherOverlaySettingsItemLeadingIconVector(itemType: OtherListItemType.OverlaySettings): ImageVector =
     when (itemType) {
         OtherListItemType.OverlayVisible -> Icons.Outlined.Layers
         OtherListItemType.OverlayTextSize -> Icons.Outlined.FormatSize
         OtherListItemType.OverlayTextColor -> Icons.Outlined.FormatColorText
         OtherListItemType.OverlayBackgroundOpacity -> Icons.Outlined.Opacity
-        else -> error("unexpected item type: $itemType")
     }
 
-private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
+private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType.AppSettings): ImageVector =
     when (itemType) {
         OtherListItemType.KeepScreenOn -> Icons.Outlined.BedtimeOff
         OtherListItemType.Theme -> Icons.Outlined.BrightnessHigh
         OtherListItemType.DynamicColor -> Icons.Outlined.Palette
         OtherListItemType.HapticFeedback -> Icons.Outlined.Vibration
         OtherListItemType.Startup -> Icons.Outlined.PowerSettingsNew
-        else -> error("unexpected item type: $itemType")
     }

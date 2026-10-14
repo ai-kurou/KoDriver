@@ -21,18 +21,15 @@ import kurou.kodriver.core.designsystem.simulatorShortName
 import kurou.kodriver.domain.model.Simulator
 
 /**
- * [itemType] が対象とするゲーム（ServerIp は LMU・ACE、それ以外は GT7）のタグを並べ、その右に詳細へ進む矢印を表示する。
+ * [simulators] のゲーム名タグを指定された順に並べ、その右に詳細へ進む矢印を表示する。
+ * 対象ゲームは最大2件の固定リストのため、ImmutableList化のコストに見合わない。
  */
+@Suppress("UnstableCollections")
 @Composable
 internal fun OtherListGameTagsWithChevron(
-    itemType: OtherListItemType,
+    simulators: List<Simulator>,
     isSelected: Boolean,
 ) {
-    val simulators =
-        when (itemType) {
-            OtherListItemType.ServerIp -> listOf(Simulator.LmuWindows, Simulator.AceWindows)
-            else -> listOf(Simulator.Gt7Ps5)
-        }
     Row(
         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
