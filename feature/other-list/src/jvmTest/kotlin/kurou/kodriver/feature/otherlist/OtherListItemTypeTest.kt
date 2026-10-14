@@ -140,4 +140,16 @@ class OtherListItemTypeTest {
             OtherListItemType.entries.filterIsInstance<OtherListItemType.AppSettings>().toSet(),
         )
     }
+
+    @Test
+    fun `entriesはOtherListItemTypeに宣言された全てのdata objectを含む`() {
+        val declaredObjects =
+            OtherListItemType::class.java.declaredClasses
+                .filterNot { it.isInterface }
+                .mapNotNull { runCatching { it.getField("INSTANCE").get(null) }.getOrNull() }
+                .filterIsInstance<OtherListItemType>()
+
+        assertEquals(declaredObjects.toSet(), OtherListItemType.entries.toSet())
+        assertEquals(declaredObjects.size, OtherListItemType.entries.size)
+    }
 }
