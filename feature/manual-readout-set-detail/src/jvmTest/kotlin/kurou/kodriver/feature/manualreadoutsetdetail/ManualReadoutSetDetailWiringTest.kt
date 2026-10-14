@@ -178,6 +178,7 @@ class ManualReadoutSetDetailWiringTest {
                             onDeleted = {},
                             canNavigateBack = false,
                             onBack = {},
+                            showHotkey = true,
                         )
                     }
                 }

@@ -153,7 +153,12 @@ class ManualReadoutListPaneTest {
             .onNodeWithText("読み上げる値がない項目は「データがありません」と読み上げます。")
             .performScrollTo()
             .assertIsDisplayed()
-        rule.onNodeWithText("ホットキー").performScrollTo().assertIsDisplayed()
+        // ホットキーの説明は Windows デスクトップでのみ表示するため、実行OSに合わせて検証する。
+        if (isManualReadoutHotkeySupported()) {
+            rule.onNodeWithText("ホットキー").performScrollTo().assertIsDisplayed()
+        } else {
+            rule.onNodeWithText("ホットキー").assertDoesNotExist()
+        }
     }
 
     @Test

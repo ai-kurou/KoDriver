@@ -63,7 +63,7 @@ fun ManualReadoutSetDetailContent(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    showHotkey: Boolean = isDesktopPlatform(),
+    showHotkey: Boolean = isManualReadoutHotkeySupported(),
 ) {
     val viewModel: ManualReadoutSetDetailViewModel =
         koinViewModel(key = "$simulatorId:$setId", parameters = { parametersOf(simulatorId, setId) })
@@ -97,7 +97,7 @@ internal fun ManualReadoutSetDetailPane(
     onAssignHotkey: (Int) -> Unit = {},
     onClearHotkey: () -> Unit = {},
     modifier: Modifier = Modifier,
-    showHotkey: Boolean = isDesktopPlatform(),
+    showHotkey: Boolean = isManualReadoutHotkeySupported(),
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     if (showDeleteDialog) {

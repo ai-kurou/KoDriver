@@ -217,7 +217,7 @@ private fun ManualReadoutHintRow(modifier: Modifier = Modifier) {
             onDismissRequest = { showHelpSheet = false },
             sheetState = sheetState,
         ) {
-            ManualReadoutHintSheetContent(showHotkeyHint = isDesktopPlatform())
+            ManualReadoutHintSheetContent(showHotkeyHint = isManualReadoutHotkeySupported())
         }
     }
 
