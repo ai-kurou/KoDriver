@@ -20,6 +20,7 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.koinApplication
@@ -31,6 +32,7 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutSetDetailModuleTest {
+    private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()
     private val lmuRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val gt7Repository: ManualReadoutSetPreferencesRepository = mockk()
@@ -55,6 +57,7 @@ class ManualReadoutSetDetailModuleTest {
                     Simulator.Gt7Ps5.id to gt7Repository,
                     Simulator.AceWindows.id to aceRepository,
                 )
+            every { debugRepository.observeVirtualKeyCode() } returns flowOf(0x70)
             repositories.forEach { (id, repository) ->
                 every { repository.observeSets() } returns flowOf(listOf(ManualReadoutSet(id = id)))
             }
@@ -63,6 +66,7 @@ class ManualReadoutSetDetailModuleTest {
                     modules(
                         manualReadoutSetDetailModule,
                         module {
+                            single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                             repositories.forEach { (id, repository) ->
                                 single<ManualReadoutSetPreferencesRepository>(named(id)) { repository }
                             }

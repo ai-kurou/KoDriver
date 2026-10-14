@@ -175,4 +175,20 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
 
             assertEquals(listOf(updated, added), repository.observeSets().first())
         }
+
+    @Test
+    fun `追加と更新と一覧保存でホットキーと割り当てなしを読み戻せる`() =
+        runTest {
+            val assigned = ManualReadoutSet("target", hotkeyVirtualKeyCode = 0x30)
+            repository.addSet(assigned)
+            assertEquals(listOf(assigned), repository.observeSets().first())
+            val updated = assigned.copy(hotkeyVirtualKeyCode = 0x5A)
+            repository.updateSet(updated)
+            assertEquals(listOf(updated), repository.observeSets().first())
+            val cleared = updated.copy(hotkeyVirtualKeyCode = null)
+            repository.updateSet(cleared)
+            assertEquals(listOf(cleared), repository.observeSets().first())
+            repository.saveSets(listOf(updated, ManualReadoutSet("none")))
+            assertEquals(listOf(updated, ManualReadoutSet("none")), repository.observeSets().first())
+        }
 }

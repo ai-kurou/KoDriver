@@ -2,6 +2,10 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.protobuf.ProtoBuf
+import kotlinx.serialization.protobuf.ProtoNumber
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -28,6 +32,7 @@ class ManualReadoutSetPreferencesSerializerTest {
                                 "set-1",
                                 listOf("SESSION", "SIMULATOR", "BRAKE_WEAR"),
                                 mapOf("SESSION" to "残量{percent}%", "UNKNOWN" to ""),
+                                hotkeyVirtualKeyCode = 0x41,
                             ),
                             ManualReadoutSetPreference(),
                         ),
@@ -77,5 +82,37 @@ class ManualReadoutSetPreferencesSerializerTest {
             val restored = ManualReadoutSetPreferencesSerializer.readFrom(ByteArrayInputStream(legacy))
             assertEquals(listOf(ManualReadoutSetPreference("set-1", listOf("ENERGY"))), restored.sets)
             assertEquals(emptyMap(), restored.sets.single().itemTexts)
+            assertEquals(null, restored.sets.single().hotkeyVirtualKeyCode)
+        }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    @Test
+    fun `ホットキーフィールドのない文言保存済み旧データも読み出せる`() =
+        runTest {
+            val legacy =
+                LegacyManualReadoutSetPreferences(
+                    listOf(LegacyManualReadoutSetPreference("target", listOf("ENERGY"), mapOf("ENERGY" to "文言"))),
+                )
+            val bytes = ProtoBuf.encodeToByteArray(LegacyManualReadoutSetPreferences.serializer(), legacy)
+            val restored = ManualReadoutSetPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
+            assertEquals(
+                listOf(ManualReadoutSetPreference("target", listOf("ENERGY"), mapOf("ENERGY" to "文言"))),
+                restored.sets,
+            )
+            assertEquals(null, restored.sets.single().hotkeyVirtualKeyCode)
         }
 }
+
+@OptIn(ExperimentalSerializationApi::class)
+@Serializable
+private data class LegacyManualReadoutSetPreferences(
+    @ProtoNumber(1) val sets: List<LegacyManualReadoutSetPreference>,
+)
+
+@OptIn(ExperimentalSerializationApi::class)
+@Serializable
+private data class LegacyManualReadoutSetPreference(
+    @ProtoNumber(1) val id: String,
+    @ProtoNumber(2) val itemKeys: List<String>,
+    @ProtoNumber(3) val itemTexts: Map<String, String>,
+)

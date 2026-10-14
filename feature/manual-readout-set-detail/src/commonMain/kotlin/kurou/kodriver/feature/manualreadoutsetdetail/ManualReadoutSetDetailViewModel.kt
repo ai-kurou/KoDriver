@@ -11,31 +11,48 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
+import kurou.kodriver.domain.model.isManualReadoutHotkeyVirtualKeyCode
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyVirtualKeyCodeUseCase
 import kurou.kodriver.domain.usecase.UpdateManualReadoutSetUseCase
 
 internal class ManualReadoutSetDetailViewModel(
-    simulatorId: String,
+    private val simulatorId: String,
     private val setId: String,
     private val observeSets: ObserveManualReadoutSetsUseCase,
     private val updateSet: UpdateManualReadoutSetUseCase,
     private val deleteSet: DeleteManualReadoutSetUseCase,
+    private val observeDebugHotkeyVirtualKeyCode: ObserveReadoutHotkeyVirtualKeyCodeUseCase,
+    private val observeOtherSimulatorSets: Map<String, ObserveManualReadoutSetsUseCase>,
 ) : ViewModel() {
     private val availableItemKeys = manualReadoutItemKeys(simulatorId)
     private val deleted = MutableStateFlow(false)
+    private val hotkeyConflict = MutableStateFlow<ManualReadoutHotkeyConflict?>(null)
     private val mutationMutex = Mutex()
 
     val uiState =
-        combine(observeSets(), deleted) { sets, isDeleted ->
+        combine(
+            observeSets(),
+            deleted,
+            hotkeyConflict,
+            observeDebugHotkeyVirtualKeyCode(),
+        ) { sets, isDeleted, conflict, debugVirtualKeyCode ->
             val index = sets.indexOfFirst { it.id == setId }
+            val hotkey = sets.getOrNull(index)?.hotkeyVirtualKeyCode
+            // 保存後にデバッグ用ホットキーが同じキーへ変更された場合も警告する。
+            val savedConflict =
+                ManualReadoutHotkeyConflict.DebugHotkey.takeIf { hotkey != null && hotkey == debugVirtualKeyCode }
             ManualReadoutSetDetailUiState(
                 setNumber = if (index >= 0) index + 1 else null,
                 availableItemKeys = availableItemKeys,
                 selectedItemKeys = sets.getOrNull(index)?.itemKeys.orEmpty(),
                 itemTexts = sets.getOrNull(index)?.itemTexts.orEmpty(),
+                hotkeyVirtualKeyCode = hotkey,
+                hotkeyConflict = conflict ?: savedConflict,
                 isLoading = false,
                 deleted = isDeleted,
             )
@@ -69,6 +86,53 @@ internal class ManualReadoutSetDetailViewModel(
                 val set = observeSets().first().find { it.id == setId } ?: return@withLock
                 val normalizedText = text.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
                 updateSet(set.copy(itemTexts = set.itemTexts + (itemKey to normalizedText)))
+            }
+        }
+    }
+
+    fun assignHotkey(virtualKeyCode: Int) {
+        if (!isManualReadoutHotkeyVirtualKeyCode(virtualKeyCode)) return
+        viewModelScope.launch {
+            mutationMutex.withLock {
+                if (deleted.value) return@withLock
+                val sets = observeSets().first()
+                val set = sets.find { it.id == setId } ?: return@withLock
+                if (set.hotkeyVirtualKeyCode == virtualKeyCode) {
+                    hotkeyConflict.update { null }
+                    return@withLock
+                }
+                val conflict =
+                    findOtherSetConflict(sets, virtualKeyCode)
+                        ?: ManualReadoutHotkeyConflict.DebugHotkey.takeIf {
+                            observeDebugHotkeyVirtualKeyCode().first() == virtualKeyCode
+                        }
+                if (conflict == null) updateSet(set.copy(hotkeyVirtualKeyCode = virtualKeyCode))
+                hotkeyConflict.update { conflict }
+            }
+        }
+    }
+
+    // OS のホットキーはシミュレーターをまたいで共有されるため、全シミュレーターのセットと重複を確認する。
+    private suspend fun findOtherSetConflict(
+        sets: List<ManualReadoutSet>,
+        virtualKeyCode: Int,
+    ): ManualReadoutHotkeyConflict.OtherSet? {
+        val ownIndex = sets.indexOfFirst { it.id != setId && it.hotkeyVirtualKeyCode == virtualKeyCode }
+        if (ownIndex >= 0) return ManualReadoutHotkeyConflict.OtherSet(simulatorId, ownIndex + 1)
+        observeOtherSimulatorSets.forEach { (otherSimulatorId, observeOtherSets) ->
+            val index = observeOtherSets().first().indexOfFirst { it.hotkeyVirtualKeyCode == virtualKeyCode }
+            if (index >= 0) return ManualReadoutHotkeyConflict.OtherSet(otherSimulatorId, index + 1)
+        }
+        return null
+    }
+
+    fun clearHotkey() {
+        viewModelScope.launch {
+            mutationMutex.withLock {
+                if (deleted.value) return@withLock
+                val set = observeSets().first().find { it.id == setId } ?: return@withLock
+                updateSet(set.copy(hotkeyVirtualKeyCode = null))
+                hotkeyConflict.update { null }
             }
         }
     }
