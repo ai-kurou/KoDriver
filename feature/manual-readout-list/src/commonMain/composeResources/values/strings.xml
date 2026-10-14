@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="manual_readout_list_add_set">セットを追加</string>
+    <string name="manual_readout_list_set_title">セット %1$d</string>
+    <string name="manual_readout_list_no_items">項目なし</string>
+    <string name="manual_readout_list_item_count">%1$d項目</string>
+    <string name="manual_readout_list_readout_set">セット %1$d を読み上げ</string>
     <string name="manual_readout_list_empty_title">%1$sの手動読み上げセットはまだありません</string>
     <string name="manual_readout_hint_label">手動読み上げについて</string>
     <string name="manual_readout_hint_help_description">手動読み上げの説明を表示</string>

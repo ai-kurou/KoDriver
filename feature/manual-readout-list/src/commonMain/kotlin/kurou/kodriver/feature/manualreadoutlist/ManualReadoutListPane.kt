@@ -4,10 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -17,6 +21,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -52,6 +58,10 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_readout_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_add_set
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_empty_title
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_item_count
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_no_items
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -75,8 +85,8 @@ fun ManualReadoutListPane(
 }
 
 /**
- * 保存済みセットが空なら空状態を表示し、1件以上なら説明見出し行のみ表示する。
- * セット追加 FAB は常時表示し、各セットの行 UI は後続 PR で実装する。
+ * 保存済みセットが空なら空状態を表示し、1件以上なら見出しの下にセット一覧を表示する。
+ * セット追加 FAB は常時表示する。行の詳細表示と読み上げは後続 PR で実装する。
  */
 @Composable
 internal fun ManualReadoutListPaneContent(
@@ -100,6 +110,15 @@ internal fun ManualReadoutListPaneContent(
                         textAlign = TextAlign.Center,
                     )
                 }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    contentPadding = PaddingValues(bottom = 56.dp + KoDriverSpacing.large),
+                ) {
+                    itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
+                        ManualReadoutSetRow(setNumber = index + 1, itemCount = set.itemKeys.size)
+                    }
+                }
             }
         }
         ExtendedFloatingActionButton(
@@ -113,6 +132,62 @@ internal fun ManualReadoutListPaneContent(
             text = { Text(stringResource(Res.string.manual_readout_list_add_set)) },
             modifier = Modifier.align(Alignment.BottomEnd).padding(KoDriverSpacing.large),
         )
+    }
+}
+
+/** セット番号と項目数を表示する。読み上げボタンは機能の実装まで無効にする。 */
+@Composable
+private fun ManualReadoutSetRow(
+    setNumber: Int,
+    itemCount: Int,
+) {
+    ElevatedCard(
+        modifier =
+            Modifier
+                .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
+                .fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = KoDriverSpacing.small,
+                        end = KoDriverSpacing.large,
+                        top = KoDriverSpacing.medium,
+                        bottom = KoDriverSpacing.medium,
+                    ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+            ) {
+                Text(
+                    text = stringResource(Res.string.manual_readout_list_set_title, setNumber),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text =
+                        if (itemCount == 0) {
+                            stringResource(Res.string.manual_readout_list_no_items)
+                        } else {
+                            stringResource(Res.string.manual_readout_list_item_count, itemCount)
+                        },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            IconButton(onClick = {}, enabled = false) {
+                Icon(
+                    imageVector = Icons.Filled.PlayArrow,
+                    contentDescription = stringResource(Res.string.manual_readout_list_readout_set, setNumber),
+                )
+            }
+        }
     }
 }
 
