@@ -165,12 +165,29 @@ class ManualReadoutSetDetailViewModelTest {
     @Test
     fun `存在しないセットと未対応項目の文言は保存しない`() =
         runTest(dispatcher) {
-            every { repository.observeSets() } returns MutableStateFlow(emptyList())
+            every { repository.observeSets() } returns MutableStateFlow(listOf(ManualReadoutSet("other")))
             val vm = viewModel()
             try {
                 vm.updateItemText("UNKNOWN", "文言")
                 vm.updateItemText(manualReadoutItemKeys(Simulator.LmuWindows.id).single(), "文言")
                 verify(exactly = 2) { repository.observeSets() }
+                confirmVerified(repository)
+            } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `削除後の文言編集は保存しない`() =
+        runTest(dispatcher) {
+            every { repository.observeSets() } returns MutableStateFlow(listOf(ManualReadoutSet("target")))
+            coEvery { repository.deleteSet("target") } returns Unit
+            val vm = viewModel()
+            try {
+                vm.deleteSet()
+                vm.updateItemText(manualReadoutItemKeys(Simulator.LmuWindows.id).single(), "文言")
+                verify(exactly = 1) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.deleteSet("target") }
                 confirmVerified(repository)
             } finally {
                 vm.viewModelScope.cancel()
