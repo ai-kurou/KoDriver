@@ -16,7 +16,7 @@ class OtherListPaneTtsGuidanceTest {
 
     @Test
     fun `Windows案内のテストデータはAndroid向け案内を同時に含めない`() {
-        val windowsItems = listOf(OtherListItemType.WindowsSpeechUnavailable)
+        val windowsItems: List<OtherListItemType> = listOf(OtherListItemType.WindowsSpeechUnavailable)
 
         assertTrue(windowsItems.contains(OtherListItemType.WindowsSpeechUnavailable))
         assertFalse(windowsItems.contains(OtherListItemType.TtsEngineMissing))
