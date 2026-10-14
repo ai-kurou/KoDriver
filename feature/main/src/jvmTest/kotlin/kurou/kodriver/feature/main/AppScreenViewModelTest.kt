@@ -6,6 +6,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -176,6 +177,39 @@ class AppScreenViewModelTest {
         }
 
     @Test
+    fun `checkUpdateを完了後に再度呼んでも更新確認は一度だけ実行される`() =
+        runTest {
+            val viewModel = createViewModel(tagName = "v9.9.9")
+            coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate("v9.9.9")
+
+            viewModel.checkUpdate()
+            advanceUntilIdle()
+            viewModel.checkUpdate()
+            advanceUntilIdle()
+
+            assertTrue(viewModel.uiState.first().hasAppUpdate)
+            coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+            confirmVerified(appUpdateRepository)
+        }
+
+    @Test
+    fun `checkUpdateを実行中に再度呼んでも更新確認は一度だけ実行される`() =
+        runTest {
+            val viewModel = createViewModel()
+            val release = CompletableDeferred<AppUpdate?>()
+            coEvery { appUpdateRepository.getLatestRelease() } coAnswers { release.await() }
+
+            viewModel.checkUpdate()
+            viewModel.checkUpdate()
+            release.complete(AppUpdate("v9.9.9"))
+            advanceUntilIdle()
+
+            assertTrue(viewModel.uiState.first().hasAppUpdate)
+            coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+            confirmVerified(appUpdateRepository)
+        }
+
+    @Test
     fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() =
         runTest {
             val viewModel = createViewModel(tagName = "v1.0.0")
@@ -212,10 +246,13 @@ class AppScreenViewModelTest {
         }
 
     @Test
-    fun `リリース情報が取得できない場合hasAppUpdateがfalseになる`() =
+    fun `リリース情報が取得できない場合hasAppUpdateがfalseになり再試行しない`() =
         runTest {
             val viewModel = createViewModel(tagName = null)
+            coEvery { appUpdateRepository.getLatestRelease() } returns null
 
+            viewModel.checkUpdate()
+            advanceUntilIdle()
             viewModel.checkUpdate()
             advanceUntilIdle()
 

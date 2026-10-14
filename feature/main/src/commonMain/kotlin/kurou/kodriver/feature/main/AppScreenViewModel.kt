@@ -35,6 +35,7 @@ class AppScreenViewModel(
     private val settingsUseCases: AppScreenSettingsUseCases,
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
 ) : ViewModel() {
+    private var updateCheckStarted = false
     private val _hasAppUpdate = MutableStateFlow(false)
     private val _accessLocalNetworkPermissionGranted = MutableStateFlow(checkAccessLocalNetworkPermissionGranted())
     private val badgeState =
@@ -61,7 +62,8 @@ class AppScreenViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppScreenUiState())
 
     fun checkUpdate() {
-        if (currentVersion.isBlank()) return
+        if (currentVersion.isBlank() || updateCheckStarted) return
+        updateCheckStarted = true
         viewModelScope.launch {
             val hasUpdate = checkAppUpdateAvailable(currentVersion)
             _hasAppUpdate.update { hasUpdate }
