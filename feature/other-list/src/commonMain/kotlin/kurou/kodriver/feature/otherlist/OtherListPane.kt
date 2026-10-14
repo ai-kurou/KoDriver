@@ -57,6 +57,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.otherlist.generated.resources.Res
@@ -321,9 +322,19 @@ private fun OtherListItemTrailingIcon(
     isSelected: Boolean,
 ) {
     when (itemType) {
-        OtherListItemType.ServerIp,
-        OtherListItemType.ConsoleIp,
-        -> OtherListGameTagsWithChevron(itemType = itemType, isSelected = isSelected)
+        OtherListItemType.ServerIp -> {
+            OtherListGameTagsWithChevron(
+                simulators = listOf(Simulator.LmuWindows, Simulator.AceWindows),
+                isSelected = isSelected,
+            )
+        }
+
+        OtherListItemType.ConsoleIp -> {
+            OtherListGameTagsWithChevron(
+                simulators = listOf(Simulator.Gt7Ps5),
+                isSelected = isSelected,
+            )
+        }
 
         OtherListItemType.Volume,
         OtherListItemType.Voice,
@@ -333,12 +344,16 @@ private fun OtherListItemTrailingIcon(
         OtherListItemType.Feedback,
         OtherListItemType.License,
         OtherListItemType.DebugState,
-        -> Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
+        -> {
+            Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
+        }
 
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,
         OtherListItemType.OverlayTextSize,
-        -> Icon(imageVector = Icons.Outlined.UnfoldMore, contentDescription = null)
+        -> {
+            Icon(imageVector = Icons.Outlined.UnfoldMore, contentDescription = null)
+        }
 
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
@@ -346,7 +361,9 @@ private fun OtherListItemTrailingIcon(
         OtherListItemType.DynamicColor,
         OtherListItemType.HapticFeedback,
         OtherListItemType.Startup,
-        -> Unit
+        -> {
+            Unit
+        }
 
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
@@ -354,7 +371,9 @@ private fun OtherListItemTrailingIcon(
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.WindowsSpeechUnavailable,
-        -> Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
+        -> {
+            Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
+        }
     }
 }
 
