@@ -86,7 +86,7 @@ import org.koin.dsl.module
  * 提供: LmuWindowsNarratorViewModel、LmuWindowsNarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
  *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases / TyreDetachedUseCases /
  *   SimulatorUseCases / ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases /
- *   RemainingVirtualEnergyUseCases / PitTimingUseCases）、
+ *   RemainingVirtualEnergyUseCases / PitTimingUseCases / LmuWindowsReadoutTextUseCases）、
  *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
  *   各フラッグ・車両接近・VE残量警告・タイヤ過熱警告・VEピットタイミング・自己ベストの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
@@ -233,28 +233,49 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase(get()) }
         factory {
             LmuWindowsReadoutTextSpeaker(
-                observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeBlueFlagReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeFullCourseYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeRedFlagReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeStartLeftReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeSustainedLeftReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeStartRightReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeSustainedRightReadoutText = get(named(Simulator.LmuWindows.id)),
-                observePitTimingTyreWearReadoutText = get(named(Simulator.LmuWindows.id)),
-                observePitTimingTyreWearImminentReadoutText = get(named(Simulator.LmuWindows.id)),
-                observePitTimingVirtualEnergyReadoutText = get(named(Simulator.LmuWindows.id)),
-                observePitTimingVirtualEnergyImminentReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeRemainingVirtualEnergyReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeBrakeTemperatureReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeBrakeWearReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeTyreWearReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeTyreOverheatReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeTyreColdReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeOverheatReadoutText = get(named(Simulator.LmuWindows.id)),
-                observePartDetachedReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeTyreDetachedReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeMyBestLapReadoutText = get(named(Simulator.LmuWindows.id)),
+                readoutTexts =
+                    LmuWindowsReadoutTextUseCases(
+                        flag =
+                            LmuWindowsFlagReadoutTextUseCases(
+                                sectorYellow = get(named(Simulator.LmuWindows.id)),
+                                blue = get(named(Simulator.LmuWindows.id)),
+                                fullCourseYellow = get(named(Simulator.LmuWindows.id)),
+                                red = get(named(Simulator.LmuWindows.id)),
+                            ),
+                        vehicleApproach =
+                            LmuWindowsVehicleApproachReadoutTextUseCases(
+                                startLeft = get(named(Simulator.LmuWindows.id)),
+                                startRight = get(named(Simulator.LmuWindows.id)),
+                                sustainedLeft = get(named(Simulator.LmuWindows.id)),
+                                sustainedRight = get(named(Simulator.LmuWindows.id)),
+                            ),
+                        pitTiming =
+                            LmuWindowsPitTimingReadoutTextUseCases(
+                                virtualEnergy = get(named(Simulator.LmuWindows.id)),
+                                virtualEnergyImminent = get(named(Simulator.LmuWindows.id)),
+                                tyreWear = get(named(Simulator.LmuWindows.id)),
+                                tyreWearImminent = get(named(Simulator.LmuWindows.id)),
+                            ),
+                        tyre =
+                            LmuWindowsTyreReadoutTextUseCases(
+                                wear = get(named(Simulator.LmuWindows.id)),
+                                overheat = get(named(Simulator.LmuWindows.id)),
+                                cold = get(named(Simulator.LmuWindows.id)),
+                            ),
+                        vehicleDamage =
+                            LmuWindowsVehicleDamageReadoutTextUseCases(
+                                overheat = get(named(Simulator.LmuWindows.id)),
+                                partDetached = get(named(Simulator.LmuWindows.id)),
+                                tyreDetached = get(named(Simulator.LmuWindows.id)),
+                            ),
+                        brake =
+                            LmuWindowsBrakeReadoutTextUseCases(
+                                temperature = get(named(Simulator.LmuWindows.id)),
+                                wear = get(named(Simulator.LmuWindows.id)),
+                            ),
+                        remainingVirtualEnergy = get(named(Simulator.LmuWindows.id)),
+                        myBestLap = get(named(Simulator.LmuWindows.id)),
+                    ),
                 checkTextToSpeechAvailable = get(),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )

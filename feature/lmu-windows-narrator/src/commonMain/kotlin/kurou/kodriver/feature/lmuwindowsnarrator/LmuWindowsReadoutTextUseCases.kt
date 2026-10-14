@@ -1,0 +1,73 @@
+package kurou.kodriver.feature.lmuwindowsnarrator
+
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
+
+internal data class LmuWindowsFlagReadoutTextUseCases(
+    val sectorYellow: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase,
+    val blue: ObserveLmuWindowsBlueFlagReadoutTextUseCase,
+    val fullCourseYellow: ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase,
+    val red: ObserveLmuWindowsRedFlagReadoutTextUseCase,
+)
+
+internal data class LmuWindowsVehicleApproachReadoutTextUseCases(
+    val startLeft: ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase,
+    val startRight: ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase,
+    val sustainedLeft: ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase,
+    val sustainedRight: ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase,
+)
+
+internal data class LmuWindowsPitTimingReadoutTextUseCases(
+    val virtualEnergy: ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase,
+    val virtualEnergyImminent: ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase,
+    val tyreWear: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase,
+    val tyreWearImminent: ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase,
+)
+
+internal data class LmuWindowsTyreReadoutTextUseCases(
+    val wear: ObserveLmuWindowsTyreWearReadoutTextUseCase,
+    val overheat: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase,
+    val cold: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase,
+)
+
+internal data class LmuWindowsVehicleDamageReadoutTextUseCases(
+    val overheat: ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase,
+    val partDetached: ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase,
+    val tyreDetached: ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase,
+)
+
+internal data class LmuWindowsBrakeReadoutTextUseCases(
+    val temperature: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase,
+    val wear: ObserveLmuWindowsBrakeWearReadoutTextUseCase,
+)
+
+internal data class LmuWindowsReadoutTextUseCases(
+    val flag: LmuWindowsFlagReadoutTextUseCases,
+    val vehicleApproach: LmuWindowsVehicleApproachReadoutTextUseCases,
+    val pitTiming: LmuWindowsPitTimingReadoutTextUseCases,
+    val tyre: LmuWindowsTyreReadoutTextUseCases,
+    val vehicleDamage: LmuWindowsVehicleDamageReadoutTextUseCases,
+    val brake: LmuWindowsBrakeReadoutTextUseCases,
+    val remainingVirtualEnergy: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase,
+    val myBestLap: ObserveLmuWindowsMyBestLapReadoutTextUseCase,
+)
