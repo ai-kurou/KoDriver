@@ -24,6 +24,11 @@ kotlin {
             implementation(project.dependencies.platform(libs.sentry.bom))
             implementation(libs.sentry)
         }
+        jvmTest.dependencies {
+            implementation(libs.mockk)
+            implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutinesTest)
+        }
         named("androidHostTest") {
             kotlin.srcDir(
                 rootProject.layout.projectDirectory.dir(
@@ -31,6 +36,10 @@ kotlin {
                 ),
             )
             dependencies {
+                implementation(libs.compose.uiTest)
+                implementation(libs.compose.uiTestJunit4)
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.mockk)
                 implementation(libs.kotlin.testJunit)
                 implementation(libs.junit)
                 implementation(libs.roborazzi.compose)
