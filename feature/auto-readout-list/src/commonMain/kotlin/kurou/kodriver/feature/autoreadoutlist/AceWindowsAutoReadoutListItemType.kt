@@ -20,6 +20,9 @@ sealed class AceWindowsAutoReadoutListItemType(
 
     companion object {
         fun fromId(id: ReadoutItemKey): AceWindowsAutoReadoutListItemType? =
+            if (id is AceWindowsReadoutItemKey.TopLevel) fromTopLevel(id) else null
+
+        private fun fromTopLevel(id: AceWindowsReadoutItemKey.TopLevel): AceWindowsAutoReadoutListItemType =
             when (id) {
                 AceWindowsReadoutItemKey.VehicleApproach.Root -> VehicleApproach
                 AceWindowsReadoutItemKey.Flag.Root -> Flag
@@ -27,7 +30,6 @@ sealed class AceWindowsAutoReadoutListItemType(
                 AceWindowsReadoutItemKey.RemainingFuel.Root -> RemainingFuel
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root -> RemainingFuelLaps
                 AceWindowsReadoutItemKey.MyBestLap.Root -> MyBestLap
-                else -> null
             }
     }
 }
