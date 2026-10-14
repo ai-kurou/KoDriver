@@ -16,6 +16,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.koDriverMonospaceTextStyle
+import kurou.kodriver.feature.telemetrylogdetail.generated.resources.Res
+import kurou.kodriver.feature.telemetrylogdetail.generated.resources.telemetry_log_detail_previous
+import kurou.kodriver.feature.telemetrylogdetail.generated.resources.telemetry_log_detail_selected
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -59,7 +63,15 @@ private fun TelemetryLogDetailItem(
 ) {
     ListItem(
         headlineContent = {
-            Text(text = item.title)
+            Text(
+                text =
+                    stringResource(
+                        when (item.kind) {
+                            TelemetryLogDetailItemKind.SELECTED -> Res.string.telemetry_log_detail_selected
+                            TelemetryLogDetailItemKind.PREVIOUS -> Res.string.telemetry_log_detail_previous
+                        },
+                    ),
+            )
         },
         supportingContent = {
             Text(
@@ -83,11 +95,11 @@ private fun TelemetryLogDetailContentPreview() {
                     items =
                         listOf(
                             TelemetryLogDetailItemUiState(
-                                title = "選択したログ",
+                                kind = TelemetryLogDetailItemKind.SELECTED,
                                 telemetryJson = """{"speed":120,"gear":4}""",
                             ),
                             TelemetryLogDetailItemUiState(
-                                title = "一つ前のログ",
+                                kind = TelemetryLogDetailItemKind.PREVIOUS,
                                 telemetryJson = """{"speed":118,"gear":4}""",
                             ),
                         ),

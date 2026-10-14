@@ -1,4 +1,7 @@
 <resources>
     <string name="desktop_splash_error_title">起動に失敗しました</string>
     <string name="desktop_splash_error_close">閉じる</string>
+    <string name="desktop_splash_initializing_modules">モジュールを初期化しています…</string>
+    <string name="desktop_splash_starting_server">サーバーを起動しています…</string>
+    <string name="desktop_splash_ready">起動が完了しました</string>
 </resources>

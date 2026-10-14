@@ -6,6 +6,11 @@ internal data class TelemetryLogDetailUiState(
 )
 
 internal data class TelemetryLogDetailItemUiState(
-    val title: String,
+    val kind: TelemetryLogDetailItemKind,
     val telemetryJson: String,
 )
+
+internal enum class TelemetryLogDetailItemKind {
+    SELECTED,
+    PREVIOUS,
+}

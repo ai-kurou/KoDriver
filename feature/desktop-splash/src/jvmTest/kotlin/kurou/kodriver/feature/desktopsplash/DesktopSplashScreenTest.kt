@@ -31,6 +31,11 @@ class DesktopSplashScreenTest {
 
         rule.onNodeWithText("モジュールを初期化しています…").assertIsDisplayed()
 
+        step = DesktopSplashStep.STARTING_SERVER
+        rule.waitForIdle()
+
+        rule.onNodeWithText("サーバーを起動しています…").assertIsDisplayed()
+
         step = DesktopSplashStep.READY
         rule.waitForIdle()
 

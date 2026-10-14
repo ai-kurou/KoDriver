@@ -1,5 +1,11 @@
 package kurou.kodriver.feature.desktopsplash
 
+import kurou.kodriver.feature.desktopsplash.generated.resources.Res
+import kurou.kodriver.feature.desktopsplash.generated.resources.desktop_splash_initializing_modules
+import kurou.kodriver.feature.desktopsplash.generated.resources.desktop_splash_ready
+import kurou.kodriver.feature.desktopsplash.generated.resources.desktop_splash_starting_server
+import org.jetbrains.compose.resources.StringResource
+
 /**
  * デスクトップアプリ起動中に進行する初期化フェーズ。
  *
@@ -20,15 +26,15 @@ enum class DesktopSplashStep {
 }
 
 /**
- * スプラッシュ画面に表示する日本語のフェーズ名。
+ * スプラッシュ画面に表示するフェーズ名の文字列リソース。
  *
  * 内部の識別子（[DesktopSplashStep] の名前）と表示名を分離するため、
  * 表示名はこの拡張プロパティ側に持たせる。
  */
-val DesktopSplashStep.displayName: String
+val DesktopSplashStep.displayNameRes: StringResource
     get() =
         when (this) {
-            DesktopSplashStep.INITIALIZING_MODULES -> "モジュールを初期化しています…"
-            DesktopSplashStep.STARTING_SERVER -> "サーバーを起動しています…"
-            DesktopSplashStep.READY -> "起動が完了しました"
+            DesktopSplashStep.INITIALIZING_MODULES -> Res.string.desktop_splash_initializing_modules
+            DesktopSplashStep.STARTING_SERVER -> Res.string.desktop_splash_starting_server
+            DesktopSplashStep.READY -> Res.string.desktop_splash_ready
         }

@@ -26,11 +26,11 @@ class TelemetryLogDetailContentScreenshotTest {
                                         items =
                                             listOf(
                                                 TelemetryLogDetailItemUiState(
-                                                    title = "選択したログ",
+                                                    kind = TelemetryLogDetailItemKind.SELECTED,
                                                     telemetryJson = """{"speed":120,"gear":4}""",
                                                 ),
                                                 TelemetryLogDetailItemUiState(
-                                                    title = "一つ前のログ",
+                                                    kind = TelemetryLogDetailItemKind.PREVIOUS,
                                                     telemetryJson = """{"speed":118,"gear":4}""",
                                                 ),
                                             ),
