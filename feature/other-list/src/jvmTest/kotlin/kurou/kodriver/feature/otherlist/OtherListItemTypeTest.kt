@@ -31,4 +31,113 @@ class OtherListItemTypeTest {
         )
         OtherListItemType.entries.forEach { assertEquals(it, OtherListItemType.fromId(it.id)) }
     }
+
+    @Test
+    fun `entriesは全25項目を既存の宣言順で返す`() {
+        assertEquals(25, OtherListItemType.entries.size)
+        assertEquals(
+            listOf(
+                OtherListItemType.AccessLocalNetworkPermission,
+                OtherListItemType.ServerIp,
+                OtherListItemType.ConsoleIp,
+                OtherListItemType.Volume,
+                OtherListItemType.TtsEngineMissing,
+                OtherListItemType.TtsLanguageDataMissing,
+                OtherListItemType.WindowsSpeechUnavailable,
+                OtherListItemType.KeepScreenOn,
+                OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Voice,
+                OtherListItemType.VoiceSpeed,
+                OtherListItemType.VoicePitch,
+                OtherListItemType.Theme,
+                OtherListItemType.OverlayVisible,
+                OtherListItemType.OverlayTextSize,
+                OtherListItemType.OverlayTextColor,
+                OtherListItemType.OverlayBackgroundOpacity,
+                OtherListItemType.DynamicColor,
+                OtherListItemType.HapticFeedback,
+                OtherListItemType.Startup,
+                OtherListItemType.GitHubRepository,
+                OtherListItemType.ReleasePage,
+                OtherListItemType.Feedback,
+                OtherListItemType.License,
+                OtherListItemType.DebugState,
+            ),
+            OtherListItemType.entries,
+        )
+        assertEquals(
+            listOf(
+                "access_local_network_permission",
+                "server_ip",
+                "console_ip",
+                "volume",
+                "tts_engine_missing",
+                "tts_language_data_missing",
+                "windows_speech_unavailable",
+                "keep_screen_on",
+                "readout_start_sound",
+                "voice",
+                "voice_speed",
+                "voice_pitch",
+                "theme",
+                "overlay_visible",
+                "overlay_text_size",
+                "overlay_text_color",
+                "overlay_background_opacity",
+                "dynamic_color",
+                "haptic_feedback",
+                "startup",
+                "github_repository",
+                "release_page",
+                "feedback",
+                "license",
+                "debug_state",
+            ),
+            OtherListItemType.entries.map { it.id },
+        )
+    }
+
+    @Test
+    fun `ReadoutSettingsには対応する8項目だけが所属する`() {
+        assertEquals(
+            setOf(
+                OtherListItemType.Volume,
+                OtherListItemType.Voice,
+                OtherListItemType.VoiceSpeed,
+                OtherListItemType.VoicePitch,
+                OtherListItemType.ReadoutStartSound,
+                OtherListItemType.TtsEngineMissing,
+                OtherListItemType.TtsLanguageDataMissing,
+                OtherListItemType.WindowsSpeechUnavailable,
+            ),
+            OtherListItemType.entries.filterIsInstance<OtherListItemType.ReadoutSettings>().toSet(),
+        )
+    }
+
+    @Test
+    fun `OverlaySettingsには対応する4項目だけが所属する`() {
+        assertEquals(
+            setOf(
+                OtherListItemType.OverlayVisible,
+                OtherListItemType.OverlayTextSize,
+                OtherListItemType.OverlayTextColor,
+                OtherListItemType.OverlayBackgroundOpacity,
+            ),
+            OtherListItemType.entries.filterIsInstance<OtherListItemType.OverlaySettings>().toSet(),
+        )
+    }
+
+    @Test
+    fun `AppSettingsには対応する5項目だけが所属する`() {
+        assertEquals(
+            setOf(
+                OtherListItemType.KeepScreenOn,
+                OtherListItemType.Theme,
+                OtherListItemType.DynamicColor,
+                OtherListItemType.HapticFeedback,
+                OtherListItemType.Startup,
+            ),
+            OtherListItemType.entries.filterIsInstance<OtherListItemType.AppSettings>().toSet(),
+        )
+    }
 }
