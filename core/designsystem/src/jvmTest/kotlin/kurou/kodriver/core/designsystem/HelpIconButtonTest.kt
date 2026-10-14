@@ -7,6 +7,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -73,5 +74,24 @@ class HelpIconButtonTest {
         rule.onNode(hasContentDescription("閾値の説明を表示")).performClick()
 
         assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
+    }
+
+    @Test
+    fun `状態復元後もヘルプ内容の表示状態が維持される`() {
+        val restorationTester = StateRestorationTester(rule)
+        restorationTester.setContent {
+            KoDriverTheme {
+                HelpIconButton(
+                    contentDescription = "閾値の説明を表示",
+                    sheetContent = { Text("ヘルプの説明文") },
+                )
+            }
+        }
+        rule.onNode(hasContentDescription("閾値の説明を表示")).performClick()
+        rule.onNodeWithText("ヘルプの説明文").assertIsDisplayed()
+
+        restorationTester.emulateSavedInstanceStateRestore()
+
+        rule.onNodeWithText("ヘルプの説明文").assertIsDisplayed()
     }
 }

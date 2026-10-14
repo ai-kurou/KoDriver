@@ -15,6 +15,8 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -88,6 +90,31 @@ class AutoReadoutListPaneTest {
             .onNodeWithText(
                 "キューアイコンがONの項目は、優先順位に関係なく、割り込まずに順番待ちします。優先度が高い項目でも、キューがONなら順番待ちになります。",
             ).assertIsDisplayed()
+    }
+
+    @Test
+    fun `状態復元後も読み上げ優先度ヒントのシートの表示状態が維持される`() {
+        val restorationTester = StateRestorationTester(rule)
+        restorationTester.setContent {
+            KoDriverTheme {
+                AutoReadoutListPane(
+                    uiState = AutoReadoutListUiState(),
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                )
+            }
+        }
+        val startSoundHint = "読み上げ開始音アイコンをONにすると、その項目の読み上げ前に開始音を鳴らします"
+        rule.onNodeWithText(startSoundHint).assertDoesNotExist()
+        rule.onNode(hasContentDescription("一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。")).performClick()
+        rule.onNodeWithText(startSoundHint).assertIsDisplayed()
+
+        restorationTester.emulateSavedInstanceStateRestore()
+
+        rule.onNodeWithText(startSoundHint).assertIsDisplayed()
     }
 
     @Test
