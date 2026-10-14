@@ -1,13 +1,15 @@
+---
+base-branch: feature/base/manual-readout
+---
+
 # 手動読み上げ ロードマップ
 
 ベースブランチ `feature/base/manual-readout`（main向けPR #2173）で少しずつ実装している「手動読み上げ」タブの仕様と進捗。
 `/cleanup-worktree` が、マージ済みPRのベースブランチ（`feature/base/*`）に対応するこのファイルを読み、次の実装候補を提示する。
 
-- 先頭に `base-branch:` を持つロードマップだけが対象になる。別のベースブランチ向けのロードマップを足す場合は `docs/roadmap/<名前>.md` を同じ形式で作る。
+- ファイル先頭のフロントマターに `base-branch:` を持つロードマップだけが対象になる。別のベースブランチ向けのロードマップを足す場合は `docs/roadmap/<名前>.md` を同じ形式で作る。
 - PR をマージしたら、同じ PR または直後の PR でチェックを付ける（実装済みの履歴は `git log main..<base-branch>` でも確認できる）。
 - 実装しながら仕様が変わったら、このファイルを同じ PR で更新する。
-
-base-branch: feature/base/manual-readout
 
 ## 仕様（合意済み）
 
