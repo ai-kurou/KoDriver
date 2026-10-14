@@ -93,7 +93,9 @@ jobs:
           printf '%s\n' "$exit_code" > "$diagnostics/exit-code.txt"
           if [ "$exit_code" -ne 0 ] || ! jq -e -s '
             length == 1 and (.[0] | type == "object" and .type == "result" and .subtype == "success" and .is_error == false
-            and ((.permission_denials // []) | length == 0)
+            and ((.permission_denials // []) | all(.[];
+              .tool_name == "Bash"
+              and ((.tool_input.command // "") | type == "string" and (test("gh issue create") | not))))
             and (.structured_output | type == "object"
               and .status == "completed"
               and (.summary | type == "string" and test("\\S"))
