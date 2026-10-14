@@ -25,6 +25,9 @@ import kurou.kodriver.domain.model.formatAceWindowsTyreTemperatureReadoutText
 /** ACE 由来の読み上げイベントを識別する共通マーカー。自由文言経路で本文を扱うため [ReadoutTextEvent] の契約を持つ。 */
 sealed interface AceWindowsSpeechEvent : ReadoutTextEvent
 
+/** ACE の全10種類のフラッグ読み上げイベント。保存文言の解決を網羅的に扱う。 */
+sealed interface AceWindowsFlagSpeechEvent : AceWindowsSpeechEvent
+
 /** ACE の残燃料で走行可能な周回数。解決済み文言は判定時の発話・ログ内容を保持する。 */
 data class AceWindowsRemainingFuelLapsWarning(
     val laps: Int,
@@ -58,7 +61,7 @@ data class AceWindowsRemainingFuelWarning(
 
 data class AceWindowsWhiteFlag(
     override val resolvedText: String? = null,
-) : AceWindowsSpeechEvent {
+) : AceWindowsFlagSpeechEvent {
     override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
     override val narratedText = ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 
@@ -67,7 +70,7 @@ data class AceWindowsWhiteFlag(
 
 data class AceWindowsGreenFlag(
     override val resolvedText: String? = null,
-) : AceWindowsSpeechEvent {
+) : AceWindowsFlagSpeechEvent {
     override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
     override val narratedText = ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
 
@@ -76,7 +79,7 @@ data class AceWindowsGreenFlag(
 
 data class AceWindowsRedFlag(
     override val resolvedText: String? = null,
-) : AceWindowsSpeechEvent {
+) : AceWindowsFlagSpeechEvent {
     override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
     override val narratedText = ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 
@@ -85,7 +88,7 @@ data class AceWindowsRedFlag(
 
 data class AceWindowsBlueFlag(
     override val resolvedText: String? = null,
-) : AceWindowsSpeechEvent {
+) : AceWindowsFlagSpeechEvent {
     override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
     override val narratedText = ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 
@@ -94,7 +97,7 @@ data class AceWindowsBlueFlag(
 
 data class AceWindowsYellowFlag(
     override val resolvedText: String? = null,
-) : AceWindowsSpeechEvent {
+) : AceWindowsFlagSpeechEvent {
     override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
     override val narratedText = ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 
@@ -103,7 +106,7 @@ data class AceWindowsYellowFlag(
 
 data class AceWindowsBlackFlag(
     override val resolvedText: String? = null,
-) : AceWindowsSpeechEvent {
+) : AceWindowsFlagSpeechEvent {
     override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
     override val narratedText = ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
 
@@ -112,7 +115,7 @@ data class AceWindowsBlackFlag(
 
 data class AceWindowsBlackWhiteFlag(
     override val resolvedText: String? = null,
-) : AceWindowsSpeechEvent {
+) : AceWindowsFlagSpeechEvent {
     override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
     override val narratedText = ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
 
@@ -121,7 +124,7 @@ data class AceWindowsBlackWhiteFlag(
 
 data class AceWindowsCheckeredFlag(
     override val resolvedText: String? = null,
-) : AceWindowsSpeechEvent {
+) : AceWindowsFlagSpeechEvent {
     override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
     override val narratedText = ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 
@@ -130,7 +133,7 @@ data class AceWindowsCheckeredFlag(
 
 data class AceWindowsOrangeCircleFlag(
     override val resolvedText: String? = null,
-) : AceWindowsSpeechEvent {
+) : AceWindowsFlagSpeechEvent {
     override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
     override val narratedText = ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 
@@ -139,7 +142,7 @@ data class AceWindowsOrangeCircleFlag(
 
 data class AceWindowsRedYellowStripesFlag(
     override val resolvedText: String? = null,
-) : AceWindowsSpeechEvent {
+) : AceWindowsFlagSpeechEvent {
     override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
     override val narratedText = ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
 
