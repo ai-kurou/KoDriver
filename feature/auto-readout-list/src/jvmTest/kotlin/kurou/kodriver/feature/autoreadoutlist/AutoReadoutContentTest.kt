@@ -661,6 +661,7 @@ class AutoReadoutContentTest {
         val priorityHintLabelText = "読み上げ優先度"
         var lastItemText by mutableStateOf("")
         var selectedItem by mutableStateOf<AutoReadoutListItemType?>(null)
+        var backEnabled = false
         var capturedOnBack: (() -> Unit)? = null
         val items =
             listOf(
@@ -697,7 +698,10 @@ class AutoReadoutContentTest {
                     onClearSelectedItem = { selectedItem = null },
                     scaffoldDirective = singlePaneDirective,
                     windowSizeClass = compactWindowSizeClass,
-                    backHandler = { _, _, onBack -> capturedOnBack = onBack },
+                    backHandler = { enabled, _, onBack ->
+                        backEnabled = enabled
+                        capturedOnBack = onBack
+                    },
                 )
             }
         }
@@ -705,8 +709,13 @@ class AutoReadoutContentTest {
         rule.onNode(hasScrollAction()).performScrollToNode(hasText(lastItemText))
         rule.onNodeWithText(lastItemText).performClick()
         rule.waitForIdle()
+        assertTrue(backEnabled)
         rule.runOnIdle { capturedOnBack?.invoke() }
         rule.waitForIdle()
+
+        // 詳細ペインから一覧へ戻ったことを先に確認する（詳細に留まっていても lastItemText は表示されるため）
+        assertFalse(backEnabled)
+        assertEquals(null, selectedItem)
 
         rule.onNodeWithText(lastItemText).assertExists()
         rule.onAllNodes(hasText(priorityHintLabelText)).assertCountEquals(0)
