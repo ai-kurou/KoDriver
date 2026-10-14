@@ -16,4 +16,10 @@
     <string name="manual_readout_text_unknown">未対応のプレースホルダー: %1$s（そのまま読み上げます）</string>
     <string name="manual_readout_percent_insert">{percent} を挿入</string>
     <string name="manual_readout_percent_hint">{percent} は現在の残量（%）に置き換わります</string>
+    <string name="manual_readout_hotkey_title">ホットキー</string>
+    <string name="manual_readout_hotkey_none">割り当てなし</string>
+    <string name="manual_readout_hotkey_clear">割り当てを解除</string>
+    <string name="manual_readout_hotkey_hint">Ctrl + Alt + Shift と数字または英字の組み合わせを割り当てます</string>
+    <string name="manual_readout_hotkey_other_set">セット%1$dで使用中のため割り当てできません</string>
+    <string name="manual_readout_hotkey_debug">デバッグ用の読み上げホットキーで使用中のため割り当てできません</string>
 </resources>

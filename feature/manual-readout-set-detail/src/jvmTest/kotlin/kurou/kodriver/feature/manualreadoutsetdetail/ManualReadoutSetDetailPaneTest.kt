@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutsetdetail
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
@@ -8,9 +9,12 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.pressKey
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.Simulator
@@ -34,6 +38,7 @@ class ManualReadoutSetDetailPaneTest {
                     uiState = ManualReadoutSetDetailUiState(setNumber = 1),
                     onToggleItem = {},
                     onDelete = {},
+                    showHotkey = false,
                     canNavigateBack = canNavigateBack.value,
                     onBack = { backed++ },
                 )
@@ -99,6 +104,7 @@ class ManualReadoutSetDetailPaneTest {
                             )
                     },
                     onDelete = {},
+                    showHotkey = false,
                     onItemTextChanged = { itemKey, text ->
                         saved.add(itemKey to text)
                         state.value = state.value.copy(itemTexts = state.value.itemTexts + (itemKey to text.trim()))
@@ -134,5 +140,47 @@ class ManualReadoutSetDetailPaneTest {
                 saved,
             )
         }
+    }
+
+    @Test
+    fun `ホットキーの入力と解除と重複エラーと非表示を扱う`() {
+        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1))
+        val showHotkey = mutableStateOf(true)
+        val assigned = mutableListOf<Int>()
+        var cleared = 0
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onToggleItem = {},
+                    onDelete = {},
+                    showHotkey = showHotkey.value,
+                    onAssignHotkey = { assigned.add(it) },
+                    onClearHotkey = { cleared++ },
+                )
+            }
+        }
+        rule.onNodeWithText("割り当てなし").assertExists()
+        rule.onNodeWithText("割り当てを解除").assertIsNotEnabled()
+        rule.onNodeWithTag("manual_readout_hotkey_key").performClick().performKeyInput {
+            pressKey(Key.A)
+            pressKey(Key.Zero)
+            pressKey(Key.F1)
+        }
+        rule.runOnIdle {
+            assertEquals(listOf(0x41, 0x30), assigned)
+            state.value = state.value.copy(hotkeyVirtualKeyCode = 0x41)
+        }
+        rule.onNodeWithText("Ctrl + Alt + Shift + A").assertExists()
+        rule.onNodeWithText("割り当てを解除").performClick()
+        rule.runOnIdle {
+            assertEquals(1, cleared)
+            state.value = state.value.copy(hotkeyConflict = ManualReadoutHotkeyConflict.OtherSet(2))
+        }
+        rule.onNodeWithText("セット2で使用中のため割り当てできません").assertExists()
+        rule.runOnIdle { state.value = state.value.copy(hotkeyConflict = ManualReadoutHotkeyConflict.DebugHotkey) }
+        rule.onNodeWithText("デバッグ用の読み上げホットキーで使用中のため割り当てできません").assertExists()
+        rule.runOnIdle { showHotkey.value = false }
+        rule.onNodeWithTag("manual_readout_hotkey_card").assertDoesNotExist()
     }
 }

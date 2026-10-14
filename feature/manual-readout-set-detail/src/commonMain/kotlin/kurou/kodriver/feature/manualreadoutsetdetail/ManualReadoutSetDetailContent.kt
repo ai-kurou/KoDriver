@@ -63,6 +63,7 @@ fun ManualReadoutSetDetailContent(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    showHotkey: Boolean = isDesktopPlatform(),
 ) {
     val viewModel: ManualReadoutSetDetailViewModel =
         koinViewModel(key = "$simulatorId:$setId", parameters = { parametersOf(simulatorId, setId) })
@@ -73,6 +74,9 @@ fun ManualReadoutSetDetailContent(
     }
     ManualReadoutSetDetailPane(
         uiState = uiState,
+        onAssignHotkey = viewModel::assignHotkey,
+        onClearHotkey = viewModel::clearHotkey,
+        showHotkey = showHotkey,
         onToggleItem = viewModel::toggleItem,
         onDelete = viewModel::deleteSet,
         onItemTextChanged = viewModel::updateItemText,
@@ -90,7 +94,10 @@ internal fun ManualReadoutSetDetailPane(
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     onItemTextChanged: (String, String) -> Unit = { _, _ -> },
+    onAssignHotkey: (Int) -> Unit = {},
+    onClearHotkey: () -> Unit = {},
     modifier: Modifier = Modifier,
+    showHotkey: Boolean = isDesktopPlatform(),
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     if (showDeleteDialog) {
@@ -140,6 +147,9 @@ internal fun ManualReadoutSetDetailPane(
                             onTextChanged = { onItemTextChanged(itemKey, it) },
                         )
                     }
+                }
+                if (showHotkey) {
+                    ManualReadoutHotkeyCard(uiState, onAssignHotkey, onClearHotkey)
                 }
                 TextButton(onClick = { showDeleteDialog = true }) {
                     Text(stringResource(Res.string.manual_readout_delete), color = MaterialTheme.colorScheme.error)

@@ -1,14 +1,18 @@
 package kurou.kodriver.feature.manualreadoutsetdetail
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.pressKey
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -30,6 +34,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -60,6 +65,7 @@ class ManualReadoutSetDetailWiringTest {
                 },
             ).around(rule)
 
+    private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
 
     @Test
@@ -85,6 +91,7 @@ class ManualReadoutSetDetailWiringTest {
             modules(
                 manualReadoutSetDetailModule,
                 module {
+                    single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) { repository }
                 },
             )
@@ -99,6 +106,7 @@ class ManualReadoutSetDetailWiringTest {
                             onDeleted = { returned++ },
                             canNavigateBack = true,
                             onBack = { backed++ },
+                            showHotkey = false,
                         )
                     }
                 }
@@ -123,6 +131,58 @@ class ManualReadoutSetDetailWiringTest {
             coVerify(exactly = 1) { repository.updateSet(reset) }
             coVerify(exactly = 1) { repository.deleteSet("target") }
             confirmVerified(repository)
+        } finally {
+            owner.viewModelStore.clear()
+            stopKoin()
+        }
+    }
+
+    @Test
+    fun `Contentはホットキーの保存と解除を配線する`() {
+        val original = ManualReadoutSet("target")
+        val assigned = original.copy(hotkeyVirtualKeyCode = 0x41)
+        val sets = MutableStateFlow(listOf(original))
+        every { repository.observeSets() } returns sets
+        every { debugRepository.observeVirtualKeyCode() } returns MutableStateFlow(0x70)
+        coEvery { repository.updateSet(assigned) } answers { sets.value = listOf(assigned) }
+        coEvery { repository.updateSet(original) } answers { sets.value = listOf(original) }
+        val owner =
+            object : ViewModelStoreOwner {
+                override val viewModelStore = ViewModelStore()
+            }
+        startKoin {
+            modules(
+                manualReadoutSetDetailModule,
+                module {
+                    single<ReadoutHotkeyPreferencesRepository> { debugRepository }
+                    single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) { repository }
+                },
+            )
+        }
+        try {
+            rule.setContent {
+                CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
+                    KoDriverTheme {
+                        ManualReadoutSetDetailContent(
+                            simulatorId = Simulator.Gt7Ps5.id,
+                            setId = "target",
+                            onDeleted = {},
+                            canNavigateBack = false,
+                            onBack = {},
+                            showHotkey = true,
+                        )
+                    }
+                }
+            }
+            rule.onNodeWithTag("manual_readout_hotkey_key").performClick().performKeyInput { pressKey(Key.A) }
+            rule.onNodeWithText("Ctrl + Alt + Shift + A").assertIsDisplayed()
+            rule.onNodeWithText("割り当てを解除").performClick()
+            rule.onNodeWithText("割り当てなし").assertIsDisplayed()
+            verify(exactly = 3) { repository.observeSets() }
+            verify(exactly = 1) { debugRepository.observeVirtualKeyCode() }
+            coVerify(exactly = 1) { repository.updateSet(assigned) }
+            coVerify(exactly = 1) { repository.updateSet(original) }
+            confirmVerified(repository, debugRepository)
         } finally {
             owner.viewModelStore.clear()
             stopKoin()
