@@ -459,7 +459,10 @@ fun AppScreen(
     },
     manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit = { selectedSimulatorId ->
         key(selectedSimulatorId) {
-            ManualReadoutListPane(simulatorName = appScreenPrimarySimulatorLabel(selectedSimulatorId))
+            ManualReadoutListPane(
+                simulatorId = selectedSimulatorId,
+                simulatorName = appScreenPrimarySimulatorLabel(selectedSimulatorId),
+            )
         }
     },
     otherContent: @Composable (

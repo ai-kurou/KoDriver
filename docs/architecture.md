@@ -47,7 +47,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-voice-detail` | その他画面の読み上げ音声設定詳細 | [図](graphs/feature-other-voice-detail.svg) |
 | `:feature:other-feedback-detail` | その他画面のフィードバック送信詳細 | [図](graphs/feature-other-feedback-detail.svg) |
 | `:feature:auto-readout-list` | アナウンス項目の一覧表示・有効/無効の切り替え・優先度のドラッグ&リオーダー | [図](graphs/feature-auto-readout-list.svg) |
-| `:feature:manual-readout-list` | 手動読み上げセット一覧（説明シート付きの見出しと、選択中シミュレーター名入りの空状態の表示） | [図](graphs/feature-manual-readout-list.svg) |
+| `:feature:manual-readout-list` | 手動読み上げセット一覧（シミュレーター別の保存済みセットを ViewModel で観測し、0件なら空状態、1件以上なら説明見出し行のみ表示。追加・行 UI は後続 PR） | [図](graphs/feature-manual-readout-list.svg) |
 | `:feature:lmu-windows-auto-readout-flag-detail` | フラッグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-flag-detail.svg) |
 | `:feature:lmu-windows-auto-readout-my-best-lap-detail` | LMU 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-my-best-lap-detail.svg) |
 | `:feature:lmu-windows-auto-readout-vehicle-approach-detail` | 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-vehicle-approach-detail.svg) |
