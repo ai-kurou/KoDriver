@@ -106,4 +106,22 @@ class DetailPaneLabeledTextFieldTest {
         rule.onNodeWithContentDescription("デフォルトに戻す").performClick()
         assertEquals(1, resetCount)
     }
+
+    @Test
+    fun `試聴コールバックがない場合は再生ボタンを表示しない`() {
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneLabeledTextField(
+                    label = "読み上げ",
+                    value = "残量",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = null,
+                    previewContentDescription = "試聴",
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("試聴").assertDoesNotExist()
+        rule.onNodeWithText("残量").assertIsDisplayed()
+    }
 }

@@ -7,9 +7,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
@@ -33,6 +35,7 @@ internal class ManualReadoutSetDetailViewModel(
                 setNumber = if (index >= 0) index + 1 else null,
                 availableItemKeys = availableItemKeys,
                 selectedItemKeys = sets.getOrNull(index)?.itemKeys.orEmpty(),
+                itemTexts = sets.getOrNull(index)?.itemTexts.orEmpty(),
                 isLoading = false,
                 deleted = isDeleted,
             )
@@ -55,12 +58,27 @@ internal class ManualReadoutSetDetailViewModel(
         }
     }
 
+    fun updateItemText(
+        itemKey: String,
+        text: String,
+    ) {
+        if (itemKey !in availableItemKeys) return
+        viewModelScope.launch {
+            mutationMutex.withLock {
+                if (deleted.value) return@withLock
+                val set = observeSets().first().find { it.id == setId } ?: return@withLock
+                val normalizedText = text.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+                updateSet(set.copy(itemTexts = set.itemTexts + (itemKey to normalizedText)))
+            }
+        }
+    }
+
     fun deleteSet() {
         viewModelScope.launch {
             mutationMutex.withLock {
                 if (!deleted.value) {
                     deleteSet(setId)
-                    deleted.value = true
+                    deleted.update { true }
                 }
             }
         }

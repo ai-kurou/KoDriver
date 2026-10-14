@@ -2,11 +2,13 @@ package kurou.kodriver.feature.manualreadoutsetdetail
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -26,6 +28,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
+import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import org.junit.Rule
 import org.junit.Test
@@ -64,9 +67,13 @@ class ManualReadoutSetDetailWiringTest {
         val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
         val original = ManualReadoutSet("target")
         val selected = original.copy(itemKeys = listOf(key))
+        val edited = selected.copy(itemTexts = mapOf(key to "残量{percent}%"))
+        val reset = edited.copy(itemTexts = mapOf(key to manualReadoutItemTextDefault(key)))
         val sets = MutableStateFlow(listOf(original))
         every { repository.observeSets() } returns sets
         coEvery { repository.updateSet(selected) } answers { sets.value = listOf(selected) }
+        coEvery { repository.updateSet(edited) } answers { sets.value = listOf(edited) }
+        coEvery { repository.updateSet(reset) } answers { sets.value = listOf(reset) }
         coEvery { repository.deleteSet("target") } returns Unit
         val owner =
             object : ViewModelStoreOwner {
@@ -100,12 +107,20 @@ class ManualReadoutSetDetailWiringTest {
             rule.onNodeWithContentDescription("戻る").performClick()
             rule.runOnIdle { assertEquals(1, backed) }
             rule.onNode(isToggleable()).performClick()
+            rule.onNode(hasSetTextAction()).performTextReplacement("残量{percent}%")
+            rule.waitForIdle()
+            rule.onNodeWithText("残量{percent}%").assertIsDisplayed()
+            rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
+            rule.waitForIdle()
+            rule.onNodeWithText(manualReadoutItemTextDefault(key)).assertIsDisplayed()
             rule.onNodeWithText("セットを削除").performClick()
             rule.onNodeWithText("削除").performClick()
             rule.waitForIdle()
             rule.runOnIdle { assertEquals(1, returned) }
-            verify(exactly = 2) { repository.observeSets() }
+            verify(exactly = 4) { repository.observeSets() }
             coVerify(exactly = 1) { repository.updateSet(selected) }
+            coVerify(exactly = 1) { repository.updateSet(edited) }
+            coVerify(exactly = 1) { repository.updateSet(reset) }
             coVerify(exactly = 1) { repository.deleteSet("target") }
             confirmVerified(repository)
         } finally {

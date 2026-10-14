@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
@@ -726,12 +727,20 @@ internal class LmuWindowsNarratorViewModel(
                             .first()
                             .find { it.id == request.setId }
                     if (set?.itemKeys?.contains(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value) == true) {
-                        readRemainingVirtualEnergyCurrentValue(manual = true)
+                        readRemainingVirtualEnergyCurrentValue(
+                            manual = true,
+                            textTemplate =
+                                set.itemTexts[LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value]
+                                    ?: LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT,
+                        )
                     }
                 }
             }.launchIn(viewModelScope)
 
-    private suspend fun readRemainingVirtualEnergyCurrentValue(manual: Boolean = false) {
+    private suspend fun readRemainingVirtualEnergyCurrentValue(
+        manual: Boolean = false,
+        textTemplate: String? = null,
+    ) {
         val remainingVirtualEnergy = latestVirtualEnergy
         if (selectedSimulator.value !is Simulator.LmuWindows || remainingVirtualEnergy == null) return
         val observedAtMs = currentTimeMs()
@@ -744,6 +753,7 @@ internal class LmuWindowsNarratorViewModel(
                 narratorUseCases.determineReadout.determineManualRemainingVirtualEnergyCurrentValue(
                     state = state,
                     data = remainingVirtualEnergy,
+                    textTemplate = textTemplate,
                 )
             } else {
                 narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(

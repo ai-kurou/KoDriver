@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -24,8 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.rememberPendingText
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
+import kurou.kodriver.domain.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
+import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_cancel
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_delete
@@ -34,8 +41,14 @@ import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_delete_title
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_energy
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_no_items
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_percent_hint
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_percent_insert
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_set_missing
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_set_title
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_text_blank
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_text_label
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_text_reset
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_text_unknown
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_title
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
@@ -62,6 +75,7 @@ fun ManualReadoutSetDetailContent(
         uiState = uiState,
         onToggleItem = viewModel::toggleItem,
         onDelete = viewModel::deleteSet,
+        onItemTextChanged = viewModel::updateItemText,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -75,6 +89,7 @@ internal fun ManualReadoutSetDetailPane(
     onDelete: () -> Unit,
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
+    onItemTextChanged: (String, String) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -118,6 +133,13 @@ internal fun ManualReadoutSetDetailPane(
                             modifier = Modifier.semantics { contentDescription = itemName },
                         )
                     }
+                    if (itemKey in uiState.selectedItemKeys) {
+                        ManualReadoutItemTextField(
+                            text = uiState.itemTexts[itemKey] ?: manualReadoutItemTextDefault(itemKey),
+                            defaultText = manualReadoutItemTextDefault(itemKey),
+                            onTextChanged = { onItemTextChanged(itemKey, it) },
+                        )
+                    }
                 }
                 TextButton(onClick = { showDeleteDialog = true }) {
                     Text(stringResource(Res.string.manual_readout_delete), color = MaterialTheme.colorScheme.error)
@@ -147,4 +169,56 @@ internal fun ManualReadoutSetDeleteConfirmDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(Res.string.manual_readout_cancel)) }
         },
     )
+}
+
+/** 選択中の項目の文言を編集し、入力ごとに保存する。 */
+@Composable
+private fun ManualReadoutItemTextField(
+    text: String,
+    defaultText: String,
+    onTextChanged: (String) -> Unit,
+) {
+    val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
+    val currentText = textState.currentText
+    val changeText: (String) -> Unit = {
+        textState.change(it)
+        onTextChanged(it)
+    }
+    val unknown = findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders(currentText).joinToString("、")
+    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
+        DetailPaneLabeledTextField(
+            label = stringResource(Res.string.manual_readout_text_label),
+            value = currentText,
+            defaultValue = defaultText,
+            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+            onValueChangeFinished = changeText,
+            onPreviewClick = null,
+            onResetToDefault = { changeText(defaultText) },
+            resetContentDescription = stringResource(Res.string.manual_readout_text_reset),
+            supportingText =
+                when {
+                    unknown.isNotEmpty() -> stringResource(Res.string.manual_readout_text_unknown, unknown)
+                    currentText.isBlank() -> stringResource(Res.string.manual_readout_text_blank)
+                    else -> null
+                },
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+        ) {
+            AssistChip(
+                onClick = { changeText(currentText + LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER) },
+                label = { Text(stringResource(Res.string.manual_readout_percent_insert)) },
+                enabled =
+                    currentText.length + LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER.length <=
+                        READOUT_CUSTOM_TEXT_MAX_LENGTH,
+            )
+            Text(
+                text = stringResource(Res.string.manual_readout_percent_hint),
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }

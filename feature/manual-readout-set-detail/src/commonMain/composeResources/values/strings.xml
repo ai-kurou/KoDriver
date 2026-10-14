@@ -10,4 +10,10 @@
     <string name="manual_readout_delete_body">この操作は取り消せません。</string>
     <string name="manual_readout_delete_confirm">削除</string>
     <string name="manual_readout_cancel">キャンセル</string>
+    <string name="manual_readout_text_label">読み上げ文言</string>
+    <string name="manual_readout_text_reset">文言をデフォルトに戻す</string>
+    <string name="manual_readout_text_blank">空欄のままなら読み上げません</string>
+    <string name="manual_readout_text_unknown">未対応のプレースホルダー: %1$s（そのまま読み上げます）</string>
+    <string name="manual_readout_percent_insert">{percent} を挿入</string>
+    <string name="manual_readout_percent_hint">{percent} は現在の残量（%）に置き換わります</string>
 </resources>

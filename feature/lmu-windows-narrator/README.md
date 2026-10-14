@@ -62,6 +62,10 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 依頼ごとに保存済みセットを取得し、`setId` に対応するセットの `itemKeys` に
 `LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value` が含まれる場合のみ残量を読み上げる。
 セットが見つからない場合や項目が含まれない場合は何もしない。
+対象セットの `itemTexts` から文言テンプレートを取得し、未保存なら
+`LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT` を使う。
+手動判定時に `{percent}` を四捨五入した現在残量へ置換し、イベントの `resolvedText` と `narratedText` に反映する。
+キュー待機中も解決済み文言を維持し、発話とテレメトリログは同じ文言になる。空白文言は発話せずスキップとしてログに残す。
 F9 と共通の `readRemainingVirtualEnergyCurrentValue` が、最新値と受信から5秒以内の鮮度を確認し、
 手動専用の `determineManualRemainingVirtualEnergyCurrentValue` → `processRemainingVirtualEnergy` へ渡す。
 手動は自動読み上げスイッチを無視し、ユーザーのキュー設定に関係なく常にキューの末尾に並ぶ。
@@ -70,4 +74,4 @@ F9 は従来どおり有効スイッチとキュー設定に従う。
 Android でも WebSocket で受信した値を使う。未受信・鮮度切れでは読み上げず、「データがありません」は後続 PR で対応する。
 
 JVM テストで連続依頼・警告状態の維持・未受信・鮮度の境界・宛先と選択中シミュレーターの照合・
-切り替え後の古い値の破棄・キューとログ、Koin の UseCase 群の解決を確認する。
+切り替え後の古い値の破棄・セット別文言・空白文言・F9との分離・キューとログ、Koin の UseCase 群の解決を確認する。

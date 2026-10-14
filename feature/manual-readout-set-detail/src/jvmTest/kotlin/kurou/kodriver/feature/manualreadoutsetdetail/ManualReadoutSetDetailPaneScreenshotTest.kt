@@ -10,6 +10,8 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.manualReadoutItemKeys
 import org.junit.Test
 
 class ManualReadoutSetDetailPaneScreenshotTest {
@@ -30,13 +32,21 @@ class ManualReadoutSetDetailPaneScreenshotTest {
         canNavigateBack: Boolean = true,
         width: Int = 1560,
         height: Int = 1080,
+        selected: Boolean = false,
+        itemTexts: Map<String, String> = emptyMap(),
     ) = composeScreenshotTest {
         setContent {
             KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(width.dp, height.dp)) {
                         ManualReadoutSetDetailPane(
-                            uiState = ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = keys),
+                            uiState =
+                                ManualReadoutSetDetailUiState(
+                                    setNumber = 1,
+                                    availableItemKeys = keys,
+                                    selectedItemKeys = if (selected) keys else emptyList(),
+                                    itemTexts = itemTexts,
+                                ),
                             onToggleItem = {},
                             onDelete = {},
                             canNavigateBack = canNavigateBack,
@@ -60,4 +70,19 @@ class ManualReadoutSetDetailPaneScreenshotTest {
             }
             onNode(isDialog()).captureRoboImage()
         }
+
+    @Test
+    fun `選択項目の既定文言欄`() = screenshot(manualReadoutItemKeys(Simulator.LmuWindows.id), selected = true)
+
+    @Test
+    fun `編集文言と未知プレースホルダー警告`() {
+        val keys = manualReadoutItemKeys(Simulator.LmuWindows.id)
+        screenshot(keys, selected = true, itemTexts = mapOf(keys.single() to "残量{unknown}%"))
+    }
+
+    @Test
+    fun `空欄の文言`() {
+        val keys = manualReadoutItemKeys(Simulator.LmuWindows.id)
+        screenshot(keys, selected = true, itemTexts = mapOf(keys.single() to ""))
+    }
 }

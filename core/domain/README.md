@@ -68,7 +68,9 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 
 ## 手動読み上げセット
 
-`ManualReadoutSet` はセット識別子と読み上げ項目キーのリストを持つ。
+`ManualReadoutSet` はセット識別子・読み上げ項目キーのリスト・項目キーごとの文言テンプレート `itemTexts` を持つ。
+文言が未保存なら `manualReadoutItemTextDefault` の既定値を使い、保存済みの空文字は読み上げない。
+LMU の残量は自動側と共通の `{percent}` 置換・未知プレースホルダー検出を使う。
 `ObserveManualReadoutSetsUseCase` / `SaveManualReadoutSetsUseCase` は
 `ManualReadoutSetPreferencesRepository` を通じてセット一覧を取得・保存する。
 `AddManualReadoutSetUseCase` は保存済み一覧の末尾へ1セットをアトミックに追加する。

@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ManualReadoutSet
@@ -113,5 +115,118 @@ class ManualReadoutSetDetailViewModelTest {
             }
             verify(exactly = 4) { repository.observeSets() }
             confirmVerified(repository)
+        }
+
+    @Test
+    fun `文言は入力ごとに正規化して保存し選択解除と再選択でも未知文言を保持する`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            val original = ManualReadoutSet("target", listOf(key), mapOf("UNKNOWN" to "保持"))
+            val edited = original.copy(itemTexts = original.itemTexts + (key to "残量{percent}%"))
+            val blank = edited.copy(itemTexts = edited.itemTexts + (key to ""))
+            val unselected = blank.copy(itemKeys = emptyList())
+            val longText = "あ".repeat(30)
+            val limited = blank.copy(itemTexts = blank.itemTexts + (key to longText))
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            listOf(edited, blank, unselected, limited).forEach { updated ->
+                coEvery { repository.updateSet(updated) } answers { sets.value = listOf(updated) }
+            }
+            coEvery { repository.deleteSet("target") } returns Unit
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                assertEquals(original.itemTexts, vm.uiState.first { !it.isLoading }.itemTexts)
+                vm.updateItemText("UNKNOWN", "変更不可")
+                vm.updateItemText(key, "  残量{percent}%  ")
+                assertEquals(edited.itemTexts, vm.uiState.value.itemTexts)
+                vm.updateItemText(key, "  ")
+                assertEquals(blank.itemTexts, vm.uiState.value.itemTexts)
+                vm.toggleItem(key)
+                vm.toggleItem(key)
+                assertEquals(blank.itemTexts, vm.uiState.value.itemTexts)
+                vm.updateItemText(key, longText + "超過")
+                assertEquals(limited.itemTexts, vm.uiState.value.itemTexts)
+                vm.deleteSet()
+                vm.updateItemText(key, "削除後は保存しない")
+                verify(exactly = 6) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(edited) }
+                coVerify(exactly = 2) { repository.updateSet(blank) }
+                coVerify(exactly = 1) { repository.updateSet(unselected) }
+                coVerify(exactly = 1) { repository.updateSet(limited) }
+                coVerify(exactly = 1) { repository.deleteSet("target") }
+                confirmVerified(repository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `存在しないセットと未対応項目の文言は保存しない`() =
+        runTest(dispatcher) {
+            every { repository.observeSets() } returns MutableStateFlow(listOf(ManualReadoutSet("other")))
+            val vm = viewModel()
+            try {
+                vm.updateItemText("UNKNOWN", "文言")
+                vm.updateItemText(manualReadoutItemKeys(Simulator.LmuWindows.id).single(), "文言")
+                verify(exactly = 2) { repository.observeSets() }
+                confirmVerified(repository)
+            } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `削除後の文言編集は保存しない`() =
+        runTest(dispatcher) {
+            every { repository.observeSets() } returns MutableStateFlow(listOf(ManualReadoutSet("target")))
+            coEvery { repository.deleteSet("target") } returns Unit
+            val vm = viewModel()
+            try {
+                vm.deleteSet()
+                vm.updateItemText(manualReadoutItemKeys(Simulator.LmuWindows.id).single(), "文言")
+                verify(exactly = 1) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.deleteSet("target") }
+                confirmVerified(repository)
+            } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `保存待ち中の選択変更と連続編集はMutexで順序を保ち直前の結果を使う`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            val original = ManualReadoutSet("target", listOf(key))
+            val edited = original.copy(itemTexts = mapOf(key to "残量{percent}%"))
+            val unselected = edited.copy(itemKeys = emptyList())
+            val next = unselected.copy(itemTexts = mapOf(key to "残り{percent}%"))
+            val sets = MutableStateFlow(listOf(original))
+            val releaseSave = CompletableDeferred<Unit>()
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(edited) } coAnswers {
+                releaseSave.await()
+                sets.value = listOf(edited)
+            }
+            coEvery { repository.updateSet(unselected) } answers { sets.value = listOf(unselected) }
+            coEvery { repository.updateSet(next) } answers { sets.value = listOf(next) }
+            val vm = viewModel()
+            try {
+                vm.updateItemText(key, "残量{percent}%")
+                vm.toggleItem(key)
+                vm.updateItemText(key, "残り{percent}%")
+                assertEquals(listOf(original), sets.value)
+                releaseSave.complete(Unit)
+                runCurrent()
+                assertEquals(listOf(next), sets.value)
+                verify(exactly = 4) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(edited) }
+                coVerify(exactly = 1) { repository.updateSet(unselected) }
+                coVerify(exactly = 1) { repository.updateSet(next) }
+                confirmVerified(repository)
+            } finally {
+                vm.viewModelScope.cancel()
+            }
         }
 }

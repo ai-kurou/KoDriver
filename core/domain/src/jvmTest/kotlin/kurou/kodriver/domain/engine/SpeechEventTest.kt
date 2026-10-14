@@ -60,7 +60,7 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `全自由文字列イベントは本文を置き換えて型と既定文言とキーを維持する`() {
+    fun `全自由文字列イベントは解決済み本文を保持して型とキーを維持する`() {
         val events =
             listOf<ReadoutTextEvent>(
                 LmuWindowsCarLeft(),
@@ -111,7 +111,10 @@ class SpeechEventTest {
             val resolved = event.withResolvedText("判定時の本文")
             assertEquals(event::class, resolved::class)
             assertEquals("判定時の本文", resolved.resolvedText)
-            assertEquals(event.narratedText, resolved.narratedText)
+            assertEquals(
+                if (event is LmuWindowsRemainingVirtualEnergyCurrentValue) "判定時の本文" else event.narratedText,
+                resolved.narratedText,
+            )
             assertEquals(event.readoutItemKey, resolved.readoutItemKey)
             assertEquals("変更後の本文", resolved.withResolvedText("変更後の本文").resolvedText)
             assertEquals("", resolved.withResolvedText("").resolvedText)
@@ -151,8 +154,10 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `現在のエナジー残量は固定文言と既存のRootキーを持つ`() {
+    fun `現在のエナジー残量は既定文言と既存のRootキーを持ち解決済み文言を反映する`() {
         val event = LmuWindowsRemainingVirtualEnergyCurrentValue(42)
+        assertEquals("残量42%", event.withResolvedText("残量42%").narratedText)
+        assertEquals("", event.withResolvedText("").narratedText)
         assertEquals(42, event.percentage)
         assertEquals("バーチャルエナジー残量は42パーセント", event.narratedText)
         assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, event.readoutItemKey)
