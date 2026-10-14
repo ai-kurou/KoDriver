@@ -11,11 +11,14 @@ import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5TyreTemperatureReadoutText
 
+/** GT7 由来の読み上げイベントを識別する共通マーカー。自由文言経路で本文を扱うため [ReadoutTextEvent] の契約を持つ。 */
+sealed interface Gt7Ps5SpeechEvent : ReadoutTextEvent
+
 /** GT7 の更新後の自己ベストタイム。解決済み文言は判定時の発話・ログ内容を保持する。 */
 data class Gt7Ps5MyBestLap(
     val lapTimeMs: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : Gt7Ps5SpeechEvent {
     override val readoutItemKey = Gt7Ps5ReadoutItemKey.MyBestLap.Root
     override val narratedText =
         formatGt7Ps5MyBestLapReadoutText(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
@@ -30,7 +33,7 @@ data class Gt7Ps5MyBestLap(
 data class Gt7Ps5RemainingFuelLapsWarning(
     val laps: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : Gt7Ps5SpeechEvent {
     override val readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root
     override val narratedText =
         if (laps <= 0) {
@@ -49,7 +52,7 @@ data class Gt7Ps5RemainingFuelLapsWarning(
 data class Gt7Ps5RemainingFuelWarning(
     val percent: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : Gt7Ps5SpeechEvent {
     override val readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuel.Root
     override val narratedText =
         formatGt7Ps5RemainingFuelReadoutText(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, percent)
@@ -61,7 +64,7 @@ data class Gt7Ps5RemainingFuelWarning(
 data class Gt7Ps5TyreOverheat(
     val celsius: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : Gt7Ps5SpeechEvent {
     override val readoutItemKey = Gt7Ps5ReadoutItemKey.TyreTemperature.Root
     override val narratedText =
         formatGt7Ps5TyreTemperatureReadoutText(GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT, celsius)
