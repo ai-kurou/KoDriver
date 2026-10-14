@@ -4,6 +4,7 @@ import kurou.kodriver.data.debugreadout.InMemoryDebugReadoutRequestRepository
 import kurou.kodriver.data.device.JvmAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.JvmHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
+import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.JvmKeepScreenOnEnabledRepository
@@ -41,6 +42,7 @@ import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
@@ -73,6 +75,7 @@ internal val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
 val desktopDataModule =
     module {
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
+        single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         includes(desktopDataModuleLmuWindows())
         includes(desktopDataModuleAceWindows())
         includes(desktopDataModuleGt7Ps5())

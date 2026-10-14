@@ -80,19 +80,21 @@ fun ManualReadoutListPane(
         uiState = uiState,
         simulatorName = simulatorName,
         onAddSet = viewModel::addSet,
+        onReadSet = viewModel::readSet,
         modifier = modifier,
     )
 }
 
 /**
  * 保存済みセットが空なら空状態を表示し、1件以上なら見出しの下にセット一覧を表示する。
- * セット追加 FAB は常時表示する。行の詳細表示と読み上げは後続 PR で実装する。
+ * セット追加 FAB は常時表示する。行の詳細表示は後続 PR で実装する。
  */
 @Composable
 internal fun ManualReadoutListPaneContent(
     uiState: ManualReadoutListUiState,
     simulatorName: String,
     onAddSet: () -> Unit,
+    onReadSet: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -116,7 +118,12 @@ internal fun ManualReadoutListPaneContent(
                     contentPadding = PaddingValues(bottom = 56.dp + KoDriverSpacing.large),
                 ) {
                     itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
-                        ManualReadoutSetRow(setNumber = index + 1, itemCount = set.itemKeys.size)
+                        ManualReadoutSetRow(
+                            setNumber = index + 1,
+                            itemCount = set.itemKeys.size,
+                            canReadSet = uiState.canReadSets,
+                            onReadSet = { onReadSet(set.id) },
+                        )
                     }
                 }
             }
@@ -135,11 +142,13 @@ internal fun ManualReadoutListPaneContent(
     }
 }
 
-/** セット番号と項目数を表示する。読み上げボタンは機能の実装まで無効にする。 */
+/** セット番号と項目数を表示する。LMU のセットは読み上げボタンから依頼を送る。 */
 @Composable
 private fun ManualReadoutSetRow(
     setNumber: Int,
     itemCount: Int,
+    canReadSet: Boolean,
+    onReadSet: () -> Unit,
 ) {
     ElevatedCard(
         modifier =
@@ -181,7 +190,7 @@ private fun ManualReadoutSetRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            IconButton(onClick = {}, enabled = false) {
+            IconButton(onClick = onReadSet, enabled = canReadSet) {
                 Icon(
                     imageVector = Icons.Filled.PlayArrow,
                     contentDescription = stringResource(Res.string.manual_readout_list_readout_set, setNumber),

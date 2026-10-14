@@ -34,6 +34,7 @@ class AndroidKoinModuleGraphTest {
     fun `Android構成のKoinモジュールグラフが解決可能である`() {
         val context = ApplicationProvider.getApplicationContext<Application>()
 
+        // 手動一覧の送信 UseCase と LMU Narrator の購読 UseCase も実 DataModule の依頼 Repository で解決する。
         checkKoinModules(
             listOf(
                 androidDataModule(context),

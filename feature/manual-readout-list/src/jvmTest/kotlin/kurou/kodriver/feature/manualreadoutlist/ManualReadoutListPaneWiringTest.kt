@@ -5,6 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -28,8 +30,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import org.junit.Rule
 import org.junit.Test
@@ -61,11 +65,14 @@ class ManualReadoutListPaneWiringTest {
                 },
             ).around(rule)
 
+    private val requestRepository: ManualReadoutRequestRepository = mockk()
     private val lmuRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val gt7Repository: ManualReadoutSetPreferencesRepository = mockk()
 
     @Test
     fun `同じViewModelStoreOwnerでシミュレーターを切り替えると対応するセットの空状態を表示する`() {
+        val request = ManualReadoutRequest(Simulator.LmuWindows.id, "lmu-set")
+        coEvery { requestRepository.request(request) } returns Unit
         val addedSet = slot<ManualReadoutSet>()
         coEvery { lmuRepository.addSet(capture(addedSet)) } returns Unit
         val lmuSets = MutableStateFlow<List<ManualReadoutSet>>(emptyList())
@@ -81,6 +88,7 @@ class ManualReadoutListPaneWiringTest {
             modules(
                 manualReadoutListModule,
                 module {
+                    single<ManualReadoutRequestRepository> { requestRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) { lmuRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) { gt7Repository }
                 },
@@ -99,8 +107,10 @@ class ManualReadoutListPaneWiringTest {
             rule.onNodeWithText("lmu_windowsの手動読み上げセットはまだありません").assertIsDisplayed()
             rule.runOnIdle { lmuSets.update { listOf(ManualReadoutSet(id = "lmu-set")) } }
             rule.onNodeWithText("lmu_windowsの手動読み上げセットはまだありません").assertDoesNotExist()
+            rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsEnabled().performClick()
             rule.runOnIdle { simulatorId = Simulator.Gt7Ps5.id }
             rule.waitForIdle()
+            rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsNotEnabled()
             rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
             rule.onNodeWithText("gt7_ps5の手動読み上げセットはまだありません").assertDoesNotExist()
             rule.runOnIdle {
@@ -122,7 +132,8 @@ class ManualReadoutListPaneWiringTest {
             }
             verify(exactly = 1) { lmuRepository.observeSets() }
             verify(exactly = 1) { gt7Repository.observeSets() }
-            confirmVerified(lmuRepository, gt7Repository)
+            coVerify(exactly = 1) { requestRepository.request(request) }
+            confirmVerified(lmuRepository, gt7Repository, requestRepository)
         } finally {
             rule.runOnIdle { showPane = false }
             rule.waitForIdle()

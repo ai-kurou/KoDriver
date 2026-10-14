@@ -22,9 +22,10 @@ class ManualReadoutListPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
                             ManualReadoutListPaneContent(
-                                uiState = ManualReadoutListUiState(),
+                                uiState = ManualReadoutListUiState(canReadSets = true),
                                 simulatorName = "LMU",
                                 onAddSet = {},
+                                onReadSet = {},
                             )
                         }
                     }
@@ -44,6 +45,7 @@ class ManualReadoutListPaneScreenshotTest {
                             ManualReadoutListPaneContent(
                                 uiState =
                                     ManualReadoutListUiState(
+                                        canReadSets = true,
                                         sets =
                                             listOf(
                                                 ManualReadoutSet(id = "set-1"),
@@ -52,6 +54,7 @@ class ManualReadoutListPaneScreenshotTest {
                                     ),
                                 simulatorName = "LMU",
                                 onAddSet = {},
+                                onReadSet = {},
                             )
                         }
                     }

@@ -66,6 +66,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
@@ -122,6 +123,7 @@ internal data class TyreWearUseCases(
 internal data class RemainingVirtualEnergyUseCases(
     val observeRemainingVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     val observeReadoutHotkey: ObserveReadoutHotkeyUseCase,
+    val observeManualReadoutRequests: ObserveManualReadoutRequestsUseCase,
     val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
 )
 
@@ -705,34 +707,48 @@ internal class LmuWindowsNarratorViewModel(
         remainingVirtualEnergyUseCases
             .observeReadoutHotkey()
             .onEach {
-                if (selectedSimulator.value !is Simulator.LmuWindows) return@onEach
-                val remainingVirtualEnergy = latestVirtualEnergy ?: return@onEach
-                val observedAtMs = currentTimeMs()
-                // セッション終了や切断後は新しい値が流れないため、古い残量は読み上げない。
-                if (observedAtMs - latestVirtualEnergyReceivedAtMs > HOTKEY_VIRTUAL_ENERGY_MAX_AGE_MS) return@onEach
-                val state = narratorState
-                val settings = currentSettings
-                val decision =
-                    narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
-                        state = state,
-                        data = remainingVirtualEnergy,
-                        settings = settings,
-                    )
-                narratorState = decision.state
-                eventProcessor.processRemainingVirtualEnergy(
-                    remainingVirtualEnergy = remainingVirtualEnergy,
-                    events = decision.events,
-                    autoReadoutOrder = autoReadoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        LmuWindowsTelemetryLogContext(
-                            state = state,
-                            settings = settings,
-                            finalState = decision.state,
-                        ),
-                )
+                readRemainingVirtualEnergyCurrentValue()
             }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val manualReadoutRequestJob =
+        remainingVirtualEnergyUseCases
+            .observeManualReadoutRequests()
+            .onEach { request ->
+                if (request.simulatorId == Simulator.LmuWindows.id) {
+                    readRemainingVirtualEnergyCurrentValue()
+                }
+            }.launchIn(viewModelScope)
+
+    private suspend fun readRemainingVirtualEnergyCurrentValue() {
+        val remainingVirtualEnergy = latestVirtualEnergy
+        if (selectedSimulator.value !is Simulator.LmuWindows || remainingVirtualEnergy == null) return
+        val observedAtMs = currentTimeMs()
+        // セッション終了や切断後は新しい値が流れないため、古い残量は読み上げない。
+        if (observedAtMs - latestVirtualEnergyReceivedAtMs > HOTKEY_VIRTUAL_ENERGY_MAX_AGE_MS) return
+        val state = narratorState
+        val settings = currentSettings
+        val decision =
+            narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
+                state = state,
+                data = remainingVirtualEnergy,
+                settings = settings,
+            )
+        narratorState = decision.state
+        eventProcessor.processRemainingVirtualEnergy(
+            remainingVirtualEnergy = remainingVirtualEnergy,
+            events = decision.events,
+            autoReadoutOrder = autoReadoutOrder.value,
+            queueEnabledStates = queueEnabledStates.value,
+            observedAtMs = observedAtMs,
+            logContext =
+                LmuWindowsTelemetryLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = decision.state,
+                ),
+        )
+    }
 
     @Suppress("UnusedPrivateProperty")
     private val pitTimingJob =
