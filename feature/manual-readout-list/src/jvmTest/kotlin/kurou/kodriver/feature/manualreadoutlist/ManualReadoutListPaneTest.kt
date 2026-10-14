@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -22,11 +24,18 @@ class ManualReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `保存済みセットがあると説明見出し行と追加FABを表示する`() {
+    fun `複数の保存済みセットのタイトルと項目数と無効な読み上げボタンを表示する`() {
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
-                    uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet(id = "set-1"))),
+                    uiState =
+                        ManualReadoutListUiState(
+                            sets =
+                                listOf(
+                                    ManualReadoutSet(id = "set-1"),
+                                    ManualReadoutSet(id = "set-2", itemKeys = listOf("SESSION", "FLAG")),
+                                ),
+                        ),
                     simulatorName = "LMU",
                     onAddSet = {},
                 )
@@ -35,7 +44,12 @@ class ManualReadoutListPaneTest {
 
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
         rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertDoesNotExist()
-        rule.onNodeWithText("set-1").assertDoesNotExist()
+        rule.onNodeWithText("セット 1").assertIsDisplayed().assertHasNoClickAction()
+        rule.onNodeWithText("項目なし").assertIsDisplayed()
+        rule.onNodeWithText("セット 2").assertIsDisplayed().assertHasNoClickAction()
+        rule.onNodeWithText("2項目").assertIsDisplayed()
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsDisplayed().assertIsNotEnabled()
+        rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsDisplayed().assertIsNotEnabled()
         rule.onNodeWithContentDescription("セットを追加").assertIsDisplayed()
     }
 

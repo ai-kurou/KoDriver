@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Test
 
 class ManualReadoutListPaneScreenshotTest {
@@ -22,6 +23,33 @@ class ManualReadoutListPaneScreenshotTest {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
                             ManualReadoutListPaneContent(
                                 uiState = ManualReadoutListUiState(),
+                                simulatorName = "LMU",
+                                onAddSet = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `保存済みセット一覧`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            ManualReadoutListPaneContent(
+                                uiState =
+                                    ManualReadoutListUiState(
+                                        sets =
+                                            listOf(
+                                                ManualReadoutSet(id = "set-1"),
+                                                ManualReadoutSet(id = "set-2", itemKeys = listOf("SESSION", "FLAG")),
+                                            ),
+                                    ),
                                 simulatorName = "LMU",
                                 onAddSet = {},
                             )
