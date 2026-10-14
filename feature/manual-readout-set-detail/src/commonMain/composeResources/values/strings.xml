@@ -1,0 +1,11 @@
+<resources>
+    <string name="manual_readout_set_title">セット %1$d</string>
+    <string name="manual_readout_set_missing">セットが見つかりません</string>
+    <string name="manual_readout_no_items">このシミュレーターで選べる項目はまだありません</string>
+    <string name="manual_readout_energy">バーチャルエナジー残量</string>
+    <string name="manual_readout_delete">セットを削除</string>
+    <string name="manual_readout_delete_title">セットを削除しますか？</string>
+    <string name="manual_readout_delete_body">この操作は取り消せません。</string>
+    <string name="manual_readout_delete_confirm">削除</string>
+    <string name="manual_readout_cancel">キャンセル</string>
+</resources>

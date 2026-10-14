@@ -134,4 +134,40 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
                 repository.observeSets().first(),
             )
         }
+
+    @Test
+    fun `更新と削除は対象IDだけに作用し存在しないIDなら一覧を保持する`() =
+        runTest {
+            val first = ManualReadoutSet("first", listOf("UNKNOWN"))
+            val second = ManualReadoutSet("second")
+            val updated = second.copy(itemKeys = listOf("ENERGY", "UNKNOWN"))
+            repository.saveSets(listOf(first, second))
+
+            repository.updateSet(updated)
+            repository.updateSet(ManualReadoutSet("missing"))
+            repository.deleteSet("missing")
+            assertEquals(listOf(first, updated), repository.observeSets().first())
+
+            repository.deleteSet(second.id)
+            assertEquals(listOf(first), repository.observeSets().first())
+            repository.deleteSet(first.id)
+            assertEquals(emptyList(), repository.observeSets().first())
+        }
+
+    @Test
+    fun `並行する追加と別セットの更新と削除が互いの変更を失わない`() =
+        runTest {
+            val updated = ManualReadoutSet("update", listOf("ENERGY", "UNKNOWN"))
+            val removed = ManualReadoutSet("remove")
+            val added = ManualReadoutSet("added")
+            repository.saveSets(listOf(updated.copy(itemKeys = emptyList()), removed))
+
+            coroutineScope {
+                launch { repository.updateSet(updated) }
+                launch { repository.deleteSet(removed.id) }
+                launch { repository.addSet(added) }
+            }
+
+            assertEquals(listOf(updated, added), repository.observeSets().first())
+        }
 }

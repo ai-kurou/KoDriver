@@ -72,6 +72,7 @@ fun ManualReadoutListPane(
     simulatorId: String,
     simulatorName: String,
     modifier: Modifier = Modifier,
+    onSetClick: (String) -> Unit = {},
 ) {
     val viewModel: ManualReadoutListViewModel =
         koinViewModel(key = simulatorId, parameters = { parametersOf(simulatorId) })
@@ -81,13 +82,14 @@ fun ManualReadoutListPane(
         simulatorName = simulatorName,
         onAddSet = viewModel::addSet,
         onReadSet = viewModel::readSet,
+        onSetClick = onSetClick,
         modifier = modifier,
     )
 }
 
 /**
  * 保存済みセットが空なら空状態を表示し、1件以上なら見出しの下にセット一覧を表示する。
- * セット追加 FAB は常時表示する。行の詳細表示は後続 PR で実装する。
+ * セット追加 FAB は常時表示する。行タップで詳細を開く。
  */
 @Composable
 internal fun ManualReadoutListPaneContent(
@@ -96,6 +98,7 @@ internal fun ManualReadoutListPaneContent(
     onAddSet: () -> Unit,
     onReadSet: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onSetClick: (String) -> Unit = {},
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
@@ -123,6 +126,7 @@ internal fun ManualReadoutListPaneContent(
                             itemCount = set.itemKeys.size,
                             canReadSet = uiState.canReadSets,
                             onReadSet = { onReadSet(set.id) },
+                            onSetClick = { onSetClick(set.id) },
                         )
                     }
                 }
@@ -149,8 +153,10 @@ private fun ManualReadoutSetRow(
     itemCount: Int,
     canReadSet: Boolean,
     onReadSet: () -> Unit,
+    onSetClick: () -> Unit,
 ) {
     ElevatedCard(
+        onClick = onSetClick,
         modifier =
             Modifier
                 .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)

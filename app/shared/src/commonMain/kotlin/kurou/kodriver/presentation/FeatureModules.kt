@@ -33,6 +33,7 @@ import kurou.kodriver.feature.lmuwindowsnarrator.lmuWindowsNarratorModule
 import kurou.kodriver.feature.main.mainModule
 import kurou.kodriver.feature.main.mainPlatformModule
 import kurou.kodriver.feature.manualreadoutlist.manualReadoutListModule
+import kurou.kodriver.feature.manualreadoutsetdetail.manualReadoutSetDetailModule
 import kurou.kodriver.feature.narratoroverlay.narratorOverlayModule
 import kurou.kodriver.feature.otherconsoleipdetail.otherConsoleIpDetailModule
 import kurou.kodriver.feature.otherfeedbackdetail.otherFeedbackDetailModule
@@ -93,6 +94,7 @@ val featureModules: List<Module> =
         otherVoiceDetailModule,
         autoReadoutListModule,
         manualReadoutListModule,
+        manualReadoutSetDetailModule,
         telemetryLogListModule,
         telemetryLogDetailModule,
         lmuWindowsAutoReadoutVehicleApproachDetailModule,

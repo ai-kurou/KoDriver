@@ -19,6 +19,21 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
         }
     }
 
+    override suspend fun updateSet(set: ManualReadoutSet) {
+        dataStore.updateData { prefs ->
+            prefs.copy(
+                sets =
+                    prefs.sets.map {
+                        if (it.id == set.id) ManualReadoutSetPreference(set.id, set.itemKeys) else it
+                    },
+            )
+        }
+    }
+
+    override suspend fun deleteSet(id: String) {
+        dataStore.updateData { prefs -> prefs.copy(sets = prefs.sets.filterNot { it.id == id }) }
+    }
+
     override suspend fun saveSets(sets: List<ManualReadoutSet>) {
         dataStore.saveProperty(sets) { prefs, value ->
             prefs.copy(sets = value.map { ManualReadoutSetPreference(id = it.id, itemKeys = it.itemKeys) })

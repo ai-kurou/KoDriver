@@ -1,0 +1,106 @@
+package kurou.kodriver.feature.manualreadoutsetdetail
+
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.isToggleable
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.manualReadoutItemKeys
+import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
+import org.junit.Rule
+import org.junit.Test
+import org.junit.rules.ExternalResource
+import org.junit.rules.RuleChain
+import org.junit.rules.TestRule
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
+import kotlin.test.assertEquals
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class ManualReadoutSetDetailWiringTest {
+    private val rule = createComposeRule()
+
+    @get:Rule
+    val rules: TestRule =
+        RuleChain
+            .outerRule(
+                object : ExternalResource() {
+                    override fun before() {
+                        Dispatchers.setMain(UnconfinedTestDispatcher())
+                    }
+
+                    override fun after() {
+                        Dispatchers.resetMain()
+                    }
+                },
+            ).around(rule)
+
+    private val repository: ManualReadoutSetPreferencesRepository = mockk()
+
+    @Test
+    fun `Contentは項目保存と削除と一覧へ戻る通知を配線する`() {
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        val original = ManualReadoutSet("target")
+        val selected = original.copy(itemKeys = listOf(key))
+        val sets = MutableStateFlow(listOf(original))
+        every { repository.observeSets() } returns sets
+        coEvery { repository.updateSet(selected) } answers { sets.value = listOf(selected) }
+        coEvery { repository.deleteSet("target") } returns Unit
+        val owner =
+            object : ViewModelStoreOwner {
+                override val viewModelStore = ViewModelStore()
+            }
+        var returned = 0
+        startKoin {
+            modules(
+                manualReadoutSetDetailModule,
+                module {
+                    single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) { repository }
+                },
+            )
+        }
+        try {
+            rule.setContent {
+                CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
+                    KoDriverTheme {
+                        ManualReadoutSetDetailContent(Simulator.LmuWindows.id, "target", { returned++ })
+                    }
+                }
+            }
+            rule.onNodeWithText("セット 1").assertIsDisplayed()
+            rule.onNode(isToggleable()).performClick()
+            rule.onNodeWithText("セットを削除").performClick()
+            rule.onNodeWithText("削除").performClick()
+            rule.waitForIdle()
+            rule.runOnIdle { assertEquals(1, returned) }
+            verify(exactly = 2) { repository.observeSets() }
+            coVerify(exactly = 1) { repository.updateSet(selected) }
+            coVerify(exactly = 1) { repository.deleteSet("target") }
+            confirmVerified(repository)
+        } finally {
+            owner.viewModelStore.clear()
+            stopKoin()
+        }
+    }
+}

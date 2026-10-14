@@ -85,7 +85,8 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.LmuWindowsDebugStateDet
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
-import kurou.kodriver.feature.manualreadoutlist.ManualReadoutListPane
+import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
+import kurou.kodriver.feature.manualreadoutsetdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
@@ -459,9 +460,17 @@ fun AppScreen(
     },
     manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit = { selectedSimulatorId ->
         key(selectedSimulatorId) {
-            ManualReadoutListPane(
+            ManualReadoutContent(
                 simulatorId = selectedSimulatorId,
                 simulatorName = appScreenPrimarySimulatorLabel(selectedSimulatorId),
+                backHandler = backHandler,
+                detailContent = { setId, onBack ->
+                    ManualReadoutSetDetailContent(
+                        simulatorId = selectedSimulatorId,
+                        setId = setId,
+                        onDeleted = onBack,
+                    )
+                },
             )
         }
     },

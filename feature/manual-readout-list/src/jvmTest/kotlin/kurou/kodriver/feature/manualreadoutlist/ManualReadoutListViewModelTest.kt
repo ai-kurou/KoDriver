@@ -184,4 +184,33 @@ class ManualReadoutListViewModelTest {
             }
             confirmVerified(requestRepository)
         }
+
+    @Test
+    fun `選択と解除と対象セットの削除を一覧状態に反映する`() =
+        runTest(dispatcher) {
+            val sets = MutableStateFlow(listOf(ManualReadoutSet("target")))
+            every { repository.observeSets() } returns sets
+            val viewModel =
+                ManualReadoutListViewModel(
+                    Simulator.LmuWindows.id,
+                    RequestManualReadoutUseCase(requestRepository),
+                    ObserveManualReadoutSetsUseCase(repository),
+                    AddManualReadoutSetUseCase(repository),
+                )
+            val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
+            try {
+                viewModel.selectSet("target")
+                assertEquals("target", viewModel.uiState.first().selectedSetId)
+                viewModel.clearSelectedSet()
+                assertEquals(null, viewModel.uiState.first().selectedSetId)
+                viewModel.selectSet("target")
+                sets.value = emptyList()
+                assertEquals(null, viewModel.uiState.first().selectedSetId)
+                viewModel.selectSet("missing")
+                assertEquals(null, viewModel.uiState.first().selectedSetId)
+            } finally {
+                collection.cancel()
+                viewModel.viewModelScope.cancel()
+            }
+        }
 }

@@ -8,5 +8,9 @@ interface ManualReadoutSetPreferencesRepository {
 
     suspend fun addSet(set: ManualReadoutSet)
 
+    suspend fun updateSet(set: ManualReadoutSet)
+
+    suspend fun deleteSet(id: String)
+
     suspend fun saveSets(sets: List<ManualReadoutSet>)
 }
