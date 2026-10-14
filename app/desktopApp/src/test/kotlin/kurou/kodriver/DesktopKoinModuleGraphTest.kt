@@ -26,6 +26,7 @@ import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
+import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
@@ -91,6 +92,8 @@ class DesktopKoinModuleGraphTest {
         try {
             assertNotNull(application.koin.get<ReadoutHotkeyPreferencesRepository>())
             assertNotNull(application.koin.get<HotkeyRepository>())
+            val manualHotkey = application.koin.get<ManualReadoutHotkeyRepository>()
+            assertSame(manualHotkey, application.koin.get<ManualReadoutHotkeyRepository>())
         } finally {
             application.close()
         }

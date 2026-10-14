@@ -22,4 +22,9 @@
     <string name="manual_readout_hotkey_hint">Ctrl + Alt + Shift と数字または英字の組み合わせを割り当てます</string>
     <string name="manual_readout_hotkey_other_set">%1$s のセット%2$dで使用中のため割り当てできません</string>
     <string name="manual_readout_hotkey_debug">デバッグ用の読み上げホットキーで使用中のため割り当てできません</string>
+    <string name="manual_readout_hotkey_registration_registering">登録中</string>
+    <string name="manual_readout_hotkey_registration_registered">登録済み</string>
+    <string name="manual_readout_hotkey_registration_conflict">他のアプリが使用中のため登録できません</string>
+    <string name="manual_readout_hotkey_registration_failed">登録に失敗しました（エラーコード: %1$d）</string>
+    <string name="manual_readout_hotkey_registration_retry">再試行</string>
 </resources>

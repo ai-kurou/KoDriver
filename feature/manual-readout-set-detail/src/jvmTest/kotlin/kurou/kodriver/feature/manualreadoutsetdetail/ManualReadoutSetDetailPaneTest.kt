@@ -16,6 +16,7 @@ import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.pressKey
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
@@ -183,5 +184,45 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("デバッグ用の読み上げホットキーで使用中のため割り当てできません").assertExists()
         rule.runOnIdle { showHotkey.value = false }
         rule.onNodeWithTag("manual_readout_hotkey_card").assertDoesNotExist()
+    }
+
+    @Test
+    fun `割り当て済みの登録状態と競合失敗時の再試行だけ表示する`() {
+        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, hotkeyVirtualKeyCode = 0x41))
+        var retries = 0
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onToggleItem = {},
+                    onDelete = {},
+                    showHotkey = true,
+                    onRetryHotkeyRegistration = { retries++ },
+                )
+            }
+        }
+        rule.onNodeWithText("再試行").assertDoesNotExist()
+        val states =
+            listOf(
+                HotkeyRegistrationState.Registering to "登録中",
+                HotkeyRegistrationState.Registered to "登録済み",
+                HotkeyRegistrationState.Conflict to "他のアプリが使用中のため登録できません",
+                HotkeyRegistrationState.Failed(5) to "登録に失敗しました（エラーコード: 5）",
+            )
+        states.forEach { (registration, text) ->
+            rule.runOnIdle { state.value = state.value.copy(hotkeyRegistrationState = registration) }
+            rule.onNodeWithText(text).assertExists()
+            if (registration is HotkeyRegistrationState.Conflict || registration is HotkeyRegistrationState.Failed) {
+                rule.onNodeWithText("再試行").performClick()
+            } else {
+                rule.onNodeWithText("再試行").assertDoesNotExist()
+            }
+        }
+        rule.runOnIdle {
+            assertEquals(2, retries)
+            state.value = state.value.copy(hotkeyVirtualKeyCode = null)
+        }
+        rule.onNodeWithText("登録に失敗しました（エラーコード: 5）").assertDoesNotExist()
+        rule.onNodeWithText("再試行").assertDoesNotExist()
     }
 }

@@ -16,10 +16,13 @@ import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.isManualReadoutHotkeyVirtualKeyCode
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyVirtualKeyCodeUseCase
+import kurou.kodriver.domain.usecase.RetryManualReadoutHotkeyRegistrationUseCase
 import kurou.kodriver.domain.usecase.UpdateManualReadoutSetUseCase
 
+@Suppress("LongParameterList")
 internal class ManualReadoutSetDetailViewModel(
     private val simulatorId: String,
     private val setId: String,
@@ -28,6 +31,8 @@ internal class ManualReadoutSetDetailViewModel(
     private val deleteSet: DeleteManualReadoutSetUseCase,
     private val observeDebugHotkeyVirtualKeyCode: ObserveReadoutHotkeyVirtualKeyCodeUseCase,
     private val observeOtherSimulatorSets: Map<String, ObserveManualReadoutSetsUseCase>,
+    observeHotkeyRegistrationState: ObserveManualReadoutHotkeyRegistrationStateUseCase,
+    private val retryHotkeyRegistration: RetryManualReadoutHotkeyRegistrationUseCase,
 ) : ViewModel() {
     private val availableItemKeys = manualReadoutItemKeys(simulatorId)
     private val deleted = MutableStateFlow(false)
@@ -40,7 +45,8 @@ internal class ManualReadoutSetDetailViewModel(
             deleted,
             hotkeyConflict,
             observeDebugHotkeyVirtualKeyCode(),
-        ) { sets, isDeleted, conflict, debugVirtualKeyCode ->
+            observeHotkeyRegistrationState(simulatorId, setId),
+        ) { sets, isDeleted, conflict, debugVirtualKeyCode, registration ->
             val index = sets.indexOfFirst { it.id == setId }
             val hotkey = sets.getOrNull(index)?.hotkeyVirtualKeyCode
             // 保存後にデバッグ用ホットキーが同じキーへ変更された場合も警告する。
@@ -52,6 +58,7 @@ internal class ManualReadoutSetDetailViewModel(
                 selectedItemKeys = sets.getOrNull(index)?.itemKeys.orEmpty(),
                 itemTexts = sets.getOrNull(index)?.itemTexts.orEmpty(),
                 hotkeyVirtualKeyCode = hotkey,
+                hotkeyRegistrationState = registration,
                 hotkeyConflict = conflict ?: savedConflict,
                 isLoading = false,
                 deleted = isDeleted,
@@ -124,6 +131,10 @@ internal class ManualReadoutSetDetailViewModel(
             if (index >= 0) return ManualReadoutHotkeyConflict.OtherSet(otherSimulatorId, index + 1)
         }
         return null
+    }
+
+    fun onRetryHotkeyRegistration() {
+        viewModelScope.launch { retryHotkeyRegistration(simulatorId, setId) }
     }
 
     fun clearHotkey() {

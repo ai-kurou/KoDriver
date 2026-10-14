@@ -10,15 +10,18 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
+import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import org.koin.core.parameter.parametersOf
@@ -32,6 +35,7 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutSetDetailModuleTest {
+    private val hotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()
     private val lmuRepository: ManualReadoutSetPreferencesRepository = mockk()
@@ -61,11 +65,16 @@ class ManualReadoutSetDetailModuleTest {
             repositories.forEach { (id, repository) ->
                 every { repository.observeSets() } returns flowOf(listOf(ManualReadoutSet(id = id)))
             }
+            Simulator.entries.forEach { simulator ->
+                every { hotkeyRepository.registrationStateStream(simulator.id, simulator.id) } returns
+                    MutableStateFlow(HotkeyRegistrationState.Unsupported)
+            }
             val application =
                 koinApplication {
                     modules(
                         manualReadoutSetDetailModule,
                         module {
+                            single<ManualReadoutHotkeyRepository> { hotkeyRepository }
                             single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                             repositories.forEach { (id, repository) ->
                                 single<ManualReadoutSetPreferencesRepository>(named(id)) { repository }

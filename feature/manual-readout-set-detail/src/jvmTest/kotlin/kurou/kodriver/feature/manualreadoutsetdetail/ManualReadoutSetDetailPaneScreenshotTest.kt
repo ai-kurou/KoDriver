@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import org.junit.Test
@@ -35,6 +36,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
         selected: Boolean = false,
         itemTexts: Map<String, String> = emptyMap(),
         hotkey: Pair<Int?, ManualReadoutHotkeyConflict?>? = null,
+        registration: HotkeyRegistrationState = HotkeyRegistrationState.Unsupported,
     ) = composeScreenshotTest {
         setContent {
             KoDriverTheme {
@@ -49,6 +51,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                                     itemTexts = itemTexts,
                                     hotkeyVirtualKeyCode = hotkey?.first,
                                     hotkeyConflict = hotkey?.second,
+                                    hotkeyRegistrationState = registration,
                                 ),
                             showHotkey = hotkey != null,
                             onToggleItem = {},
@@ -98,8 +101,16 @@ class ManualReadoutSetDetailPaneScreenshotTest {
 
     @Test
     fun `ホットキー他セット重複`() =
-        screenshot(emptyList(), hotkey = 0x30 to ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2))
+        screenshot(
+            emptyList(),
+            hotkey =
+                0x30 to ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2),
+        )
 
     @Test
     fun `ホットキーデバッグ重複`() = screenshot(emptyList(), hotkey = null to ManualReadoutHotkeyConflict.DebugHotkey)
+
+    @Test
+    fun `ホットキー登録競合と再試行`() =
+        screenshot(emptyList(), hotkey = 0x41 to null, registration = HotkeyRegistrationState.Conflict)
 }

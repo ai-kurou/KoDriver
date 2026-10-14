@@ -17,12 +17,18 @@ import androidx.compose.ui.platform.testTag
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.simulatorDisplayName
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_clear
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_debug
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_hint
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_none
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_other_set
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_registration_conflict
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_registration_failed
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_registration_registered
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_registration_registering
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_registration_retry
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_title
 import org.jetbrains.compose.resources.stringResource
 
@@ -31,6 +37,7 @@ internal fun ManualReadoutHotkeyCard(
     state: ManualReadoutSetDetailUiState,
     onAssign: (Int) -> Unit,
     onClear: () -> Unit,
+    onRetry: () -> Unit,
 ) {
     DetailPaneCard(
         title = stringResource(Res.string.manual_readout_hotkey_title),
@@ -79,8 +86,46 @@ internal fun ManualReadoutHotkeyCard(
                 TextButton(onClick = onClear, enabled = state.hotkeyVirtualKeyCode != null) {
                     Text(stringResource(Res.string.manual_readout_hotkey_clear))
                 }
+                if (state.hotkeyVirtualKeyCode != null) {
+                    ManualReadoutHotkeyRegistration(state.hotkeyRegistrationState, onRetry)
+                }
                 Text(stringResource(Res.string.manual_readout_hotkey_hint))
             }
         },
     )
+}
+
+@Composable
+private fun ManualReadoutHotkeyRegistration(
+    registration: HotkeyRegistrationState,
+    onRetry: () -> Unit,
+) {
+    when (registration) {
+        HotkeyRegistrationState.Unsupported -> {
+            Unit
+        }
+
+        HotkeyRegistrationState.Registering -> {
+            Text(stringResource(Res.string.manual_readout_hotkey_registration_registering))
+        }
+
+        HotkeyRegistrationState.Registered -> {
+            Text(stringResource(Res.string.manual_readout_hotkey_registration_registered))
+        }
+
+        HotkeyRegistrationState.Conflict -> {
+            Text(stringResource(Res.string.manual_readout_hotkey_registration_conflict))
+        }
+
+        is HotkeyRegistrationState.Failed -> {
+            Text(
+                stringResource(Res.string.manual_readout_hotkey_registration_failed, registration.errorCode),
+            )
+        }
+    }
+    if (registration is HotkeyRegistrationState.Conflict || registration is HotkeyRegistrationState.Failed) {
+        TextButton(onClick = onRetry) {
+            Text(stringResource(Res.string.manual_readout_hotkey_registration_retry))
+        }
+    }
 }

@@ -82,3 +82,12 @@ Android と非 Windows ではホットキー押下を通知しない。
 ## デバッグ読み上げの例外
 
 デバッグ状態詳細ペインの要求は `ReadoutItemKey.topLevelEntriesOf` の項目を使用する。ログと優先度・キュー判定のキーは通常の Narrator と同じ TopLevel で、項目スイッチと determine 系の判定を意図的に通さず入力文字列を読み上げる。この経路は設定スイッチの配線確認には使わない。通常テレメトリ経路のスイッチ動作は従来どおり確認する。
+
+## 手動読み上げセットのホットキー
+
+セット詳細で保存した `ManualReadoutSet.hotkeyVirtualKeyCode` は、Windows の
+`ManualReadoutHotkeyRepositoryImpl` が全シミュレーターの設定から観測して登録する。
+押下は `ManualReadoutRequest(simulatorId, setId)` で配信し、LMU Narrator はタブからの依頼と
+`merge` して同じ処理へ渡す。自分宛ての保存済みセットの項目と文言を参照し、手動読み上げの判定を使う。
+セット詳細は同じ Repository の登録状態を観測し、競合・失敗時の再試行もセット識別子付きで委譲する。
+Android は非対応実装を使い、キー未割り当て・非対応時は登録状態を表示しない。

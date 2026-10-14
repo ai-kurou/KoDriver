@@ -29,10 +29,12 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.model.manualReadoutItemTextDefault
+import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import org.junit.Rule
@@ -65,12 +67,15 @@ class ManualReadoutSetDetailWiringTest {
                 },
             ).around(rule)
 
+    private val hotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
     private val otherRepository: ManualReadoutSetPreferencesRepository = mockk()
 
     @Test
     fun `Contentは項目保存と削除と一覧へ戻る通知を配線する`() {
+        every { hotkeyRepository.registrationStateStream(Simulator.LmuWindows.id, "target") } returns
+            MutableStateFlow(HotkeyRegistrationState.Unsupported)
         val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
         val original = ManualReadoutSet("target")
         val selected = original.copy(itemKeys = listOf(key))
@@ -93,6 +98,7 @@ class ManualReadoutSetDetailWiringTest {
             modules(
                 manualReadoutSetDetailModule,
                 module {
+                    single<ManualReadoutHotkeyRepository> { hotkeyRepository }
                     single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) { repository }
                     Simulator.entries.filter { it != Simulator.LmuWindows }.forEach { simulator ->
@@ -144,6 +150,11 @@ class ManualReadoutSetDetailWiringTest {
 
     @Test
     fun `Contentはホットキーの保存と解除を配線する`() {
+        val registration = MutableStateFlow<HotkeyRegistrationState>(HotkeyRegistrationState.Conflict)
+        every { hotkeyRepository.registrationStateStream(Simulator.Gt7Ps5.id, "target") } returns registration
+        coEvery { hotkeyRepository.retryRegistration(Simulator.Gt7Ps5.id, "target") } answers {
+            registration.value = HotkeyRegistrationState.Registered
+        }
         val original = ManualReadoutSet("target")
         val assigned = original.copy(hotkeyVirtualKeyCode = 0x41)
         val sets = MutableStateFlow(listOf(original))
@@ -160,6 +171,7 @@ class ManualReadoutSetDetailWiringTest {
             modules(
                 manualReadoutSetDetailModule,
                 module {
+                    single<ManualReadoutHotkeyRepository> { hotkeyRepository }
                     single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) { repository }
                     Simulator.entries.filter { it != Simulator.Gt7Ps5 }.forEach { simulator ->
@@ -185,6 +197,9 @@ class ManualReadoutSetDetailWiringTest {
             }
             rule.onNodeWithTag("manual_readout_hotkey_key").performClick().performKeyInput { pressKey(Key.A) }
             rule.onNodeWithText("Ctrl + Alt + Shift + A").assertIsDisplayed()
+            rule.onNodeWithText("他のアプリが使用中のため登録できません").assertIsDisplayed()
+            rule.onNodeWithText("再試行").performClick()
+            rule.onNodeWithText("登録済み").assertIsDisplayed()
             rule.onNodeWithText("割り当てを解除").performClick()
             rule.onNodeWithText("割り当てなし").assertIsDisplayed()
             verify(exactly = 3) { repository.observeSets() }
@@ -192,7 +207,9 @@ class ManualReadoutSetDetailWiringTest {
             verify(exactly = 2) { otherRepository.observeSets() }
             coVerify(exactly = 1) { repository.updateSet(assigned) }
             coVerify(exactly = 1) { repository.updateSet(original) }
-            confirmVerified(repository, debugRepository, otherRepository)
+            verify(exactly = 1) { hotkeyRepository.registrationStateStream(Simulator.Gt7Ps5.id, "target") }
+            coVerify(exactly = 1) { hotkeyRepository.retryRegistration(Simulator.Gt7Ps5.id, "target") }
+            confirmVerified(repository, debugRepository, otherRepository, hotkeyRepository)
         } finally {
             owner.viewModelStore.clear()
             stopKoin()
