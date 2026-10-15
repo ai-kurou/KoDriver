@@ -9,7 +9,7 @@ description: 実装内容とベースブランチを指定して、専用ワー�
 - 第一引数（実装内容）が空の場合は、何もせず実装内容を確認するようユーザーに促して終了する。
 - 第二引数（ベースブランチ）が空の場合は `main` をデフォルトとして扱う。
 - 第三引数（CodeRabbitへのレビュー依頼有無）は省略可能。`true` を指定した場合のみ、コミット・PR作成フェーズでCodeRabbitへの手動レビュー依頼を行う。`false` または省略時はレビュー依頼を行わない（CodeRabbitの`auto_review`はデフォルトで無効化されているため、明示的な依頼がない限りCodeRabbitはレビューを行わない）。`true`/`false` 以外の値が指定された場合は、実装を進めずユーザーに正しい値（`true` または `false`）を確認する。
-- 第四引数（実装の委任先）は省略可能。`sol` / `astra` / `luna` を指定した場合のみ、実装フェーズの手順6をClaude自身ではなく Codex（`codex:codex-rescue` エージェント）に委任する。`sol` / `astra` / `luna` は、`~/.codex/models_cache.json` の `models` のうち `visibility` が `list` で slug が `-<指定値>` で終わるものから、バージョン番号が最大のモデルID（例: `sol` → `gpt-6.1-sol`）を解決し、`codex:codex-rescue` へ `--model <解決したID>` として渡す（手順6・9の両方）。該当するモデルが無い場合は、実装を進めずユーザーに確認する。`sonnet` / `opus` / `haiku` のいずれかを指定した場合は、手順6・7を、そのモデルのClaudeサブエージェント（`Agent` ツールの `model` にその値を渡す）に委任する。モデル名はエイリアスのため、バージョンはClaude Codeが割り当てるデフォルトになる。省略時はClaudeが自分で実装する。この引数は Claude Code から実行した場合のみ有効で、Codex から実行している場合（`$start-implementation`）は無視して自分で実装する（Codex自身が `codex:codex-rescue` へ再委任しない）。`sol` / `astra` / `luna` / `sonnet` / `opus` / `haiku` 以外の値が指定された場合は、実装を進めずユーザーに正しい値（`sol` / `astra` / `luna` / `sonnet` / `opus` / `haiku` または省略）を確認する。
+- 第四引数（実装の委任先）は省略可能。`sol` / `astra` / `luna` を指定した場合のみ、実装フェーズの手順6をClaude自身ではなく Codex（`codex:codex-rescue` エージェント）に委任する。`sol` / `astra` / `luna` は、`~/.codex/models_cache.json` の `models` のうち `visibility` が `list` で slug が `-<指定値>` で終わるものから、バージョン番号が最大のモデルID（例: `sol` → `gpt-6.1-sol`）を解決し、`codex:codex-rescue` へ `--model <解決したID>` として渡す（手順6・9の両方）。該当するモデルが無い場合は、実装を進めずユーザーに確認する。委任先のエフォート（推論の強さ）は、モデルに関わらず常に `low` とする（Codex は `--effort low`、Claudeサブエージェントは `Agent` の `effort: "low"`。手順6・9の委任のすべてに適用する）。`sonnet` / `opus` / `haiku` のいずれかを指定した場合は、手順6・7を、そのモデルのClaudeサブエージェント（`Agent` ツールの `model` にその値を渡す）に委任する。モデル名はエイリアスのため、バージョンはClaude Codeが割り当てるデフォルトになる。省略時はClaudeが自分で実装する。この引数は Claude Code から実行した場合のみ有効で、Codex から実行している場合（`$start-implementation`）は無視して自分で実装する（Codex自身が `codex:codex-rescue` へ再委任しない）。`sol` / `astra` / `luna` / `sonnet` / `opus` / `haiku` 以外の値が指定された場合は、実装を進めずユーザーに正しい値（`sol` / `astra` / `luna` / `sonnet` / `opus` / `haiku` または省略）を確認する。
 
 ## 実装フェーズ
 
@@ -28,12 +28,12 @@ description: 実装内容とベースブランチを指定して、専用ワー�
    - `moduleGraphAssert` ブロックは変更しない。
    - スクリーンショット画像・モジュール図はステージングしない。
    - **Codexへの委任（第四引数が `sol` / `astra` / `luna` の場合のみ）**:
-     1. 手順5の調査結果をもとにClaudeが実装計画を立て、その計画をそのまま、作成したワークツリーを作業ディレクトリとして `codex:codex-rescue` に渡す（計画書の固定フォーマットは不要）。`codex:codex-rescue` は待機モードを明示しないと複雑なタスクをバックグラウンドで実行するため、必ず `--wait` を指定して完了まで待つ。Codexの完了結果を取得し、書き込みが終わったことを確認するまで手順7以降へ進まない。
+     1. 手順5の調査結果をもとにClaudeが実装計画を立て、その計画をそのまま、作成したワークツリーを作業ディレクトリとして `codex:codex-rescue` に渡す（計画書の固定フォーマットは不要）。`codex:codex-rescue` は待機モードを明示しないと複雑なタスクをバックグラウンドで実行するため、必ず `--wait` と `--effort low`（および解決した `--model`）を指定して完了まで待つ。Codexの完了結果を取得し、書き込みが終わったことを確認するまで手順7以降へ進まない。
      2. 計画の末尾に次の定型文を付ける: 「実装前に CLAUDE.md と、計画で挙げた近い責務の既存コードを必ず確認すること。テストの配置は近い既存モジュールに揃え、Android 向けスクリーンショットテストは `docs/testing-guidelines.md` の「Android と Desktop で表示が異なる場合に限る」を満たす場合以外は複製しないこと。`@Suppress("UNUSED_PARAMETER")` や `object` の UiState など、既存コードにない独自の書き方は持ち込まないこと。テストは実装と同時に書き、CLAUDE.md・`docs/testing-guidelines.md` の方針（`any()` は原則禁止で `docs/testing-guidelines.md` 記載の例外のみ許可、`verify`/`coVerify` には `exactly = N`、`confirmVerified` 等）に従うこと。`moduleGraphAssert` は変更しないこと。サンドボックス制約で Gradle（`./gradlew`）は実行できないため実行しないこと（`git diff --check` 等の静的確認は可）。`preSubmitChecks` は Claude が実行する。`local.properties` は `sdk.dir` のみを意図的に置いているため、`sdk.dir` 以外の値や署名鍵などの秘匿情報（環境変数を含む）を追加・読み取りしようとしないこと。コミット・プッシュ・PR作成は行わないこと。」
      3. Codexの完了結果で書き込み完了を確認する。`preSubmitChecks` は Codex 側では実行できない前提とし、Codex に成功報告を求めない。
      4. 戻ってきた変更はコミット前にClaudeが `git diff` で確認し、類似モジュールの実装と差分比較して、不整合を修正する。比較項目は `build.gradle.kts`、README、strings、UiState / ViewModel / Module、テスト構成（配置・スクリーンショットテストの要否）、既存にない独自の書き方とする。比較で見つけた差分と対応結果は、PR説明の補足または完了報告に残す。`preSubmitChecks`（手順7）・コミット・プッシュ・PR作成はClaudeが行う。
    - **Claudeサブエージェントへの委任（第四引数が `sonnet` / `opus` / `haiku` の場合のみ）**:
-     1. 手順5の調査結果をもとに親（Claude）が実装計画を立て、その計画を、作成したワークツリーを作業ディレクトリとして `Agent`（`subagent_type` 省略または `general-purpose`、`model` に第四引数の値）へ渡す。完了まで待ち、書き込みが終わったことを確認するまで手順8以降へ進まない。
+     1. 手順5の調査結果をもとに親（Claude）が実装計画を立て、その計画を、作成したワークツリーを作業ディレクトリとして `Agent`（`subagent_type` 省略または `general-purpose`、`model` に第四引数の値、`effort` に `low`）へ渡す。完了まで待ち、書き込みが終わったことを確認するまで手順8以降へ進まない。
      2. 計画の末尾には、Codex向けの定型文のうち、既存コード確認・テスト配置・独自の書き方の禁止・テスト方針・`moduleGraphAssert` 不変の部分を付ける。加えて次を明示する: 「手順7の `./gradlew preSubmitChecks` を実行して失敗を解消し、終了コードと要約を報告すること。コミット・プッシュ・PR作成は行わないこと。`local.properties` の `sdk.dir` 以外の値や署名鍵などの秘匿情報は読み取り・追加しないこと。」
      3. サブエージェントの成功報告は鵜呑みにしない。戻ってきた変更を親が `git diff` で確認し、Codexへの委任の手順4と同じ項目で類似モジュールと比較する。親が差分を修正した場合は、親が `preSubmitChecks` を再実行し、終了コードを自分で確認する。
      4. `preSubmitChecks` は同一セッションで1つまでのため、サブエージェントの実行中は親から重ねて実行しない。コミット・プッシュ・PR作成は親が行う。
@@ -46,7 +46,7 @@ description: 実装内容とベースブランチを指定して、専用ワー�
    - わかりやすい日本語のコミットメッセージでコミットする。
    - `git push -u origin <ブランチ名>` でプッシュする。
    - `gh pr create --base <ベースブランチ> --head <ブランチ名> --title --body` でPRを作成する。タイトル・説明は日本語で書き、署名やセッションURLは含めない。
-   - **第四引数が `sol` / `astra` / `luna` の場合は、PRのタイトルと説明文のドラフトを Codex に依頼する。** コミット後（プッシュ前でもよい）に、ワークツリーを作業ディレクトリとして `codex:codex-rescue --wait` に次を渡し、ドラフトのテキストを受け取る。
+   - **第四引数が `sol` / `astra` / `luna` の場合は、PRのタイトルと説明文のドラフトを Codex に依頼する。** コミット後（プッシュ前でもよい）に、ワークツリーを作業ディレクトリとして `codex:codex-rescue --wait --effort low`（および解決した `--model`）に次を渡し、ドラフトのテキストを受け取る。
      - 例外: 差分が数行程度の設定・ドキュメントのみの小さな変更（目安: `git diff --stat` で合計10行以下）の場合は、Codexに依頼せずClaudeが直接タイトル・説明を書いてよい。コミット後は `git diff <ベースブランチ>...HEAD --stat` で変更全体の行数を確認する。
      - 渡す内容: 実装内容（第一引数）、ベースブランチ、`git diff <ベースブランチ>...HEAD --stat` と差分、手順6の計画、Claudeが実行した `preSubmitChecks` の結果、Claudeが差分レビューで加えた修正点（あれば）。
      - 依頼文に含める条件: 「PRのタイトルと説明を日本語で書くこと（概要・変更内容・補足の構成）。署名や『Generated with Claude Code』・セッションURLは含めないこと。ファイルの変更・コミット・プッシュ・`gh` コマンドの実行は行わず、タイトルと本文のテキストだけを返すこと。実際に行っていない検証（未実行のテスト等）を実施済みとして書かないこと。」
