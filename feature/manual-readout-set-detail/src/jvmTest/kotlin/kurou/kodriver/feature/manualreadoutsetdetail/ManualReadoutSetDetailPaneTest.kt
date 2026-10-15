@@ -35,6 +35,48 @@ class ManualReadoutSetDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `項目選択時は既定文言の残量を埋めた完成文を表示し空欄では非表示にする`() {
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                    selectedItemKeys = listOf(key),
+                ),
+            )
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = {},
+                    onDelete = {},
+                    showHotkey = false,
+                )
+            }
+        }
+        rule.onNodeWithText("バーチャルエナジー残量は50パーセント").assertExists()
+        rule.runOnIdle { state.value = state.value.copy(itemTexts = mapOf(key to "")) }
+        rule.onNodeWithText("バーチャルエナジー残量は50パーセント").assertDoesNotExist()
+    }
+
+    @Test
+    fun `未選択時は完成文を表示しない`() {
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)),
+                    onAddItem = {},
+                    onDelete = {},
+                    showHotkey = false,
+                )
+            }
+        }
+        rule.onNodeWithText("バーチャルエナジー残量は50パーセント").assertDoesNotExist()
+    }
+
+    @Test
     fun `上限では追加を無効化する`() {
         val keys = List(MANUAL_READOUT_SET_ITEM_MAX) { "item$it" }
         rule.setContent {
