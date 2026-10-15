@@ -730,9 +730,10 @@ internal class LmuWindowsNarratorViewModel(
                         .observeManualReadoutSets()
                         .first()
                         .find { it.id == request.setId }
-                if (set?.itemKeys?.contains(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value) == true) {
+                if (set != null) {
                     readRemainingVirtualEnergyCurrentValue(
                         manual = true,
+                        noItems = !set.itemKeys.contains(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value),
                         textTemplate =
                             set.itemTexts[LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value]
                                 ?: LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT,
@@ -743,6 +744,7 @@ internal class LmuWindowsNarratorViewModel(
 
     private suspend fun readRemainingVirtualEnergyCurrentValue(
         manual: Boolean = false,
+        noItems: Boolean = false,
         textTemplate: String? = null,
     ) {
         if (selectedSimulator.value !is Simulator.LmuWindows) return
@@ -756,7 +758,9 @@ internal class LmuWindowsNarratorViewModel(
         val state = narratorState
         val settings = currentSettings
         val decision =
-            if (manual) {
+            if (manual && noItems) {
+                narratorUseCases.determineReadout.determineManualReadoutNoItems(state)
+            } else if (manual) {
                 narratorUseCases.determineReadout.determineManualRemainingVirtualEnergyCurrentValue(
                     state = state,
                     data = remainingVirtualEnergy,

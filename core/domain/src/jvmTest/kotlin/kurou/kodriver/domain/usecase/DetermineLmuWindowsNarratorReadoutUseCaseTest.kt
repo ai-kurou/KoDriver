@@ -2748,6 +2748,19 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動読み上げの対象項目がない場合は固定文言を読み上げ状態を維持する`() {
+        val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
+        val decision = useCase.determineManualReadoutNoItems(state)
+
+        assertEquals(state, decision.state)
+        assertEquals(
+            listOf(LmuWindowsRemainingVirtualEnergyCurrentValue(0, "読み上げる項目がありません")),
+            decision.events,
+        )
+        assertEquals("読み上げる項目がありません", decision.events.single().narratedText)
+    }
+
+    @Test
     fun `手動残量はデータ無しなら編集文言に関係なくデータ無しを読み上げ状態を維持する`() {
         val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
         for (template in listOf(null, "残量{percent}%", "", "  ")) {

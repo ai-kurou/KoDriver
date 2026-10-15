@@ -20,3 +20,6 @@ const val LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT =
 
 /** 手動読み上げで値がない場合の文言。 */
 const val LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT = "データがありません"
+
+/** 手動読み上げで対象項目がない場合の文言。 */
+const val LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT = "読み上げる項目がありません"
