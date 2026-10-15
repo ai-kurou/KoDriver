@@ -93,7 +93,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processMyBestLap(
         telemetry: LmuWindowsTelemetryData,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -115,7 +115,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processVehicleApproach(
         vehicleApproach: LmuWindowsVehicleApproachData,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -137,7 +137,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processVehicleDamage(
         vehicleDamage: LmuWindowsVehicleDamageData,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -159,7 +159,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processTyreDetached(
         tyreDetached: LmuWindowsTyreDetachedData,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -181,7 +181,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processRaceFlags(
         raceFlags: LmuWindowsRaceFlagsData,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -203,7 +203,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processTyreWear(
         tyreWear: LmuWindowsTyreWearData,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -225,7 +225,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processBrakeTemperature(
         brakeTemperature: LmuWindowsBrakeTemperatureData,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -247,7 +247,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processBrakeWear(
         brakeWear: LmuWindowsBrakeWearRemainingData,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -269,7 +269,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processRemainingVirtualEnergy(
         remainingVirtualEnergy: LmuWindowsVirtualEnergyData?,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -297,7 +297,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processTyreTemperature(
         input: TyreTemperatureReadoutInput,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -317,7 +317,7 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processPitTiming(
         snapshot: LmuWindowsPitTimingSnapshot,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -337,7 +337,7 @@ internal class LmuWindowsNarratorEventProcessor(
     }
 
     /** 本文の確定・優先度つき再生・ログ保存を全LMUイベントで共有する。 */
-    private suspend fun <E : SpeechEvent> processEvents(
+    private suspend fun <E : ReadoutTextEvent> processEvents(
         events: List<E>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
@@ -350,7 +350,7 @@ internal class LmuWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
+                    val resolvedEvent = event.withResolvedText(text)
                     speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(

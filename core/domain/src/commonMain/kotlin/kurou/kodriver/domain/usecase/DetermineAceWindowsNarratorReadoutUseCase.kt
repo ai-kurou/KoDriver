@@ -17,7 +17,7 @@ import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import kurou.kodriver.domain.engine.LmuWindowsCarLeft
 import kurou.kodriver.domain.engine.LmuWindowsCarRight
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
@@ -66,7 +66,7 @@ data class AceWindowsNarratorReadoutSettings(
 /** ACE 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
 data class AceWindowsNarratorReadoutDecision(
     val state: AceWindowsNarratorState,
-    val events: List<SpeechEvent>,
+    val events: List<ReadoutTextEvent>,
 )
 
 /**
@@ -247,7 +247,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         )
     }
 
-    private fun flagEvent(flag: AceWindowsFlagType): Pair<ReadoutItemKey, SpeechEvent>? =
+    private fun flagEvent(flag: AceWindowsFlagType): Pair<ReadoutItemKey, ReadoutTextEvent>? =
         when (flag) {
             AceWindowsFlagType.WHITE_FLAG -> {
                 AceWindowsReadoutItemKey.Flag.WhiteFlag to AceWindowsWhiteFlag()

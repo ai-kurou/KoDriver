@@ -879,7 +879,7 @@ internal class LmuWindowsNarratorViewModel(
 private fun selectLowerPitTimingEvent(
     virtualEnergyEvents: List<SpeechEvent>,
     tyreWearEvents: List<SpeechEvent>,
-): List<SpeechEvent> {
+): List<LmuWindowsPitTimingWarning> {
     val virtualEnergyEvent =
         virtualEnergyEvents.filterIsInstance<LmuWindowsPitTimingWarning>().firstOrNull()
     val tyreWearEvent = tyreWearEvents.filterIsInstance<LmuWindowsPitTimingWarning>().firstOrNull()
