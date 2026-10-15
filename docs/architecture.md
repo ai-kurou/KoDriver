@@ -9,7 +9,6 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:app:desktopApp` | JVM デスクトップアプリのエントリーポイント。Windows 共有メモリ読み取りと Ktor サーバーを同一プロセスで起動する | [図](graphs/app-desktopApp.svg) |
 | `:app:androidApp` | Android アプリのエントリーポイント | [図](graphs/app-androidApp.svg) |
 | `:app:androidBenchmark` | Macrobenchmark による Baseline Profile 生成（`app:androidApp` 計装テスト） | [図](graphs/app-androidBenchmark.svg) |
-| `:app:webApp` | Web アプリ（Gradle ビルド設定のみ用意、独自機能は未実装） | [図](graphs/app-webApp.svg) |
 | `:app:shared` | Compose Multiplatform 共通 UI・ナビゲーション。各 feature モジュールを組み合わせた画面遷移を担当する | [図](graphs/app-shared.svg) |
 | `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](graphs/core-domain.svg) |
 | `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |

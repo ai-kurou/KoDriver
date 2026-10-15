@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -11,15 +10,6 @@ private val libs = versionCatalogs.named("libs")
 
 kotlin {
     jvm()
-
-    js {
-        browser()
-    }
-
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-    }
 
     android {
         compileSdk = libs.findVersion("android-compileSdk").get().requiredVersion.toInt()

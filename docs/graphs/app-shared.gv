@@ -4,7 +4,6 @@ digraph G {
   ":app:androidApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":app:desktopApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=2.5]
-  ":app:webApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":feature:ace-windows-auto-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -111,5 +110,4 @@ digraph G {
   ":app:shared" -> ":feature:ace-windows-auto-readout-vehicle-approach-detail"
   ":app:shared" -> ":feature:ace-windows-auto-readout-my-best-lap-detail"
   ":app:shared" -> ":feature:ace-windows-auto-readout-remaining-fuel-laps-detail"
-  ":app:webApp" -> ":app:shared"
 }

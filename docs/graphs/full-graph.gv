@@ -6,7 +6,6 @@ digraph G {
   ":app:androidBenchmark" [label=":app:androidBenchmark", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:desktopApp" [label=":app:desktopApp", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:shared" [label=":app:shared", fillcolor="#FFE0B2", color="#FB8C00"]
-  ":app:webApp" [label=":app:webApp", fillcolor="#FFE0B2", color="#FB8C00"]
   ":core:ace-windows-data" [label=":core:ace-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:data" [label=":core:data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:designsystem" [label=":core:designsystem", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -42,7 +41,6 @@ digraph G {
   ":app:desktopApp" -> ":core:windows-startup-data"
   ":app:desktopApp" -> ":server"
   ":app:shared" -> "feature"
-  ":app:webApp" -> ":app:shared"
   ":core:ace-windows-data" -> ":core:domain"
   ":core:ace-windows-data" -> ":core:windows-shared-memory"
   ":core:data" -> ":core:domain"

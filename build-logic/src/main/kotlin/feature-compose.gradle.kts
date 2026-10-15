@@ -18,8 +18,6 @@ kotlin {
             dependsOn(commonMain.get())
         }
         jvmMain.get().dependsOn(nonAndroidMain)
-        jsMain.get().dependsOn(nonAndroidMain)
-        wasmJsMain.get().dependsOn(nonAndroidMain)
 
         commonMain.dependencies {
             implementation(libs.findLibrary("compose-runtime").get())
