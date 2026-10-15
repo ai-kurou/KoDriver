@@ -9,7 +9,7 @@
     <string name="remaining_fuel_text_reset_to_default">デフォルトに戻す</string>
     <string name="remaining_fuel_text_label">燃料残量警告の文言</string>
     <string name="remaining_fuel_percent_insert">{percent}を挿入</string>
-    <string name="remaining_fuel_percent_placeholder_hint">{percent} は燃料の残量(%)に置き換わります（整数に丸めます）</string>
+    <string name="remaining_fuel_percent_placeholder_hint">{percent} は燃料の残量（%）に置き換わります（整数に丸めます）</string>
     <string name="remaining_fuel_text_supporting">空欄のままなら読み上げません</string>
     <string name="remaining_fuel_text_unavailable">この端末では音声合成を利用できないため、読み上げません</string>
     <string name="remaining_fuel_text_preview">入力した文言を再生</string>
