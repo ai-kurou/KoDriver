@@ -168,6 +168,26 @@ class AceWindowsReadoutTextSpeakerTest {
         }
 
     @Test
+    fun `他シミュレーターの解決済み本文も読み上げない`() =
+        runTest {
+            val text = "他シミュレーターの本文"
+            val events =
+                listOf(
+                    LmuWindowsBlueFlag(resolvedText = text),
+                    Gt7Ps5MyBestLap(83_456, resolvedText = text),
+                )
+            events.forEach { event ->
+                assertFalse(isAceWindowsCustomSpeakEvent(event))
+                assertNull(speaker.readoutText(event))
+                speaker(event, 42)
+            }
+            verify(exactly = 0) { observeText() }
+            coVerify(exactly = 0) { checkAvailable() }
+            coVerify(exactly = 0) { speakText(text, volume = 42) }
+            confirmVerified(observeText, checkAvailable, speakText)
+        }
+
+    @Test
     fun `全ACEイベントは自由文言対象になる`() {
         listOf(
             AceWindowsRemainingFuelLapsWarning(3),
@@ -922,10 +942,15 @@ class AceWindowsReadoutTextSpeakerTest {
                 )
             coEvery { speakText("判定時の本文", volume = 42) } just Runs
 
+            coEvery { checkAvailable() } returns true
+            events.forEach { event ->
+                assertEquals("判定時の本文", speaker.readoutText(event))
+            }
+            coEvery { checkAvailable() } returns false
             events.forEach { event -> speaker(event, 42) }
 
             coVerify(exactly = 11) { speakText("判定時の本文", volume = 42) }
-            coVerify(exactly = 0) { checkAvailable() }
+            coVerify(exactly = 11) { checkAvailable() }
             verify(exactly = 0) {
                 observeText()
                 observeWhite()
