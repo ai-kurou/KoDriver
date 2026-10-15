@@ -754,24 +754,33 @@ internal class LmuWindowsNarratorViewModel(
             latestVirtualEnergy?.takeIf {
                 observedAtMs - latestVirtualEnergyReceivedAtMs <= HOTKEY_VIRTUAL_ENERGY_MAX_AGE_MS
             }
-        if (!manual && remainingVirtualEnergy == null) return
         val state = narratorState
         val settings = currentSettings
         val decision =
-            if (manual && noItems) {
-                narratorUseCases.determineReadout.determineManualReadoutNoItems(state)
-            } else if (manual) {
-                narratorUseCases.determineReadout.determineManualRemainingVirtualEnergyCurrentValue(
-                    state = state,
-                    data = remainingVirtualEnergy,
-                    textTemplate = textTemplate,
-                )
-            } else {
-                narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
-                    state = state,
-                    data = checkNotNull(remainingVirtualEnergy),
-                    settings = settings,
-                )
+            when {
+                manual && noItems -> {
+                    narratorUseCases.determineReadout.determineManualReadoutNoItems(state)
+                }
+
+                manual -> {
+                    narratorUseCases.determineReadout.determineManualRemainingVirtualEnergyCurrentValue(
+                        state = state,
+                        data = remainingVirtualEnergy,
+                        textTemplate = textTemplate,
+                    )
+                }
+
+                remainingVirtualEnergy == null -> {
+                    return
+                }
+
+                else -> {
+                    narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
+                        state = state,
+                        data = remainingVirtualEnergy,
+                        settings = settings,
+                    )
+                }
             }
         val currentQueueEnabledStates =
             if (manual) {
