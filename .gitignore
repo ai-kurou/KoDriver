@@ -48,8 +48,5 @@ google-services.json
 # Android Profiling
 *.hprof
 
-# JS/Wasm
-node_modules/
-
 # Dokka generated API documentation (CI で生成し GitHub Pages へデプロイする)
 docs/api/

@@ -40,8 +40,6 @@
 ./gradlew :<module-path>:jvmTest
 ```
 
-`:app:webApp` は Gradle ビルド設定のみで独自機能が未実装のため、現在はテスト・ビルド確認の対象外。
-
 GitHub Actions ワークフローの一覧・詳細な挙動・権限設計は [`docs/ci-workflows.md`](ci-workflows.md) を参照。
 
 作業中に個別のチェックを素早く回したい場合は、以下も利用できる（完了報告前の `preSubmitChecks` 実行は省略不可）。

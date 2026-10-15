@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -10,15 +9,6 @@ plugins {
 
 kotlin {
     jvm()
-
-    js {
-        browser()
-    }
-
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-    }
 
     android {
         namespace = "kurou.kodriver.core.narrator"
@@ -63,10 +53,6 @@ kotlin {
         jvmTest.dependencies {
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
-            implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
-            implementation(libs.kotlinx.coroutinesTest)
-        }
-        wasmJsTest.dependencies {
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesTest)
         }
