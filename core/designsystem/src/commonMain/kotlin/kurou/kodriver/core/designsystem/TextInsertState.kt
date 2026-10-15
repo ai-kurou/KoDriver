@@ -55,17 +55,23 @@ internal fun insertAtSelection(
     }
 }
 
-/** 改行を除去して [maxLength] で切り詰め、選択範囲を切り詰め後の長さに収める。 */
+/**
+ * 改行を除去して [maxLength] で切り詰め、選択範囲を除去後のオフセットへ写像する。
+ * IMEの変換中範囲は、テキストが加工されなかった場合のみ引き継ぐ。
+ */
 internal fun normalizeInput(
     input: TextFieldValue,
     maxLength: Int,
 ): TextFieldValue {
     val text = input.text.replace("\n", "").take(maxLength)
+
+    fun mapOffset(offset: Int): Int {
+        val removed = input.text.take(offset).count { it == '\n' }
+        return (offset - removed).coerceIn(0, text.length)
+    }
     return TextFieldValue(
         text,
-        TextRange(
-            input.selection.start.coerceIn(0, text.length),
-            input.selection.end.coerceIn(0, text.length),
-        ),
+        TextRange(mapOffset(input.selection.start), mapOffset(input.selection.end)),
+        input.composition.takeIf { text == input.text },
     )
 }

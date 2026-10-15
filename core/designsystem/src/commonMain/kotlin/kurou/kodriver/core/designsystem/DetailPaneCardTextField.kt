@@ -82,16 +82,23 @@ fun DetailPaneCardTextField(
     var text by remember(value) { mutableStateOf(value) }
     // 未操作（null）の間は従来どおり先頭を表示し、挿入要求は末尾へ追加する。
     var selection by remember { mutableStateOf<TextRange?>(null) }
-    val fieldValue = TextFieldValue(text, selection ?: TextRange.Zero)
+    // IMEの変換中範囲は入力ごとに引き継ぎ、外部値や挿入でテキストが変わったら破棄する。
+    var composition by remember(value) { mutableStateOf<TextRange?>(null) }
+    val fieldValue = TextFieldValue(text, selection ?: TextRange.Zero, composition)
     val request = insertState?.request
     val currentOnValueChangeFinished by rememberUpdatedState(onValueChangeFinished)
     LaunchedEffect(insertState, request) {
-        if (insertState != null && request != null) {
-            val inserted = insertAtSelection(text, selection, request.text, maxLength)
-            insertState.consume(request)
+        if (request != null) {
+            // 無効な入力欄や文言が変わらない挿入は、確定通知せず要求だけを消費する。
+            val inserted =
+                insertAtSelection(text, selection, request.text, maxLength)
+                    .takeIf { enabled }
+                    ?.takeIf { it.text != text }
+            insertState?.consume(request)
             if (inserted != null) {
                 text = inserted.text
                 selection = inserted.selection
+                composition = null
                 currentOnValueChangeFinished(text)
             }
         }
@@ -102,10 +109,11 @@ fun DetailPaneCardTextField(
     TextField(
         value = fieldValue,
         onValueChange = { input ->
-            val textChanged = input.text != text
             val normalized = normalizeInput(input, maxLength)
+            val textChanged = normalized.text != text
             text = normalized.text
             selection = normalized.selection
+            composition = normalized.composition
             if (textChanged) {
                 onValueChangeFinished(text)
             }

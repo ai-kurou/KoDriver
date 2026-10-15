@@ -120,6 +120,50 @@ class DetailPaneCardTextFieldInsertTest {
     }
 
     @Test
+    fun `無効な入力欄への挿入は要求だけ消費して文言を変えず通知もしない`() {
+        val insertState = TextInsertState()
+        val finishedTexts = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "abcd",
+                    placeholder = "文言",
+                    maxLength = 10,
+                    onValueChangeFinished = { finishedTexts.add(it) },
+                    onPreviewClick = null,
+                    enabled = false,
+                    modifier = Modifier.testTag("textField"),
+                    insertState = insertState,
+                )
+            }
+        }
+        rule.runOnIdle { insertState.insert("X") }
+        rule.waitForIdle()
+        rule.onNodeWithText("abcd").assertIsDisplayed()
+        assertEquals(emptyList(), finishedTexts)
+        assertNull(insertState.request)
+    }
+
+    @Test
+    fun `上限で切り詰められて文言が変わらない入力は確定通知しない`() {
+        val finishedTexts = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "abcd",
+                    placeholder = "文言",
+                    maxLength = 4,
+                    onValueChangeFinished = { finishedTexts.add(it) },
+                    onPreviewClick = null,
+                    modifier = Modifier.testTag("textField"),
+                )
+            }
+        }
+        rule.onNodeWithTag("textField").performTextReplacement("abcde")
+        assertEquals(emptyList(), finishedTexts)
+    }
+
+    @Test
     fun `挿入状態を指定しなくても改行除去と切り詰めと外部値の再初期化を維持する`() {
         var value by mutableStateOf("abcd")
         val finishedTexts = mutableListOf<String>()
