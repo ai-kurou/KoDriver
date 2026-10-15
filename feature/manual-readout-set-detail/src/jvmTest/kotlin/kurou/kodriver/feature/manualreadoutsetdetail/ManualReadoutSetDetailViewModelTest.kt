@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
@@ -303,12 +304,14 @@ class ManualReadoutSetDetailViewModelTest {
             val vm = viewModel()
             try {
                 vm.assignHotkey(0x41)
+                vm.selectHotkeyModifiers(ManualReadoutHotkeyModifiers.CTRL_ALT)
                 vm.clearHotkey()
                 sets.value = listOf(ManualReadoutSet("target"))
                 vm.deleteSet()
                 vm.assignHotkey(0x41)
+                vm.selectHotkeyModifiers(ManualReadoutHotkeyModifiers.CTRL_ALT)
                 vm.clearHotkey()
-                verify(exactly = 3) { repository.observeSets() }
+                verify(exactly = 4) { repository.observeSets() }
                 coVerify(exactly = 1) { repository.deleteSet("target") }
                 verify(exactly = 1) { debugRepository.observeVirtualKeyCode() }
                 confirmVerified(repository, debugRepository)
@@ -364,6 +367,80 @@ class ManualReadoutSetDetailViewModelTest {
                 verify(exactly = 2) { repository.observeSets() }
                 verify(exactly = 1) { debugRepository.observeVirtualKeyCode() }
                 confirmVerified(repository, debugRepository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `修飾キーだけ保存でき割当済みでは組み合わせの競合を拒否する`() =
+        runTest(dispatcher) {
+            val original = ManualReadoutSet("target")
+            val modified = original.copy(hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_ALT)
+            val assigned = modified.copy(hotkeyVirtualKeyCode = 0x41)
+            val other = ManualReadoutSet("other", hotkeyVirtualKeyCode = 0x41)
+            val sets = MutableStateFlow(listOf(original, other))
+            every { repository.observeSets() } returns sets
+            every { otherRepository.observeSets() } returns MutableStateFlow(listOf(other.copy(id = "gt7")))
+            every { debugRepository.observeVirtualKeyCode() } returns MutableStateFlow(0x41)
+            coEvery { repository.updateSet(modified) } answers { sets.value = listOf(modified, other) }
+            coEvery { repository.updateSet(assigned) } answers { sets.value = listOf(assigned, other) }
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                vm.selectHotkeyModifiers(ManualReadoutHotkeyModifiers.CTRL_ALT)
+                assertEquals(ManualReadoutHotkeyModifiers.CTRL_ALT, vm.uiState.first().hotkeyModifiers)
+                vm.assignHotkey(0x41)
+                assertEquals(null, vm.uiState.first().hotkeyConflict)
+                vm.selectHotkeyModifiers(ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT)
+                assertEquals(
+                    ManualReadoutHotkeyConflict.OtherSet(Simulator.LmuWindows.id, 2),
+                    vm.uiState.first().hotkeyConflict,
+                )
+                sets.value = listOf(assigned)
+                vm.selectHotkeyModifiers(ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT)
+                assertEquals(
+                    ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 1),
+                    vm.uiState.first().hotkeyConflict,
+                )
+                every { otherRepository.observeSets() } returns MutableStateFlow(emptyList())
+                vm.selectHotkeyModifiers(ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT)
+                assertEquals(ManualReadoutHotkeyConflict.DebugHotkey, vm.uiState.first().hotkeyConflict)
+                assertEquals(ManualReadoutHotkeyModifiers.CTRL_ALT, vm.uiState.first().hotkeyModifiers)
+                vm.selectHotkeyModifiers(ManualReadoutHotkeyModifiers.CTRL_ALT)
+                assertEquals(null, vm.uiState.first().hotkeyConflict)
+                verify(exactly = 7) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(modified) }
+                coVerify(exactly = 1) { repository.updateSet(assigned) }
+                confirmVerified(repository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `割当済みの修飾キー変更を保存しデバッグの同じキーも修飾キーが違えば警告しない`() =
+        runTest(dispatcher) {
+            val original = ManualReadoutSet("target", hotkeyVirtualKeyCode = 0x41)
+            val modified = original.copy(hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_SHIFT)
+            val sets = MutableStateFlow(listOf(original))
+            val debugKey = MutableStateFlow(0x42)
+            every { repository.observeSets() } returns sets
+            every { otherRepository.observeSets() } returns MutableStateFlow(emptyList())
+            every { debugRepository.observeVirtualKeyCode() } returns debugKey
+            coEvery { repository.updateSet(modified) } answers { sets.value = listOf(modified) }
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                vm.selectHotkeyModifiers(ManualReadoutHotkeyModifiers.CTRL_SHIFT)
+                debugKey.value = 0x41
+                assertEquals(ManualReadoutHotkeyModifiers.CTRL_SHIFT, vm.uiState.first().hotkeyModifiers)
+                assertEquals(null, vm.uiState.first().hotkeyConflict)
+                verify(exactly = 2) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(modified) }
+                confirmVerified(repository)
             } finally {
                 collection.cancel()
                 vm.viewModelScope.cancel()

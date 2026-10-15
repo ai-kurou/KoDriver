@@ -30,6 +30,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
@@ -156,13 +157,14 @@ class ManualReadoutSetDetailWiringTest {
             registration.value = HotkeyRegistrationState.Registered
         }
         val original = ManualReadoutSet("target")
-        val assigned = original.copy(hotkeyVirtualKeyCode = 0x41)
+        val modified = original.copy(hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_ALT)
+        val assigned = modified.copy(hotkeyVirtualKeyCode = 0x41)
         val sets = MutableStateFlow(listOf(original))
         every { repository.observeSets() } returns sets
         every { debugRepository.observeVirtualKeyCode() } returns MutableStateFlow(0x70)
         every { otherRepository.observeSets() } returns MutableStateFlow(emptyList())
         coEvery { repository.updateSet(assigned) } answers { sets.value = listOf(assigned) }
-        coEvery { repository.updateSet(original) } answers { sets.value = listOf(original) }
+        coEvery { repository.updateSet(modified) } answers { sets.value = listOf(modified) }
         val owner =
             object : ViewModelStoreOwner {
                 override val viewModelStore = ViewModelStore()
@@ -195,18 +197,21 @@ class ManualReadoutSetDetailWiringTest {
                     }
                 }
             }
+            rule.onNodeWithTag("manual_readout_hotkey_modifiers").performClick()
+            rule.onNodeWithTag("manual_readout_hotkey_modifiers_CTRL_ALT").performClick()
+            rule.onNodeWithText("Ctrl + Alt").assertIsDisplayed()
             rule.onNodeWithTag("manual_readout_hotkey_key").performClick().performKeyInput { pressKey(Key.A) }
-            rule.onNodeWithText("Ctrl + Alt + Shift + A").assertIsDisplayed()
+            rule.onNodeWithText("A").assertIsDisplayed()
             rule.onNodeWithText("他のアプリが使用中のため登録できません").assertIsDisplayed()
             rule.onNodeWithText("再試行").performClick()
             rule.onNodeWithText("登録済み").assertIsDisplayed()
             rule.onNodeWithText("割り当てを解除").performClick()
             rule.onNodeWithText("割り当てなし").assertIsDisplayed()
-            verify(exactly = 3) { repository.observeSets() }
-            verify(exactly = 2) { debugRepository.observeVirtualKeyCode() }
+            verify(exactly = 4) { repository.observeSets() }
+            verify(exactly = 1) { debugRepository.observeVirtualKeyCode() }
             verify(exactly = 2) { otherRepository.observeSets() }
             coVerify(exactly = 1) { repository.updateSet(assigned) }
-            coVerify(exactly = 1) { repository.updateSet(original) }
+            coVerify(exactly = 2) { repository.updateSet(modified) }
             verify(exactly = 1) { hotkeyRepository.registrationStateStream(Simulator.Gt7Ps5.id, "target") }
             coVerify(exactly = 1) { hotkeyRepository.retryRegistration(Simulator.Gt7Ps5.id, "target") }
             confirmVerified(repository, debugRepository, otherRepository, hotkeyRepository)

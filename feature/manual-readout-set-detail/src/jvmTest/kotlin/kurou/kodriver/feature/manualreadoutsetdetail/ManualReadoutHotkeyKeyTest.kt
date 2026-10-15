@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutsetdetail
 
 import androidx.compose.ui.input.key.Key
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -49,9 +50,13 @@ class ManualReadoutHotkeyKeyTest {
         val codes = (0x30..0x39).toList() + (0x41..0x5A).toList()
         keys.zip(codes).forEach { (key, code) ->
             assertEquals(code, manualReadoutHotkeyVirtualKeyCode(key))
-            assertEquals("Ctrl + Alt + Shift + ${code.toChar()}", manualReadoutHotkeyDisplayName(code))
+            assertEquals("${code.toChar()}", manualReadoutHotkeyDisplayName(code))
         }
+        assertEquals(
+            listOf("Ctrl + Alt + Shift", "Ctrl + Alt", "Ctrl + Shift", "Alt + Shift"),
+            ManualReadoutHotkeyModifiers.entries.map { it.displayName() },
+        )
         assertEquals(null, manualReadoutHotkeyVirtualKeyCode(Key.F1))
-        assertEquals("Ctrl + Alt + Shift + 112", manualReadoutHotkeyDisplayName(0x70))
+        assertEquals("112", manualReadoutHotkeyDisplayName(0x70))
     }
 }

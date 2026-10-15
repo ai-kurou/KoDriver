@@ -17,6 +17,7 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.pressKey
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
@@ -149,6 +150,7 @@ class ManualReadoutSetDetailPaneTest {
         val showHotkey = mutableStateOf(true)
         val assigned = mutableListOf<Int>()
         var cleared = 0
+        val modifiers = mutableListOf<ManualReadoutHotkeyModifiers>()
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
@@ -157,10 +159,14 @@ class ManualReadoutSetDetailPaneTest {
                     onDelete = {},
                     showHotkey = showHotkey.value,
                     onAssignHotkey = { assigned.add(it) },
+                    onSelectModifiers = { modifiers.add(it) },
                     onClearHotkey = { cleared++ },
                 )
             }
         }
+        rule.onNodeWithTag("manual_readout_hotkey_modifiers").performClick()
+        rule.onNodeWithTag("manual_readout_hotkey_modifiers_CTRL_ALT").performClick()
+        rule.runOnIdle { assertEquals(listOf(ManualReadoutHotkeyModifiers.CTRL_ALT), modifiers) }
         rule.onNodeWithText("割り当てなし").assertExists()
         rule.onNodeWithText("割り当てを解除").assertIsNotEnabled()
         rule.onNodeWithTag("manual_readout_hotkey_key").performClick().performKeyInput {
@@ -172,7 +178,7 @@ class ManualReadoutSetDetailPaneTest {
             assertEquals(listOf(0x41, 0x30), assigned)
             state.value = state.value.copy(hotkeyVirtualKeyCode = 0x41)
         }
-        rule.onNodeWithText("Ctrl + Alt + Shift + A").assertExists()
+        rule.onNodeWithText("A").assertExists()
         rule.onNodeWithText("割り当てを解除").performClick()
         rule.runOnIdle {
             assertEquals(1, cleared)

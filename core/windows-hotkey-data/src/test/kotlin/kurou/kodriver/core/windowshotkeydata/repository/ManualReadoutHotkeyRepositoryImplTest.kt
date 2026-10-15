@@ -14,6 +14,7 @@ import kurou.kodriver.core.windowshotkeydata.GlobalHotkey
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkeyEvent
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkeySource
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
@@ -76,12 +77,21 @@ class ManualReadoutHotkeyRepositoryImplTest {
             testScheduler.runCurrent()
             assertEquals(listOf(0x41, 0x42, 0x43), source.requested)
             assertEquals(listOf(0x41), source.released)
+            lmuSets.update {
+                listOf(first.copy(hotkeyVirtualKeyCode = 0x43, hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_ALT))
+            }
+            testScheduler.runCurrent()
+            assertEquals(
+                listOf(GlobalHotkey(7, 0x41), GlobalHotkey(7, 0x42), GlobalHotkey(7, 0x43), GlobalHotkey(3, 0x43)),
+                source.hotkeys,
+            )
+            assertEquals(listOf(0x41, 0x43), source.released)
             lmuSets.update { listOf(first.copy(hotkeyVirtualKeyCode = null)) }
             testScheduler.runCurrent()
             assertEquals(HotkeyRegistrationState.Unsupported, states.last())
             gt7Sets.update { emptyList() }
             testScheduler.runCurrent()
-            assertEquals(listOf(0x41, 0x43, 0x42), source.released)
+            assertEquals(listOf(0x41, 0x43, 0x43, 0x42), source.released)
             stateCollector.cancel()
             pressCollector.cancel()
             lateCollector.cancel()
@@ -192,12 +202,13 @@ private class ManualRecordingSource(
     var state: HotkeyRegistrationState = HotkeyRegistrationState.Registered,
 ) : GlobalHotkeySource {
     val events = MutableSharedFlow<Pair<Int, GlobalHotkeyEvent>>()
+    val hotkeys = mutableListOf<GlobalHotkey>()
     val requested = mutableListOf<Int>()
     val released = mutableListOf<Int>()
 
     override fun observe(hotkey: GlobalHotkey): Flow<GlobalHotkeyEvent> =
         flow {
-            assertEquals(7, hotkey.modifiers)
+            hotkeys.add(hotkey)
             requested.add(hotkey.virtualKeyCode)
             try {
                 emit(GlobalHotkeyEvent.Registration(state))

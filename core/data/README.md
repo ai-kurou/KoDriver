@@ -80,6 +80,8 @@ Desktop／Android とも `named(simulator.id)` で登録し、セット識別子
 文言は `ManualReadoutSetPreference` の protobuf フィールド3に `Map<String, String>` として保存する。
 旧データの文言フィールドがないセットは空 Map として読み込み、Narrator と詳細画面で既定文言を使う。
 
+修飾キーは protobuf フィールド5に nullable な `Int` として保存する。読み込み時に `ManualReadoutHotkeyModifiers` へ変換し、フィールドのない旧データ・null・不明値は Ctrl + Alt + Shift を使う。
+
 ホットキーは protobuf フィールド4に nullable な `Int` として保存する。null は割り当てなしを表し、フィールド4のない旧データも null として読み込む。
 
 ## 手動読み上げ依頼

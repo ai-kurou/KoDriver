@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.isManualReadoutHotkeyVirtualKeyCode
@@ -48,16 +50,22 @@ internal class ManualReadoutSetDetailViewModel(
             observeHotkeyRegistrationState(simulatorId, setId),
         ) { sets, isDeleted, conflict, debugVirtualKeyCode, registration ->
             val index = sets.indexOfFirst { it.id == setId }
-            val hotkey = sets.getOrNull(index)?.hotkeyVirtualKeyCode
+            val set = sets.getOrNull(index)
+            val hotkey = set?.hotkeyVirtualKeyCode
+            val modifiers = set?.hotkeyModifiers ?: MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
             // 保存後にデバッグ用ホットキーが同じキーへ変更された場合も警告する。
             val savedConflict =
-                ManualReadoutHotkeyConflict.DebugHotkey.takeIf { hotkey != null && hotkey == debugVirtualKeyCode }
+                ManualReadoutHotkeyConflict.DebugHotkey.takeIf {
+                    modifiers == ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT &&
+                        hotkey != null && hotkey == debugVirtualKeyCode
+                }
             ManualReadoutSetDetailUiState(
                 setNumber = if (index >= 0) index + 1 else null,
                 availableItemKeys = availableItemKeys,
                 selectedItemKeys = sets.getOrNull(index)?.itemKeys.orEmpty(),
                 itemTexts = sets.getOrNull(index)?.itemTexts.orEmpty(),
                 hotkeyVirtualKeyCode = hotkey,
+                hotkeyModifiers = modifiers,
                 hotkeyRegistrationState = registration,
                 hotkeyConflict = conflict ?: savedConflict,
                 isLoading = false,
@@ -109,11 +117,37 @@ internal class ManualReadoutSetDetailViewModel(
                     return@withLock
                 }
                 val conflict =
-                    findOtherSetConflict(sets, virtualKeyCode)
+                    findOtherSetConflict(sets, virtualKeyCode, set.hotkeyModifiers)
                         ?: ManualReadoutHotkeyConflict.DebugHotkey.takeIf {
-                            observeDebugHotkeyVirtualKeyCode().first() == virtualKeyCode
+                            set.hotkeyModifiers == ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT &&
+                                observeDebugHotkeyVirtualKeyCode().first() == virtualKeyCode
                         }
                 if (conflict == null) updateSet(set.copy(hotkeyVirtualKeyCode = virtualKeyCode))
+                hotkeyConflict.update { conflict }
+            }
+        }
+    }
+
+    fun selectHotkeyModifiers(modifiers: ManualReadoutHotkeyModifiers) {
+        viewModelScope.launch {
+            mutationMutex.withLock {
+                if (deleted.value) return@withLock
+                val sets = observeSets().first()
+                val set = sets.find { it.id == setId } ?: return@withLock
+                if (set.hotkeyModifiers == modifiers) {
+                    hotkeyConflict.update { null }
+                    return@withLock
+                }
+                val key = set.hotkeyVirtualKeyCode
+                val conflict =
+                    key?.let {
+                        findOtherSetConflict(sets, it, modifiers)
+                            ?: ManualReadoutHotkeyConflict.DebugHotkey.takeIf {
+                                modifiers == ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT &&
+                                    observeDebugHotkeyVirtualKeyCode().first() == key
+                            }
+                    }
+                if (conflict == null) updateSet(set.copy(hotkeyModifiers = modifiers))
                 hotkeyConflict.update { conflict }
             }
         }
@@ -123,11 +157,18 @@ internal class ManualReadoutSetDetailViewModel(
     private suspend fun findOtherSetConflict(
         sets: List<ManualReadoutSet>,
         virtualKeyCode: Int,
+        modifiers: ManualReadoutHotkeyModifiers,
     ): ManualReadoutHotkeyConflict.OtherSet? {
-        val ownIndex = sets.indexOfFirst { it.id != setId && it.hotkeyVirtualKeyCode == virtualKeyCode }
+        val ownIndex =
+            sets.indexOfFirst {
+                it.id != setId && it.hotkeyVirtualKeyCode == virtualKeyCode && it.hotkeyModifiers == modifiers
+            }
         if (ownIndex >= 0) return ManualReadoutHotkeyConflict.OtherSet(simulatorId, ownIndex + 1)
         observeOtherSimulatorSets.forEach { (otherSimulatorId, observeOtherSets) ->
-            val index = observeOtherSets().first().indexOfFirst { it.hotkeyVirtualKeyCode == virtualKeyCode }
+            val index =
+                observeOtherSets().first().indexOfFirst {
+                    it.hotkeyVirtualKeyCode == virtualKeyCode && it.hotkeyModifiers == modifiers
+                }
             if (index >= 0) return ManualReadoutHotkeyConflict.OtherSet(otherSimulatorId, index + 1)
         }
         return null

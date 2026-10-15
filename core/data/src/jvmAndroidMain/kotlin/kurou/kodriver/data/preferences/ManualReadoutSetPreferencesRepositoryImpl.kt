@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 
@@ -16,6 +17,7 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
                     itemKeys = it.itemKeys,
                     itemTexts = it.itemTexts,
                     hotkeyVirtualKeyCode = it.hotkeyVirtualKeyCode,
+                    hotkeyModifiers = ManualReadoutHotkeyModifiers.fromValue(it.hotkeyModifiers),
                 )
             }
         }
@@ -48,4 +50,5 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
     }
 }
 
-private fun ManualReadoutSet.toPreference() = ManualReadoutSetPreference(id, itemKeys, itemTexts, hotkeyVirtualKeyCode)
+private fun ManualReadoutSet.toPreference() =
+    ManualReadoutSetPreference(id, itemKeys, itemTexts, hotkeyVirtualKeyCode, hotkeyModifiers.value)

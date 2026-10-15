@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutsetdetail
 
 import androidx.compose.ui.input.key.Key
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 
 private data class ManualReadoutHotkeyKey(
     val key: Key,
@@ -51,8 +52,13 @@ private val manualReadoutHotkeyKeys =
 internal fun manualReadoutHotkeyVirtualKeyCode(key: Key): Int? =
     manualReadoutHotkeyKeys.find { it.key == key }?.virtualKeyCode
 
-internal fun manualReadoutHotkeyDisplayName(virtualKeyCode: Int): String {
-    val name =
-        manualReadoutHotkeyKeys.find { it.virtualKeyCode == virtualKeyCode }?.displayName ?: virtualKeyCode.toString()
-    return "Ctrl + Alt + Shift + $name"
-}
+internal fun manualReadoutHotkeyDisplayName(virtualKeyCode: Int): String =
+    manualReadoutHotkeyKeys.find { it.virtualKeyCode == virtualKeyCode }?.displayName ?: virtualKeyCode.toString()
+
+internal fun ManualReadoutHotkeyModifiers.displayName(): String =
+    when (this) {
+        ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT -> "Ctrl + Alt + Shift"
+        ManualReadoutHotkeyModifiers.CTRL_ALT -> "Ctrl + Alt"
+        ManualReadoutHotkeyModifiers.CTRL_SHIFT -> "Ctrl + Shift"
+        ManualReadoutHotkeyModifiers.ALT_SHIFT -> "Alt + Shift"
+    }

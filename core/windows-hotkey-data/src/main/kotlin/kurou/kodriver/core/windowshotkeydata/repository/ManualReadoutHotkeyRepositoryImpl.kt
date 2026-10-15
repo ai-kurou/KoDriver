@@ -25,7 +25,7 @@ import kurou.kodriver.core.windowshotkeydata.GlobalHotkey
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkeyEvent
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkeySource
 import kurou.kodriver.domain.model.HotkeyRegistrationState
-import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_HOTKEY_MODIFIERS
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
@@ -37,6 +37,7 @@ class ManualReadoutHotkeyRepositoryImpl(
 ) : ManualReadoutHotkeyRepository {
     private data class Registration(
         val key: Int,
+        val modifiers: ManualReadoutHotkeyModifiers,
         val retry: Int,
     )
 
@@ -48,7 +49,9 @@ class ManualReadoutHotkeyRepositoryImpl(
                 repository.observeSets().map { sets ->
                     sets
                         .mapNotNull { set ->
-                            set.hotkeyVirtualKeyCode?.let { ManualReadoutRequest(simulatorId, set.id) to it }
+                            set.hotkeyVirtualKeyCode?.let {
+                                ManualReadoutRequest(simulatorId, set.id) to (it to set.hotkeyModifiers)
+                            }
                         }.toMap()
                 }
             }.let { streams ->
@@ -69,7 +72,7 @@ class ManualReadoutHotkeyRepositoryImpl(
         channelFlow {
             val active = mutableMapOf<ManualReadoutRequest, Pair<Registration, Job>>()
             combine(assignments, retries) { keys, counts ->
-                keys.mapValues { (request, key) -> Registration(key, counts[request] ?: 0) }
+                keys.mapValues { (request, key) -> Registration(key.first, key.second, counts[request] ?: 0) }
             }.distinctUntilChanged().collect { desired ->
                 val removed = active.keys.filter { active.getValue(it).first != desired[it] }
                 for (request in removed) {
@@ -81,7 +84,7 @@ class ManualReadoutHotkeyRepositoryImpl(
                         val job =
                             launch {
                                 source
-                                    .observe(GlobalHotkey(LMU_WINDOWS_READOUT_HOTKEY_MODIFIERS, registration.key))
+                                    .observe(GlobalHotkey(registration.modifiers.value, registration.key))
                                     .onStart {
                                         emit(
                                             GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Registering),

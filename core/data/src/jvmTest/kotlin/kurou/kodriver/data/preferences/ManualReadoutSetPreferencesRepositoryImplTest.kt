@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -179,10 +180,19 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
     @Test
     fun `追加と更新と一覧保存でホットキーと割り当てなしを読み戻せる`() =
         runTest {
-            val assigned = ManualReadoutSet("target", hotkeyVirtualKeyCode = 0x30)
+            val assigned =
+                ManualReadoutSet(
+                    "target",
+                    hotkeyVirtualKeyCode = 0x30,
+                    hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_ALT,
+                )
             repository.addSet(assigned)
             assertEquals(listOf(assigned), repository.observeSets().first())
-            val updated = assigned.copy(hotkeyVirtualKeyCode = 0x5A)
+            val updated =
+                assigned.copy(
+                    hotkeyVirtualKeyCode = 0x5A,
+                    hotkeyModifiers = ManualReadoutHotkeyModifiers.ALT_SHIFT,
+                )
             repository.updateSet(updated)
             assertEquals(listOf(updated), repository.observeSets().first())
             val cleared = updated.copy(hotkeyVirtualKeyCode = null)
@@ -190,5 +200,22 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
             assertEquals(listOf(cleared), repository.observeSets().first())
             repository.saveSets(listOf(updated, ManualReadoutSet("none")))
             assertEquals(listOf(updated, ManualReadoutSet("none")), repository.observeSets().first())
+        }
+
+    @Test
+    fun `旧データと未知の修飾キーは既定値で読み出す`() =
+        runTest {
+            dataStore.updateData {
+                ManualReadoutSetPreferences(
+                    listOf(
+                        ManualReadoutSetPreference("legacy", hotkeyVirtualKeyCode = 0x41),
+                        ManualReadoutSetPreference("unknown", hotkeyModifiers = 99),
+                    ),
+                )
+            }
+            assertEquals(
+                listOf(ManualReadoutSet("legacy", hotkeyVirtualKeyCode = 0x41), ManualReadoutSet("unknown")),
+                repository.observeSets().first(),
+            )
         }
 }
