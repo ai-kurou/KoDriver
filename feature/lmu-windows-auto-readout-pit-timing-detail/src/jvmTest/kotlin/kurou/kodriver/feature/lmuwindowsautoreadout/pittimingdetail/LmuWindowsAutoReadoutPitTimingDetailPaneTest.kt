@@ -19,7 +19,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -28,9 +30,56 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Suppress("TooManyFunctions")
 class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `文言の中間のカーソル位置にlapsを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                    onVirtualEnergyTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "前半後半"
+        rule.onAllNodes(hasSetTextAction())[0].performScrollTo().performTextReplacement(text)
+        rule.onAllNodes(hasSetTextAction())[0].performScrollTo().performTextInputSelection(TextRange(2))
+        rule
+            .onAllNodesWithText("{laps}を挿入")[0]
+            .performScrollTo()
+            .assertIsEnabled()
+            .performClick()
+        rule.waitForIdle()
+        assertEquals(listOf(text, "前半{laps}後半"), changed)
+    }
+
+    @Test
+    fun `タイヤ摩耗の文言の中間のカーソル位置にlapsを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                    onTyreWearTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "前半後半"
+        rule.onAllNodes(hasSetTextAction())[2].performScrollTo().performTextReplacement(text)
+        rule.onAllNodes(hasSetTextAction())[2].performScrollTo().performTextInputSelection(TextRange(2))
+        rule
+            .onAllNodesWithText("{laps}を挿入")[1]
+            .performScrollTo()
+            .assertIsEnabled()
+            .performClick()
+        rule.waitForIdle()
+        assertEquals(listOf(text, "前半{laps}後半"), changed)
+    }
 
     @Test
     fun `タイトルと入力欄の間に4dpを確保する`() {
@@ -293,6 +342,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             .performScrollTo()
             .assertIsEnabled()
             .performClick()
+        rule.waitForIdle()
         assertEquals(listOf(text, text + "{laps}"), changed)
         rule.onAllNodesWithText("{laps}を挿入")[0].assertIsNotEnabled()
     }
@@ -385,6 +435,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             .performScrollTo()
             .assertIsEnabled()
             .performClick()
+        rule.waitForIdle()
         assertEquals(listOf(text, text + "{laps}"), changed)
         rule.onAllNodesWithText("{laps}を挿入")[1].assertIsNotEnabled()
     }

@@ -27,7 +27,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -42,6 +44,25 @@ private const val DEFAULT_TEXT = GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_
 class Gt7Ps5AutoReadoutTyreTemperatureDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `文言の中間のカーソル位置にcelsiusを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                Gt7Ps5AutoReadoutTyreTemperatureDetailPaneContent(
+                    uiState = Gt7Ps5AutoReadoutTyreTemperatureDetailUiState(isTextToSpeechAvailable = true),
+                    onReadoutTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "前半後半"
+        rule.onNode(hasSetTextAction()).performTextReplacement(text)
+        rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(2))
+        rule.onNodeWithText("{celsius}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
+        assertEquals(listOf(text, "前半{celsius}後半"), changed)
+    }
 
     @Test
     fun `タイトルと入力欄の間に4dpを確保する`() {
@@ -160,6 +181,7 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailPaneTest {
         val text = "あ".repeat(21)
         rule.onNode(hasSetTextAction()).performTextReplacement(text)
         rule.onNodeWithText("{celsius}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
         assertEquals(listOf(text, text + "{celsius}"), changed)
         rule.onNodeWithText("{celsius}を挿入").assertIsNotEnabled()
     }

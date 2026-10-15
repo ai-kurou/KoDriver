@@ -22,7 +22,9 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -37,6 +39,25 @@ private const val DEFAULT_TEXT = GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 class Gt7Ps5AutoReadoutMyBestLapDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `文言の中間のカーソル位置にlaptimeを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                Gt7Ps5AutoReadoutMyBestLapDetailPaneContent(
+                    uiState = Gt7Ps5AutoReadoutMyBestLapDetailUiState(isTextToSpeechAvailable = true),
+                    onReadoutTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "前半後半"
+        rule.onNode(hasSetTextAction()).performTextReplacement(text)
+        rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(2))
+        rule.onNodeWithText("{laptime}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
+        assertEquals(listOf(text, "前半{laptime}後半"), changed)
+    }
 
     @Test
     fun `タイトルと入力欄の間に4dpを確保する`() {
@@ -153,6 +174,7 @@ class Gt7Ps5AutoReadoutMyBestLapDetailPaneTest {
         val text = "あ".repeat(21)
         rule.onNode(hasSetTextAction()).performTextReplacement(text)
         rule.onNodeWithText("{laptime}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
         assertEquals(listOf(text, text + "{laptime}"), changed)
         rule.onNodeWithText("{laptime}を挿入").assertIsNotEnabled()
     }

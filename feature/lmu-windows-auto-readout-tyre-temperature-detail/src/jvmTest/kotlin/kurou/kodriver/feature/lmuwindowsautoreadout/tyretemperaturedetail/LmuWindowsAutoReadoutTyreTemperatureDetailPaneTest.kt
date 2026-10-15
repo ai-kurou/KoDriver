@@ -24,7 +24,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -42,6 +44,56 @@ import kotlin.test.assertEquals
 class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `過熱文言の中間のカーソル位置にcelsiusを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
+                            overheatReadoutText = "前半後半",
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onOverheatReadoutTextChanged = { changed += it },
+                )
+            }
+        }
+        rule
+            .onNode(hasSetTextAction() and hasText("前半後半"))
+            .performScrollTo()
+            .performTextInputSelection(TextRange(2))
+        rule.onAllNodesWithText("{celsius}を挿入")[0].performScrollTo().performClick()
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("前半{celsius}後半")).assertExists()
+        assertEquals(listOf("前半{celsius}後半"), changed)
+    }
+
+    @Test
+    fun `低温文言の中間のカーソル位置にcelsiusを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
+                            coldReadoutText = "前半後半",
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onColdReadoutTextChanged = { changed += it },
+                )
+            }
+        }
+        rule
+            .onNode(hasSetTextAction() and hasText("前半後半"))
+            .performScrollTo()
+            .performTextInputSelection(TextRange(2))
+        rule.onAllNodesWithText("{celsius}を挿入")[1].performScrollTo().performClick()
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("前半{celsius}後半")).assertExists()
+        assertEquals(listOf("前半{celsius}後半"), changed)
+    }
 
     @Test
     fun `タイトルと入力欄の間に4dpを確保する`() {
@@ -609,7 +661,9 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             }
         }
         rule.onAllNodesWithText("{celsius}を挿入")[0].performScrollTo().performClick()
+        rule.waitForIdle()
         rule.onAllNodesWithText("{celsius}を挿入")[1].performScrollTo().performClick()
+        rule.waitForIdle()
         assertEquals(listOf("過熱{celsius}"), overheatChanges)
         assertEquals(listOf("低温{celsius}"), coldChanges)
         rule.onNode(hasSetTextAction() and hasText("過熱{celsius}")).assertExists()

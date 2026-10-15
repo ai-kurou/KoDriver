@@ -28,6 +28,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.core.designsystem.rememberPendingText
+import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
@@ -142,6 +143,7 @@ private fun TyreTemperatureOverheatReadoutField(
 ) {
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
+    val insertState = rememberTextInsertState()
     val changeText: (String) -> Unit = {
         textState.change(it)
         onTextChanged(it)
@@ -158,6 +160,7 @@ private fun TyreTemperatureOverheatReadoutField(
             maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
             onValueChangeFinished = changeText,
             onPreviewClick = onPreviewClick,
+            insertState = insertState,
             enabled = available,
             selected = currentText.isNotBlank(),
             supportingText =
@@ -190,7 +193,7 @@ private fun TyreTemperatureOverheatReadoutField(
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
             AssistChip(
-                onClick = { changeText(currentText + ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER) },
+                onClick = { insertState.insert(ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER) },
                 label = { Text(stringResource(Res.string.tyre_temperature_overheat_celsius_insert)) },
                 enabled =
                     available &&
