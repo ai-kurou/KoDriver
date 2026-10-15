@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
@@ -80,6 +81,72 @@ class ManualReadoutSetDetailViewModelTest {
     }
 
     @Test
+    fun `上限直前では末尾へ追加し削除で文言と残りの順序を保持する`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            val original =
+                ManualReadoutSet(
+                    "target",
+                    List(MANUAL_READOUT_SET_ITEM_MAX - 1) { "UNKNOWN$it" },
+                    mapOf(key to "保持"),
+                )
+            val added = original.copy(itemKeys = original.itemKeys + key)
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(added) } answers { sets.value = listOf(added) }
+            coEvery { repository.updateSet(original) } answers { sets.value = listOf(original) }
+            val vm = viewModel()
+            try {
+                vm.addItem(key)
+                assertEquals(added, sets.value.single())
+                vm.removeItem(key)
+                assertEquals(original, sets.value.single())
+                sets.value = emptyList()
+                vm.removeItem(key)
+                vm.moveItem(0, 1)
+                verify(exactly = 5) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(added) }
+                coVerify(exactly = 1) { repository.updateSet(original) }
+                confirmVerified(repository)
+            } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `追加の重複と上限と未知キーを無視し並べ替えは順序だけ保存する`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            val unknownKeys = List(MANUAL_READOUT_SET_ITEM_MAX) { "UNKNOWN$it" }
+            val full = ManualReadoutSet("target", unknownKeys, mapOf(key to "保持"))
+            val moved = full.copy(itemKeys = listOf(unknownKeys[1], unknownKeys[2], unknownKeys[0]))
+            val selected = full.copy(itemKeys = listOf(key))
+            val sets = MutableStateFlow(listOf(full))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(moved) } answers { sets.value = listOf(moved) }
+            val vm = viewModel()
+            try {
+                vm.addItem(key)
+                vm.addItem("UNKNOWN")
+                vm.removeItem("UNKNOWN")
+                vm.removeItem(key)
+                vm.moveItem(-1, 0)
+                vm.moveItem(0, MANUAL_READOUT_SET_ITEM_MAX)
+                vm.moveItem(0, 0)
+                vm.moveItem(0, MANUAL_READOUT_SET_ITEM_MAX - 1)
+                assertEquals(moved, sets.value.single())
+                sets.value = listOf(selected)
+                vm.addItem(key)
+                assertEquals(selected, sets.value.single())
+                verify(exactly = 8) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(moved) }
+                confirmVerified(repository)
+            } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
     fun `連続選択は最新の保存状態を使い未知キーを保持し削除完了を通知する`() =
         runTest(dispatcher) {
             val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
@@ -95,16 +162,18 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(2, vm.uiState.first { !it.isLoading }.setNumber)
-                vm.toggleItem("UNKNOWN")
-                vm.toggleItem(key)
+                vm.addItem("UNKNOWN")
+                vm.addItem(key)
                 assertEquals(selected.itemKeys, vm.uiState.first().selectedItemKeys)
-                vm.toggleItem(key)
+                vm.removeItem(key)
                 assertEquals(original.itemKeys, vm.uiState.first().selectedItemKeys)
                 sets.value = listOf(original, other)
                 assertEquals(1, vm.uiState.first().setNumber)
                 vm.deleteSet()
                 vm.deleteSet()
-                vm.toggleItem(key)
+                vm.addItem(key)
+                vm.removeItem(key)
+                vm.moveItem(0, 1)
                 assertTrue(vm.uiState.first { it.deleted }.deleted)
                 assertEquals(null, vm.uiState.first().setNumber)
                 verify(exactly = 3) { repository.observeSets() }
@@ -130,7 +199,7 @@ class ManualReadoutSetDetailViewModelTest {
                     assertEquals(null, state.setNumber)
                     assertEquals(manualReadoutItemKeys(simulator.id), state.availableItemKeys)
                     assertFalse(state.deleted)
-                    vm.toggleItem(manualReadoutItemKeys(Simulator.LmuWindows.id).single())
+                    vm.addItem(manualReadoutItemKeys(Simulator.LmuWindows.id).single())
                 } finally {
                     vm.viewModelScope.cancel()
                 }
@@ -164,8 +233,8 @@ class ManualReadoutSetDetailViewModelTest {
                 assertEquals(edited.itemTexts, vm.uiState.value.itemTexts)
                 vm.updateItemText(key, "  ")
                 assertEquals(blank.itemTexts, vm.uiState.value.itemTexts)
-                vm.toggleItem(key)
-                vm.toggleItem(key)
+                vm.removeItem(key)
+                vm.addItem(key)
                 assertEquals(blank.itemTexts, vm.uiState.value.itemTexts)
                 vm.updateItemText(key, longText + "超過")
                 assertEquals(limited.itemTexts, vm.uiState.value.itemTexts)
@@ -236,7 +305,7 @@ class ManualReadoutSetDetailViewModelTest {
             val vm = viewModel()
             try {
                 vm.updateItemText(key, "残量{percent}%")
-                vm.toggleItem(key)
+                vm.removeItem(key)
                 vm.updateItemText(key, "残り{percent}%")
                 assertEquals(listOf(original), sets.value)
                 releaseSave.complete(Unit)

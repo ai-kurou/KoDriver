@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
+import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
@@ -77,15 +78,38 @@ internal class ManualReadoutSetDetailViewModel(
             ManualReadoutSetDetailUiState(availableItemKeys = availableItemKeys),
         )
 
-    fun toggleItem(itemKey: String) {
+    fun addItem(itemKey: String) {
         if (itemKey !in availableItemKeys) return
+        mutateItems { keys ->
+            if (itemKey in keys || keys.size >= MANUAL_READOUT_SET_ITEM_MAX) keys else keys + itemKey
+        }
+    }
+
+    fun removeItem(itemKey: String) {
+        if (itemKey !in availableItemKeys) return
+        mutateItems { keys -> keys.filterNot { it == itemKey } }
+    }
+
+    fun moveItem(
+        from: Int,
+        to: Int,
+    ) {
+        mutateItems { keys ->
+            if (from !in keys.indices || to !in keys.indices || from == to) {
+                keys
+            } else {
+                keys.toMutableList().apply { add(to, removeAt(from)) }
+            }
+        }
+    }
+
+    private fun mutateItems(transform: (List<String>) -> List<String>) {
         viewModelScope.launch {
             mutationMutex.withLock {
                 if (deleted.value) return@withLock
                 val set = observeSets().first().find { it.id == setId } ?: return@withLock
-                val keys =
-                    if (itemKey in set.itemKeys) set.itemKeys.filterNot { it == itemKey } else set.itemKeys + itemKey
-                updateSet(set.copy(itemKeys = keys))
+                val keys = transform(set.itemKeys)
+                if (keys != set.itemKeys) updateSet(set.copy(itemKeys = keys))
             }
         }
     }

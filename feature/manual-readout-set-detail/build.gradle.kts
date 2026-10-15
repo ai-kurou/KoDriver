@@ -15,6 +15,8 @@ kotlin {
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
             implementation(libs.compose.foundation)
+            implementation(libs.compose.material.icons.extended)
+            implementation(libs.reorderable)
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         jvmTest.dependencies {

@@ -68,6 +68,8 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 
 ## 手動読み上げセット
 
+`ManualReadoutDefaults.kt` の `MANUAL_READOUT_SET_ITEM_MAX`（3）は、1セットに追加できる項目数の上限。詳細画面と ViewModel の追加処理で参照する。
+
 `ManualReadoutSet` はセット識別子・読み上げ項目キーのリスト・項目キーごとの文言テンプレート `itemTexts` を持つ。
 文言が未保存なら `manualReadoutItemTextDefault` の既定値を使い、保存済みの空文字は読み上げない。
 LMU の残量は自動側と共通の `{percent}` 置換・未知プレースホルダー検出を使う。

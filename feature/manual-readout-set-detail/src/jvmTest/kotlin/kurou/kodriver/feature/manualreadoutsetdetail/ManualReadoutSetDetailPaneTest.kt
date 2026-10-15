@@ -3,10 +3,7 @@ package kurou.kodriver.feature.manualreadoutsetdetail
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.assertIsOff
-import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -17,6 +14,7 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.pressKey
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.Simulator
@@ -31,6 +29,30 @@ class ManualReadoutSetDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `上限では追加を無効化し文言と順序通りのプレビューを表示する`() {
+        val keys = List(MANUAL_READOUT_SET_ITEM_MAX) { "item$it" }
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState =
+                        ManualReadoutSetDetailUiState(
+                            setNumber = 1,
+                            availableItemKeys = keys + "extra",
+                            selectedItemKeys = keys,
+                            itemTexts = keys.zip(listOf("先頭", " ", "末尾")).toMap(),
+                        ),
+                    onAddItem = {},
+                    onDelete = {},
+                    showHotkey = false,
+                )
+            }
+        }
+        rule.onNodeWithText("＋ 項目を追加").assertIsNotEnabled()
+        rule.onNodeWithText("1セットに追加できる項目は3つまでです").assertExists()
+        rule.onNodeWithText("先頭、末尾").assertExists()
+    }
+
+    @Test
     fun `戻るボタンは戻れる場合だけ表示しクリックを通知する`() {
         val canNavigateBack = mutableStateOf(false)
         var backed = 0
@@ -38,7 +60,7 @@ class ManualReadoutSetDetailPaneTest {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
                     uiState = ManualReadoutSetDetailUiState(setNumber = 1),
-                    onToggleItem = {},
+                    onAddItem = {},
                     onDelete = {},
                     showHotkey = false,
                     canNavigateBack = canNavigateBack.value,
@@ -54,19 +76,33 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `選択と削除確認のキャンセルと確定を通知する`() {
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 2, availableItemKeys = listOf("energy")))
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    setNumber = 2,
+                    availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
+                ),
+            )
         var deleted = 0
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
                     uiState = state.value,
-                    onToggleItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
+                    onAddItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
                     onDelete = { deleted++ },
                 )
             }
         }
-        rule.onNode(isToggleable()).assertIsOff().performClick()
-        rule.onNode(isToggleable()).assertIsOn()
+        rule.onNodeWithText("バーチャルエナジー残量").assertDoesNotExist()
+        rule.onNodeWithText("プレビュー").assertDoesNotExist()
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("エネルギー").assertExists()
+        rule.onNodeWithText("キャンセル").performClick()
+        rule.onNodeWithText("バーチャルエナジー残量").assertDoesNotExist()
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("バーチャルエナジー残量").performClick()
+        rule.onNodeWithText("＋ 項目を追加").assertIsNotEnabled()
+        rule.onNodeWithText("バーチャルエナジー残量は50パーセント").assertExists()
         rule.onNodeWithText("セットを削除").performClick()
         rule.onNodeWithText("キャンセル").performClick()
         rule.runOnIdle { assertEquals(0, deleted) }
@@ -99,12 +135,13 @@ class ManualReadoutSetDetailPaneTest {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
                     uiState = state.value,
-                    onToggleItem = {
+                    onAddItem = {
                         state.value =
                             state.value.copy(
-                                selectedItemKeys = if (it in state.value.selectedItemKeys) emptyList() else listOf(it),
+                                selectedItemKeys = listOf(it),
                             )
                     },
+                    onRemoveItem = { state.value = state.value.copy(selectedItemKeys = emptyList()) },
                     onDelete = {},
                     showHotkey = false,
                     onItemTextChanged = { itemKey, text ->
@@ -115,7 +152,8 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
-        rule.onNode(isToggleable()).performClick()
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("バーチャルエナジー残量").performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("")
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
@@ -128,7 +166,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{percent} を挿入").assertIsNotEnabled()
         rule.onNodeWithText("30/30").assertExists()
-        rule.onNode(isToggleable()).performClick()
+        rule.onNodeWithContentDescription("バーチャルエナジー残量を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
             assertEquals(
@@ -155,7 +193,7 @@ class ManualReadoutSetDetailPaneTest {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
                     uiState = state.value,
-                    onToggleItem = {},
+                    onAddItem = {},
                     onDelete = {},
                     showHotkey = showHotkey.value,
                     onAssignHotkey = { assigned.add(it) },
@@ -200,7 +238,7 @@ class ManualReadoutSetDetailPaneTest {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
                     uiState = state.value,
-                    onToggleItem = {},
+                    onAddItem = {},
                     onDelete = {},
                     showHotkey = true,
                     onRetryHotkeyRegistration = { retries++ },

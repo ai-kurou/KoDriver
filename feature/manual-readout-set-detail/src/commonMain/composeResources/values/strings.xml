@@ -27,4 +27,12 @@
     <string name="manual_readout_hotkey_registration_conflict">他のアプリが使用中のため登録できません</string>
     <string name="manual_readout_hotkey_registration_failed">登録に失敗しました（エラーコード: %1$d）</string>
     <string name="manual_readout_hotkey_registration_retry">再試行</string>
+    <string name="manual_readout_items_title">読み上げる項目</string>
+    <string name="manual_readout_add_item">＋ 項目を追加</string>
+    <string name="manual_readout_category_energy">エネルギー</string>
+    <string name="manual_readout_empty_hint">読み上げたい項目を追加してください</string>
+    <string name="manual_readout_remove_item">%1$sを削除</string>
+    <string name="manual_readout_drag_item">%1$sを並べ替え</string>
+    <string name="manual_readout_item_limit">1セットに追加できる項目は%1$dつまでです</string>
+    <string name="manual_readout_preview">プレビュー</string>
 </resources>

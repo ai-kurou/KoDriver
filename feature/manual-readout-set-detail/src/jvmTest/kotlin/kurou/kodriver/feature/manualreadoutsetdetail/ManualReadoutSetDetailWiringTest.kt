@@ -4,7 +4,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -82,12 +81,14 @@ class ManualReadoutSetDetailWiringTest {
         val selected = original.copy(itemKeys = listOf(key))
         val edited = selected.copy(itemTexts = mapOf(key to "残量{percent}%"))
         val reset = edited.copy(itemTexts = mapOf(key to manualReadoutItemTextDefault(key)))
+        val removed = reset.copy(itemKeys = emptyList())
         val sets = MutableStateFlow(listOf(original))
         every { repository.observeSets() } returns sets
         every { debugRepository.observeVirtualKeyCode() } returns MutableStateFlow(0x70)
         coEvery { repository.updateSet(selected) } answers { sets.value = listOf(selected) }
         coEvery { repository.updateSet(edited) } answers { sets.value = listOf(edited) }
         coEvery { repository.updateSet(reset) } answers { sets.value = listOf(reset) }
+        coEvery { repository.updateSet(removed) } answers { sets.value = listOf(removed) }
         coEvery { repository.deleteSet("target") } returns Unit
         val owner =
             object : ViewModelStoreOwner {
@@ -126,21 +127,25 @@ class ManualReadoutSetDetailWiringTest {
             rule.onNodeWithText("セット 1").assertIsDisplayed()
             rule.onNodeWithContentDescription("戻る").performClick()
             rule.runOnIdle { assertEquals(1, backed) }
-            rule.onNode(isToggleable()).performClick()
+            rule.onNodeWithText("＋ 項目を追加").performClick()
+            rule.onNodeWithText("バーチャルエナジー残量").performClick()
             rule.onNode(hasSetTextAction()).performTextReplacement("残量{percent}%")
             rule.waitForIdle()
             rule.onNodeWithText("残量{percent}%").assertIsDisplayed()
             rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
             rule.waitForIdle()
             rule.onNodeWithText(manualReadoutItemTextDefault(key)).assertIsDisplayed()
+            rule.onNodeWithContentDescription("バーチャルエナジー残量を削除").performClick()
+            rule.onNode(hasSetTextAction()).assertDoesNotExist()
             rule.onNodeWithText("セットを削除").performClick()
             rule.onNodeWithText("削除").performClick()
             rule.waitForIdle()
             rule.runOnIdle { assertEquals(1, returned) }
-            verify(exactly = 4) { repository.observeSets() }
+            verify(exactly = 5) { repository.observeSets() }
             coVerify(exactly = 1) { repository.updateSet(selected) }
             coVerify(exactly = 1) { repository.updateSet(edited) }
             coVerify(exactly = 1) { repository.updateSet(reset) }
+            coVerify(exactly = 1) { repository.updateSet(removed) }
             coVerify(exactly = 1) { repository.deleteSet("target") }
             confirmVerified(repository)
         } finally {
