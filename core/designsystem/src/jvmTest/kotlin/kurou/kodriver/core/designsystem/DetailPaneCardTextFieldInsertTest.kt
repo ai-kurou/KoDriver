@@ -98,6 +98,28 @@ class DetailPaneCardTextFieldInsertTest {
     }
 
     @Test
+    fun `カーソルを操作していない入力欄への挿入は末尾へ追加する`() {
+        val insertState = TextInsertState()
+        val finishedTexts = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "abcd",
+                    placeholder = "文言",
+                    maxLength = 10,
+                    onValueChangeFinished = { finishedTexts.add(it) },
+                    onPreviewClick = null,
+                    modifier = Modifier.testTag("textField"),
+                    insertState = insertState,
+                )
+            }
+        }
+        rule.runOnIdle { insertState.insert("X") }
+        rule.waitForIdle()
+        assertEquals(listOf("abcdX"), finishedTexts)
+    }
+
+    @Test
     fun `挿入状態を指定しなくても改行除去と切り詰めと外部値の再初期化を維持する`() {
         var value by mutableStateOf("abcd")
         val finishedTexts = mutableListOf<String>()
@@ -114,7 +136,7 @@ class DetailPaneCardTextFieldInsertTest {
             }
         }
         val field = rule.onNodeWithTag("textField")
-        assertEquals(TextRange(4), field.fetchSemanticsNode().config[SemanticsProperties.TextSelectionRange])
+        assertEquals(TextRange(0), field.fetchSemanticsNode().config[SemanticsProperties.TextSelectionRange])
         field.performTextReplacement("ab\ncdef")
         assertEquals(listOf("abcde"), finishedTexts)
         rule.onNodeWithText("5/5").assertIsDisplayed()

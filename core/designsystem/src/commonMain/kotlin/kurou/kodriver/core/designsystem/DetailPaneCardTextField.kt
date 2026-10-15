@@ -80,13 +80,14 @@ fun DetailPaneCardTextField(
 ) {
     val haptic = LocalHapticFeedback.current
     var text by remember(value) { mutableStateOf(value) }
-    var selection by remember { mutableStateOf(TextRange(value.length)) }
-    val fieldValue = TextFieldValue(text, selection)
+    // 未操作（null）の間は従来どおり先頭を表示し、挿入要求は末尾へ追加する。
+    var selection by remember { mutableStateOf<TextRange?>(null) }
+    val fieldValue = TextFieldValue(text, selection ?: TextRange.Zero)
     val request = insertState?.request
     val currentOnValueChangeFinished by rememberUpdatedState(onValueChangeFinished)
     LaunchedEffect(insertState, request) {
         if (insertState != null && request != null) {
-            val inserted = insertAtSelection(text, fieldValue.selection, request.text, maxLength)
+            val inserted = insertAtSelection(text, selection, request.text, maxLength)
             insertState.consume(request)
             if (inserted != null) {
                 text = inserted.text
@@ -102,12 +103,9 @@ fun DetailPaneCardTextField(
         value = fieldValue,
         onValueChange = { input ->
             val textChanged = input.text != text
-            text = input.text.replace("\n", "").take(maxLength)
-            selection =
-                TextRange(
-                    input.selection.start.coerceIn(0, text.length),
-                    input.selection.end.coerceIn(0, text.length),
-                )
+            val normalized = normalizeInput(input, maxLength)
+            text = normalized.text
+            selection = normalized.selection
             if (textChanged) {
                 onValueChangeFinished(text)
             }

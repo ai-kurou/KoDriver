@@ -38,12 +38,14 @@ fun rememberTextInsertState(): TextInsertState = remember { TextInsertState() }
 /** 選択範囲を置換し、改行除去後に上限を超える場合は挿入しない。 */
 internal fun insertAtSelection(
     text: String,
-    selection: TextRange,
+    selection: TextRange?,
     insertion: String,
     maxLength: Int,
 ): TextFieldValue? {
-    val start = selection.min.coerceIn(0, text.length)
-    val end = selection.max.coerceIn(0, text.length)
+    // 選択範囲が未操作（null）の場合は末尾へ追加する。
+    val range = selection ?: TextRange(text.length)
+    val start = range.min.coerceIn(0, text.length)
+    val end = range.max.coerceIn(0, text.length)
     val prefix = (text.take(start) + insertion).replace("\n", "")
     val result = prefix + text.substring(end).replace("\n", "")
     return if (result.length > maxLength) {
@@ -51,4 +53,19 @@ internal fun insertAtSelection(
     } else {
         TextFieldValue(result, TextRange(prefix.length))
     }
+}
+
+/** 改行を除去して [maxLength] で切り詰め、選択範囲を切り詰め後の長さに収める。 */
+internal fun normalizeInput(
+    input: TextFieldValue,
+    maxLength: Int,
+): TextFieldValue {
+    val text = input.text.replace("\n", "").take(maxLength)
+    return TextFieldValue(
+        text,
+        TextRange(
+            input.selection.start.coerceIn(0, text.length),
+            input.selection.end.coerceIn(0, text.length),
+        ),
+    )
 }
