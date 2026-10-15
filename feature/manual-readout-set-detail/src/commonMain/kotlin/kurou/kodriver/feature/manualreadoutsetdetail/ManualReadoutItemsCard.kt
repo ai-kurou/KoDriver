@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragIndicator
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -41,6 +44,7 @@ import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_item_limit
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_items_title
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_preview
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_preview_play
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_remove_item
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -84,7 +88,9 @@ internal fun ManualReadoutItemsCard(
     onRemoveItem: (String) -> Unit,
     onMoveItem: (Int, Int) -> Unit,
     onItemTextChanged: (String, String) -> Unit,
+    onPreviewClick: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     var showPicker by remember { mutableStateOf(false) }
     val remaining = uiState.availableItemKeys.filterNot { it in uiState.selectedItemKeys }
     val atLimit = uiState.selectedItemKeys.size >= MANUAL_READOUT_SET_ITEM_MAX
@@ -118,7 +124,7 @@ internal fun ManualReadoutItemsCard(
                                     Icon(
                                         Icons.Default.DragIndicator,
                                         stringResource(Res.string.manual_readout_drag_item, name),
-                                        Modifier.draggableHandle().size(48.dp),
+                                        Modifier.draggableHandle().size(20.dp),
                                     )
                                     Text(name, modifier = Modifier.weight(1f))
                                     IconButton(onClick = { onRemoveItem(itemKey) }) {
@@ -144,7 +150,27 @@ internal fun ManualReadoutItemsCard(
                     Text(stringResource(Res.string.manual_readout_item_limit, MANUAL_READOUT_SET_ITEM_MAX))
                 }
                 if (uiState.selectedItemKeys.isNotEmpty()) {
-                    Text(stringResource(Res.string.manual_readout_preview), style = MaterialTheme.typography.titleSmall)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            stringResource(Res.string.manual_readout_preview),
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                        IconButton(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                onPreviewClick()
+                            },
+                            enabled = uiState.isTextToSpeechAvailable && manualReadoutPreview(uiState).isNotBlank(),
+                            modifier = Modifier.size(32.dp),
+                        ) {
+                            Icon(
+                                Icons.Outlined.PlayArrow,
+                                stringResource(Res.string.manual_readout_preview_play),
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp),
+                            )
+                        }
+                    }
                     Text(manualReadoutPreview(uiState))
                 }
             }

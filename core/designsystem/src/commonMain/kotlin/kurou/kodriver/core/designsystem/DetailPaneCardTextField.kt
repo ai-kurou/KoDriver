@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -53,6 +56,8 @@ import androidx.compose.ui.unit.dp
  *
  * [supportingText] の右側に、入力中の文字数と [maxLength] を「12/30」の形式で常に表示する。
  * [supportingText] がない場合も、文字数カウンターは右端に配置する。
+ * [selection] は外部更新時のカーソル・選択範囲。null なら末尾に置く。
+ * [onSelectionChange] はカーソル・選択範囲が変わるたびに通知する。
  */
 @Composable
 fun DetailPaneCardTextField(
@@ -70,17 +75,29 @@ fun DetailPaneCardTextField(
     defaultValue: String? = null,
     onResetToDefault: (() -> Unit)? = null,
     resetContentDescription: String? = null,
+    selection: TextRange? = null,
+    onSelectionChange: ((TextRange) -> Unit)? = null,
 ) {
     val haptic = LocalHapticFeedback.current
-    var text by remember(value) { mutableStateOf(value) }
-    val isResettable = enabled && defaultValue != null && text != defaultValue
+    var text by remember { mutableStateOf(TextFieldValue(value, selection ?: TextRange(value.length))) }
+    LaunchedEffect(value, selection) {
+        if (text.isOutOfSync(value, selection)) {
+            text = TextFieldValue(value, selection ?: TextRange(value.length))
+            onSelectionChange?.invoke(text.selection)
+        }
+    }
+    val isResettable = enabled && defaultValue != null && text.text != defaultValue
     val resetButtonAlpha by animateFloatAsState(targetValue = if (isResettable) 1f else 0f)
 
     TextField(
         value = text,
         onValueChange = { input ->
-            text = input.replace("\n", "").take(maxLength)
-            onValueChangeFinished(text)
+            val next = normalizeInput(input, maxLength)
+            val textChanged = text.text != input.text
+            val selectionChanged = text.selection != next.selection
+            text = next
+            if (selectionChanged) onSelectionChange?.invoke(next.selection)
+            if (textChanged) onValueChangeFinished(next.text)
         },
         enabled = enabled,
         placeholder = { Text(text = placeholder) },
@@ -93,7 +110,7 @@ fun DetailPaneCardTextField(
                 } else {
                     Spacer(Modifier.weight(1f))
                 }
-                Text(text = "${text.length}/$maxLength")
+                Text(text = "${text.text.length}/$maxLength")
             }
         },
         singleLine = true,
@@ -143,7 +160,7 @@ fun DetailPaneCardTextField(
                     IconButton(
                         onClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            onPreviewClick(text)
+                            onPreviewClick(text.text)
                         },
                         enabled = enabled,
                         modifier = Modifier.size(32.dp),
@@ -217,3 +234,27 @@ private fun DetailPaneCardTextFieldPreview() {
         }
     }
 }
+
+/** 改行を除いて [maxLength] で切り詰め、カーソル・選択範囲も除去後の位置に合わせる。 */
+private fun normalizeInput(
+    input: TextFieldValue,
+    maxLength: Int,
+): TextFieldValue {
+    val normalized = input.text.replace("\n", "").take(maxLength)
+
+    fun normalizedOffset(offset: Int) =
+        input.text
+            .take(offset)
+            .count { it != '\n' }
+            .coerceAtMost(normalized.length)
+    return input.copy(
+        text = normalized,
+        selection = TextRange(normalizedOffset(input.selection.start), normalizedOffset(input.selection.end)),
+    )
+}
+
+/** 外部から渡された [value]・[selection] と内部状態が食い違うか。 */
+private fun TextFieldValue.isOutOfSync(
+    value: String,
+    selection: TextRange?,
+): Boolean = text != value || (selection != null && this.selection != selection)

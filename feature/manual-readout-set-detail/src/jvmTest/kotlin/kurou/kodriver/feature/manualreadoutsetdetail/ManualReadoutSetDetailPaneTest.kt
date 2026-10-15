@@ -2,6 +2,8 @@ package kurou.kodriver.feature.manualreadoutsetdetail
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -10,8 +12,10 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performKeyInput
+import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.pressKey
+import androidx.compose.ui.text.TextRange
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
@@ -268,5 +272,74 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNodeWithText("登録に失敗しました（エラーコード: 5）").assertDoesNotExist()
         rule.onNodeWithText("再試行").assertDoesNotExist()
+    }
+
+    @Test
+    fun `プレビュー再生を通知しTTS不可と空文言では無効にする`() {
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                    selectedItemKeys = listOf(key),
+                    isTextToSpeechAvailable = true,
+                ),
+            )
+        var clicked = 0
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = {},
+                    onDelete = {},
+                    onPreviewClick = { clicked++ },
+                    showHotkey = false,
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("プレビューを再生").assertIsEnabled().performClick()
+        rule.runOnIdle {
+            assertEquals(1, clicked)
+            state.value = state.value.copy(isTextToSpeechAvailable = false)
+        }
+        rule.onNodeWithContentDescription("プレビューを再生").assertIsNotEnabled()
+        rule.runOnIdle { state.value = state.value.copy(isTextToSpeechAvailable = true, itemTexts = mapOf(key to "")) }
+        rule.onNodeWithContentDescription("プレビューを再生").assertIsNotEnabled()
+    }
+
+    @Test
+    fun `プレースホルダーはカーソル位置に挿入し選択範囲を置換する`() {
+        val text = mutableStateOf("前後")
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutItemTextField(text.value, "既定", { text.value = it })
+            }
+        }
+        rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(1))
+        rule.onNodeWithText("{percent} を挿入").performClick()
+        rule.runOnIdle { assertEquals("前{percent}後", text.value) }
+        assertEquals(
+            TextRange(10),
+            rule.onNode(hasSetTextAction()).fetchSemanticsNode().config[SemanticsProperties.TextSelectionRange],
+        )
+        rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(1, 10))
+        rule.onNodeWithText("{percent} を挿入").performClick()
+        rule.runOnIdle { assertEquals("前{percent}後", text.value) }
+        rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(0, 11))
+        rule.onNodeWithText("{percent} を挿入").performClick()
+        rule.runOnIdle { assertEquals("{percent}", text.value) }
+    }
+
+    @Test
+    fun `文字数上限でも選択範囲の置換で収まる場合は挿入できる`() {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutItemTextField("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH), "既定", {})
+            }
+        }
+        rule.onNodeWithText("{percent} を挿入").assertIsNotEnabled()
+        rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(0, 9))
+        rule.onNodeWithText("{percent} を挿入").assertIsEnabled()
     }
 }

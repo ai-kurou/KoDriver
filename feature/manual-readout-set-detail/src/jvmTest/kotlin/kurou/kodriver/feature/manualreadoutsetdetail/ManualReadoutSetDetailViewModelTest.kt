@@ -10,6 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -23,16 +24,21 @@ import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyVirtualKeyCodeUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.RetryManualReadoutHotkeyRegistrationUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kurou.kodriver.domain.usecase.UpdateManualReadoutSetUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -42,7 +48,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class ManualReadoutSetDetailViewModelTest {
+    private val checkTts: CheckTextToSpeechAvailableUseCase = mockk()
+    private val observeVolume: ObserveSoundVolumeUseCase = mockk()
+    private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
+    private val speakText: SpeakTextUseCase = mockk()
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
     private val hotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
@@ -63,8 +74,10 @@ class ManualReadoutSetDetailViewModelTest {
 
     private fun viewModel(
         simulatorId: String = Simulator.LmuWindows.id,
+        available: Boolean = false,
         registration: MutableStateFlow<HotkeyRegistrationState> = MutableStateFlow(HotkeyRegistrationState.Unsupported),
     ): ManualReadoutSetDetailViewModel {
+        coEvery { checkTts() } returns available
         every { hotkeyRepository.registrationStateStream(simulatorId, "target") } returns
             registration
         return ManualReadoutSetDetailViewModel(
@@ -77,6 +90,10 @@ class ManualReadoutSetDetailViewModelTest {
             mapOf(Simulator.Gt7Ps5.id to ObserveManualReadoutSetsUseCase(otherRepository)),
             ObserveManualReadoutHotkeyRegistrationStateUseCase(hotkeyRepository),
             RetryManualReadoutHotkeyRegistrationUseCase(hotkeyRepository),
+            checkTts,
+            observeVolume,
+            playStartSound,
+            speakText,
         )
     }
 
@@ -540,5 +557,103 @@ class ManualReadoutSetDetailViewModelTest {
                 collection.cancel()
                 target.viewModelScope.cancel()
             }
+        }
+
+    @Test
+    fun `プレビューは先頭キーの開始音と置換済み本文を現在の音量で再生する`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            every { repository.observeSets() } returns
+                MutableStateFlow(
+                    listOf(ManualReadoutSet("target", listOf(key), mapOf(key to "残り{percent}%"))),
+                )
+            every { observeVolume() } returns MutableStateFlow(60)
+            coEvery { playStartSound(ReadoutItemKey.fromValue(key)!!) } returns Unit
+            coEvery { speakText("残り50%", volume = 60) } returns Unit
+            val vm = viewModel(available = true)
+            val collection = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
+            try {
+                assertTrue(vm.uiState.first { !it.isLoading }.isTextToSpeechAvailable)
+                vm.onPreviewClicked()
+                coVerify(exactly = 1) { playStartSound(ReadoutItemKey.fromValue(key)!!) }
+                coVerify(exactly = 1) { speakText("残り50%", volume = 60) }
+                verify(exactly = 1) { observeVolume() }
+                confirmVerified(playStartSound, speakText, observeVolume)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `再押しとペイン離脱で開始音待機中のプレビューを停止する`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            every { repository.observeSets() } returns
+                MutableStateFlow(
+                    listOf(ManualReadoutSet("target", listOf(key), mapOf(key to "残り{percent}%"))),
+                )
+            every { observeVolume() } returns MutableStateFlow(60)
+            var stopped = 0
+            coEvery { playStartSound(ReadoutItemKey.fromValue(key)!!) } coAnswers {
+                try {
+                    awaitCancellation()
+                } finally {
+                    stopped++
+                }
+            }
+            val vm = viewModel(available = true)
+            val collection = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
+            try {
+                vm.uiState.first { !it.isLoading }
+                vm.onPreviewClicked()
+                vm.onPreviewClicked()
+                assertEquals(1, stopped)
+                vm.onPreviewClicked()
+                vm.onPreviewStopped()
+                assertEquals(2, stopped)
+                coVerify(exactly = 2) { playStartSound(ReadoutItemKey.fromValue(key)!!) }
+                coVerify(exactly = 0) { speakText("残り50%", volume = 60) }
+                verify(exactly = 2) { observeVolume() }
+                confirmVerified(playStartSound, speakText, observeVolume)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `TTS不可と空文言と未知の先頭キーでは試聴しない`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            val cases =
+                listOf(
+                    Triple(false, listOf(key), "注意"),
+                    Triple(true, listOf(key), " "),
+                    Triple(true, listOf("UNKNOWN", key), "注意"),
+                    Triple(true, emptyList(), "注意"),
+                )
+            for ((available, keys, text) in cases) {
+                every { repository.observeSets() } returns
+                    MutableStateFlow(
+                        listOf(ManualReadoutSet("target", keys, mapOf(key to text))),
+                    )
+                val vm = viewModel(available = available)
+                val collection =
+                    backgroundScope.launch(
+                        UnconfinedTestDispatcher(testScheduler),
+                    ) { vm.uiState.collect {} }
+                try {
+                    vm.uiState.first { !it.isLoading }
+                    vm.onPreviewClicked()
+                } finally {
+                    collection.cancel()
+                    vm.viewModelScope.cancel()
+                }
+            }
+            verify(exactly = 0) { observeVolume() }
+            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.fromValue(key)!!) }
+            coVerify(exactly = 0) { speakText("注意", volume = 60) }
+            confirmVerified(observeVolume, playStartSound, speakText)
         }
 }

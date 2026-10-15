@@ -31,12 +31,17 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
+import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kurou.kodriver.domain.repository.TextToSpeechRepository
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -67,6 +72,10 @@ class ManualReadoutSetDetailWiringTest {
                 },
             ).around(rule)
 
+    private val ttsRepository: TextToSpeechRepository = mockk()
+    private val volumeRepository: SoundVolumePreferencesRepository = mockk()
+    private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
+    private val speakText: SpeakTextUseCase = mockk()
     private val hotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
@@ -74,9 +83,13 @@ class ManualReadoutSetDetailWiringTest {
 
     @Test
     fun `Contentは項目保存と削除と一覧へ戻る通知を配線する`() {
+        coEvery { ttsRepository.isAvailable() } returns true
         every { hotkeyRepository.registrationStateStream(Simulator.LmuWindows.id, "target") } returns
             MutableStateFlow(HotkeyRegistrationState.Unsupported)
         val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        every { volumeRepository.volume() } returns MutableStateFlow(60)
+        coEvery { playStartSound(ReadoutItemKey.fromValue(key)!!) } returns Unit
+        coEvery { speakText("残量50%", volume = 60) } returns Unit
         val original = ManualReadoutSet("target")
         val selected = original.copy(itemKeys = listOf(key))
         val edited = selected.copy(itemTexts = mapOf(key to "残量{percent}%"))
@@ -100,6 +113,12 @@ class ManualReadoutSetDetailWiringTest {
             modules(
                 manualReadoutSetDetailModule,
                 module {
+                    single<TextToSpeechRepository> { ttsRepository }
+                    single<SoundVolumePreferencesRepository> { volumeRepository }
+                    Simulator.entries.forEach { simulator ->
+                        single<PlayStartSoundForKeyUseCase>(named(simulator.id)) { playStartSound }
+                        single<SpeakTextUseCase>(named(simulator.id)) { speakText }
+                    }
                     single<ManualReadoutHotkeyRepository> { hotkeyRepository }
                     single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) { repository }
@@ -132,6 +151,8 @@ class ManualReadoutSetDetailWiringTest {
             rule.onNode(hasSetTextAction()).performTextReplacement("残量{percent}%")
             rule.waitForIdle()
             rule.onNodeWithText("残量{percent}%").assertIsDisplayed()
+            rule.onNodeWithContentDescription("プレビューを再生").performClick()
+            rule.waitForIdle()
             rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
             rule.waitForIdle()
             rule.onNodeWithText(manualReadoutItemTextDefault(key)).assertIsDisplayed()
@@ -147,7 +168,10 @@ class ManualReadoutSetDetailWiringTest {
             coVerify(exactly = 1) { repository.updateSet(reset) }
             coVerify(exactly = 1) { repository.updateSet(removed) }
             coVerify(exactly = 1) { repository.deleteSet("target") }
-            confirmVerified(repository)
+            verify(exactly = 1) { volumeRepository.volume() }
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.fromValue(key)!!) }
+            coVerify(exactly = 1) { speakText("残量50%", volume = 60) }
+            confirmVerified(repository, volumeRepository, playStartSound, speakText)
         } finally {
             owner.viewModelStore.clear()
             stopKoin()
@@ -156,6 +180,7 @@ class ManualReadoutSetDetailWiringTest {
 
     @Test
     fun `Contentはホットキーの保存と解除を配線する`() {
+        coEvery { ttsRepository.isAvailable() } returns true
         val registration = MutableStateFlow<HotkeyRegistrationState>(HotkeyRegistrationState.Conflict)
         every { hotkeyRepository.registrationStateStream(Simulator.Gt7Ps5.id, "target") } returns registration
         coEvery { hotkeyRepository.retryRegistration(Simulator.Gt7Ps5.id, "target") } answers {
@@ -178,6 +203,12 @@ class ManualReadoutSetDetailWiringTest {
             modules(
                 manualReadoutSetDetailModule,
                 module {
+                    single<TextToSpeechRepository> { ttsRepository }
+                    single<SoundVolumePreferencesRepository> { volumeRepository }
+                    Simulator.entries.forEach { simulator ->
+                        single<PlayStartSoundForKeyUseCase>(named(simulator.id)) { playStartSound }
+                        single<SpeakTextUseCase>(named(simulator.id)) { speakText }
+                    }
                     single<ManualReadoutHotkeyRepository> { hotkeyRepository }
                     single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) { repository }

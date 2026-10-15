@@ -36,6 +36,7 @@
 
 - feature モジュール側では 4/8/12/16/24dp の余白値を直接指定せず、`KoDriverSpacing.*` を参照する。
 - 読み上げ文言のタイトルと入力欄は `DetailPaneLabeledTextField` の4dp（`extraSmall`）で揃える。挿入チップと説明文の行には下部8dp（`small`）、同じカード内の独立した文言グループ間には16dp（`large`）を確保する。区切り線やカード内部の既存余白も含めて調整し、一律には加算しない。
+- `DetailPaneLabeledTextField` / `DetailPaneCardTextField` は任意の `selection` で外部更新時の選択範囲を指定し、`onSelectionChange` でカーソル移動・選択変更を受け取れる。未指定の外部更新は末尾へ移動する。選択だけの変更では保存通知を行わない。
 - `DetailPaneLabeledTextField` / `DetailPaneCardTextField` は `onPreviewClick = null` で試聴ボタンを非表示にできる。
 - アイコンサイズ・カード幅など「余白」ではない寸法（`Modifier.size` 等）は対象外。値がたまたま同じでも `KoDriverSpacing` は使わない。
 - `app:shared` は `moduleGraphAssert` で `core:.*` への依存が禁止されているため、`AppSpacing.kt` に同じ余白値を複製している。余白の値を変更する場合は両方を同期させる。

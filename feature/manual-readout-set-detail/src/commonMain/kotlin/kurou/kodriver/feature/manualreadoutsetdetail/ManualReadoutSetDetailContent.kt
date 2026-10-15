@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.text.TextRange
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
@@ -63,6 +66,9 @@ fun ManualReadoutSetDetailContent(
     val viewModel: ManualReadoutSetDetailViewModel =
         koinViewModel(key = "$simulatorId:$setId", parameters = { parametersOf(simulatorId, setId) })
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onPreviewStopped() }
+    }
     val currentOnDeleted by rememberUpdatedState(onDeleted)
     LaunchedEffect(uiState.deleted) {
         if (uiState.deleted) currentOnDeleted()
@@ -79,6 +85,7 @@ fun ManualReadoutSetDetailContent(
         onMoveItem = viewModel::moveItem,
         onDelete = viewModel::deleteSet,
         onItemTextChanged = viewModel::updateItemText,
+        onPreviewClick = viewModel::onPreviewClicked,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -95,6 +102,7 @@ internal fun ManualReadoutSetDetailPane(
     onRemoveItem: (String) -> Unit = {},
     onMoveItem: (Int, Int) -> Unit = { _, _ -> },
     onItemTextChanged: (String, String) -> Unit = { _, _ -> },
+    onPreviewClick: () -> Unit = {},
     onAssignHotkey: (Int) -> Unit = {},
     onSelectModifiers: (ManualReadoutHotkeyModifiers) -> Unit = {},
     onClearHotkey: () -> Unit = {},
@@ -134,7 +142,14 @@ internal fun ManualReadoutSetDetailPane(
                     Text(stringResource(Res.string.manual_readout_no_items))
                 }
                 if (uiState.availableItemKeys.isNotEmpty()) {
-                    ManualReadoutItemsCard(uiState, onAddItem, onRemoveItem, onMoveItem, onItemTextChanged)
+                    ManualReadoutItemsCard(
+                        uiState,
+                        onAddItem,
+                        onRemoveItem,
+                        onMoveItem,
+                        onItemTextChanged,
+                        onPreviewClick,
+                    )
                 }
                 if (showHotkey) {
                     ManualReadoutHotkeyCard(
@@ -184,6 +199,9 @@ internal fun ManualReadoutItemTextField(
 ) {
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
+    var selection by remember { mutableStateOf(TextRange(currentText.length)) }
+    val start = selection.min.coerceIn(0, currentText.length)
+    val end = selection.max.coerceIn(start, currentText.length)
     val changeText: (String) -> Unit = {
         textState.change(it)
         onTextChanged(it)
@@ -193,6 +211,8 @@ internal fun ManualReadoutItemTextField(
         DetailPaneLabeledTextField(
             label = stringResource(Res.string.manual_readout_text_label),
             value = currentText,
+            selection = selection,
+            onSelectionChange = { selection = it },
             defaultValue = defaultText,
             maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
             onValueChangeFinished = changeText,
@@ -211,10 +231,17 @@ internal fun ManualReadoutItemTextField(
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
             AssistChip(
-                onClick = { changeText(currentText + LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER) },
+                onClick = {
+                    val placeholder = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
+                    selection = TextRange(start + placeholder.length)
+                    changeText(currentText.replaceRange(start, end, placeholder))
+                },
                 label = { Text(stringResource(Res.string.manual_readout_percent_insert)) },
+                // 押下で入力欄のフォーカスが外れると選択範囲が解除されるため、チップはフォーカスを取らない。
+                modifier = Modifier.focusProperties { canFocus = false },
                 enabled =
-                    currentText.length + LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER.length <=
+                    currentText.length - (end - start) +
+                        LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER.length <=
                         READOUT_CUSTOM_TEXT_MAX_LENGTH,
             )
             Text(
