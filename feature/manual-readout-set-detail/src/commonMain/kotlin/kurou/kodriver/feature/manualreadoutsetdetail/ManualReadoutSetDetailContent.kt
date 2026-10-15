@@ -6,8 +6,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -22,6 +26,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextRange
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
@@ -132,6 +138,19 @@ internal fun ManualReadoutSetDetailPane(
         navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
+        actions = {
+            if (number != null) {
+                val haptic = LocalHapticFeedback.current
+                IconButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        showDeleteDialog = true
+                    },
+                ) {
+                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.manual_readout_delete))
+                }
+            }
+        },
     ) {
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState()).padding(KoDriverSpacing.large),
@@ -159,9 +178,6 @@ internal fun ManualReadoutSetDetailPane(
                         onRetryHotkeyRegistration,
                         onSelectModifiers,
                     )
-                }
-                TextButton(onClick = { showDeleteDialog = true }) {
-                    Text(stringResource(Res.string.manual_readout_delete), color = MaterialTheme.colorScheme.error)
                 }
             } else if (!uiState.isLoading) {
                 Text(stringResource(Res.string.manual_readout_set_missing))

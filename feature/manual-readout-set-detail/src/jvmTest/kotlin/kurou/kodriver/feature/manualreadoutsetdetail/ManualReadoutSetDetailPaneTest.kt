@@ -108,10 +108,10 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("バーチャルエナジー残量").performClick()
         rule.onNodeWithText("＋ 項目を追加").assertIsNotEnabled()
         rule.onNodeWithText("試聴").assertExists()
-        rule.onNodeWithText("セットを削除").performClick()
+        rule.onNodeWithContentDescription("セットを削除").performClick()
         rule.onNodeWithText("キャンセル").performClick()
         rule.runOnIdle { assertEquals(0, deleted) }
-        rule.onNodeWithText("セットを削除").performClick()
+        rule.onNodeWithContentDescription("セットを削除").performClick()
         rule.onNodeWithText("削除").performClick()
         rule.runOnIdle { assertEquals(1, deleted) }
     }
@@ -127,7 +127,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("このシミュレーターで選べる項目はまだありません").assertExists()
         rule.runOnIdle { state.value = ManualReadoutSetDetailUiState(isLoading = false) }
         rule.onNodeWithText("セットが見つかりません").assertExists()
-        rule.onNodeWithText("セットを削除").assertDoesNotExist()
+        rule.onNodeWithContentDescription("セットを削除").assertDoesNotExist()
     }
 
     @Test

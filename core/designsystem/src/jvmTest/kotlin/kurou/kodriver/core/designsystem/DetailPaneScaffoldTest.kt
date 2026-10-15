@@ -73,6 +73,25 @@ class DetailPaneScaffoldTest {
         assertEquals(1, backCount)
     }
 
+    @Test
+    fun `actionsに渡した内容を上部バーに表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneScaffold(
+                    title = "ライセンス",
+                    canNavigateBack = true,
+                    navigateBackContentDescription = "戻る",
+                    onBack = {},
+                    actions = { Text("操作") },
+                ) {
+                    Text("詳細内容")
+                }
+            }
+        }
+
+        rule.onNodeWithText("操作").assertIsDisplayed()
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Test
     fun `下スクロールでAppBarが折りたたまれ上スクロールで再表示される`() {

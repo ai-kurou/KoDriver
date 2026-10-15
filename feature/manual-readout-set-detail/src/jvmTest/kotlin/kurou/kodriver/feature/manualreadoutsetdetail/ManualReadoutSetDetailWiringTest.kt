@@ -158,7 +158,7 @@ class ManualReadoutSetDetailWiringTest {
             rule.onNodeWithText(manualReadoutItemTextDefault(key)).assertIsDisplayed()
             rule.onNodeWithContentDescription("バーチャルエナジー残量を削除").performClick()
             rule.onNode(hasSetTextAction()).assertDoesNotExist()
-            rule.onNodeWithText("セットを削除").performClick()
+            rule.onNodeWithContentDescription("セットを削除").performClick()
             rule.onNodeWithText("削除").performClick()
             rule.waitForIdle()
             rule.runOnIdle { assertEquals(1, returned) }
