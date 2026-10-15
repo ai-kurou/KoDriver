@@ -29,6 +29,42 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class SpeechEventTest {
     @Test
+    fun `LMUイベントだけがLMU由来の共通マーカーを持つ`() {
+        val events =
+            listOf<ReadoutTextEvent>(
+                LmuWindowsCarLeft(),
+                LmuWindowsCarRight(),
+                LmuWindowsCarLeftSustained(),
+                LmuWindowsCarRightSustained(),
+                LmuWindowsBlueFlag(),
+                LmuWindowsYellowFlag(),
+                LmuWindowsFullCourseYellow(),
+                LmuWindowsRedFlag(),
+                LmuWindowsOverheating(),
+                LmuWindowsPartDetached(),
+                LmuWindowsTyreDetached(),
+                LmuWindowsTyreOverheat(100),
+                LmuWindowsTyreCold(60),
+                LmuWindowsTyreWearWarning(50),
+                LmuWindowsBrakeOverheat(700),
+                LmuWindowsBrakeWearLow(30),
+                LmuWindowsRemainingVirtualEnergyWarning(50),
+                LmuWindowsRemainingVirtualEnergyCurrentValue(42),
+                LmuWindowsMyBestLap(83_456L),
+                LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
+            )
+        events.forEach { event ->
+            assertTrue(event is LmuWindowsSpeechEvent)
+            assertTrue(event.withResolvedText("判定時の本文") is LmuWindowsSpeechEvent)
+        }
+        listOf<SpeechEvent>(
+            AceWindowsBlueFlag(),
+            Gt7Ps5MyBestLap(83_456),
+            DebugReadoutText(LmuWindowsReadoutItemKey.Flag.Root, "入力文言"),
+        ).forEach { assertFalse(it is LmuWindowsSpeechEvent) }
+    }
+
+    @Test
     fun `GT7の4型だけがGT7由来の共通マーカーを持つ`() {
         val events =
             listOf<ReadoutTextEvent>(

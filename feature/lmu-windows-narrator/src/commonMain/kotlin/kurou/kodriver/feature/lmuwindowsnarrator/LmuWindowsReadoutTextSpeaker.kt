@@ -10,6 +10,7 @@ import kurou.kodriver.domain.engine.LmuWindowsCarLeft
 import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
 import kurou.kodriver.domain.engine.LmuWindowsCarRight
 import kurou.kodriver.domain.engine.LmuWindowsCarRightSustained
+import kurou.kodriver.domain.engine.LmuWindowsFlagSpeechEvent
 import kurou.kodriver.domain.engine.LmuWindowsFullCourseYellow
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsOverheating
@@ -18,12 +19,15 @@ import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
+import kurou.kodriver.domain.engine.LmuWindowsSpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsThresholdWarningSpeechEvent
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
+import kurou.kodriver.domain.engine.LmuWindowsVehicleApproachSpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsVehicleDamageSpeechEvent
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
-import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
@@ -40,7 +44,8 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * フラッグ・車両接近・ピットタイミング・バーチャルエナジー残量警告・タイヤ摩耗警告・ブレーキ過熱警告・タイヤ温度警告・車両故障警告・自己ベストラップ更新の自由文字列をOS標準TTSで読み上げる、
  * [NarratorEngine][kurou.kodriver.core.narrator.NarratorEngine] 用のフック。
  * 空欄またはTTSが利用できない場合は本文を読み上げない。
- * イベントごとの文言取得とTTSの依存を明示する。
+ * LMU イベントと [DebugReadoutText] を対象とし、LMU の各グループを網羅的に解決する。
+ * 他シミュレーターのイベントは解決済み本文があっても読み上げない。
  *
  * 対象イベントと文言の対応:
  * - [LmuWindowsMyBestLap] : 自己ベストラップ更新（`{laptime}` は更新後のタイム）
@@ -83,16 +88,28 @@ internal class LmuWindowsReadoutTextSpeaker(
 
     /** 現在の読み上げ文言。空欄・TTS利用不可・対象外イベントは null。 */
     suspend fun readoutText(event: SpeechEvent): String? {
-        val text = (event as ReadoutTextEvent).resolvedText ?: eventText(event) ?: return null
+        val text =
+            when (event) {
+                is DebugReadoutText -> event.resolvedText
+                is LmuWindowsSpeechEvent -> event.resolvedText ?: lmuWindowsText(event)
+                else -> null
+            } ?: return null
         return text.takeIf { it.isNotBlank() && checkTextToSpeechAvailable() }
     }
 
-    private suspend fun eventText(event: SpeechEvent): String? =
+    private suspend fun lmuWindowsText(event: LmuWindowsSpeechEvent): String =
         when (event) {
-            is DebugReadoutText -> {
-                event.resolvedText
-            }
+            is LmuWindowsFlagSpeechEvent -> flagText(event)
+            is LmuWindowsVehicleApproachSpeechEvent -> vehicleApproachText(event)
+            is LmuWindowsVehicleDamageSpeechEvent -> vehicleDamageText(event)
+            is LmuWindowsThresholdWarningSpeechEvent -> thresholdWarningText(event)
+            is LmuWindowsMyBestLap -> myBestLapText(event)
+            is LmuWindowsRemainingVirtualEnergyCurrentValue -> event.narratedText
+            is LmuWindowsPitTimingWarning -> pitTimingText(event)
+        }
 
+    private suspend fun flagText(event: LmuWindowsFlagSpeechEvent): String =
+        when (event) {
             is LmuWindowsYellowFlag -> {
                 readoutTexts.flag.sectorYellow().first()
             }
@@ -108,7 +125,10 @@ internal class LmuWindowsReadoutTextSpeaker(
             is LmuWindowsRedFlag -> {
                 readoutTexts.flag.red().first()
             }
+        }
 
+    private suspend fun vehicleApproachText(event: LmuWindowsVehicleApproachSpeechEvent): String =
+        when (event) {
             is LmuWindowsCarLeft -> {
                 readoutTexts.vehicleApproach.startLeft().first()
             }
@@ -124,26 +144,10 @@ internal class LmuWindowsReadoutTextSpeaker(
             is LmuWindowsCarRightSustained -> {
                 readoutTexts.vehicleApproach.sustainedRight().first()
             }
-
-            is LmuWindowsMyBestLap -> {
-                myBestLapText(event)
-            }
-
-            is LmuWindowsRemainingVirtualEnergyCurrentValue -> {
-                event.narratedText
-            }
-
-            is LmuWindowsPitTimingWarning -> {
-                pitTimingText(event)
-            }
-
-            else -> {
-                thresholdWarningText(event)
-            }
         }
 
-    /** 閾値や温度を文言に埋め込む警告（残量・タイヤ摩耗・ブレーキ温度・タイヤ温度）の文言。対象外イベントは null。 */
-    private suspend fun thresholdWarningText(event: SpeechEvent): String? =
+    /** 閾値や温度を文言に埋め込む警告（残量・タイヤ摩耗・ブレーキ温度・タイヤ温度）の文言。 */
+    private suspend fun thresholdWarningText(event: LmuWindowsThresholdWarningSpeechEvent): String =
         when (event) {
             is LmuWindowsTyreOverheat -> {
                 tyreTemperatureText(event.celsius) { readoutTexts.tyre.overheat() }
@@ -168,18 +172,13 @@ internal class LmuWindowsReadoutTextSpeaker(
             is LmuWindowsTyreWearWarning -> {
                 tyreWearText(event)
             }
-
-            else -> {
-                vehicleDamageText(event)
-            }
         }
 
-    private suspend fun vehicleDamageText(event: SpeechEvent): String? =
+    private suspend fun vehicleDamageText(event: LmuWindowsVehicleDamageSpeechEvent): String =
         when (event) {
             is LmuWindowsOverheating -> readoutTexts.vehicleDamage.overheat().first()
             is LmuWindowsPartDetached -> readoutTexts.vehicleDamage.partDetached().first()
             is LmuWindowsTyreDetached -> readoutTexts.vehicleDamage.tyreDetached().first()
-            else -> null
         }
 
     private suspend fun myBestLapText(event: LmuWindowsMyBestLap): String =
@@ -214,7 +213,7 @@ internal class LmuWindowsReadoutTextSpeaker(
             event.percentage,
         )
 
-    private suspend fun pitTimingText(event: LmuWindowsPitTimingWarning): String? {
+    private suspend fun pitTimingText(event: LmuWindowsPitTimingWarning): String {
         if (event.source == PitTimingSource.TyreWear) {
             return if (event.laps <= 0) {
                 readoutTexts.pitTiming.tyreWearImminent().first()
@@ -232,3 +231,7 @@ internal class LmuWindowsReadoutTextSpeaker(
         }
     }
 }
+
+/** DebugReadoutText と LMU 由来の全イベントを自由文言対象とし、判定をNarratorと本文再生で共有する。 */
+internal fun isLmuWindowsCustomSpeakEvent(event: SpeechEvent): Boolean =
+    event is DebugReadoutText || event is LmuWindowsSpeechEvent

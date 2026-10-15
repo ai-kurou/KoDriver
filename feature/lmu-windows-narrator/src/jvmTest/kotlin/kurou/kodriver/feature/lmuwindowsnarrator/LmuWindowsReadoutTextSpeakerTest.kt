@@ -10,6 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
@@ -57,7 +58,9 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedR
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class LmuWindowsReadoutTextSpeakerTest {
@@ -136,6 +139,35 @@ class LmuWindowsReadoutTextSpeakerTest {
             checkTextToSpeechAvailable = checkTextToSpeechAvailable,
             speakText = speakText,
         )
+
+    @Test
+    fun `自由文言対象はデバッグ要求とLMUイベントだけ`() {
+        val key = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).first()
+        assertTrue(isLmuWindowsCustomSpeakEvent(DebugReadoutText(key, "入力文言")))
+        assertTrue(isLmuWindowsCustomSpeakEvent(LmuWindowsBlueFlag()))
+        assertFalse(isLmuWindowsCustomSpeakEvent(AceWindowsBlueFlag()))
+        assertFalse(isLmuWindowsCustomSpeakEvent(Gt7Ps5MyBestLap(83_456)))
+    }
+
+    @Test
+    fun `他シミュレーターのイベントは解決済み本文があっても読み上げない`() =
+        runTest {
+            val text = "他シミュレーターの本文"
+            val events =
+                listOf(
+                    AceWindowsBlueFlag(),
+                    Gt7Ps5MyBestLap(83_456),
+                    AceWindowsBlueFlag(resolvedText = text),
+                    Gt7Ps5MyBestLap(83_456, resolvedText = text),
+                )
+            events.forEach { event ->
+                assertNull(speaker.readoutText(event))
+                speaker(event, VOLUME)
+            }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(text, volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
 
     @Test
     fun `現在のエナジー残量は警告設定を取得せず既定文言で読み上げる`() =
