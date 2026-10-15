@@ -2746,6 +2746,23 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             assertEquals(null, state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption)
         }
     }
+
+    @Test
+    fun `手動残量は編集文言のプレースホルダーを置換して状態を維持する`() {
+        val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
+        listOf("残量{percent}%、{unknown}" to "残量43%、{unknown}", "" to "", "  " to "  ").forEach { (text, expected) ->
+            val decision =
+                useCase.determineManualRemainingVirtualEnergyCurrentValue(
+                    state = state,
+                    data = remainingVirtualEnergy(remainingRatio = 0.425),
+                    textTemplate = text,
+                )
+            val event = LmuWindowsRemainingVirtualEnergyCurrentValue(43, resolvedText = expected)
+            assertEquals(listOf(event), decision.events)
+            assertEquals(expected, event.narratedText)
+            assertEquals(state, decision.state)
+        }
+    }
 }
 
 private fun pitTimingBoundaryState(): LmuWindowsNarratorState =

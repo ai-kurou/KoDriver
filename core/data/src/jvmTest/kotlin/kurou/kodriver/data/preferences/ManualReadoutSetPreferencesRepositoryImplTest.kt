@@ -37,7 +37,7 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
     @Test
     fun `空の保存済み一覧へセットを追加できる`() =
         runTest {
-            val set = ManualReadoutSet("set-1", listOf("SESSION", "REMOVED_KEY"))
+            val set = ManualReadoutSet("set-1", listOf("SESSION", "REMOVED_KEY"), mapOf("SESSION" to "残量{percent}%"))
 
             repository.addSet(set)
 
@@ -80,7 +80,11 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
         runTest {
             val sets =
                 listOf(
-                    ManualReadoutSet("set-1", listOf("BRAKE_WEAR", "BEST_LAP", "REMOVED_KEY", "SIMULATOR")),
+                    ManualReadoutSet(
+                        "set-1",
+                        listOf("BRAKE_WEAR", "BEST_LAP", "REMOVED_KEY", "SIMULATOR"),
+                        mapOf("REMOVED_KEY" to "", "BEST_LAP" to "文言"),
+                    ),
                     ManualReadoutSet("set-2"),
                 )
             repository.saveSets(sets)
@@ -138,9 +142,10 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
     @Test
     fun `更新と削除は対象IDだけに作用し存在しないIDなら一覧を保持する`() =
         runTest {
-            val first = ManualReadoutSet("first", listOf("UNKNOWN"))
+            val first = ManualReadoutSet("first", listOf("UNKNOWN"), mapOf("UNKNOWN" to "保持"))
             val second = ManualReadoutSet("second")
-            val updated = second.copy(itemKeys = listOf("ENERGY", "UNKNOWN"))
+            val updated =
+                second.copy(itemKeys = listOf("ENERGY", "UNKNOWN"), itemTexts = mapOf("ENERGY" to "残量{percent}%"))
             repository.saveSets(listOf(first, second))
 
             repository.updateSet(updated)
@@ -169,5 +174,21 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
             }
 
             assertEquals(listOf(updated, added), repository.observeSets().first())
+        }
+
+    @Test
+    fun `追加と更新と一覧保存でホットキーと割り当てなしを読み戻せる`() =
+        runTest {
+            val assigned = ManualReadoutSet("target", hotkeyVirtualKeyCode = 0x30)
+            repository.addSet(assigned)
+            assertEquals(listOf(assigned), repository.observeSets().first())
+            val updated = assigned.copy(hotkeyVirtualKeyCode = 0x5A)
+            repository.updateSet(updated)
+            assertEquals(listOf(updated), repository.observeSets().first())
+            val cleared = updated.copy(hotkeyVirtualKeyCode = null)
+            repository.updateSet(cleared)
+            assertEquals(listOf(cleared), repository.observeSets().first())
+            repository.saveSets(listOf(updated, ManualReadoutSet("none")))
+            assertEquals(listOf(updated, ManualReadoutSet("none")), repository.observeSets().first())
         }
 }

@@ -10,4 +10,16 @@
     <string name="manual_readout_delete_body">この操作は取り消せません。</string>
     <string name="manual_readout_delete_confirm">削除</string>
     <string name="manual_readout_cancel">キャンセル</string>
+    <string name="manual_readout_text_label">読み上げ文言</string>
+    <string name="manual_readout_text_reset">文言をデフォルトに戻す</string>
+    <string name="manual_readout_text_blank">空欄のままなら読み上げません</string>
+    <string name="manual_readout_text_unknown">未対応のプレースホルダー: %1$s（そのまま読み上げます）</string>
+    <string name="manual_readout_percent_insert">{percent} を挿入</string>
+    <string name="manual_readout_percent_hint">{percent} は現在の残量（%）に置き換わります</string>
+    <string name="manual_readout_hotkey_title">ホットキー</string>
+    <string name="manual_readout_hotkey_none">割り当てなし</string>
+    <string name="manual_readout_hotkey_clear">割り当てを解除</string>
+    <string name="manual_readout_hotkey_hint">Ctrl + Alt + Shift と数字または英字の組み合わせを割り当てます</string>
+    <string name="manual_readout_hotkey_other_set">%1$s のセット%2$dで使用中のため割り当てできません</string>
+    <string name="manual_readout_hotkey_debug">デバッグ用の読み上げホットキーで使用中のため割り当てできません</string>
 </resources>

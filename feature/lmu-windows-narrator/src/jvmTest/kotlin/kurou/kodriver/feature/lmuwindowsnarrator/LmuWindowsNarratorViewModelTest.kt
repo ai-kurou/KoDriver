@@ -2773,6 +2773,14 @@ class LmuWindowsNarratorViewModelTest {
             createViewModel(
                 remainingVirtualEnergyChannel = energy,
                 manualRequestChannel = requests,
+                manualSets =
+                    listOf(
+                        ManualReadoutSet(
+                            "set-1",
+                            listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value),
+                            mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to "残量{percent}%"),
+                        ),
+                    ),
                 ttsEngine = tts,
                 enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
                 queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false),
@@ -2789,13 +2797,15 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(
                     LmuWindowsRemainingVirtualEnergyCurrentValue(
                         percentage = 80,
-                        resolvedText = LmuWindowsRemainingVirtualEnergyCurrentValue(80).narratedText,
+                        resolvedText = "残量80%",
                     ),
                 ),
                 queued,
             )
             verify(exactly = 1) { ttsEngine.speak(queued.single(), queue = true) }
             val log = logs.single()
+            assertEquals("残量80%", queued.single().narratedText)
+            assertEquals("残量80%", log.narratedText)
             assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
             assertContains(log.telemetryJson, "\"remainingRatio\":0.8")
             coVerify(exactly = 1) {
@@ -3723,6 +3733,52 @@ class LmuWindowsNarratorViewModelTest {
             } finally {
                 viewModel.viewModelScope.cancel()
             }
+        }
+
+    @Test
+    fun `手動依頼はセットごとの文言を使い空白文言は読み上げずF9は従来文言を使う`() =
+        runTest(testDispatcher) {
+            val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val hotkey = Channel<Unit>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                manualRequestChannel = requests,
+                hotkeyChannel = hotkey,
+                manualSets =
+                    listOf(
+                        ManualReadoutSet("custom", listOf(key), mapOf(key to "残り{percent}%、{unknown}")),
+                        ManualReadoutSet("default", listOf(key)),
+                        ManualReadoutSet("empty", listOf(key), mapOf(key to "")),
+                        ManualReadoutSet("blank", listOf(key), mapOf(key to "  ")),
+                    ),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
+                currentTimeMs = { 123L },
+            )
+            stubTelemetryLogSave(logs, 123L, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "custom"))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "default"))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "empty"))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "blank"))
+            hotkey.send(Unit)
+            assertEquals(
+                listOf("残り80%、{unknown}", "バーチャルエナジー残量は80パーセント", "バーチャルエナジー残量は80パーセント"),
+                spoken.map { it.narratedText },
+            )
+            assertEquals(5, logs.size)
+            assertEquals(
+                listOf("残り80%、{unknown}", "バーチャルエナジー残量は80パーセント", "", "", "バーチャルエナジー残量は80パーセント"),
+                logs.map { it.narratedText },
+            )
+            assertEquals(
+                listOf(NarrationOutcome.SKIPPED, NarrationOutcome.SKIPPED),
+                logs.slice(2..3).map { it.narrationOutcome },
+            )
         }
 }
 

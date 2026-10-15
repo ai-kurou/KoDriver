@@ -21,7 +21,7 @@ class ManualReadoutHintSheetContentScreenshotTest {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             KoDriverTheme {
                 Surface {
-                    ManualReadoutHintSheetContent(showHotkeyHint = isDesktopPlatform())
+                    ManualReadoutHintSheetContent(showHotkeyHint = isManualReadoutHotkeySupported())
                 }
             }
         }

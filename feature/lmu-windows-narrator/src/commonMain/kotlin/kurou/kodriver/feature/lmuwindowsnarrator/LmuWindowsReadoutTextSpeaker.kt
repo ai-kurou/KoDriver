@@ -54,7 +54,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [LmuWindowsCarRight] : 右車両接近開始
  * - [LmuWindowsCarLeftSustained] : 左車両接近継続
  * - [LmuWindowsCarRightSustained] : 右車両接近継続
- * - [LmuWindowsRemainingVirtualEnergyCurrentValue] : 現在の残量の固定文言
+ * - [LmuWindowsRemainingVirtualEnergyCurrentValue] : 現在の残量の解決済み文言（未指定なら既定文言）
  * - [LmuWindowsRemainingVirtualEnergyWarning] : 設定した残量閾値の警告
  * - [LmuWindowsOverheating] : オーバーヒート
  * - [LmuWindowsPartDetached] : 部品脱落

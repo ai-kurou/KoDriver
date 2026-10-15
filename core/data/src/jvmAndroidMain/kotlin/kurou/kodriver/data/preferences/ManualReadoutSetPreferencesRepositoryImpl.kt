@@ -10,12 +10,19 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
 ) : ManualReadoutSetPreferencesRepository {
     override fun observeSets(): Flow<List<ManualReadoutSet>> =
         dataStore.observeProperty { prefs ->
-            prefs.sets.map { ManualReadoutSet(id = it.id, itemKeys = it.itemKeys) }
+            prefs.sets.map {
+                ManualReadoutSet(
+                    id = it.id,
+                    itemKeys = it.itemKeys,
+                    itemTexts = it.itemTexts,
+                    hotkeyVirtualKeyCode = it.hotkeyVirtualKeyCode,
+                )
+            }
         }
 
     override suspend fun addSet(set: ManualReadoutSet) {
         dataStore.updateData { prefs ->
-            prefs.copy(sets = prefs.sets + ManualReadoutSetPreference(id = set.id, itemKeys = set.itemKeys))
+            prefs.copy(sets = prefs.sets + set.toPreference())
         }
     }
 
@@ -24,7 +31,7 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
             prefs.copy(
                 sets =
                     prefs.sets.map {
-                        if (it.id == set.id) ManualReadoutSetPreference(set.id, set.itemKeys) else it
+                        if (it.id == set.id) set.toPreference() else it
                     },
             )
         }
@@ -36,7 +43,9 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
 
     override suspend fun saveSets(sets: List<ManualReadoutSet>) {
         dataStore.saveProperty(sets) { prefs, value ->
-            prefs.copy(sets = value.map { ManualReadoutSetPreference(id = it.id, itemKeys = it.itemKeys) })
+            prefs.copy(sets = value.map { it.toPreference() })
         }
     }
 }
+
+private fun ManualReadoutSet.toPreference() = ManualReadoutSetPreference(id, itemKeys, itemTexts, hotkeyVirtualKeyCode)
