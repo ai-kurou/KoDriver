@@ -2831,6 +2831,67 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `キュー設定が無効でもセットホットキーはキューへ追加してログを保存する`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val presses = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val queued = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spoken)
+            every { ttsEngine.speak(capture(queued), queue = true) } just Runs
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                manualHotkeyChannel = presses,
+                manualSets =
+                    listOf(
+                        ManualReadoutSet(
+                            "set-1",
+                            listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value),
+                            mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to "残量{percent}%"),
+                        ),
+                    ),
+                ttsEngine = tts,
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
+                queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false),
+                currentTimeMs = { 123L },
+            )
+
+            stubTelemetryLogSave(logs, 123L, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            presses.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
+
+            assertEquals(emptyList(), spoken)
+            assertEquals(
+                listOf<SpeechEvent>(
+                    LmuWindowsRemainingVirtualEnergyCurrentValue(
+                        percentage = 80,
+                        resolvedText = "残量80%",
+                    ),
+                ),
+                queued,
+            )
+            verify(exactly = 1) { ttsEngine.speak(queued.single(), queue = true) }
+            val log = logs.single()
+            assertEquals("残量80%", queued.single().narratedText)
+            assertEquals("残量80%", log.narratedText)
+            assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
+            assertContains(log.telemetryJson, "\"remainingRatio\":0.8")
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 123L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    narratedText = queued.single().narratedText,
+                    narrationOutcome = NarrationOutcome.QUEUED,
+                    telemetryJson = log.telemetryJson,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `別シミュレーター宛ての手動依頼はLMU選択中でも読み上げない`() =
         runTest(testDispatcher) {
             val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
