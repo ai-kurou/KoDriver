@@ -1,5 +1,6 @@
 package kurou.kodriver.core.designsystem
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +30,7 @@ fun DetailPaneTopAppBar(
     modifier: Modifier = Modifier,
     navigationIconModifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     val haptic = LocalHapticFeedback.current
     TopAppBar(
@@ -50,6 +52,7 @@ fun DetailPaneTopAppBar(
                 }
             }
         },
+        actions = actions,
         expandedHeight = DETAIL_TOP_APP_BAR_HEIGHT,
         scrollBehavior = scrollBehavior,
     )

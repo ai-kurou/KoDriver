@@ -24,6 +24,10 @@ import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
+import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kurou.kodriver.domain.repository.TextToSpeechRepository
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.koinApplication
@@ -35,6 +39,10 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutSetDetailModuleTest {
+    private val ttsRepository: TextToSpeechRepository = mockk()
+    private val volumeRepository: SoundVolumePreferencesRepository = mockk()
+    private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
+    private val speakText: SpeakTextUseCase = mockk()
     private val hotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()
@@ -55,6 +63,7 @@ class ManualReadoutSetDetailModuleTest {
     @Test
     fun `全シミュレーターのパラメータで解決したViewModelは対応するRepositoryのセットを返す`() =
         runTest(dispatcher) {
+            coEvery { ttsRepository.isAvailable() } returns true
             val repositories =
                 mapOf(
                     Simulator.LmuWindows.id to lmuRepository,
@@ -74,6 +83,12 @@ class ManualReadoutSetDetailModuleTest {
                     modules(
                         manualReadoutSetDetailModule,
                         module {
+                            single<TextToSpeechRepository> { ttsRepository }
+                            single<SoundVolumePreferencesRepository> { volumeRepository }
+                            Simulator.entries.forEach { simulator ->
+                                single<PlayStartSoundForKeyUseCase>(named(simulator.id)) { playStartSound }
+                                single<SpeakTextUseCase>(named(simulator.id)) { speakText }
+                            }
                             single<ManualReadoutHotkeyRepository> { hotkeyRepository }
                             single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                             repositories.forEach { (id, repository) ->

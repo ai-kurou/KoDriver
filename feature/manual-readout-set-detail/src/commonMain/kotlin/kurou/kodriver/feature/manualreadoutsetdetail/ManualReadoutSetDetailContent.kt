@@ -3,17 +3,20 @@ package kurou.kodriver.feature.manualreadoutsetdetail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,25 +25,25 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
+import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
-import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_cancel
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_delete
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_delete_body
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_delete_confirm
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_delete_title
-import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_energy
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_no_items
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_percent_hint
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_percent_insert
@@ -69,6 +72,9 @@ fun ManualReadoutSetDetailContent(
     val viewModel: ManualReadoutSetDetailViewModel =
         koinViewModel(key = "$simulatorId:$setId", parameters = { parametersOf(simulatorId, setId) })
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onPreviewStopped() }
+    }
     val currentOnDeleted by rememberUpdatedState(onDeleted)
     LaunchedEffect(uiState.deleted) {
         if (uiState.deleted) currentOnDeleted()
@@ -80,9 +86,12 @@ fun ManualReadoutSetDetailContent(
         onClearHotkey = viewModel::clearHotkey,
         onRetryHotkeyRegistration = viewModel::onRetryHotkeyRegistration,
         showHotkey = showHotkey,
-        onToggleItem = viewModel::toggleItem,
+        onAddItem = viewModel::addItem,
+        onRemoveItem = viewModel::removeItem,
+        onMoveItem = viewModel::moveItem,
         onDelete = viewModel::deleteSet,
         onItemTextChanged = viewModel::updateItemText,
+        onPreviewClick = viewModel::onPreviewClicked,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -92,11 +101,14 @@ fun ManualReadoutSetDetailContent(
 @Composable
 internal fun ManualReadoutSetDetailPane(
     uiState: ManualReadoutSetDetailUiState,
-    onToggleItem: (String) -> Unit,
+    onAddItem: (String) -> Unit,
     onDelete: () -> Unit,
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
+    onRemoveItem: (String) -> Unit = {},
+    onMoveItem: (Int, Int) -> Unit = { _, _ -> },
     onItemTextChanged: (String, String) -> Unit = { _, _ -> },
+    onPreviewClick: () -> Unit = {},
     onAssignHotkey: (Int) -> Unit = {},
     onSelectModifiers: (ManualReadoutHotkeyModifiers) -> Unit = {},
     onClearHotkey: () -> Unit = {},
@@ -126,6 +138,19 @@ internal fun ManualReadoutSetDetailPane(
         navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
+        actions = {
+            if (number != null) {
+                val haptic = LocalHapticFeedback.current
+                IconButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        showDeleteDialog = true
+                    },
+                ) {
+                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.manual_readout_delete))
+                }
+            }
+        },
     ) {
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState()).padding(KoDriverSpacing.large),
@@ -135,23 +160,15 @@ internal fun ManualReadoutSetDetailPane(
                 if (uiState.availableItemKeys.isEmpty()) {
                     Text(stringResource(Res.string.manual_readout_no_items))
                 }
-                uiState.availableItemKeys.forEach { itemKey ->
-                    val itemName = stringResource(Res.string.manual_readout_energy)
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Text(itemName, modifier = Modifier.weight(1f))
-                        Switch(
-                            checked = itemKey in uiState.selectedItemKeys,
-                            onCheckedChange = { onToggleItem(itemKey) },
-                            modifier = Modifier.semantics { contentDescription = itemName },
-                        )
-                    }
-                    if (itemKey in uiState.selectedItemKeys) {
-                        ManualReadoutItemTextField(
-                            text = uiState.itemTexts[itemKey] ?: manualReadoutItemTextDefault(itemKey),
-                            defaultText = manualReadoutItemTextDefault(itemKey),
-                            onTextChanged = { onItemTextChanged(itemKey, it) },
-                        )
-                    }
+                if (uiState.availableItemKeys.isNotEmpty()) {
+                    ManualReadoutItemsCard(
+                        uiState,
+                        onAddItem,
+                        onRemoveItem,
+                        onMoveItem,
+                        onItemTextChanged,
+                        onPreviewClick,
+                    )
                 }
                 if (showHotkey) {
                     ManualReadoutHotkeyCard(
@@ -161,9 +178,6 @@ internal fun ManualReadoutSetDetailPane(
                         onRetryHotkeyRegistration,
                         onSelectModifiers,
                     )
-                }
-                TextButton(onClick = { showDeleteDialog = true }) {
-                    Text(stringResource(Res.string.manual_readout_delete), color = MaterialTheme.colorScheme.error)
                 }
             } else if (!uiState.isLoading) {
                 Text(stringResource(Res.string.manual_readout_set_missing))
@@ -194,13 +208,14 @@ internal fun ManualReadoutSetDeleteConfirmDialog(
 
 /** 選択中の項目の文言を編集し、入力ごとに保存する。 */
 @Composable
-private fun ManualReadoutItemTextField(
+internal fun ManualReadoutItemTextField(
     text: String,
     defaultText: String,
     onTextChanged: (String) -> Unit,
 ) {
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
+    val insertState = rememberTextInsertState()
     val changeText: (String) -> Unit = {
         textState.change(it)
         onTextChanged(it)
@@ -210,6 +225,7 @@ private fun ManualReadoutItemTextField(
         DetailPaneLabeledTextField(
             label = stringResource(Res.string.manual_readout_text_label),
             value = currentText,
+            insertState = insertState,
             defaultValue = defaultText,
             maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
             onValueChangeFinished = changeText,
@@ -228,11 +244,10 @@ private fun ManualReadoutItemTextField(
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
             AssistChip(
-                onClick = { changeText(currentText + LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER) },
+                onClick = { insertState.insert(LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER) },
                 label = { Text(stringResource(Res.string.manual_readout_percent_insert)) },
-                enabled =
-                    currentText.length + LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER.length <=
-                        READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                // 押下で入力欄のフォーカスが外れると選択範囲が解除されるため、チップはフォーカスを取らない。
+                modifier = Modifier.focusProperties { canFocus = false },
             )
             Text(
                 text = stringResource(Res.string.manual_readout_percent_hint),

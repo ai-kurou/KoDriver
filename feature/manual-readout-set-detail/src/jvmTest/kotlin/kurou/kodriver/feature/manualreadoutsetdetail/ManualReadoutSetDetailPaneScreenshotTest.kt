@@ -18,16 +18,29 @@ import org.junit.Test
 
 class ManualReadoutSetDetailPaneScreenshotTest {
     @Test
-    fun `項目あり`() = screenshot(listOf("energy"))
+    fun `項目追加ダイアログ`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
+                        ManualReadoutItemPickerDialog(manualReadoutItemKeys(Simulator.LmuWindows.id), {}, {})
+                    }
+                }
+            }
+            onNode(isDialog()).captureRoboImage()
+        }
+
+    @Test
+    fun `項目あり`() = screenshot(manualReadoutItemKeys(Simulator.LmuWindows.id))
 
     @Test
     fun `項目なし`() = screenshot(emptyList())
 
     @Test
-    fun `戻るボタンなし`() = screenshot(listOf("energy"), canNavigateBack = false)
+    fun `戻るボタンなし`() = screenshot(manualReadoutItemKeys(Simulator.LmuWindows.id), canNavigateBack = false)
 
     @Test
-    fun `1ペインで戻るボタンを表示`() = screenshot(listOf("energy"), size = DpSize(360.dp, 640.dp))
+    fun `1ペインで戻るボタンを表示`() = screenshot(manualReadoutItemKeys(Simulator.LmuWindows.id), size = DpSize(360.dp, 640.dp))
 
     private fun screenshot(
         keys: List<String>,
@@ -54,7 +67,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                                     hotkeyRegistrationState = registration,
                                 ),
                             showHotkey = hotkey != null,
-                            onToggleItem = {},
+                            onAddItem = {},
                             onDelete = {},
                             canNavigateBack = canNavigateBack,
                         )

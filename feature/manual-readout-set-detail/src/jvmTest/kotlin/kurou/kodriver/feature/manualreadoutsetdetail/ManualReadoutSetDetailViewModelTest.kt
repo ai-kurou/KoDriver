@@ -10,6 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -20,18 +21,24 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyVirtualKeyCodeUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.RetryManualReadoutHotkeyRegistrationUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kurou.kodriver.domain.usecase.UpdateManualReadoutSetUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -41,7 +48,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class ManualReadoutSetDetailViewModelTest {
+    private val checkTts: CheckTextToSpeechAvailableUseCase = mockk()
+    private val observeVolume: ObserveSoundVolumeUseCase = mockk()
+    private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
+    private val speakText: SpeakTextUseCase = mockk()
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
     private val hotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
@@ -62,8 +74,10 @@ class ManualReadoutSetDetailViewModelTest {
 
     private fun viewModel(
         simulatorId: String = Simulator.LmuWindows.id,
+        available: Boolean = false,
         registration: MutableStateFlow<HotkeyRegistrationState> = MutableStateFlow(HotkeyRegistrationState.Unsupported),
     ): ManualReadoutSetDetailViewModel {
+        coEvery { checkTts() } returns available
         every { hotkeyRepository.registrationStateStream(simulatorId, "target") } returns
             registration
         return ManualReadoutSetDetailViewModel(
@@ -76,8 +90,99 @@ class ManualReadoutSetDetailViewModelTest {
             mapOf(Simulator.Gt7Ps5.id to ObserveManualReadoutSetsUseCase(otherRepository)),
             ObserveManualReadoutHotkeyRegistrationStateUseCase(hotkeyRepository),
             RetryManualReadoutHotkeyRegistrationUseCase(hotkeyRepository),
+            checkTts,
+            observeVolume,
+            playStartSound,
+            speakText,
         )
     }
+
+    @Test
+    fun `上限直前では末尾へ追加し削除で文言と残りの順序を保持する`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            val original =
+                ManualReadoutSet(
+                    "target",
+                    List(MANUAL_READOUT_SET_ITEM_MAX - 1) { "UNKNOWN$it" },
+                    mapOf(key to "保持"),
+                )
+            val added = original.copy(itemKeys = original.itemKeys + key)
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(added) } answers { sets.value = listOf(added) }
+            coEvery { repository.updateSet(original) } answers { sets.value = listOf(original) }
+            val vm = viewModel()
+            try {
+                vm.addItem(key)
+                assertEquals(added, sets.value.single())
+                vm.removeItem(key)
+                assertEquals(original, sets.value.single())
+                sets.value = emptyList()
+                vm.removeItem(key)
+                vm.moveItem(0, 1)
+                verify(exactly = 5) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(added) }
+                coVerify(exactly = 1) { repository.updateSet(original) }
+                confirmVerified(repository)
+            } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `追加の重複と上限と未知キーを無視し並べ替えは順序だけ保存する`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            val unknownKeys = List(MANUAL_READOUT_SET_ITEM_MAX) { "UNKNOWN$it" }
+            val full = ManualReadoutSet("target", unknownKeys, mapOf(key to "保持"))
+            val moved = full.copy(itemKeys = listOf(unknownKeys[1], unknownKeys[2], unknownKeys[0]))
+            val selected = full.copy(itemKeys = listOf(key))
+            val sets = MutableStateFlow(listOf(full))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(moved) } answers { sets.value = listOf(moved) }
+            val vm = viewModel()
+            try {
+                vm.addItem(key)
+                vm.addItem("UNKNOWN")
+                vm.removeItem("UNKNOWN")
+                vm.removeItem(key)
+                vm.moveItem(-1, 0)
+                vm.moveItem(0, MANUAL_READOUT_SET_ITEM_MAX)
+                vm.moveItem(0, 0)
+                vm.moveItem(0, MANUAL_READOUT_SET_ITEM_MAX - 1)
+                assertEquals(moved, sets.value.single())
+                sets.value = listOf(selected)
+                vm.addItem(key)
+                assertEquals(selected, sets.value.single())
+                verify(exactly = 9) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(moved) }
+                confirmVerified(repository)
+            } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `選べなくなった保存済み項目も削除して上限枠を空けられる`() =
+        runTest(dispatcher) {
+            val unknownKeys = List(MANUAL_READOUT_SET_ITEM_MAX) { "UNKNOWN$it" }
+            val full = ManualReadoutSet("target", unknownKeys)
+            val removed = full.copy(itemKeys = unknownKeys.drop(1))
+            val sets = MutableStateFlow(listOf(full))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(removed) } answers { sets.value = listOf(removed) }
+            val vm = viewModel()
+            try {
+                vm.removeItem(unknownKeys[0])
+                assertEquals(removed, sets.value.single())
+                verify(exactly = 2) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(removed) }
+                confirmVerified(repository)
+            } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
 
     @Test
     fun `連続選択は最新の保存状態を使い未知キーを保持し削除完了を通知する`() =
@@ -95,16 +200,18 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(2, vm.uiState.first { !it.isLoading }.setNumber)
-                vm.toggleItem("UNKNOWN")
-                vm.toggleItem(key)
+                vm.addItem("UNKNOWN")
+                vm.addItem(key)
                 assertEquals(selected.itemKeys, vm.uiState.first().selectedItemKeys)
-                vm.toggleItem(key)
+                vm.removeItem(key)
                 assertEquals(original.itemKeys, vm.uiState.first().selectedItemKeys)
                 sets.value = listOf(original, other)
                 assertEquals(1, vm.uiState.first().setNumber)
                 vm.deleteSet()
                 vm.deleteSet()
-                vm.toggleItem(key)
+                vm.addItem(key)
+                vm.removeItem(key)
+                vm.moveItem(0, 1)
                 assertTrue(vm.uiState.first { it.deleted }.deleted)
                 assertEquals(null, vm.uiState.first().setNumber)
                 verify(exactly = 3) { repository.observeSets() }
@@ -130,7 +237,7 @@ class ManualReadoutSetDetailViewModelTest {
                     assertEquals(null, state.setNumber)
                     assertEquals(manualReadoutItemKeys(simulator.id), state.availableItemKeys)
                     assertFalse(state.deleted)
-                    vm.toggleItem(manualReadoutItemKeys(Simulator.LmuWindows.id).single())
+                    vm.addItem(manualReadoutItemKeys(Simulator.LmuWindows.id).single())
                 } finally {
                     vm.viewModelScope.cancel()
                 }
@@ -164,8 +271,8 @@ class ManualReadoutSetDetailViewModelTest {
                 assertEquals(edited.itemTexts, vm.uiState.value.itemTexts)
                 vm.updateItemText(key, "  ")
                 assertEquals(blank.itemTexts, vm.uiState.value.itemTexts)
-                vm.toggleItem(key)
-                vm.toggleItem(key)
+                vm.removeItem(key)
+                vm.addItem(key)
                 assertEquals(blank.itemTexts, vm.uiState.value.itemTexts)
                 vm.updateItemText(key, longText + "超過")
                 assertEquals(limited.itemTexts, vm.uiState.value.itemTexts)
@@ -236,7 +343,7 @@ class ManualReadoutSetDetailViewModelTest {
             val vm = viewModel()
             try {
                 vm.updateItemText(key, "残量{percent}%")
-                vm.toggleItem(key)
+                vm.removeItem(key)
                 vm.updateItemText(key, "残り{percent}%")
                 assertEquals(listOf(original), sets.value)
                 releaseSave.complete(Unit)
@@ -471,5 +578,105 @@ class ManualReadoutSetDetailViewModelTest {
                 collection.cancel()
                 target.viewModelScope.cancel()
             }
+        }
+
+    @Test
+    fun `プレビューは先頭キーの開始音と置換済み本文を現在の音量で再生する`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            every { repository.observeSets() } returns
+                MutableStateFlow(
+                    listOf(ManualReadoutSet("target", listOf(key), mapOf(key to "残り{percent}%"))),
+                )
+            every { observeVolume() } returns MutableStateFlow(60)
+            coEvery { playStartSound(ReadoutItemKey.fromValue(key)!!) } returns Unit
+            coEvery { speakText("残り50%", volume = 60) } returns Unit
+            val vm = viewModel(available = true)
+            val collection = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
+            try {
+                assertTrue(vm.uiState.first { !it.isLoading }.isTextToSpeechAvailable)
+                vm.onPreviewClicked()
+                coVerify(exactly = 1) { playStartSound(ReadoutItemKey.fromValue(key)!!) }
+                coVerify(exactly = 1) { speakText("残り50%", volume = 60) }
+                verify(exactly = 1) { observeVolume() }
+                confirmVerified(playStartSound, speakText, observeVolume)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `再押しとペイン離脱で開始音待機中のプレビューを停止する`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            every { repository.observeSets() } returns
+                MutableStateFlow(
+                    listOf(ManualReadoutSet("target", listOf(key), mapOf(key to "残り{percent}%"))),
+                )
+            every { observeVolume() } returns MutableStateFlow(60)
+            var stopped = 0
+            coEvery { playStartSound(ReadoutItemKey.fromValue(key)!!) } coAnswers {
+                try {
+                    awaitCancellation()
+                } finally {
+                    stopped++
+                }
+            }
+            val vm = viewModel(available = true)
+            val collection = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
+            try {
+                vm.uiState.first { !it.isLoading }
+                vm.onPreviewClicked()
+                assertTrue(vm.uiState.value.isPreviewing)
+                vm.onPreviewClicked()
+                assertFalse(vm.uiState.value.isPreviewing)
+                assertEquals(1, stopped)
+                vm.onPreviewClicked()
+                vm.onPreviewStopped()
+                assertEquals(2, stopped)
+                coVerify(exactly = 2) { playStartSound(ReadoutItemKey.fromValue(key)!!) }
+                coVerify(exactly = 0) { speakText("残り50%", volume = 60) }
+                verify(exactly = 2) { observeVolume() }
+                confirmVerified(playStartSound, speakText, observeVolume)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `TTS不可と空文言と未知の先頭キーでは試聴しない`() =
+        runTest(dispatcher) {
+            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+            val cases =
+                listOf(
+                    Triple(false, listOf(key), "注意"),
+                    Triple(true, listOf(key), " "),
+                    Triple(true, listOf("UNKNOWN", key), "注意"),
+                    Triple(true, emptyList(), "注意"),
+                )
+            for ((available, keys, text) in cases) {
+                every { repository.observeSets() } returns
+                    MutableStateFlow(
+                        listOf(ManualReadoutSet("target", keys, mapOf(key to text))),
+                    )
+                val vm = viewModel(available = available)
+                val collection =
+                    backgroundScope.launch(
+                        UnconfinedTestDispatcher(testScheduler),
+                    ) { vm.uiState.collect {} }
+                try {
+                    vm.uiState.first { !it.isLoading }
+                    vm.onPreviewClicked()
+                } finally {
+                    collection.cancel()
+                    vm.viewModelScope.cancel()
+                }
+            }
+            verify(exactly = 0) { observeVolume() }
+            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.fromValue(key)!!) }
+            coVerify(exactly = 0) { speakText("注意", volume = 60) }
+            confirmVerified(observeVolume, playStartSound, speakText)
         }
 }

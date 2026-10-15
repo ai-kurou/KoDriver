@@ -13,6 +13,8 @@ internal data class ManualReadoutSetDetailUiState(
     val hotkeyVirtualKeyCode: Int? = null,
     val hotkeyRegistrationState: HotkeyRegistrationState = HotkeyRegistrationState.Unsupported,
     val hotkeyConflict: ManualReadoutHotkeyConflict? = null,
+    val isTextToSpeechAvailable: Boolean = false,
+    val isPreviewing: Boolean = false,
     val isLoading: Boolean = true,
     val deleted: Boolean = false,
 )
