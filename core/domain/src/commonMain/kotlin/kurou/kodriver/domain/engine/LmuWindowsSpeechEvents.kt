@@ -29,9 +29,24 @@ import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadout
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 
+/** LMU 由来の読み上げイベントを識別する共通マーカー。自由文言経路で本文を扱うため [ReadoutTextEvent] の契約を持つ。 */
+sealed interface LmuWindowsSpeechEvent : ReadoutTextEvent
+
+/** LMU の全4種類のフラッグ読み上げイベント。保存文言の解決を網羅的に扱う。 */
+sealed interface LmuWindowsFlagSpeechEvent : LmuWindowsSpeechEvent
+
+/** LMU の車両接近開始・継続の読み上げイベント。 */
+sealed interface LmuWindowsVehicleApproachSpeechEvent : LmuWindowsSpeechEvent
+
+/** LMU の車両故障の読み上げイベント。 */
+sealed interface LmuWindowsVehicleDamageSpeechEvent : LmuWindowsSpeechEvent
+
+/** LMU の閾値や温度を文言に埋め込む警告イベント。 */
+sealed interface LmuWindowsThresholdWarningSpeechEvent : LmuWindowsSpeechEvent
+
 data class LmuWindowsCarLeft(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsVehicleApproachSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root
     override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 
@@ -40,7 +55,7 @@ data class LmuWindowsCarLeft(
 
 data class LmuWindowsCarRight(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsVehicleApproachSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root
     override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 
@@ -49,7 +64,7 @@ data class LmuWindowsCarRight(
 
 data class LmuWindowsCarLeftSustained(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsVehicleApproachSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root
     override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 
@@ -58,7 +73,7 @@ data class LmuWindowsCarLeftSustained(
 
 data class LmuWindowsCarRightSustained(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsVehicleApproachSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root
     override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 
@@ -67,7 +82,7 @@ data class LmuWindowsCarRightSustained(
 
 data class LmuWindowsBlueFlag(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsFlagSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root
     override val narratedText = LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 
@@ -76,7 +91,7 @@ data class LmuWindowsBlueFlag(
 
 data class LmuWindowsYellowFlag(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsFlagSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root
     override val narratedText = LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 
@@ -85,7 +100,7 @@ data class LmuWindowsYellowFlag(
 
 data class LmuWindowsFullCourseYellow(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsFlagSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root
     override val narratedText = LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 
@@ -94,7 +109,7 @@ data class LmuWindowsFullCourseYellow(
 
 data class LmuWindowsRedFlag(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsFlagSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root
     override val narratedText = LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 
@@ -103,7 +118,7 @@ data class LmuWindowsRedFlag(
 
 data class LmuWindowsOverheating(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsVehicleDamageSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root
     override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
 
@@ -112,7 +127,7 @@ data class LmuWindowsOverheating(
 
 data class LmuWindowsPartDetached(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsVehicleDamageSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root
     override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
 
@@ -121,7 +136,7 @@ data class LmuWindowsPartDetached(
 
 data class LmuWindowsTyreDetached(
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsVehicleDamageSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root
     override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 
@@ -135,7 +150,7 @@ data class LmuWindowsTyreDetached(
 data class LmuWindowsTyreOverheat(
     val celsius: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsThresholdWarningSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root
     override val narratedText =
         formatLmuWindowsTyreTemperatureReadoutText(
@@ -153,7 +168,7 @@ data class LmuWindowsTyreOverheat(
 data class LmuWindowsTyreCold(
     val celsius: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsThresholdWarningSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root
     override val narratedText =
         formatLmuWindowsTyreTemperatureReadoutText(
@@ -171,7 +186,7 @@ data class LmuWindowsTyreCold(
 data class LmuWindowsTyreWearWarning(
     val percentage: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsThresholdWarningSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root
     override val narratedText =
         formatLmuWindowsTyreWearReadoutText(
@@ -189,7 +204,7 @@ data class LmuWindowsTyreWearWarning(
 data class LmuWindowsBrakeOverheat(
     val celsius: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsThresholdWarningSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.BrakeTemperature.Root
     override val narratedText =
         formatLmuWindowsBrakeTemperatureReadoutText(
@@ -207,7 +222,7 @@ data class LmuWindowsBrakeOverheat(
 data class LmuWindowsBrakeWearLow(
     val percent: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsThresholdWarningSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root
     override val narratedText =
         formatLmuWindowsBrakeWearReadoutText(
@@ -225,7 +240,7 @@ data class LmuWindowsBrakeWearLow(
 data class LmuWindowsRemainingVirtualEnergyWarning(
     val percentage: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsThresholdWarningSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
     override val narratedText =
         formatLmuWindowsRemainingVirtualEnergyReadoutText(
@@ -240,7 +255,7 @@ data class LmuWindowsRemainingVirtualEnergyWarning(
 data class LmuWindowsRemainingVirtualEnergyCurrentValue(
     val percentage: Int,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
     override val narratedText =
         resolvedText ?: formatLmuWindowsRemainingVirtualEnergyReadoutText(
@@ -255,7 +270,7 @@ data class LmuWindowsRemainingVirtualEnergyCurrentValue(
 data class LmuWindowsMyBestLap(
     val lapTimeMs: Long,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root
     override val narratedText =
         formatLmuWindowsMyBestLapReadoutText(LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
@@ -271,7 +286,7 @@ data class LmuWindowsPitTimingWarning(
     val laps: Int,
     val source: PitTimingSource,
     override val resolvedText: String? = null,
-) : ReadoutTextEvent {
+) : LmuWindowsSpeechEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root
     override val narratedText = defaultLmuWindowsPitTimingReadoutText(source, laps)
 
