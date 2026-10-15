@@ -383,7 +383,7 @@ class AutoReadoutListPaneTest {
             .onNodeWithText(
                 "レース開始前やローディング画面で読み上げが発生することがありますが、仕様上の挙動です。" +
                     "レース中（コース走行中）は設定通りに読み上げられます。" +
-                    "なお、Assetto Corsa Evoは現在正式リリース前のため、" +
+                    "なお、Assetto Corsa EVOは現在正式リリース前のため、" +
                     "シミュレーターとKoDriverのバージョンの組み合わせによっては正しく動作しない場合があります。",
             ).assertDoesNotExist()
     }
@@ -412,7 +412,7 @@ class AutoReadoutListPaneTest {
             .onNodeWithText(
                 "レース開始前やローディング画面で読み上げが発生することがありますが、仕様上の挙動です。" +
                     "レース中（コース走行中）は設定通りに読み上げられます。" +
-                    "なお、Assetto Corsa Evoは現在正式リリース前のため、" +
+                    "なお、Assetto Corsa EVOは現在正式リリース前のため、" +
                     "シミュレーターとKoDriverのバージョンの組み合わせによっては正しく動作しない場合があります。",
             ).assertIsDisplayed()
     }
