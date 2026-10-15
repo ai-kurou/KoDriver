@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -11,15 +10,6 @@ plugins {
 
 kotlin {
     jvm()
-
-    js {
-        browser()
-    }
-
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-    }
 
     android {
         namespace = "kurou.kodriver.core.designsystem"
@@ -50,8 +40,6 @@ kotlin {
             dependsOn(commonMain.get())
         }
         jvmMain.get().dependsOn(nonAndroidMain)
-        jsMain.get().dependsOn(nonAndroidMain)
-        wasmJsMain.get().dependsOn(nonAndroidMain)
 
         jvmMain.dependencies {
             implementation(libs.compose.uiTooling)

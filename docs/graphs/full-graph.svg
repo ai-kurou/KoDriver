@@ -24,7 +24,7 @@
 <!-- :app:androidApp&#45;&gt;:app:androidBenchmark -->
 <g id="edge1" class="edge">
 <title>:app:androidApp&#45;&gt;:app:androidBenchmark</title>
-<path fill="none" stroke="black" d="M98.78,-523.7C137.75,-553.22 201.84,-607.43 208,-610.66 223.61,-618.84 241.78,-624.91 258.56,-629.85"/>
+<path fill="none" stroke="black" d="M93.7,-523.76C119.75,-547.35 163.17,-587.18 208,-610.66 223.61,-618.84 241.78,-624.91 258.56,-629.85"/>
 <polygon fill="black" stroke="black" points="257.68,-633.23 268.26,-632.63 259.61,-626.51 257.68,-633.23"/>
 </g>
 <!-- :app:shared -->
@@ -40,70 +40,70 @@
 <polygon fill="black" stroke="black" points="252.89,-581.09 263.46,-580.35 254.74,-574.34 252.89,-581.09"/>
 </g>
 <!-- :core:data -->
-<g id="node7" class="node">
+<g id="node6" class="node">
 <title>:core:data</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M346,-494.66C346,-494.66 282,-494.66 282,-494.66 276,-494.66 270,-488.66 270,-482.66 270,-482.66 270,-470.66 270,-470.66 270,-464.66 276,-458.66 282,-458.66 282,-458.66 346,-458.66 346,-458.66 352,-458.66 358,-464.66 358,-470.66 358,-470.66 358,-482.66 358,-482.66 358,-488.66 352,-494.66 346,-494.66"/>
-<text text-anchor="middle" x="314" y="-472.96" font-family="Times,serif" font-size="14.00">:core:data</text>
+<path fill="#bbdefb" stroke="#1e88e5" d="M346,-552.66C346,-552.66 282,-552.66 282,-552.66 276,-552.66 270,-546.66 270,-540.66 270,-540.66 270,-528.66 270,-528.66 270,-522.66 276,-516.66 282,-516.66 282,-516.66 346,-516.66 346,-516.66 352,-516.66 358,-522.66 358,-528.66 358,-528.66 358,-540.66 358,-540.66 358,-546.66 352,-552.66 346,-552.66"/>
+<text text-anchor="middle" x="314" y="-530.96" font-family="Times,serif" font-size="14.00">:core:data</text>
 </g>
 <!-- :app:androidApp&#45;&gt;:core:data -->
 <g id="edge3" class="edge">
 <title>:app:androidApp&#45;&gt;:core:data</title>
-<path fill="none" stroke="black" d="M135.03,-497.81C174.25,-493.15 223.32,-487.32 259.99,-482.96"/>
-<polygon fill="black" stroke="black" points="260.47,-486.43 269.99,-481.77 259.65,-479.48 260.47,-486.43"/>
+<path fill="none" stroke="black" d="M135.03,-513.51C174.25,-518.17 223.32,-524 259.99,-528.36"/>
+<polygon fill="black" stroke="black" points="259.65,-531.84 269.99,-529.55 260.47,-524.89 259.65,-531.84"/>
 </g>
 <!-- :core:device&#45;volume&#45;data -->
-<g id="node9" class="node">
+<g id="node8" class="node">
 <title>:core:device&#45;volume&#45;data</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M399,-436.66C399,-436.66 229,-436.66 229,-436.66 223,-436.66 217,-430.66 217,-424.66 217,-424.66 217,-412.66 217,-412.66 217,-406.66 223,-400.66 229,-400.66 229,-400.66 399,-400.66 399,-400.66 405,-400.66 411,-406.66 411,-412.66 411,-412.66 411,-424.66 411,-424.66 411,-430.66 405,-436.66 399,-436.66"/>
-<text text-anchor="middle" x="314" y="-414.96" font-family="Times,serif" font-size="14.00">:core:device&#45;volume&#45;data</text>
+<path fill="#bbdefb" stroke="#1e88e5" d="M399,-494.66C399,-494.66 229,-494.66 229,-494.66 223,-494.66 217,-488.66 217,-482.66 217,-482.66 217,-470.66 217,-470.66 217,-464.66 223,-458.66 229,-458.66 229,-458.66 399,-458.66 399,-458.66 405,-458.66 411,-464.66 411,-470.66 411,-470.66 411,-482.66 411,-482.66 411,-488.66 405,-494.66 399,-494.66"/>
+<text text-anchor="middle" x="314" y="-472.96" font-family="Times,serif" font-size="14.00">:core:device&#45;volume&#45;data</text>
 </g>
 <!-- :app:androidApp&#45;&gt;:core:device&#45;volume&#45;data -->
 <g id="edge4" class="edge">
 <title>:app:androidApp&#45;&gt;:core:device&#45;volume&#45;data</title>
-<path fill="none" stroke="black" d="M108.63,-487.56C136.16,-475.37 173.89,-459.43 208,-447.66 216.12,-444.86 224.66,-442.14 233.22,-439.56"/>
-<polygon fill="black" stroke="black" points="234.27,-442.9 242.87,-436.71 232.29,-436.18 234.27,-442.9"/>
+<path fill="none" stroke="black" d="M135.03,-497.81C157.11,-495.19 182.31,-492.19 206.67,-489.3"/>
+<polygon fill="black" stroke="black" points="207.16,-492.76 216.68,-488.11 206.33,-485.81 207.16,-492.76"/>
 </g>
 <!-- :core:gt7&#45;ps5&#45;data -->
-<g id="node11" class="node">
+<g id="node10" class="node">
 <title>:core:gt7&#45;ps5&#45;data</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M375,-378.66C375,-378.66 253,-378.66 253,-378.66 247,-378.66 241,-372.66 241,-366.66 241,-366.66 241,-354.66 241,-354.66 241,-348.66 247,-342.66 253,-342.66 253,-342.66 375,-342.66 375,-342.66 381,-342.66 387,-348.66 387,-354.66 387,-354.66 387,-366.66 387,-366.66 387,-372.66 381,-378.66 375,-378.66"/>
-<text text-anchor="middle" x="314" y="-356.96" font-family="Times,serif" font-size="14.00">:core:gt7&#45;ps5&#45;data</text>
+<path fill="#bbdefb" stroke="#1e88e5" d="M375,-436.66C375,-436.66 253,-436.66 253,-436.66 247,-436.66 241,-430.66 241,-424.66 241,-424.66 241,-412.66 241,-412.66 241,-406.66 247,-400.66 253,-400.66 253,-400.66 375,-400.66 375,-400.66 381,-400.66 387,-406.66 387,-412.66 387,-412.66 387,-424.66 387,-424.66 387,-430.66 381,-436.66 375,-436.66"/>
+<text text-anchor="middle" x="314" y="-414.96" font-family="Times,serif" font-size="14.00">:core:gt7&#45;ps5&#45;data</text>
 </g>
 <!-- :app:androidApp&#45;&gt;:core:gt7&#45;ps5&#45;data -->
 <g id="edge5" class="edge">
 <title>:app:androidApp&#45;&gt;:core:gt7&#45;ps5&#45;data</title>
-<path fill="none" stroke="black" d="M85.63,-487.57C110.06,-462.08 158.16,-415.76 208,-389.66 215.35,-385.81 223.25,-382.43 231.32,-379.47"/>
-<polygon fill="black" stroke="black" points="232.52,-382.76 240.83,-376.19 230.24,-376.14 232.52,-382.76"/>
+<path fill="none" stroke="black" d="M108.63,-487.56C136.16,-475.37 173.89,-459.43 208,-447.66 216.12,-444.86 224.66,-442.14 233.22,-439.56"/>
+<polygon fill="black" stroke="black" points="234.27,-442.9 242.87,-436.71 232.29,-436.18 234.27,-442.9"/>
 </g>
 <!-- :core:text&#45;to&#45;speech&#45;data -->
-<g id="node15" class="node">
+<g id="node14" class="node">
 <title>:core:text&#45;to&#45;speech&#45;data</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M399,-320.66C399,-320.66 229,-320.66 229,-320.66 223,-320.66 217,-314.66 217,-308.66 217,-308.66 217,-296.66 217,-296.66 217,-290.66 223,-284.66 229,-284.66 229,-284.66 399,-284.66 399,-284.66 405,-284.66 411,-290.66 411,-296.66 411,-296.66 411,-308.66 411,-308.66 411,-314.66 405,-320.66 399,-320.66"/>
-<text text-anchor="middle" x="314" y="-298.96" font-family="Times,serif" font-size="14.00">:core:text&#45;to&#45;speech&#45;data</text>
+<path fill="#bbdefb" stroke="#1e88e5" d="M399,-378.66C399,-378.66 229,-378.66 229,-378.66 223,-378.66 217,-372.66 217,-366.66 217,-366.66 217,-354.66 217,-354.66 217,-348.66 223,-342.66 229,-342.66 229,-342.66 399,-342.66 399,-342.66 405,-342.66 411,-348.66 411,-354.66 411,-354.66 411,-366.66 411,-366.66 411,-372.66 405,-378.66 399,-378.66"/>
+<text text-anchor="middle" x="314" y="-356.96" font-family="Times,serif" font-size="14.00">:core:text&#45;to&#45;speech&#45;data</text>
 </g>
 <!-- :app:androidApp&#45;&gt;:core:text&#45;to&#45;speech&#45;data -->
 <g id="edge6" class="edge">
 <title>:app:androidApp&#45;&gt;:core:text&#45;to&#45;speech&#45;data</title>
-<path fill="none" stroke="black" d="M78.34,-487.53C97.6,-452 145.23,-373.07 208,-331.66 211.6,-329.29 215.38,-327.11 219.3,-325.11"/>
-<polygon fill="black" stroke="black" points="221.06,-328.15 228.64,-320.75 218.1,-321.8 221.06,-328.15"/>
+<path fill="none" stroke="black" d="M85.63,-487.57C110.06,-462.08 158.16,-415.76 208,-389.66 213.1,-386.99 218.47,-384.55 223.97,-382.31"/>
+<polygon fill="black" stroke="black" points="225.24,-385.57 233.34,-378.74 222.75,-379.03 225.24,-385.57"/>
 </g>
 <!-- :core:windows&#45;startup&#45;data -->
-<g id="node18" class="node">
+<g id="node17" class="node">
 <title>:core:windows&#45;startup&#45;data</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M408,-552.66C408,-552.66 220,-552.66 220,-552.66 214,-552.66 208,-546.66 208,-540.66 208,-540.66 208,-528.66 208,-528.66 208,-522.66 214,-516.66 220,-516.66 220,-516.66 408,-516.66 408,-516.66 414,-516.66 420,-522.66 420,-528.66 420,-528.66 420,-540.66 420,-540.66 420,-546.66 414,-552.66 408,-552.66"/>
-<text text-anchor="middle" x="314" y="-530.96" font-family="Times,serif" font-size="14.00">:core:windows&#45;startup&#45;data</text>
+<path fill="#bbdefb" stroke="#1e88e5" d="M408,-320.66C408,-320.66 220,-320.66 220,-320.66 214,-320.66 208,-314.66 208,-308.66 208,-308.66 208,-296.66 208,-296.66 208,-290.66 214,-284.66 220,-284.66 220,-284.66 408,-284.66 408,-284.66 414,-284.66 420,-290.66 420,-296.66 420,-296.66 420,-308.66 420,-308.66 420,-314.66 414,-320.66 408,-320.66"/>
+<text text-anchor="middle" x="314" y="-298.96" font-family="Times,serif" font-size="14.00">:core:windows&#45;startup&#45;data</text>
 </g>
 <!-- :app:androidApp&#45;&gt;:core:windows&#45;startup&#45;data -->
 <g id="edge7" class="edge">
 <title>:app:androidApp&#45;&gt;:core:windows&#45;startup&#45;data</title>
-<path fill="none" stroke="black" d="M135.03,-513.51C154.4,-515.81 176.18,-518.4 197.68,-520.95"/>
-<polygon fill="black" stroke="black" points="197.52,-524.46 207.86,-522.16 198.34,-517.51 197.52,-524.46"/>
+<path fill="none" stroke="black" d="M78.34,-487.53C97.6,-452 145.23,-373.07 208,-331.66 211.6,-329.29 215.38,-327.11 219.3,-325.11"/>
+<polygon fill="black" stroke="black" points="221.06,-328.15 228.64,-320.75 218.1,-321.8 221.06,-328.15"/>
 </g>
 <!-- :app:androidBenchmark&#45;&gt;:app:androidApp -->
 <g id="edge8" class="edge">
 <title>:app:androidBenchmark&#45;&gt;:app:androidApp</title>
-<path fill="none" stroke="black" d="M219.97,-638.33C215.86,-636.57 211.85,-634.68 208,-632.66 201.42,-629.21 128.75,-567.6 91.2,-531.17"/>
-<polygon fill="black" stroke="black" points="93.32,-528.35 83.75,-523.81 88.4,-533.33 93.32,-528.35"/>
+<path fill="none" stroke="black" d="M219.97,-638.33C215.86,-636.57 211.85,-634.68 208,-632.66 158.63,-606.8 110.96,-561.11 86.32,-531.81"/>
+<polygon fill="black" stroke="black" points="89.02,-529.58 80,-524.01 83.58,-533.98 89.02,-529.58"/>
 </g>
 <!-- :app:desktopApp -->
 <g id="node3" class="node">
@@ -118,7 +118,7 @@
 <polygon fill="black" stroke="black" points="252.94,-588.5 263.48,-587.43 254.57,-581.69 252.94,-588.5"/>
 </g>
 <!-- :core:ace&#45;windows&#45;data -->
-<g id="node6" class="node">
+<g id="node5" class="node">
 <title>:core:ace&#45;windows&#45;data</title>
 <path fill="#bbdefb" stroke="#1e88e5" d="M393.5,-262.66C393.5,-262.66 234.5,-262.66 234.5,-262.66 228.5,-262.66 222.5,-256.66 222.5,-250.66 222.5,-250.66 222.5,-238.66 222.5,-238.66 222.5,-232.66 228.5,-226.66 234.5,-226.66 234.5,-226.66 393.5,-226.66 393.5,-226.66 399.5,-226.66 405.5,-232.66 405.5,-238.66 405.5,-238.66 405.5,-250.66 405.5,-250.66 405.5,-256.66 399.5,-262.66 393.5,-262.66"/>
 <text text-anchor="middle" x="314" y="-240.96" font-family="Times,serif" font-size="14.00">:core:ace&#45;windows&#45;data</text>
@@ -132,23 +132,23 @@
 <!-- :app:desktopApp&#45;&gt;:core:data -->
 <g id="edge11" class="edge">
 <title>:app:desktopApp&#45;&gt;:core:data</title>
-<path fill="none" stroke="black" d="M81.3,-320.81C103.13,-351.61 151.7,-414.07 208,-447.66 223.68,-457.02 242.47,-463.44 259.79,-467.81"/>
-<polygon fill="black" stroke="black" points="259.25,-471.28 269.78,-470.16 260.85,-464.47 259.25,-471.28"/>
+<path fill="none" stroke="black" d="M76.19,-320.73C92.97,-360.52 138.64,-456.15 208,-505.66 223.12,-516.45 242.09,-523.23 259.74,-527.49"/>
+<polygon fill="black" stroke="black" points="259.42,-531 269.94,-529.72 260.91,-524.16 259.42,-531"/>
 </g>
 <!-- :app:desktopApp&#45;&gt;:core:device&#45;volume&#45;data -->
 <g id="edge12" class="edge">
 <title>:app:desktopApp&#45;&gt;:core:device&#45;volume&#45;data</title>
-<path fill="none" stroke="black" d="M93.39,-321.01C120.24,-340.44 165.26,-370.86 208,-389.66 214.22,-392.4 220.77,-394.94 227.42,-397.28"/>
-<polygon fill="black" stroke="black" points="226.63,-400.71 237.23,-400.58 228.86,-394.07 226.63,-400.71"/>
+<path fill="none" stroke="black" d="M81.3,-320.81C103.13,-351.61 151.7,-414.07 208,-447.66 212.19,-450.16 216.61,-452.46 221.16,-454.56"/>
+<polygon fill="black" stroke="black" points="220.1,-457.91 230.67,-458.6 222.84,-451.46 220.1,-457.91"/>
 </g>
 <!-- :app:desktopApp&#45;&gt;:core:gt7&#45;ps5&#45;data -->
 <g id="edge13" class="edge">
 <title>:app:desktopApp&#45;&gt;:core:gt7&#45;ps5&#45;data</title>
-<path fill="none" stroke="black" d="M136.32,-318.66C165.6,-325.62 200.17,-333.84 230.93,-341.15"/>
-<polygon fill="black" stroke="black" points="230.24,-344.58 240.77,-343.49 231.86,-337.77 230.24,-344.58"/>
+<path fill="none" stroke="black" d="M93.39,-321.01C120.24,-340.44 165.26,-370.86 208,-389.66 215.38,-392.91 223.22,-395.88 231.16,-398.57"/>
+<polygon fill="black" stroke="black" points="230.27,-401.97 240.87,-401.73 232.44,-395.31 230.27,-401.97"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;data -->
-<g id="node12" class="node">
+<g id="node11" class="node">
 <title>:core:lmu&#45;windows&#45;data</title>
 <path fill="#bbdefb" stroke="#1e88e5" d="M395,-204.66C395,-204.66 233,-204.66 233,-204.66 227,-204.66 221,-198.66 221,-192.66 221,-192.66 221,-180.66 221,-180.66 221,-174.66 227,-168.66 233,-168.66 233,-168.66 395,-168.66 395,-168.66 401,-168.66 407,-174.66 407,-180.66 407,-180.66 407,-192.66 407,-192.66 407,-198.66 401,-204.66 395,-204.66"/>
 <text text-anchor="middle" x="314" y="-182.96" font-family="Times,serif" font-size="14.00">:core:lmu&#45;windows&#45;data</text>
@@ -160,7 +160,7 @@
 <polygon fill="black" stroke="black" points="228.86,-211.25 237.23,-204.74 226.63,-204.61 228.86,-211.25"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;rest&#45;api&#45;data -->
-<g id="node13" class="node">
+<g id="node12" class="node">
 <title>:core:lmu&#45;windows&#45;rest&#45;api&#45;data</title>
 <path fill="#bbdefb" stroke="#1e88e5" d="M725,-152.66C725,-152.66 504,-152.66 504,-152.66 498,-152.66 492,-146.66 492,-140.66 492,-140.66 492,-128.66 492,-128.66 492,-122.66 498,-116.66 504,-116.66 504,-116.66 725,-116.66 725,-116.66 731,-116.66 737,-122.66 737,-128.66 737,-128.66 737,-140.66 737,-140.66 737,-146.66 731,-152.66 725,-152.66"/>
 <text text-anchor="middle" x="614.5" y="-130.96" font-family="Times,serif" font-size="14.00">:core:lmu&#45;windows&#45;rest&#45;api&#45;data</text>
@@ -174,11 +174,11 @@
 <!-- :app:desktopApp&#45;&gt;:core:text&#45;to&#45;speech&#45;data -->
 <g id="edge16" class="edge">
 <title>:app:desktopApp&#45;&gt;:core:text&#45;to&#45;speech&#45;data</title>
-<path fill="none" stroke="black" d="M136.32,-302.66C158.04,-302.66 182.68,-302.66 206.52,-302.66"/>
-<polygon fill="black" stroke="black" points="206.67,-306.16 216.67,-302.66 206.67,-299.16 206.67,-306.16"/>
+<path fill="none" stroke="black" d="M136.32,-318.66C164.33,-325.32 197.18,-333.13 226.92,-340.2"/>
+<polygon fill="black" stroke="black" points="226.33,-343.66 236.87,-342.56 227.95,-336.85 226.33,-343.66"/>
 </g>
 <!-- :core:windows&#45;hotkey&#45;data -->
-<g id="node16" class="node">
+<g id="node15" class="node">
 <title>:core:windows&#45;hotkey&#45;data</title>
 <path fill="#bbdefb" stroke="#1e88e5" d="M706,-36.66C706,-36.66 523,-36.66 523,-36.66 517,-36.66 511,-30.66 511,-24.66 511,-24.66 511,-12.66 511,-12.66 511,-6.66 517,-0.66 523,-0.66 523,-0.66 706,-0.66 706,-0.66 712,-0.66 718,-6.66 718,-12.66 718,-12.66 718,-24.66 718,-24.66 718,-30.66 712,-36.66 706,-36.66"/>
 <text text-anchor="middle" x="614.5" y="-14.96" font-family="Times,serif" font-size="14.00">:core:windows&#45;hotkey&#45;data</text>
@@ -192,11 +192,11 @@
 <!-- :app:desktopApp&#45;&gt;:core:windows&#45;startup&#45;data -->
 <g id="edge18" class="edge">
 <title>:app:desktopApp&#45;&gt;:core:windows&#45;startup&#45;data</title>
-<path fill="none" stroke="black" d="M76.19,-320.73C92.97,-360.52 138.64,-456.15 208,-505.66 211.24,-507.97 214.66,-510.1 218.2,-512.06"/>
-<polygon fill="black" stroke="black" points="216.73,-515.24 227.24,-516.59 219.87,-508.98 216.73,-515.24"/>
+<path fill="none" stroke="black" d="M136.32,-302.66C155.35,-302.66 176.62,-302.66 197.63,-302.66"/>
+<polygon fill="black" stroke="black" points="197.91,-306.16 207.91,-302.66 197.91,-299.16 197.91,-306.16"/>
 </g>
 <!-- :server -->
-<g id="node19" class="node">
+<g id="node18" class="node">
 <title>:server</title>
 <path fill="#f8bbd0" stroke="#d81b60" d="M636,-94.66C636,-94.66 593,-94.66 593,-94.66 587,-94.66 581,-88.66 581,-82.66 581,-82.66 581,-70.66 581,-70.66 581,-64.66 587,-58.66 593,-58.66 593,-58.66 636,-58.66 636,-58.66 642,-58.66 648,-64.66 648,-70.66 648,-70.66 648,-82.66 648,-82.66 648,-88.66 642,-94.66 636,-94.66"/>
 <text text-anchor="middle" x="614.5" y="-72.96" font-family="Times,serif" font-size="14.00">:server</text>
@@ -204,147 +204,135 @@
 <!-- :app:desktopApp&#45;&gt;:server -->
 <g id="edge19" class="edge">
 <title>:app:desktopApp&#45;&gt;:server</title>
-<path fill="none" stroke="black" d="M76.07,-284.54C92.47,-245.27 137.17,-152.64 208,-112.66 325.51,-46.33 493.29,-58.92 571,-69.6"/>
-<polygon fill="black" stroke="black" points="570.51,-73.06 580.91,-71.02 571.5,-66.14 570.51,-73.06"/>
+<path fill="none" stroke="black" d="M76.03,-284.44C92.36,-244.94 136.93,-151.78 208,-111.66 325.49,-45.34 493.28,-58.48 570.99,-69.44"/>
+<polygon fill="black" stroke="black" points="570.5,-72.91 580.9,-70.9 571.52,-65.98 570.5,-72.91"/>
 </g>
 <!-- feature -->
-<g id="node20" class="node">
+<g id="node19" class="node">
 <title>feature</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M652,-604.66C652,-604.66 577,-604.66 577,-604.66 571,-604.66 565,-598.66 565,-592.66 565,-592.66 565,-578.66 565,-578.66 565,-572.66 571,-566.66 577,-566.66 577,-566.66 652,-566.66 652,-566.66 658,-566.66 664,-572.66 664,-578.66 664,-578.66 664,-592.66 664,-592.66 664,-598.66 658,-604.66 652,-604.66"/>
-<text text-anchor="middle" x="614.5" y="-589.46" font-family="Times,serif" font-size="14.00">feature</text>
-<text text-anchor="middle" x="614.5" y="-574.46" font-family="Times,serif" font-size="14.00">50 modules</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M652,-605.66C652,-605.66 577,-605.66 577,-605.66 571,-605.66 565,-599.66 565,-593.66 565,-593.66 565,-579.66 565,-579.66 565,-573.66 571,-567.66 577,-567.66 577,-567.66 652,-567.66 652,-567.66 658,-567.66 664,-573.66 664,-579.66 664,-579.66 664,-593.66 664,-593.66 664,-599.66 658,-605.66 652,-605.66"/>
+<text text-anchor="middle" x="614.5" y="-590.46" font-family="Times,serif" font-size="14.00">feature</text>
+<text text-anchor="middle" x="614.5" y="-575.46" font-family="Times,serif" font-size="14.00">50 modules</text>
 </g>
 <!-- :app:shared&#45;&gt;feature -->
 <g id="edge20" class="edge">
 <title>:app:shared&#45;&gt;feature</title>
-<path fill="none" stroke="black" d="M364.63,-591.5C416.91,-590.27 499.21,-588.34 554.71,-587.04"/>
-<polygon fill="black" stroke="black" points="554.83,-590.54 564.75,-586.8 554.67,-583.54 554.83,-590.54"/>
-</g>
-<!-- :app:webApp -->
-<g id="node5" class="node">
-<title>:app:webApp</title>
-<path fill="#ffe0b2" stroke="#fb8c00" d="M110.5,-610.66C110.5,-610.66 25.5,-610.66 25.5,-610.66 19.5,-610.66 13.5,-604.66 13.5,-598.66 13.5,-598.66 13.5,-586.66 13.5,-586.66 13.5,-580.66 19.5,-574.66 25.5,-574.66 25.5,-574.66 110.5,-574.66 110.5,-574.66 116.5,-574.66 122.5,-580.66 122.5,-586.66 122.5,-586.66 122.5,-598.66 122.5,-598.66 122.5,-604.66 116.5,-610.66 110.5,-610.66"/>
-<text text-anchor="middle" x="68" y="-588.96" font-family="Times,serif" font-size="14.00">:app:webApp</text>
-</g>
-<!-- :app:webApp&#45;&gt;:app:shared -->
-<g id="edge21" class="edge">
-<title>:app:webApp&#45;&gt;:app:shared</title>
-<path fill="none" stroke="black" d="M122.55,-592.66C161.13,-592.66 213.23,-592.66 253.18,-592.66"/>
-<polygon fill="black" stroke="black" points="253.32,-596.16 263.32,-592.66 253.32,-589.16 253.32,-596.16"/>
+<path fill="none" stroke="black" d="M364.63,-591.66C416.91,-590.61 499.21,-588.96 554.71,-587.84"/>
+<polygon fill="black" stroke="black" points="554.82,-591.34 564.75,-587.64 554.68,-584.34 554.82,-591.34"/>
 </g>
 <!-- :core:domain -->
-<g id="node10" class="node">
+<g id="node9" class="node">
 <title>:core:domain</title>
 <path fill="#bbdefb" stroke="#1e88e5" d="M929,-354.66C929,-354.66 844,-354.66 844,-354.66 838,-354.66 832,-348.66 832,-342.66 832,-342.66 832,-330.66 832,-330.66 832,-324.66 838,-318.66 844,-318.66 844,-318.66 929,-318.66 929,-318.66 935,-318.66 941,-324.66 941,-330.66 941,-330.66 941,-342.66 941,-342.66 941,-348.66 935,-354.66 929,-354.66"/>
 <text text-anchor="middle" x="886.5" y="-332.96" font-family="Times,serif" font-size="14.00">:core:domain</text>
 </g>
 <!-- :core:ace&#45;windows&#45;data&#45;&gt;:core:domain -->
-<g id="edge22" class="edge">
+<g id="edge21" class="edge">
 <title>:core:ace&#45;windows&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M405.7,-257.46C491.26,-269.75 623.04,-289.28 737,-308.66 764.98,-313.42 795.83,-319.16 822.13,-324.19"/>
-<polygon fill="black" stroke="black" points="821.49,-327.63 831.97,-326.09 822.81,-320.76 821.49,-327.63"/>
+<path fill="none" stroke="black" d="M405.74,-257.01C491.32,-268.95 623.12,-288.05 737,-307.66 765,-312.48 795.86,-318.41 822.15,-323.64"/>
+<polygon fill="black" stroke="black" points="821.5,-327.08 831.99,-325.61 822.87,-320.22 821.5,-327.08"/>
 </g>
 <!-- :core:windows&#45;shared&#45;memory -->
-<g id="node17" class="node">
+<g id="node16" class="node">
 <title>:core:windows&#45;shared&#45;memory</title>
 <path fill="#bbdefb" stroke="#1e88e5" d="M720,-256.66C720,-256.66 509,-256.66 509,-256.66 503,-256.66 497,-250.66 497,-244.66 497,-244.66 497,-232.66 497,-232.66 497,-226.66 503,-220.66 509,-220.66 509,-220.66 720,-220.66 720,-220.66 726,-220.66 732,-226.66 732,-232.66 732,-232.66 732,-244.66 732,-244.66 732,-250.66 726,-256.66 720,-256.66"/>
 <text text-anchor="middle" x="614.5" y="-234.96" font-family="Times,serif" font-size="14.00">:core:windows&#45;shared&#45;memory</text>
 </g>
 <!-- :core:ace&#45;windows&#45;data&#45;&gt;:core:windows&#45;shared&#45;memory -->
-<g id="edge23" class="edge">
+<g id="edge22" class="edge">
 <title>:core:ace&#45;windows&#45;data&#45;&gt;:core:windows&#45;shared&#45;memory</title>
 <path fill="none" stroke="black" d="M405.78,-242.84C431.25,-242.32 459.43,-241.76 486.59,-241.21"/>
 <polygon fill="black" stroke="black" points="487.02,-244.7 496.95,-241 486.88,-237.7 487.02,-244.7"/>
 </g>
 <!-- :core:data&#45;&gt;:core:domain -->
-<g id="edge24" class="edge">
+<g id="edge23" class="edge">
 <title>:core:data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M358.15,-473.66C435.59,-467.39 602.6,-449.83 737,-407.66 775.26,-395.66 816.19,-375.48 845.37,-359.7"/>
-<polygon fill="black" stroke="black" points="847.32,-362.62 854.41,-354.75 843.96,-356.48 847.32,-362.62"/>
+<path fill="none" stroke="black" d="M358.22,-531.97C436.81,-525.74 607.03,-506.11 737,-447.66 784.76,-426.18 831.8,-387.17 859.74,-361.58"/>
+<polygon fill="black" stroke="black" points="862.15,-364.12 867.1,-354.75 857.39,-358.99 862.15,-364.12"/>
 </g>
 <!-- :core:designsystem -->
-<g id="node8" class="node">
+<g id="node7" class="node">
 <title>:core:designsystem</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M952,-574.66C952,-574.66 821,-574.66 821,-574.66 815,-574.66 809,-568.66 809,-562.66 809,-562.66 809,-550.66 809,-550.66 809,-544.66 815,-538.66 821,-538.66 821,-538.66 952,-538.66 952,-538.66 958,-538.66 964,-544.66 964,-550.66 964,-550.66 964,-562.66 964,-562.66 964,-568.66 958,-574.66 952,-574.66"/>
-<text text-anchor="middle" x="886.5" y="-552.96" font-family="Times,serif" font-size="14.00">:core:designsystem</text>
+<path fill="#bbdefb" stroke="#1e88e5" d="M952,-575.66C952,-575.66 821,-575.66 821,-575.66 815,-575.66 809,-569.66 809,-563.66 809,-563.66 809,-551.66 809,-551.66 809,-545.66 815,-539.66 821,-539.66 821,-539.66 952,-539.66 952,-539.66 958,-539.66 964,-545.66 964,-551.66 964,-551.66 964,-563.66 964,-563.66 964,-569.66 958,-575.66 952,-575.66"/>
+<text text-anchor="middle" x="886.5" y="-553.96" font-family="Times,serif" font-size="14.00">:core:designsystem</text>
 </g>
 <!-- :core:device&#45;volume&#45;data&#45;&gt;:core:domain -->
-<g id="edge25" class="edge">
+<g id="edge24" class="edge">
 <title>:core:device&#45;volume&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M411.09,-412.67C497,-406.36 626.06,-394.53 737,-374.66 765.22,-369.61 795.99,-362.08 822.16,-355.05"/>
-<polygon fill="black" stroke="black" points="823.22,-358.39 831.96,-352.39 821.39,-351.63 823.22,-358.39"/>
+<path fill="none" stroke="black" d="M411.4,-467.88C498.06,-458.25 628.08,-439.45 737,-405.66 774.61,-393.99 814.99,-374.75 844.14,-359.55"/>
+<polygon fill="black" stroke="black" points="845.98,-362.53 853.19,-354.77 842.71,-356.34 845.98,-362.53"/>
 </g>
 <!-- :core:gt7&#45;ps5&#45;data&#45;&gt;:core:domain -->
-<g id="edge26" class="edge">
+<g id="edge25" class="edge">
 <title>:core:gt7&#45;ps5&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M387.14,-361.6C471.24,-362.19 614.34,-361.68 737,-353.66 764.89,-351.84 795.6,-348.54 821.81,-345.33"/>
-<polygon fill="black" stroke="black" points="822.51,-348.77 832,-344.06 821.64,-341.82 822.51,-348.77"/>
+<path fill="none" stroke="black" d="M387.11,-414.01C471.46,-407.87 615.11,-395.24 737,-373.66 765.19,-368.67 795.95,-361.33 822.13,-354.5"/>
+<polygon fill="black" stroke="black" points="823.15,-357.85 831.92,-351.91 821.36,-351.08 823.15,-357.85"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;data&#45;&gt;:core:domain -->
-<g id="edge27" class="edge">
+<g id="edge26" class="edge">
 <title>:core:lmu&#45;windows&#45;data&#45;&gt;:core:domain</title>
 <path fill="none" stroke="black" d="M407.12,-175.14C495.14,-167.88 629.89,-166.76 737,-209.66 790.77,-231.2 838.87,-280.5 864.95,-310.95"/>
 <polygon fill="black" stroke="black" points="862.29,-313.22 871.4,-318.63 867.65,-308.72 862.29,-313.22"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;data&#45;&gt;:core:windows&#45;shared&#45;memory -->
-<g id="edge28" class="edge">
+<g id="edge27" class="edge">
 <title>:core:lmu&#45;windows&#45;data&#45;&gt;:core:windows&#45;shared&#45;memory</title>
 <path fill="none" stroke="black" d="M407.4,-202.76C436.76,-207.87 469.56,-213.59 500.22,-218.93"/>
 <polygon fill="black" stroke="black" points="499.63,-222.38 510.09,-220.65 500.83,-215.48 499.63,-222.38"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;rest&#45;api&#45;data&#45;&gt;:core:domain -->
-<g id="edge29" class="edge">
+<g id="edge28" class="edge">
 <title>:core:lmu&#45;windows&#45;rest&#45;api&#45;data&#45;&gt;:core:domain</title>
 <path fill="none" stroke="black" d="M701.15,-152.67C713.68,-157.18 726.04,-162.76 737,-169.66 795.4,-206.46 844.36,-272.77 868.78,-309.8"/>
 <polygon fill="black" stroke="black" points="866.08,-312.06 874.46,-318.55 871.95,-308.25 866.08,-312.06"/>
 </g>
 <!-- :core:narrator -->
-<g id="node14" class="node">
+<g id="node13" class="node">
 <title>:core:narrator</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M932.5,-632.66C932.5,-632.66 840.5,-632.66 840.5,-632.66 834.5,-632.66 828.5,-626.66 828.5,-620.66 828.5,-620.66 828.5,-608.66 828.5,-608.66 828.5,-602.66 834.5,-596.66 840.5,-596.66 840.5,-596.66 932.5,-596.66 932.5,-596.66 938.5,-596.66 944.5,-602.66 944.5,-608.66 944.5,-608.66 944.5,-620.66 944.5,-620.66 944.5,-626.66 938.5,-632.66 932.5,-632.66"/>
-<text text-anchor="middle" x="886.5" y="-610.96" font-family="Times,serif" font-size="14.00">:core:narrator</text>
+<path fill="#bbdefb" stroke="#1e88e5" d="M932.5,-633.66C932.5,-633.66 840.5,-633.66 840.5,-633.66 834.5,-633.66 828.5,-627.66 828.5,-621.66 828.5,-621.66 828.5,-609.66 828.5,-609.66 828.5,-603.66 834.5,-597.66 840.5,-597.66 840.5,-597.66 932.5,-597.66 932.5,-597.66 938.5,-597.66 944.5,-603.66 944.5,-609.66 944.5,-609.66 944.5,-621.66 944.5,-621.66 944.5,-627.66 938.5,-633.66 932.5,-633.66"/>
+<text text-anchor="middle" x="886.5" y="-611.96" font-family="Times,serif" font-size="14.00">:core:narrator</text>
 </g>
 <!-- :core:text&#45;to&#45;speech&#45;data&#45;&gt;:core:domain -->
-<g id="edge30" class="edge">
+<g id="edge29" class="edge">
 <title>:core:text&#45;to&#45;speech&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M411.13,-308.39C527.99,-315.35 721.9,-326.91 821.75,-332.86"/>
-<polygon fill="black" stroke="black" points="821.8,-336.37 831.99,-333.47 822.22,-329.38 821.8,-336.37"/>
+<path fill="none" stroke="black" d="M411.06,-361.73C496.67,-362.04 625.31,-360.96 737,-353.66 764.89,-351.84 795.6,-348.54 821.81,-345.33"/>
+<polygon fill="black" stroke="black" points="822.51,-348.77 832,-344.06 821.64,-341.82 822.51,-348.77"/>
 </g>
 <!-- :core:windows&#45;hotkey&#45;data&#45;&gt;:core:domain -->
-<g id="edge31" class="edge">
+<g id="edge30" class="edge">
 <title>:core:windows&#45;hotkey&#45;data&#45;&gt;:core:domain</title>
 <path fill="none" stroke="black" d="M718.05,-35.99C724.8,-39.26 731.2,-43.11 737,-47.66 824.32,-116.17 865.14,-250.08 879.35,-308.4"/>
 <polygon fill="black" stroke="black" points="876,-309.44 881.7,-318.37 882.82,-307.84 876,-309.44"/>
 </g>
 <!-- :core:windows&#45;startup&#45;data&#45;&gt;:core:domain -->
-<g id="edge32" class="edge">
+<g id="edge31" class="edge">
 <title>:core:windows&#45;startup&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M420.09,-527.13C508.03,-517.74 635.11,-496.85 737,-450.66 785.43,-428.7 832.62,-388.25 860.36,-361.91"/>
-<polygon fill="black" stroke="black" points="862.89,-364.34 867.66,-354.88 858.03,-359.29 862.89,-364.34"/>
+<path fill="none" stroke="black" d="M420.3,-308.94C537.88,-315.94 724.4,-327.06 821.69,-332.86"/>
+<polygon fill="black" stroke="black" points="821.78,-336.37 831.97,-333.47 822.19,-329.38 821.78,-336.37"/>
 </g>
 <!-- :server&#45;&gt;:core:domain -->
-<g id="edge33" class="edge">
+<g id="edge32" class="edge">
 <title>:server&#45;&gt;:core:domain</title>
 <path fill="none" stroke="black" d="M648.15,-77.88C674.3,-80.3 710.82,-87.09 737,-105.66 810.88,-158.06 856.89,-259.91 875.71,-308.95"/>
 <polygon fill="black" stroke="black" points="872.53,-310.44 879.31,-318.58 879.08,-307.99 872.53,-310.44"/>
 </g>
 <!-- feature&#45;&gt;:core:designsystem -->
-<g id="edge34" class="edge">
+<g id="edge33" class="edge">
 <title>feature&#45;&gt;:core:designsystem</title>
-<path fill="none" stroke="black" d="M664.08,-580.44C701.56,-576.42 754.36,-570.75 799,-565.95"/>
-<polygon fill="black" stroke="black" points="799.41,-569.43 808.98,-564.88 798.66,-562.47 799.41,-569.43"/>
+<path fill="none" stroke="black" d="M664.08,-581.44C701.56,-577.42 754.36,-571.75 799,-566.95"/>
+<polygon fill="black" stroke="black" points="799.41,-570.43 808.98,-565.88 798.66,-563.47 799.41,-570.43"/>
 </g>
 <!-- feature&#45;&gt;:core:domain -->
-<g id="edge35" class="edge">
+<g id="edge34" class="edge">
 <title>feature&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M664.07,-576.64C687.74,-570.49 715.63,-560.51 737,-544.66 803.1,-495.64 851.37,-408.47 872.95,-364.16"/>
-<polygon fill="black" stroke="black" points="876.23,-365.41 877.38,-354.88 869.91,-362.39 876.23,-365.41"/>
+<path fill="none" stroke="black" d="M664.07,-577.19C687.74,-570.84 715.64,-560.63 737,-544.66 802.92,-495.4 851.27,-408.34 872.91,-364.11"/>
+<polygon fill="black" stroke="black" points="876.18,-365.37 877.35,-354.84 869.87,-362.34 876.18,-365.37"/>
 </g>
 <!-- feature&#45;&gt;:core:narrator -->
-<g id="edge36" class="edge">
+<g id="edge35" class="edge">
 <title>feature&#45;&gt;:core:narrator</title>
-<path fill="none" stroke="black" d="M664.08,-590.88C707.17,-595.51 770.53,-602.31 818.44,-607.46"/>
-<polygon fill="black" stroke="black" points="818.1,-610.94 828.42,-608.53 818.85,-603.98 818.1,-610.94"/>
+<path fill="none" stroke="black" d="M664.08,-591.88C707.17,-596.51 770.53,-603.31 818.44,-608.46"/>
+<polygon fill="black" stroke="black" points="818.1,-611.94 828.42,-609.53 818.85,-604.98 818.1,-611.94"/>
 </g>
 </g>
 </svg>

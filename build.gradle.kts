@@ -1,11 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
-import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
-import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
-import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnPlugin
-import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnRootExtension
-import org.jetbrains.kotlin.gradle.targets.web.yarn.BaseYarnRootExtension
-
 plugins {
     // 各サブプロジェクトのクラスローダーでプラグインが多重に読み込まれるのを避けるため、
     // ルートでは apply false で宣言のみ行う。
@@ -24,47 +16,6 @@ plugins {
     alias(libs.plugins.modulesGraphAssert)
     alias(libs.plugins.kotlinxSerialization) apply false
     alias(libs.plugins.androidxBaselineProfile) apply false
-}
-
-fun BaseYarnRootExtension.configureDependencyResolutions() {
-    resolution("body-parser", "2.3.0")
-    resolution("brace-expansion", "5.0.12")
-    resolution("diff", "9.0.0")
-    resolution("serialize-javascript", "7.1.2")
-    resolution("fast-uri", "4.2.1")
-    resolution("js-yaml", "5.4.3")
-    resolution("qs", "6.16.0")
-    resolution("shell-quote", "1.12.0")
-    resolution("socket.io", "4.8.4")
-    resolution("engine.io", "6.6.11")
-    resolution("socket.io-parser", "4.2.7")
-    resolution("uuid", "14.0.2")
-    resolution("webpack-dev-server", "6.0.0")
-    resolution("webpack", "5.111.1")
-    resolution("webpack-cli", "7.2.3")
-    resolution("compression", "1.8.2")
-    resolution("source-map-js", "1.2.2")
-    resolution("ws", "8.22.0")
-}
-
-plugins.withType<YarnPlugin> {
-    extensions.configure<YarnRootExtension> {
-        configureDependencyResolutions()
-    }
-}
-
-plugins.withType<WasmYarnPlugin> {
-    extensions.configure<WasmYarnRootExtension> {
-        configureDependencyResolutions()
-    }
-}
-
-plugins.withType<NodeJsRootPlugin> {
-    extensions.configure<NodeJsRootExtension> {
-        versions.webpackCli.version = "7.2.3"
-        versions.webpack.version = "5.111.1"
-        versions.webpackDevServer.version = "6.0.0"
-    }
 }
 
 val isCI = System.getenv("CI") != null

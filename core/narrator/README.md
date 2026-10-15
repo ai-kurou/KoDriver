@@ -3,10 +3,9 @@
 開始音の再生と TTS 読み上げを制御する narrator feature（`feature:lmu-windows-narrator` / `feature:gt7-ps5-narrator` /
 `feature:ace-windows-narrator`）が共通で利用する、開始音の WAV 再生基盤モジュールです（読み上げ本文は各 feature が OS 標準 TTS で処理します）。
 
-`SoundPlayer` はプラットフォームごとに JVM（`javax.sound.sampled`）/ Android（`SoundPool`）/ Js / WasmJs の
+`SoundPlayer` はプラットフォームごとに JVM（`javax.sound.sampled`）/ Android（`SoundPool`）の
 実装を提供します。JVM/Android 実装は Bluetooth A2DP 接続時の音切れ対策（末尾への無音追記・アンロードタイミングの調整）を
-含みます。`NarratorErrorCapture` は再生失敗を Sentry（JVM/Android のみ）へ送出する expect/actual です。
-Js / WasmJs では例外文字列とスタックトレースを `console.error` に出力します。
+含みます。`NarratorErrorCapture` は再生失敗を Sentry へ送出する expect/actual です。
 
 `wavDurationMs`（`WavDuration.kt`）は WAV（RIFF）ヘッダから再生時間を求める純粋関数です。再生完了を通知しない
 `SoundPool` を使う Android 実装が、再生時間だけ待ってから `stop()` するために利用します（JVM 実装は
