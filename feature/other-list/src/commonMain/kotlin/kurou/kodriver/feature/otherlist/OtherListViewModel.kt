@@ -90,6 +90,7 @@ class OtherListViewModel(
     private val getDeviceVolume: GetDeviceVolumeUseCase,
 ) : ViewModel() {
     private val currentVersion = appVersionInfo.currentVersion
+    private var updateCheckStarted = false
     private val hapticFeedbackAvailable = checkHapticFeedbackAvailable()
     private val textToSpeechUnavailableReason = MutableStateFlow<TextToSpeechUnavailableReason?>(null)
     private val _uiState =
@@ -175,7 +176,8 @@ class OtherListViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun checkUpdate() {
-        if (currentVersion.isBlank()) return
+        if (currentVersion.isBlank() || updateCheckStarted) return
+        updateCheckStarted = true
         viewModelScope.launch {
             val hasUpdate = checkAppUpdateAvailable(currentVersion)
             _uiState.update { it.copy(hasAppUpdate = hasUpdate) }

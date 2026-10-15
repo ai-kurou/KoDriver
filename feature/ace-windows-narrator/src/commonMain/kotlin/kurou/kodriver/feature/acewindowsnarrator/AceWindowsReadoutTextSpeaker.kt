@@ -5,6 +5,7 @@ import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
+import kurou.kodriver.domain.engine.AceWindowsFlagSpeechEvent
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
 import kurou.kodriver.domain.engine.AceWindowsMyBestLap
 import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
@@ -18,7 +19,6 @@ import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import kurou.kodriver.domain.engine.DebugReadoutText
-import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelLapsReadoutText
@@ -59,43 +59,45 @@ internal class AceWindowsReadoutTextSpeaker(
         val isResolved: Boolean,
     )
 
-    private suspend fun eventText(event: SpeechEvent): ReadoutText? {
-        val text =
-            if (event is DebugReadoutText) {
-                event.resolvedText
-            } else if (event is AceWindowsTyreOverheat) {
-                event.resolvedText
-                    ?: formatAceWindowsTyreTemperatureReadoutText(
-                        readoutTexts.tyreOverheat().first(),
-                        event.celsius,
-                    )
-            } else if (event is AceWindowsRemainingFuelWarning) {
-                event.resolvedText
-                    ?: formatAceWindowsRemainingFuelReadoutText(
-                        readoutTexts.remainingFuel.fuel().first(),
-                        event.percent,
-                    )
-            } else if (event is AceWindowsRemainingFuelLapsWarning) {
-                event.resolvedText
-                    ?: if (event.laps <= 0) {
-                        readoutTexts.remainingFuel.fuelLapsEmpty().first()
-                    } else {
-                        formatAceWindowsRemainingFuelLapsReadoutText(
-                            readoutTexts.remainingFuel.fuelLaps().first(),
-                            event.laps,
-                        )
-                    }
-            } else if (event is AceWindowsMyBestLap) {
-                event.resolvedText
-                    ?: formatAceWindowsMyBestLapReadoutText(readoutTexts.myBestLap().first(), event.lapTimeMs)
-            } else {
-                (event as ReadoutTextEvent).resolvedText ?: savedReadoutText(event) ?: return null
-            }
-        return ReadoutText(text, (event as ReadoutTextEvent).resolvedText != null)
-    }
+    private suspend fun eventText(event: SpeechEvent): ReadoutText? =
+        when (event) {
+            is DebugReadoutText -> ReadoutText(event.resolvedText, true)
+            is AceWindowsSpeechEvent -> ReadoutText(aceWindowsText(event), event.resolvedText != null)
+            else -> null
+        }
 
-    /** 保存済み固定文言（フラッグ・車両接近）。対象外イベントは null。 */
-    private suspend fun savedReadoutText(event: SpeechEvent): String? =
+    private suspend fun aceWindowsText(event: AceWindowsSpeechEvent): String =
+        event.resolvedText
+            ?: when (event) {
+                is AceWindowsFlagSpeechEvent -> flagText(event)
+                is AceWindowsVehicleApproach -> readoutTexts.vehicleApproach().first()
+                is AceWindowsTyreOverheat -> tyreOverheatText(event)
+                is AceWindowsRemainingFuelWarning -> remainingFuelText(event)
+                is AceWindowsRemainingFuelLapsWarning -> remainingFuelLapsText(event)
+                is AceWindowsMyBestLap -> myBestLapText(event)
+            }
+
+    private suspend fun tyreOverheatText(event: AceWindowsTyreOverheat): String =
+        formatAceWindowsTyreTemperatureReadoutText(readoutTexts.tyreOverheat().first(), event.celsius)
+
+    private suspend fun remainingFuelText(event: AceWindowsRemainingFuelWarning): String =
+        formatAceWindowsRemainingFuelReadoutText(readoutTexts.remainingFuel.fuel().first(), event.percent)
+
+    private suspend fun myBestLapText(event: AceWindowsMyBestLap): String =
+        formatAceWindowsMyBestLapReadoutText(readoutTexts.myBestLap().first(), event.lapTimeMs)
+
+    private suspend fun remainingFuelLapsText(event: AceWindowsRemainingFuelLapsWarning): String =
+        if (event.laps <= 0) {
+            readoutTexts.remainingFuel.fuelLapsEmpty().first()
+        } else {
+            formatAceWindowsRemainingFuelLapsReadoutText(
+                readoutTexts.remainingFuel.fuelLaps().first(),
+                event.laps,
+            )
+        }
+
+    /** 全10種類のフラッグの保存済み固定文言。 */
+    private suspend fun flagText(event: AceWindowsFlagSpeechEvent): String =
         when (event) {
             is AceWindowsCheckeredFlag -> {
                 readoutTexts.flag.checkered().first()
@@ -135,14 +137,6 @@ internal class AceWindowsReadoutTextSpeaker(
 
             is AceWindowsRedYellowStripesFlag -> {
                 readoutTexts.flag.redYellowStripes().first()
-            }
-
-            is AceWindowsVehicleApproach -> {
-                readoutTexts.vehicleApproach().first()
-            }
-
-            else -> {
-                null
             }
         }
 }

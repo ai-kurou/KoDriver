@@ -534,12 +534,12 @@ fun AppScreen(
         bannerUiState = bannerUiState,
         ttsUnavailableGuidance = otherListUiState.ttsUnavailableGuidance,
         onTtsAction = {
-            when (otherListUiState.ttsUnavailableGuidance) {
-                TtsUnavailableGuidance.EngineMissing -> uriHandler.openUri(TTS_ENGINE_PLAY_STORE_URL)
-                TtsUnavailableGuidance.LanguageDataMissing -> openTtsSettings()
-                TtsUnavailableGuidance.WindowsSpeechUnavailable -> otherListViewModel.openWindowsSpeechSettings()
-                null -> Unit
-            }
+            handleTtsUnavailableAction(
+                guidance = otherListUiState.ttsUnavailableGuidance,
+                openUri = uriHandler::openUri,
+                openTtsSettings = openTtsSettings,
+                openWindowsSpeechSettings = otherListViewModel::openWindowsSpeechSettings,
+            )
         },
         snackbarHostState = snackbarHostState,
         hasAppUpdate = uiState.hasAppUpdate,

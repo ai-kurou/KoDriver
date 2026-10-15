@@ -5,6 +5,7 @@ import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
+import kurou.kodriver.domain.engine.Gt7Ps5SpeechEvent
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
@@ -48,38 +49,26 @@ internal class Gt7Ps5ReadoutTextSpeaker(
                 ReadoutText(event.resolvedText, true)
             }
 
-            is Gt7Ps5RemainingFuelWarning -> {
-                ReadoutText(
-                    remainingFuelText(event),
-                    event.resolvedText != null,
-                )
-            }
-
-            is Gt7Ps5RemainingFuelLapsWarning -> {
-                ReadoutText(
-                    remainingFuelLapsText(event),
-                    event.resolvedText != null,
-                )
-            }
-
-            is Gt7Ps5MyBestLap -> {
-                ReadoutText(
-                    myBestLapText(event),
-                    event.resolvedText != null,
-                )
-            }
-
-            is Gt7Ps5TyreOverheat -> {
-                ReadoutText(
-                    tyreOverheatText(event),
-                    event.resolvedText != null,
-                )
+            is Gt7Ps5SpeechEvent -> {
+                gt7EventText(event)
             }
 
             else -> {
                 null
             }
         }
+
+    /** GT7イベント型の追加時は、網羅的な when により未対応をコンパイルエラーにする。 */
+    private suspend fun gt7EventText(event: Gt7Ps5SpeechEvent): ReadoutText {
+        val text =
+            when (event) {
+                is Gt7Ps5RemainingFuelWarning -> remainingFuelText(event)
+                is Gt7Ps5RemainingFuelLapsWarning -> remainingFuelLapsText(event)
+                is Gt7Ps5MyBestLap -> myBestLapText(event)
+                is Gt7Ps5TyreOverheat -> tyreOverheatText(event)
+            }
+        return ReadoutText(text, event.resolvedText != null)
+    }
 
     private suspend fun remainingFuelText(event: Gt7Ps5RemainingFuelWarning): String =
         event.resolvedText

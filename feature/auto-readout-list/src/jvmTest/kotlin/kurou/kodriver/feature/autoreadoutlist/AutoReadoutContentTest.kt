@@ -656,6 +656,71 @@ class AutoReadoutContentTest {
         }
     }
 
+    @Test
+    fun `コンパクト幅で下にスクロールした一覧は詳細ペインから戻ってもスクロール位置を維持する`() {
+        val priorityHintLabelText = "読み上げ優先度"
+        var lastItemText by mutableStateOf("")
+        var selectedItem by mutableStateOf<AutoReadoutListItemType?>(null)
+        var backEnabled = false
+        var capturedOnBack: (() -> Unit)? = null
+        val items =
+            listOf(
+                LmuWindowsReadoutItemKey.Flag.Root,
+                LmuWindowsReadoutItemKey.Flag.BlueFlag,
+                LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
+                LmuWindowsReadoutItemKey.Flag.FullCourseYellow,
+                LmuWindowsReadoutItemKey.Flag.RedFlag,
+                LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Overheat,
+                LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
+                LmuWindowsReadoutItemKey.TyreTemperature.LowWarning,
+                LmuWindowsReadoutItemKey.MyBestLap.Root,
+            )
+
+        rule.setContent {
+            lastItemText = autoReadoutItemDisplayName(LmuWindowsReadoutItemKey.MyBestLap.Root)
+            Box(modifier = Modifier.height(240.dp)) {
+                AutoReadoutContent(
+                    uiState =
+                        AutoReadoutListUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = items,
+                            autoReadoutEnabledStates = items.associateWith { true },
+                            selectedItem = selectedItem,
+                        ),
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
+                    onItemSelected = { selectedItem = AutoReadoutListItemType.fromId(Simulator.LmuWindows, it) },
+                    onClearSelectedItem = { selectedItem = null },
+                    scaffoldDirective = singlePaneDirective,
+                    windowSizeClass = compactWindowSizeClass,
+                    backHandler = { enabled, _, onBack ->
+                        backEnabled = enabled
+                        capturedOnBack = onBack
+                    },
+                )
+            }
+        }
+
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText(lastItemText))
+        rule.onNodeWithText(lastItemText).performClick()
+        rule.waitForIdle()
+        assertTrue(backEnabled)
+        rule.runOnIdle { capturedOnBack?.invoke() }
+        rule.waitForIdle()
+
+        // 詳細ペインから一覧へ戻ったことを先に確認する（詳細に留まっていても lastItemText は表示されるため）
+        assertFalse(backEnabled)
+        assertEquals(null, selectedItem)
+
+        rule.onNodeWithText(lastItemText).assertExists()
+        rule.onAllNodes(hasText(priorityHintLabelText)).assertCountEquals(0)
+    }
+
     private fun assertAllItemsCanNavigateBack(
         itemTexts: List<String>,
         backEnabled: () -> Boolean,

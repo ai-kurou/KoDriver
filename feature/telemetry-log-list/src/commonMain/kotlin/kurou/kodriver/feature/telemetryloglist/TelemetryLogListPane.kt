@@ -53,6 +53,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -121,7 +122,7 @@ internal fun TelemetryLogListPane(
                 uiState.logs.minOf { it.createdAt }
             }
         var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
-        var showNewLogsButton by remember { mutableStateOf(false) }
+        var showNewLogsButton by rememberSaveable { mutableStateOf(false) }
         val isAtTop by remember {
             derivedStateOf {
                 listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
@@ -337,7 +338,7 @@ private fun TelemetryLogListItem(
     onDeleteClick: () -> Unit = {},
 ) {
     val haptic = LocalHapticFeedback.current
-    var menuExpanded by remember { mutableStateOf(false) }
+    var menuExpanded by rememberSaveable { mutableStateOf(false) }
     val containerColor by animateColorAsState(
         targetValue =
             if (isSelected) {
