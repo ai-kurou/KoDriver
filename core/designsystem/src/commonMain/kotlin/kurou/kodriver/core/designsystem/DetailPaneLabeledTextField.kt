@@ -31,6 +31,7 @@ fun DetailPaneLabeledTextField(
     defaultValue: String? = null,
     onResetToDefault: (() -> Unit)? = null,
     resetContentDescription: String? = null,
+    insertState: TextInsertState? = null,
 ) {
     Column(
         modifier = modifier,
@@ -51,6 +52,7 @@ fun DetailPaneLabeledTextField(
             defaultValue = defaultValue,
             onResetToDefault = onResetToDefault,
             resetContentDescription = resetContentDescription,
+            insertState = insertState,
         )
     }
 }

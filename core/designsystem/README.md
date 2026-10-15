@@ -50,6 +50,7 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 ## 文言入力の状態
 
+- `rememberTextInsertState()` を入力欄ごとに作り、`DetailPaneLabeledTextField` / `DetailPaneCardTextField` の `insertState` に渡す。`insertState.insert("{placeholder}")` でカーソル位置に挿入し、選択範囲があれば置換する。改行除去後に文字数上限を超える要求は挿入せず消費する。
 - `PendingTextState.kt` の `rememberPendingText` は非同期保存中の入力を保持し、保存側UseCaseと同じ `trim().take(MAX)` に正規化した保存値が一致すると保存待ちを解除する。文字数上限は呼び出し側から渡す。
 - 連続編集・リセットによる保存待ちを順序付きで保持し、途中の保存値が反映されても最新の入力に巻き戻りが起きないようにする。
 - 保存反映が conflate されて観測できない場合も、保存待ちの変更から既定で3秒後に入力を保持したまま解除し、その後の外部更新への追従を再開する。
