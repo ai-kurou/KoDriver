@@ -21,7 +21,7 @@ fun DetailPaneLabeledTextField(
     value: String,
     maxLength: Int,
     onValueChangeFinished: (String) -> Unit,
-    onPreviewClick: (String) -> Unit,
+    onPreviewClick: ((String) -> Unit)?,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     selected: Boolean = false,

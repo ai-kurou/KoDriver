@@ -73,6 +73,8 @@ kotlin {
             implementation(projects.feature.telemetryLogList)
             implementation(projects.feature.telemetryLogDetail)
             implementation(projects.feature.autoReadoutList)
+            implementation(projects.feature.manualReadoutList)
+            implementation(projects.feature.manualReadoutSetDetail)
             implementation(projects.feature.lmuWindowsAutoReadoutVehicleApproachDetail)
             implementation(projects.feature.lmuWindowsAutoReadoutFlagDetail)
             implementation(projects.feature.lmuWindowsAutoReadoutMyBestLapDetail)

@@ -53,3 +53,26 @@ ViewModel の独立した Job が `ObserveDebugReadoutRequestUseCase` を購読�
 `DebugReadoutText` の本文は入力をそのまま保持する。通常の文言解決・優先度・キュー・開始音・TTS・安全なログ保存の経路を使い、空白または TTS 利用不可の本文は SKIPPED として記録する。ログの JSON は現在の `state`、`settings`、`observedAtMs` と `debugReadout: true` を含む。ログを購読するオーバーレイは通常の最新読み上げログ経路で表示する。
 
 JVM テストで未受信・項目無効の要求の発話とログ保存、別シミュレーター宛ての要求の無視、空白スキップとテンプレートをそのまま TTS に渡すことを検証する。
+
+## 手動読み上げ依頼
+
+`RemainingVirtualEnergyUseCases` に束ねた `ObserveManualReadoutRequestsUseCase` と `ObserveManualReadoutHotkeyPressesUseCase` を `merge` し、独立した Job で購読する。Windows のセットホットキーもタブの操作と同じ依頼経路で処理する。
+依頼の `simulatorId` が `Simulator.LmuWindows.id` で、選択中のシミュレーターも LMU の場合だけ処理する。
+同じ UseCase 群の `ObserveManualReadoutSetsUseCase` は `named(Simulator.LmuWindows.id)` の Repository を参照する。
+依頼ごとに保存済みセットを取得し、`setId` に対応するセットの `itemKeys` に
+`LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value` が含まれる場合のみ残量を読み上げる。
+セットが見つからない場合や項目が含まれない場合は何もしない。
+対象セットの `itemTexts` から文言テンプレートを取得し、未保存なら
+`LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT` を使う。
+手動判定時に `{percent}` を四捨五入した現在残量へ置換し、イベントの `resolvedText` と `narratedText` に反映する。
+キュー待機中も解決済み文言を維持し、発話とテレメトリログは同じ文言になる。空白文言は発話せずスキップとしてログに残す。
+F9 と共通の `readRemainingVirtualEnergyCurrentValue` が、最新値と受信から5秒以内の鮮度を確認し、
+手動専用の `determineManualRemainingVirtualEnergyCurrentValue` → `processRemainingVirtualEnergy` へ渡す。
+手動はタブの操作・セットホットキー押下ともに自動読み上げスイッチを無視し、ユーザーのキュー設定に関係なく常にキューの末尾に並ぶ。
+開始音・文言・テレメトリログは既存経路を使い、自動警告の読み上げ済み状態は変えない。
+F9 は従来どおり有効スイッチとキュー設定に従う。
+Android でも WebSocket で受信した値を使う。LMU 選択中の手動依頼は未受信・鮮度切れなら、編集文言に関係なく「データがありません」を開始音付きで読み上げ、常にキュー末尾へ追加しログを保存する。
+文言は domain の `LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT` を使う。データ無しの `telemetryJson` はデバッグ未受信時に合わせて状態・設定・観測時刻を記録し、テレメトリ値は含めない。F9 は未受信・鮮度切れなら従来どおり何もしない。
+
+JVM テストで連続依頼・警告状態の維持・未受信・鮮度の境界・宛先と選択中シミュレーターの照合・
+未受信・鮮度切れそれぞれのタブ依頼とセットホットキー押下のデータ無し発話（queue=true）・ログ保存・切り替え後の古い値の破棄・セット別文言・空白文言・F9との分離・タブの操作とセットホットキー押下のキューとログ、Koin の UseCase 群の解決を確認する。

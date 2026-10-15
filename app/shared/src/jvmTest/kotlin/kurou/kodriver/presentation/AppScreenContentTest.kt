@@ -42,6 +42,24 @@ class AppScreenContentTest {
     }
 
     @Test
+    fun `手動画面に選択中のシミュレーターIDを渡し変更時に更新する`() {
+        val selectedSimulatorId = mutableStateOf("lmu_windows")
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                selectedSimulatorId = selectedSimulatorId.value,
+                manualReadoutContent = { Text("手動画面: $it") },
+            )
+        }
+
+        rule.onNodeWithText("手動").performClick()
+        rule.onNodeWithText("手動画面: lmu_windows").assertIsDisplayed()
+        rule.runOnIdle { selectedSimulatorId.value = "ace_windows" }
+        rule.onNodeWithText("手動画面: ace_windows").assertIsDisplayed()
+        rule.onNodeWithText("手動画面: lmu_windows").assertDoesNotExist()
+    }
+
+    @Test
     fun `両バナー表示時だけ背景色の隙間を表示する`() {
         val connectionVisible = mutableStateOf(true)
         val reason = mutableStateOf<TtsUnavailableGuidance?>(TtsUnavailableGuidance.EngineMissing)
@@ -139,7 +157,7 @@ class AppScreenContentTest {
             )
         }
 
-        rule.onNode(hasText("自動読み上げ")).performClick()
+        rule.onNode(hasText("自動")).performClick()
         rule.waitForIdle()
 
         assertEquals(1, readoutReselectedCount)
@@ -218,7 +236,7 @@ class AppScreenContentTest {
 
         rule.onNode(hasText("その他")).performClick()
         rule.waitForIdle()
-        rule.onNode(hasText("自動読み上げ")).performClick()
+        rule.onNode(hasText("自動")).performClick()
         rule.waitForIdle()
 
         assertEquals(0, readoutReselectedCount)

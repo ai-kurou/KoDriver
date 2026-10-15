@@ -1769,6 +1769,25 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動のエナジー残量はスイッチ設定なしで四捨五入して毎回読み上げ状態を維持する`() {
+        listOf(false, true).forEach { warned ->
+            val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = warned)
+            listOf(0.0 to 0, 0.424 to 42, 0.425 to 43, 1.0 to 100).forEach { (ratio, percentage) ->
+                repeat(2) {
+                    val decision =
+                        useCase.determineManualRemainingVirtualEnergyCurrentValue(
+                            state = state,
+                            data = remainingVirtualEnergy(remainingRatio = ratio),
+                        )
+
+                    assertEquals(listOf(LmuWindowsRemainingVirtualEnergyCurrentValue(percentage)), decision.events)
+                    assertEquals(state, decision.state)
+                }
+            }
+        }
+    }
+
+    @Test
     fun `残量が閾値以下になると RemainingVirtualEnergyWarning を返す`() {
         val decision =
             useCase.determineRemainingVirtualEnergy(
@@ -2725,6 +2744,42 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 )
             state = decision.state
             assertEquals(null, state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption)
+        }
+    }
+
+    @Test
+    fun `手動残量はデータ無しなら編集文言に関係なくデータ無しを読み上げ状態を維持する`() {
+        val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
+        for (template in listOf(null, "残量{percent}%", "", "  ")) {
+            val decision =
+                useCase.determineManualRemainingVirtualEnergyCurrentValue(
+                    state = state,
+                    data = null,
+                    textTemplate = template,
+                )
+            assertEquals(state, decision.state)
+            assertEquals(
+                listOf(LmuWindowsRemainingVirtualEnergyCurrentValue(0, "データがありません")),
+                decision.events,
+            )
+            assertEquals("データがありません", decision.events.single().narratedText)
+        }
+    }
+
+    @Test
+    fun `手動残量は編集文言のプレースホルダーを置換して状態を維持する`() {
+        val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
+        listOf("残量{percent}%、{unknown}" to "残量43%、{unknown}", "" to "", "  " to "  ").forEach { (text, expected) ->
+            val decision =
+                useCase.determineManualRemainingVirtualEnergyCurrentValue(
+                    state = state,
+                    data = remainingVirtualEnergy(remainingRatio = 0.425),
+                    textTemplate = text,
+                )
+            val event = LmuWindowsRemainingVirtualEnergyCurrentValue(43, resolvedText = expected)
+            assertEquals(listOf(event), decision.events)
+            assertEquals(expected, event.narratedText)
+            assertEquals(state, decision.state)
         }
     }
 }

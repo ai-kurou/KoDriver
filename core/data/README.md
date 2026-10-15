@@ -71,3 +71,22 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 LMU のデバッグ専用の現在値読み上げホットキーは `ReadoutHotkeyPreferencesRepository` が
 `lmu_windows_readout_hotkey_preferences.pb` に仮想キーコードを保存する。既定値は domain の F1 定数を参照する。
 Desktop・Android 両方で設定 Repository を登録し、Android の `HotkeyRepository` は `Unsupported` 状態のみを提供する。
+
+## 手動読み上げセット
+
+`ManualReadoutSetPreferencesRepository` は手動読み上げセットを
+`manual_readout_set_preferences_${simulator.id}.pb` にシミュレーターごとに保存する。
+Desktop／Android とも `named(simulator.id)` で登録し、セット識別子・項目キーの順序・項目キーごとの文言テンプレート・ホットキーの仮想キーコードを保持する。
+文言は `ManualReadoutSetPreference` の protobuf フィールド3に `Map<String, String>` として保存する。
+旧データの文言フィールドがないセットは空 Map として読み込み、Narrator と詳細画面で既定文言を使う。
+
+ホットキーは protobuf フィールド4に nullable な `Int` として保存する。null は割り当てなしを表し、フィールド4のない旧データも null として読み込む。
+
+## 手動読み上げ依頼
+
+`InMemoryManualReadoutRequestRepository` は `jvmAndroidMain` の共通実装で、Android / Desktop の
+DataModule にシングルトンとして登録する。`MutableSharedFlow` の追加バッファは64件で、
+満杯なら `emit` が待機し、購読中の Narrator へ連続依頼を順番通り届ける。
+依頼は永続化せず、購読開始前・終了後の依頼を再配信しない。
+
+Android の `ManualReadoutHotkeyRepository` は `UnsupportedManualReadoutHotkeyRepository` を提供し、押下は通知せず、登録状態は `Unsupported`、再試行は何もしない。

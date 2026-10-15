@@ -263,7 +263,7 @@ class AppTest {
         selectSimulator("Gran Turismo 7（PS5）")
         waitUntilDisplayed("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         clickItem("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
-        clickItem("自動読み上げ")
+        clickItem("自動")
     }
 
     @Test
@@ -328,13 +328,17 @@ class AppTest {
     }
 
     @Test
-    fun `ログタブにログがない場合は空状態を表示する`() {
+    fun `ログと手動タブにセットやログがない場合は空状態を表示する`() {
         setContent()
         selectSimulator("Le Mans Ultimate（Windows版）")
 
         clickItem("ログ")
         waitUntilDisplayed("Le Mans Ultimate（Windows版）のログはまだありません")
+        waitUntilDisplayed("手動")
         waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
+        clickItem("手動")
+        waitUntilDisplayed("LMUの手動読み上げセットはまだありません")
+        waitUntilDisplayed("手動読み上げについて")
     }
 
     @Test

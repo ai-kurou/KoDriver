@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -15,6 +16,7 @@ internal enum class AppDestination(
     val icon: ImageVector,
 ) : NavKey {
     AutoReadout(Icons.Default.HeadsetMic),
+    ManualReadout(Icons.Default.TouchApp),
     Log(Icons.Default.Description),
     More(Icons.Default.MoreHoriz),
 }

@@ -46,6 +46,8 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-voice-detail` | その他画面の読み上げ音声設定詳細 | [図](graphs/feature-other-voice-detail.svg) |
 | `:feature:other-feedback-detail` | その他画面のフィードバック送信詳細 | [図](graphs/feature-other-feedback-detail.svg) |
 | `:feature:auto-readout-list` | アナウンス項目の一覧表示・有効/無効の切り替え・優先度のドラッグ&リオーダー | [図](graphs/feature-auto-readout-list.svg) |
+| `:feature:manual-readout-list` | 手動読み上げセット一覧・追加・読み上げ依頼と list/detail 切替（詳細はスロットで受け取る） | [図](graphs/feature-manual-readout-list.svg) |
+| `:feature:manual-readout-set-detail` | 手動読み上げセット詳細（項目の選択・削除） | [図](graphs/feature-manual-readout-set-detail.svg) |
 | `:feature:lmu-windows-auto-readout-flag-detail` | フラッグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-flag-detail.svg) |
 | `:feature:lmu-windows-auto-readout-my-best-lap-detail` | LMU 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-my-best-lap-detail.svg) |
 | `:feature:lmu-windows-auto-readout-vehicle-approach-detail` | 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-vehicle-approach-detail.svg) |
@@ -83,6 +85,8 @@ F9 の読み上げホットキーは `:core:windows-hotkey-data` → `:core:doma
 `HotkeyRepository` / `ObserveReadoutHotkeyUseCase` → `:feature:lmu-windows-narrator` に配線する。
 デスクトップの composition root が `windowsHotkeyDataModule` を登録し、Android の `:core:data` は
 空 Flow の Repository を提供する。モジュール依存図は Gradle から CI で再生成する。
+
+手動読み上げの詳細は `app:shared` → `:feature:manual-readout-set-detail` → `:core:domain` / `:core:designsystem` に依存する。一覧は詳細スロットを公開し、feature 間依存は持たない。両プラットフォームの共通 composition root が詳細の Koin モジュールを登録する。
 
 ## モジュール一覧の更新漏れ防止
 

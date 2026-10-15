@@ -1,0 +1,96 @@
+package kurou.kodriver.feature.manualreadoutlist
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.dp
+import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
+import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
+import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ManualReadoutSet
+import org.junit.Test
+
+class ManualReadoutListPaneScreenshotTest {
+    @Test
+    fun `空状態`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            ManualReadoutListPaneContent(
+                                uiState = ManualReadoutListUiState(canReadSets = true),
+                                simulatorName = "LMU",
+                                onAddSet = {},
+                                onReadSet = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `保存済みセット一覧`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            ManualReadoutListPaneContent(
+                                uiState =
+                                    ManualReadoutListUiState(
+                                        canReadSets = true,
+                                        sets =
+                                            listOf(
+                                                ManualReadoutSet(id = "set-1"),
+                                                ManualReadoutSet(id = "set-2", itemKeys = listOf("SESSION", "FLAG")),
+                                            ),
+                                    ),
+                                simulatorName = "LMU",
+                                onAddSet = {},
+                                onReadSet = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `ヘルプボトムシートホットキーあり`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                            ManualReadoutHintSheetContent(showHotkeyHint = true)
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `ヘルプボトムシートホットキーなし`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                            ManualReadoutHintSheetContent(showHotkeyHint = false)
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+}

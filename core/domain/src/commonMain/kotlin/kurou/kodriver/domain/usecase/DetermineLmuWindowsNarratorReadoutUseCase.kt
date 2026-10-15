@@ -23,6 +23,7 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -40,6 +41,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.roundToInt
 
@@ -522,20 +524,39 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val shouldAnnounce =
             settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) &&
                 settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout)
-        return LmuWindowsNarratorReadoutDecision(
+        return if (shouldAnnounce) {
+            determineManualRemainingVirtualEnergyCurrentValue(state, data)
+        } else {
+            LmuWindowsNarratorReadoutDecision(state = state, events = emptyList())
+        }
+    }
+
+    /** 自動読み上げスイッチに関係なく現在の残量（未受信・鮮度切れならデータ無し）を読み上げ、警告済み状態を維持する。 */
+    fun determineManualRemainingVirtualEnergyCurrentValue(
+        state: LmuWindowsNarratorState,
+        data: LmuWindowsVirtualEnergyData?,
+        textTemplate: String? = null,
+    ): LmuWindowsNarratorReadoutDecision =
+        LmuWindowsNarratorReadoutDecision(
             state = state,
             events =
-                if (shouldAnnounce) {
-                    listOf(
-                        LmuWindowsRemainingVirtualEnergyCurrentValue(
-                            (data.remainingRatio.value * PERCENTAGE_SCALE).roundToInt(),
-                        ),
-                    )
-                } else {
-                    emptyList()
-                },
+                listOf(
+                    LmuWindowsRemainingVirtualEnergyCurrentValue(
+                        data?.let { (it.remainingRatio.value * PERCENTAGE_SCALE).roundToInt() } ?: 0,
+                        resolvedText =
+                            if (data == null) {
+                                LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
+                            } else {
+                                textTemplate?.let {
+                                    formatLmuWindowsRemainingVirtualEnergyReadoutText(
+                                        it,
+                                        (data.remainingRatio.value * PERCENTAGE_SCALE).roundToInt(),
+                                    )
+                                }
+                            },
+                    ),
+                ),
         )
-    }
 
     fun determinePitTimingVirtualEnergy(
         state: LmuWindowsNarratorState,

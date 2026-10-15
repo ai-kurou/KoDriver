@@ -104,13 +104,15 @@ class AppNavigationStateTest {
     @Test
     fun `AppNavigationStateSaverはcurrentの名前を保存しNavBackStackを再構築して復元する`() {
         val saverScope = SaverScope { true }
-        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.More))
+        AppDestination.entries.forEach { destination ->
+            val state = AppNavigationState(NavBackStack<NavKey>(destination))
 
-        val saved = with(AppNavigationStateSaver) { saverScope.save(state) }
-        val restored = AppNavigationStateSaver.restore(checkNotNull(saved))
+            val saved = with(AppNavigationStateSaver) { saverScope.save(state) }
+            val restored = AppNavigationStateSaver.restore(checkNotNull(saved))
 
-        assertEquals(AppDestination.More.name, saved)
-        assertEquals(AppDestination.More, restored?.current)
+            assertEquals(destination.name, saved)
+            assertEquals(destination, restored?.current)
+        }
     }
 
     @Test

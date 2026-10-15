@@ -13,3 +13,10 @@ const val LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT = "バーチ
 
 /** バーチャルエナジー残量警告の閾値（%）を埋め込むプレースホルダー。 */
 const val LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER = "{percent}"
+
+/** 手動読み上げの現在のバーチャルエナジー残量の既定文言。 */
+const val LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT =
+    "バーチャルエナジー残量は{percent}パーセント"
+
+/** 手動読み上げで値がない場合の文言。 */
+const val LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT = "データがありません"

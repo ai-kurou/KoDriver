@@ -34,6 +34,7 @@ class AndroidKoinModuleGraphTest {
     fun `Android構成のKoinモジュールグラフが解決可能である`() {
         val context = ApplicationProvider.getApplicationContext<Application>()
 
+        // 手動一覧の送信 UseCase と LMU Narrator の購読 UseCase も実 DataModule の依頼 Repository で解決する。
         checkKoinModules(
             listOf(
                 androidDataModule(context),
@@ -45,7 +46,8 @@ class AndroidKoinModuleGraphTest {
                 featureModules +
                 listOf(module { single(named("appVersion")) { "test" } }),
         ) {
-            // 開始音ダイアログの ViewModel が要求する選択中のシミュレーター ID。
+            // 開始音ダイアログ・手動読み上げ一覧/詳細のシミュレーター ID。
+            // 詳細の setId にも同じ String を注入し、存在しないセットとして解決する。
             withInstance("lmu_windows")
         }
     }

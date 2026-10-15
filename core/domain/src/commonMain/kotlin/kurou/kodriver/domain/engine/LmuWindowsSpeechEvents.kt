@@ -4,6 +4,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
@@ -241,7 +242,11 @@ data class LmuWindowsRemainingVirtualEnergyCurrentValue(
     override val resolvedText: String? = null,
 ) : ReadoutTextEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
-    override val narratedText = "バーチャルエナジー残量は${percentage}パーセント"
+    override val narratedText =
+        resolvedText ?: formatLmuWindowsRemainingVirtualEnergyReadoutText(
+            LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT,
+            percentage,
+        )
 
     override fun withResolvedText(text: String): LmuWindowsRemainingVirtualEnergyCurrentValue =
         copy(resolvedText = text)

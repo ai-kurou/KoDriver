@@ -65,3 +65,17 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 `HotkeyRepository` は登録状態と押下の Flow、競合後の再試行を提供する。キーの取得・保存は `ReadoutHotkeyPreferencesRepository` が担う。
 永続化は `ReadoutHotkeyPreferencesRepository`、既定 F1 と固定修飾キーは `ReadoutHotkeyDefaults.kt` に定義する。
 ホットキー設定と登録状態の UseCase はデバッグペインで使用し、`ObserveReadoutHotkeyUseCase` の押下通知は従来どおり Narrator で使用する。
+
+## 手動読み上げセット
+
+`ManualReadoutSet` はセット識別子・読み上げ項目キーのリスト・項目キーごとの文言テンプレート `itemTexts` を持つ。
+文言が未保存なら `manualReadoutItemTextDefault` の既定値を使い、保存済みの空文字は読み上げない。
+LMU の残量は自動側と共通の `{percent}` 置換・未知プレースホルダー検出を使う。
+`ObserveManualReadoutSetsUseCase` / `SaveManualReadoutSetsUseCase` は
+`ManualReadoutSetPreferencesRepository` を通じてセット一覧を取得・保存する。
+`AddManualReadoutSetUseCase` は保存済み一覧の末尾へ1セットをアトミックに追加する。
+`ManualReadoutRequest(simulatorId, setId)` は Narrator にセットを読むよう依頼するモデル。
+`RequestManualReadoutUseCase` / `ObserveManualReadoutRequestsUseCase` は
+`ManualReadoutRequestRepository` を通じてアプリ内の依頼を送信・購読する。
+
+`ManualReadoutHotkeyRepository` はセットホットキーの押下（`ManualReadoutRequest`）とセット別の登録状態を配信し、競合・失敗時の再試行を受け付ける。対応する Observe / Retry UseCase を通じて Narrator とセット詳細画面から利用する。

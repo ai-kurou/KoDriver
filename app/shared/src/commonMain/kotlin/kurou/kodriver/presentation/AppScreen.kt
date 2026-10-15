@@ -47,6 +47,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,6 +71,7 @@ import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_auto_readout
 import kurou.kodriver.app.shared.generated.resources.nav_log
+import kurou.kodriver.app.shared.generated.resources.nav_manual_readout
 import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.feature.acewindowsdebugstatedetail.AceWindowsDebugStateDetailPane
 import kurou.kodriver.feature.autoreadoutlist.AceWindowsAutoReadoutListItemType
@@ -83,6 +85,8 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.LmuWindowsDebugStateDet
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
+import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
+import kurou.kodriver.feature.manualreadoutsetdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
@@ -199,10 +203,12 @@ private fun AppDestinationContent(
     destination: AppDestination,
     autoReadoutContent: @Composable () -> Unit,
     telemetryLogContent: @Composable () -> Unit,
+    manualReadoutContent: @Composable () -> Unit,
     otherContent: @Composable () -> Unit,
 ) {
     when (destination) {
         AppDestination.AutoReadout -> autoReadoutContent()
+        AppDestination.ManualReadout -> manualReadoutContent()
         AppDestination.Log -> telemetryLogContent()
         AppDestination.More -> otherContent()
     }
@@ -212,6 +218,7 @@ private fun AppDestinationContent(
 private fun AppDestination.label(): String =
     when (this) {
         AppDestination.AutoReadout -> stringResource(Res.string.nav_auto_readout)
+        AppDestination.ManualReadout -> stringResource(Res.string.nav_manual_readout)
         AppDestination.Log -> stringResource(Res.string.nav_log)
         AppDestination.More -> stringResource(Res.string.nav_more)
     }
@@ -451,6 +458,24 @@ fun AppScreen(
             },
         )
     },
+    manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit = { selectedSimulatorId ->
+        key(selectedSimulatorId) {
+            ManualReadoutContent(
+                simulatorId = selectedSimulatorId,
+                simulatorName = appScreenPrimarySimulatorLabel(selectedSimulatorId),
+                backHandler = backHandler,
+                detailContent = { setId, canNavigateBack, onBack ->
+                    ManualReadoutSetDetailContent(
+                        simulatorId = selectedSimulatorId,
+                        setId = setId,
+                        onDeleted = onBack,
+                        canNavigateBack = canNavigateBack,
+                        onBack = onBack,
+                    )
+                },
+            )
+        }
+    },
     otherContent: @Composable (
         scrollToTopRequest: Int,
         selectedSimulatorId: String,
@@ -555,6 +580,7 @@ fun AppScreen(
         telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
         otherListScrollToTopRequest = otherListScrollToTopRequest,
         telemetryLogContent = telemetryLogContent,
+        manualReadoutContent = manualReadoutContent,
         otherContent = otherContent,
     )
 }
@@ -628,6 +654,7 @@ internal fun AppScreenContent(
     autoReadoutListScrollToTopRequest: Int = 0,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit = { _, _ -> },
     telemetryLogListScrollToTopRequest: Int = 0,
+    manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit = {},
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit = { _, _ -> },
     otherListScrollToTopRequest: Int = 0,
 ) {
@@ -669,6 +696,7 @@ internal fun AppScreenContent(
                 autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
                 telemetryLogContent = telemetryLogContent,
                 telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
+                manualReadoutContent = manualReadoutContent,
                 otherContent = otherContent,
                 otherListScrollToTopRequest = otherListScrollToTopRequest,
             )
@@ -697,6 +725,7 @@ private fun AppScreenScaffold(
     autoReadoutListScrollToTopRequest: Int,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit,
     telemetryLogListScrollToTopRequest: Int,
+    manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit,
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit,
     otherListScrollToTopRequest: Int,
 ) {
@@ -734,6 +763,7 @@ private fun AppScreenScaffold(
                             navigationState.handleTabClick(dest) { reselected ->
                                 when (reselected) {
                                     AppDestination.AutoReadout -> onAutoReadoutTabReselected()
+                                    AppDestination.ManualReadout -> Unit
                                     AppDestination.Log -> onLogTabReselected()
                                     AppDestination.More -> onOtherTabReselected()
                                 }
@@ -809,6 +839,7 @@ private fun AppScreenScaffold(
                                 onFeedbackClickWithTabSwitch ?: {},
                             )
                         },
+                        manualReadoutContent = { manualReadoutContent(selectedSimulatorId) },
                         otherContent = { otherContent(otherListScrollToTopRequest, selectedSimulatorId) },
                     )
                 }
