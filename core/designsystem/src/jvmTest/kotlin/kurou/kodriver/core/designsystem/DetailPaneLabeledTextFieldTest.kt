@@ -124,4 +124,27 @@ class DetailPaneLabeledTextFieldTest {
         rule.onNodeWithContentDescription("試聴").assertDoesNotExist()
         rule.onNodeWithText("残量").assertIsDisplayed()
     }
+
+    @Test
+    fun `挿入状態がDetailPaneCardTextFieldに委譲される`() {
+        val insertState = TextInsertState()
+        val finishedTexts = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneLabeledTextField(
+                    label = "読み上げ",
+                    value = "残量",
+                    maxLength = 10,
+                    onValueChangeFinished = { finishedTexts.add(it) },
+                    onPreviewClick = null,
+                    insertState = insertState,
+                )
+            }
+        }
+        rule.runOnIdle { insertState.insert("{fuel}") }
+        rule.waitForIdle()
+
+        rule.onNodeWithText("残量{fuel}").assertIsDisplayed()
+        assertEquals(listOf("残量{fuel}"), finishedTexts)
+    }
 }

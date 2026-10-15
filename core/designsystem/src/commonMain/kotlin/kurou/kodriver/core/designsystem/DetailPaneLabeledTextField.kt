@@ -6,7 +6,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -15,8 +14,6 @@ import androidx.compose.ui.tooling.preview.Preview
  * [label] を [DetailPaneCardTextField] の上に表示し、両者の間隔を [KoDriverSpacing.extraSmall] にする。
  * 同じカード内に複数の入力欄を並べるときは、呼び出し側でこの関数同士の間隔（[KoDriverSpacing.large] 想定）を付ける。
  * 入力・確定・試聴・リセット・選択状態の挙動は [DetailPaneCardTextField] と同じ。[label] はプレースホルダーにも使う。
- * [selection] はカーソル・選択範囲。null なら表示開始時は先頭、外部更新時は末尾に置く。
- * [onSelectionChange] はカーソル・選択範囲が変わるたびに通知する。
  */
 @Composable
 fun DetailPaneLabeledTextField(
@@ -34,8 +31,7 @@ fun DetailPaneLabeledTextField(
     defaultValue: String? = null,
     onResetToDefault: (() -> Unit)? = null,
     resetContentDescription: String? = null,
-    selection: TextRange? = null,
-    onSelectionChange: ((TextRange) -> Unit)? = null,
+    insertState: TextInsertState? = null,
 ) {
     Column(
         modifier = modifier,
@@ -56,8 +52,7 @@ fun DetailPaneLabeledTextField(
             defaultValue = defaultValue,
             onResetToDefault = onResetToDefault,
             resetContentDescription = resetContentDescription,
-            selection = selection,
-            onSelectionChange = onSelectionChange,
+            insertState = insertState,
         )
     }
 }

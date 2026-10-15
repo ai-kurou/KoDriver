@@ -169,7 +169,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
-        rule.onNodeWithText("{percent} を挿入").assertIsNotEnabled()
+        rule.onNodeWithText("{percent} を挿入").performClick()
         rule.onNodeWithText("30/30").assertExists()
         rule.onNodeWithContentDescription("バーチャルエナジー残量を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
@@ -335,15 +335,19 @@ class ManualReadoutSetDetailPaneTest {
     }
 
     @Test
-    fun `文字数上限でも選択範囲の置換で収まる場合は挿入できる`() {
+    fun `文字数上限では挿入せず選択範囲の置換で収まる場合は挿入する`() {
+        val full = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+        val text = mutableStateOf(full)
         rule.setContent {
             KoDriverTheme {
-                ManualReadoutItemTextField("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH), "既定", {})
+                ManualReadoutItemTextField(text.value, "既定", { text.value = it })
             }
         }
-        rule.onNodeWithText("{percent} を挿入").assertIsNotEnabled()
+        rule.onNodeWithText("{percent} を挿入").performClick()
+        rule.runOnIdle { assertEquals(full, text.value) }
         rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(0, 9))
-        rule.onNodeWithText("{percent} を挿入").assertIsEnabled()
+        rule.onNodeWithText("{percent} を挿入").performClick()
+        rule.runOnIdle { assertEquals("{percent}" + "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH - 9), text.value) }
     }
 
     @Test

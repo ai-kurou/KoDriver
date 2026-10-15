@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -54,10 +55,10 @@ import androidx.compose.ui.unit.dp
  * チップ側と [selected] を排他にして渡すことで、どちらが使われるかを一目で判別できるようにする。
  * [selected] の判定は [onValueChangeFinished] で通知される文字列に基づかせる想定（1文字入力するたびに更新される）。
  *
+ * [insertState] を渡すと、カーソル位置への挿入や選択範囲の置換を要求できる。上限を超える要求は破棄する。
+ *
  * [supportingText] の右側に、入力中の文字数と [maxLength] を「12/30」の形式で常に表示する。
  * [supportingText] がない場合も、文字数カウンターは右端に配置する。
- * [selection] はカーソル・選択範囲。null なら表示開始時は先頭、外部更新時は末尾に置く。
- * [onSelectionChange] はカーソル・選択範囲が変わるたびに通知する。
  */
 @Composable
 fun DetailPaneCardTextField(
@@ -75,29 +76,47 @@ fun DetailPaneCardTextField(
     defaultValue: String? = null,
     onResetToDefault: (() -> Unit)? = null,
     resetContentDescription: String? = null,
-    selection: TextRange? = null,
-    onSelectionChange: ((TextRange) -> Unit)? = null,
+    insertState: TextInsertState? = null,
 ) {
     val haptic = LocalHapticFeedback.current
-    var text by remember { mutableStateOf(TextFieldValue(value, selection ?: TextRange.Zero)) }
-    LaunchedEffect(value, selection) {
-        if (text.isOutOfSync(value, selection)) {
-            text = TextFieldValue(value, selection ?: TextRange(value.length))
-            onSelectionChange?.invoke(text.selection)
+    var text by remember(value) { mutableStateOf(value) }
+    // 未操作（null）の間は従来どおり先頭を表示し、挿入要求は末尾へ追加する。
+    var selection by remember { mutableStateOf<TextRange?>(null) }
+    // IMEの変換中範囲は入力ごとに引き継ぎ、外部値や挿入でテキストが変わったら破棄する。
+    var composition by remember(value) { mutableStateOf<TextRange?>(null) }
+    val fieldValue = TextFieldValue(text, selection ?: TextRange.Zero, composition)
+    val request = insertState?.request
+    val currentOnValueChangeFinished by rememberUpdatedState(onValueChangeFinished)
+    LaunchedEffect(insertState, request) {
+        if (request != null) {
+            // 無効な入力欄や文言が変わらない挿入は、確定通知せず要求だけを消費する。
+            val inserted =
+                insertAtSelection(text, selection, request.text, maxLength)
+                    .takeIf { enabled }
+                    ?.takeIf { it.text != text }
+            insertState?.consume(request)
+            if (inserted != null) {
+                text = inserted.text
+                selection = inserted.selection
+                composition = null
+                currentOnValueChangeFinished(text)
+            }
         }
     }
-    val isResettable = enabled && defaultValue != null && text.text != defaultValue
+    val isResettable = enabled && defaultValue != null && text != defaultValue
     val resetButtonAlpha by animateFloatAsState(targetValue = if (isResettable) 1f else 0f)
 
     TextField(
-        value = text,
+        value = fieldValue,
         onValueChange = { input ->
-            val next = normalizeInput(input, maxLength)
-            val textChanged = text.text != input.text
-            val selectionChanged = text.selection != next.selection
-            text = next
-            if (selectionChanged) onSelectionChange?.invoke(next.selection)
-            if (textChanged) onValueChangeFinished(next.text)
+            val normalized = normalizeInput(input, maxLength)
+            val textChanged = normalized.text != text
+            text = normalized.text
+            selection = normalized.selection
+            composition = normalized.composition
+            if (textChanged) {
+                onValueChangeFinished(text)
+            }
         },
         enabled = enabled,
         placeholder = { Text(text = placeholder) },
@@ -110,7 +129,7 @@ fun DetailPaneCardTextField(
                 } else {
                     Spacer(Modifier.weight(1f))
                 }
-                Text(text = "${text.text.length}/$maxLength")
+                Text(text = "${text.length}/$maxLength")
             }
         },
         singleLine = true,
@@ -160,7 +179,7 @@ fun DetailPaneCardTextField(
                     IconButton(
                         onClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            onPreviewClick(text.text)
+                            onPreviewClick(text)
                         },
                         enabled = enabled,
                         modifier = Modifier.size(32.dp),
@@ -234,27 +253,3 @@ private fun DetailPaneCardTextFieldPreview() {
         }
     }
 }
-
-/** 改行を除いて [maxLength] で切り詰め、カーソル・選択範囲も除去後の位置に合わせる。 */
-private fun normalizeInput(
-    input: TextFieldValue,
-    maxLength: Int,
-): TextFieldValue {
-    val normalized = input.text.replace("\n", "").take(maxLength)
-
-    fun normalizedOffset(offset: Int) =
-        input.text
-            .take(offset)
-            .count { it != '\n' }
-            .coerceAtMost(normalized.length)
-    return input.copy(
-        text = normalized,
-        selection = TextRange(normalizedOffset(input.selection.start), normalizedOffset(input.selection.end)),
-    )
-}
-
-/** 外部から渡された [value]・[selection] と内部状態が食い違うか。 */
-private fun TextFieldValue.isOutOfSync(
-    value: String,
-    selection: TextRange?,
-): Boolean = text != value || (selection != null && this.selection != selection)

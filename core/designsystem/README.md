@@ -36,7 +36,6 @@
 
 - feature モジュール側では 4/8/12/16/24dp の余白値を直接指定せず、`KoDriverSpacing.*` を参照する。
 - 読み上げ文言のタイトルと入力欄は `DetailPaneLabeledTextField` の4dp（`extraSmall`）で揃える。挿入チップと説明文の行には下部8dp（`small`）、同じカード内の独立した文言グループ間には16dp（`large`）を確保する。区切り線やカード内部の既存余白も含めて調整し、一律には加算しない。
-- `DetailPaneLabeledTextField` / `DetailPaneCardTextField` は任意の `selection` で外部更新時の選択範囲を指定し、`onSelectionChange` でカーソル移動・選択変更を受け取れる。未指定の外部更新は末尾へ移動する。選択だけの変更では保存通知を行わない。
 - `DetailPaneLabeledTextField` / `DetailPaneCardTextField` は `onPreviewClick = null` で試聴ボタンを非表示にできる。
 - アイコンサイズ・カード幅など「余白」ではない寸法（`Modifier.size` 等）は対象外。値がたまたま同じでも `KoDriverSpacing` は使わない。
 - `app:shared` は `moduleGraphAssert` で `core:.*` への依存が禁止されているため、`AppSpacing.kt` に同じ余白値を複製している。余白の値を変更する場合は両方を同期させる。
@@ -51,6 +50,7 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 ## 文言入力の状態
 
+- `rememberTextInsertState()` を入力欄ごとに作り、`DetailPaneLabeledTextField` / `DetailPaneCardTextField` の `insertState` に渡す。`insertState.insert("{placeholder}")` でカーソル位置に挿入し、選択範囲があれば置換する。改行除去後に文字数上限を超える要求は挿入せず消費する。
 - `PendingTextState.kt` の `rememberPendingText` は非同期保存中の入力を保持し、保存側UseCaseと同じ `trim().take(MAX)` に正規化した保存値が一致すると保存待ちを解除する。文字数上限は呼び出し側から渡す。
 - 連続編集・リセットによる保存待ちを順序付きで保持し、途中の保存値が反映されても最新の入力に巻き戻りが起きないようにする。
 - 保存反映が conflate されて観測できない場合も、保存待ちの変更から既定で3秒後に入力を保持したまま解除し、その後の外部更新への追従を再開する。

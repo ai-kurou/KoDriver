@@ -2,16 +2,13 @@ package kurou.kodriver.core.designsystem
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
-import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
-import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -19,10 +16,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +25,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@Suppress("TooManyFunctions")
 class DetailPaneCardTextFieldTest {
     @get:Rule
     val rule = createComposeRule()
@@ -365,88 +359,6 @@ class DetailPaneCardTextFieldTest {
                 rule.onNodeWithText(supportingText, useUnmergedTree = true).getUnclippedBoundsInRoot()
             assertTrue(supportingBounds.right <= counterBounds.left)
             assertTrue(supportingBounds.bottom - supportingBounds.top > counterBounds.bottom - counterBounds.top)
-        }
-    }
-
-    @Test
-    fun `表示開始時は選択範囲の指定がなければ先頭から表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                DetailPaneCardTextField(
-                    value = "長い文言",
-                    placeholder = "文言",
-                    maxLength = 30,
-                    onValueChangeFinished = {},
-                    onPreviewClick = null,
-                )
-            }
-        }
-        assertEquals(
-            TextRange.Zero,
-            rule.onNode(hasSetTextAction()).fetchSemanticsNode().config[SemanticsProperties.TextSelectionRange],
-        )
-    }
-
-    @Test
-    fun `外部更新の選択範囲を反映しカーソル移動は保存せず通知する`() {
-        val value = mutableStateOf("前後")
-        val selection = mutableStateOf<TextRange?>(TextRange(1))
-        var notified: TextRange? = null
-        var saved: String? = null
-        rule.setContent {
-            KoDriverTheme {
-                DetailPaneCardTextField(
-                    value = value.value,
-                    placeholder = "文言",
-                    maxLength = 30,
-                    onValueChangeFinished = { saved = it },
-                    onPreviewClick = null,
-                    selection = selection.value,
-                    onSelectionChange = { notified = it },
-                )
-            }
-        }
-        rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(0, 2))
-        rule.runOnIdle {
-            assertEquals(TextRange(0, 2), notified)
-            assertNull(saved)
-            value.value = "置換後"
-            selection.value = TextRange(2)
-        }
-        rule.waitForIdle()
-        rule.runOnIdle { assertEquals(TextRange(2), notified) }
-        rule.onNode(hasSetTextAction()).performTextInput("あ")
-        rule.runOnIdle { assertEquals("置換あ後", saved) }
-        rule.runOnIdle {
-            value.value = "外部"
-            selection.value = null
-        }
-        rule.waitForIdle()
-        rule.runOnIdle { assertEquals(TextRange(2), notified) }
-        rule.onNode(hasSetTextAction()).performTextInput("い")
-        rule.runOnIdle { assertEquals("外部い", saved) }
-    }
-
-    @Test
-    fun `改行除去と文字数制限後のカーソル位置を通知する`() {
-        var saved: String? = null
-        var selection: TextRange? = null
-        rule.setContent {
-            KoDriverTheme {
-                DetailPaneCardTextField(
-                    value = "",
-                    placeholder = "文言",
-                    maxLength = 3,
-                    onValueChangeFinished = { saved = it },
-                    onPreviewClick = null,
-                    onSelectionChange = { selection = it },
-                )
-            }
-        }
-        rule.onNode(hasSetTextAction()).performTextInput("あ\nいうえ")
-        rule.runOnIdle {
-            assertEquals("あいう", saved)
-            assertEquals(TextRange(3), selection)
         }
     }
 }
