@@ -628,7 +628,9 @@ class ManualReadoutSetDetailViewModelTest {
             try {
                 vm.uiState.first { !it.isLoading }
                 vm.onPreviewClicked()
+                assertTrue(vm.uiState.value.isPreviewing)
                 vm.onPreviewClicked()
+                assertFalse(vm.uiState.value.isPreviewing)
                 assertEquals(1, stopped)
                 vm.onPreviewClicked()
                 vm.onPreviewStopped()

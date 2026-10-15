@@ -36,6 +36,6 @@
     <string name="manual_readout_move_up">上へ移動</string>
     <string name="manual_readout_move_down">下へ移動</string>
     <string name="manual_readout_item_limit">1セットに追加できる項目は%1$dつまでです</string>
-    <string name="manual_readout_preview">プレビュー</string>
-    <string name="manual_readout_preview_play">プレビューを再生</string>
+    <string name="manual_readout_preview_play">試聴</string>
+    <string name="manual_readout_preview_stop">試聴を停止</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -29,6 +30,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@Suppress("TooManyFunctions")
 class DetailPaneCardTextFieldTest {
     @get:Rule
     val rule = createComposeRule()
@@ -364,6 +366,25 @@ class DetailPaneCardTextFieldTest {
             assertTrue(supportingBounds.right <= counterBounds.left)
             assertTrue(supportingBounds.bottom - supportingBounds.top > counterBounds.bottom - counterBounds.top)
         }
+    }
+
+    @Test
+    fun `表示開始時は選択範囲の指定がなければ先頭から表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "長い文言",
+                    placeholder = "文言",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = null,
+                )
+            }
+        }
+        assertEquals(
+            TextRange.Zero,
+            rule.onNode(hasSetTextAction()).fetchSemanticsNode().config[SemanticsProperties.TextSelectionRange],
+        )
     }
 
     @Test

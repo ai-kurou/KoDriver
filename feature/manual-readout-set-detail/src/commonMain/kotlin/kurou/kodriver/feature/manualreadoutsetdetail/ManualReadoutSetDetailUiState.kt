@@ -14,6 +14,7 @@ internal data class ManualReadoutSetDetailUiState(
     val hotkeyRegistrationState: HotkeyRegistrationState = HotkeyRegistrationState.Unsupported,
     val hotkeyConflict: ManualReadoutHotkeyConflict? = null,
     val isTextToSpeechAvailable: Boolean = false,
+    val isPreviewing: Boolean = false,
     val isLoading: Boolean = true,
     val deleted: Boolean = false,
 )

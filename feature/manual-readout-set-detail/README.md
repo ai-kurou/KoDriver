@@ -4,7 +4,7 @@
 
 「＋ 項目を追加」から Desktop / Android 共通の `AlertDialog` を開き、未選択項目をカテゴリ別に表示する。カテゴリと表示名の対応は feature 内で管理し、現在は「エネルギー」の「バーチャルエナジー残量」のみ。選択すると末尾へ追加して閉じる。未選択項目がない場合、または domain の `MANUAL_READOUT_SET_ITEM_MAX`（3件）に達した場合は追加ボタンを無効化し、上限時は説明を表示する。未選択時は短い説明と追加ボタンを表示する。
 
-`libs.reorderable` の `ReorderableColumn` でドラッグ終了時に `moveItem` を呼び、`ManualReadoutSet.itemKeys` の順序を保存する。最大3項目のため、画面のスクロール内で通常の Column として配置する。プレビューは選択順に空欄を除いて「、」でつなぎ、domain の置換関数で仮想エネルギーを表示用サンプル値50に置換する。項目がなければプレビューを表示しない。Narrator の読み上げロジックは変更しない。
+`libs.reorderable` の `ReorderableColumn` でドラッグ終了時に `moveItem` を呼び、`ManualReadoutSet.itemKeys` の順序を保存する。最大3項目のため、画面のスクロール内で通常の Column として配置する。試聴文は選択順に空欄を除いて「、」でつなぎ、domain の置換関数で仮想エネルギーをサンプル値50に置換する（画面には表示しない）。項目がなければ試聴ボタンを表示しない。Narrator の読み上げロジックは変更しない。
 
 `ManualReadoutSetDetailViewModel` は `ObserveManualReadoutSetsUseCase` で対象セットを観測し、`UpdateManualReadoutSetUseCase` で追加・削除・並べ替えと項目ごとの文言を保存する。追加は重複・未対応キー・3件上限を検証する。未知キーは保持し、連続操作は直前の保存結果を参照する。セットが見つからない場合は説明を表示する。確認ダイアログから `DeleteManualReadoutSetUseCase` を実行し、削除完了時に Content の `onDeleted` を通知する。
 
@@ -12,9 +12,9 @@
 空欄は読み上げず、リセットで既定文言へ戻す。選択を解除しても編集した文言は保持する。
 LMU の残量では `{percent}` を現在の残量（%）に置換し、挿入ボタンと未知プレースホルダーの警告を提供する。挿入はカーソル位置に行い、選択中ならその範囲を置き換え、挿入直後へカーソルを移動する。置換後に文字数上限を超える場合は無効にする。
 自動読み上げと同じ共通入力部品を使い、項目ごとの試聴ボタンは表示しない。
-プレビュー見出しの再生ボタンで、表示中のプレビュー全文を `ReadoutTextPreviewHelper` により試聴する。
+「試聴」ボタン（他の設定画面と同じ `FilledTonalButton`、再生中は「試聴を停止」）で、試聴文全体を `ReadoutTextPreviewHelper` により試聴する。
 選択済み項目の先頭キーに対応する開始音を再生し、現在の音量で読み上げる。未知の先頭キーでは再生しない。
-再押しやペイン離脱で停止し、TTS 利用不可またはプレビューが空のときはボタンを無効にする。
+再押しやペイン離脱で停止し、TTS 利用不可または試聴文が空のときはボタンを無効にする。
 DI は TTS・音量の Repository と、Narrator 登録済みの `named(simulatorId)` の開始音・読み上げ UseCase を消費する。
 
 `manualReadoutSetDetailModule` は `named(simulatorId)` の Repository を解決する。Android・Desktop 共通の `featureModules` に登録する。一覧モジュールはこのモジュールに依存せず、`app:shared` が詳細スロットに接続する。

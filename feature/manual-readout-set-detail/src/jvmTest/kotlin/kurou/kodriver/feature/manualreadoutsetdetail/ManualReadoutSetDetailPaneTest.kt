@@ -35,7 +35,7 @@ class ManualReadoutSetDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `上限では追加を無効化し文言と順序通りのプレビューを表示する`() {
+    fun `上限では追加を無効化する`() {
         val keys = List(MANUAL_READOUT_SET_ITEM_MAX) { "item$it" }
         rule.setContent {
             KoDriverTheme {
@@ -55,7 +55,6 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNodeWithText("＋ 項目を追加").assertIsNotEnabled()
         rule.onNodeWithText("1セットに追加できる項目は3つまでです").assertExists()
-        rule.onNodeWithText("先頭、末尾").assertExists()
     }
 
     @Test
@@ -100,7 +99,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("バーチャルエナジー残量").assertDoesNotExist()
-        rule.onNodeWithText("プレビュー").assertDoesNotExist()
+        rule.onNodeWithText("試聴").assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("エネルギー").assertExists()
         rule.onNodeWithText("キャンセル").performClick()
@@ -108,7 +107,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("バーチャルエナジー残量").performClick()
         rule.onNodeWithText("＋ 項目を追加").assertIsNotEnabled()
-        rule.onNodeWithText("バーチャルエナジー残量は50パーセント").assertExists()
+        rule.onNodeWithText("試聴").assertExists()
         rule.onNodeWithText("セットを削除").performClick()
         rule.onNodeWithText("キャンセル").performClick()
         rule.runOnIdle { assertEquals(0, deleted) }
@@ -300,14 +299,16 @@ class ManualReadoutSetDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithContentDescription("プレビューを再生").assertIsEnabled().performClick()
+        rule.onNodeWithText("試聴").assertIsEnabled().performClick()
         rule.runOnIdle {
             assertEquals(1, clicked)
             state.value = state.value.copy(isTextToSpeechAvailable = false)
         }
-        rule.onNodeWithContentDescription("プレビューを再生").assertIsNotEnabled()
+        rule.onNodeWithText("試聴").assertIsNotEnabled()
         rule.runOnIdle { state.value = state.value.copy(isTextToSpeechAvailable = true, itemTexts = mapOf(key to "")) }
-        rule.onNodeWithContentDescription("プレビューを再生").assertIsNotEnabled()
+        rule.onNodeWithText("試聴").assertIsNotEnabled()
+        rule.runOnIdle { state.value = state.value.copy(itemTexts = emptyMap(), isPreviewing = true) }
+        rule.onNodeWithText("試聴を停止").assertIsEnabled()
     }
 
     @Test

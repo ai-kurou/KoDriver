@@ -93,6 +93,8 @@ internal class ManualReadoutSetDetailViewModel(
             )
         }.combine(preview.textToSpeechAvailable) { state, available ->
             state.copy(isTextToSpeechAvailable = available)
+        }.combine(preview.isPreviewing) { state, previewing ->
+            state.copy(isPreviewing = previewing)
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),

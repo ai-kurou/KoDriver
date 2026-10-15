@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
  * [label] を [DetailPaneCardTextField] の上に表示し、両者の間隔を [KoDriverSpacing.extraSmall] にする。
  * 同じカード内に複数の入力欄を並べるときは、呼び出し側でこの関数同士の間隔（[KoDriverSpacing.large] 想定）を付ける。
  * 入力・確定・試聴・リセット・選択状態の挙動は [DetailPaneCardTextField] と同じ。[label] はプレースホルダーにも使う。
- * [selection] は外部更新時のカーソル・選択範囲。null なら末尾に置く。
+ * [selection] はカーソル・選択範囲。null なら表示開始時は先頭、外部更新時は末尾に置く。
  * [onSelectionChange] はカーソル・選択範囲が変わるたびに通知する。
  */
 @Composable

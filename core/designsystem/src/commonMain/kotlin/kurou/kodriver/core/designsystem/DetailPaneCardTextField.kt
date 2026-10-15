@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.dp
  *
  * [supportingText] の右側に、入力中の文字数と [maxLength] を「12/30」の形式で常に表示する。
  * [supportingText] がない場合も、文字数カウンターは右端に配置する。
- * [selection] は外部更新時のカーソル・選択範囲。null なら末尾に置く。
+ * [selection] はカーソル・選択範囲。null なら表示開始時は先頭、外部更新時は末尾に置く。
  * [onSelectionChange] はカーソル・選択範囲が変わるたびに通知する。
  */
 @Composable
@@ -79,7 +79,7 @@ fun DetailPaneCardTextField(
     onSelectionChange: ((TextRange) -> Unit)? = null,
 ) {
     val haptic = LocalHapticFeedback.current
-    var text by remember { mutableStateOf(TextFieldValue(value, selection ?: TextRange(value.length))) }
+    var text by remember { mutableStateOf(TextFieldValue(value, selection ?: TextRange.Zero)) }
     LaunchedEffect(value, selection) {
         if (text.isOutOfSync(value, selection)) {
             text = TextFieldValue(value, selection ?: TextRange(value.length))

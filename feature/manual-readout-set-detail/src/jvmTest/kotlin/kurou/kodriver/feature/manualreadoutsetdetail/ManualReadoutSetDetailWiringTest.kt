@@ -151,7 +151,7 @@ class ManualReadoutSetDetailWiringTest {
             rule.onNode(hasSetTextAction()).performTextReplacement("残量{percent}%")
             rule.waitForIdle()
             rule.onNodeWithText("残量{percent}%").assertIsDisplayed()
-            rule.onNodeWithContentDescription("プレビューを再生").performClick()
+            rule.onNodeWithText("試聴").performClick()
             rule.waitForIdle()
             rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
             rule.waitForIdle()

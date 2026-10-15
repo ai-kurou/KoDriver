@@ -199,7 +199,7 @@ internal fun ManualReadoutItemTextField(
 ) {
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
-    var selection by remember { mutableStateOf(TextRange(currentText.length)) }
+    var selection by remember { mutableStateOf(TextRange.Zero) }
     val start = selection.min.coerceIn(0, currentText.length)
     val end = selection.max.coerceIn(start, currentText.length)
     val changeText: (String) -> Unit = {
