@@ -12,9 +12,11 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -76,7 +78,9 @@ class ManualReadoutListPaneWiringTest {
 
     @Test
     fun `Contentはシミュレーター切替と離脱時に選択を解除して再表示では一覧を表示する`() {
-        every { lmuRepository.observeSets() } returns flowOf(listOf(ManualReadoutSet("lmu-set")))
+        val sets = MutableStateFlow(listOf(ManualReadoutSet("lmu-set")))
+        every { lmuRepository.observeSets() } returns sets
+        coEvery { lmuRepository.deleteSet("lmu-set") } answers { sets.update { emptyList() } }
         every { gt7Repository.observeSets() } returns flowOf(listOf(ManualReadoutSet("gt7-set")))
         val owner =
             object : ViewModelStoreOwner {
@@ -98,7 +102,7 @@ class ManualReadoutListPaneWiringTest {
             rule.setContent {
                 CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
                     KoDriverTheme {
-                        Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                             if (showContent) {
                                 ManualReadoutContent(
                                     simulatorId = simulatorId,
@@ -127,7 +131,16 @@ class ManualReadoutListPaneWiringTest {
             rule.runOnIdle { showContent = true }
             rule.waitForIdle()
             rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
-            rule.onNodeWithText("セット 1").assertIsDisplayed()
+            rule.onNodeWithText("セット 1").assertIsDisplayed().performClick()
+            rule.onNodeWithText("詳細 lmu-set").assertExists()
+            rule.onNodeWithText("セット 1").performTouchInput { longClick() }
+            rule.onNodeWithText("削除").performClick()
+            rule.onNodeWithText("削除").performClick()
+            rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
+            rule.onNodeWithText("lmu_windowsの手動読み上げセットはまだありません").assertIsDisplayed()
+            verify(exactly = 1) { lmuRepository.observeSets() }
+            coVerify(exactly = 1) { lmuRepository.deleteSet("lmu-set") }
+            confirmVerified(lmuRepository)
         } finally {
             rule.runOnIdle { showContent = false }
             rule.waitForIdle()
@@ -144,6 +157,7 @@ class ManualReadoutListPaneWiringTest {
         coEvery { lmuRepository.addSet(capture(addedSet)) } returns Unit
         val lmuSets = MutableStateFlow<List<ManualReadoutSet>>(emptyList())
         every { lmuRepository.observeSets() } returns lmuSets
+        coEvery { lmuRepository.deleteSet("lmu-set") } answers { lmuSets.update { emptyList() } }
         every { gt7Repository.observeSets() } returns flowOf(listOf(ManualReadoutSet(id = "gt7-set")))
         val owner =
             object : ViewModelStoreOwner {
@@ -180,10 +194,10 @@ class ManualReadoutListPaneWiringTest {
             rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsNotEnabled()
             rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
             rule.onNodeWithText("gt7_ps5の手動読み上げセットはまだありません").assertDoesNotExist()
-            rule.runOnIdle {
-                lmuSets.update { emptyList() }
-                simulatorId = Simulator.LmuWindows.id
-            }
+            rule.runOnIdle { simulatorId = Simulator.LmuWindows.id }
+            rule.onNodeWithText("セット 1").performTouchInput { longClick() }
+            rule.onNodeWithText("削除").performClick()
+            rule.onNodeWithText("削除").performClick()
             rule.onNodeWithText("lmu_windowsの手動読み上げセットはまだありません").assertIsDisplayed()
             rule.onNodeWithContentDescription("セットを追加").assertIsDisplayed().performClick()
             rule.runOnIdle {
@@ -200,6 +214,7 @@ class ManualReadoutListPaneWiringTest {
             verify(exactly = 1) { lmuRepository.observeSets() }
             verify(exactly = 1) { gt7Repository.observeSets() }
             coVerify(exactly = 1) { requestRepository.request(request) }
+            coVerify(exactly = 1) { lmuRepository.deleteSet("lmu-set") }
             confirmVerified(lmuRepository, gt7Repository, requestRepository)
         } finally {
             rule.runOnIdle { showPane = false }

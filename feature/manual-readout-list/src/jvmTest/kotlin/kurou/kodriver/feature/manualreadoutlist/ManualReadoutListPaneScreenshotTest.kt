@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
@@ -92,5 +93,18 @@ class ManualReadoutListPaneScreenshotTest {
                 }
             }
             onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `削除確認ダイアログ`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
+                        ManualReadoutListDeleteConfirmDialog(onConfirm = {}, onDismiss = {})
+                    }
+                }
+            }
+            onNode(isDialog()).captureRoboImage()
         }
 }

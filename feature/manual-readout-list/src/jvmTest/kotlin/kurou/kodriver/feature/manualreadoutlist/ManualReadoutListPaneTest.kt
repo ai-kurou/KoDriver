@@ -8,10 +8,12 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ManualReadoutSet
@@ -153,6 +155,8 @@ class ManualReadoutListPaneTest {
             .onNodeWithText("読み上げる値がない項目は「データがありません」と読み上げます。")
             .performScrollTo()
             .assertIsDisplayed()
+        rule.onNodeWithText("長押しで削除").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("セットを長押しすると、確認してから削除できます。").performScrollTo().assertIsDisplayed()
         // ホットキーの説明は Windows デスクトップでのみ表示するため、実行OSに合わせて検証する。
         if (isManualReadoutHotkeySupported()) {
             rule.onNodeWithText("ホットキー").performScrollTo().assertIsDisplayed()
@@ -169,9 +173,10 @@ class ManualReadoutListPaneTest {
             }
         }
 
-        rule.onNodeWithText("ホットキー").assertIsDisplayed()
+        rule.onNodeWithText("ホットキー").performScrollTo().assertIsDisplayed()
         rule
             .onNodeWithText("選んだ修飾キーと数字または英字キーの組み合わせで、セットを読み上げられます。")
+            .performScrollTo()
             .assertIsDisplayed()
     }
 
@@ -214,5 +219,43 @@ class ManualReadoutListPaneTest {
             assertEquals(listOf("set-1"), selected)
             assertEquals(listOf("set-1"), requested)
         }
+    }
+
+    @Test
+    fun `長押しは詳細を開かず削除メニューから確認したセットだけを削除する`() {
+        val deleted = mutableListOf<String>()
+        val selected = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState =
+                        ManualReadoutListUiState(
+                            sets = listOf(ManualReadoutSet("first"), ManualReadoutSet("second")),
+                        ),
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                    onSetClick = { selected.add(it) },
+                    onDeleteSet = { deleted.add(it) },
+                )
+            }
+        }
+        rule.onNodeWithText("セット 2").performTouchInput { longClick() }
+        rule.onNodeWithText("削除").assertIsDisplayed().performClick()
+        rule.onNodeWithText("セットを削除しますか？").assertIsDisplayed()
+        rule.onNodeWithText("この操作は取り消せません。").assertIsDisplayed()
+        rule.runOnIdle {
+            assertEquals(emptyList(), selected)
+            assertEquals(emptyList(), deleted)
+        }
+        rule.onNodeWithText("キャンセル").performClick()
+        rule.onNodeWithText("セットを削除しますか？").assertDoesNotExist()
+        rule.runOnIdle { assertEquals(emptyList(), deleted) }
+        rule.onNodeWithText("セット 2").performTouchInput { longClick() }
+        rule.onNodeWithText("削除").performClick()
+        rule.onNodeWithText("削除").performClick()
+        rule.onNodeWithText("セットを削除しますか？").assertDoesNotExist()
+        rule.onNodeWithText("削除").assertDoesNotExist()
+        rule.runOnIdle { assertEquals(listOf("second"), deleted) }
     }
 }

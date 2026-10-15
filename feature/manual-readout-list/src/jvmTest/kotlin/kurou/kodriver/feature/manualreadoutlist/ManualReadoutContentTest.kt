@@ -9,14 +9,17 @@ import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class ManualReadoutContentTest {
@@ -60,5 +63,41 @@ class ManualReadoutContentTest {
         rule.onNodeWithText("詳細 target").performClick()
         rule.onNodeWithText("詳細 target").assertDoesNotExist()
         rule.onNodeWithText("セット 1").assertExists()
+    }
+
+    @Test
+    fun `選択中セットの削除を通知して一覧状態が更新されると詳細を閉じる`() {
+        val state =
+            mutableStateOf(
+                ManualReadoutListUiState(sets = listOf(ManualReadoutSet("target")), selectedSetId = "target"),
+            )
+        val deleted = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                    ManualReadoutContentScaffold(
+                        uiState = state.value,
+                        simulatorName = "LMU",
+                        windowSizeClass = WindowSizeClass.compute(840f, 640f),
+                        onAddSet = {},
+                        onReadSet = {},
+                        onSetClick = {},
+                        onClearSelectedSet = {},
+                        onDeleteSet = {
+                            deleted.add(it)
+                            state.value = ManualReadoutListUiState()
+                        },
+                        detailContent = { id, _, _ -> Text("詳細 $id") },
+                    )
+                }
+            }
+        }
+        rule.onNodeWithText("詳細 target").assertExists()
+        rule.onNodeWithText("セット 1").performTouchInput { longClick() }
+        rule.onNodeWithText("削除").performClick()
+        rule.onNodeWithText("削除").performClick()
+        rule.onNodeWithText("詳細 target").assertDoesNotExist()
+        rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertExists()
+        rule.runOnIdle { assertEquals(listOf("target"), deleted) }
     }
 }

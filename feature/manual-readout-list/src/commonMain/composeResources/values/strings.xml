@@ -16,4 +16,11 @@
     <string name="manual_readout_hint_no_data_description">読み上げる値がない項目は「データがありません」と読み上げます。</string>
     <string name="manual_readout_hint_hotkey_title">ホットキー</string>
     <string name="manual_readout_hint_hotkey_description">選んだ修飾キーと数字または英字キーの組み合わせで、セットを読み上げられます。</string>
+    <string name="manual_readout_list_delete">削除</string>
+    <string name="manual_readout_list_delete_title">セットを削除しますか？</string>
+    <string name="manual_readout_list_delete_body">この操作は取り消せません。</string>
+    <string name="manual_readout_list_delete_confirm">削除</string>
+    <string name="manual_readout_list_cancel">キャンセル</string>
+    <string name="manual_readout_hint_delete_title">長押しで削除</string>
+    <string name="manual_readout_hint_delete_description">セットを長押しすると、確認してから削除できます。</string>
 </resources>

@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
+import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
 import kotlin.test.AfterTest
@@ -57,6 +58,7 @@ class ManualReadoutListViewModelTest {
                     requestManualReadout = RequestManualReadoutUseCase(requestRepository),
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
+                    deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
                 )
             try {
                 assertEquals(ManualReadoutListUiState(canReadSets = true), viewModel.uiState.value)
@@ -78,6 +80,7 @@ class ManualReadoutListViewModelTest {
                     requestManualReadout = RequestManualReadoutUseCase(requestRepository),
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
+                    deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
                 )
             val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
             try {
@@ -106,6 +109,7 @@ class ManualReadoutListViewModelTest {
                     requestManualReadout = RequestManualReadoutUseCase(requestRepository),
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
+                    deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
                     generateSetId = { ids.next() },
                 )
             try {
@@ -138,6 +142,7 @@ class ManualReadoutListViewModelTest {
                     requestManualReadout = RequestManualReadoutUseCase(requestRepository),
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
+                    deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
                     generateSetId = { ids.next() },
                 )
             val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
@@ -169,6 +174,7 @@ class ManualReadoutListViewModelTest {
                         requestManualReadout = RequestManualReadoutUseCase(requestRepository),
                         observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                         addManualReadoutSet = AddManualReadoutSetUseCase(repository),
+                        deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
                     )
                 val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
                 try {
@@ -188,26 +194,37 @@ class ManualReadoutListViewModelTest {
     @Test
     fun `選択と解除と対象セットの削除を一覧状態に反映する`() =
         runTest(dispatcher) {
-            val sets = MutableStateFlow(listOf(ManualReadoutSet("target")))
+            val sets = MutableStateFlow(listOf(ManualReadoutSet("target"), ManualReadoutSet("other")))
             every { repository.observeSets() } returns sets
+            coEvery { repository.deleteSet("other") } answers {
+                sets.update { current -> current.filter { it.id != "other" } }
+            }
+            coEvery { repository.deleteSet("target") } answers { sets.update { emptyList() } }
             val viewModel =
                 ManualReadoutListViewModel(
                     Simulator.LmuWindows.id,
                     RequestManualReadoutUseCase(requestRepository),
                     ObserveManualReadoutSetsUseCase(repository),
                     AddManualReadoutSetUseCase(repository),
+                    DeleteManualReadoutSetUseCase(repository),
                 )
             val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
             try {
                 viewModel.selectSet("target")
                 assertEquals("target", viewModel.uiState.first().selectedSetId)
+                viewModel.deleteSet("other")
+                assertEquals("target", viewModel.uiState.first().selectedSetId)
                 viewModel.clearSelectedSet()
                 assertEquals(null, viewModel.uiState.first().selectedSetId)
                 viewModel.selectSet("target")
-                sets.value = emptyList()
+                viewModel.deleteSet("target")
                 assertEquals(null, viewModel.uiState.first().selectedSetId)
                 viewModel.selectSet("missing")
                 assertEquals(null, viewModel.uiState.first().selectedSetId)
+                verify(exactly = 1) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.deleteSet("other") }
+                coVerify(exactly = 1) { repository.deleteSet("target") }
+                confirmVerified(repository)
             } finally {
                 collection.cancel()
                 viewModel.viewModelScope.cancel()
