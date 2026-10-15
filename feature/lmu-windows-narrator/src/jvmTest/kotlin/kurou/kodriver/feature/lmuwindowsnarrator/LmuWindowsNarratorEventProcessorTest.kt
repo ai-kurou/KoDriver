@@ -3160,6 +3160,63 @@ class LmuWindowsNarratorEventProcessorTest {
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
+    @Test
+    fun `初回のブレーキ残量警告は直前の残量をnullとしてログに保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every {
+                ttsEngine.speak(LmuWindowsBrakeWearLow(20, resolvedText = "残量20%です"), queue = false)
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    narratedText = "残量20%です",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor { "残量20%です" }
+
+            processor.processBrakeWear(
+                brakeWear = brakeWear(frontLeft = 18),
+                events = listOf(LmuWindowsBrakeWearLow(20)),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.BrakeWear.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+
+            val root = Json.parseToJsonElement(telemetryJsonSlot.captured).jsonObject
+            assertEquals(Json.parseToJsonElement("null"), root["previousBrakeWear"])
+            assertEquals(
+                18f,
+                root["brakeWear"]!!
+                    .jsonObject["wheels"]!!
+                    .jsonObject["FRONT_LEFT"]!!
+                    .jsonObject["remainingPercent"]!!
+                    .jsonPrimitive.float,
+            )
+            assertContains(telemetryJsonSlot.captured, """"observedAtMs":200""")
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) {
+                ttsEngine.speak(LmuWindowsBrakeWearLow(20, resolvedText = "残量20%です"), false)
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    narratedText = "残量20%です",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
     private fun createProcessor(readoutText: suspend (SpeechEvent) -> String? = { it.narratedText }) =
         LmuWindowsNarratorEventProcessor(
             ttsEngine = ttsEngine,

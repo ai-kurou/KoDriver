@@ -2927,6 +2927,67 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `自動読み上げとキュー設定が無効でも手動依頼は残りVE現在値をキューへ追加する`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val queued = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spoken)
+            every { ttsEngine.speak(capture(queued), queue = true) } just Runs
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                manualRequestChannel = requests,
+                manualSets =
+                    listOf(
+                        ManualReadoutSet(
+                            "set-1",
+                            listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value),
+                            mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to "残量{percent}%"),
+                        ),
+                    ),
+                ttsEngine = tts,
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false),
+                queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false),
+                currentTimeMs = { 123L },
+            )
+
+            stubTelemetryLogSave(logs, 123L, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
+
+            assertEquals(emptyList(), spoken)
+            assertEquals(
+                listOf<SpeechEvent>(
+                    LmuWindowsRemainingVirtualEnergyCurrentValue(
+                        percentage = 80,
+                        resolvedText = "残量80%",
+                    ),
+                ),
+                queued,
+            )
+            verify(exactly = 1) { ttsEngine.speak(queued.single(), queue = true) }
+            val log = logs.single()
+            assertEquals("残量80%", queued.single().narratedText)
+            assertEquals("残量80%", log.narratedText)
+            assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
+            assertContains(log.telemetryJson, "\"remainingRatio\":0.8")
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 123L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    narratedText = queued.single().narratedText,
+                    narrationOutcome = NarrationOutcome.QUEUED,
+                    telemetryJson = log.telemetryJson,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `キュー設定が無効でもセットホットキーはキューへ追加してログを保存する`() =
         runTest(testDispatcher) {
             val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
@@ -3468,6 +3529,61 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `両方のピットタイミング警告が同時に発火しタイヤ摩耗の残り周回数が低い場合はタイヤ摩耗のみ読み上げる`() =
+        runTest(testDispatcher) {
+            val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            var currentTime = 0L
+            createViewModel(
+                telemetryChannel = telemetryChannel,
+                remainingVirtualEnergyChannel = virtualEnergyChannel,
+                tyreWearChannel = tyreWearChannel,
+                ttsEngine = tts,
+                pitTimingVirtualEnergyLapsThreshold = 3,
+                pitTimingTyreWearLapsThreshold = 3,
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.PitTiming.Root to true),
+                currentTimeMs = { currentTime },
+            )
+
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyreWearChannel.send(tyreWear(fl = 1.0))
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            currentTime = 45_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
+            tyreWearChannel.send(tyreWear(fl = 0.9))
+            currentTime = 90_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            tyreWearChannel.send(tyreWear(fl = 0.8))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            // 読み上げ可能時刻の直前にVE残り1周、タイヤ摩耗残り0周の入力を揃える。
+            currentTime = 149_999L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.25))
+            tyreWearChannel.send(tyreWear(fl = 0.05))
+            assertEquals(emptyList(), spokenTexts)
+
+            currentTime = 150_000L
+            telemetryChannel.send(
+                fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L).copy(timestampMs = currentTime),
+            )
+
+            assertEquals(
+                listOf<SpeechEvent>(
+                    LmuWindowsPitTimingWarning(
+                        0,
+                        source = PitTimingSource.TyreWear,
+                        resolvedText = "タイヤ交換へ",
+                    ),
+                ),
+                spokenTexts,
+            )
+        }
+
+    @Test
     fun `バーチャルエナジーとタイヤ摩耗が同時に閾値以下になり残り周回数が同じ場合はバーチャルエナジーを読み上げる`() =
         runTest(testDispatcher) {
             val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
@@ -3499,9 +3615,17 @@ class LmuWindowsNarratorViewModelTest {
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.8))
             tyreWearChannel.send(tyreWear(fl = 0.8))
             telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-            currentTime = 150_000L
+            // 読み上げ可能時刻の直前に両方の予想残り周回数を0周に揃える。
+            currentTime = 149_999L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
             tyreWearChannel.send(tyreWear(fl = 0.05))
+            assertEquals(emptyList(), spokenTexts)
+
+            // 同じtickで両方の警告を発火させ、同点時のVE優先を検証する。
+            currentTime = 150_000L
+            telemetryChannel.send(
+                fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L).copy(timestampMs = currentTime),
+            )
 
             assertEquals(
                 listOf<SpeechEvent>(
