@@ -77,3 +77,5 @@ LMU の残量は自動側と共通の `{percent}` 置換・未知プレースホ
 `ManualReadoutRequest(simulatorId, setId)` は Narrator にセットを読むよう依頼するモデル。
 `RequestManualReadoutUseCase` / `ObserveManualReadoutRequestsUseCase` は
 `ManualReadoutRequestRepository` を通じてアプリ内の依頼を送信・購読する。
+
+`ManualReadoutHotkeyRepository` はセットホットキーの押下（`ManualReadoutRequest`）とセット別の登録状態を配信し、競合・失敗時の再試行を受け付ける。対応する Observe / Retry UseCase を通じて Narrator とセット詳細画面から利用する。

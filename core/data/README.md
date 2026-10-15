@@ -88,3 +88,5 @@ Desktop／Android とも `named(simulator.id)` で登録し、セット識別子
 DataModule にシングルトンとして登録する。`MutableSharedFlow` の追加バッファは64件で、
 満杯なら `emit` が待機し、購読中の Narrator へ連続依頼を順番通り届ける。
 依頼は永続化せず、購読開始前・終了後の依頼を再配信しない。
+
+Android の `ManualReadoutHotkeyRepository` は `UnsupportedManualReadoutHotkeyRepository` を提供し、押下は通知せず、登録状態は `Unsupported`、再試行は何もしない。

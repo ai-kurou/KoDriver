@@ -38,10 +38,10 @@ base-branch: feature/base/manual-readout
 - [x] セット詳細画面（項目の選択・削除） (#2212)
 - [x] セット詳細画面の文言編集 (#2218)
 - [x] ホットキー割り当て（Windowsのみ）と重複チェック (#2223)
+- [x] ホットキーの登録（Narrator 側の受け口・登録状態の表示） (#2235)
 
 ## 次以降（上から順に着手する想定）
 
-- [ ] ホットキーの登録（Narrator 側の受け口・登録状態の表示）
 - [ ] 読み上げ項目の追加（LMU、1項目ずつ）
 - [ ] キュー・テレメトリログ・オーバーレイへの出力
 - [ ] 手動側専用 DataStore の扱いを決める（`lmu_windows_readout_hotkey_preferences.pb` の扱い含む）

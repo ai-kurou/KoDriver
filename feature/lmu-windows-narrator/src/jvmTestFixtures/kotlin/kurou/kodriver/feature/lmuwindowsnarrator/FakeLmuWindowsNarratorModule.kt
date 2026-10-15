@@ -34,6 +34,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
@@ -62,6 +63,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -72,6 +74,7 @@ import org.koin.dsl.module
  */
 val fakeLmuWindowsNarratorModule =
     module {
+        single<ManualReadoutHotkeyRepository> { FakeManualReadoutHotkeyRepository() }
         single<HotkeyRepository> { FakeHotkeyRepository() }
         single<LmuWindowsVehicleApproachRepository> { FakeLmuWindowsVehicleApproachRepository() }
         single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
@@ -403,4 +406,18 @@ class FakeHotkeyRepository : HotkeyRepository {
     override fun registrationStateStream(): Flow<HotkeyRegistrationState> = flowOf(HotkeyRegistrationState.Unsupported)
 
     override fun hotkeyPressStream(): Flow<Unit> = emptyFlow()
+}
+
+class FakeManualReadoutHotkeyRepository : ManualReadoutHotkeyRepository {
+    override fun pressStream(): Flow<ManualReadoutRequest> = emptyFlow()
+
+    override fun registrationStateStream(
+        simulatorId: String,
+        setId: String,
+    ): Flow<HotkeyRegistrationState> = flowOf(HotkeyRegistrationState.Unsupported)
+
+    override suspend fun retryRegistration(
+        simulatorId: String,
+        setId: String,
+    ) = Unit
 }

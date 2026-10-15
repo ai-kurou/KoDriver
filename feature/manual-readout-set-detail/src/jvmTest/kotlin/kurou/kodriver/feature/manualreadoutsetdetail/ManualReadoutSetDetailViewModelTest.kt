@@ -19,14 +19,18 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
+import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyVirtualKeyCodeUseCase
+import kurou.kodriver.domain.usecase.RetryManualReadoutHotkeyRegistrationUseCase
 import kurou.kodriver.domain.usecase.UpdateManualReadoutSetUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -38,6 +42,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutSetDetailViewModelTest {
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
+    private val hotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
     private val otherRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()
@@ -54,8 +59,13 @@ class ManualReadoutSetDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(simulatorId: String = Simulator.LmuWindows.id) =
-        ManualReadoutSetDetailViewModel(
+    private fun viewModel(
+        simulatorId: String = Simulator.LmuWindows.id,
+        registration: MutableStateFlow<HotkeyRegistrationState> = MutableStateFlow(HotkeyRegistrationState.Unsupported),
+    ): ManualReadoutSetDetailViewModel {
+        every { hotkeyRepository.registrationStateStream(simulatorId, "target") } returns
+            registration
+        return ManualReadoutSetDetailViewModel(
             simulatorId,
             "target",
             ObserveManualReadoutSetsUseCase(repository),
@@ -63,7 +73,10 @@ class ManualReadoutSetDetailViewModelTest {
             DeleteManualReadoutSetUseCase(repository),
             ObserveReadoutHotkeyVirtualKeyCodeUseCase(debugRepository),
             mapOf(Simulator.Gt7Ps5.id to ObserveManualReadoutSetsUseCase(otherRepository)),
+            ObserveManualReadoutHotkeyRegistrationStateUseCase(hotkeyRepository),
+            RetryManualReadoutHotkeyRegistrationUseCase(hotkeyRepository),
         )
+    }
 
     @Test
     fun `連続選択は最新の保存状態を使い未知キーを保持し削除完了を通知する`() =
@@ -354,6 +367,32 @@ class ManualReadoutSetDetailViewModelTest {
             } finally {
                 collection.cancel()
                 vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `登録状態を購読し指定セットの再試行を委譲する`() =
+        runTest(dispatcher) {
+            every { repository.observeSets() } returns
+                MutableStateFlow(listOf(ManualReadoutSet("target", hotkeyVirtualKeyCode = 0x41)))
+            val registration = MutableStateFlow<HotkeyRegistrationState>(HotkeyRegistrationState.Conflict)
+            val target = viewModel(registration = registration)
+            coEvery { hotkeyRepository.retryRegistration(Simulator.LmuWindows.id, "target") } returns Unit
+            val collection = backgroundScope.launch(dispatcher) { target.uiState.collect {} }
+            try {
+                assertEquals(
+                    HotkeyRegistrationState.Conflict,
+                    target.uiState.first { !it.isLoading }.hotkeyRegistrationState,
+                )
+                target.onRetryHotkeyRegistration()
+                registration.value = HotkeyRegistrationState.Registered
+                assertEquals(HotkeyRegistrationState.Registered, target.uiState.first().hotkeyRegistrationState)
+                verify(exactly = 1) { hotkeyRepository.registrationStateStream(Simulator.LmuWindows.id, "target") }
+                coVerify(exactly = 1) { hotkeyRepository.retryRegistration(Simulator.LmuWindows.id, "target") }
+                confirmVerified(hotkeyRepository)
+            } finally {
+                collection.cancel()
+                target.viewModelScope.cancel()
             }
         }
 }

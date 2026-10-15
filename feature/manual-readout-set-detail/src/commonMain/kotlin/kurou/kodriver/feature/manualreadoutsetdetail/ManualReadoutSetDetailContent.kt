@@ -76,6 +76,7 @@ fun ManualReadoutSetDetailContent(
         uiState = uiState,
         onAssignHotkey = viewModel::assignHotkey,
         onClearHotkey = viewModel::clearHotkey,
+        onRetryHotkeyRegistration = viewModel::onRetryHotkeyRegistration,
         showHotkey = showHotkey,
         onToggleItem = viewModel::toggleItem,
         onDelete = viewModel::deleteSet,
@@ -96,6 +97,7 @@ internal fun ManualReadoutSetDetailPane(
     onItemTextChanged: (String, String) -> Unit = { _, _ -> },
     onAssignHotkey: (Int) -> Unit = {},
     onClearHotkey: () -> Unit = {},
+    onRetryHotkeyRegistration: () -> Unit = {},
     modifier: Modifier = Modifier,
     showHotkey: Boolean = isManualReadoutHotkeySupported(),
 ) {
@@ -149,7 +151,7 @@ internal fun ManualReadoutSetDetailPane(
                     }
                 }
                 if (showHotkey) {
-                    ManualReadoutHotkeyCard(uiState, onAssignHotkey, onClearHotkey)
+                    ManualReadoutHotkeyCard(uiState, onAssignHotkey, onClearHotkey, onRetryHotkeyRegistration)
                 }
                 TextButton(onClick = { showDeleteDialog = true }) {
                     Text(stringResource(Res.string.manual_readout_delete), color = MaterialTheme.colorScheme.error)

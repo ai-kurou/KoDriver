@@ -15,8 +15,8 @@ JVM テストで ViewModel・Koin のパラメータ解決・項目選択・文�
 
 Windows デスクトップ版のみ（macOS/Linux・Web では表示しない）「ホットキー」カードを表示する。読み取り専用の入力欄にフォーカスして数字0–9または英字A–Zを押すと、Ctrl + Alt + Shift 固定で割り当てる。解除すると null を保存する。Android ではカードを表示しない。Content / Pane の `showHotkey` で表示を注入できる。
 
-OS のホットキーはシミュレーターをまたいで共有されるため、全シミュレーターの他セットとの重複をシミュレーター名と一覧番号で表示し、全シミュレーター共通のデバッグ用ホットキーとの重複も拒否する。保存後にデバッグ用ホットキーが同じキーへ変更された場合も、画面表示中は重複として表示し続ける。自セットの同じキーを再入力すると他セットとの重複エラーを解除する。保存は項目編集と同じ Mutex で直列化し、最新の保存状態を参照する。OSへの登録と登録状態の表示は後続PRで実装する。
-`manualReadoutSetDetailModule` は共通の `ReadoutHotkeyPreferencesRepository` から `ObserveReadoutHotkeyVirtualKeyCodeUseCase` を解決する。
+OS のホットキーはシミュレーターをまたいで共有されるため、全シミュレーターの他セットとの重複をシミュレーター名と一覧番号で表示し、全シミュレーター共通のデバッグ用ホットキーとの重複も拒否する。保存後にデバッグ用ホットキーが同じキーへ変更された場合も、画面表示中は重複として表示し続ける。自セットの同じキーを再入力すると他セットとの重複エラーを解除する。保存は項目編集と同じ Mutex で直列化し、最新の保存状態を参照する。保存済みキーがある場合は登録中・登録済み・競合・失敗（エラーコード）を表示し、競合・失敗時に「再試行」を提供する。未割り当て・非対応時は登録状態を表示しない。
+`manualReadoutSetDetailModule` は共通の `ReadoutHotkeyPreferencesRepository` から `ObserveReadoutHotkeyVirtualKeyCodeUseCase` を、`ManualReadoutHotkeyRepository` から登録状態の購読・再試行 UseCase を解決する。JVM テストで状態の表示分岐と再試行の配線を、Desktop スクリーンショットで登録競合と再試行ボタンを確認する。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

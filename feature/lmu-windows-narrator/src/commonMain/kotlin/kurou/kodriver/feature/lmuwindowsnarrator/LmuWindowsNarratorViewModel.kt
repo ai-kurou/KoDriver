@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
@@ -69,6 +70,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -127,6 +129,7 @@ internal data class TyreWearUseCases(
 internal data class RemainingVirtualEnergyUseCases(
     val observeRemainingVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     val observeReadoutHotkey: ObserveReadoutHotkeyUseCase,
+    val observeManualReadoutHotkeyPresses: ObserveManualReadoutHotkeyPressesUseCase,
     val observeManualReadoutRequests: ObserveManualReadoutRequestsUseCase,
     val observeManualReadoutSets: ObserveManualReadoutSetsUseCase,
     val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
@@ -717,25 +720,26 @@ internal class LmuWindowsNarratorViewModel(
 
     @Suppress("UnusedPrivateProperty")
     private val manualReadoutRequestJob =
-        remainingVirtualEnergyUseCases
-            .observeManualReadoutRequests()
-            .onEach { request ->
-                if (request.simulatorId == Simulator.LmuWindows.id) {
-                    val set =
-                        remainingVirtualEnergyUseCases
-                            .observeManualReadoutSets()
-                            .first()
-                            .find { it.id == request.setId }
-                    if (set?.itemKeys?.contains(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value) == true) {
-                        readRemainingVirtualEnergyCurrentValue(
-                            manual = true,
-                            textTemplate =
-                                set.itemTexts[LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value]
-                                    ?: LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT,
-                        )
-                    }
+        merge(
+            remainingVirtualEnergyUseCases.observeManualReadoutRequests(),
+            remainingVirtualEnergyUseCases.observeManualReadoutHotkeyPresses(),
+        ).onEach { request ->
+            if (request.simulatorId == Simulator.LmuWindows.id) {
+                val set =
+                    remainingVirtualEnergyUseCases
+                        .observeManualReadoutSets()
+                        .first()
+                        .find { it.id == request.setId }
+                if (set?.itemKeys?.contains(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value) == true) {
+                    readRemainingVirtualEnergyCurrentValue(
+                        manual = true,
+                        textTemplate =
+                            set.itemTexts[LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value]
+                                ?: LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT,
+                    )
                 }
-            }.launchIn(viewModelScope)
+            }
+        }.launchIn(viewModelScope)
 
     private suspend fun readRemainingVirtualEnergyCurrentValue(
         manual: Boolean = false,

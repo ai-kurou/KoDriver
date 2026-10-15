@@ -7,6 +7,7 @@ import kurou.kodriver.data.debugreadout.InMemoryDebugReadoutRequestRepository
 import kurou.kodriver.data.device.AndroidAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
+import kurou.kodriver.data.hotkey.UnsupportedManualReadoutHotkeyRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.preferences.AndroidAutoReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidDynamicColorEnabledRepository
@@ -48,6 +49,7 @@ import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
@@ -88,6 +90,7 @@ private val Context.hapticFeedbackEnabledDataStore by preferencesDataStore("hapt
 fun androidDataModule(context: Context) =
     module {
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
+        single<ManualReadoutHotkeyRepository> { UnsupportedManualReadoutHotkeyRepository() }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<Context> { context }
 
