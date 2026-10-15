@@ -91,7 +91,7 @@ class AceWindowsAutoReadoutRemainingFuelDetailPaneTest {
         rule.onNodeWithText("燃料残量").assertIsDisplayed()
         rule.onNodeWithText("燃料残量警告の文言").assertIsDisplayed()
         rule.onNodeWithText(DEFAULT_TEXT).assertIsDisplayed()
-        rule.onNodeWithText("{percent} は燃料の残量(%)に置き換わります（整数に丸めます）").assertIsDisplayed()
+        rule.onNodeWithText("{percent} は燃料の残量（%）に置き換わります（整数に丸めます）").assertIsDisplayed()
         rule.onNodeWithText("{percent}を挿入").assertIsEnabled()
     }
 
