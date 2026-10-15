@@ -26,9 +26,11 @@ import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.TextInsertState
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.core.designsystem.rememberPendingText
+import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
@@ -151,6 +153,7 @@ private fun TyreWearReadoutField(
 ) {
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
+    val insertState = rememberTextInsertState()
     val changeText: (String) -> Unit = {
         textState.change(it)
         onTextChanged(it)
@@ -162,6 +165,7 @@ private fun TyreWearReadoutField(
         isTextToSpeechAvailable = available,
         onTextChanged = changeText,
         onPreviewClick = onPreviewClick,
+        insertState = insertState,
         unknownPlaceholders =
             findUnknownLmuWindowsTyreWearReadoutPlaceholders(currentText)
                 .joinToString("、"),
@@ -173,9 +177,7 @@ private fun TyreWearReadoutField(
     ) {
         AssistChip(
             onClick = {
-                changeText(
-                    currentText + LMU_WINDOWS_TYRE_WEAR_PERCENT_PLACEHOLDER,
-                )
+                insertState.insert(LMU_WINDOWS_TYRE_WEAR_PERCENT_PLACEHOLDER)
             },
             label = { Text(stringResource(Res.string.tyre_wear_percent_insert)) },
             enabled =
@@ -202,6 +204,7 @@ private fun ReadoutTextField(
     isTextToSpeechAvailable: Boolean,
     onTextChanged: (String) -> Unit,
     onPreviewClick: (String) -> Unit,
+    insertState: TextInsertState,
     unknownPlaceholders: String = "",
 ) {
     DetailPaneLabeledTextField(
@@ -213,6 +216,7 @@ private fun ReadoutTextField(
         maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
         onValueChangeFinished = onTextChanged,
         onPreviewClick = onPreviewClick,
+        insertState = insertState,
         enabled = isTextToSpeechAvailable,
         selected = text.isNotBlank(),
         supportingText =

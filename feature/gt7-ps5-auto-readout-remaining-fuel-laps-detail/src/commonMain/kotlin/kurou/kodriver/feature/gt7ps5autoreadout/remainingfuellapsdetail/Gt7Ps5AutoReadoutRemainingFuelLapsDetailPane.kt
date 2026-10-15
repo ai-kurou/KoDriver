@@ -24,10 +24,12 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.TextInsertState
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberPendingThreshold
+import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_MAX
@@ -179,6 +181,7 @@ private fun RemainingFuelLapsReadoutField(
 ) {
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
+    val insertState = rememberTextInsertState()
     val changeText: (String) -> Unit = {
         textState.change(it)
         onTextChanged(it)
@@ -190,6 +193,7 @@ private fun RemainingFuelLapsReadoutField(
         isTextToSpeechAvailable = available,
         onTextChanged = changeText,
         onPreviewClick = onPreviewClick,
+        insertState = insertState,
         unknownPlaceholders =
             if (withPlaceholder) {
                 findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders(currentText).joinToString("、")
@@ -205,9 +209,7 @@ private fun RemainingFuelLapsReadoutField(
     ) {
         AssistChip(
             onClick = {
-                changeText(
-                    currentText + GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER,
-                )
+                insertState.insert(GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER)
             },
             label = { Text(stringResource(Res.string.remaining_fuel_laps_laps_insert)) },
             enabled =
@@ -234,6 +236,7 @@ private fun ReadoutTextField(
     isTextToSpeechAvailable: Boolean,
     onTextChanged: (String) -> Unit,
     onPreviewClick: (String) -> Unit,
+    insertState: TextInsertState,
     unknownPlaceholders: String = "",
 ) {
     DetailPaneLabeledTextField(
@@ -245,6 +248,7 @@ private fun ReadoutTextField(
         maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
         onValueChangeFinished = onTextChanged,
         onPreviewClick = onPreviewClick,
+        insertState = insertState,
         enabled = isTextToSpeechAvailable,
         selected = text.isNotBlank(),
         supportingText =

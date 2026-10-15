@@ -20,7 +20,9 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.text.TextRange
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
@@ -33,6 +35,28 @@ import kotlin.test.assertEquals
 class AceWindowsAutoReadoutTyreTemperatureDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `過熱文言の中間のカーソル位置にcelsiusを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                AceWindowsAutoReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        AceWindowsAutoReadoutTyreTemperatureDetailUiState(
+                            overheatReadoutText = "前半後半",
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onOverheatReadoutTextChanged = { changed += it },
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction() and hasText("前半後半")).performTextInputSelection(TextRange(2))
+        rule.onNodeWithText("{celsius}を挿入").performClick()
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("前半{celsius}後半")).assertExists()
+        assertEquals(listOf("前半{celsius}後半"), changed)
+    }
 
     @Test
     fun `タイトルと説明文が表示される`() {
@@ -257,6 +281,7 @@ class AceWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             }
         }
         rule.onNodeWithText("{celsius}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
         rule.onNodeWithText("{celsius}を挿入").assertIsNotEnabled()
         assertEquals(listOf(text + ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER), changes)
         rule.onNode(hasSetTextAction() and hasText(changes.single())).assertExists()

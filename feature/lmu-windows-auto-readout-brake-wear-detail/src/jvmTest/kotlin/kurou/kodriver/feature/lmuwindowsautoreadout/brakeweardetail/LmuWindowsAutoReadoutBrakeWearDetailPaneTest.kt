@@ -23,7 +23,9 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -39,6 +41,25 @@ private const val DEFAULT_TEXT = LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 class LmuWindowsAutoReadoutBrakeWearDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `文言の中間のカーソル位置にpercentを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutBrakeWearDetailPaneContent(
+                    uiState = LmuWindowsAutoReadoutBrakeWearDetailUiState(isTextToSpeechAvailable = true),
+                    onReadoutTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "前半後半"
+        rule.onNode(hasSetTextAction()).performTextReplacement(text)
+        rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(2))
+        rule.onNodeWithText("{percent}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
+        assertEquals(listOf(text, "前半{percent}後半"), changed)
+    }
 
     @Test
     fun `タイトルと入力欄の間に4dpを確保する`() {
@@ -208,6 +229,7 @@ class LmuWindowsAutoReadoutBrakeWearDetailPaneTest {
         val text = "あ".repeat(21)
         rule.onNode(hasSetTextAction()).performTextReplacement(text)
         rule.onNodeWithText("{percent}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
         assertEquals(listOf(text, text + "{percent}"), changed)
         rule.onNodeWithText("{percent}を挿入").assertIsNotEnabled()
     }

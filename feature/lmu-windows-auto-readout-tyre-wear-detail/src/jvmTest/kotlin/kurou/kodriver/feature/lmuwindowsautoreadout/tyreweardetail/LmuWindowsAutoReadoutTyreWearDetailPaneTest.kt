@@ -19,7 +19,9 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.text.TextRange
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import org.junit.Rule
@@ -28,9 +30,29 @@ import kotlin.test.assertEquals
 
 private const val DEFAULT_TEXT = LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
 
+@Suppress("TooManyFunctions")
 class LmuWindowsAutoReadoutTyreWearDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `文言の中間のカーソル位置にpercentを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutTyreWearDetailPaneContent(
+                    uiState = LmuWindowsAutoReadoutTyreWearDetailUiState(isTextToSpeechAvailable = true),
+                    onReadoutTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "前半後半"
+        rule.onNode(hasSetTextAction()).performTextReplacement(text)
+        rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(2))
+        rule.onNodeWithText("{percent}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
+        assertEquals(listOf(text, "前半{percent}後半"), changed)
+    }
 
     @Test
     fun `説明文が表示される`() {
@@ -150,6 +172,7 @@ class LmuWindowsAutoReadoutTyreWearDetailPaneTest {
         val text = "あ".repeat(21)
         rule.onNode(hasSetTextAction()).performTextReplacement(text)
         rule.onNodeWithText("{percent}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
         assertEquals(listOf(text, text + "{percent}"), changed)
         rule.onNodeWithText("{percent}を挿入").assertIsNotEnabled()
     }

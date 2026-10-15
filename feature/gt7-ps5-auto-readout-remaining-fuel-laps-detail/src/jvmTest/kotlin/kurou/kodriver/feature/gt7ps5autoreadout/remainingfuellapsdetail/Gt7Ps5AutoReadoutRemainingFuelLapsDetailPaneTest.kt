@@ -24,7 +24,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.text.TextRange
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import org.junit.Rule
@@ -33,9 +35,29 @@ import kotlin.test.assertEquals
 
 private const val DEFAULT_TEXT = GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 
+@Suppress("TooManyFunctions")
 class Gt7Ps5AutoReadoutRemainingFuelLapsDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `文言の中間のカーソル位置にlapsを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                Gt7Ps5AutoReadoutRemainingFuelLapsDetailPaneContent(
+                    uiState = Gt7Ps5AutoReadoutRemainingFuelLapsDetailUiState(isTextToSpeechAvailable = true),
+                    onReadoutTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "前半後半"
+        rule.onAllNodes(hasSetTextAction())[0].performTextReplacement(text)
+        rule.onAllNodes(hasSetTextAction())[0].performTextInputSelection(TextRange(2))
+        rule.onNodeWithText("{laps}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
+        assertEquals(listOf(text, "前半{laps}後半"), changed)
+    }
 
     @Test
     fun `説明文が表示される`() {
@@ -170,6 +192,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailPaneTest {
         val text = "あ".repeat(24)
         rule.onAllNodes(hasSetTextAction())[0].performTextReplacement(text)
         rule.onNodeWithText("{laps}を挿入").assertIsEnabled().performClick()
+        rule.waitForIdle()
         assertEquals(listOf(text, text + "{laps}"), changed)
         rule.onNodeWithText("{laps}を挿入").assertIsNotEnabled()
     }

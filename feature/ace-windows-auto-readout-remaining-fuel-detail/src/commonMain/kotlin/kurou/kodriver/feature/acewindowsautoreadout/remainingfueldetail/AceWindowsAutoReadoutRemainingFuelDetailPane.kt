@@ -29,6 +29,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.core.designsystem.rememberPendingText
+import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
@@ -149,6 +150,7 @@ private fun RemainingFuelReadoutField(
 ) {
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
+    val insertState = rememberTextInsertState()
     val changeText: (String) -> Unit = {
         textState.change(it)
         onTextChanged(it)
@@ -165,6 +167,7 @@ private fun RemainingFuelReadoutField(
             maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
             onValueChangeFinished = changeText,
             onPreviewClick = onPreviewClick,
+            insertState = insertState,
             enabled = available,
             selected = currentText.isNotBlank(),
             supportingText =
@@ -197,7 +200,7 @@ private fun RemainingFuelReadoutField(
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
             AssistChip(
-                onClick = { changeText(currentText + ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER) },
+                onClick = { insertState.insert(ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER) },
                 label = { Text(stringResource(Res.string.remaining_fuel_percent_insert)) },
                 enabled =
                     available &&
