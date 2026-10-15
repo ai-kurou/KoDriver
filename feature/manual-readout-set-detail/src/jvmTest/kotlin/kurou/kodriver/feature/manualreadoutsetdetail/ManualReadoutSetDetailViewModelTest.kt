@@ -155,8 +155,29 @@ class ManualReadoutSetDetailViewModelTest {
                 sets.value = listOf(selected)
                 vm.addItem(key)
                 assertEquals(selected, sets.value.single())
-                verify(exactly = 8) { repository.observeSets() }
+                verify(exactly = 9) { repository.observeSets() }
                 coVerify(exactly = 1) { repository.updateSet(moved) }
+                confirmVerified(repository)
+            } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `選べなくなった保存済み項目も削除して上限枠を空けられる`() =
+        runTest(dispatcher) {
+            val unknownKeys = List(MANUAL_READOUT_SET_ITEM_MAX) { "UNKNOWN$it" }
+            val full = ManualReadoutSet("target", unknownKeys)
+            val removed = full.copy(itemKeys = unknownKeys.drop(1))
+            val sets = MutableStateFlow(listOf(full))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(removed) } answers { sets.value = listOf(removed) }
+            val vm = viewModel()
+            try {
+                vm.removeItem(unknownKeys[0])
+                assertEquals(removed, sets.value.single())
+                verify(exactly = 2) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(removed) }
                 confirmVerified(repository)
             } finally {
                 vm.viewModelScope.cancel()

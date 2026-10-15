@@ -33,6 +33,8 @@
     <string name="manual_readout_empty_hint">読み上げたい項目を追加してください</string>
     <string name="manual_readout_remove_item">%1$sを削除</string>
     <string name="manual_readout_drag_item">%1$sを並べ替え</string>
+    <string name="manual_readout_move_up">上へ移動</string>
+    <string name="manual_readout_move_down">下へ移動</string>
     <string name="manual_readout_item_limit">1セットに追加できる項目は%1$dつまでです</string>
     <string name="manual_readout_preview">プレビュー</string>
     <string name="manual_readout_preview_play">プレビューを再生</string>

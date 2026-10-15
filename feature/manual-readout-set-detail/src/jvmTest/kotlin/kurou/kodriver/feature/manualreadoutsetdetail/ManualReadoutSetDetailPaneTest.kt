@@ -2,7 +2,9 @@ package kurou.kodriver.feature.manualreadoutsetdetail
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasSetTextAction
@@ -341,5 +343,36 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("{percent} を挿入").assertIsNotEnabled()
         rule.onNode(hasSetTextAction()).performTextInputSelection(TextRange(0, 9))
         rule.onNodeWithText("{percent} を挿入").assertIsEnabled()
+    }
+
+    @Test
+    fun `ドラッグ以外に上下移動のアクセシビリティ操作で並べ替えられる`() {
+        val keys = listOf("A", "B", "C")
+        val moves = mutableListOf<Pair<Int, Int>>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState =
+                        ManualReadoutSetDetailUiState(
+                            setNumber = 1,
+                            availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
+                            selectedItemKeys = keys,
+                        ),
+                    onAddItem = {},
+                    onDelete = {},
+                    onMoveItem = { from, to -> moves.add(from to to) },
+                    showHotkey = false,
+                )
+            }
+        }
+        val rows = rule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.CustomActions)).fetchSemanticsNodes()
+        val labels = rows.map { row -> row.config[SemanticsActions.CustomActions].map { it.label } }
+        assertEquals(listOf(listOf("下へ移動"), listOf("上へ移動", "下へ移動"), listOf("上へ移動")), labels)
+        rule.runOnIdle {
+            rows.forEach { row ->
+                row.config[SemanticsActions.CustomActions].forEach { assertEquals(true, it.action()) }
+            }
+        }
+        assertEquals(listOf(0 to 1, 1 to 0, 1 to 2, 2 to 1), moves)
     }
 }

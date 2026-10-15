@@ -27,6 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -43,6 +46,8 @@ import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_energy
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_item_limit
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_items_title
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_move_down
+import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_move_up
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_preview
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_preview_play
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_remove_item
@@ -115,12 +120,17 @@ internal fun ManualReadoutItemsCard(
                     list = uiState.selectedItemKeys,
                     onSettle = onMoveItem,
                     verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
-                ) { _, itemKey, _ ->
+                ) { index, itemKey, _ ->
                     key(itemKey) {
                         ReorderableItem {
                             Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
                                 val name = itemPresentations[itemKey]?.let { stringResource(it.name) } ?: itemKey
-                                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                val moveActions =
+                                    manualReadoutMoveActions(index, uiState.selectedItemKeys.size, onMoveItem)
+                                Row(
+                                    Modifier.fillMaxWidth().semantics { customActions = moveActions },
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
                                     Icon(
                                         Icons.Default.DragIndicator,
                                         stringResource(Res.string.manual_readout_drag_item, name),
@@ -176,6 +186,35 @@ internal fun ManualReadoutItemsCard(
             }
         },
     )
+}
+
+/** ドラッグできない利用者向けに、上下への移動をアクセシビリティ操作として提供する。 */
+@Composable
+private fun manualReadoutMoveActions(
+    index: Int,
+    count: Int,
+    onMoveItem: (Int, Int) -> Unit,
+): List<CustomAccessibilityAction> {
+    val moveUp = stringResource(Res.string.manual_readout_move_up)
+    val moveDown = stringResource(Res.string.manual_readout_move_down)
+    return buildList {
+        if (index > 0) {
+            add(
+                CustomAccessibilityAction(moveUp) {
+                    onMoveItem(index, index - 1)
+                    true
+                },
+            )
+        }
+        if (index < count - 1) {
+            add(
+                CustomAccessibilityAction(moveDown) {
+                    onMoveItem(index, index + 1)
+                    true
+                },
+            )
+        }
+    }
 }
 
 // 追加候補は1セット3件上限の項目一覧のため、ImmutableList化のコストに見合わない。

@@ -114,8 +114,8 @@ internal class ManualReadoutSetDetailViewModel(
         }
     }
 
+    // 保存済みで選べなくなった項目も上限枠を空けられるよう、対応項目かどうかは問わない。
     fun removeItem(itemKey: String) {
-        if (itemKey !in availableItemKeys) return
         mutateItems { keys -> keys.filterNot { it == itemKey } }
     }
 
