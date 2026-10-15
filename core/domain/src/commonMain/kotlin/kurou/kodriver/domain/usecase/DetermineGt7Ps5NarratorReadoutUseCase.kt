@@ -4,7 +4,7 @@ import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
@@ -62,7 +62,7 @@ data class Gt7Ps5NarratorReadoutSettings(
 /** GT7 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
 data class Gt7Ps5NarratorReadoutDecision(
     val state: Gt7Ps5NarratorState,
-    val events: List<SpeechEvent>,
+    val events: List<ReadoutTextEvent>,
 )
 
 /**

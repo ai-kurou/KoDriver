@@ -21,7 +21,7 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
@@ -143,7 +143,7 @@ data class LmuWindowsNarratorReadoutSettings(
 /** LMU 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
 data class LmuWindowsNarratorReadoutDecision(
     val state: LmuWindowsNarratorState,
-    val events: List<SpeechEvent>,
+    val events: List<ReadoutTextEvent>,
 )
 
 /**
@@ -734,7 +734,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         previous: LmuWindowsRaceFlagsData,
         raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
-    ): List<SpeechEvent> =
+    ): List<ReadoutTextEvent> =
         listOfNotNull(
             determineBlueFlagEvent(previous, raceFlags, settings),
             determineYellowFlagEvent(previous, raceFlags, settings),
@@ -746,7 +746,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         previous: LmuWindowsRaceFlagsData,
         raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
-    ): SpeechEvent? {
+    ): ReadoutTextEvent? {
         if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.Flag.SectorYellowFlag)) return null
         val newYellowSector =
             raceFlags.sectorFlags.indices.any { i ->
@@ -760,7 +760,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         previous: LmuWindowsRaceFlagsData,
         raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
-    ): SpeechEvent? =
+    ): ReadoutTextEvent? =
         if (
             settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.Flag.FullCourseYellow) &&
             previous.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
@@ -775,7 +775,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         previous: LmuWindowsRaceFlagsData,
         raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
-    ): SpeechEvent? =
+    ): ReadoutTextEvent? =
         if (
             settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.Flag.RedFlag) &&
             previous.gamePhase != SessionPhase.RED_FLAG &&
@@ -791,7 +791,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         leftAnnounce: Boolean,
         rightAnnounce: Boolean,
         settings: LmuWindowsNarratorReadoutSettings,
-    ): SpeechEvent? {
+    ): ReadoutTextEvent? {
         if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleApproach.Root)) return null
         if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout)) return null
         // mLapNumber は 0 スタート（最初の計測周 = 0、フォーメーションラップは負値の可能性あり）
@@ -807,7 +807,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         leftSustainedAnnounce: Boolean,
         rightSustainedAnnounce: Boolean,
         settings: LmuWindowsNarratorReadoutSettings,
-    ): SpeechEvent? {
+    ): ReadoutTextEvent? {
         if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleApproach.Root)) return null
         if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleApproach.Sustained)) return null
         if (settings.skipFirstLap && settings.currentLap <= 0) return null
@@ -840,7 +840,7 @@ private fun determineBlueFlagEvent(
     previous: LmuWindowsRaceFlagsData,
     raceFlags: LmuWindowsRaceFlagsData,
     settings: LmuWindowsNarratorReadoutSettings,
-): SpeechEvent? =
+): ReadoutTextEvent? =
     if (
         settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.Flag.BlueFlag) &&
         previous.playerFlag != PrimaryFlag.BLUE &&
@@ -1000,13 +1000,13 @@ private enum class ApproachSide {
     RIGHT,
     ;
 
-    fun toSpeechEvent(): SpeechEvent =
+    fun toSpeechEvent(): ReadoutTextEvent =
         when (this) {
             LEFT -> LmuWindowsCarLeft()
             RIGHT -> LmuWindowsCarRight()
         }
 
-    fun toSustainedSpeechEvent(): SpeechEvent =
+    fun toSustainedSpeechEvent(): ReadoutTextEvent =
         when (this) {
             LEFT -> LmuWindowsCarLeftSustained()
             RIGHT -> LmuWindowsCarRightSustained()

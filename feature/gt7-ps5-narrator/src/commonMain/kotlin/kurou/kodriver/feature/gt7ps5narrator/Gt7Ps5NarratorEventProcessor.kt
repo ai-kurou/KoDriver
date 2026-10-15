@@ -68,7 +68,7 @@ internal class Gt7Ps5NarratorEventProcessor(
     suspend fun process(
         sourceKey: ReadoutItemKey,
         telemetry: Gt7Ps5TelemetryData,
-        events: List<SpeechEvent>,
+        events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
@@ -81,7 +81,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
+                    val resolvedEvent = event.withResolvedText(text)
                     speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(

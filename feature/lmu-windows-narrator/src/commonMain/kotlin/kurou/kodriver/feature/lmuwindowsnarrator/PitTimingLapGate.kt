@@ -16,7 +16,7 @@ internal class PitTimingLapGate {
     fun filter(
         currentLap: Int,
         events: List<SpeechEvent>,
-    ): List<SpeechEvent> {
+    ): List<LmuWindowsPitTimingWarning> {
         val event =
             events.filterIsInstance<LmuWindowsPitTimingWarning>().firstOrNull() ?: return emptyList()
         if (currentLap == lastAnnouncedLap && event.laps >= lastAnnouncedLaps) return emptyList()
