@@ -268,7 +268,7 @@ internal class LmuWindowsNarratorEventProcessor(
     }
 
     suspend fun processRemainingVirtualEnergy(
-        remainingVirtualEnergy: LmuWindowsVirtualEnergyData,
+        remainingVirtualEnergy: LmuWindowsVirtualEnergyData?,
         events: List<SpeechEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
@@ -277,16 +277,22 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousRemainingVirtualEnergy
         processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
-            buildTelemetryLogJson(
-                state = logContext.state,
-                previous = previous,
-                current = remainingVirtualEnergy,
-                settings = logContext.settings,
-                observedAtMs = observedAtMs,
-                finalState = logContext.finalState,
-            )
+            if (remainingVirtualEnergy == null) {
+                """{"state":${TelemetryLogJson.encodeToString(logContext.state)},""" +
+                    """"settings":${TelemetryLogJson.encodeToString(logContext.settings)},""" +
+                    """"observedAtMs":$observedAtMs}"""
+            } else {
+                buildTelemetryLogJson(
+                    state = logContext.state,
+                    previous = previous,
+                    current = remainingVirtualEnergy,
+                    settings = logContext.settings,
+                    observedAtMs = observedAtMs,
+                    finalState = logContext.finalState,
+                )
+            }
         }
-        previousRemainingVirtualEnergy = remainingVirtualEnergy
+        if (remainingVirtualEnergy != null) previousRemainingVirtualEnergy = remainingVirtualEnergy
     }
 
     suspend fun processTyreTemperature(

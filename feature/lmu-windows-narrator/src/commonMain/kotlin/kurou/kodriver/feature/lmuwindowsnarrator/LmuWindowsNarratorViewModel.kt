@@ -745,11 +745,14 @@ internal class LmuWindowsNarratorViewModel(
         manual: Boolean = false,
         textTemplate: String? = null,
     ) {
-        val remainingVirtualEnergy = latestVirtualEnergy
-        if (selectedSimulator.value !is Simulator.LmuWindows || remainingVirtualEnergy == null) return
+        if (selectedSimulator.value !is Simulator.LmuWindows) return
         val observedAtMs = currentTimeMs()
-        // セッション終了や切断後は新しい値が流れないため、古い残量は読み上げない。
-        if (observedAtMs - latestVirtualEnergyReceivedAtMs > HOTKEY_VIRTUAL_ENERGY_MAX_AGE_MS) return
+        // セッション終了や切断後の古い残量も、未受信と同じ扱いにする。
+        val remainingVirtualEnergy =
+            latestVirtualEnergy?.takeIf {
+                observedAtMs - latestVirtualEnergyReceivedAtMs <= HOTKEY_VIRTUAL_ENERGY_MAX_AGE_MS
+            }
+        if (!manual && remainingVirtualEnergy == null) return
         val state = narratorState
         val settings = currentSettings
         val decision =
@@ -762,7 +765,7 @@ internal class LmuWindowsNarratorViewModel(
             } else {
                 narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
                     state = state,
-                    data = remainingVirtualEnergy,
+                    data = checkNotNull(remainingVirtualEnergy),
                     settings = settings,
                 )
             }

@@ -2748,6 +2748,25 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動残量はデータ無しなら編集文言に関係なくデータ無しを読み上げ状態を維持する`() {
+        val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
+        for (template in listOf(null, "残量{percent}%", "", "  ")) {
+            val decision =
+                useCase.determineManualRemainingVirtualEnergyCurrentValue(
+                    state = state,
+                    data = null,
+                    textTemplate = template,
+                )
+            assertEquals(state, decision.state)
+            assertEquals(
+                listOf(LmuWindowsRemainingVirtualEnergyCurrentValue(0, "データがありません")),
+                decision.events,
+            )
+            assertEquals("データがありません", decision.events.single().narratedText)
+        }
+    }
+
+    @Test
     fun `手動残量は編集文言のプレースホルダーを置換して状態を維持する`() {
         val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
         listOf("残量{percent}%、{unknown}" to "残量43%、{unknown}", "" to "", "  " to "  ").forEach { (text, expected) ->

@@ -167,6 +167,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsNarratorViewModelTest {
@@ -2656,26 +2658,56 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `データ未受信の手動依頼は何もしない`() =
+    fun `未受信と鮮度切れのタブ依頼とセットホットキーはデータ無しをキューへ追加してログを保存する`() =
         runTest(testDispatcher) {
-            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
-            val spoken = mutableListOf<SpeechEvent>()
-            createViewModel(manualRequestChannel = requests, ttsEngine = mockTts(spoken))
+            val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+            val expected = LmuWindowsRemainingVirtualEnergyCurrentValue(0, "データがありません")
+            val logs = mutableListOf<TelemetryLog>()
+            stubTelemetryLogSave(logs, 5_001L, key)
+            for (stale in listOf(false, true)) {
+                for (hotkey in listOf(false, true)) {
+                    val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+                    val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+                    val presses = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+                    val spoken = mutableListOf<SpeechEvent>()
+                    var fakeTime = 0L
+                    createViewModel(
+                        remainingVirtualEnergyChannel = energy,
+                        manualRequestChannel = requests,
+                        manualHotkeyChannel = presses,
+                        ttsEngine = mockTts(spoken),
+                        queueEnabledOverrides = mapOf(key to false),
+                        currentTimeMs = { fakeTime },
+                    )
+                    if (stale) energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+                    fakeTime = 5_001L
+                    val channel = if (hotkey) presses else requests
+                    channel.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
 
-            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
-
-            assertEquals(emptyList(), spoken)
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) {
-                ttsEngine.speak(
-                    LmuWindowsRemainingVirtualEnergyCurrentValue(
-                        80,
-                        LmuWindowsRemainingVirtualEnergyCurrentValue(80).narratedText,
-                    ),
-                    queue = false,
+                    assertEquals(listOf<SpeechEvent>(expected), spoken)
+                    val log = logs.last()
+                    assertEquals("データがありません", log.narratedText)
+                    assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
+                    assertContains(log.telemetryJson, "\"state\":")
+                    assertContains(log.telemetryJson, "\"settings\":")
+                    assertContains(log.telemetryJson, "\"observedAtMs\":5001")
+                    assertFalse(log.telemetryJson.contains("remainingRatio"))
+                    assertFalse(log.telemetryJson.contains("debugReadout"))
+                }
+            }
+            assertEquals(4, logs.size)
+            verify(exactly = 4) { ttsEngine.speak(expected, queue = true) }
+            coVerify(exactly = 4) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 5_001L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = key,
+                    narratedText = "データがありません",
+                    narrationOutcome = NarrationOutcome.QUEUED,
+                    telemetryJson = withArg { json -> assertTrue(logs.any { it.telemetryJson == json }) },
                 )
             }
-            confirmVerified(ttsEngine)
+            confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
     @Test
@@ -2762,11 +2794,11 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
             selected.update { Simulator.LmuWindows }
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
-            assertEquals(emptyList(), spoken)
+            assertEquals(listOf("データがありません"), spoken.map { it.narratedText })
 
             energy.send(remainingVirtualEnergy(remainingRatio = 0.7))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
-            assertEquals(1, spoken.size)
+            assertEquals(2, spoken.size)
         }
 
     @Test
@@ -2921,7 +2953,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `手動依頼は鮮度の上限までは読み上げ上限を超えたら読み上げない`() =
+    fun `手動依頼は鮮度の上限までは残量を読み上げ上限を超えたらデータ無しを読み上げる`() =
         runTest(testDispatcher) {
             val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
             val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
@@ -2940,7 +2972,8 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(1, spoken.size)
             fakeTime = 5_001L
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
-            assertEquals(1, spoken.size)
+            assertEquals(2, spoken.size)
+            assertEquals("データがありません", spoken.last().narratedText)
         }
 
     // --- ピットタイミング ---
