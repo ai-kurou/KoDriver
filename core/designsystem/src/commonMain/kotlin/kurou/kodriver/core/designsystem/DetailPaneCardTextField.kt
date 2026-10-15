@@ -18,14 +18,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -51,6 +55,8 @@ import androidx.compose.ui.unit.dp
  * チップ側と [selected] を排他にして渡すことで、どちらが使われるかを一目で判別できるようにする。
  * [selected] の判定は [onValueChangeFinished] で通知される文字列に基づかせる想定（1文字入力するたびに更新される）。
  *
+ * [insertState] を渡すと、カーソル位置への挿入や選択範囲の置換を要求できる。上限を超える要求は破棄する。
+ *
  * [supportingText] の右側に、入力中の文字数と [maxLength] を「12/30」の形式で常に表示する。
  * [supportingText] がない場合も、文字数カウンターは右端に配置する。
  */
@@ -70,17 +76,41 @@ fun DetailPaneCardTextField(
     defaultValue: String? = null,
     onResetToDefault: (() -> Unit)? = null,
     resetContentDescription: String? = null,
+    insertState: TextInsertState? = null,
 ) {
     val haptic = LocalHapticFeedback.current
     var text by remember(value) { mutableStateOf(value) }
+    var selection by remember { mutableStateOf(TextRange(value.length)) }
+    val fieldValue = TextFieldValue(text, selection)
+    val request = insertState?.request
+    val currentOnValueChangeFinished by rememberUpdatedState(onValueChangeFinished)
+    LaunchedEffect(insertState, request) {
+        if (insertState != null && request != null) {
+            val inserted = insertAtSelection(text, fieldValue.selection, request.text, maxLength)
+            insertState.consume(request)
+            if (inserted != null) {
+                text = inserted.text
+                selection = inserted.selection
+                currentOnValueChangeFinished(text)
+            }
+        }
+    }
     val isResettable = enabled && defaultValue != null && text != defaultValue
     val resetButtonAlpha by animateFloatAsState(targetValue = if (isResettable) 1f else 0f)
 
     TextField(
-        value = text,
+        value = fieldValue,
         onValueChange = { input ->
-            text = input.replace("\n", "").take(maxLength)
-            onValueChangeFinished(text)
+            val textChanged = input.text != text
+            text = input.text.replace("\n", "").take(maxLength)
+            selection =
+                TextRange(
+                    input.selection.start.coerceIn(0, text.length),
+                    input.selection.end.coerceIn(0, text.length),
+                )
+            if (textChanged) {
+                onValueChangeFinished(text)
+            }
         },
         enabled = enabled,
         placeholder = { Text(text = placeholder) },
