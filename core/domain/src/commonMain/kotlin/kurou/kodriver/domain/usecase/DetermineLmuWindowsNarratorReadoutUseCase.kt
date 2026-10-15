@@ -24,6 +24,7 @@ import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
+import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -530,6 +531,19 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             LmuWindowsNarratorReadoutDecision(state = state, events = emptyList())
         }
     }
+
+    /** 手動読み上げの対象項目がないことを読み上げ、警告済み状態を維持する。 */
+    fun determineManualReadoutNoItems(state: LmuWindowsNarratorState): LmuWindowsNarratorReadoutDecision =
+        LmuWindowsNarratorReadoutDecision(
+            state = state,
+            events =
+                listOf(
+                    LmuWindowsRemainingVirtualEnergyCurrentValue(
+                        0,
+                        resolvedText = LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT,
+                    ),
+                ),
+        )
 
     /** 自動読み上げスイッチに関係なく現在の残量（未受信・鮮度切れならデータ無し）を読み上げ、警告済み状態を維持する。 */
     fun determineManualRemainingVirtualEnergyCurrentValue(

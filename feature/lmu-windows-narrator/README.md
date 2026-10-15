@@ -65,7 +65,7 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 同じ UseCase 群の `ObserveManualReadoutSetsUseCase` は `named(Simulator.LmuWindows.id)` の Repository を参照する。
 依頼ごとに保存済みセットを取得し、`setId` に対応するセットの `itemKeys` に
 `LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value` が含まれる場合のみ残量を読み上げる。
-セットが見つからない場合や項目が含まれない場合は何もしない。
+セットが見つからない場合は何もしない。項目が含まれない場合は `determineManualReadoutNoItems` で項目なし文言を読み上げる。
 対象セットの `itemTexts` から文言テンプレートを取得し、未保存なら
 `LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT` を使う。
 手動判定時に `{percent}` を四捨五入した現在残量へ置換し、イベントの `resolvedText` と `narratedText` に反映する。
@@ -75,8 +75,10 @@ F9 と共通の `readRemainingVirtualEnergyCurrentValue` が、最新値と受�
 手動はタブの操作・セットホットキー押下ともに自動読み上げスイッチを無視し、ユーザーのキュー設定に関係なく常にキューの末尾に並ぶ。
 開始音・文言・テレメトリログは既存経路を使い、自動警告の読み上げ済み状態は変えない。
 F9 は従来どおり有効スイッチとキュー設定に従う。
-Android でも WebSocket で受信した値を使う。LMU 選択中の手動依頼は未受信・鮮度切れなら、編集文言に関係なく「データがありません」を開始音付きで読み上げ、常にキュー末尾へ追加しログを保存する。
+Android でも WebSocket で受信した値を使う。LMU 選択中で残量項目を含むセットの手動依頼は未受信・鮮度切れなら、編集文言に関係なく「データがありません」を開始音付きで読み上げ、常にキュー末尾へ追加しログを保存する。
 文言は domain の `LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT` を使う。データ無しの `telemetryJson` はデバッグ未受信時に合わせて状態・設定・観測時刻を記録し、テレメトリ値は含めない。F9 は未受信・鮮度切れなら従来どおり何もしない。
 
 JVM テストで連続依頼・警告状態の維持・未受信・鮮度の境界・宛先と選択中シミュレーターの照合・
 未受信・鮮度切れそれぞれのタブ依頼とセットホットキー押下のデータ無し発話（queue=true）・ログ保存・切り替え後の古い値の破棄・セット別文言・空白文言・F9との分離・タブの操作とセットホットキー押下のキューとログ、Koin の UseCase 群の解決を確認する。
+
+LMU の手動依頼（一覧の ▶・セットホットキー）で、対象セットにバーチャルエナジー残量キーが含まれない場合は、データの有無に関係なく「読み上げる項目がありません」を開始音付きで読み上げる。文言は編集不可の `LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT` を使い、データ無しと同じ経路で常にキュー末尾へ追加してログを保存する。存在しないセット ID は読み上げない。

@@ -2630,31 +2630,95 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `対象セットに残量項目が含まれる場合のみ手動依頼を読み上げる`() =
+    fun `存在しないセットの手動依頼とホットキーは読み上げずログも保存しない`() =
         runTest(testDispatcher) {
-            val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value
-            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
             val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val presses = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
             val spoken = mutableListOf<SpeechEvent>()
             createViewModel(
-                remainingVirtualEnergyChannel = energy,
                 manualRequestChannel = requests,
-                manualSets = listOf(ManualReadoutSet("target", listOf(key)), ManualReadoutSet("empty")),
+                manualHotkeyChannel = presses,
+                manualSets = listOf(ManualReadoutSet("empty")),
                 currentTimeMs = { 123L },
                 ttsEngine = mockTts(spoken),
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false),
             )
-            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
-            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "empty"))
-            assertEquals(emptyList(), spoken)
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "missing"))
+            presses.send(ManualReadoutRequest(Simulator.LmuWindows.id, "missing"))
+
             assertEquals(emptyList(), spoken)
-            stubTelemetryLogSave(mutableListOf(), 123L, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
-            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "target"))
-            assertEquals(
-                listOf(80),
-                spoken.filterIsInstance<LmuWindowsRemainingVirtualEnergyCurrentValue>().map { it.percentage },
-            )
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            coVerify(exactly = 0) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 123L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    narratedText = "読み上げる項目がありません",
+                    narrationOutcome = NarrationOutcome.QUEUED,
+                    telemetryJson = "",
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `項目なしセットのタブ依頼とホットキーはデータの有無に関係なく固定文言をキューへ追加してログを保存する`() =
+        runTest(testDispatcher) {
+            val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+            val expected = LmuWindowsRemainingVirtualEnergyCurrentValue(0, "読み上げる項目がありません")
+            val logs = mutableListOf<TelemetryLog>()
+            stubTelemetryLogSave(logs, 5_001L, key)
+            for (hasData in listOf(false, true)) {
+                for (hotkey in listOf(false, true)) {
+                    val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+                    val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+                    val presses = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+                    val spoken = mutableListOf<SpeechEvent>()
+                    var fakeTime = 0L
+                    createViewModel(
+                        remainingVirtualEnergyChannel = energy,
+                        manualRequestChannel = requests,
+                        manualHotkeyChannel = presses,
+                        manualSets =
+                            listOf(
+                                ManualReadoutSet(
+                                    "set-1",
+                                    emptyList(),
+                                    mapOf(key.value to "編集された残量{percent}%"),
+                                ),
+                            ),
+                        ttsEngine = mockTts(spoken),
+                        queueEnabledOverrides = mapOf(key to false),
+                        currentTimeMs = { fakeTime },
+                    )
+                    fakeTime = 5_001L
+                    if (hasData) energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+                    val channel = if (hotkey) presses else requests
+                    channel.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
+
+                    assertEquals(listOf<SpeechEvent>(expected), spoken)
+                    val log = logs.last()
+                    assertEquals("読み上げる項目がありません", log.narratedText)
+                    assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
+                    assertContains(log.telemetryJson, "\"state\":")
+                    assertContains(log.telemetryJson, "\"settings\":")
+                    assertContains(log.telemetryJson, "\"observedAtMs\":5001")
+                    assertEquals(hasData, log.telemetryJson.contains("remainingRatio"))
+                    assertFalse(log.telemetryJson.contains("debugReadout"))
+                }
+            }
+            assertEquals(4, logs.size)
+            verify(exactly = 4) { ttsEngine.speak(expected, queue = true) }
+            coVerify(exactly = 4) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 5_001L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = key,
+                    narratedText = "読み上げる項目がありません",
+                    narrationOutcome = NarrationOutcome.QUEUED,
+                    telemetryJson = withArg { json -> assertTrue(logs.any { it.telemetryJson == json }) },
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
     @Test
