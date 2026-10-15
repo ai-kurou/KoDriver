@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.manualreadoutlist
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,10 +20,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -31,6 +37,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,6 +55,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_description
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_help_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_title
@@ -59,6 +68,11 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_readout_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_readout_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_add_set
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_cancel
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete_body
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete_confirm
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_empty_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_item_count
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_no_items
@@ -84,6 +98,7 @@ fun ManualReadoutListPane(
         simulatorName = simulatorName,
         onAddSet = viewModel::addSet,
         onReadSet = viewModel::readSet,
+        onDeleteSet = viewModel::deleteSet,
         onSetClick = onSetClick,
         modifier = modifier,
     )
@@ -101,6 +116,7 @@ internal fun ManualReadoutListPaneContent(
     onReadSet: (String) -> Unit,
     modifier: Modifier = Modifier,
     onSetClick: (String) -> Unit = {},
+    onDeleteSet: (String) -> Unit = {},
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
@@ -129,6 +145,7 @@ internal fun ManualReadoutListPaneContent(
                             canReadSet = uiState.canReadSets,
                             onReadSet = { onReadSet(set.id) },
                             onSetClick = { onSetClick(set.id) },
+                            onDeleteSet = { onDeleteSet(set.id) },
                         )
                     }
                 }
@@ -149,6 +166,7 @@ internal fun ManualReadoutListPaneContent(
 }
 
 /** セット番号と項目数を表示する。LMU のセットは読み上げボタンから依頼を送る。 */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ManualReadoutSetRow(
     setNumber: Int,
@@ -156,19 +174,48 @@ private fun ManualReadoutSetRow(
     canReadSet: Boolean,
     onReadSet: () -> Unit,
     onSetClick: () -> Unit,
+    onDeleteSet: () -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
+    var menuExpanded by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    if (showDeleteDialog) {
+        ManualReadoutListDeleteConfirmDialog(
+            onConfirm = {
+                showDeleteDialog = false
+                onDeleteSet()
+            },
+            onDismiss = { showDeleteDialog = false },
+        )
+    }
     ElevatedCard(
-        onClick = {
-            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-            onSetClick()
-        },
         modifier =
             Modifier
                 .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .combinedClickable(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onSetClick()
+                    },
+                    onLongClick = { menuExpanded = true },
+                ),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
+        DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+            DropdownMenuItem(
+                text = {
+                    Text(stringResource(Res.string.manual_readout_list_delete), color = MaterialTheme.colorScheme.error)
+                },
+                leadingIcon = {
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                },
+                onClick = {
+                    menuExpanded = false
+                    showDeleteDialog = true
+                },
+            )
+        }
         Row(
             modifier =
                 Modifier
@@ -210,6 +257,30 @@ private fun ManualReadoutSetRow(
             }
         }
     }
+}
+
+/** 一覧からのセット削除を確認する。 */
+@Composable
+internal fun ManualReadoutListDeleteConfirmDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.manual_readout_list_delete_title)) },
+        text = { Text(stringResource(Res.string.manual_readout_list_delete_body)) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text = stringResource(Res.string.manual_readout_list_delete_confirm),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.manual_readout_list_cancel)) }
+        },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -282,6 +353,11 @@ internal fun ManualReadoutHintSheetContent(
             icon = Icons.Outlined.Info,
             title = stringResource(Res.string.manual_readout_hint_no_data_title),
             description = stringResource(Res.string.manual_readout_hint_no_data_description),
+        )
+        ManualReadoutHintSheetRow(
+            icon = Icons.Filled.Delete,
+            title = stringResource(Res.string.manual_readout_hint_delete_title),
+            description = stringResource(Res.string.manual_readout_hint_delete_description),
         )
         if (showHotkeyHint) {
             ManualReadoutHintSheetRow(

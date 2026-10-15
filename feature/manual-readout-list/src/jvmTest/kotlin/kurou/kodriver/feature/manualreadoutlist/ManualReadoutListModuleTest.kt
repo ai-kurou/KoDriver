@@ -88,6 +88,9 @@ class ManualReadoutListModuleTest {
                         coEvery { requestRepository.request(request) } returns Unit
                         viewModel.readSet(simulator.id)
                         coVerify(exactly = 1) { requestRepository.request(request) }
+                        coEvery { repository.deleteSet(simulator.id) } returns Unit
+                        viewModel.deleteSet(simulator.id)
+                        coVerify(exactly = 1) { repository.deleteSet(simulator.id) }
                         viewModel.addSet()
                         val saved = addedSet.captured
                         assertEquals(emptyList(), saved.itemKeys)

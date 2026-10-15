@@ -56,6 +56,7 @@ fun ManualReadoutContent(
         simulatorName = simulatorName,
         onAddSet = viewModel::addSet,
         onReadSet = viewModel::readSet,
+        onDeleteSet = viewModel::deleteSet,
         onSetClick = viewModel::selectSet,
         onClearSelectedSet = viewModel::clearSelectedSet,
         modifier = modifier,
@@ -74,6 +75,7 @@ internal fun ManualReadoutContentScaffold(
     onSetClick: (String) -> Unit,
     onClearSelectedSet: () -> Unit,
     modifier: Modifier = Modifier,
+    onDeleteSet: (String) -> Unit = {},
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
@@ -174,6 +176,7 @@ internal fun ManualReadoutContentScaffold(
                     simulatorName = simulatorName,
                     onAddSet = onAddSet,
                     onReadSet = onReadSet,
+                    onDeleteSet = onDeleteSet,
                     onSetClick = onSetClick,
                 )
             },

@@ -11,6 +11,7 @@ import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
+import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
 import kotlin.uuid.ExperimentalUuidApi
@@ -23,6 +24,7 @@ internal class ManualReadoutListViewModel(
     private val requestManualReadout: RequestManualReadoutUseCase,
     observeManualReadoutSets: ObserveManualReadoutSetsUseCase,
     private val addManualReadoutSet: AddManualReadoutSetUseCase,
+    private val deleteManualReadoutSet: DeleteManualReadoutSetUseCase,
     private val generateSetId: () -> String = { Uuid.random().toString() },
 ) : ViewModel() {
     private val canReadSets = simulatorId == Simulator.LmuWindows.id
@@ -52,6 +54,10 @@ internal class ManualReadoutListViewModel(
 
     fun readSet(setId: String) {
         viewModelScope.launch { requestManualReadout(ManualReadoutRequest(simulatorId, setId)) }
+    }
+
+    fun deleteSet(setId: String) {
+        viewModelScope.launch { deleteManualReadoutSet(setId) }
     }
 
     fun addSet() {
