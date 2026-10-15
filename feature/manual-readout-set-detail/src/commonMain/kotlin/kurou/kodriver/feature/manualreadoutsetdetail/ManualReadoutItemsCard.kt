@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
@@ -165,7 +166,11 @@ internal fun ManualReadoutItemsCard(
                     val preview = manualReadoutPreview(uiState)
                     HorizontalDivider()
                     if (preview.isNotBlank()) {
-                        Text(preview, style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            preview,
+                            modifier = Modifier.testTag("manual_readout_preview_sentence"),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
                     }
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                         FilledTonalButton(

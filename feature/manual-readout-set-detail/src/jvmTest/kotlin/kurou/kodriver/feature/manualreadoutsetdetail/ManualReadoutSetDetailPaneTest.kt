@@ -7,6 +7,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -55,9 +56,12 @@ class ManualReadoutSetDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("バーチャルエナジー残量は50パーセント").assertExists()
+        rule
+            .onNodeWithTag("manual_readout_preview_sentence")
+            .assertExists()
+            .assertTextEquals("バーチャルエナジー残量は50パーセント")
         rule.runOnIdle { state.value = state.value.copy(itemTexts = mapOf(key to "")) }
-        rule.onNodeWithText("バーチャルエナジー残量は50パーセント").assertDoesNotExist()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertDoesNotExist()
     }
 
     @Test
@@ -73,7 +77,7 @@ class ManualReadoutSetDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("バーチャルエナジー残量は50パーセント").assertDoesNotExist()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertDoesNotExist()
     }
 
     @Test
