@@ -171,7 +171,7 @@ class ManualReadoutListPaneTest {
 
         rule.onNodeWithText("ホットキー").assertIsDisplayed()
         rule
-            .onNodeWithText("Ctrl + Alt + Shift と数字または英字キーの組み合わせで、セットを読み上げられます。")
+            .onNodeWithText("選んだ修飾キーと数字または英字キーの組み合わせで、セットを読み上げられます。")
             .assertIsDisplayed()
     }
 
@@ -188,7 +188,7 @@ class ManualReadoutListPaneTest {
         rule.onNodeWithText("データがないとき").assertIsDisplayed()
         rule.onNodeWithText("ホットキー").assertDoesNotExist()
         rule
-            .onNodeWithText("Ctrl + Alt + Shift と数字または英字キーの組み合わせで、セットを読み上げられます。")
+            .onNodeWithText("選んだ修飾キーと数字または英字キーの組み合わせで、セットを読み上げられます。")
             .assertDoesNotExist()
     }
 

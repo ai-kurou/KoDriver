@@ -2,12 +2,21 @@ package kurou.kodriver.feature.manualreadoutsetdetail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -18,6 +27,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_clear
 import kurou.kodriver.feature.manualreadoutsetdetail.generated.resources.manual_readout_hotkey_debug
@@ -38,32 +48,36 @@ internal fun ManualReadoutHotkeyCard(
     onAssign: (Int) -> Unit,
     onClear: () -> Unit,
     onRetry: () -> Unit,
+    onSelectModifiers: (ManualReadoutHotkeyModifiers) -> Unit,
 ) {
     DetailPaneCard(
         title = stringResource(Res.string.manual_readout_hotkey_title),
         modifier = Modifier.testTag("manual_readout_hotkey_card"),
         bottomContent = {
             Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
-                OutlinedTextField(
-                    value =
-                        state.hotkeyVirtualKeyCode?.let { manualReadoutHotkeyDisplayName(it) }
-                            ?: stringResource(Res.string.manual_readout_hotkey_none),
-                    onValueChange = {},
-                    readOnly = true,
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .testTag("manual_readout_hotkey_key")
-                            .onPreviewKeyEvent { event ->
-                                val code = manualReadoutHotkeyVirtualKeyCode(event.key)
-                                if (event.type == KeyEventType.KeyDown && code != null) {
-                                    onAssign(code)
-                                    true
-                                } else {
-                                    false
-                                }
-                            },
-                )
+                Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
+                    ManualReadoutHotkeyModifiersDropdown(state.hotkeyModifiers, onSelectModifiers)
+                    OutlinedTextField(
+                        value =
+                            state.hotkeyVirtualKeyCode?.let { manualReadoutHotkeyDisplayName(it) }
+                                ?: stringResource(Res.string.manual_readout_hotkey_none),
+                        onValueChange = {},
+                        readOnly = true,
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .testTag("manual_readout_hotkey_key")
+                                .onPreviewKeyEvent { event ->
+                                    val code = manualReadoutHotkeyVirtualKeyCode(event.key)
+                                    if (event.type == KeyEventType.KeyDown && code != null) {
+                                        onAssign(code)
+                                        true
+                                    } else {
+                                        false
+                                    }
+                                },
+                    )
+                }
                 val conflictText =
                     when (val conflict = state.hotkeyConflict) {
                         is ManualReadoutHotkeyConflict.OtherSet -> {
@@ -126,6 +140,39 @@ private fun ManualReadoutHotkeyRegistration(
     if (registration is HotkeyRegistrationState.Conflict || registration is HotkeyRegistrationState.Failed) {
         TextButton(onClick = onRetry) {
             Text(stringResource(Res.string.manual_readout_hotkey_registration_retry))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ManualReadoutHotkeyModifiersDropdown(
+    modifiers: ManualReadoutHotkeyModifiers,
+    onSelect: (ManualReadoutHotkeyModifiers) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+        OutlinedTextField(
+            value = modifiers.displayName(),
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            modifier =
+                Modifier
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                    .testTag("manual_readout_hotkey_modifiers"),
+        )
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            ManualReadoutHotkeyModifiers.entries.forEach { value ->
+                DropdownMenuItem(
+                    text = { Text(value.displayName()) },
+                    modifier = Modifier.testTag("manual_readout_hotkey_modifiers_${value.name}"),
+                    onClick = {
+                        onSelect(value)
+                        expanded = false
+                    },
+                )
+            }
         }
     }
 }

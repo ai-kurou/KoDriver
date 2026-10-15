@@ -33,6 +33,7 @@ class ManualReadoutSetPreferencesSerializerTest {
                                 listOf("SESSION", "SIMULATOR", "BRAKE_WEAR"),
                                 mapOf("SESSION" to "残量{percent}%", "UNKNOWN" to ""),
                                 hotkeyVirtualKeyCode = 0x41,
+                                hotkeyModifiers = 3,
                             ),
                             ManualReadoutSetPreference(),
                         ),
@@ -83,6 +84,7 @@ class ManualReadoutSetPreferencesSerializerTest {
             assertEquals(listOf(ManualReadoutSetPreference("set-1", listOf("ENERGY"))), restored.sets)
             assertEquals(emptyMap(), restored.sets.single().itemTexts)
             assertEquals(null, restored.sets.single().hotkeyVirtualKeyCode)
+            assertEquals(null, restored.sets.single().hotkeyModifiers)
         }
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -100,6 +102,21 @@ class ManualReadoutSetPreferencesSerializerTest {
                 restored.sets,
             )
             assertEquals(null, restored.sets.single().hotkeyVirtualKeyCode)
+            assertEquals(null, restored.sets.single().hotkeyModifiers)
+        }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    @Test
+    fun `修飾キーフィールドのないホットキー保存済み旧データも読み出せる`() =
+        runTest {
+            val legacy =
+                LegacyManualReadoutSetPreferences(
+                    listOf(LegacyManualReadoutSetPreference("target", emptyList(), emptyMap(), 0x41)),
+                )
+            val bytes = ProtoBuf.encodeToByteArray(LegacyManualReadoutSetPreferences.serializer(), legacy)
+            val restored = ManualReadoutSetPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
+            assertEquals(listOf(ManualReadoutSetPreference("target", hotkeyVirtualKeyCode = 0x41)), restored.sets)
+            assertEquals(null, restored.sets.single().hotkeyModifiers)
         }
 }
 
@@ -115,4 +132,5 @@ private data class LegacyManualReadoutSetPreference(
     @ProtoNumber(1) val id: String,
     @ProtoNumber(2) val itemKeys: List<String>,
     @ProtoNumber(3) val itemTexts: Map<String, String>,
+    @ProtoNumber(4) val hotkeyVirtualKeyCode: Int? = null,
 )

@@ -17,4 +17,5 @@ internal data class ManualReadoutSetPreference(
     @ProtoNumber(2) val itemKeys: List<String> = emptyList(),
     @ProtoNumber(3) val itemTexts: Map<String, String> = emptyMap(),
     @ProtoNumber(4) val hotkeyVirtualKeyCode: Int? = null,
+    @ProtoNumber(5) val hotkeyModifiers: Int? = null,
 )

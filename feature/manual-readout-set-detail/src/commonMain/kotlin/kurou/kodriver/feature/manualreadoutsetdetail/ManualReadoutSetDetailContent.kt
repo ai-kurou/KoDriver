@@ -30,6 +30,7 @@ import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
 import kurou.kodriver.domain.model.manualReadoutItemTextDefault
@@ -75,6 +76,7 @@ fun ManualReadoutSetDetailContent(
     ManualReadoutSetDetailPane(
         uiState = uiState,
         onAssignHotkey = viewModel::assignHotkey,
+        onSelectModifiers = viewModel::selectHotkeyModifiers,
         onClearHotkey = viewModel::clearHotkey,
         onRetryHotkeyRegistration = viewModel::onRetryHotkeyRegistration,
         showHotkey = showHotkey,
@@ -96,6 +98,7 @@ internal fun ManualReadoutSetDetailPane(
     onBack: () -> Unit = {},
     onItemTextChanged: (String, String) -> Unit = { _, _ -> },
     onAssignHotkey: (Int) -> Unit = {},
+    onSelectModifiers: (ManualReadoutHotkeyModifiers) -> Unit = {},
     onClearHotkey: () -> Unit = {},
     onRetryHotkeyRegistration: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -151,7 +154,13 @@ internal fun ManualReadoutSetDetailPane(
                     }
                 }
                 if (showHotkey) {
-                    ManualReadoutHotkeyCard(uiState, onAssignHotkey, onClearHotkey, onRetryHotkeyRegistration)
+                    ManualReadoutHotkeyCard(
+                        uiState,
+                        onAssignHotkey,
+                        onClearHotkey,
+                        onRetryHotkeyRegistration,
+                        onSelectModifiers,
+                    )
                 }
                 TextButton(onClick = { showDeleteDialog = true }) {
                     Text(stringResource(Res.string.manual_readout_delete), color = MaterialTheme.colorScheme.error)
