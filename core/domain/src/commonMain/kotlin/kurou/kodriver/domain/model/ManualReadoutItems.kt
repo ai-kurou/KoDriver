@@ -8,6 +8,7 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
                 LmuWindowsReadoutItemKey.TyreWear.Root.value,
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value,
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root.value,
             )
         }
 
@@ -31,6 +32,10 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
             LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT
         }
 
+        LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> {
+            LMU_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT
+        }
+
         else -> {
             ""
         }
@@ -42,12 +47,14 @@ fun manualReadoutItemName(itemKey: String): String =
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> "バーチャルエナジー残量"
         LmuWindowsReadoutItemKey.TyreWear.Root.value -> "タイヤ摩耗"
         LmuWindowsReadoutItemKey.BrakeWear.Root.value -> "ブレーキ残量"
+        LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> "ブレーキ温度"
         else -> ""
     }
 
-/** 鮮度判定済みの手動読み上げ項目。残存率は0〜1で、未受信・鮮度切れは null。 */
+/** 鮮度判定済みの手動読み上げ項目。残存率は0〜1、温度は℃で、未受信・鮮度切れは null。 */
 data class LmuWindowsManualReadoutItem(
     val key: String,
     val textTemplate: String,
     val ratio: Double?,
+    val celsius: Float? = null,
 )

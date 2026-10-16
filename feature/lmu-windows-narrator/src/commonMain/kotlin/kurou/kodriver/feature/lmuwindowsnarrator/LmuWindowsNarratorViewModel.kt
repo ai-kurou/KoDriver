@@ -25,6 +25,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DE
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -576,11 +577,18 @@ internal class LmuWindowsNarratorViewModel(
                 }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
+    private var latestBrakeTemperature: LmuWindowsBrakeTemperatureData? = null
+    private var latestBrakeTemperatureReceivedAtMs: Long = 0L
+
     private val brakeTemperatureFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
+                latestBrakeTemperature = null
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-                brakeTemperatureUseCases.observeBrakeTemperature()
+                brakeTemperatureUseCases.observeBrakeTemperature().onEach {
+                    latestBrakeTemperature = it
+                    latestBrakeTemperatureReceivedAtMs = currentTimeMs()
+                }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private var latestBrakeWear: LmuWindowsBrakeWearRemainingData? = null
@@ -773,10 +781,16 @@ internal class LmuWindowsNarratorViewModel(
             latestBrakeWear?.takeIf {
                 observedAtMs - latestBrakeWearReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
             }
+        val brakeTemperature =
+            latestBrakeTemperature?.takeIf {
+                observedAtMs - latestBrakeTemperatureReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+            }
         val items =
             set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }.map { key ->
                 val ratio =
-                    if (key == LmuWindowsReadoutItemKey.BrakeWear.Root.value) {
+                    if (key == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) {
+                        null
+                    } else if (key == LmuWindowsReadoutItemKey.BrakeWear.Root.value) {
                         brakeWear?.let { data ->
                             data.wheels.values
                                 .minOfOrNull { it.remainingPercent }
@@ -791,7 +805,18 @@ internal class LmuWindowsNarratorViewModel(
                     } else {
                         energy?.remainingRatio?.value
                     }
-                LmuWindowsManualReadoutItem(key, set.itemTexts[key] ?: manualReadoutItemTextDefault(key), ratio)
+                val celsius =
+                    if (key == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) {
+                        brakeTemperature?.let { data -> data.wheels.values.maxOfOrNull { it.value } }
+                    } else {
+                        null
+                    }
+                LmuWindowsManualReadoutItem(
+                    key,
+                    set.itemTexts[key] ?: manualReadoutItemTextDefault(key),
+                    ratio,
+                    celsius,
+                )
             }
         val state = narratorState
         val settings = currentSettings

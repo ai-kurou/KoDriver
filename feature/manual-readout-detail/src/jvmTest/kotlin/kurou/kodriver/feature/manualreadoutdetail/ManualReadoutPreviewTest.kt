@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import org.junit.Test
@@ -7,8 +8,20 @@ import kotlin.test.assertEquals
 
 class ManualReadoutPreviewTest {
     @Test
+    fun `ブレーキ温度の既定文言と編集文言はサンプル値に置換する`() {
+        val key = LmuWindowsReadoutItemKey.BrakeTemperature.Root.value
+        val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
+        assertEquals("ブレーキ温度500℃", manualReadoutPreview(state))
+        assertEquals(
+            "温度500℃ {unknown}",
+            manualReadoutPreview(state.copy(itemTexts = mapOf(key to "温度{celsius}℃ {unknown}"))),
+        )
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+    }
+
+    @Test
     fun `ブレーキ残量の既定文言と編集文言はサンプル値に置換する`() {
-        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).last()
+        val key = LmuWindowsReadoutItemKey.BrakeWear.Root.value
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
         assertEquals("ブレーキ残量50%", manualReadoutPreview(state))
         assertEquals(

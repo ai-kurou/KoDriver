@@ -12,6 +12,8 @@ import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
 import org.junit.Test
@@ -60,7 +62,8 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                                 ManualReadoutSetDetailUiState(
                                     setNumber = 1,
                                     availableItemKeys = keys,
-                                    selectedItemKeys = if (selected) keys else emptyList(),
+                                    selectedItemKeys =
+                                        if (selected) keys.take(MANUAL_READOUT_SET_ITEM_MAX) else emptyList(),
                                     itemTexts = itemTexts,
                                     hotkeyVirtualKeyCode = hotkey?.first,
                                     hotkeyConflict = hotkey?.second,
@@ -90,6 +93,17 @@ class ManualReadoutSetDetailPaneScreenshotTest {
             }
             onNode(isDialog()).captureRoboImage()
         }
+
+    @Test
+    fun `ブレーキ温度の文言欄と連結プレビュー`() =
+        screenshot(
+            listOf(
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root.value,
+                LmuWindowsReadoutItemKey.BrakeWear.Root.value,
+                LmuWindowsReadoutItemKey.TyreWear.Root.value,
+            ),
+            selected = true,
+        )
 
     @Test
     fun `選択項目の既定文言欄`() = screenshot(manualReadoutItemKeys(Simulator.LmuWindows.id), selected = true)

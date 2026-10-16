@@ -21,6 +21,7 @@ import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.text.TextRange
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
@@ -34,6 +35,29 @@ import kotlin.test.assertEquals
 class ManualReadoutSetDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `ブレーキ温度を追加すると既定文言とプレビューを表示する`() {
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    setNumber = 1,
+                    availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
+                ),
+            )
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
+                    onDelete = {},
+                )
+            }
+        }
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("ブレーキ温度").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("ブレーキ温度500℃")
+    }
 
     @Test
     fun `ブレーキ残量を追加すると既定文言とプレビューを表示する`() {
@@ -174,6 +198,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("タイヤ").assertExists()
         rule.onNodeWithText("ブレーキ").assertExists()
         rule.onNodeWithText("ブレーキ残量").assertExists()
+        rule.onNodeWithText("ブレーキ温度").assertExists()
         rule.onNodeWithText("タイヤ摩耗").assertExists()
         rule.onNodeWithText("キャンセル").performClick()
         rule.onNodeWithText("バーチャルエナジー残量").assertDoesNotExist()
@@ -202,6 +227,64 @@ class ManualReadoutSetDetailPaneTest {
         rule.runOnIdle { state.value = ManualReadoutSetDetailUiState(isLoading = false) }
         rule.onNodeWithText("セットが見つかりません").assertExists()
         rule.onNodeWithContentDescription("セットを削除").assertDoesNotExist()
+    }
+
+    @Test
+    fun `温度の文言欄は摂氏の挿入と警告とリセットと文字数上限を扱う`() {
+        val key = LmuWindowsReadoutItemKey.BrakeTemperature.Root.value
+        val defaultText = manualReadoutItemTextDefault(key)
+        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val saved = mutableListOf<Pair<String, String>>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = {
+                        state.value =
+                            state.value.copy(
+                                selectedItemKeys = listOf(it),
+                            )
+                    },
+                    onRemoveItem = { state.value = state.value.copy(selectedItemKeys = emptyList()) },
+                    onDelete = {},
+                    showHotkey = false,
+                    onItemTextChanged = { itemKey, text ->
+                        saved.add(itemKey to text)
+                        state.value = state.value.copy(itemTexts = state.value.itemTexts + (itemKey to text.trim()))
+                    },
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).assertDoesNotExist()
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("ブレーキ温度").performClick()
+        rule.onNodeWithText(defaultText).assertExists()
+        rule.onNodeWithText("未対応のプレースホルダー: {celsius}（そのまま読み上げます）").assertDoesNotExist()
+        rule.onNode(hasSetTextAction()).performTextReplacement("")
+        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
+        rule.onNodeWithText("{celsius} を挿入").performClick()
+        rule.onNodeWithText("{celsius}").assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("温度{other}℃")
+        rule.onNodeWithText("未対応のプレースホルダー: {other}（そのまま読み上げます）").assertExists()
+        rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
+        rule.onNodeWithText(defaultText).assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
+        rule.onNodeWithText("{celsius} を挿入").performClick()
+        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithContentDescription("ブレーキ温度を削除").performClick()
+        rule.onNode(hasSetTextAction()).assertDoesNotExist()
+        rule.runOnIdle {
+            assertEquals(
+                listOf(
+                    key to "",
+                    key to "{celsius}",
+                    key to "温度{other}℃",
+                    key to defaultText,
+                    key to "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH),
+                ),
+                saved,
+            )
+        }
     }
 
     @Test

@@ -33,12 +33,16 @@ import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
+import kurou.kodriver.domain.model.findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_celsius_hint
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_celsius_insert
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_body
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_confirm
@@ -204,6 +208,7 @@ internal fun ManualReadoutItemTextField(
     text: String,
     defaultText: String,
     onTextChanged: (String) -> Unit,
+    isTemperature: Boolean = false,
 ) {
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
@@ -212,7 +217,12 @@ internal fun ManualReadoutItemTextField(
         textState.change(it)
         onTextChanged(it)
     }
-    val unknown = findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders(currentText).joinToString("、")
+    val unknown =
+        if (isTemperature) {
+            findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders(currentText)
+        } else {
+            findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders(currentText)
+        }.joinToString("、")
     Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
         DetailPaneLabeledTextField(
             label = stringResource(Res.string.manual_readout_text_label),
@@ -236,13 +246,38 @@ internal fun ManualReadoutItemTextField(
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
             AssistChip(
-                onClick = { insertState.insert(LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER) },
-                label = { Text(stringResource(Res.string.manual_readout_percent_insert)) },
+                onClick = {
+                    insertState.insert(
+                        if (isTemperature) {
+                            LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
+                        } else {
+                            LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
+                        },
+                    )
+                },
+                label = {
+                    Text(
+                        stringResource(
+                            if (isTemperature) {
+                                Res.string.manual_readout_celsius_insert
+                            } else {
+                                Res.string.manual_readout_percent_insert
+                            },
+                        ),
+                    )
+                },
                 // 押下で入力欄のフォーカスが外れると選択範囲が解除されるため、チップはフォーカスを取らない。
                 modifier = Modifier.focusProperties { canFocus = false },
             )
             Text(
-                text = stringResource(Res.string.manual_readout_percent_hint),
+                text =
+                    stringResource(
+                        if (isTemperature) {
+                            Res.string.manual_readout_celsius_hint
+                        } else {
+                            Res.string.manual_readout_percent_hint
+                        },
+                    ),
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

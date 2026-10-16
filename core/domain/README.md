@@ -86,6 +86,10 @@ LMU のバーチャルエナジー残量・タイヤ摩耗・ブレーキ残量�
 
 手動タイヤ摩耗は4輪の最小残存率×100を四捨五入し、既定文言「タイヤ摩耗残り{percent}%」へ置換する。未受信・鮮度切れ・空の wheels はデータ無しとして扱う。自動警告の閾値・状態は変更しない。
 
-LMU の手動セットは鮮度判定済みの残存率を `LmuWindowsManualReadoutItem` で受け取り、`determineManualReadout` 内で既存の `PERCENTAGE_SCALE` を使って整数%へ四捨五入する。各項目の文を保存順に「、」で連結し、`LmuWindowsManualReadoutText` の1イベントで読み上げる。項目のデータが無い場合は `manualReadoutItemName` の日本語名を使った「<項目名>はデータがありません」を連結する。全項目がデータ無しなら、1項目の場合も含め「データがありません」のみ。対象項目なしは「読み上げる項目がありません」を維持する。
+LMU の手動セットは鮮度判定済みの残存率・摂氏温度を `LmuWindowsManualReadoutItem` で受け取り、`determineManualReadout` 内で残存率は既存の `PERCENTAGE_SCALE` を使って整数%へ、温度は整数℃へ四捨五入する。各項目の文を保存順に「、」で連結し、`LmuWindowsManualReadoutText` の1イベントで読み上げる。項目のデータが無い場合は `manualReadoutItemName` の日本語名を使った「<項目名>はデータがありません」を連結する。全項目がデータ無しなら、1項目の場合も含め「データがありません」のみ。対象項目なしは「読み上げる項目がありません」を維持する。
 
 手動ブレーキ残量は `BrakeWear.Root` に対応し、4輪の `remainingPercent`（0〜100）の最小値を四捨五入して、既定文言「ブレーキ残量{percent}%」へ置換する。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。未受信・受信から5秒超・空の wheels はデータ無しとして扱い、自動警告の前回値・警告済み状態は変更しない。
+
+手動ブレーキ温度は `BrakeTemperature.Root` に対応し、`LmuWindowsBrakeTemperatureData.wheels` の最高温度を四捨五入した整数℃を、既定文言「ブレーキ温度{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱警告の前回値・警告済み状態は変更しない。
+
+`LmuWindowsManualReadoutItem` は従来の `ratio`（0〜1）に加え、既定値 null の `celsius: Float?` を保持する。温度項目では `celsius`、割合項目では `ratio` の有無でデータ無しを判定する。温度の整数化と `{celsius}` 置換も `determineManualReadout` で行い、既存の連結イベントを使う。

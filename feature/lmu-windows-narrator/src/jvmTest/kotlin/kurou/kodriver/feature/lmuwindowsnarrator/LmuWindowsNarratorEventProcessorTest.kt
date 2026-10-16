@@ -242,6 +242,49 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `温度から始まる手動セットはRootキーで一回キューへ追加しログを保存する`() =
+        runTest {
+            val key = LmuWindowsReadoutItemKey.BrakeTemperature.Root
+            val text = "ブレーキ温度501℃、VE50%"
+            val event = LmuWindowsManualReadoutText(key, text)
+            val resolved = event.withResolvedText(text)
+            val json = slot<String>()
+            every { ttsEngine.speak(resolved, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.LmuWindows,
+                    key,
+                    text,
+                    NarrationOutcome.QUEUED,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor().processManualReadout(
+                listOf(event),
+                emptyList(),
+                mapOf(key to true),
+                123L,
+                logContext(),
+            )
+            val root = Json.parseToJsonElement(json.captured).jsonObject
+            assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
+            assertEquals("123", root["observedAtMs"]!!.jsonPrimitive.content)
+            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.LmuWindows,
+                    key,
+                    text,
+                    NarrationOutcome.QUEUED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `手動セットは連結文を一回キューへ追加し状態設定時刻をログに保存する`() =
         runTest {
             val key = LmuWindowsReadoutItemKey.TyreWear.Root
