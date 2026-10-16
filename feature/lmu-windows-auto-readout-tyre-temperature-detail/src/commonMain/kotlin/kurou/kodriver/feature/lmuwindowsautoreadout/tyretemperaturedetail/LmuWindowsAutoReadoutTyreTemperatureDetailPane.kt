@@ -3,7 +3,6 @@ package kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -23,22 +21,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
-import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.PlaceholderReadoutTextField
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.core.designsystem.rememberPendingText
-import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
@@ -158,13 +153,33 @@ internal fun LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    TyreTemperatureOverheatReadoutField(
-                        text = uiState.overheatReadoutText,
-                        available = uiState.isTextToSpeechAvailable,
+                    PlaceholderReadoutTextField(
+                        label = stringResource(Res.string.tyre_temperature_overheat_text_label),
+                        savedText = uiState.overheatReadoutText,
+                        defaultText = LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                        isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                         onTextChanged = onOverheatReadoutTextChanged,
                         onPreviewClick = { text ->
                             val celsius = uiState.selectedVehicleClassHighThresholdCelsius.value
                             onOverheatReadoutTextPreviewClicked(text, celsius)
+                        },
+                        placeholder = LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER,
+                        insertLabel = stringResource(Res.string.tyre_temperature_overheat_celsius_insert),
+                        placeholderHint = stringResource(Res.string.tyre_temperature_overheat_celsius_placeholder_hint),
+                        resetContentDescription = stringResource(Res.string.tyre_temperature_overheat_text_reset),
+                        previewContentDescription = stringResource(Res.string.tyre_temperature_overheat_text_preview),
+                        selectedContentDescription =
+                            stringResource(Res.string.tyre_temperature_overheat_text_selected_icon),
+                        unavailableText = stringResource(Res.string.tyre_temperature_overheat_text_unavailable),
+                        supportingText = stringResource(Res.string.tyre_temperature_overheat_text_supporting),
+                        unknownPlaceholdersText = { currentText ->
+                            findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders(currentText)
+                                .joinToString("、")
+                                .takeIf { it.isNotEmpty() }
+                                ?.let {
+                                    stringResource(Res.string.tyre_temperature_overheat_text_unknown_placeholders, it)
+                                }
                         },
                     )
                     HorizontalDivider(
@@ -250,11 +265,29 @@ internal fun LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    TyreTemperatureColdReadoutField(
-                        text = uiState.coldReadoutText,
-                        available = uiState.isTextToSpeechAvailable,
+                    PlaceholderReadoutTextField(
+                        label = stringResource(Res.string.tyre_temperature_cold_text_label),
+                        savedText = uiState.coldReadoutText,
+                        defaultText = LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT,
+                        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                        isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                         onTextChanged = onColdReadoutTextChanged,
                         onPreviewClick = onLowWarningPreviewClicked,
+                        placeholder = LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER,
+                        insertLabel = stringResource(Res.string.tyre_temperature_cold_celsius_insert),
+                        placeholderHint = stringResource(Res.string.tyre_temperature_cold_celsius_placeholder_hint),
+                        resetContentDescription = stringResource(Res.string.tyre_temperature_cold_text_reset),
+                        previewContentDescription = stringResource(Res.string.tyre_temperature_cold_text_preview),
+                        selectedContentDescription =
+                            stringResource(Res.string.tyre_temperature_cold_text_selected_icon),
+                        unavailableText = stringResource(Res.string.tyre_temperature_cold_text_unavailable),
+                        supportingText = stringResource(Res.string.tyre_temperature_cold_text_supporting),
+                        unknownPlaceholdersText = { currentText ->
+                            findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders(currentText)
+                                .joinToString("、")
+                                .takeIf { it.isNotEmpty() }
+                                ?.let { stringResource(Res.string.tyre_temperature_cold_text_unknown_placeholders, it) }
+                        },
                     )
                     HorizontalDivider(
                         modifier =
@@ -304,155 +337,6 @@ internal fun LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
                 }
             },
         )
-    }
-}
-
-@Composable
-private fun TyreTemperatureOverheatReadoutField(
-    text: String,
-    available: Boolean,
-    onTextChanged: (String) -> Unit,
-    onPreviewClick: (String) -> Unit,
-) {
-    val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
-    val currentText = textState.currentText
-    val insertState = rememberTextInsertState()
-    val changeText: (String) -> Unit = {
-        textState.change(it)
-        onTextChanged(it)
-    }
-    val unknownPlaceholders = findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders(currentText).joinToString("、")
-    Column {
-        val label = stringResource(Res.string.tyre_temperature_overheat_text_label)
-        DetailPaneLabeledTextField(
-            label = label,
-            value = currentText,
-            defaultValue = LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
-            onResetToDefault = { changeText(LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT) },
-            resetContentDescription = stringResource(Res.string.tyre_temperature_overheat_text_reset),
-            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            onValueChangeFinished = changeText,
-            onPreviewClick = onPreviewClick,
-            insertState = insertState,
-            enabled = available,
-            selected = currentText.isNotBlank(),
-            supportingText =
-                when {
-                    !available -> {
-                        stringResource(Res.string.tyre_temperature_overheat_text_unavailable)
-                    }
-
-                    unknownPlaceholders.isNotEmpty() -> {
-                        stringResource(
-                            Res.string.tyre_temperature_overheat_text_unknown_placeholders,
-                            unknownPlaceholders,
-                        )
-                    }
-
-                    currentText.isBlank() -> {
-                        stringResource(Res.string.tyre_temperature_overheat_text_supporting)
-                    }
-
-                    else -> {
-                        null
-                    }
-                },
-            previewContentDescription = stringResource(Res.string.tyre_temperature_overheat_text_preview),
-            selectedContentDescription = stringResource(Res.string.tyre_temperature_overheat_text_selected_icon),
-        )
-        Row(
-            modifier = Modifier.padding(bottom = KoDriverSpacing.small),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-        ) {
-            AssistChip(
-                onClick = { insertState.insert(LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER) },
-                label = { Text(stringResource(Res.string.tyre_temperature_overheat_celsius_insert)) },
-                enabled =
-                    available &&
-                        currentText.length + LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER.length <=
-                        READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            )
-            Text(
-                text = stringResource(Res.string.tyre_temperature_overheat_celsius_placeholder_hint),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
-
-@Composable
-private fun TyreTemperatureColdReadoutField(
-    text: String,
-    available: Boolean,
-    onTextChanged: (String) -> Unit,
-    onPreviewClick: (String) -> Unit,
-) {
-    val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
-    val currentText = textState.currentText
-    val insertState = rememberTextInsertState()
-    val changeText: (String) -> Unit = {
-        textState.change(it)
-        onTextChanged(it)
-    }
-    val unknownPlaceholders = findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders(currentText).joinToString("、")
-    Column {
-        val label = stringResource(Res.string.tyre_temperature_cold_text_label)
-        DetailPaneLabeledTextField(
-            label = label,
-            value = currentText,
-            defaultValue = LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT,
-            onResetToDefault = { changeText(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT) },
-            resetContentDescription = stringResource(Res.string.tyre_temperature_cold_text_reset),
-            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            onValueChangeFinished = changeText,
-            onPreviewClick = onPreviewClick,
-            insertState = insertState,
-            enabled = available,
-            selected = currentText.isNotBlank(),
-            supportingText =
-                when {
-                    !available -> {
-                        stringResource(Res.string.tyre_temperature_cold_text_unavailable)
-                    }
-
-                    unknownPlaceholders.isNotEmpty() -> {
-                        stringResource(Res.string.tyre_temperature_cold_text_unknown_placeholders, unknownPlaceholders)
-                    }
-
-                    currentText.isBlank() -> {
-                        stringResource(Res.string.tyre_temperature_cold_text_supporting)
-                    }
-
-                    else -> {
-                        null
-                    }
-                },
-            previewContentDescription = stringResource(Res.string.tyre_temperature_cold_text_preview),
-            selectedContentDescription = stringResource(Res.string.tyre_temperature_cold_text_selected_icon),
-        )
-        Row(
-            modifier = Modifier.padding(bottom = KoDriverSpacing.small),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-        ) {
-            AssistChip(
-                onClick = { insertState.insert(LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER) },
-                label = { Text(stringResource(Res.string.tyre_temperature_cold_celsius_insert)) },
-                enabled =
-                    available &&
-                        currentText.length + LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER.length <=
-                        READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            )
-            Text(
-                text = stringResource(Res.string.tyre_temperature_cold_celsius_placeholder_hint),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
     }
 }
 
