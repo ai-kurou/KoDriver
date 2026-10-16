@@ -9,6 +9,7 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
                 LmuWindowsReadoutItemKey.TyreWear.Root.value,
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value,
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root.value,
+                LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
             )
         }
 
@@ -36,6 +37,10 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
             LMU_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT
         }
 
+        LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> {
+            LMU_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
+        }
+
         else -> {
             ""
         }
@@ -48,6 +53,7 @@ fun manualReadoutItemName(itemKey: String): String =
         LmuWindowsReadoutItemKey.TyreWear.Root.value -> "タイヤ摩耗"
         LmuWindowsReadoutItemKey.BrakeWear.Root.value -> "ブレーキ残量"
         LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> "ブレーキ温度"
+        LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
         else -> ""
     }
 
@@ -58,3 +64,8 @@ data class LmuWindowsManualReadoutItem(
     val ratio: Double?,
     val celsius: Float? = null,
 )
+
+/** 摂氏温度を使う手動読み上げ項目かを判定する。 */
+fun isLmuWindowsManualReadoutTemperatureItem(itemKey: String): Boolean =
+    itemKey == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value ||
+        itemKey == LmuWindowsReadoutItemKey.TyreTemperature.Root.value

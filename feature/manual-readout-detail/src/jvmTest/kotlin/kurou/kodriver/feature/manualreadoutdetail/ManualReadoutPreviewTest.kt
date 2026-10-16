@@ -8,6 +8,24 @@ import kotlin.test.assertEquals
 
 class ManualReadoutPreviewTest {
     @Test
+    fun `タイヤ温度の既定文言と編集文言はサンプル値に置換する`() {
+        val key = LmuWindowsReadoutItemKey.TyreTemperature.Root.value
+        val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
+        assertEquals("タイヤ温度90℃", manualReadoutPreview(state))
+        assertEquals(
+            "温度90℃ {unknown}",
+            manualReadoutPreview(state.copy(itemTexts = mapOf(key to "温度{celsius}℃ {unknown}"))),
+        )
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+        assertEquals(
+            "タイヤ温度90℃、ブレーキ温度500℃",
+            manualReadoutPreview(
+                state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.BrakeTemperature.Root.value)),
+            ),
+        )
+    }
+
+    @Test
     fun `ブレーキ温度の既定文言と編集文言はサンプル値に置換する`() {
         val key = LmuWindowsReadoutItemKey.BrakeTemperature.Root.value
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))

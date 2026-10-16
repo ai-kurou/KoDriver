@@ -42,7 +42,9 @@ import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
+import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_add_item
@@ -62,6 +64,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_play
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_stop
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remove_item
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_temperature
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_wear
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -89,8 +92,14 @@ private val itemPresentations =
                 Res.string.manual_readout_brake_temperature,
                 Res.string.manual_readout_category_brake,
             ),
+        LmuWindowsReadoutItemKey.TyreTemperature.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_tyre_temperature,
+                Res.string.manual_readout_category_tyre,
+            ),
     )
 
+private const val PREVIEW_TYRE_TEMPERATURE_CELSIUS = 90
 private const val PREVIEW_BRAKE_TEMPERATURE_CELSIUS = 500
 private const val PREVIEW_BRAKE_WEAR_PERCENT = 50
 private const val PREVIEW_TYRE_WEAR_PERCENT = 50
@@ -108,6 +117,10 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
 
                     LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> {
                         formatLmuWindowsBrakeTemperatureReadoutText(it, PREVIEW_BRAKE_TEMPERATURE_CELSIUS)
+                    }
+
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> {
+                        formatLmuWindowsTyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS)
                     }
 
                     LmuWindowsReadoutItemKey.BrakeWear.Root.value -> {
@@ -186,7 +199,7 @@ internal fun ManualReadoutItemsCard(
                                     text = uiState.itemTexts[itemKey] ?: manualReadoutItemTextDefault(itemKey),
                                     defaultText = manualReadoutItemTextDefault(itemKey),
                                     onTextChanged = { onItemTextChanged(itemKey, it) },
-                                    isTemperature = itemKey == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value,
+                                    isTemperature = isLmuWindowsManualReadoutTemperatureItem(itemKey),
                                 )
                             }
                         }

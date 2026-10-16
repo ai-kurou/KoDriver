@@ -92,4 +92,6 @@ LMU の手動セットは鮮度判定済みの残存率・摂氏温度を `LmuWi
 
 手動ブレーキ温度は `BrakeTemperature.Root` に対応し、`LmuWindowsBrakeTemperatureData.wheels` の最高温度を四捨五入した整数℃を、既定文言「ブレーキ温度{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱警告の前回値・警告済み状態は変更しない。
 
+手動タイヤ温度は `TyreTemperature.Root` に対応し、`LmuWindowsTyreCarcassTemperatureData.wheels` の `CelsiusReading.value` の最大カーカス温度を四捨五入した整数℃を、既定文言「タイヤ温度{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱・低温警告の前回値・警告済み状態は変更しない。
+
 `LmuWindowsManualReadoutItem` は従来の `ratio`（0〜1）に加え、既定値 null の `celsius: Float?` を保持する。温度項目では `celsius`、割合項目では `ratio` の有無でデータ無しを判定する。温度の整数化と `{celsius}` 置換も `determineManualReadout` で行い、既存の連結イベントを使う。
