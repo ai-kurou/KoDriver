@@ -777,12 +777,11 @@ internal class LmuWindowsNarratorViewModel(
             set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }.map { key ->
                 val ratio =
                     if (key == LmuWindowsReadoutItemKey.BrakeWear.Root.value) {
-                        brakeWear
-                            ?.wheels
-                            ?.values
-                            ?.minOfOrNull { it.remainingPercent }
-                            ?.toDouble()
-                            ?.div(PERCENTAGE_SCALE)
+                        brakeWear?.let { data ->
+                            data.wheels.values
+                                .minOfOrNull { it.remainingPercent }
+                                ?.let { it / PERCENTAGE_SCALE }
+                        }
                     } else if (key == LmuWindowsReadoutItemKey.TyreWear.Root.value) {
                         tyreWear
                             ?.wheels
