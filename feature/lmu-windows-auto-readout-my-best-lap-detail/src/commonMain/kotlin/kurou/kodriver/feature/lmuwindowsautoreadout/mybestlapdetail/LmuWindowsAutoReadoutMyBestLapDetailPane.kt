@@ -20,10 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
-import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.core.designsystem.TextInsertState
+import kurou.kodriver.core.designsystem.ReadoutTextField
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
@@ -123,9 +122,17 @@ private fun MyBestLapReadoutField(
         onTextChanged = changeText,
         onPreviewClick = onPreviewClick,
         insertState = insertState,
-        unknownPlaceholders =
+        unknownPlaceholdersText =
             findUnknownLmuWindowsMyBestLapReadoutPlaceholders(currentText)
-                .joinToString("、"),
+                .joinToString("、")
+                .takeIf { it.isNotEmpty() }
+                ?.let { stringResource(Res.string.my_best_lap_text_unknown_placeholders, it) },
+        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+        resetContentDescription = stringResource(Res.string.my_best_lap_text_reset_to_default),
+        previewContentDescription = stringResource(Res.string.my_best_lap_text_preview),
+        selectedContentDescription = stringResource(Res.string.my_best_lap_text_selected_icon),
+        unavailableText = stringResource(Res.string.my_best_lap_text_unavailable),
+        supportingText = stringResource(Res.string.my_best_lap_text_supporting),
     )
     Row(
         modifier = Modifier.padding(bottom = KoDriverSpacing.small),
@@ -149,57 +156,6 @@ private fun MyBestLapReadoutField(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
-}
-
-/** 自己ベストラップ更新の文言入力と試聴を提供する。 */
-@Suppress("LongParameterList")
-@Composable
-private fun ReadoutTextField(
-    label: String,
-    text: String,
-    defaultText: String,
-    isTextToSpeechAvailable: Boolean,
-    onTextChanged: (String) -> Unit,
-    onPreviewClick: (String) -> Unit,
-    insertState: TextInsertState,
-    unknownPlaceholders: String = "",
-) {
-    DetailPaneLabeledTextField(
-        label = label,
-        value = text,
-        defaultValue = defaultText,
-        onResetToDefault = { onTextChanged(defaultText) },
-        resetContentDescription = stringResource(Res.string.my_best_lap_text_reset_to_default),
-        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-        onValueChangeFinished = onTextChanged,
-        onPreviewClick = onPreviewClick,
-        insertState = insertState,
-        enabled = isTextToSpeechAvailable,
-        selected = text.isNotBlank(),
-        supportingText =
-            when {
-                !isTextToSpeechAvailable -> {
-                    stringResource(Res.string.my_best_lap_text_unavailable)
-                }
-
-                unknownPlaceholders.isNotEmpty() -> {
-                    stringResource(
-                        Res.string.my_best_lap_text_unknown_placeholders,
-                        unknownPlaceholders,
-                    )
-                }
-
-                text.isNotBlank() -> {
-                    null
-                }
-
-                else -> {
-                    stringResource(Res.string.my_best_lap_text_supporting)
-                }
-            },
-        previewContentDescription = stringResource(Res.string.my_best_lap_text_preview),
-        selectedContentDescription = stringResource(Res.string.my_best_lap_text_selected_icon),
-    )
 }
 
 @Preview(showBackground = true)
