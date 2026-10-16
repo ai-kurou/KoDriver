@@ -69,3 +69,9 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 ## デバッグ読み上げ
 
 `DebugReadoutRequestCard` は項目ドロップダウン、自由文言の OutlinedTextField と読み上げボタンを提供する。domain に依存せずキーの value を文字列で受け取り、既存の `readoutItemDisplayName` で表示する。選択・入力・送信はコールバックで通知し、空白のみではボタンを無効化する。ラベルは composeResources の日本語文字列を使う。
+
+## 削除・リセットの確認ダイアログ
+
+`KoDriverDestructiveConfirmDialog` は、error 色の確認ボタンとキャンセルボタンを持つ共通ダイアログ。`title`・`body`・`confirmLabel`・`dismissLabel` は呼び出し側で `stringResource` を解決して渡す。本文への名前の埋め込みも呼び出し側で行い、feature の文字列リソースを designsystem に持ち込まない。
+
+`onConfirm` は確認ボタン、`onDismiss` はキャンセルボタンとダイアログの閉じる要求を通知する。表示状態と削除・リセット処理は呼び出し側で管理する。

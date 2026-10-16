@@ -8,13 +8,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +29,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
@@ -191,18 +190,13 @@ internal fun ManualReadoutSetDeleteConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(Res.string.manual_readout_delete_title)) },
-        text = { Text(stringResource(Res.string.manual_readout_delete_body)) },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(stringResource(Res.string.manual_readout_delete_confirm), color = MaterialTheme.colorScheme.error)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.manual_readout_cancel)) }
-        },
+    KoDriverDestructiveConfirmDialog(
+        title = stringResource(Res.string.manual_readout_delete_title),
+        body = stringResource(Res.string.manual_readout_delete_body),
+        confirmLabel = stringResource(Res.string.manual_readout_delete_confirm),
+        dismissLabel = stringResource(Res.string.manual_readout_cancel),
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
     )
 }
 
