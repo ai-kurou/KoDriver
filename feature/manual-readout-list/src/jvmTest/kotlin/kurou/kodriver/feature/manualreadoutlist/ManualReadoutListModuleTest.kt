@@ -83,7 +83,7 @@ class ManualReadoutListModuleTest {
                     try {
                         val state = viewModel.uiState.first { it.sets.isNotEmpty() }
                         assertEquals(listOf(ManualReadoutSet(id = simulator.id)), state.sets)
-                        assertEquals(simulator == Simulator.LmuWindows, state.canReadSets)
+                        assertEquals(simulator != Simulator.AceWindows, state.canReadSets)
                         val request = ManualReadoutRequest(simulator.id, simulator.id)
                         coEvery { requestRepository.request(request) } returns Unit
                         viewModel.readSet(simulator.id)

@@ -162,7 +162,7 @@ class ManualReadoutListViewModelTest {
         }
 
     @Test
-    fun `全シミュレーターの初期状態と購読状態はLMUのみ読み上げ可能で依頼に各IDを渡す`() =
+    fun `全シミュレーターの初期状態と購読状態はLMUとGT7のみ読み上げ可能で依頼に各IDを渡す`() =
         runTest(dispatcher) {
             every { repository.observeSets() } returns MutableStateFlow(emptyList())
             Simulator.entries.forEach { simulator ->
@@ -178,7 +178,10 @@ class ManualReadoutListViewModelTest {
                     )
                 val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
                 try {
-                    val expected = ManualReadoutListUiState(canReadSets = simulator == Simulator.LmuWindows)
+                    val expected =
+                        ManualReadoutListUiState(
+                            canReadSets = simulator == Simulator.LmuWindows || simulator == Simulator.Gt7Ps5,
+                        )
                     assertEquals(expected, viewModel.uiState.value)
                     assertEquals(expected, viewModel.uiState.first())
                     viewModel.readSet("set-1")

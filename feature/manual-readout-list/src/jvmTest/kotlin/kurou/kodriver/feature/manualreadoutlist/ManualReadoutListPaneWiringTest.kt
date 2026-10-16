@@ -11,7 +11,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.longClick
@@ -205,7 +204,7 @@ class ManualReadoutListPaneWiringTest {
             rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsEnabled().performClick()
             rule.runOnIdle { simulatorId = Simulator.Gt7Ps5.id }
             rule.waitForIdle()
-            rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsNotEnabled()
+            rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsEnabled()
             rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
             rule.onNodeWithText("gt7_ps5の手動読み上げセットはまだありません").assertDoesNotExist()
             rule.runOnIdle { simulatorId = Simulator.LmuWindows.id }

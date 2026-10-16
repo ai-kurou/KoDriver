@@ -2,6 +2,7 @@ package kurou.kodriver.feature.gt7ps5narrator
 
 import kotlinx.coroutines.flow.first
 import kurou.kodriver.domain.engine.DebugReadoutText
+import kurou.kodriver.domain.engine.Gt7Ps5ManualReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
@@ -62,6 +63,7 @@ internal class Gt7Ps5ReadoutTextSpeaker(
     private suspend fun gt7EventText(event: Gt7Ps5SpeechEvent): ReadoutText {
         val text =
             when (event) {
+                is Gt7Ps5ManualReadoutText -> event.resolvedText ?: event.text
                 is Gt7Ps5RemainingFuelWarning -> remainingFuelText(event)
                 is Gt7Ps5RemainingFuelLapsWarning -> remainingFuelLapsText(event)
                 is Gt7Ps5MyBestLap -> myBestLapText(event)

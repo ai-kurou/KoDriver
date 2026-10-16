@@ -71,3 +71,14 @@ data class Gt7Ps5TyreOverheat(
 
     override fun withResolvedText(text: String): Gt7Ps5TyreOverheat = copy(resolvedText = text)
 }
+
+/** セット内の項目を保存順に連結する手動読み上げイベント。 */
+data class Gt7Ps5ManualReadoutText(
+    override val readoutItemKey: Gt7Ps5ReadoutItemKey,
+    val text: String,
+    override val resolvedText: String? = null,
+) : Gt7Ps5SpeechEvent {
+    override val narratedText = resolvedText ?: text
+
+    override fun withResolvedText(text: String): Gt7Ps5ManualReadoutText = copy(resolvedText = text)
+}

@@ -63,3 +63,16 @@ ViewModel の独立した Job が `ObserveDebugReadoutRequestUseCase` を購読�
 `DebugReadoutText` の本文は入力をそのまま保持する。通常の文言解決・優先度・キュー・開始音・TTS・安全なログ保存の経路を使い、空白または TTS 利用不可の本文は SKIPPED として記録する。ログの JSON は現在の `state`、`settings`、`observedAtMs` と `debugReadout: true` を含む。ログを購読するオーバーレイは通常の最新読み上げログ経路で表示する。
 
 JVM テストで未受信・項目無効の要求の発話とログ保存、別シミュレーター宛ての要求の無視、空白スキップとテンプレートをそのまま TTS に渡すことを検証する。
+
+## 手動読み上げセット
+
+GT7 の手動読み上げは、一覧の ▶ と Windows のセットホットキーからの依頼を合流し、
+`Simulator.Gt7Ps5.id` 宛てで保存済みセットが見つかり、GT7 が選択中の場合だけ処理する。
+`manualReadoutItemKeys` の GT7 対応項目は0件のままなので、テレメトリ未受信でも固定文言
+「読み上げる項目がありません」を `Gt7Ps5ManualReadoutText` の1イベントで読み上げる。
+自動読み上げの設定・判定状態は変更せず、キュー設定に関係なく末尾へ追加し、ログを保存する。
+自動項目キーは追加せず、開始音とログのキーには既存の `RemainingFuel.Root` を使う。
+GT7 の個別項目は別 PR で追加する。
+
+`processManualReadout` のログ JSON は `state`・`settings`・`observedAtMs` の3フィールドで、
+状態と設定は `toRawTelemetryLogJson` を使い、テレメトリの前回値・現在値を含めない。

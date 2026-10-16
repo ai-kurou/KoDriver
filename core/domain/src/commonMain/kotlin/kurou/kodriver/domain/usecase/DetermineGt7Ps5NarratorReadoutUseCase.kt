@@ -1,11 +1,13 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.engine.Gt7Ps5ManualReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.GT7_PS5_MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -69,6 +71,20 @@ data class Gt7Ps5NarratorReadoutDecision(
  * GT7 のテレメトリから、自己ベスト・燃料残量・残り燃料周回数・タイヤ温度の読み上げを決定する UseCase。
  */
 class DetermineGt7Ps5NarratorReadoutUseCase {
+    /** GT7 の手動項目は未実装のため、警告済み状態を維持して項目なし文言を返す。 */
+    fun determineManualReadout(state: Gt7Ps5NarratorState): Gt7Ps5NarratorReadoutDecision =
+        Gt7Ps5NarratorReadoutDecision(
+            state = state,
+            events =
+                listOf(
+                    Gt7Ps5ManualReadoutText(
+                        // 自動読み上げの一覧・並び順にキーを追加せず、開始音とログに既存の Root を使う。
+                        readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
+                        text = GT7_PS5_MANUAL_READOUT_NO_ITEMS_TEXT,
+                    ),
+                ),
+        )
+
     fun determineMyBestLap(
         state: Gt7Ps5NarratorState,
         telemetry: Gt7Ps5TelemetryData,

@@ -19,6 +19,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
@@ -28,6 +29,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kurou.kodriver.domain.engine.DebugReadoutText
+import kurou.kodriver.domain.engine.Gt7Ps5ManualReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
@@ -42,6 +44,8 @@ import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ManualReadoutRequest
+import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -51,6 +55,9 @@ import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesReposi
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
+import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
+import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -62,6 +69,9 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercenta
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -75,6 +85,13 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions")
 class Gt7Ps5NarratorViewModelTest {
+    private val manualRequests = MutableSharedFlow<ManualReadoutRequest>()
+    private val manualHotkeyPresses = MutableSharedFlow<ManualReadoutRequest>()
+    private val manualSets = MutableStateFlow(listOf(ManualReadoutSet("set-1")))
+    private val manualRequestRepository: ManualReadoutRequestRepository = mockk()
+    private val manualHotkeyRepository: ManualReadoutHotkeyRepository = mockk()
+    private val manualSetRepository: ManualReadoutSetPreferencesRepository = mockk()
+
     private val debugRequests = MutableSharedFlow<DebugReadoutRequest>()
     private val debugRequestRepository: DebugReadoutRequestRepository = mockk()
 
@@ -116,9 +133,18 @@ class Gt7Ps5NarratorViewModelTest {
         currentTimeMs: () -> Long = { 0L },
         readoutText: suspend (SpeechEvent) -> String? = { it.narratedText },
     ): Gt7Ps5NarratorViewModel {
+        every { manualRequestRepository.observeRequests() } returns manualRequests
+        every { manualHotkeyRepository.pressStream() } returns manualHotkeyPresses
+        every { manualSetRepository.observeSets() } returns manualSets
         every { telemetryRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
         every { debugRequestRepository.observeRequests() } returns debugRequests
         return Gt7Ps5NarratorViewModel(
+            manualReadoutUseCases =
+                ManualReadoutUseCases(
+                    ObserveManualReadoutRequestsUseCase(manualRequestRepository),
+                    ObserveManualReadoutHotkeyPressesUseCase(manualHotkeyRepository),
+                    ObserveManualReadoutSetsUseCase(manualSetRepository),
+                ),
             observeDebugReadoutRequest = ObserveDebugReadoutRequestUseCase(debugRequestRepository),
             myBestLapUseCases =
                 MyBestLapUseCases(
@@ -163,6 +189,117 @@ class Gt7Ps5NarratorViewModelTest {
             currentTimeMs = currentTimeMs,
         )
     }
+
+    @Test
+    fun `一覧の依頼はキュー設定が無効でも項目なし文言を末尾に追加してログ保存する`() =
+        runTest(testDispatcher) {
+            assertManualReadout(hotkey = false)
+        }
+
+    @Test
+    fun `ホットキーの依頼も項目なし文言を末尾に追加してログ保存する`() =
+        runTest(testDispatcher) {
+            assertManualReadout(hotkey = true)
+        }
+
+    private suspend fun TestScope.assertManualReadout(hotkey: Boolean) {
+        val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root
+        val event = Gt7Ps5ManualReadoutText(key, "読み上げる項目がありません", "読み上げる項目がありません")
+        val json = slot<String>()
+        stubReadoutDefaults(queueEnabledOverrides = mapOf(key to false))
+        every { ttsEngine.speak(event, true) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                100L,
+                Simulator.Gt7Ps5,
+                key,
+                event.text,
+                NarrationOutcome.QUEUED,
+                capture(json),
+            )
+        } just Runs
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val viewModel = createViewModel(channel, ttsEngine, currentTimeMs = { 100L })
+        try {
+            val request = ManualReadoutRequest(Simulator.Gt7Ps5.id, "set-1")
+            runCurrent()
+            if (hotkey) {
+                manualHotkeyPresses.emit(request)
+            } else {
+                manualRequests.emit(request)
+            }
+            runCurrent()
+            val logged = Json.parseToJsonElement(json.captured).jsonObject
+            assertEquals(setOf("state", "settings", "observedAtMs"), logged.keys)
+            assertEquals("100", logged.getValue("observedAtMs").jsonPrimitive.content)
+            verify(exactly = 1) { ttsEngine.speak(event, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    event.text,
+                    NarrationOutcome.QUEUED,
+                    json.captured,
+                )
+            }
+            verify(exactly = 1) { manualRequestRepository.observeRequests() }
+            verify(exactly = 1) { manualHotkeyRepository.pressStream() }
+            verify(exactly = 1) { manualSetRepository.observeSets() }
+            confirmVerified(
+                ttsEngine,
+                telemetryLogRepository,
+                manualRequestRepository,
+                manualHotkeyRepository,
+                manualSetRepository,
+            )
+        } finally {
+            viewModel.viewModelScope.cancel()
+            channel.close()
+        }
+    }
+
+    @Test
+    fun `別シミュレーター宛てとセットなしとGT7未選択の依頼は読み上げない`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.Gt7Ps5)
+            stubReadoutDefaults()
+            every { simulatorPreferencesRepository.selectedSimulator() } returns selected
+            every {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every {
+                autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.LmuWindows.id)
+            } returns MutableStateFlow(emptyList())
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val viewModel = createViewModel(channel, ttsEngine)
+            try {
+                runCurrent()
+                manualRequests.emit(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
+                manualRequests.emit(ManualReadoutRequest(Simulator.Gt7Ps5.id, "missing"))
+                runCurrent()
+                selected.value = Simulator.LmuWindows
+                runCurrent()
+                manualRequests.emit(ManualReadoutRequest(Simulator.Gt7Ps5.id, "set-1"))
+                manualHotkeyPresses.emit(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
+                manualHotkeyPresses.emit(ManualReadoutRequest(Simulator.Gt7Ps5.id, "missing"))
+                manualHotkeyPresses.emit(ManualReadoutRequest(Simulator.Gt7Ps5.id, "set-1"))
+                runCurrent()
+                verify(exactly = 1) { manualRequestRepository.observeRequests() }
+                verify(exactly = 1) { manualHotkeyRepository.pressStream() }
+                verify(exactly = 4) { manualSetRepository.observeSets() }
+                confirmVerified(
+                    ttsEngine,
+                    telemetryLogRepository,
+                    manualRequestRepository,
+                    manualHotkeyRepository,
+                    manualSetRepository,
+                )
+            } finally {
+                viewModel.viewModelScope.cancel()
+                channel.close()
+            }
+        }
 
     @Test
     fun `自由文言の解決に失敗しても次のテレメトリを収集して読み上げる`() =
