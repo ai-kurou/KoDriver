@@ -6,8 +6,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
@@ -15,6 +17,7 @@ import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -28,11 +31,20 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercenta
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+
+internal data class ManualReadoutUseCases(
+    val observeRequests: ObserveManualReadoutRequestsUseCase,
+    val observeHotkeyPresses: ObserveManualReadoutHotkeyPressesUseCase,
+    val observeSets: ObserveManualReadoutSetsUseCase,
+)
 
 internal data class MyBestLapUseCases(
     val observeGt7Ps5: ObserveGt7Ps5UseCase,
@@ -73,6 +85,7 @@ internal class Gt7Ps5NarratorViewModel(
     private val eventProcessor: Gt7Ps5NarratorEventProcessor,
     private val determineGt7Ps5NarratorReadout: DetermineGt7Ps5NarratorReadoutUseCase =
         DetermineGt7Ps5NarratorReadoutUseCase(),
+    manualReadoutUseCases: ManualReadoutUseCases,
     observeDebugReadoutRequest: ObserveDebugReadoutRequestUseCase,
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
@@ -269,6 +282,34 @@ internal class Gt7Ps5NarratorViewModel(
                         ),
                 )
             }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val manualReadoutRequestJob =
+        merge(
+            manualReadoutUseCases.observeRequests(),
+            manualReadoutUseCases.observeHotkeyPresses(),
+        ).onEach { request ->
+            if (request.simulatorId == Simulator.Gt7Ps5.id) {
+                val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
+                readManualReadout(set)
+            }
+        }.launchIn(viewModelScope)
+
+    private suspend fun readManualReadout(set: ManualReadoutSet?) {
+        if (set == null || selectedSimulator.value !is Simulator.Gt7Ps5) return
+        val observedAtMs = currentTimeMs()
+        val state = narratorState
+        val settings = currentSettings
+        // GT7 の項目は未実装のため、解決済みの全セットで項目なし文言を読む。
+        val decision = determineGt7Ps5NarratorReadout.determineManualReadout(state)
+        eventProcessor.processManualReadout(
+            events = decision.events,
+            autoReadoutOrder = autoReadoutOrder.value,
+            queueEnabledStates = queueEnabledStates.value + (decision.events.first().readoutItemKey to true),
+            observedAtMs = observedAtMs,
+            logContext = Gt7Ps5TelemetryLogContext(state, settings, decision.state),
+        )
+    }
 
     private val currentSettings: Gt7Ps5NarratorReadoutSettings
         get() =

@@ -23,6 +23,9 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUs
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
@@ -48,7 +51,7 @@ import org.koin.dsl.module
  *
  * 提供: Gt7Ps5NarratorViewModel、Gt7Ps5NarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
  *   （MyBestLapUseCases / SimulatorUseCases / ReadoutListUseCases / RemainingFuelLapsUseCases / RemainingFuelUseCases /
- *   TyreTemperatureUseCases / Gt7Ps5ReadoutTextUseCases）、それらが束ねる
+ *   ManualReadoutUseCases / TyreTemperatureUseCases / Gt7Ps5ReadoutTextUseCases）、それらが束ねる
  *   各ドメイン UseCase、および named(Simulator.Gt7Ps5.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine・SpeakTextUseCase・
  *   自己ベストラップ更新・タイヤ過熱・燃料残量・残り周回数文言の Observe UseCase・
@@ -61,6 +64,8 @@ import org.koin.dsl.module
 val gt7Ps5NarratorModule: Module =
     module {
         factory { ObserveDebugReadoutRequestUseCase(get()) }
+        factory { ObserveManualReadoutRequestsUseCase(get()) }
+        factory { ObserveManualReadoutHotkeyPressesUseCase(get()) }
         // ViewModel（Gt7Ps5NarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
         viewModel {
             Gt7Ps5NarratorViewModel(
@@ -72,11 +77,19 @@ val gt7Ps5NarratorModule: Module =
                 get(),
                 get(),
                 get(),
+                manualReadoutUseCases = get(),
                 observeDebugReadoutRequest = get(),
             )
         }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
+        factory {
+            ManualReadoutUseCases(
+                get(),
+                get(),
+                ObserveManualReadoutSetsUseCase(get(named(Simulator.Gt7Ps5.id))),
+            )
+        }
         factory { MyBestLapUseCases(get()) }
         factory { SimulatorUseCases(get()) }
         factory { ReadoutListUseCases(get(), get(), get()) }

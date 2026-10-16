@@ -27,7 +27,7 @@ internal class ManualReadoutListViewModel(
     private val deleteManualReadoutSet: DeleteManualReadoutSetUseCase,
     private val generateSetId: () -> String = { Uuid.random().toString() },
 ) : ViewModel() {
-    private val canReadSets = simulatorId == Simulator.LmuWindows.id
+    private val canReadSets = simulatorId == Simulator.LmuWindows.id || simulatorId == Simulator.Gt7Ps5.id
 
     private val selectedSetId = MutableStateFlow<String?>(null)
 

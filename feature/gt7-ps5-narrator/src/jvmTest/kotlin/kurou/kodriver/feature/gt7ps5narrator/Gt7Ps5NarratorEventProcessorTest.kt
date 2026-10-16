@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kurou.kodriver.domain.engine.DebugReadoutText
+import kurou.kodriver.domain.engine.Gt7Ps5ManualReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
@@ -41,6 +42,116 @@ class Gt7Ps5NarratorEventProcessorTest {
     private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
     private val ttsEngine: TextToSpeechEngine = mockk()
+
+    @Test
+    fun `手動イベントをキューに追加しテレメトリなしのログを保存する`() =
+        runTest {
+            val event = Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")
+            val resolved = event.withResolvedText(event.text)
+            val json = slot<String>()
+            every { ttsEngine.speak(resolved, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.Gt7Ps5,
+                    event.readoutItemKey,
+                    event.text,
+                    NarrationOutcome.QUEUED,
+                    capture(json),
+                )
+            } just Runs
+
+            createProcessor().processManualReadout(
+                listOf(event),
+                emptyList(),
+                mapOf(event.readoutItemKey to true),
+                100L,
+                logContext,
+            )
+
+            val logged = Json.parseToJsonElement(json.captured).jsonObject
+            assertEquals(setOf("state", "settings", "observedAtMs"), logged.keys)
+            assertEquals("100", logged.getValue("observedAtMs").toString())
+            assertEquals(true, logged.getValue("state").jsonObject.containsKey("raw"))
+            assertEquals(true, logged.getValue("settings").jsonObject.containsKey("raw"))
+            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.Gt7Ps5,
+                    event.readoutItemKey,
+                    event.text,
+                    NarrationOutcome.QUEUED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `手動文言が空白なら読み上げずログにスキップを保存する`() =
+        runTest {
+            val event = Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, " ")
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor().processManualReadout(listOf(event), emptyList(), emptyMap(), 0L, logContext)
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `手動文言が解決できなければ読み上げずログにスキップを保存する`() =
+        runTest {
+            val event = Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor { null }.processManualReadout(listOf(event), emptyList(), emptyMap(), 0L, logContext)
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `手動イベントがなければ発話もログ保存もしない`() =
+        runTest {
+            createProcessor().processManualReadout(emptyList(), emptyList(), emptyMap(), 0L, logContext)
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
 
     @Test
     fun `直前のテレメトリがないイベントはnullとして保存する`() =

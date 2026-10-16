@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.engine.Gt7Ps5ManualReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
@@ -20,6 +21,18 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     private val useCase = DetermineGt7Ps5NarratorReadoutUseCase()
+
+    @Test
+    fun `手動読み上げは固定の項目なし文言を返し自動判定の状態を変更しない`() {
+        val state = Gt7Ps5NarratorState(personalBestMs = 80_000, previousLapCount = 5)
+        val decision = useCase.determineManualReadout(state)
+        assertEquals(state, decision.state)
+        assertTrue(state === decision.state)
+        assertEquals(
+            listOf(Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")),
+            decision.events,
+        )
+    }
 
     @Test
     fun `周回数が減少したら自己ベストをリセットして新セッションの更新を読み上げる`() {

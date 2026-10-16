@@ -64,6 +64,34 @@ internal class Gt7Ps5NarratorEventProcessor(
         )
     }
 
+    suspend fun processManualReadout(
+        events: List<ReadoutTextEvent>,
+        autoReadoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: Gt7Ps5TelemetryLogContext,
+    ) {
+        events.forEach { event ->
+            val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
+            val outcome =
+                if (text == null) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    speakWithPriority(event.withResolvedText(text), autoReadoutOrder, queueEnabledStates)
+                }
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = text.orEmpty(),
+                narrationOutcome = outcome,
+                telemetryJson =
+                    """{"state":${logContext.state.toRawTelemetryLogJson()},""" +
+                        """"settings":${logContext.settings.toRawTelemetryLogJson()},""" +
+                        """"observedAtMs":$observedAtMs}""",
+            )
+        }
+    }
+
     suspend fun process(
         sourceKey: ReadoutItemKey,
         telemetry: Gt7Ps5TelemetryData,
