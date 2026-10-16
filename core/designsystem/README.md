@@ -69,3 +69,10 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 ## デバッグ読み上げ
 
 `DebugReadoutRequestCard` は項目ドロップダウン、自由文言の OutlinedTextField と読み上げボタンを提供する。domain に依存せずキーの value を文字列で受け取り、既存の `readoutItemDisplayName` で表示する。選択・入力・送信はコールバックで通知し、空白のみではボタンを無効化する。ラベルは composeResources の日本語文字列を使う。
+
+## ヒント行・ヘルプシート行
+
+- `KoDriverHintRow` はラベル・ヘルプアイコンボタン・区切り線と、省略可能な `trailingText`（`labelSmall`）を表示する。ボタンを押すと `sheetContent` を `ModalBottomSheet` に表示する。
+- 開閉は部品内の一時的な UI 状態として `rememberSaveable` で保持し、保存状態からの再生成時に復元する。業務状態は従来どおり feature の ViewModel が管理する。
+- `KoDriverHintSheetRow` は同じ見た目のアイコンバッジとタイトル・説明を表示する。文字列リソースは呼び出し側で解決して渡す。
+- 表示と操作は `src/jvmTest` の `KoDriverHintRowTest`、実際の画面レイアウトは両 list feature の既存スクリーンショットテストで確認する。

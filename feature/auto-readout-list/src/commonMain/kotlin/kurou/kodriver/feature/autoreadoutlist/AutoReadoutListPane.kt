@@ -30,7 +30,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Flag
@@ -42,26 +41,19 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,6 +75,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.KoDriverHintRow
+import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
@@ -121,51 +115,15 @@ private fun autoReadoutItemIndex(
     itemCount: Int,
 ): Int = (lazyListIndex - autoReadoutItemStartIndex).coerceIn(0, itemCount - 1)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PriorityHintRow(modifier: Modifier = Modifier) {
-    var showHelpSheet by rememberSaveable { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-
-    if (showHelpSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showHelpSheet = false },
-            sheetState = sheetState,
-        ) {
-            PriorityHintSheetContent()
-        }
-    }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
-        modifier = modifier.padding(bottom = KoDriverSpacing.medium),
+    KoDriverHintRow(
+        label = stringResource(Res.string.priority_hint_label),
+        helpContentDescription = stringResource(Res.string.priority_hint_description),
+        modifier = modifier,
+        trailingText = stringResource(Res.string.priority_hint_order),
     ) {
-        Text(
-            text = stringResource(Res.string.priority_hint_label),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        IconButton(
-            onClick = { showHelpSheet = true },
-            modifier = Modifier.size(24.dp),
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.HelpOutline,
-                contentDescription = stringResource(Res.string.priority_hint_description),
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.outlineVariant,
-        )
-        Text(
-            text = stringResource(Res.string.priority_hint_order),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        PriorityHintSheetContent()
     }
 }
 
@@ -179,65 +137,20 @@ internal fun PriorityHintSheetContent(modifier: Modifier = Modifier) {
                 .padding(bottom = KoDriverSpacing.extraLarge),
         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
     ) {
-        PriorityHintSheetRow(
+        KoDriverHintSheetRow(
             icon = Icons.Filled.DragIndicator,
             title = stringResource(Res.string.priority_hint_title),
             description = stringResource(Res.string.priority_hint_description),
         )
-        PriorityHintSheetRow(
+        KoDriverHintSheetRow(
             icon = Icons.AutoMirrored.Filled.PlaylistAdd,
             title = stringResource(Res.string.queue_toggle_description),
             description = stringResource(Res.string.queue_hint_description),
         )
-        PriorityHintSheetRow(
+        KoDriverHintSheetRow(
             icon = Icons.Filled.NotificationsActive,
             title = stringResource(Res.string.start_sound_toggle_description),
             description = stringResource(Res.string.start_sound_hint_description),
-        )
-    }
-}
-
-@Composable
-private fun PriorityHintSheetRow(
-    icon: ImageVector,
-    title: String,
-    description: String,
-) {
-    Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium)) {
-        PriorityHintIconBadge(icon = icon)
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PriorityHintIconBadge(icon: ImageVector) {
-    Box(
-        modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(KoDriverSpacing.small),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.size(24.dp),
         )
     }
 }
