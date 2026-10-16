@@ -458,24 +458,26 @@ fun AppScreen(
             },
         )
     },
-    manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit = { selectedSimulatorId ->
-        key(selectedSimulatorId) {
-            ManualReadoutContent(
-                simulatorId = selectedSimulatorId,
-                simulatorName = appScreenPrimarySimulatorLabel(selectedSimulatorId),
-                backHandler = backHandler,
-                detailContent = { setId, canNavigateBack, onBack ->
-                    ManualReadoutSetDetailContent(
-                        simulatorId = selectedSimulatorId,
-                        setId = setId,
-                        onDeleted = onBack,
-                        canNavigateBack = canNavigateBack,
-                        onBack = onBack,
-                    )
-                },
-            )
-        }
-    },
+    manualReadoutContent: @Composable (selectedSimulatorId: String, tabReselectRequest: Int) -> Unit =
+        { selectedSimulatorId, tabReselectRequest ->
+            key(selectedSimulatorId) {
+                ManualReadoutContent(
+                    simulatorId = selectedSimulatorId,
+                    tabReselectRequest = tabReselectRequest,
+                    simulatorName = appScreenPrimarySimulatorLabel(selectedSimulatorId),
+                    backHandler = backHandler,
+                    detailContent = { setId, canNavigateBack, onBack ->
+                        ManualReadoutSetDetailContent(
+                            simulatorId = selectedSimulatorId,
+                            setId = setId,
+                            onDeleted = onBack,
+                            canNavigateBack = canNavigateBack,
+                            onBack = onBack,
+                        )
+                    },
+                )
+            }
+        },
     otherContent: @Composable (
         scrollToTopRequest: Int,
         selectedSimulatorId: String,
@@ -494,6 +496,7 @@ fun AppScreen(
     val autoReadoutListUiState by autoReadoutListViewModel.uiState.collectAsState()
     val telemetryLogListUiState by telemetryLogListViewModel.uiState.collectAsState()
     val otherListUiState by otherListViewModel.uiState.collectAsStateWithLifecycle()
+    var manualReadoutTabReselectRequest by rememberSaveable { mutableIntStateOf(0) }
     var autoReadoutListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
     var telemetryLogListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
     var otherListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
@@ -554,6 +557,8 @@ fun AppScreen(
                 onSelectOtherItem = otherListViewModel::selectItem,
             ),
         onFeedbackClick = { telemetryLogId -> otherListViewModel.selectFeedbackItem(telemetryLogId) },
+        onManualReadoutTabReselected = { manualReadoutTabReselectRequest++ },
+        manualReadoutTabReselectRequest = manualReadoutTabReselectRequest,
         onAutoReadoutTabReselected = {
             handleTabReselected(
                 selectedItem = autoReadoutListUiState.selectedItem,
@@ -647,6 +652,8 @@ internal fun AppScreenContent(
     onSimulatorSelected: (String) -> Unit = {},
     onBannerTap: (() -> Unit)? = null,
     onFeedbackClick: ((Long) -> Unit)? = null,
+    onManualReadoutTabReselected: () -> Unit = {},
+    manualReadoutTabReselectRequest: Int = 0,
     onAutoReadoutTabReselected: () -> Unit = {},
     onLogTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
@@ -654,7 +661,7 @@ internal fun AppScreenContent(
     autoReadoutListScrollToTopRequest: Int = 0,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit = { _, _ -> },
     telemetryLogListScrollToTopRequest: Int = 0,
-    manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit = {},
+    manualReadoutContent: @Composable (selectedSimulatorId: String, tabReselectRequest: Int) -> Unit = { _, _ -> },
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit = { _, _ -> },
     otherListScrollToTopRequest: Int = 0,
 ) {
@@ -689,6 +696,8 @@ internal fun AppScreenContent(
                 navigationState = navigationState,
                 onBannerTapWithTabSwitch = onBannerTapWithTabSwitch,
                 onFeedbackClickWithTabSwitch = onFeedbackClickWithTabSwitch,
+                onManualReadoutTabReselected = onManualReadoutTabReselected,
+                manualReadoutTabReselectRequest = manualReadoutTabReselectRequest,
                 onAutoReadoutTabReselected = onAutoReadoutTabReselected,
                 onLogTabReselected = onLogTabReselected,
                 onOtherTabReselected = onOtherTabReselected,
@@ -718,6 +727,8 @@ private fun AppScreenScaffold(
     navigationState: AppNavigationState,
     onBannerTapWithTabSwitch: (() -> Unit)?,
     onFeedbackClickWithTabSwitch: ((Long) -> Unit)?,
+    onManualReadoutTabReselected: () -> Unit,
+    manualReadoutTabReselectRequest: Int,
     onAutoReadoutTabReselected: () -> Unit,
     onLogTabReselected: () -> Unit,
     onOtherTabReselected: () -> Unit,
@@ -725,7 +736,7 @@ private fun AppScreenScaffold(
     autoReadoutListScrollToTopRequest: Int,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit,
     telemetryLogListScrollToTopRequest: Int,
-    manualReadoutContent: @Composable (selectedSimulatorId: String) -> Unit,
+    manualReadoutContent: @Composable (selectedSimulatorId: String, tabReselectRequest: Int) -> Unit,
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit,
     otherListScrollToTopRequest: Int,
 ) {
@@ -763,7 +774,7 @@ private fun AppScreenScaffold(
                             navigationState.handleTabClick(dest) { reselected ->
                                 when (reselected) {
                                     AppDestination.AutoReadout -> onAutoReadoutTabReselected()
-                                    AppDestination.ManualReadout -> Unit
+                                    AppDestination.ManualReadout -> onManualReadoutTabReselected()
                                     AppDestination.Log -> onLogTabReselected()
                                     AppDestination.More -> onOtherTabReselected()
                                 }
@@ -839,7 +850,9 @@ private fun AppScreenScaffold(
                                 onFeedbackClickWithTabSwitch ?: {},
                             )
                         },
-                        manualReadoutContent = { manualReadoutContent(selectedSimulatorId) },
+                        manualReadoutContent = {
+                            manualReadoutContent(selectedSimulatorId, manualReadoutTabReselectRequest)
+                        },
                         otherContent = { otherContent(otherListScrollToTopRequest, selectedSimulatorId) },
                     )
                 }

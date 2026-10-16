@@ -29,14 +29,20 @@ class AppScreenManualReadoutTabTest {
 
     private fun assertManualReadoutTab(layoutType: NavigationSuiteType) {
         var reselectedCount = 0
+        var manualReselectedCount = 0
         rule.setContent {
             AppScreenContent(
                 layoutType = layoutType,
+                onManualReadoutTabReselected = { manualReselectedCount++ },
+                manualReadoutTabReselectRequest = 7,
                 onAutoReadoutTabReselected = { reselectedCount++ },
                 onLogTabReselected = { reselectedCount++ },
                 onOtherTabReselected = { reselectedCount++ },
                 autoReadoutContent = { Text("読み上げ画面") },
-                manualReadoutContent = { Text("手動画面") },
+                manualReadoutContent = { _, request ->
+                    assertEquals(7, request)
+                    Text("手動画面")
+                },
                 telemetryLogContent = { _, _ -> Text("ログ画面") },
                 otherContent = { _, _ -> Text("その他画面") },
             )
@@ -72,5 +78,6 @@ class AppScreenManualReadoutTabTest {
             }
         }
         assertEquals(0, reselectedCount)
+        assertEquals(3, manualReselectedCount)
     }
 }

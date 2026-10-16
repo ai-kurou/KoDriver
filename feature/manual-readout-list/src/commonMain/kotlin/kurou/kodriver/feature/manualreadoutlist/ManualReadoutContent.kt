@@ -2,6 +2,8 @@ package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.Posture
@@ -20,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -30,6 +33,7 @@ import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
 import kurou.kodriver.core.designsystem.KoDriverListPaneWidth
+import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
@@ -42,17 +46,29 @@ fun ManualReadoutContent(
     simulatorId: String,
     simulatorName: String,
     modifier: Modifier = Modifier,
+    tabReselectRequest: Int = 0,
     backHandler: AppBackHandler = { _, _, _ -> },
     detailContent: @Composable (setId: String, canNavigateBack: Boolean, onBack: () -> Unit) -> Unit,
 ) {
     val viewModel: ManualReadoutListViewModel =
         koinViewModel(key = simulatorId, parameters = { parametersOf(simulatorId) })
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var scrollToTopRequest by remember { mutableIntStateOf(0) }
+    LaunchedEffect(tabReselectRequest) {
+        if (tabReselectRequest > 0) {
+            handleManualReadoutTabReselected(
+                selectedSetId = uiState.selectedSetId,
+                clearSelectedSet = viewModel::clearSelectedSet,
+                requestScrollToTop = { scrollToTopRequest++ },
+            )
+        }
+    }
     DisposableEffect(viewModel) {
         onDispose { viewModel.clearSelectedSet() }
     }
     ManualReadoutContentScaffold(
         uiState = uiState,
+        scrollToTopRequest = scrollToTopRequest,
         simulatorName = simulatorName,
         onAddSet = viewModel::addSet,
         onReadSet = viewModel::readSet,
@@ -76,12 +92,15 @@ internal fun ManualReadoutContentScaffold(
     onClearSelectedSet: () -> Unit,
     modifier: Modifier = Modifier,
     onDeleteSet: (String) -> Unit = {},
+    scrollToTopRequest: Int = 0,
+    listState: LazyListState = rememberLazyListState(),
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     detailContent: @Composable (setId: String, canNavigateBack: Boolean, onBack: () -> Unit) -> Unit,
 ) {
+    ScrollToTopEffect(scrollToTopRequest) { listState.animateScrollToItem(0) }
     val navigationState =
         rememberManualReadoutNavigationState(
             initial =
@@ -173,6 +192,7 @@ internal fun ManualReadoutContentScaffold(
             listPane = {
                 ManualReadoutListPaneContent(
                     uiState = uiState,
+                    listState = listState,
                     simulatorName = simulatorName,
                     onAddSet = onAddSet,
                     onReadSet = onReadSet,
@@ -188,5 +208,17 @@ internal fun ManualReadoutContentScaffold(
                 }
             },
         )
+    }
+}
+
+internal fun handleManualReadoutTabReselected(
+    selectedSetId: String?,
+    clearSelectedSet: () -> Unit,
+    requestScrollToTop: () -> Unit,
+) {
+    if (selectedSetId != null) {
+        clearSelectedSet()
+    } else {
+        requestScrollToTop()
     }
 }
