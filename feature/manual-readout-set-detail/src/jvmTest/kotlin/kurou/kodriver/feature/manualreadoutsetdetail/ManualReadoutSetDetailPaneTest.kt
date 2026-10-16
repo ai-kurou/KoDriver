@@ -7,6 +7,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -33,6 +34,51 @@ import kotlin.test.assertEquals
 class ManualReadoutSetDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `項目選択時は既定文言の残量を埋めた完成文を表示し空欄では非表示にする`() {
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                    selectedItemKeys = listOf(key),
+                ),
+            )
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = {},
+                    onDelete = {},
+                    showHotkey = false,
+                )
+            }
+        }
+        rule
+            .onNodeWithTag("manual_readout_preview_sentence")
+            .assertExists()
+            .assertTextEquals("バーチャルエナジー残量は50パーセント")
+        rule.runOnIdle { state.value = state.value.copy(itemTexts = mapOf(key to "")) }
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertDoesNotExist()
+    }
+
+    @Test
+    fun `未選択時は完成文を表示しない`() {
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)),
+                    onAddItem = {},
+                    onDelete = {},
+                    showHotkey = false,
+                )
+            }
+        }
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertDoesNotExist()
+    }
 
     @Test
     fun `上限では追加を無効化する`() {
