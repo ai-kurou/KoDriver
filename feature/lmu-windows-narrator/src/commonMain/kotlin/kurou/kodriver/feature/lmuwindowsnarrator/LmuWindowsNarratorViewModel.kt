@@ -25,10 +25,12 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DE
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
+import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -740,113 +742,72 @@ internal class LmuWindowsNarratorViewModel(
                         .first()
                         .find { it.id == request.setId }
                 if (set != null) {
-                    val itemKeys = set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }
-                    if (itemKeys.isEmpty()) {
-                        readRemainingVirtualEnergyCurrentValue(manual = true, noItems = true)
-                    } else {
-                        itemKeys.forEach { key ->
-                            val template = set.itemTexts[key] ?: manualReadoutItemTextDefault(key)
-                            if (key == LmuWindowsReadoutItemKey.TyreWear.Root.value) {
-                                readTyreWearCurrentValue(template)
-                            } else {
-                                readRemainingVirtualEnergyCurrentValue(manual = true, textTemplate = template)
-                            }
-                        }
-                    }
+                    readManualReadout(set)
                 }
             }
         }.launchIn(viewModelScope)
 
-    private suspend fun readRemainingVirtualEnergyCurrentValue(
-        manual: Boolean = false,
-        noItems: Boolean = false,
-        textTemplate: String? = null,
-    ) {
+    private suspend fun readManualReadout(set: ManualReadoutSet) {
         if (selectedSimulator.value !is Simulator.LmuWindows) return
         val observedAtMs = currentTimeMs()
-        // セッション終了や切断後の古い残量も、未受信と同じ扱いにする。
-        val remainingVirtualEnergy =
+        val energy =
             latestVirtualEnergy?.takeIf {
                 observedAtMs - latestVirtualEnergyReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
             }
+        val tyreWear =
+            latestTyreWear?.takeIf {
+                observedAtMs - latestTyreWearReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+            }
+        val items =
+            set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }.map { key ->
+                val ratio =
+                    if (key == LmuWindowsReadoutItemKey.TyreWear.Root.value) {
+                        tyreWear
+                            ?.wheels
+                            ?.values
+                            ?.minOrNull()
+                            ?.value
+                    } else {
+                        energy?.remainingRatio?.value
+                    }
+                LmuWindowsManualReadoutItem(key, set.itemTexts[key] ?: manualReadoutItemTextDefault(key), ratio)
+            }
+        val state = narratorState
+        val settings = currentSettings
+        val decision = narratorUseCases.determineReadout.determineManualReadout(state, items)
+        narratorState = decision.state
+        eventProcessor.processManualReadout(
+            events = decision.events,
+            autoReadoutOrder = autoReadoutOrder.value,
+            queueEnabledStates = queueEnabledStates.value + (decision.events.first().readoutItemKey to true),
+            observedAtMs = observedAtMs,
+            logContext = LmuWindowsTelemetryLogContext(state, settings, decision.state),
+        )
+    }
+
+    private suspend fun readRemainingVirtualEnergyCurrentValue() {
+        if (selectedSimulator.value !is Simulator.LmuWindows) return
+        val observedAtMs = currentTimeMs()
+        val remainingVirtualEnergy =
+            latestVirtualEnergy?.takeIf {
+                observedAtMs - latestVirtualEnergyReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+            } ?: return
         val state = narratorState
         val settings = currentSettings
         val decision =
-            when {
-                manual && noItems -> {
-                    narratorUseCases.determineReadout.determineManualReadoutNoItems(state)
-                }
-
-                manual -> {
-                    narratorUseCases.determineReadout.determineManualRemainingVirtualEnergyCurrentValue(
-                        state = state,
-                        data = remainingVirtualEnergy,
-                        textTemplate = textTemplate,
-                    )
-                }
-
-                remainingVirtualEnergy == null -> {
-                    return
-                }
-
-                else -> {
-                    narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
-                        state = state,
-                        data = remainingVirtualEnergy,
-                        settings = settings,
-                    )
-                }
-            }
-        val currentQueueEnabledStates =
-            if (manual) {
-                queueEnabledStates.value + (LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true)
-            } else {
-                queueEnabledStates.value
-            }
+            narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
+                state = state,
+                data = remainingVirtualEnergy,
+                settings = settings,
+            )
         narratorState = decision.state
         eventProcessor.processRemainingVirtualEnergy(
             remainingVirtualEnergy = remainingVirtualEnergy,
             events = decision.events,
             autoReadoutOrder = autoReadoutOrder.value,
-            queueEnabledStates = currentQueueEnabledStates,
+            queueEnabledStates = queueEnabledStates.value,
             observedAtMs = observedAtMs,
-            logContext =
-                LmuWindowsTelemetryLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = decision.state,
-                ),
-        )
-    }
-
-    private suspend fun readTyreWearCurrentValue(textTemplate: String) {
-        if (selectedSimulator.value !is Simulator.LmuWindows) return
-        val observedAtMs = currentTimeMs()
-        val tyreWear =
-            latestTyreWear?.takeIf {
-                observedAtMs - latestTyreWearReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
-            }
-        val state = narratorState
-        val settings = currentSettings
-        val decision =
-            narratorUseCases.determineReadout.determineManualTyreWearCurrentValue(
-                state = state,
-                data = tyreWear,
-                textTemplate = textTemplate,
-            )
-        narratorState = decision.state
-        eventProcessor.processTyreWearCurrentValue(
-            tyreWear = tyreWear,
-            events = decision.events,
-            autoReadoutOrder = autoReadoutOrder.value,
-            queueEnabledStates = queueEnabledStates.value + (LmuWindowsReadoutItemKey.TyreWear.Root to true),
-            observedAtMs = observedAtMs,
-            logContext =
-                LmuWindowsTelemetryLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = decision.state,
-                ),
+            logContext = LmuWindowsTelemetryLogContext(state, settings, decision.state),
         )
     }
 

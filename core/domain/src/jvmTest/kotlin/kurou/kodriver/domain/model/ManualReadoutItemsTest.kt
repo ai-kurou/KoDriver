@@ -5,6 +5,13 @@ import kotlin.test.assertEquals
 
 class ManualReadoutItemsTest {
     @Test
+    fun `項目名は詳細画面の日本語名と一致し未対応キーは空になる`() {
+        assertEquals("バーチャルエナジー残量", manualReadoutItemName(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value))
+        assertEquals("タイヤ摩耗", manualReadoutItemName(LmuWindowsReadoutItemKey.TyreWear.Root.value))
+        assertEquals("", manualReadoutItemName("unknown"))
+    }
+
+    @Test
     fun `LMUは残量とタイヤ摩耗の順に選択でき未対応シミュレーターは空を返す`() {
         assertEquals(
             listOf(

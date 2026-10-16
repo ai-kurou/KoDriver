@@ -34,6 +34,7 @@ import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
 import kurou.kodriver.domain.engine.LmuWindowsCarLeft
 import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
+import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
@@ -692,6 +693,50 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     // --- 自己ベストラップ ---
+
+    @Test
+    fun `複数項目の手動依頼は欠損と鮮度を反映し依頼ごとに一発話にする`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val wear = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val energyKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+            val tyreKey = LmuWindowsReadoutItemKey.TyreWear.Root
+            var time = 0L
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                tyreWearChannel = wear,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("both", listOf("unknown", energyKey.value, tyreKey.value))),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(energyKey to false, tyreKey to false),
+                queueEnabledOverrides = mapOf(energyKey to false, tyreKey to false),
+                currentTimeMs = { time },
+            )
+            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "both")
+            requests.send(request)
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.5))
+            requests.send(request)
+            time = 1L
+            wear.send(tyreWear(fl = 0.795))
+            requests.send(request)
+            time = 5_001L
+            requests.send(request)
+            time = 5_002L
+            requests.send(request)
+            assertEquals(
+                listOf(
+                    "データがありません",
+                    "バーチャルエナジー残量は50パーセント、タイヤ摩耗はデータがありません",
+                    "バーチャルエナジー残量は50パーセント、タイヤ摩耗残り80%",
+                    "バーチャルエナジー残量はデータがありません、タイヤ摩耗残り80%",
+                    "データがありません",
+                ),
+                spoken.map { it.narratedText },
+            )
+            assertEquals(List(5) { energyKey }, spoken.map { it.readoutItemKey })
+        }
 
     @Test
     fun `自由文言の解決に失敗しても次のテレメトリを収集して読み上げる`() =
@@ -2618,15 +2663,17 @@ class LmuWindowsNarratorViewModelTest {
             energy.send(remainingVirtualEnergy(remainingRatio = 0.2))
 
             assertEquals(
-                listOf(80, 20, 20),
-                events.filterIsInstance<LmuWindowsRemainingVirtualEnergyCurrentValue>().map { it.percentage },
+                listOf("バーチャルエナジー残量は80パーセント", "バーチャルエナジー残量は20パーセント", "バーチャルエナジー残量は20パーセント"),
+                events.filterIsInstance<LmuWindowsManualReadoutText>().map { it.narratedText },
             )
             assertEquals(4, events.size)
             assertEquals(4, spoken.size)
             assertEquals(4, logs.size)
             assertEquals(123L, logs.last().createdAt)
-            assertContains(logs.last().telemetryJson, "\"remainingRatio\":0.2")
-            assertContains(logs.last().telemetryJson, "\"finalState\":")
+            assertContains(logs[1].telemetryJson, "\"remainingRatio\":0.2")
+            assertContains(logs[1].telemetryJson, "\"finalState\":")
+            assertFalse(logs.last().telemetryJson.contains("remainingRatio"))
+            assertContains(logs.last().telemetryJson, "\"observedAtMs\":123")
         }
 
     @Test
@@ -2664,7 +2711,7 @@ class LmuWindowsNarratorViewModelTest {
     fun `項目なしセットのタブ依頼とホットキーはデータの有無に関係なく固定文言をキューへ追加してログを保存する`() =
         runTest(testDispatcher) {
             val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
-            val expected = LmuWindowsRemainingVirtualEnergyCurrentValue(0, "読み上げる項目がありません")
+            val expected = LmuWindowsManualReadoutText(key, "読み上げる項目がありません", "読み上げる項目がありません")
             val logs = mutableListOf<TelemetryLog>()
             stubTelemetryLogSave(logs, 5_001L, key)
             for (hasData in listOf(false, true)) {
@@ -2702,7 +2749,7 @@ class LmuWindowsNarratorViewModelTest {
                     assertContains(log.telemetryJson, "\"state\":")
                     assertContains(log.telemetryJson, "\"settings\":")
                     assertContains(log.telemetryJson, "\"observedAtMs\":5001")
-                    assertEquals(hasData, log.telemetryJson.contains("remainingRatio"))
+                    assertFalse(log.telemetryJson.contains("remainingRatio"))
                     assertFalse(log.telemetryJson.contains("debugReadout"))
                 }
             }
@@ -2725,7 +2772,7 @@ class LmuWindowsNarratorViewModelTest {
     fun `未受信と鮮度切れのタブ依頼とセットホットキーはデータ無しをキューへ追加してログを保存する`() =
         runTest(testDispatcher) {
             val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
-            val expected = LmuWindowsRemainingVirtualEnergyCurrentValue(0, "データがありません")
+            val expected = LmuWindowsManualReadoutText(key, "データがありません", "データがありません")
             val logs = mutableListOf<TelemetryLog>()
             stubTelemetryLogSave(logs, 5_001L, key)
             for (stale in listOf(false, true)) {
@@ -2801,9 +2848,10 @@ class LmuWindowsNarratorViewModelTest {
 
             verify(exactly = 2) {
                 ttsEngine.speak(
-                    LmuWindowsRemainingVirtualEnergyCurrentValue(
-                        80,
-                        LmuWindowsRemainingVirtualEnergyCurrentValue(80).narratedText,
+                    LmuWindowsManualReadoutText(
+                        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                        "バーチャルエナジー残量は80パーセント",
+                        "バーチャルエナジー残量は80パーセント",
                     ),
                     queue = true,
                 )
@@ -2828,9 +2876,10 @@ class LmuWindowsNarratorViewModelTest {
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 0) {
                 ttsEngine.speak(
-                    LmuWindowsRemainingVirtualEnergyCurrentValue(
-                        80,
-                        LmuWindowsRemainingVirtualEnergyCurrentValue(80).narratedText,
+                    LmuWindowsManualReadoutText(
+                        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                        "バーチャルエナジー残量は80パーセント",
+                        "バーチャルエナジー残量は80パーセント",
                     ),
                     queue = false,
                 )
@@ -2900,8 +2949,9 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(emptyList(), spoken)
             assertEquals(
                 listOf<SpeechEvent>(
-                    LmuWindowsRemainingVirtualEnergyCurrentValue(
-                        percentage = 80,
+                    LmuWindowsManualReadoutText(
+                        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                        "残量80%",
                         resolvedText = "残量80%",
                     ),
                 ),
@@ -2912,7 +2962,7 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals("残量80%", queued.single().narratedText)
             assertEquals("残量80%", log.narratedText)
             assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
-            assertContains(log.telemetryJson, "\"remainingRatio\":0.8")
+            assertContains(log.telemetryJson, "\"observedAtMs\":123")
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 123L,
@@ -2961,8 +3011,9 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(emptyList(), spoken)
             assertEquals(
                 listOf<SpeechEvent>(
-                    LmuWindowsRemainingVirtualEnergyCurrentValue(
-                        percentage = 80,
+                    LmuWindowsManualReadoutText(
+                        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                        "残量80%",
                         resolvedText = "残量80%",
                     ),
                 ),
@@ -2973,7 +3024,7 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals("残量80%", queued.single().narratedText)
             assertEquals("残量80%", log.narratedText)
             assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
-            assertContains(log.telemetryJson, "\"remainingRatio\":0.8")
+            assertContains(log.telemetryJson, "\"observedAtMs\":123")
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 123L,
@@ -3022,8 +3073,9 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(emptyList(), spoken)
             assertEquals(
                 listOf<SpeechEvent>(
-                    LmuWindowsRemainingVirtualEnergyCurrentValue(
-                        percentage = 80,
+                    LmuWindowsManualReadoutText(
+                        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                        "残量80%",
                         resolvedText = "残量80%",
                     ),
                 ),
@@ -3034,7 +3086,7 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals("残量80%", queued.single().narratedText)
             assertEquals("残量80%", log.narratedText)
             assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
-            assertContains(log.telemetryJson, "\"remainingRatio\":0.8")
+            assertContains(log.telemetryJson, "\"observedAtMs\":123")
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 123L,
@@ -3067,9 +3119,10 @@ class LmuWindowsNarratorViewModelTest {
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 0) {
                 ttsEngine.speak(
-                    LmuWindowsRemainingVirtualEnergyCurrentValue(
-                        80,
-                        LmuWindowsRemainingVirtualEnergyCurrentValue(80).narratedText,
+                    LmuWindowsManualReadoutText(
+                        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                        "バーチャルエナジー残量は80パーセント",
+                        "バーチャルエナジー残量は80パーセント",
                     ),
                     queue = false,
                 )
@@ -3159,7 +3212,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `手動セットは保存した項目順と文言で別イベントをキューへ追加する`() =
+    fun `手動セットは保存した項目順と文言で一イベントをキューへ追加する`() =
         runTest(testDispatcher) {
             val wear = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
             val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
@@ -3185,8 +3238,8 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(tyreWear(fl = 0.7))
             energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "ordered"))
-            assertEquals(listOf(tyreKey, energyKey), spoken.map { it.readoutItemKey })
-            assertEquals(listOf("タイヤ70%", "VE80%"), spoken.map { it.narratedText })
+            assertEquals(listOf(tyreKey), spoken.map { it.readoutItemKey })
+            assertEquals(listOf("タイヤ70%、VE80%"), spoken.map { it.narratedText })
         }
 
     // --- ピットタイミング ---
@@ -4187,8 +4240,8 @@ class LmuWindowsNarratorViewModelTest {
             presses.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
             testScheduler.runCurrent()
             assertEquals(
-                80,
-                events.filterIsInstance<LmuWindowsRemainingVirtualEnergyCurrentValue>().single().percentage,
+                "バーチャルエナジー残量は80パーセント",
+                events.filterIsInstance<LmuWindowsManualReadoutText>().single().narratedText,
             )
             assertEquals(1, spoken.size)
             assertEquals(1, logs.size)

@@ -31,3 +31,5 @@ OS のホットキーはシミュレーターをまたいで共有されるた�
 
 ![Module Graph](../../docs/graphs/feature-manual-readout-detail.svg)
 <!-- MODULE-GRAPH-END -->
+
+LMU の手動セットは `determineManualReadout` で各項目の文を保存順に「、」で連結し、`LmuWindowsManualReadoutText` の1イベントで読み上げる。項目のデータが無い場合は `manualReadoutItemName` の日本語名を使った「<項目名>はデータがありません」を連結する。全項目がデータ無しなら、1項目の場合も含め「データがありません」のみ。対象項目なしは「読み上げる項目がありません」を維持する。

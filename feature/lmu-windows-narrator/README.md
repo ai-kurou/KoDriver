@@ -64,23 +64,24 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 依頼の `simulatorId` が `Simulator.LmuWindows.id` で、選択中のシミュレーターも LMU の場合だけ処理する。
 同じ UseCase 群の `ObserveManualReadoutSetsUseCase` は `named(Simulator.LmuWindows.id)` の Repository を参照する。
 依頼ごとに保存済みセットを取得し、`setId` に対応するセットの `itemKeys` に
-`RemainingVirtualEnergy.Root.value`・`TyreWear.Root.value` を保存順に走査し、対応項目ごとに別イベントで現在値を読み上げる。
-セットが見つからない場合は何もしない。どちらの対応項目も含まれない場合は `determineManualReadoutNoItems` で項目なし文言を読み上げる。
+`RemainingVirtualEnergy.Root.value`・`TyreWear.Root.value` を保存順に走査し、各項目の現在値の文を「、」で連結し、1依頼につき1イベントで読み上げる。
+セットが見つからない場合は何もしない。どちらの対応項目も含まれない場合は `determineManualReadout` で項目なし文言を読み上げる。
 対象セットの `itemTexts` から文言テンプレートを取得し、未保存なら
 `manualReadoutItemTextDefault` の項目ごとの既定値を使う。
 手動判定時に `{percent}` を四捨五入した現在残量へ置換し、イベントの `resolvedText` と `narratedText` に反映する。
 キュー待機中も解決済み文言を維持し、発話とテレメトリログは同じ文言になる。空白文言は発話せずスキップとしてログに残す。
-F9 と共通の `readRemainingVirtualEnergyCurrentValue` が、最新値と受信から5秒以内の鮮度を確認し、
-手動専用の `determineManualRemainingVirtualEnergyCurrentValue` → `processRemainingVirtualEnergy` へ渡す。
+`readManualReadout` が最新値と受信から5秒以内の鮮度を確認し、項目キー・テンプレート・残存率（データ無しは null）を
+`determineManualReadout` へ渡し、同UseCase内で既存の `PERCENTAGE_SCALE` により整数%へ四捨五入して連結する。
+連結イベントを `processManualReadout` へ1回だけ渡す。先頭の対応項目のキーをイベントに使い、そのキーのキュー設定を true にする。
 手動はタブの操作・セットホットキー押下ともに自動読み上げスイッチを無視し、ユーザーのキュー設定に関係なく常にキューの末尾に並ぶ。
 開始音・文言・テレメトリログは既存経路を使い、自動警告の読み上げ済み状態は変えない。
 F9 は従来どおり有効スイッチとキュー設定に従う。
-Android でも WebSocket で受信した値を使う。LMU 選択中で残量項目を含むセットの手動依頼は未受信・鮮度切れなら、編集文言に関係なく「データがありません」を開始音付きで読み上げ、常にキュー末尾へ追加しログを保存する。
-文言は domain の `LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT` を使う。データ無しの `telemetryJson` はデバッグ未受信時に合わせて状態・設定・観測時刻を記録し、テレメトリ値は含めない。F9 は未受信・鮮度切れなら従来どおり何もしない。
+Android でも WebSocket で受信した値を使う。未受信・鮮度切れの項目は「<項目名>はデータがありません」とし、すべての項目がデータ無しなら「データがありません」だけを読み上げる（1項目のデータ無しも同じ）。
+文言は domain の `LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT` を使う。手動セットの `telemetryJson` はデバッグ未受信時に合わせて状態・設定・観測時刻を記録し、テレメトリ値は含めない。F9 は未受信・鮮度切れなら従来どおり何もしない。
 
 JVM テストで連続依頼・警告状態の維持・未受信・鮮度の境界・宛先と選択中シミュレーターの照合・
 未受信・鮮度切れそれぞれのタブ依頼とセットホットキー押下のデータ無し発話（queue=true）・ログ保存・切り替え後の古い値の破棄・セット別文言・空白文言・F9との分離・タブの操作とセットホットキー押下のキューとログ、Koin の UseCase 群の解決を確認する。
 
 LMU の手動依頼（一覧の ▶・セットホットキー）で、対象セットにバーチャルエナジー残量・タイヤ摩耗のどちらのキーも含まれない場合は、データの有無に関係なく「読み上げる項目がありません」を開始音付きで読み上げる。文言は編集不可の `LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT` を使い、データ無しと同じ経路で常にキュー末尾へ追加してログを保存する。存在しないセット ID は読み上げない。
 
-タイヤ摩耗は共有前の Flow で最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。受信から5秒以内なら最小残存率を整数%に丸め、手動専用の `determineManualTyreWearCurrentValue` → `processTyreWearCurrentValue` で処理する。既定文言は「タイヤ摩耗残り{percent}%」。未受信・鮮度切れ・空の wheels は「データがありません」を読む。自動警告の前回値・警告済み状態は変更しない。
+タイヤ摩耗は共有前の Flow で最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。受信から5秒以内なら最小残存率を domain に渡し、UseCase で整数%に丸めて他の項目と同じ連結用イベントで処理する。既定文言は「タイヤ摩耗残り{percent}%」。未受信・鮮度切れ・空の wheels はデータ無しとして扱う。自動警告の前回値・警告済み状態は変更しない。

@@ -9,6 +9,7 @@ import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
 import kurou.kodriver.domain.engine.LmuWindowsCarRight
 import kurou.kodriver.domain.engine.LmuWindowsCarRightSustained
 import kurou.kodriver.domain.engine.LmuWindowsFullCourseYellow
+import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
@@ -19,7 +20,6 @@ import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
-import kurou.kodriver.domain.engine.LmuWindowsTyreWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
@@ -28,6 +28,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -45,6 +46,7 @@ import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
+import kurou.kodriver.domain.model.manualReadoutItemName
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.roundToInt
 
@@ -534,18 +536,54 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         }
     }
 
-    /** 手動読み上げの対象項目がないことを読み上げ、警告済み状態を維持する。 */
-    fun determineManualReadoutNoItems(state: LmuWindowsNarratorState): LmuWindowsNarratorReadoutDecision =
-        LmuWindowsNarratorReadoutDecision(
+    /** 対応項目の現在値を保存順に連結し、警告済み状態を維持する。 */
+    fun determineManualReadout(
+        state: LmuWindowsNarratorState,
+        items: List<LmuWindowsManualReadoutItem>,
+    ): LmuWindowsNarratorReadoutDecision {
+        val supportedItems = items.filter { manualReadoutItemName(it.key).isNotEmpty() }
+        val key =
+            if (supportedItems.firstOrNull()?.key == LmuWindowsReadoutItemKey.TyreWear.Root.value) {
+                LmuWindowsReadoutItemKey.TyreWear.Root
+            } else {
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+            }
+        val text =
+            when {
+                supportedItems.isEmpty() -> {
+                    LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
+                }
+
+                supportedItems.all { it.ratio == null } -> {
+                    LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
+                }
+
+                else -> {
+                    supportedItems
+                        .map { item ->
+                            val percentage = item.ratio?.let { (it * PERCENTAGE_SCALE).roundToInt() }
+                            when {
+                                percentage == null -> {
+                                    "${manualReadoutItemName(item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
+                                }
+
+                                item.key == LmuWindowsReadoutItemKey.TyreWear.Root.value -> {
+                                    formatLmuWindowsTyreWearReadoutText(item.textTemplate, percentage)
+                                }
+
+                                else -> {
+                                    formatLmuWindowsRemainingVirtualEnergyReadoutText(item.textTemplate, percentage)
+                                }
+                            }
+                        }.filter { it.isNotBlank() }
+                        .joinToString("、")
+                }
+            }
+        return LmuWindowsNarratorReadoutDecision(
             state = state,
-            events =
-                listOf(
-                    LmuWindowsRemainingVirtualEnergyCurrentValue(
-                        0,
-                        resolvedText = LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT,
-                    ),
-                ),
+            events = listOf(LmuWindowsManualReadoutText(key, text)),
         )
+    }
 
     /** 自動読み上げスイッチに関係なく現在の残量（未受信・鮮度切れならデータ無し）を読み上げ、警告済み状態を維持する。 */
     fun determineManualRemainingVirtualEnergyCurrentValue(
@@ -573,33 +611,6 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                     ),
                 ),
         )
-
-    /** 最も摩耗したタイヤの現在値を読み上げ、警告済み状態を維持する。 */
-    fun determineManualTyreWearCurrentValue(
-        state: LmuWindowsNarratorState,
-        data: LmuWindowsTyreWearData?,
-        textTemplate: String? = null,
-    ): LmuWindowsNarratorReadoutDecision {
-        val percentage =
-            data
-                ?.let { it.wheels.values.minOrNull() }
-                ?.let { (it.value * PERCENTAGE_SCALE).roundToInt() }
-        return LmuWindowsNarratorReadoutDecision(
-            state = state,
-            events =
-                listOf(
-                    LmuWindowsTyreWearCurrentValue(
-                        percentage = percentage ?: 0,
-                        resolvedText =
-                            if (percentage == null) {
-                                LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
-                            } else {
-                                textTemplate?.let { formatLmuWindowsTyreWearReadoutText(it, percentage) }
-                            },
-                    ),
-                ),
-        )
-    }
 
     fun determinePitTimingVirtualEnergy(
         state: LmuWindowsNarratorState,

@@ -17,6 +17,7 @@ import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
 import kurou.kodriver.domain.engine.LmuWindowsFullCourseYellow
+import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
@@ -27,9 +28,9 @@ import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
-import kurou.kodriver.domain.engine.LmuWindowsTyreWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -142,6 +143,65 @@ class LmuWindowsReadoutTextSpeakerTest {
         )
 
     @Test
+    fun `手動セットは連結本文を一回だけ読み上げる`() =
+        runTest {
+            val text = "VE50%、タイヤ80%"
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText(text, volume = VOLUME) } just Runs
+            speaker(LmuWindowsManualReadoutText(LmuWindowsReadoutItemKey.TyreWear.Root, text), VOLUME)
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText(text, volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `手動セットは解決済み本文を読み設定を取得しない`() =
+        runTest {
+            val event = LmuWindowsManualReadoutText(LmuWindowsReadoutItemKey.TyreWear.Root, "元の文", "解決済み")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("解決済み", volume = VOLUME) } just Runs
+            assertEquals("解決済み", speaker.readoutText(event))
+            speaker(event, VOLUME)
+            verify(exactly = 0) { observeTyreWearText() }
+            verify(exactly = 0) { observeRemainingText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `手動セットはTTS利用不可ならnullを返し読み上げない`() =
+        runTest {
+            val text = "タイヤ80%、VE50%"
+            val event = LmuWindowsManualReadoutText(LmuWindowsReadoutItemKey.TyreWear.Root, text)
+            coEvery { checkTextToSpeechAvailable() } returns false
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(text, volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `手動セットは未解決と解決済みの空文字や空白を読み上げない`() =
+        runTest {
+            val key = LmuWindowsReadoutItemKey.TyreWear.Root
+            listOf("", " ").forEach { text ->
+                listOf(
+                    LmuWindowsManualReadoutText(key, text),
+                    LmuWindowsManualReadoutText(key, "元の文", text),
+                ).forEach { event ->
+                    assertNull(speaker.readoutText(event))
+                    speaker(event, VOLUME)
+                }
+            }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText("", volume = VOLUME) }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
     fun `自由文言対象はデバッグ要求とLMUイベントだけ`() {
         val key = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).first()
         assertTrue(isLmuWindowsCustomSpeakEvent(DebugReadoutText(key, "入力文言")))
@@ -211,54 +271,6 @@ class LmuWindowsReadoutTextSpeakerTest {
     fun `現在のエナジー残量の解決済み本文が空白ならTTSを確認せず読み上げない`() =
         runTest {
             val event = LmuWindowsRemainingVirtualEnergyCurrentValue(42, resolvedText = " ")
-            assertNull(speaker.readoutText(event))
-            speaker(event, VOLUME)
-            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `現在のタイヤ摩耗は警告設定を取得せず既定文言で読み上げる`() =
-        runTest {
-            coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("タイヤ摩耗残り42%", volume = VOLUME) } just Runs
-            speaker(LmuWindowsTyreWearCurrentValue(42), VOLUME)
-            verify(exactly = 0) { observeTyreWearText() }
-            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("タイヤ摩耗残り42%", volume = VOLUME) }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `現在のタイヤ摩耗は解決済み本文を読み上げる`() =
-        runTest {
-            coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("残量42%", volume = VOLUME) } just Runs
-            val event = LmuWindowsTyreWearCurrentValue(42, resolvedText = "残量42%")
-            assertEquals("残量42%", event.narratedText)
-            speaker(event, VOLUME)
-            verify(exactly = 0) { observeTyreWearText() }
-            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("残量42%", volume = VOLUME) }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `現在のタイヤ摩耗のTTS利用不可では読み上げない`() =
-        runTest {
-            coEvery { checkTextToSpeechAvailable() } returns false
-            assertNull(speaker.readoutText(LmuWindowsTyreWearCurrentValue(42)))
-            speaker(LmuWindowsTyreWearCurrentValue(42), VOLUME)
-            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 0) { speakText("タイヤ摩耗残り42%", volume = VOLUME) }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `現在のタイヤ摩耗の解決済み本文が空白ならTTSを確認せず読み上げない`() =
-        runTest {
-            val event = LmuWindowsTyreWearCurrentValue(42, resolvedText = " ")
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
