@@ -25,6 +25,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
@@ -63,6 +64,26 @@ import kotlin.test.assertNotNull
 @Suppress("TooManyFunctions")
 class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
+
+    @Test
+    fun `LMUの手動判定はGT7の残り燃料キーを読み上げ対象にしない`() {
+        val state = LmuWindowsNarratorState()
+        val decision =
+            useCase.determineManualReadout(
+                state,
+                listOf(LmuWindowsManualReadoutItem(Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value, "読まない", 0.5)),
+            )
+        assertEquals(state, decision.state)
+        assertEquals(
+            listOf(
+                LmuWindowsManualReadoutText(
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    "読み上げる項目がありません",
+                ),
+            ),
+            decision.events,
+        )
+    }
 
     @Test
     fun `ブレーキとタイヤの温度はそれぞれ摂氏の有無で欠損判定し保存順に連結する`() {

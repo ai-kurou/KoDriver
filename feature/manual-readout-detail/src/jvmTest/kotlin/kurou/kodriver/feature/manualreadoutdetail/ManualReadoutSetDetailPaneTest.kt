@@ -20,6 +20,7 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.text.TextRange
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
@@ -35,6 +36,40 @@ import kotlin.test.assertEquals
 class ManualReadoutSetDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `GT7の残り燃料を追加して文言を編集し既定文言に戻せる`() {
+        val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    setNumber = 1,
+                    availableItemKeys = manualReadoutItemKeys(Simulator.Gt7Ps5.id),
+                ),
+            )
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
+                    onItemTextChanged = { item, text ->
+                        state.value = state.value.copy(itemTexts = mapOf(item to text))
+                    },
+                    onDelete = {},
+                    showHotkey = false,
+                )
+            }
+        }
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("残り燃料").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
+        rule.onNodeWithText("{percent} は現在の残量（%）に置き換わります").assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("残り{percent}%")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("残り50%")
+        assertEquals("残り{percent}%", state.value.itemTexts[key])
+        rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
+    }
 
     @Test
     fun `タイヤ温度を追加すると既定文言とプレビューを表示する`() {

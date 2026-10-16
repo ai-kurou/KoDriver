@@ -44,9 +44,14 @@ class Gt7Ps5NarratorEventProcessorTest {
     private val ttsEngine: TextToSpeechEngine = mockk()
 
     @Test
-    fun `手動イベントをキューに追加しテレメトリなしのログを保存する`() =
+    fun `手動イベントをキューに追加しテレメトリなしのログを保存する`() = assertQueuedManualReadout("読み上げる項目がありません")
+
+    @Test
+    fun `手動燃料の編集済み文言をキューとログで一致させる`() = assertQueuedManualReadout("残り42%")
+
+    private fun assertQueuedManualReadout(text: String) =
         runTest {
-            val event = Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")
+            val event = Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, text)
             val resolved = event.withResolvedText(event.text)
             val json = slot<String>()
             every { ttsEngine.speak(resolved, true) } just Runs

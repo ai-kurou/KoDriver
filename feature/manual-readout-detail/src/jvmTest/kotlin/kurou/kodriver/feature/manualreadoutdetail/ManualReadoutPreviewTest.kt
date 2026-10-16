@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemKeys
@@ -7,6 +8,18 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ManualReadoutPreviewTest {
+    @Test
+    fun `GT7の残り燃料の既定文言と編集文言はサンプル値に置換する`() {
+        val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
+        val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
+        assertEquals("燃料は残り50パーセント", manualReadoutPreview(state))
+        assertEquals(
+            "残り50% {unknown}",
+            manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}% {unknown}"))),
+        )
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+    }
+
     @Test
     fun `タイヤ温度の既定文言と編集文言はサンプル値に置換する`() {
         val key = LmuWindowsReadoutItemKey.TyreTemperature.Root.value

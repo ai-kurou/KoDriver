@@ -64,6 +64,7 @@ internal class Gt7Ps5NarratorEventProcessor(
         )
     }
 
+    /** セット内の編集文言と現在値は判定時に解決済み。キューとログへ同じ本文を渡す。 */
     suspend fun processManualReadout(
         events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,

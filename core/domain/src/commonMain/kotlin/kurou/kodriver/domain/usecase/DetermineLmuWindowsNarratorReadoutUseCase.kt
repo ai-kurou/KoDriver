@@ -45,12 +45,14 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
+import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.model.manualReadoutItemName
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.roundToInt
@@ -546,7 +548,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         state: LmuWindowsNarratorState,
         items: List<LmuWindowsManualReadoutItem>,
     ): LmuWindowsNarratorReadoutDecision {
-        val supportedItems = items.filter { manualReadoutItemName(it.key).isNotEmpty() }
+        val supportedItems = items.filter { it.key in manualReadoutItemKeys(Simulator.LmuWindows.id) }
         val key =
             when (supportedItems.firstOrNull()?.key) {
                 LmuWindowsReadoutItemKey.TyreWear.Root.value -> LmuWindowsReadoutItemKey.TyreWear.Root

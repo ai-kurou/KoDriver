@@ -16,6 +16,7 @@ import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5ManualReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelCurrentValue
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
@@ -55,6 +56,22 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             checkAvailable,
             speakText,
         )
+
+    @Test
+    fun `手動燃料残量は自動読み上げ文言を参照せず既定文言と解決済み文言を読む`() =
+        runTest {
+            val event = Gt7Ps5RemainingFuelCurrentValue(42)
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("燃料は残り42パーセント", volume = 80) } just Runs
+            coEvery { speakText("残り42%", volume = 80) } just Runs
+            assertEquals("燃料は残り42パーセント", speaker.readoutText(event))
+            speaker(event, 80)
+            speaker(event.withResolvedText("残り42%"), 80)
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("燃料は残り42パーセント", volume = 80) }
+            coVerify(exactly = 1) { speakText("残り42%", volume = 80) }
+            confirmVerified(checkAvailable, speakText, observeFuelText)
+        }
 
     @Test
     fun `手動イベントの本文と解決済み文言を再生する`() =

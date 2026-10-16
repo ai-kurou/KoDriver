@@ -29,6 +29,17 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class SpeechEventTest {
     @Test
+    fun `GT7の手動燃料残量はRootキーと既定文言と解決済み本文を持つ`() {
+        val event = Gt7Ps5RemainingFuelCurrentValue(42)
+        assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)
+        assertEquals("燃料は残り42パーセント", event.narratedText)
+        val resolved = event.withResolvedText("残り42%")
+        assertEquals("残り42%", resolved.resolvedText)
+        assertEquals("残り42%", resolved.narratedText)
+        assertEquals(42, resolved.percent)
+    }
+
+    @Test
     fun `GT7の手動文言はキーと本文を保持し解決済み文言を優先する`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root
         val event = Gt7Ps5ManualReadoutText(key, "読み上げる項目がありません")

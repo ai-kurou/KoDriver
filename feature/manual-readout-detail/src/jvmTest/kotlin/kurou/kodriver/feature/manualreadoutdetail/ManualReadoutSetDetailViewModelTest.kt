@@ -14,12 +14,14 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
@@ -96,6 +98,35 @@ class ManualReadoutSetDetailViewModelTest {
             speakText,
         )
     }
+
+    @Test
+    fun `GT7の残り燃料は項目追加と編集文言をセットへ保存する`() =
+        runTest(dispatcher) {
+            val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
+            val original = ManualReadoutSet("target")
+            val added = original.copy(itemKeys = listOf(key))
+            val edited = added.copy(itemTexts = mapOf(key to "残り{percent}%"))
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(added) } answers { sets.update { listOf(added) } }
+            coEvery { repository.updateSet(edited) } answers { sets.update { listOf(edited) } }
+            val vm = viewModel(Simulator.Gt7Ps5.id)
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                assertEquals(listOf(key), vm.uiState.first { !it.isLoading }.availableItemKeys)
+                vm.addItem(key)
+                assertEquals(listOf(key), vm.uiState.first().selectedItemKeys)
+                vm.updateItemText(key, "残り{percent}%")
+                assertEquals(edited.itemTexts, vm.uiState.first().itemTexts)
+                verify(exactly = 3) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(added) }
+                coVerify(exactly = 1) { repository.updateSet(edited) }
+                confirmVerified(repository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
 
     @Test
     fun `上限直前では末尾へ追加し削除で文言と残りの順序を保持する`() =

@@ -16,11 +16,14 @@ import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
@@ -135,11 +138,15 @@ internal class Gt7Ps5NarratorViewModel(
             .stateIn(viewModelScope, SharingStarted.Eagerly, GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
 
     private var narratorState = Gt7Ps5NarratorState()
+    private var latestTelemetry: Gt7Ps5TelemetryData? = null
+    private var latestTelemetryReceivedAtMs = 0L
 
     private val telemetryFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.Gt7Ps5) {
+                    latestTelemetry = null
+                    latestTelemetryReceivedAtMs = 0L
                     emptyFlow()
                 } else {
                     myBestLapUseCases.observeGt7Ps5()
@@ -228,6 +235,8 @@ internal class Gt7Ps5NarratorViewModel(
         telemetryFlow
             .onEach { telemetry ->
                 val observedAtMs = currentTimeMs()
+                latestTelemetry = telemetry
+                latestTelemetryReceivedAtMs = observedAtMs
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
@@ -300,8 +309,14 @@ internal class Gt7Ps5NarratorViewModel(
         val observedAtMs = currentTimeMs()
         val state = narratorState
         val settings = currentSettings
-        // GT7 の項目は未実装のため、解決済みの全セットで項目なし文言を読む。
-        val decision = determineGt7Ps5NarratorReadout.determineManualReadout(state)
+        val telemetry =
+            latestTelemetry?.takeIf { observedAtMs - latestTelemetryReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
+        val percent = determineGt7Ps5NarratorReadout.currentRemainingFuelPercent(telemetry)
+        val items =
+            set.itemKeys.map { key ->
+                Gt7Ps5ManualReadoutItem(key, set.itemTexts[key] ?: manualReadoutItemTextDefault(key), percent)
+            }
+        val decision = determineGt7Ps5NarratorReadout.determineManualReadout(state, items)
         eventProcessor.processManualReadout(
             events = decision.events,
             autoReadoutOrder = autoReadoutOrder.value,
@@ -320,3 +335,5 @@ internal class Gt7Ps5NarratorViewModel(
                 tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThreshold.value,
             )
 }
+
+private const val CURRENT_VALUE_MAX_AGE_MS = 5_000L

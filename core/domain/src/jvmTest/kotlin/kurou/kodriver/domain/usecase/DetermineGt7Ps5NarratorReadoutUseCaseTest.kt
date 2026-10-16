@@ -10,10 +10,13 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
+import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -21,6 +24,73 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     private val useCase = DetermineGt7Ps5NarratorReadoutUseCase()
+
+    @Test
+    fun `手動燃料は編集文言とデータなしを保存順に連結し空欄と他シムのキーを除外する`() {
+        val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
+        val state = Gt7Ps5NarratorState(remainingFuelWarned = true)
+        val decision =
+            useCase.determineManualReadout(
+                state,
+                listOf(
+                    Gt7Ps5ManualReadoutItem("unknown", "読まない", 50),
+                    Gt7Ps5ManualReadoutItem(LmuWindowsReadoutItemKey.TyreWear.Root.value, "読まない", 50),
+                    Gt7Ps5ManualReadoutItem(key, "あと{percent}% {unknown}", 42),
+                    Gt7Ps5ManualReadoutItem(key, "", 20),
+                    Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(key), null),
+                    Gt7Ps5ManualReadoutItem(key, "上限外", 10),
+                ),
+            )
+        assertTrue(state === decision.state)
+        assertEquals(
+            listOf(Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, "あと42% {unknown}、残り燃料はデータがありません")),
+            decision.events,
+        )
+    }
+
+    @Test
+    fun `手動燃料は既定文言と全データなしと空白と対応項目なしを区別する`() {
+        val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
+        val cases =
+            listOf(
+                listOf(Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(key), 0)) to "燃料は残り0パーセント",
+                listOf(Gt7Ps5ManualReadoutItem(key, "任意", null)) to "残り燃料はデータがありません",
+                listOf(Gt7Ps5ManualReadoutItem(key, "  ", 100)) to "",
+                listOf(Gt7Ps5ManualReadoutItem(key, "", null)) to "",
+                listOf(Gt7Ps5ManualReadoutItem("unknown", "任意", 50)) to "読み上げる項目がありません",
+            )
+        cases.forEach { (items, text) ->
+            assertEquals(
+                listOf(Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, text)),
+                useCase.determineManualReadout(Gt7Ps5NarratorState(), items).events,
+            )
+        }
+    }
+
+    @Test
+    fun `手動燃料の現在値は整数に丸め容量で割り未受信と不正値はデータなしにする`() {
+        assertEquals(null, useCase.currentRemainingFuelPercent(null))
+        val cases =
+            listOf(
+                Triple(42.5f, 100f, 43),
+                Triple(21f, 50f, 42),
+                Triple(0f, 100f, 0),
+                Triple(120f, 100f, 100),
+                Triple(Float.NaN, 100f, null),
+                Triple(Float.POSITIVE_INFINITY, 100f, null),
+                Triple(10f, Float.NaN, null),
+                Triple(10f, Float.POSITIVE_INFINITY, null),
+                Triple(-1f, 100f, null),
+                Triple(10f, 0f, null),
+                Triple(10f, -1f, null),
+            )
+        cases.forEach { (level, capacity, expected) ->
+            assertEquals(
+                expected,
+                useCase.currentRemainingFuelPercent(telemetry(gasLevel = level, gasCapacity = capacity)),
+            )
+        }
+    }
 
     @Test
     fun `手動読み上げは固定の項目なし文言を返し自動判定の状態を変更しない`() {

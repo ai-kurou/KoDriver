@@ -20,6 +20,9 @@ import org.junit.Test
 
 class ManualReadoutSetDetailPaneScreenshotTest {
     @Test
+    fun `GT7の残り燃料の文言`() = screenshot(manualReadoutItemKeys(Simulator.Gt7Ps5.id), selected = true)
+
+    @Test
     fun `項目追加ダイアログ`() =
         composeScreenshotTest {
             setContent {

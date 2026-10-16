@@ -83,10 +83,22 @@ class ManualReadoutSetDetailWiringTest {
 
     @Test
     fun `Contentは項目保存と削除と一覧へ戻る通知を配線する`() {
+        assertItemWiring(Simulator.LmuWindows, "バーチャルエナジー残量")
+    }
+
+    @Test
+    fun `GT7のContentは残り燃料の追加と文言編集と試聴と削除を配線する`() {
+        assertItemWiring(Simulator.Gt7Ps5, "残り燃料")
+    }
+
+    private fun assertItemWiring(
+        targetSimulator: Simulator,
+        itemName: String,
+    ) {
         coEvery { ttsRepository.isAvailable() } returns true
-        every { hotkeyRepository.registrationStateStream(Simulator.LmuWindows.id, "target") } returns
+        every { hotkeyRepository.registrationStateStream(targetSimulator.id, "target") } returns
             MutableStateFlow(HotkeyRegistrationState.Unsupported)
-        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+        val key = manualReadoutItemKeys(targetSimulator.id).first()
         every { volumeRepository.volume() } returns MutableStateFlow(60)
         coEvery { playStartSound(ReadoutItemKey.fromValue(key)!!) } returns Unit
         coEvery { speakText("残量50%", volume = 60) } returns Unit
@@ -121,8 +133,8 @@ class ManualReadoutSetDetailWiringTest {
                     }
                     single<ManualReadoutHotkeyRepository> { hotkeyRepository }
                     single<ReadoutHotkeyPreferencesRepository> { debugRepository }
-                    single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) { repository }
-                    Simulator.entries.filter { it != Simulator.LmuWindows }.forEach { simulator ->
+                    single<ManualReadoutSetPreferencesRepository>(named(targetSimulator.id)) { repository }
+                    Simulator.entries.filter { it != targetSimulator }.forEach { simulator ->
                         single<ManualReadoutSetPreferencesRepository>(named(simulator.id)) { otherRepository }
                     }
                 },
@@ -133,7 +145,7 @@ class ManualReadoutSetDetailWiringTest {
                 CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
                     KoDriverTheme {
                         ManualReadoutSetDetailContent(
-                            simulatorId = Simulator.LmuWindows.id,
+                            simulatorId = targetSimulator.id,
                             setId = "target",
                             onDeleted = { returned++ },
                             canNavigateBack = true,
@@ -147,7 +159,7 @@ class ManualReadoutSetDetailWiringTest {
             rule.onNodeWithContentDescription("戻る").performClick()
             rule.runOnIdle { assertEquals(1, backed) }
             rule.onNodeWithText("＋ 項目を追加").performClick()
-            rule.onNodeWithText("バーチャルエナジー残量").performClick()
+            rule.onNodeWithText(itemName).performClick()
             rule.onNode(hasSetTextAction()).performTextReplacement("残量{percent}%")
             rule.waitForIdle()
             rule.onNodeWithText("残量{percent}%").assertIsDisplayed()
@@ -156,7 +168,7 @@ class ManualReadoutSetDetailWiringTest {
             rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
             rule.waitForIdle()
             rule.onNodeWithText(manualReadoutItemTextDefault(key)).assertIsDisplayed()
-            rule.onNodeWithContentDescription("バーチャルエナジー残量を削除").performClick()
+            rule.onNodeWithContentDescription("${itemName}を削除").performClick()
             rule.onNode(hasSetTextAction()).assertDoesNotExist()
             rule.onNodeWithContentDescription("セットを削除").performClick()
             rule.onNodeWithText("削除").performClick()

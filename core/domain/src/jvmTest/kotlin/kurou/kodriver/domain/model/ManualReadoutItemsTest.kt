@@ -5,6 +5,16 @@ import kotlin.test.assertEquals
 
 class ManualReadoutItemsTest {
     @Test
+    fun `GT7の残り燃料は既定文言と名前を持ちLMUのキーと衝突しない`() {
+        val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
+        assertEquals("残り燃料", manualReadoutItemName(key))
+        assertEquals(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, manualReadoutItemTextDefault(key))
+        assertEquals("燃料は残り42パーセント", formatGt7Ps5RemainingFuelReadoutText(manualReadoutItemTextDefault(key), 42))
+        assertEquals(emptySet(), manualReadoutItemKeys(Simulator.LmuWindows.id).toSet().intersect(setOf(key)))
+        assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
+    }
+
+    @Test
     fun `温度項目はブレーキとタイヤのみで割合項目や未知項目と区別する`() {
         val cases =
             listOf(
@@ -43,7 +53,7 @@ class ManualReadoutItemsTest {
             manualReadoutItemKeys(Simulator.LmuWindows.id),
         )
         assertEquals(emptyList(), manualReadoutItemKeys(Simulator.AceWindows.id))
-        assertEquals(emptyList(), manualReadoutItemKeys(Simulator.Gt7Ps5.id))
+        assertEquals(listOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value), manualReadoutItemKeys(Simulator.Gt7Ps5.id))
         assertEquals(emptyList(), manualReadoutItemKeys("unknown"))
     }
 
