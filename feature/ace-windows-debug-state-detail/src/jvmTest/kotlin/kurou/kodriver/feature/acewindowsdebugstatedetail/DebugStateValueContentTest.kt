@@ -10,8 +10,10 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.ExtendedColorScheme
+import kurou.kodriver.core.designsystem.HeatLevel
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.heatColor
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

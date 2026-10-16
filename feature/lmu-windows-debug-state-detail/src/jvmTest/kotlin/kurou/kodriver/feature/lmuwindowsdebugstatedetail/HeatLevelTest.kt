@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
+import kurou.kodriver.core.designsystem.HeatLevel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
