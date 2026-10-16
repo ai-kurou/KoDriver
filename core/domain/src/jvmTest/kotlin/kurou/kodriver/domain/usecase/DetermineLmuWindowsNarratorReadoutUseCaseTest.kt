@@ -65,12 +65,76 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
 
     @Test
+    fun `手動ブレーキ残量は最小パーセントを四捨五入し警告状態を維持する`() {
+        val state = LmuWindowsNarratorState(brakeWearWarned = true)
+        val data =
+            LmuWindowsBrakeWearRemainingData(
+                mapOf(
+                    WheelIndex.FRONT_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80.5f),
+                    WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 42.4f),
+                    WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 42.5f),
+                    WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 90f),
+                ),
+            )
+        val decision = useCase.determineManualBrakeWearCurrentValue(state, data)
+        assertEquals(state, decision.state)
+        assertEquals("ブレーキ残量42%", decision.events.single().narratedText)
+        assertEquals(
+            "残り42%",
+            useCase
+                .determineManualBrakeWearCurrentValue(state, data, "残り{percent}%")
+                .events
+                .single()
+                .narratedText,
+        )
+        val rounded =
+            LmuWindowsBrakeWearRemainingData(mapOf(WheelIndex.REAR_LEFT to data.wheels.getValue(WheelIndex.REAR_LEFT)))
+        assertEquals(
+            "ブレーキ残量43%",
+            useCase
+                .determineManualBrakeWearCurrentValue(state, rounded)
+                .events
+                .single()
+                .narratedText,
+        )
+        listOf(null, LmuWindowsBrakeWearRemainingData(emptyMap())).forEach { missing ->
+            val noData = useCase.determineManualBrakeWearCurrentValue(state, missing, "残り{percent}%")
+            assertEquals(state, noData.state)
+            assertEquals("データがありません", noData.events.single().narratedText)
+        }
+    }
+
+    @Test
+    fun `手動ブレーキ残量を含むセットは欠損名と空文言と保存順を反映する`() {
+        val brake = LmuWindowsReadoutItemKey.BrakeWear.Root
+        val tyre = LmuWindowsReadoutItemKey.TyreWear.Root
+        val state = LmuWindowsNarratorState(brakeWearWarned = true)
+        val brakeItem = LmuWindowsManualReadoutItem(brake.value, "ブレーキ{percent}%", 0.425)
+        val tyreItem = LmuWindowsManualReadoutItem(tyre.value, "タイヤ{percent}%", 0.8)
+        val cases =
+            listOf(
+                Triple(listOf(brakeItem, tyreItem), brake, "ブレーキ43%、タイヤ80%"),
+                Triple(listOf(tyreItem, brakeItem), tyre, "タイヤ80%、ブレーキ43%"),
+                Triple(listOf(brakeItem.copy(ratio = null), tyreItem), brake, "ブレーキ残量はデータがありません、タイヤ80%"),
+                Triple(listOf(brakeItem.copy(ratio = null)), brake, "データがありません"),
+                Triple(listOf(brakeItem.copy(textTemplate = "")), brake, ""),
+            )
+        cases.forEach { (items, key, text) ->
+            val decision = useCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            assertEquals(key, decision.events.single().readoutItemKey)
+            assertEquals(text, decision.events.single().narratedText)
+        }
+    }
+
+    @Test
     fun `手動セットは比率を整数パーセントへ四捨五入して警告状態を維持する`() {
         val state = LmuWindowsNarratorState(tyreWearWarned = true, remainingVirtualEnergyWarned = true)
         val keys =
             listOf(
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                 LmuWindowsReadoutItemKey.TyreWear.Root,
+                LmuWindowsReadoutItemKey.BrakeWear.Root,
             )
         keys.forEach { key ->
             listOf(0.0 to "0", 0.424 to "42", 0.425 to "43", 1.0 to "100").forEach { (ratio, percent) ->

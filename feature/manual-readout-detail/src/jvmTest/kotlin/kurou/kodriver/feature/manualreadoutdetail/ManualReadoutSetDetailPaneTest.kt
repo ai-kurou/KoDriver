@@ -36,6 +36,29 @@ class ManualReadoutSetDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `ブレーキ残量を追加すると既定文言とプレビューを表示する`() {
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    setNumber = 1,
+                    availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
+                ),
+            )
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
+                    onDelete = {},
+                )
+            }
+        }
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("ブレーキ残量").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("ブレーキ残量50%")
+    }
+
+    @Test
     fun `項目選択時は既定文言の残量を埋めた完成文を表示し空欄では非表示にする`() {
         val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
         val state =
@@ -149,6 +172,8 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("エネルギー").assertExists()
         rule.onNodeWithText("タイヤ").assertExists()
+        rule.onNodeWithText("ブレーキ").assertExists()
+        rule.onNodeWithText("ブレーキ残量").assertExists()
         rule.onNodeWithText("タイヤ摩耗").assertExists()
         rule.onNodeWithText("キャンセル").performClick()
         rule.onNodeWithText("バーチャルエナジー残量").assertDoesNotExist()

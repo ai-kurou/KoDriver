@@ -4,6 +4,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
@@ -265,6 +266,21 @@ data class LmuWindowsRemainingVirtualEnergyCurrentValue(
 
     override fun withResolvedText(text: String): LmuWindowsRemainingVirtualEnergyCurrentValue =
         copy(resolvedText = text)
+}
+
+/** 最も残量が少ないブレーキの現在の残り（%）を読み上げる手動読み上げイベント。 */
+data class LmuWindowsBrakeWearCurrentValue(
+    val percentage: Int,
+    override val resolvedText: String? = null,
+) : LmuWindowsSpeechEvent {
+    override val readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root
+    override val narratedText =
+        resolvedText ?: formatLmuWindowsBrakeWearReadoutText(
+            LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT,
+            percentage,
+        )
+
+    override fun withResolvedText(text: String): LmuWindowsBrakeWearCurrentValue = copy(resolvedText = text)
 }
 
 data class LmuWindowsMyBestLap(

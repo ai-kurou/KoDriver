@@ -7,6 +7,7 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
             listOf(
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
                 LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                LmuWindowsReadoutItemKey.BrakeWear.Root.value,
             )
         }
 
@@ -26,6 +27,10 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
             LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT
         }
 
+        LmuWindowsReadoutItemKey.BrakeWear.Root.value -> {
+            LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT
+        }
+
         else -> {
             ""
         }
@@ -36,6 +41,7 @@ fun manualReadoutItemName(itemKey: String): String =
     when (itemKey) {
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> "バーチャルエナジー残量"
         LmuWindowsReadoutItemKey.TyreWear.Root.value -> "タイヤ摩耗"
+        LmuWindowsReadoutItemKey.BrakeWear.Root.value -> "ブレーキ残量"
         else -> ""
     }
 

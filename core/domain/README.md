@@ -72,7 +72,7 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 
 `ManualReadoutSet` はセット識別子・読み上げ項目キーのリスト・項目キーごとの文言テンプレート `itemTexts` を持つ。
 文言が未保存なら `manualReadoutItemTextDefault` の既定値を使い、保存済みの空文字は読み上げない。
-LMU のバーチャルエナジー残量・タイヤ摩耗は自動側と共通の `{percent}` 置換・未知プレースホルダー検出を使う。
+LMU のバーチャルエナジー残量・タイヤ摩耗・ブレーキ残量は自動側と共通の `{percent}` 置換・未知プレースホルダー検出を使う。
 `ObserveManualReadoutSetsUseCase` / `SaveManualReadoutSetsUseCase` は
 `ManualReadoutSetPreferencesRepository` を通じてセット一覧を取得・保存する。
 `AddManualReadoutSetUseCase` は保存済み一覧の末尾へ1セットをアトミックに追加する。
@@ -87,3 +87,5 @@ LMU のバーチャルエナジー残量・タイヤ摩耗は自動側と共通�
 手動タイヤ摩耗は4輪の最小残存率×100を四捨五入し、既定文言「タイヤ摩耗残り{percent}%」へ置換する。未受信・鮮度切れ・空の wheels はデータ無しとして扱う。自動警告の閾値・状態は変更しない。
 
 LMU の手動セットは鮮度判定済みの残存率を `LmuWindowsManualReadoutItem` で受け取り、`determineManualReadout` 内で既存の `PERCENTAGE_SCALE` を使って整数%へ四捨五入する。各項目の文を保存順に「、」で連結し、`LmuWindowsManualReadoutText` の1イベントで読み上げる。項目のデータが無い場合は `manualReadoutItemName` の日本語名を使った「<項目名>はデータがありません」を連結する。全項目がデータ無しなら、1項目の場合も含め「データがありません」のみ。対象項目なしは「読み上げる項目がありません」を維持する。
+
+手動ブレーキ残量は `BrakeWear.Root` に対応し、4輪の `remainingPercent`（0〜100）の最小値を四捨五入して、既定文言「ブレーキ残量{percent}%」へ置換する。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。未受信・受信から5秒超・空の wheels はデータ無しとして扱い、自動警告の前回値・警告済み状態は変更しない。
