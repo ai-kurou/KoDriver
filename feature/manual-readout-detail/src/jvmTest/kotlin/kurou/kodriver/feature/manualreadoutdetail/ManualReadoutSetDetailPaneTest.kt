@@ -37,7 +37,7 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `項目選択時は既定文言の残量を埋めた完成文を表示し空欄では非表示にする`() {
-        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
@@ -66,7 +66,7 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `未選択時は完成文を表示しない`() {
-        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
@@ -148,11 +148,14 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("試聴").assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("エネルギー").assertExists()
+        rule.onNodeWithText("タイヤ").assertExists()
+        rule.onNodeWithText("タイヤ摩耗").assertExists()
         rule.onNodeWithText("キャンセル").performClick()
         rule.onNodeWithText("バーチャルエナジー残量").assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("バーチャルエナジー残量").performClick()
-        rule.onNodeWithText("＋ 項目を追加").assertIsNotEnabled()
+        rule.onNodeWithText("タイヤ摩耗").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤ摩耗残り50%")
+        rule.onNodeWithText("＋ 項目を追加").assertIsEnabled()
         rule.onNodeWithText("試聴").assertExists()
         rule.onNodeWithContentDescription("セットを削除").performClick()
         rule.onNodeWithText("キャンセル").performClick()
@@ -178,7 +181,7 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `選択時だけ文言欄を表示し入力と挿入と警告とリセットと文字数上限を扱う`() {
-        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
         val defaultText = manualReadoutItemTextDefault(key)
         val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
         val saved = mutableListOf<Pair<String, String>>()
@@ -323,7 +326,7 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `プレビュー再生を通知しTTS不可と空文言では無効にする`() {
-        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(

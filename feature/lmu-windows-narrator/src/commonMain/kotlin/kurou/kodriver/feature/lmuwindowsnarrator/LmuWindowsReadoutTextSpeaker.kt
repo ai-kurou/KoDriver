@@ -24,6 +24,7 @@ import kurou.kodriver.domain.engine.LmuWindowsThresholdWarningSpeechEvent
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
+import kurou.kodriver.domain.engine.LmuWindowsTyreWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsVehicleApproachSpeechEvent
 import kurou.kodriver.domain.engine.LmuWindowsVehicleDamageSpeechEvent
@@ -105,6 +106,7 @@ internal class LmuWindowsReadoutTextSpeaker(
             is LmuWindowsThresholdWarningSpeechEvent -> thresholdWarningText(event)
             is LmuWindowsMyBestLap -> myBestLapText(event)
             is LmuWindowsRemainingVirtualEnergyCurrentValue -> event.narratedText
+            is LmuWindowsTyreWearCurrentValue -> event.narratedText
             is LmuWindowsPitTimingWarning -> pitTimingText(event)
         }
 

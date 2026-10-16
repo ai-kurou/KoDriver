@@ -86,7 +86,7 @@ class ManualReadoutSetDetailWiringTest {
         coEvery { ttsRepository.isAvailable() } returns true
         every { hotkeyRepository.registrationStateStream(Simulator.LmuWindows.id, "target") } returns
             MutableStateFlow(HotkeyRegistrationState.Unsupported)
-        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).single()
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
         every { volumeRepository.volume() } returns MutableStateFlow(60)
         coEvery { playStartSound(ReadoutItemKey.fromValue(key)!!) } returns Unit
         coEvery { speakText("残量50%", volume = 60) } returns Unit

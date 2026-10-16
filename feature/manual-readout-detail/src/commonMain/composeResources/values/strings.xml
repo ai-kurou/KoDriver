@@ -38,4 +38,6 @@
     <string name="manual_readout_item_limit">1セットに追加できる項目は%1$dつまでです</string>
     <string name="manual_readout_preview_play">試聴</string>
     <string name="manual_readout_preview_stop">試聴を停止</string>
+    <string name="manual_readout_tyre_wear">タイヤ摩耗</string>
+    <string name="manual_readout_category_tyre">タイヤ</string>
 </resources>

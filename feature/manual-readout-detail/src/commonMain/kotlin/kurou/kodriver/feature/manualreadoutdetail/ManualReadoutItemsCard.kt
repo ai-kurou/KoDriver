@@ -40,11 +40,13 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_add_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_energy
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_tyre
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_drag_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_empty_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_energy
@@ -55,6 +57,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_play
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_stop
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remove_item
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_wear
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableColumn
@@ -69,8 +72,11 @@ private val itemPresentations =
     mapOf(
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
             ManualReadoutItemPresentation(Res.string.manual_readout_energy, Res.string.manual_readout_category_energy),
+        LmuWindowsReadoutItemKey.TyreWear.Root.value to
+            ManualReadoutItemPresentation(Res.string.manual_readout_tyre_wear, Res.string.manual_readout_category_tyre),
     )
 
+private const val PREVIEW_TYRE_WEAR_PERCENT = 50
 private const val PREVIEW_ENERGY_PERCENT = 50
 
 internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): String =
@@ -81,6 +87,10 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
                 when (itemKey) {
                     LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> {
                         formatLmuWindowsRemainingVirtualEnergyReadoutText(it, PREVIEW_ENERGY_PERCENT)
+                    }
+
+                    LmuWindowsReadoutItemKey.TyreWear.Root.value -> {
+                        formatLmuWindowsTyreWearReadoutText(it, PREVIEW_TYRE_WEAR_PERCENT)
                     }
 
                     else -> {

@@ -97,13 +97,13 @@ class ManualReadoutSetDetailPaneScreenshotTest {
     @Test
     fun `編集文言と未知プレースホルダー警告`() {
         val keys = manualReadoutItemKeys(Simulator.LmuWindows.id)
-        screenshot(keys, selected = true, itemTexts = mapOf(keys.single() to "残量{unknown}%"))
+        screenshot(keys, selected = true, itemTexts = mapOf(keys.first() to "残量{unknown}%"))
     }
 
     @Test
     fun `空欄の文言`() {
         val keys = manualReadoutItemKeys(Simulator.LmuWindows.id)
-        screenshot(keys, selected = true, itemTexts = mapOf(keys.single() to ""))
+        screenshot(keys, selected = true, itemTexts = keys.associateWith { "" })
     }
 
     @Test

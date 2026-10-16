@@ -295,6 +295,33 @@ internal class LmuWindowsNarratorEventProcessor(
         if (remainingVirtualEnergy != null) previousRemainingVirtualEnergy = remainingVirtualEnergy
     }
 
+    suspend fun processTyreWearCurrentValue(
+        tyreWear: LmuWindowsTyreWearData?,
+        events: List<ReadoutTextEvent>,
+        autoReadoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: LmuWindowsTelemetryLogContext,
+    ) {
+        val previous = previousTyreWear
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
+            if (tyreWear == null) {
+                """{"state":${TelemetryLogJson.encodeToString(logContext.state)},""" +
+                    """"settings":${TelemetryLogJson.encodeToString(logContext.settings)},""" +
+                    """"observedAtMs":$observedAtMs}"""
+            } else {
+                buildTelemetryLogJson(
+                    state = logContext.state,
+                    previous = previous,
+                    current = tyreWear,
+                    settings = logContext.settings,
+                    observedAtMs = observedAtMs,
+                    finalState = logContext.finalState,
+                )
+            }
+        }
+    }
+
     suspend fun processTyreTemperature(
         input: TyreTemperatureReadoutInput,
         events: List<ReadoutTextEvent>,

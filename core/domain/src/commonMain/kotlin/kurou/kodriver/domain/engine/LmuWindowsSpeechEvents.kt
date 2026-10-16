@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DE
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
@@ -265,6 +266,21 @@ data class LmuWindowsRemainingVirtualEnergyCurrentValue(
 
     override fun withResolvedText(text: String): LmuWindowsRemainingVirtualEnergyCurrentValue =
         copy(resolvedText = text)
+}
+
+/** 最も摩耗したタイヤの現在の残り（%）を読み上げる手動読み上げイベント。 */
+data class LmuWindowsTyreWearCurrentValue(
+    val percentage: Int,
+    override val resolvedText: String? = null,
+) : LmuWindowsSpeechEvent {
+    override val readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root
+    override val narratedText =
+        resolvedText ?: formatLmuWindowsTyreWearReadoutText(
+            LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT,
+            percentage,
+        )
+
+    override fun withResolvedText(text: String): LmuWindowsTyreWearCurrentValue = copy(resolvedText = text)
 }
 
 data class LmuWindowsMyBestLap(
