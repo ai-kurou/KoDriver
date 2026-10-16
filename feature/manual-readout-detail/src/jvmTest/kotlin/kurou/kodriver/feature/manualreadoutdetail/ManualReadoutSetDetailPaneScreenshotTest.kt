@@ -95,6 +95,17 @@ class ManualReadoutSetDetailPaneScreenshotTest {
         }
 
     @Test
+    fun `タイヤ温度の文言欄と連結プレビュー`() =
+        screenshot(
+            listOf(
+                LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
+                LmuWindowsReadoutItemKey.BrakeWear.Root.value,
+                LmuWindowsReadoutItemKey.TyreWear.Root.value,
+            ),
+            selected = true,
+        )
+
+    @Test
     fun `ブレーキ温度の文言欄と連結プレビュー`() =
         screenshot(
             listOf(

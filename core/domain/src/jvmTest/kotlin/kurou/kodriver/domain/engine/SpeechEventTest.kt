@@ -234,6 +234,7 @@ class SpeechEventTest {
     fun `手動連結イベントは指定キーと本文を保持し解決済み文言を優先する`() {
         listOf(
             LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+            LmuWindowsReadoutItemKey.TyreTemperature.Root,
             LmuWindowsReadoutItemKey.TyreWear.Root,
             LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
         ).forEach { key ->

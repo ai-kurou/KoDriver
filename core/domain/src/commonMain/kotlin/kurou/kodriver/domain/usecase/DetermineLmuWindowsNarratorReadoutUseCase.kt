@@ -48,7 +48,9 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
+import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.model.manualReadoutItemName
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.roundToInt
@@ -550,6 +552,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 LmuWindowsReadoutItemKey.TyreWear.Root.value -> LmuWindowsReadoutItemKey.TyreWear.Root
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value -> LmuWindowsReadoutItemKey.BrakeWear.Root
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> LmuWindowsReadoutItemKey.BrakeTemperature.Root
+                LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> LmuWindowsReadoutItemKey.TyreTemperature.Root
                 else -> LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
             }
         val text =
@@ -559,7 +562,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 }
 
                 supportedItems.all {
-                    if (it.key == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) {
+                    if (isLmuWindowsManualReadoutTemperatureItem(it.key)) {
                         it.celsius == null
                     } else {
                         it.ratio == null
@@ -583,9 +586,13 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     private fun manualReadoutItemText(item: LmuWindowsManualReadoutItem): String {
         val noDataText = "${manualReadoutItemName(item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
-        if (item.key == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) {
+        if (isLmuWindowsManualReadoutTemperatureItem(item.key)) {
             return item.celsius?.let {
-                formatLmuWindowsBrakeTemperatureReadoutText(item.textTemplate, it.roundToInt())
+                if (item.key == LmuWindowsReadoutItemKey.TyreTemperature.Root.value) {
+                    formatLmuWindowsTyreTemperatureReadoutText(item.textTemplate, it.roundToInt())
+                } else {
+                    formatLmuWindowsBrakeTemperatureReadoutText(item.textTemplate, it.roundToInt())
+                }
             } ?: noDataText
         }
         val percentage = item.ratio?.let { (it * PERCENTAGE_SCALE).roundToInt() } ?: return noDataText

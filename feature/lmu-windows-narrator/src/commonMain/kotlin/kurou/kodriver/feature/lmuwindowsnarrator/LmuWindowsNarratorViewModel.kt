@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
@@ -29,6 +30,7 @@ import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -36,6 +38,7 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
@@ -519,13 +522,22 @@ internal class LmuWindowsNarratorViewModel(
                 )
             }.launchIn(viewModelScope)
 
+    private var latestTyreTemperature: LmuWindowsTyreCarcassTemperatureData? = null
+    private var latestTyreTemperatureReceivedAtMs: Long = 0L
+
     @Suppress("UnusedPrivateProperty")
     private val tyreTemperatureJob =
         selectedSimulator
             .flatMapLatest { simulator ->
+                latestTyreTemperature = null
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
                 combine(
-                    tyreTemperatureUseCases.observeTyreCarcassTemperature(),
+                    tyreTemperatureUseCases
+                        .observeTyreCarcassTemperature()
+                        .onEach {
+                            latestTyreTemperature = it
+                            latestTyreTemperatureReceivedAtMs = currentTimeMs()
+                        },
                     raceFlagsFlow,
                 ) { tyreCarcassTemperature, raceFlags -> tyreCarcassTemperature to raceFlags }
             }.onEach { (tyreCarcassTemperature, raceFlags) ->
@@ -785,10 +797,14 @@ internal class LmuWindowsNarratorViewModel(
             latestBrakeTemperature?.takeIf {
                 observedAtMs - latestBrakeTemperatureReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
             }
+        val tyreTemperature =
+            latestTyreTemperature?.takeIf {
+                observedAtMs - latestTyreTemperatureReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+            }
         val items =
             set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }.map { key ->
                 val ratio =
-                    if (key == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) {
+                    if (isLmuWindowsManualReadoutTemperatureItem(key)) {
                         null
                     } else if (key == LmuWindowsReadoutItemKey.BrakeWear.Root.value) {
                         brakeWear?.let { data ->
@@ -807,7 +823,9 @@ internal class LmuWindowsNarratorViewModel(
                     }
                 val celsius =
                     if (key == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) {
-                        brakeTemperature?.let { data -> data.wheels.values.maxOfOrNull { it.value } }
+                        brakeTemperature?.let { data -> maxFiniteCelsius(data.wheels.values) }
+                    } else if (key == LmuWindowsReadoutItemKey.TyreTemperature.Root.value) {
+                        tyreTemperature?.let { data -> maxFiniteCelsius(data.wheels.values) }
                     } else {
                         null
                     }
@@ -933,6 +951,13 @@ internal class LmuWindowsNarratorViewModel(
                 pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
             )
 }
+
+/** 非有限値（NaN・無限大）を除いた最高温度。有効な値が無ければ null（データ無し扱い）。 */
+private fun maxFiniteCelsius(readings: Collection<CelsiusReading>): Float? =
+    readings
+        .map { it.value }
+        .filter { it.isFinite() }
+        .maxOrNull()
 
 /**
  * バーチャルエナジー・タイヤ摩耗のピットタイミング警告が同一tickで両方発火した場合、
