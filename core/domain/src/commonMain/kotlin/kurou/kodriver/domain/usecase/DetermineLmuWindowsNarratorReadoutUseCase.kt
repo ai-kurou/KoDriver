@@ -3,6 +3,7 @@ package kurou.kodriver.domain.usecase
 import kotlinx.serialization.Serializable
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
+import kurou.kodriver.domain.engine.LmuWindowsBrakeWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
 import kurou.kodriver.domain.engine.LmuWindowsCarLeft
 import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
@@ -44,6 +45,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.manualReadoutItemName
@@ -543,10 +545,10 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val supportedItems = items.filter { manualReadoutItemName(it.key).isNotEmpty() }
         val key =
-            if (supportedItems.firstOrNull()?.key == LmuWindowsReadoutItemKey.TyreWear.Root.value) {
-                LmuWindowsReadoutItemKey.TyreWear.Root
-            } else {
-                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+            when (supportedItems.firstOrNull()?.key) {
+                LmuWindowsReadoutItemKey.TyreWear.Root.value -> LmuWindowsReadoutItemKey.TyreWear.Root
+                LmuWindowsReadoutItemKey.BrakeWear.Root.value -> LmuWindowsReadoutItemKey.BrakeWear.Root
+                else -> LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
             }
         val text =
             when {
@@ -565,6 +567,10 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                             when {
                                 percentage == null -> {
                                     "${manualReadoutItemName(item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
+                                }
+
+                                item.key == LmuWindowsReadoutItemKey.BrakeWear.Root.value -> {
+                                    formatLmuWindowsBrakeWearReadoutText(item.textTemplate, percentage)
                                 }
 
                                 item.key == LmuWindowsReadoutItemKey.TyreWear.Root.value -> {
@@ -611,6 +617,28 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                     ),
                 ),
         )
+
+    /** 最も残量が少ないブレーキの現在値を読み上げ、警告済み状態を維持する。 */
+    fun determineManualBrakeWearCurrentValue(
+        state: LmuWindowsNarratorState,
+        data: LmuWindowsBrakeWearRemainingData?,
+        textTemplate: String? = null,
+    ): LmuWindowsNarratorReadoutDecision {
+        val minimum = if (data == null) null else data.wheels.values.minOfOrNull { it.remainingPercent }
+        val percentage = if (minimum == null) null else minimum.roundToInt()
+        val resolvedText =
+            if (percentage == null) {
+                LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
+            } else if (textTemplate == null) {
+                null
+            } else {
+                formatLmuWindowsBrakeWearReadoutText(textTemplate, percentage)
+            }
+        return LmuWindowsNarratorReadoutDecision(
+            state = state,
+            events = listOf(LmuWindowsBrakeWearCurrentValue(percentage ?: 0, resolvedText)),
+        )
+    }
 
     fun determinePitTimingVirtualEnergy(
         state: LmuWindowsNarratorState,

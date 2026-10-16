@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.first
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
+import kurou.kodriver.domain.engine.LmuWindowsBrakeWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
 import kurou.kodriver.domain.engine.LmuWindowsCarLeft
 import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
@@ -106,6 +107,7 @@ internal class LmuWindowsReadoutTextSpeaker(
             is LmuWindowsThresholdWarningSpeechEvent -> thresholdWarningText(event)
             is LmuWindowsMyBestLap -> myBestLapText(event)
             is LmuWindowsRemainingVirtualEnergyCurrentValue -> event.narratedText
+            is LmuWindowsBrakeWearCurrentValue -> event.narratedText
             is LmuWindowsManualReadoutText -> event.narratedText
             is LmuWindowsPitTimingWarning -> pitTimingText(event)
         }

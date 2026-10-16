@@ -29,6 +29,16 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class SpeechEventTest {
     @Test
+    fun `現在のブレーキ残量は既定文言とRootキーを持ち解決済み文言を反映する`() {
+        val event = LmuWindowsBrakeWearCurrentValue(42)
+        assertEquals(42, event.percentage)
+        assertEquals("ブレーキ残量42%", event.narratedText)
+        assertEquals(LmuWindowsReadoutItemKey.BrakeWear.Root, event.readoutItemKey)
+        assertEquals("残り42%", event.withResolvedText("残り42%").narratedText)
+        assertEquals("", event.withResolvedText("").narratedText)
+    }
+
+    @Test
     fun `LMUイベントだけがLMU由来の共通マーカーを持つ`() {
         val events =
             listOf<ReadoutTextEvent>(

@@ -295,6 +295,33 @@ internal class LmuWindowsNarratorEventProcessor(
         if (remainingVirtualEnergy != null) previousRemainingVirtualEnergy = remainingVirtualEnergy
     }
 
+    suspend fun processBrakeWearCurrentValue(
+        brakeWear: LmuWindowsBrakeWearRemainingData?,
+        events: List<ReadoutTextEvent>,
+        autoReadoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: LmuWindowsTelemetryLogContext,
+    ) {
+        val previous = previousBrakeWear
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
+            if (brakeWear == null) {
+                """{"state":${TelemetryLogJson.encodeToString(logContext.state)},""" +
+                    """"settings":${TelemetryLogJson.encodeToString(logContext.settings)},""" +
+                    """"observedAtMs":$observedAtMs}"""
+            } else {
+                buildTelemetryLogJson(
+                    state = logContext.state,
+                    previous = previous,
+                    current = brakeWear,
+                    settings = logContext.settings,
+                    observedAtMs = observedAtMs,
+                    finalState = logContext.finalState,
+                )
+            }
+        }
+    }
+
     suspend fun processManualReadout(
         events: List<ReadoutTextEvent>,
         autoReadoutOrder: List<ReadoutItemKey>,

@@ -39,4 +39,6 @@
     <string name="manual_readout_preview_stop">試聴を停止</string>
     <string name="manual_readout_tyre_wear">タイヤ摩耗</string>
     <string name="manual_readout_category_tyre">タイヤ</string>
+    <string name="manual_readout_brake_wear">ブレーキ残量</string>
+    <string name="manual_readout_category_brake">ブレーキ</string>
 </resources>

@@ -25,6 +25,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DE
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
@@ -161,6 +162,7 @@ internal data class NarratorUseCases(
 
 // 共有メモリは短周期で届くため、これを超えて更新がなければ切断・セッション終了とみなす。
 private const val CURRENT_VALUE_MAX_AGE_MS = 5_000L
+private const val PERCENTAGE_SCALE = 100.0
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 @Suppress("LongParameterList")
@@ -581,11 +583,20 @@ internal class LmuWindowsNarratorViewModel(
                 brakeTemperatureUseCases.observeBrakeTemperature()
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
+    private var latestBrakeWear: LmuWindowsBrakeWearRemainingData? = null
+    private var latestBrakeWearReceivedAtMs: Long = 0L
+
     private val brakeWearFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
+                latestBrakeWear = null
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-                brakeWearUseCases.observeBrakeWear().filterNotNull()
+                brakeWearUseCases
+                    .observeBrakeWear()
+                    .onEach {
+                        latestBrakeWear = it
+                        latestBrakeWearReceivedAtMs = currentTimeMs()
+                    }.filterNotNull()
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     // replay なしの共有 Flow を再購読せず、共有前に最新値と受信時刻を保持する。切り替え時は破棄する。
@@ -758,10 +769,20 @@ internal class LmuWindowsNarratorViewModel(
             latestTyreWear?.takeIf {
                 observedAtMs - latestTyreWearReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
             }
+        val brakeWear =
+            latestBrakeWear?.takeIf {
+                observedAtMs - latestBrakeWearReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+            }
         val items =
             set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }.map { key ->
                 val ratio =
-                    if (key == LmuWindowsReadoutItemKey.TyreWear.Root.value) {
+                    if (key == LmuWindowsReadoutItemKey.BrakeWear.Root.value) {
+                        brakeWear?.let { data ->
+                            data.wheels.values
+                                .minOfOrNull { it.remainingPercent }
+                                ?.let { it / PERCENTAGE_SCALE }
+                        }
+                    } else if (key == LmuWindowsReadoutItemKey.TyreWear.Root.value) {
                         tyreWear
                             ?.wheels
                             ?.values

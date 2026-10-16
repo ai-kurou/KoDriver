@@ -7,8 +7,20 @@ import kotlin.test.assertEquals
 
 class ManualReadoutPreviewTest {
     @Test
-    fun `タイヤ摩耗の既定文言と編集文言はサンプル値に置換する`() {
+    fun `ブレーキ残量の既定文言と編集文言はサンプル値に置換する`() {
         val key = manualReadoutItemKeys(Simulator.LmuWindows.id).last()
+        val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
+        assertEquals("ブレーキ残量50%", manualReadoutPreview(state))
+        assertEquals(
+            "残り50% {unknown}",
+            manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}% {unknown}"))),
+        )
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+    }
+
+    @Test
+    fun `タイヤ摩耗の既定文言と編集文言はサンプル値に置換する`() {
+        val key = manualReadoutItemKeys(Simulator.LmuWindows.id)[1]
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
         assertEquals("タイヤ摩耗残り50%", manualReadoutPreview(state))
         assertEquals("残り50%", manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}%"))))

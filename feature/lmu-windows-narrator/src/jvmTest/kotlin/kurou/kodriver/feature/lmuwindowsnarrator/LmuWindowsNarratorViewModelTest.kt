@@ -695,6 +695,48 @@ class LmuWindowsNarratorViewModelTest {
     // --- 自己ベストラップ ---
 
     @Test
+    fun `手動セットはブレーキ残量とVEとタイヤを保存順に連結する`() =
+        runTest(testDispatcher) {
+            val brake = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val wear = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.BrakeWear.Root
+            createViewModel(
+                brakeWearChannel = brake,
+                remainingVirtualEnergyChannel = energy,
+                tyreWearChannel = wear,
+                manualRequestChannel = requests,
+                manualSets =
+                    listOf(
+                        ManualReadoutSet(
+                            "mixed",
+                            listOf(
+                                key.value,
+                                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
+                                LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                            ),
+                            mapOf(key.value to "ブレーキ{percent}%"),
+                        ),
+                    ),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(key to false),
+                queueEnabledOverrides = mapOf(key to false),
+            )
+            brake.send(brakeWearData(thickness = 0.035f))
+            brake.send(brakeWearData(thickness = 0.03f))
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            wear.send(tyreWear(fl = 0.7))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "mixed"))
+            assertEquals(
+                listOf("ブレーキ50%、バーチャルエナジー残量は80パーセント、タイヤ摩耗残り70%"),
+                spoken.map { it.narratedText },
+            )
+            assertEquals(key, spoken.single().readoutItemKey)
+        }
+
+    @Test
     fun `複数項目の手動依頼は欠損と鮮度を反映し依頼ごとに一発話にする`() =
         runTest(testDispatcher) {
             val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
@@ -3152,6 +3194,66 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
             assertEquals(2, spoken.size)
             assertEquals("データがありません", spoken.last().narratedText)
+        }
+
+    @Test
+    fun `ブレーキのみの手動セットはVEを読まず未受信と空輪と鮮度切れをデータ無しにする`() =
+        runTest(testDispatcher) {
+            val wear = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.BrakeWear.Root
+            var time = 0L
+            createViewModel(
+                brakeWearChannel = wear,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("brake", listOf(key.value))),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(key to false),
+                queueEnabledOverrides = mapOf(key to false),
+                currentTimeMs = { time },
+            )
+            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "brake")
+            requests.send(request)
+            wear.send(brakeWearData(thickness = 0.035f))
+            wear.send(brakeWearData(thickness = 0.03f))
+            time = 5_000L
+            requests.send(request)
+            time = 5_001L
+            requests.send(request)
+            wear.send(LmuWindowsBrakeWearData(emptyMap()))
+            requests.send(request)
+            wear.send(null)
+            requests.send(request)
+            assertEquals(
+                listOf("データがありません", "ブレーキ残量50%", "データがありません", "データがありません", "データがありません"),
+                spoken.map { it.narratedText },
+            )
+            assertEquals(listOf(key, key, key, key, key), spoken.map { it.readoutItemKey })
+        }
+
+    @Test
+    fun `手動ブレーキ残量はシミュレーター切り替えで古い値を破棄する`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            val wear = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.BrakeWear.Root
+            createViewModel(
+                brakeWearChannel = wear,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("brake", listOf(key.value))),
+                selectedSimulatorFlow = selected,
+                enabledOverrides = mapOf(key to false),
+                ttsEngine = mockTts(spoken),
+            )
+            wear.send(brakeWearData(thickness = 0.036f))
+            selected.update { Simulator.Gt7Ps5 }
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "brake"))
+            selected.update { Simulator.LmuWindows }
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "brake"))
+            assertEquals(listOf("データがありません"), spoken.map { it.narratedText })
         }
 
     @Test

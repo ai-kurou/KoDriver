@@ -15,6 +15,7 @@ import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
+import kurou.kodriver.domain.engine.LmuWindowsBrakeWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
 import kurou.kodriver.domain.engine.LmuWindowsFullCourseYellow
 import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
@@ -141,6 +142,19 @@ class LmuWindowsReadoutTextSpeakerTest {
             checkTextToSpeechAvailable = checkTextToSpeechAvailable,
             speakText = speakText,
         )
+
+    @Test
+    fun `現在のブレーキ残量は既定文言と解決済み文言を読む`() =
+        runTest {
+            coEvery { checkTextToSpeechAvailable() } returns true
+            listOf(LmuWindowsBrakeWearCurrentValue(42), LmuWindowsBrakeWearCurrentValue(42, "残り42%")).forEach { event ->
+                coEvery { speakText(event.narratedText, volume = VOLUME) } just Runs
+                speaker(event, VOLUME)
+                coVerify(exactly = 1) { speakText(event.narratedText, volume = VOLUME) }
+            }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            confirmAllMocksVerified()
+        }
 
     @Test
     fun `手動セットは連結本文を一回だけ読み上げる`() =
