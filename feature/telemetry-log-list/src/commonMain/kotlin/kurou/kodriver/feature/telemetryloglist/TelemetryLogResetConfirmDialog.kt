@@ -1,12 +1,9 @@
 package kurou.kodriver.feature.telemetryloglist
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_cancel_button
@@ -22,23 +19,13 @@ internal fun TelemetryLogResetConfirmDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(Res.string.telemetry_log_reset_confirm_title)) },
-        text = { Text(stringResource(Res.string.telemetry_log_reset_confirm_body, simulatorName)) },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(
-                    text = stringResource(Res.string.telemetry_log_reset_confirm_button),
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.telemetry_log_reset_cancel_button))
-            }
-        },
+    KoDriverDestructiveConfirmDialog(
+        title = stringResource(Res.string.telemetry_log_reset_confirm_title),
+        body = stringResource(Res.string.telemetry_log_reset_confirm_body, simulatorName),
+        confirmLabel = stringResource(Res.string.telemetry_log_reset_confirm_button),
+        dismissLabel = stringResource(Res.string.telemetry_log_reset_cancel_button),
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
         modifier = modifier,
     )
 }

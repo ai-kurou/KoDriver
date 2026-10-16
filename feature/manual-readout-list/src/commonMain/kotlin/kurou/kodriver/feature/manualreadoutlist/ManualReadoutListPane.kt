@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -33,7 +32,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +45,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverHintRow
 import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -294,21 +293,13 @@ internal fun ManualReadoutListDeleteConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(Res.string.manual_readout_list_delete_title)) },
-        text = { Text(stringResource(Res.string.manual_readout_list_delete_body)) },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(
-                    text = stringResource(Res.string.manual_readout_list_delete_confirm),
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.manual_readout_list_cancel)) }
-        },
+    KoDriverDestructiveConfirmDialog(
+        title = stringResource(Res.string.manual_readout_list_delete_title),
+        body = stringResource(Res.string.manual_readout_list_delete_body),
+        confirmLabel = stringResource(Res.string.manual_readout_list_delete_confirm),
+        dismissLabel = stringResource(Res.string.manual_readout_list_cancel),
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
     )
 }
 
