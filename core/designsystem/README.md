@@ -61,6 +61,10 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 補足文は TTS 不可の `unavailableText`、null でも空でもない `unknownPlaceholdersText`、空欄時の `supportingText` の順に優先する。入力が空白のみでなければ選択アイコンを表示し、警告がなければ補足文を隠す。リセットは `defaultText` を `onTextChanged` に通知する。
 
+`PlaceholderReadoutTextField` は `ReadoutTextField` に保存待ちの入力状態（`rememberPendingText`）とプレースホルダー挿入チップ・説明文の行を組み合わせた部品。保存値は `savedText`、挿入文字列は `placeholder`、チップと説明文は `insertLabel` / `placeholderHint` に渡す。TTS が利用可能で、現在の入力と挿入文字列の合計が `maxLength` 以下の場合だけチップを有効にする。
+
+文字列リソースは呼び出し側で解決する。`unknownPlaceholdersText` は現在の入力を受け取る Composable ラムダで、保存反映前の入力からも `stringResource` を使って警告文を生成できる。入力・挿入・リセットは保存待ちの表示を更新し、`onTextChanged` に通知する。
+
 ## 閾値スライダー
 
 - `ThresholdSlider` の `onValueChange` は操作中の表示値を通知する。試聴など兄弟要素で同じ値が必要な画面はPane側で保持し、`value` にも渡す。保存は従来どおり `onValueChangeFinished` で操作完了時に行う。
