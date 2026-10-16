@@ -18,3 +18,6 @@ const val LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT =
 /** 温度プレースホルダーを含むタイヤ低温警告の既定文言。DataStore の初期値とリセット値に使用する。 */
 const val LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT =
     "タイヤ低温 ${LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER}度"
+
+/** 手動読み上げの現在のタイヤ温度の既定文言。 */
+const val LMU_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT = "タイヤ温度{celsius}℃"

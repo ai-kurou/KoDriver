@@ -29,6 +29,27 @@ fun DebugStateHeatTile(
     )
 }
 
+/**
+ * 1輪分の温度を熱レベル付きで表示する。未取得（[formattedCelsius] が null）の場合は "-" を表示し、中立色にする。
+ *
+ * @param text 表示する値（[formattedCelsius] または "-"）を受け取ってタイル全体の文言を作る。
+ */
+@Composable
+fun DebugStateWheelTemperatureTile(
+    text: @Composable (value: String) -> String,
+    formattedCelsius: String?,
+    heatLevel: HeatLevel?,
+    modifier: Modifier = Modifier,
+) {
+    DebugStateHeatTile(
+        text = text(formattedCelsius ?: WHEEL_TEMPERATURE_UNAVAILABLE_TEXT),
+        heatLevel = heatLevel,
+        modifier = modifier,
+    )
+}
+
+private const val WHEEL_TEMPERATURE_UNAVAILABLE_TEXT = "-"
+
 /** 状態をアクセント色のチップで表示する。 */
 @Composable
 fun DebugStateStatusChip(

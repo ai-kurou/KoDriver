@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import kurou.kodriver.core.designsystem.DebugStateWheelTemperatureTile
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -81,15 +82,11 @@ private fun WheelTemperatureText(
     labelRes: StringResource,
     modifier: Modifier = Modifier,
 ) {
-    DebugStateHeatTile(
-        text = stringResource(labelRes, formatCelsius(wheels.getValue(wheelIndex))),
-        celsius = wheels.getValue(wheelIndex).value.toDouble(),
+    val reading = wheels.getValue(wheelIndex)
+    DebugStateWheelTemperatureTile(
+        text = { stringResource(labelRes, it) },
+        formattedCelsius = formatCelsius(reading),
+        heatLevel = tyreTemperatureHeatLevel(reading.value.toDouble()),
         modifier = modifier,
-        heatLevel =
-            wheels
-                .getValue(wheelIndex)
-                .value
-                .toDouble()
-                .let { tyreTemperatureHeatLevel(it) },
     )
 }

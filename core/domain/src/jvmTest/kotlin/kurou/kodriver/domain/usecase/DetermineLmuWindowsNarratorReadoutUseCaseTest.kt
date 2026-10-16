@@ -65,6 +65,60 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
 
     @Test
+    fun `ブレーキとタイヤの温度はそれぞれ摂氏の有無で欠損判定し保存順に連結する`() {
+        val brake = LmuWindowsReadoutItemKey.BrakeTemperature.Root
+        val tyre = LmuWindowsReadoutItemKey.TyreTemperature.Root
+        val brakeItem = LmuWindowsManualReadoutItem(brake.value, "ブレーキ{celsius}℃", null, 500.5f)
+        val tyreItem = LmuWindowsManualReadoutItem(tyre.value, "タイヤ{celsius}℃", null, 90.5f)
+        val state = LmuWindowsNarratorState()
+        val cases =
+            listOf(
+                listOf(brakeItem, tyreItem) to "ブレーキ501℃、タイヤ91℃",
+                listOf(tyreItem, brakeItem) to "タイヤ91℃、ブレーキ501℃",
+                listOf(brakeItem, tyreItem.copy(celsius = null, ratio = 1.0)) to "ブレーキ501℃、タイヤ温度はデータがありません",
+                listOf(brakeItem.copy(celsius = null), tyreItem) to "ブレーキ温度はデータがありません、タイヤ91℃",
+                listOf(brakeItem.copy(celsius = null), tyreItem.copy(celsius = null, ratio = 1.0)) to "データがありません",
+            )
+        cases.forEach { (items, text) ->
+            val decision = useCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            assertEquals(text, decision.events.single().narratedText)
+        }
+    }
+
+    @Test
+    fun `手動タイヤ温度は四捨五入と欠損と保存順を反映し警告状態を維持する`() {
+        val key = LmuWindowsReadoutItemKey.TyreTemperature.Root
+        val tyre = LmuWindowsReadoutItemKey.TyreWear.Root
+        val state =
+            LmuWindowsNarratorState(
+                tyreOverheating = true,
+                previousGamePhaseForTyreLowWarning = SessionPhase.GARAGE,
+            )
+        val temperature = LmuWindowsManualReadoutItem(key.value, "タイヤ温度{celsius}℃", null, 90.5f)
+        val tyreItem = LmuWindowsManualReadoutItem(tyre.value, "タイヤ{percent}%", 0.8)
+        val cases =
+            listOf(
+                Triple(listOf(temperature), key, "タイヤ温度91℃"),
+                Triple(listOf(temperature.copy(celsius = 90.4f)), key, "タイヤ温度90℃"),
+                Triple(listOf(temperature, tyreItem), key, "タイヤ温度91℃、タイヤ80%"),
+                Triple(listOf(tyreItem, temperature), tyre, "タイヤ80%、タイヤ温度91℃"),
+                Triple(listOf(temperature.copy(celsius = null), tyreItem), key, "タイヤ温度はデータがありません、タイヤ80%"),
+                Triple(listOf(temperature, tyreItem.copy(ratio = null)), key, "タイヤ温度91℃、タイヤ摩耗はデータがありません"),
+                Triple(listOf(temperature.copy(celsius = null)), key, "データがありません"),
+                Triple(listOf(temperature.copy(celsius = null), tyreItem.copy(ratio = null)), key, "データがありません"),
+                Triple(listOf(temperature.copy(textTemplate = "")), key, ""),
+                Triple(listOf(temperature.copy(textTemplate = "温度{celsius}℃ {unknown}")), key, "温度91℃ {unknown}"),
+            )
+        cases.forEach { (items, firstKey, text) ->
+            val decision = useCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            assertEquals(firstKey, decision.events.single().readoutItemKey)
+            assertEquals(text, decision.events.single().narratedText)
+        }
+    }
+
+    @Test
     fun `手動ブレーキ温度は四捨五入と欠損と保存順を反映し警告状態を維持する`() {
         val key = LmuWindowsReadoutItemKey.BrakeTemperature.Root
         val tyre = LmuWindowsReadoutItemKey.TyreWear.Root
