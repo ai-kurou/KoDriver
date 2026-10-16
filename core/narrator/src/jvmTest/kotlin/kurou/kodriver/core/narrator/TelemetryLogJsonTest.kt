@@ -33,6 +33,34 @@ class TelemetryLogJsonTest {
     }
 
     @Test
+    fun `特殊な浮動小数点値を許可する設定でNaNをencodeできる`() {
+        val json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(DoubleHolder(Double.NaN))
+
+        assertEquals("""{"value":NaN}""", json)
+    }
+
+    @Test
+    fun `特殊な浮動小数点値を許可する設定でもencodeDefaultsとexplicitNullsを維持する`() {
+        val json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(Sample())
+
+        assertEquals("""{"value":0,"nullable":null}""", json)
+    }
+
+    @Test
+    fun `オブジェクトのtoStringをrawフィールドに格納する`() {
+        val json = Sample(value = 42).toRawTelemetryLogJson()
+
+        assertEquals("""{"raw":"Sample(value=42, nullable=null)"}""", json)
+    }
+
+    @Test
+    fun `rawフィールドの特殊文字をエスケープする`() {
+        val json = "a\\b\"c\nd\re\tf".toRawTelemetryLogJson()
+
+        assertEquals("""{"raw":"a\\b\"c\nd\re\tf"}""", json)
+    }
+
+    @Test
     fun `バックスラッシュ・ダブルクォート・改行等をエスケープする`() {
         val literal = "a\\b\"c\nd\re\tf".toJsonStringLiteral()
 

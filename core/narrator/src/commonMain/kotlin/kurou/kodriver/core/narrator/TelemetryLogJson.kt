@@ -10,13 +10,28 @@ import kotlinx.serialization.json.Json
  * `XxxNarratorEventProcessor` が、テレメトリログ JSON をビルドする際の基底設定として利用する。
  *
  * UDP/共有メモリ由来のテレメトリに NaN/Infinity を取りうる Float/Double フィールドが含まれる場合は、
- * `Json(TelemetryLogJson) { allowSpecialFloatingPointValues = true }` のように拡張して利用する。
+ * [TelemetryLogJsonAllowingSpecialFloatingPoint] を利用する。
  */
 val TelemetryLogJson: Json =
     Json {
         encodeDefaults = true
         explicitNulls = true
     }
+
+/**
+ * NaN/Infinity を取りうる Float/Double フィールドを含むテレメトリログ用の設定。
+ *
+ * [TelemetryLogJson] の共通設定を維持し、非有限値の encode を許可する。
+ */
+val TelemetryLogJsonAllowingSpecialFloatingPoint: Json =
+    Json(TelemetryLogJson) {
+        allowSpecialFloatingPointValues = true
+    }
+
+/**
+ * 状態や設定の `toString()` をエスケープし、`raw` フィールドを持つテレメトリログ JSON へ変換する。
+ */
+fun Any.toRawTelemetryLogJson(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 
 /**
  * テレメトリログ JSON の値として埋め込めるよう、文字列を JSON 文字列リテラルへ変換する。
@@ -63,7 +78,7 @@ data class TelemetryLogJsonCurrentField(
  * `XxxNarratorEventProcessor` がテレメトリログとして保存する JSON オブジェクトを組み立てる共通ヘルパー。
  *
  * LMU / GT7 / ACE の各 narrator feature は、判定対象のテレメトリ型やシリアライズ方法（[TelemetryLogJson] を
- * そのまま使うか `allowSpecialFloatingPointValues = true` で拡張するか等）がそれぞれ異なるため、値の
+ * そのまま使うか [TelemetryLogJsonAllowingSpecialFloatingPoint] を使うか等）がそれぞれ異なるため、値の
  * シリアライズ自体は呼び出し側の責務のまま、既に JSON 文字列化された値をここへ渡してもらい、
  * `state` / `previous<X>` / `<x>` / `settings` / `observedAtMs` / `finalState` という共通のキー構成へ
  * 組み立てるだけを担う。
