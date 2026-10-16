@@ -44,7 +44,6 @@ import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.Res
-import kurou.kodriver.feature.autoreadoutlist.generated.resources.navigate_back
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.root_disabled_banner_enable
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.root_disabled_banner_message
 import org.jetbrains.compose.resources.stringResource
@@ -77,7 +76,6 @@ internal fun AutoReadoutDetailPane(
             DetailPaneTopAppBar(
                 title = title,
                 canNavigateBack = canNavigateBack,
-                navigateBackContentDescription = stringResource(Res.string.navigate_back),
                 onBack = onBack,
                 scrollBehavior = scrollBehavior,
             )

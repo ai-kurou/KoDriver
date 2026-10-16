@@ -65,7 +65,6 @@ import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_i
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_save
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_save_failed
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_title
-import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -145,7 +144,6 @@ fun OtherConsoleIpDetailPaneContent(
     DetailPaneScaffold(
         title = stringResource(Res.string.console_ip_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = {
             onDismiss()
             onBack()

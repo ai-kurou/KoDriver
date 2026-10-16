@@ -14,5 +14,4 @@
     <string name="server_ip_discovery_dialog_title">Windows版KoDriverを選択</string>
     <string name="server_ip_discovery_dialog_confirm">OK</string>
     <string name="server_ip_discovery_dialog_cancel">キャンセル</string>
-    <string name="navigate_back">戻る</string>
 </resources>

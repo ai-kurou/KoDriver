@@ -31,7 +31,6 @@ import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.deb
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_title
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_tyre_carcass_temperature_title
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_title
-import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -88,7 +87,6 @@ internal fun AceWindowsDebugStateDetailPaneContent(
     DetailPaneScaffold(
         title = stringResource(Res.string.debug_state_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
     ) {

@@ -30,7 +30,6 @@ import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.feature.othervolumedetail.generated.resources.Res
 import kurou.kodriver.feature.othervolumedetail.generated.resources.device_volume_description
 import kurou.kodriver.feature.othervolumedetail.generated.resources.device_volume_subtitle
-import kurou.kodriver.feature.othervolumedetail.generated.resources.navigate_back
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_description
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_formula
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_label
@@ -86,7 +85,6 @@ fun OtherVolumeDetailPaneContent(
     DetailPaneScaffold(
         title = stringResource(Res.string.volume_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
     ) {

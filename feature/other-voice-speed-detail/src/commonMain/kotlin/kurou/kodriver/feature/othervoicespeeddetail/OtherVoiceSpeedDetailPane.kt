@@ -29,7 +29,6 @@ import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 import kurou.kodriver.domain.model.VOICE_SPEED_MAX
 import kurou.kodriver.domain.model.VOICE_SPEED_MIN
 import kurou.kodriver.feature.othervoicespeeddetail.generated.resources.Res
-import kurou.kodriver.feature.othervoicespeeddetail.generated.resources.navigate_back
 import kurou.kodriver.feature.othervoicespeeddetail.generated.resources.voice_speed_description
 import kurou.kodriver.feature.othervoicespeeddetail.generated.resources.voice_speed_label
 import kurou.kodriver.feature.othervoicespeeddetail.generated.resources.voice_speed_preview
@@ -82,7 +81,6 @@ fun OtherVoiceSpeedDetailPaneContent(
     DetailPaneScaffold(
         title = stringResource(Res.string.voice_speed_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
     ) {

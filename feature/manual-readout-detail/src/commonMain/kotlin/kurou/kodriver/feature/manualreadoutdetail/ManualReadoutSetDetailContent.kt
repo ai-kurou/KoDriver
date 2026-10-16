@@ -53,7 +53,6 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_text_reset
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_text_unknown
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_title
-import kurou.kodriver.feature.manualreadoutdetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -134,7 +133,6 @@ internal fun ManualReadoutSetDetailPane(
                 stringResource(Res.string.manual_readout_title)
             },
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
         actions = {

@@ -81,7 +81,6 @@ import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_t
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_type_label
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_type_other
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_type_question
-import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -140,7 +139,6 @@ fun OtherFeedbackDetailPaneContent(
     DetailPaneScaffold(
         title = stringResource(Res.string.feedback_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
     ) {

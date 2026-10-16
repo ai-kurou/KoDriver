@@ -29,7 +29,6 @@ import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
 import kurou.kodriver.domain.model.VOICE_PITCH_MAX
 import kurou.kodriver.domain.model.VOICE_PITCH_MIN
 import kurou.kodriver.feature.othervoicepitchdetail.generated.resources.Res
-import kurou.kodriver.feature.othervoicepitchdetail.generated.resources.navigate_back
 import kurou.kodriver.feature.othervoicepitchdetail.generated.resources.voice_pitch_description
 import kurou.kodriver.feature.othervoicepitchdetail.generated.resources.voice_pitch_label
 import kurou.kodriver.feature.othervoicepitchdetail.generated.resources.voice_pitch_preview
@@ -82,7 +81,6 @@ fun OtherVoicePitchDetailPaneContent(
     DetailPaneScaffold(
         title = stringResource(Res.string.voice_pitch_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
     ) {

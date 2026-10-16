@@ -1,6 +1,5 @@
 <resources>
     <string name="manual_readout_title">手動読み上げセット</string>
-    <string name="navigate_back">戻る</string>
     <string name="manual_readout_set_title">セット %1$d</string>
     <string name="manual_readout_set_missing">セットが見つかりません</string>
     <string name="manual_readout_no_items">このシミュレーターで選べる項目はまだありません</string>

@@ -40,7 +40,6 @@ class DetailPaneScaffoldTest {
                 DetailPaneScaffold(
                     title = "ライセンス",
                     canNavigateBack = true,
-                    navigateBackContentDescription = "戻る",
                     onBack = {},
                 ) {
                     Text("詳細内容")
@@ -60,7 +59,6 @@ class DetailPaneScaffoldTest {
                 DetailPaneScaffold(
                     title = "ライセンス",
                     canNavigateBack = true,
-                    navigateBackContentDescription = "戻る",
                     onBack = { backCount++ },
                 ) {
                     Text("詳細内容")
@@ -80,7 +78,6 @@ class DetailPaneScaffoldTest {
                 DetailPaneScaffold(
                     title = "ライセンス",
                     canNavigateBack = true,
-                    navigateBackContentDescription = "戻る",
                     onBack = {},
                     actions = { Text("操作") },
                 ) {
@@ -102,7 +99,6 @@ class DetailPaneScaffoldTest {
                 DetailPaneScaffold(
                     title = "ライセンス",
                     canNavigateBack = true,
-                    navigateBackContentDescription = "戻る",
                     onBack = {},
                     scrollBehavior = scrollBehavior,
                 ) {
@@ -130,7 +126,6 @@ class DetailPaneScaffoldTest {
                     DetailPaneScaffold(
                         title = "ライセンス",
                         canNavigateBack = true,
-                        navigateBackContentDescription = "戻る",
                         onBack = {},
                     ) {
                         Box(modifier = Modifier.fillMaxSize().testTag(CONTENT_TAG))
@@ -150,7 +145,6 @@ class DetailPaneScaffoldTest {
                     DetailPaneScaffold(
                         title = "ライセンス",
                         canNavigateBack = true,
-                        navigateBackContentDescription = "戻る",
                         onBack = {},
                     ) {
                         Box(modifier = Modifier.fillMaxSize().testTag(CONTENT_TAG))

@@ -46,7 +46,6 @@ import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.Res
-import kurou.kodriver.feature.otherserveripdetail.generated.resources.navigate_back
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_connectivity_warning
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_description
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovering
@@ -147,7 +146,6 @@ fun OtherServerIpDetailPaneContent(
     DetailPaneScaffold(
         title = stringResource(Res.string.server_ip_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = {
             onDismiss()
             onBack()

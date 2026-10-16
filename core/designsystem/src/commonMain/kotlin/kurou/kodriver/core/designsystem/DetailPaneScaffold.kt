@@ -19,14 +19,13 @@ import androidx.compose.ui.unit.dp
 private val DETAIL_PANE_CONTENT_MAX_WIDTH = 840.dp
 
 /**
- * DetailPaneScaffold を提供する公開関数。
+ * 詳細ペインの共通レイアウト。戻るボタンの説明文は [DetailPaneTopAppBar] が内部で解決する。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailPaneScaffold(
     title: String,
     canNavigateBack: Boolean,
-    navigateBackContentDescription: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     navigationIconModifier: Modifier = Modifier,
@@ -43,7 +42,6 @@ fun DetailPaneScaffold(
             DetailPaneTopAppBar(
                 title = title,
                 canNavigateBack = canNavigateBack,
-                navigateBackContentDescription = navigateBackContentDescription,
                 onBack = onBack,
                 navigationIconModifier = navigationIconModifier,
                 scrollBehavior = scrollBehavior,
