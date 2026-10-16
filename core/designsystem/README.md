@@ -55,6 +55,12 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 - 連続編集・リセットによる保存待ちを順序付きで保持し、途中の保存値が反映されても最新の入力に巻き戻りが起きないようにする。
 - 保存反映が conflate されて観測できない場合も、保存待ちの変更から既定で3秒後に入力を保持したまま解除し、その後の外部更新への追従を再開する。
 
+## 読み上げ文言入力
+
+`ReadoutTextField` は `DetailPaneLabeledTextField` を使い、読み上げ文言の入力・試聴・既定値へのリセットを提供する。文字列リソースは呼び出し側で解決し、文字数上限は `maxLength` に渡す。`insertState` でプレースホルダーを挿入できる。
+
+補足文は TTS 不可の `unavailableText`、null でも空でもない `unknownPlaceholdersText`、空欄時の `supportingText` の順に優先する。入力が空白のみでなければ選択アイコンを表示し、警告がなければ補足文を隠す。リセットは `defaultText` を `onTextChanged` に通知する。
+
 ## 閾値スライダー
 
 - `ThresholdSlider` の `onValueChange` は操作中の表示値を通知する。試聴など兄弟要素で同じ値が必要な画面はPane側で保持し、`value` にも渡す。保存は従来どおり `onValueChangeFinished` で操作完了時に行う。

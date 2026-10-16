@@ -27,12 +27,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
-import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.core.designsystem.TextInsertState
+import kurou.kodriver.core.designsystem.ReadoutTextField
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.core.designsystem.rememberPendingText
@@ -288,9 +287,17 @@ private fun PitTimingReadoutFields(
                 onTextChanged = changeText,
                 onPreviewClick = onPreviewClick,
                 insertState = insertState,
-                unknownPlaceholders =
+                unknownPlaceholdersText =
                     findUnknownLmuWindowsPitTimingReadoutPlaceholders(currentText)
-                        .joinToString("、"),
+                        .joinToString("、")
+                        .takeIf { it.isNotEmpty() }
+                        ?.let { stringResource(Res.string.pit_timing_text_unknown_placeholders, it) },
+                maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                resetContentDescription = stringResource(Res.string.pit_timing_text_reset_to_default),
+                previewContentDescription = stringResource(Res.string.pit_timing_text_preview),
+                selectedContentDescription = stringResource(Res.string.pit_timing_text_selected_icon),
+                unavailableText = stringResource(Res.string.pit_timing_text_unavailable),
+                supportingText = stringResource(Res.string.pit_timing_text_supporting),
             )
             Row(
                 modifier = Modifier.padding(bottom = KoDriverSpacing.small),
@@ -323,56 +330,14 @@ private fun PitTimingReadoutFields(
             onTextChanged = changeImminentText,
             onPreviewClick = onImminentPreviewClick,
             insertState = imminentInsertState,
+            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+            resetContentDescription = stringResource(Res.string.pit_timing_text_reset_to_default),
+            previewContentDescription = stringResource(Res.string.pit_timing_text_preview),
+            selectedContentDescription = stringResource(Res.string.pit_timing_text_selected_icon),
+            unavailableText = stringResource(Res.string.pit_timing_text_unavailable),
+            supportingText = stringResource(Res.string.pit_timing_text_supporting),
         )
     }
-}
-
-/** 通常・切迫時の文言入力と試聴を提供する。未知トークンの警告は通常文言だけに使う。 */
-@Suppress("LongParameterList")
-@Composable
-private fun ReadoutTextField(
-    label: String,
-    text: String,
-    defaultText: String,
-    isTextToSpeechAvailable: Boolean,
-    onTextChanged: (String) -> Unit,
-    onPreviewClick: (String) -> Unit,
-    insertState: TextInsertState,
-    unknownPlaceholders: String = "",
-) {
-    DetailPaneLabeledTextField(
-        label = label,
-        value = text,
-        defaultValue = defaultText,
-        onResetToDefault = { onTextChanged(defaultText) },
-        resetContentDescription = stringResource(Res.string.pit_timing_text_reset_to_default),
-        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-        onValueChangeFinished = onTextChanged,
-        onPreviewClick = onPreviewClick,
-        insertState = insertState,
-        enabled = isTextToSpeechAvailable,
-        selected = text.isNotBlank(),
-        supportingText =
-            when {
-                !isTextToSpeechAvailable -> {
-                    stringResource(Res.string.pit_timing_text_unavailable)
-                }
-
-                unknownPlaceholders.isNotEmpty() -> {
-                    stringResource(Res.string.pit_timing_text_unknown_placeholders, unknownPlaceholders)
-                }
-
-                text.isNotBlank() -> {
-                    null
-                }
-
-                else -> {
-                    stringResource(Res.string.pit_timing_text_supporting)
-                }
-            },
-        previewContentDescription = stringResource(Res.string.pit_timing_text_preview),
-        selectedContentDescription = stringResource(Res.string.pit_timing_text_selected_icon),
-    )
 }
 
 @Composable
