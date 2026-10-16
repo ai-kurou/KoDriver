@@ -85,8 +85,8 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.LmuWindowsDebugStateDet
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
+import kurou.kodriver.feature.manualreadoutdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
-import kurou.kodriver.feature.manualreadoutsetdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
