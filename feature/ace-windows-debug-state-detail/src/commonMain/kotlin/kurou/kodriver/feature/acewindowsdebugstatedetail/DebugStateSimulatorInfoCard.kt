@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.designsystem.SimulatorInfoContent as CommonSimulatorInfoContent
 
 @Composable
 internal fun SimulatorInfoContent() {
-    Text(text = simulatorDisplayName(Simulator.AceWindows.id))
+    CommonSimulatorInfoContent(simulatorId = Simulator.AceWindows.id)
 }
