@@ -60,7 +60,6 @@ import kurou.kodriver.core.designsystem.koDriverMonospaceTextStyle
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.othervoicedetail.generated.resources.Res
-import kurou.kodriver.feature.othervoicedetail.generated.resources.navigate_back
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_alternatives_empty
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_count
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_default_section
@@ -140,7 +139,6 @@ fun OtherVoiceDetailPaneContent(
     DetailPaneScaffold(
         title = stringResource(Res.string.voice_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
     ) {

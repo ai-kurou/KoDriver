@@ -43,7 +43,6 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.deb
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_damage_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_yellow_flag_state_title
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -104,7 +103,6 @@ fun LmuWindowsDebugStateDetailPaneContent(
     DetailPaneScaffold(
         title = stringResource(Res.string.debug_state_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
     ) {

@@ -21,7 +21,6 @@ class DetailPaneTopAppBarScreenshotTest {
                             DetailPaneTopAppBar(
                                 title = "車両接近",
                                 canNavigateBack = true,
-                                navigateBackContentDescription = "戻る",
                                 onBack = {},
                             )
                         }
@@ -41,7 +40,6 @@ class DetailPaneTopAppBarScreenshotTest {
                             DetailPaneTopAppBar(
                                 title = "車両接近",
                                 canNavigateBack = true,
-                                navigateBackContentDescription = "戻る",
                                 onBack = {},
                             )
                         }
@@ -61,7 +59,6 @@ class DetailPaneTopAppBarScreenshotTest {
                             DetailPaneTopAppBar(
                                 title = "車両接近",
                                 canNavigateBack = false,
-                                navigateBackContentDescription = "戻る",
                                 onBack = {},
                             )
                         }

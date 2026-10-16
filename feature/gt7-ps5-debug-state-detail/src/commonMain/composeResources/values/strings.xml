@@ -1,6 +1,5 @@
 <resources>
     <string name="debug_state_title">デバッグ状態</string>
-    <string name="navigate_back">戻る</string>
     <string name="debug_state_flag_info_unavailable">未取得</string>
     <string name="debug_state_simulator_info_title">選択中のシミュレーター</string>
     <string name="debug_state_current_lap_title">現在のラップ</string>

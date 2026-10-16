@@ -18,7 +18,6 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.Res
-import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.navigate_back
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.opacity_description
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.opacity_label
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.opacity_title
@@ -67,7 +66,6 @@ fun OtherOverlayBackgroundOpacityDetailPaneContent(
     DetailPaneScaffold(
         title = stringResource(Res.string.opacity_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
     ) {

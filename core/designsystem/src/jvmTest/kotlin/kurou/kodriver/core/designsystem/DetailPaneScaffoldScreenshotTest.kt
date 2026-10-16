@@ -22,7 +22,6 @@ class DetailPaneScaffoldScreenshotTest {
                             DetailPaneScaffold(
                                 title = "車両接近",
                                 canNavigateBack = true,
-                                navigateBackContentDescription = "戻る",
                                 onBack = {},
                             ) {
                                 Text("本文")
@@ -44,7 +43,6 @@ class DetailPaneScaffoldScreenshotTest {
                             DetailPaneScaffold(
                                 title = "車両接近",
                                 canNavigateBack = true,
-                                navigateBackContentDescription = "戻る",
                                 onBack = {},
                             ) {
                                 Text("本文")
@@ -66,7 +64,6 @@ class DetailPaneScaffoldScreenshotTest {
                             DetailPaneScaffold(
                                 title = "車両接近",
                                 canNavigateBack = false,
-                                navigateBackContentDescription = "戻る",
                                 onBack = {},
                             ) {
                                 Text("本文")

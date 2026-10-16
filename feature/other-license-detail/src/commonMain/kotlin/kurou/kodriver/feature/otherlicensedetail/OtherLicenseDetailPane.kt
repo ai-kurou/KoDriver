@@ -12,7 +12,6 @@ import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.feature.otherlicensedetail.generated.resources.Res
 import kurou.kodriver.feature.otherlicensedetail.generated.resources.license_title
-import kurou.kodriver.feature.otherlicensedetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -31,7 +30,6 @@ fun OtherLicenseDetailPane(
     DetailPaneScaffold(
         title = stringResource(Res.string.license_title),
         canNavigateBack = canNavigateBack,
-        navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
     ) {

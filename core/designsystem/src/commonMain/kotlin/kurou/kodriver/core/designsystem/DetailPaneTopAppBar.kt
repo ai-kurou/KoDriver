@@ -14,18 +14,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.generated.resources.Res
+import kurou.kodriver.core.designsystem.generated.resources.navigate_back
+import org.jetbrains.compose.resources.stringResource
 
 private val DETAIL_TOP_APP_BAR_HEIGHT = 56.dp
 
 /**
- * DetailPaneTopAppBar を提供する公開関数。
+ * 詳細ペインの上部バー。戻るボタンの説明文は designsystem の文字列リソースから解決する。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailPaneTopAppBar(
     title: String,
     canNavigateBack: Boolean,
-    navigateBackContentDescription: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     navigationIconModifier: Modifier = Modifier,
@@ -47,7 +49,7 @@ fun DetailPaneTopAppBar(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = navigateBackContentDescription,
+                        contentDescription = stringResource(Res.string.navigate_back),
                     )
                 }
             }
