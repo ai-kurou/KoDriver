@@ -75,3 +75,12 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 `KoDriverDestructiveConfirmDialog` は、error 色の確認ボタンとキャンセルボタンを持つ共通ダイアログ。`title`・`body`・`confirmLabel`・`dismissLabel` は呼び出し側で `stringResource` を解決して渡す。本文への名前の埋め込みも呼び出し側で行い、feature の文字列リソースを designsystem に持ち込まない。
 
 `onConfirm` は確認ボタン、`onDismiss` はキャンセルボタンとダイアログの閉じる要求を通知する。表示状態と削除・リセット処理は呼び出し側で管理する。
+
+## デバッグ状態の共通部品
+
+- `DebugStateUnavailableContent` は未取得文言を文字列で受け取り、装飾とともに表示する。リソースの解決は feature が行う。
+- `DebugStateHeatTile` は必須の `heatLevel: HeatLevel?` を受け取り、`null` は中立色で表示する。`HeatLevel` とテーマ色への変換 `heatColor` は共通とし、温度・摩耗の閾値判定は各 feature に残す。
+- `DebugStateStatusChip` は文言とアクセント色を受け取る。
+- `DebugStateCardFrame` はタイトル・記号・アクセント色を受け取る。カードキーから色・記号への変換は各 feature の責務とする。`showHandle` で右上の点状装飾を切り替え、GT7 は非表示を維持する。
+- `SimulatorInfoContent` は `simulatorId` を受け取り、既存の `simulatorDisplayName` で表示名を解決する。
+- 各 feature の既存関数は薄いラッパーとして維持し、温度判定の既定引数と既存テストの呼び出しを保つ。LMU 固有の `DebugStateWearMeter` は共通化しない。
