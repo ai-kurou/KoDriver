@@ -1,16 +1,15 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kurou.kodriver.core.narrator.SpeakOutcomes
-import kurou.kodriver.core.narrator.TelemetryLogJson
+import kurou.kodriver.core.narrator.TelemetryLogJsonAllowingSpecialFloatingPoint
 import kurou.kodriver.core.narrator.TelemetryLogJsonCurrentField
 import kurou.kodriver.core.narrator.TelemetryLogJsonPreviousField
 import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.runCatchingTelemetryLogSave
 import kurou.kodriver.core.narrator.speakWithOutcome
-import kurou.kodriver.core.narrator.toJsonStringLiteral
+import kurou.kodriver.core.narrator.toRawTelemetryLogJson
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -59,8 +58,8 @@ internal class Gt7Ps5NarratorEventProcessor(
             narratedText = text.orEmpty(),
             narrationOutcome = outcome,
             telemetryJson =
-                """{"state":${logContext.state.toJsonString()},""" +
-                    """"settings":${logContext.settings.toJsonString()},""" +
+                """{"state":${logContext.state.toRawTelemetryLogJson()},""" +
+                    """"settings":${logContext.settings.toRawTelemetryLogJson()},""" +
                     """"observedAtMs":$observedAtMs,"debugReadout":true}""",
         )
     }
@@ -156,7 +155,7 @@ internal class Gt7Ps5NarratorEventProcessor(
 /**
  * GT7 の読み上げ判定入力（[Gt7Ps5TelemetryData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase] の各 determine* 関数）と
- * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJsonAllowingSpecialFloatingPoint] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
 private fun buildTelemetryLogJson(
@@ -168,30 +167,21 @@ private fun buildTelemetryLogJson(
     finalState: Gt7Ps5NarratorState,
 ): String =
     buildTelemetryLogJson(
-        stateJson = state.toJsonString(),
+        stateJson = state.toRawTelemetryLogJson(),
         previous =
             TelemetryLogJsonPreviousField(
                 name = "previousTelemetry",
                 json =
                     previous?.let {
-                        telemetryLogJson.encodeToString(it)
+                        TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(it)
                     },
             ),
-        current = TelemetryLogJsonCurrentField(name = "telemetry", json = telemetryLogJson.encodeToString(current)),
-        settingsJson = settings.toJsonString(),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "telemetry",
+                json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(current),
+            ),
+        settingsJson = settings.toRawTelemetryLogJson(),
         observedAtMs = observedAtMs,
-        finalStateJson = finalState.toJsonString(),
+        finalStateJson = finalState.toRawTelemetryLogJson(),
     )
-
-private fun Gt7Ps5NarratorReadoutSettings.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
-
-private fun Gt7Ps5NarratorState.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
-
-/**
- * UDP テレメトリの Float フィールド（gasLevel/gasCapacity 等）が NaN/Infinity を
- * 取りうるため、[TelemetryLogJson] に対して通常は encode を拒否する非有限値も許可するよう拡張する。
- */
-private val telemetryLogJson =
-    Json(TelemetryLogJson) {
-        allowSpecialFloatingPointValues = true
-    }

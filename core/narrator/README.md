@@ -60,9 +60,10 @@
 
 `TelemetryLogJson`（`TelemetryLogJson.kt`）は、3つの narrator feature が読み上げイベントをテレメトリログとして
 保存する際に使う kotlinx.serialization の共通設定（`encodeDefaults` / `explicitNulls`）です。UDP/共有メモリ由来の
-Float/Double フィールドが NaN/Infinity を取りうる GT7/ACE では、`Json(TelemetryLogJson) { allowSpecialFloatingPointValues
-= true }` のように拡張して利用します。同ファイルの `String.toJsonStringLiteral()` は、`toString()` した状態オブジェクト
-などをログ JSON の値としてそのまま埋め込むための文字列エスケープ関数です。
+Float/Double フィールドが NaN/Infinity を取りうる GT7/ACE では、
+`TelemetryLogJsonAllowingSpecialFloatingPoint` を利用します。同ファイルの `String.toJsonStringLiteral()` は、
+ログ JSON の値として埋め込む文字列をエスケープします。`Any.toRawTelemetryLogJson()` は、状態や設定の
+`toString()` をエスケープし、`{"raw":"..."}` 形式の JSON を生成します。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

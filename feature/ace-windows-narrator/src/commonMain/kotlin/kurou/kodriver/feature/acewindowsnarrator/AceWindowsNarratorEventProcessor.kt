@@ -1,16 +1,15 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kurou.kodriver.core.narrator.SpeakOutcomes
-import kurou.kodriver.core.narrator.TelemetryLogJson
+import kurou.kodriver.core.narrator.TelemetryLogJsonAllowingSpecialFloatingPoint
 import kurou.kodriver.core.narrator.TelemetryLogJsonCurrentField
 import kurou.kodriver.core.narrator.TelemetryLogJsonPreviousField
 import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.runCatchingTelemetryLogSave
 import kurou.kodriver.core.narrator.speakWithOutcome
-import kurou.kodriver.core.narrator.toJsonStringLiteral
+import kurou.kodriver.core.narrator.toRawTelemetryLogJson
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -69,8 +68,8 @@ internal class AceWindowsNarratorEventProcessor(
             narratedText = text.orEmpty(),
             narrationOutcome = outcome,
             telemetryJson =
-                """{"state":${logContext.state.toJsonString()},""" +
-                    """"settings":${logContext.settings.toJsonString()},""" +
+                """{"state":${logContext.state.toRawTelemetryLogJson()},""" +
+                    """"settings":${logContext.settings.toRawTelemetryLogJson()},""" +
                     """"observedAtMs":$observedAtMs,"debugReadout":true}""",
         )
     }
@@ -350,7 +349,7 @@ internal class AceWindowsNarratorEventProcessor(
 /**
  * ACE の燃料残量判定入力（[AceWindowsFuelData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineRemainingFuel]）と
- * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJsonAllowingSpecialFloatingPoint] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
 private fun buildTelemetryLogJson(
@@ -362,16 +361,20 @@ private fun buildTelemetryLogJson(
     finalState: AceWindowsNarratorState,
 ): String =
     buildTelemetryLogJson(
-        stateJson = state.toJsonString(),
+        stateJson = state.toRawTelemetryLogJson(),
         previous =
             TelemetryLogJsonPreviousField(
                 name = "previousFuel",
-                json = previous?.let { telemetryLogJson.encodeToString(it) },
+                json = previous?.let { TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(it) },
             ),
-        current = TelemetryLogJsonCurrentField(name = "fuel", json = telemetryLogJson.encodeToString(current)),
-        settingsJson = settings.toJsonString(),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "fuel",
+                json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(current),
+            ),
+        settingsJson = settings.toRawTelemetryLogJson(),
         observedAtMs = observedAtMs,
-        finalStateJson = finalState.toJsonString(),
+        finalStateJson = finalState.toRawTelemetryLogJson(),
     )
 
 private fun buildRemainingFuelLapsTelemetryLogJson(
@@ -383,39 +386,26 @@ private fun buildRemainingFuelLapsTelemetryLogJson(
     finalState: AceWindowsNarratorState,
 ): String =
     buildTelemetryLogJson(
-        stateJson = state.toJsonString(),
+        stateJson = state.toRawTelemetryLogJson(),
         previous =
             TelemetryLogJsonPreviousField(
                 name = "previousRemainingFuelLaps",
-                json = previous?.let { telemetryLogJson.encodeToString(it) },
+                json = previous?.let { TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(it) },
             ),
         current =
             TelemetryLogJsonCurrentField(
                 name = "remainingFuelLaps",
-                json = telemetryLogJson.encodeToString(current),
+                json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(current),
             ),
-        settingsJson = settings.toJsonString(),
+        settingsJson = settings.toRawTelemetryLogJson(),
         observedAtMs = observedAtMs,
-        finalStateJson = finalState.toJsonString(),
+        finalStateJson = finalState.toRawTelemetryLogJson(),
     )
-
-private fun AceWindowsNarratorReadoutSettings.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
-
-private fun AceWindowsNarratorState.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
-
-/**
- * NaN/Infinity を含む可能性のある燃料残量（[AceWindowsFuelData.remainingPercent]）を
- * encode 失敗させないため、[TelemetryLogJson] に対して非有限値の encode を許可するよう拡張する。
- */
-private val telemetryLogJson =
-    Json(TelemetryLogJson) {
-        allowSpecialFloatingPointValues = true
-    }
 
 /**
  * ACE の自己ベストラップ判定入力（[AceWindowsBestLapTimeData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineMyBestLap]）と
- * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJsonAllowingSpecialFloatingPoint] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
 private fun buildMyBestLapTelemetryLogJson(
@@ -427,22 +417,26 @@ private fun buildMyBestLapTelemetryLogJson(
     finalState: AceWindowsNarratorState,
 ): String =
     buildTelemetryLogJson(
-        stateJson = state.toJsonString(),
+        stateJson = state.toRawTelemetryLogJson(),
         previous =
             TelemetryLogJsonPreviousField(
                 name = "previousBestLapTime",
-                json = previous?.let { telemetryLogJson.encodeToString(it) },
+                json = previous?.let { TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(it) },
             ),
-        current = TelemetryLogJsonCurrentField(name = "bestLapTime", json = telemetryLogJson.encodeToString(current)),
-        settingsJson = settings.toJsonString(),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "bestLapTime",
+                json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(current),
+            ),
+        settingsJson = settings.toRawTelemetryLogJson(),
         observedAtMs = observedAtMs,
-        finalStateJson = finalState.toJsonString(),
+        finalStateJson = finalState.toRawTelemetryLogJson(),
     )
 
 /**
  * ACE のフラッグ判定入力（[AceWindowsFlagData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineFlag]）と
- * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJsonAllowingSpecialFloatingPoint] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
 private fun buildFlagTelemetryLogJson(
@@ -454,22 +448,26 @@ private fun buildFlagTelemetryLogJson(
     finalState: AceWindowsNarratorState,
 ): String =
     buildTelemetryLogJson(
-        stateJson = state.toJsonString(),
+        stateJson = state.toRawTelemetryLogJson(),
         previous =
             TelemetryLogJsonPreviousField(
                 name = "previousFlag",
-                json = previous?.let { telemetryLogJson.encodeToString(it) },
+                json = previous?.let { TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(it) },
             ),
-        current = TelemetryLogJsonCurrentField(name = "flag", json = telemetryLogJson.encodeToString(current)),
-        settingsJson = settings.toJsonString(),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "flag",
+                json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(current),
+            ),
+        settingsJson = settings.toRawTelemetryLogJson(),
         observedAtMs = observedAtMs,
-        finalStateJson = finalState.toJsonString(),
+        finalStateJson = finalState.toRawTelemetryLogJson(),
     )
 
 /**
  * ACE のタイヤカーカス温度判定入力（[AceWindowsTyreCarcassTemperatureData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineTyreTemperatureOverheat]）と
- * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJsonAllowingSpecialFloatingPoint] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
 private fun buildTyreTemperatureTelemetryLogJson(
@@ -481,29 +479,29 @@ private fun buildTyreTemperatureTelemetryLogJson(
     finalState: AceWindowsNarratorState,
 ): String =
     buildTelemetryLogJson(
-        stateJson = state.toJsonString(),
+        stateJson = state.toRawTelemetryLogJson(),
         previous =
             TelemetryLogJsonPreviousField(
                 name = "previousTyreCarcassTemperature",
                 json =
                     previous?.let {
-                        telemetryLogJson.encodeToString(it)
+                        TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(it)
                     },
             ),
         current =
             TelemetryLogJsonCurrentField(
                 name = "tyreCarcassTemperature",
-                json = telemetryLogJson.encodeToString(current),
+                json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(current),
             ),
-        settingsJson = settings.toJsonString(),
+        settingsJson = settings.toRawTelemetryLogJson(),
         observedAtMs = observedAtMs,
-        finalStateJson = finalState.toJsonString(),
+        finalStateJson = finalState.toRawTelemetryLogJson(),
     )
 
 /**
  * ACE の車両接近判定入力（[AceWindowsVehicleApproachData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineVehicleApproach]）と
- * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJsonAllowingSpecialFloatingPoint] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
 private fun buildVehicleApproachTelemetryLogJson(
@@ -515,18 +513,18 @@ private fun buildVehicleApproachTelemetryLogJson(
     finalState: AceWindowsNarratorState,
 ): String =
     buildTelemetryLogJson(
-        stateJson = state.toJsonString(),
+        stateJson = state.toRawTelemetryLogJson(),
         previous =
             TelemetryLogJsonPreviousField(
                 name = "previousVehicleApproach",
-                json = previous?.let { telemetryLogJson.encodeToString(it) },
+                json = previous?.let { TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(it) },
             ),
         current =
             TelemetryLogJsonCurrentField(
                 name = "vehicleApproach",
-                json = telemetryLogJson.encodeToString(current),
+                json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(current),
             ),
-        settingsJson = settings.toJsonString(),
+        settingsJson = settings.toRawTelemetryLogJson(),
         observedAtMs = observedAtMs,
-        finalStateJson = finalState.toJsonString(),
+        finalStateJson = finalState.toRawTelemetryLogJson(),
     )
