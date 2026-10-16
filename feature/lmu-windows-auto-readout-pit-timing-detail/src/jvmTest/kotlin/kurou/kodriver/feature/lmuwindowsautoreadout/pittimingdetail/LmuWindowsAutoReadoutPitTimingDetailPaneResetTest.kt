@@ -3,11 +3,6 @@ package kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.semantics.getOrNull
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.SemanticsNodeInteraction
-import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasSetTextAction
@@ -17,6 +12,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
+import kurou.kodriver.buildlogic.screenshottest.assertEditableTextEquals
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
@@ -164,13 +160,6 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneResetTest {
             }
         }
     }
-
-    private fun SemanticsNodeInteraction.assertEditableTextEquals(expected: String) =
-        assert(
-            SemanticsMatcher("EditableText == $expected") {
-                it.config.getOrNull(SemanticsProperties.EditableText)?.text == expected
-            },
-        )
 
     private val defaultTexts =
         listOf(
