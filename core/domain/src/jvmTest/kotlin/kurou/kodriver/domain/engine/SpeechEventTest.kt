@@ -220,6 +220,16 @@ class SpeechEventTest {
     }
 
     @Test
+    fun `現在のタイヤ摩耗は既定文言と既存のRootキーを持ち解決済み文言を反映する`() {
+        val event = LmuWindowsTyreWearCurrentValue(42)
+        assertEquals("残量42%", event.withResolvedText("残量42%").narratedText)
+        assertEquals("", event.withResolvedText("").narratedText)
+        assertEquals(42, event.percentage)
+        assertEquals("タイヤ摩耗残り42%", event.narratedText)
+        assertEquals(LmuWindowsReadoutItemKey.TyreWear.Root, event.readoutItemKey)
+    }
+
+    @Test
     fun `タイヤ温度警告は温度と解決済み文言を保持し既定文言とキーを維持する`() {
         val overheat = LmuWindowsTyreOverheat(100)
         val cold = LmuWindowsTyreCold(60)

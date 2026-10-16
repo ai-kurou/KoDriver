@@ -63,6 +63,46 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
 
     @Test
+    fun `手動タイヤ摩耗は最小残存率を四捨五入し警告状態を維持する`() {
+        val state = LmuWindowsNarratorState(tyreWearWarned = true)
+        val data =
+            LmuWindowsTyreWearData(
+                mapOf(
+                    WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(0.805),
+                    WheelIndex.FRONT_RIGHT to LmuWindowsTyreWearRatio(0.424),
+                    WheelIndex.REAR_LEFT to LmuWindowsTyreWearRatio(0.425),
+                    WheelIndex.REAR_RIGHT to LmuWindowsTyreWearRatio(0.9),
+                ),
+            )
+        val decision = useCase.determineManualTyreWearCurrentValue(state, data)
+        assertEquals(state, decision.state)
+        assertEquals("タイヤ摩耗残り42%", decision.events.single().narratedText)
+        assertEquals(
+            "残り42%",
+            useCase
+                .determineManualTyreWearCurrentValue(state, data, "残り{percent}%")
+                .events
+                .single()
+                .narratedText,
+        )
+        assertEquals(
+            "タイヤ摩耗残り43%",
+            useCase
+                .determineManualTyreWearCurrentValue(
+                    state,
+                    LmuWindowsTyreWearData(mapOf(WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(0.425))),
+                ).events
+                .single()
+                .narratedText,
+        )
+        listOf(null, LmuWindowsTyreWearData(emptyMap())).forEach {
+            val noData = useCase.determineManualTyreWearCurrentValue(state, it, "残り{percent}%")
+            assertEquals(state, noData.state)
+            assertEquals("データがありません", noData.events.single().narratedText)
+        }
+    }
+
+    @Test
     fun `周回数が減少したら自己ベストをリセットして新セッションの更新を読み上げる`() {
         val first =
             useCase.determineMyBestLap(

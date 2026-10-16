@@ -72,7 +72,7 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 
 `ManualReadoutSet` はセット識別子・読み上げ項目キーのリスト・項目キーごとの文言テンプレート `itemTexts` を持つ。
 文言が未保存なら `manualReadoutItemTextDefault` の既定値を使い、保存済みの空文字は読み上げない。
-LMU の残量は自動側と共通の `{percent}` 置換・未知プレースホルダー検出を使う。
+LMU のバーチャルエナジー残量・タイヤ摩耗は自動側と共通の `{percent}` 置換・未知プレースホルダー検出を使う。
 `ObserveManualReadoutSetsUseCase` / `SaveManualReadoutSetsUseCase` は
 `ManualReadoutSetPreferencesRepository` を通じてセット一覧を取得・保存する。
 `AddManualReadoutSetUseCase` は保存済み一覧の末尾へ1セットをアトミックに追加する。
@@ -83,3 +83,5 @@ LMU の残量は自動側と共通の `{percent}` 置換・未知プレースホ
 `ManualReadoutSet.hotkeyModifiers` は `ManualReadoutHotkeyModifiers` の4種類から選択する。Windows の修飾キー値を保持し、既定値は `ReadoutHotkeyDefaults.kt` の `MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT`（Ctrl + Alt + Shift）。不明値・null は既定値として扱う。
 
 `ManualReadoutHotkeyRepository` はセットホットキーの押下（`ManualReadoutRequest`）とセット別の登録状態を配信し、競合・失敗時の再試行を受け付ける。対応する Observe / Retry UseCase を通じて Narrator とセット詳細画面から利用する。
+
+手動タイヤ摩耗は4輪の最小残存率×100を四捨五入し、既定文言「タイヤ摩耗残り{percent}%」へ置換する。未受信・鮮度切れ・空の wheels は「データがありません」とする。自動警告の閾値・状態は変更しない。

@@ -19,6 +19,7 @@ import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
+import kurou.kodriver.domain.engine.LmuWindowsTyreWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
@@ -43,6 +44,7 @@ import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.roundToInt
 
@@ -571,6 +573,33 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                     ),
                 ),
         )
+
+    /** 最も摩耗したタイヤの現在値を読み上げ、警告済み状態を維持する。 */
+    fun determineManualTyreWearCurrentValue(
+        state: LmuWindowsNarratorState,
+        data: LmuWindowsTyreWearData?,
+        textTemplate: String? = null,
+    ): LmuWindowsNarratorReadoutDecision {
+        val percentage =
+            data
+                ?.let { it.wheels.values.minOrNull() }
+                ?.let { (it.value * PERCENTAGE_SCALE).roundToInt() }
+        return LmuWindowsNarratorReadoutDecision(
+            state = state,
+            events =
+                listOf(
+                    LmuWindowsTyreWearCurrentValue(
+                        percentage = percentage ?: 0,
+                        resolvedText =
+                            if (percentage == null) {
+                                LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
+                            } else {
+                                textTemplate?.let { formatLmuWindowsTyreWearReadoutText(it, percentage) }
+                            },
+                    ),
+                ),
+        )
+    }
 
     fun determinePitTimingVirtualEnergy(
         state: LmuWindowsNarratorState,

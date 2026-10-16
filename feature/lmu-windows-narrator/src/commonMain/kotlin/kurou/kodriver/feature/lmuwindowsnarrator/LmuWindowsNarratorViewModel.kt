@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
@@ -27,6 +26,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_D
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -36,6 +36,8 @@ import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningDefaultPha
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
+import kurou.kodriver.domain.model.manualReadoutItemKeys
+import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.domain.model.resolveLmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsius
 import kurou.kodriver.domain.model.resolveLmuWindowsVehicleClassBrakeWearLowThresholdPercent
 import kurou.kodriver.domain.model.resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius
@@ -156,7 +158,7 @@ internal data class NarratorUseCases(
 )
 
 // 共有メモリは短周期で届くため、これを超えて更新がなければ切断・セッション終了とみなす。
-private const val HOTKEY_VIRTUAL_ENERGY_MAX_AGE_MS = 5_000L
+private const val CURRENT_VALUE_MAX_AGE_MS = 5_000L
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 @Suppress("LongParameterList")
@@ -556,11 +558,18 @@ internal class LmuWindowsNarratorViewModel(
                 )
             }.launchIn(viewModelScope)
 
+    private var latestTyreWear: LmuWindowsTyreWearData? = null
+    private var latestTyreWearReceivedAtMs: Long = 0L
+
     private val tyreWearFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
+                latestTyreWear = null
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-                tyreWearUseCases.observeTyreWear()
+                tyreWearUseCases.observeTyreWear().onEach {
+                    latestTyreWear = it
+                    latestTyreWearReceivedAtMs = currentTimeMs()
+                }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val brakeTemperatureFlow =
@@ -731,13 +740,19 @@ internal class LmuWindowsNarratorViewModel(
                         .first()
                         .find { it.id == request.setId }
                 if (set != null) {
-                    readRemainingVirtualEnergyCurrentValue(
-                        manual = true,
-                        noItems = !set.itemKeys.contains(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value),
-                        textTemplate =
-                            set.itemTexts[LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value]
-                                ?: LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT,
-                    )
+                    val itemKeys = set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }
+                    if (itemKeys.isEmpty()) {
+                        readRemainingVirtualEnergyCurrentValue(manual = true, noItems = true)
+                    } else {
+                        itemKeys.forEach { key ->
+                            val template = set.itemTexts[key] ?: manualReadoutItemTextDefault(key)
+                            if (key == LmuWindowsReadoutItemKey.TyreWear.Root.value) {
+                                readTyreWearCurrentValue(template)
+                            } else {
+                                readRemainingVirtualEnergyCurrentValue(manual = true, textTemplate = template)
+                            }
+                        }
+                    }
                 }
             }
         }.launchIn(viewModelScope)
@@ -752,7 +767,7 @@ internal class LmuWindowsNarratorViewModel(
         // セッション終了や切断後の古い残量も、未受信と同じ扱いにする。
         val remainingVirtualEnergy =
             latestVirtualEnergy?.takeIf {
-                observedAtMs - latestVirtualEnergyReceivedAtMs <= HOTKEY_VIRTUAL_ENERGY_MAX_AGE_MS
+                observedAtMs - latestVirtualEnergyReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
             }
         val state = narratorState
         val settings = currentSettings
@@ -794,6 +809,37 @@ internal class LmuWindowsNarratorViewModel(
             events = decision.events,
             autoReadoutOrder = autoReadoutOrder.value,
             queueEnabledStates = currentQueueEnabledStates,
+            observedAtMs = observedAtMs,
+            logContext =
+                LmuWindowsTelemetryLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = decision.state,
+                ),
+        )
+    }
+
+    private suspend fun readTyreWearCurrentValue(textTemplate: String) {
+        if (selectedSimulator.value !is Simulator.LmuWindows) return
+        val observedAtMs = currentTimeMs()
+        val tyreWear =
+            latestTyreWear?.takeIf {
+                observedAtMs - latestTyreWearReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+            }
+        val state = narratorState
+        val settings = currentSettings
+        val decision =
+            narratorUseCases.determineReadout.determineManualTyreWearCurrentValue(
+                state = state,
+                data = tyreWear,
+                textTemplate = textTemplate,
+            )
+        narratorState = decision.state
+        eventProcessor.processTyreWearCurrentValue(
+            tyreWear = tyreWear,
+            events = decision.events,
+            autoReadoutOrder = autoReadoutOrder.value,
+            queueEnabledStates = queueEnabledStates.value + (LmuWindowsReadoutItemKey.TyreWear.Root to true),
             observedAtMs = observedAtMs,
             logContext =
                 LmuWindowsTelemetryLogContext(
