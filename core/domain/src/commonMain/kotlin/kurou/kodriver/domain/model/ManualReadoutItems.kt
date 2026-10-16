@@ -14,7 +14,10 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
         }
 
         Simulator.Gt7Ps5.id -> {
-            listOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value)
+            listOf(
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
+            )
         }
 
         else -> {
@@ -27,6 +30,10 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
     when (itemKey) {
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
             GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
+        }
+
+        Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
+            GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
         }
 
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> {
@@ -58,6 +65,7 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
 fun manualReadoutItemName(itemKey: String): String =
     when (itemKey) {
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
+        Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> "残り燃料の周回数"
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> "バーチャルエナジー残量"
         LmuWindowsReadoutItemKey.TyreWear.Root.value -> "タイヤ摩耗"
         LmuWindowsReadoutItemKey.BrakeWear.Root.value -> "ブレーキ残量"
@@ -79,9 +87,9 @@ fun isLmuWindowsManualReadoutTemperatureItem(itemKey: String): Boolean =
     itemKey == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value ||
         itemKey == LmuWindowsReadoutItemKey.TyreTemperature.Root.value
 
-/** 鮮度判定済みの GT7 手動読み上げ項目。残量は整数％、未受信・鮮度切れは null。 */
+/** 鮮度判定済みの GT7 手動読み上げ項目。残り燃料は％、残り燃料の周回数は周。未受信・鮮度切れは null。 */
 data class Gt7Ps5ManualReadoutItem(
     val key: String,
     val textTemplate: String,
-    val percent: Int?,
+    val value: Int?,
 )

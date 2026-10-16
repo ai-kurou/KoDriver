@@ -5,6 +5,15 @@ import kotlin.test.assertEquals
 
 class ManualReadoutItemsTest {
     @Test
+    fun `GT7の周回数は名前と既定文言を持ちLMUと衝突しない`() {
+        val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
+        assertEquals("残り燃料の周回数", manualReadoutItemName(key))
+        assertEquals("燃料は残り約{laps}周", manualReadoutItemTextDefault(key))
+        assertEquals(emptySet(), manualReadoutItemKeys(Simulator.LmuWindows.id).toSet().intersect(setOf(key)))
+        assertEquals(3, Gt7Ps5ManualReadoutItem(key, "", 3).value)
+    }
+
+    @Test
     fun `GT7の残り燃料は既定文言と名前を持ちLMUのキーと衝突しない`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
         assertEquals("残り燃料", manualReadoutItemName(key))
@@ -53,7 +62,13 @@ class ManualReadoutItemsTest {
             manualReadoutItemKeys(Simulator.LmuWindows.id),
         )
         assertEquals(emptyList(), manualReadoutItemKeys(Simulator.AceWindows.id))
-        assertEquals(listOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value), manualReadoutItemKeys(Simulator.Gt7Ps5.id))
+        assertEquals(
+            listOf(
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
+            ),
+            manualReadoutItemKeys(Simulator.Gt7Ps5.id),
+        )
         assertEquals(emptyList(), manualReadoutItemKeys("unknown"))
     }
 

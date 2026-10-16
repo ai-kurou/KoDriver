@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.engine
 
+import kurou.kodriver.domain.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
@@ -97,4 +98,20 @@ data class Gt7Ps5RemainingFuelCurrentValue(
         )
 
     override fun withResolvedText(text: String): Gt7Ps5RemainingFuelCurrentValue = copy(resolvedText = text)
+}
+
+/** GT7 の現在の残り燃料周回数。手動読み上げではセット内の文言を優先する。 */
+data class Gt7Ps5RemainingFuelLapsCurrentValue(
+    val laps: Int,
+    override val resolvedText: String? = null,
+) : Gt7Ps5SpeechEvent {
+    override val readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root
+    override val narratedText =
+        resolvedText ?: if (laps <= 0) {
+            GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+        } else {
+            formatGt7Ps5RemainingFuelLapsReadoutText(GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT, laps)
+        }
+
+    override fun withResolvedText(text: String): Gt7Ps5RemainingFuelLapsCurrentValue = copy(resolvedText = text)
 }

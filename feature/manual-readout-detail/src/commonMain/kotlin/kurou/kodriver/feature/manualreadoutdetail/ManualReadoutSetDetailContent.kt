@@ -33,10 +33,12 @@ import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
+import kurou.kodriver.domain.model.findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders
 import kurou.kodriver.domain.model.findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
@@ -47,6 +49,8 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_body
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_confirm
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_title
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_laps_hint
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_laps_insert
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_no_items
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_percent_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_percent_insert
@@ -209,6 +213,7 @@ internal fun ManualReadoutItemTextField(
     defaultText: String,
     onTextChanged: (String) -> Unit,
     isTemperature: Boolean = false,
+    isLaps: Boolean = false,
 ) {
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
@@ -218,10 +223,10 @@ internal fun ManualReadoutItemTextField(
         onTextChanged(it)
     }
     val unknown =
-        if (isTemperature) {
-            findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders(currentText)
-        } else {
-            findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders(currentText)
+        when {
+            isLaps -> findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders(currentText)
+            isTemperature -> findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders(currentText)
+            else -> findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders(currentText)
         }.joinToString("、")
     Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
         DetailPaneLabeledTextField(
@@ -248,7 +253,9 @@ internal fun ManualReadoutItemTextField(
             AssistChip(
                 onClick = {
                     insertState.insert(
-                        if (isTemperature) {
+                        if (isLaps) {
+                            GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
+                        } else if (isTemperature) {
                             LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
                         } else {
                             LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
@@ -258,7 +265,9 @@ internal fun ManualReadoutItemTextField(
                 label = {
                     Text(
                         stringResource(
-                            if (isTemperature) {
+                            if (isLaps) {
+                                Res.string.manual_readout_laps_insert
+                            } else if (isTemperature) {
                                 Res.string.manual_readout_celsius_insert
                             } else {
                                 Res.string.manual_readout_percent_insert
@@ -272,7 +281,9 @@ internal fun ManualReadoutItemTextField(
             Text(
                 text =
                     stringResource(
-                        if (isTemperature) {
+                        if (isLaps) {
+                            Res.string.manual_readout_laps_hint
+                        } else if (isTemperature) {
                             Res.string.manual_readout_celsius_hint
                         } else {
                             Res.string.manual_readout_percent_hint

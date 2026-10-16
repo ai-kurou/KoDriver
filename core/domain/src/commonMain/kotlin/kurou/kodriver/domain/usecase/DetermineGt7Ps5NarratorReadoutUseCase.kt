@@ -3,6 +3,7 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.engine.Gt7Ps5ManualReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelCurrentValue
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsCurrentValue
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
@@ -10,13 +11,17 @@ import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.model.GT7_PS5_MANUAL_READOUT_NO_ITEMS_TEXT
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
+import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.model.manualReadoutItemName
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.roundToInt
@@ -82,16 +87,14 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         state: Gt7Ps5NarratorState,
         items: List<Gt7Ps5ManualReadoutItem> = emptyList(),
     ): Gt7Ps5NarratorReadoutDecision {
-        val supportedItems =
-            items
-                .filter { it.key == Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value }
-                .take(MANUAL_READOUT_SET_ITEM_MAX)
+        val supportedKeys = manualReadoutItemKeys(Simulator.Gt7Ps5.id)
+        val supportedItems = items.filter { it.key in supportedKeys }.take(MANUAL_READOUT_SET_ITEM_MAX)
         val text =
             if (supportedItems.isEmpty()) {
                 GT7_PS5_MANUAL_READOUT_NO_ITEMS_TEXT
             } else {
                 supportedItems
-                    .map { item -> manualRemainingFuelCurrentValue(item).narratedText }
+                    .map { item -> manualCurrentValue(item).narratedText }
                     .filter { it.isNotBlank() }
                     .joinToString("、")
             }
@@ -101,16 +104,43 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         )
     }
 
-    private fun manualRemainingFuelCurrentValue(item: Gt7Ps5ManualReadoutItem): Gt7Ps5RemainingFuelCurrentValue =
-        Gt7Ps5RemainingFuelCurrentValue(
-            percent = item.percent ?: 0,
-            resolvedText =
-                when {
-                    item.textTemplate.isBlank() -> ""
-                    item.percent == null -> "${manualReadoutItemName(item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT"
-                    else -> formatGt7Ps5RemainingFuelReadoutText(item.textTemplate, item.percent)
-                },
-        )
+    private fun manualCurrentValue(item: Gt7Ps5ManualReadoutItem): ReadoutTextEvent {
+        val isLaps = item.key == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
+        val text =
+            when {
+                item.textTemplate.isBlank() -> ""
+                item.value == null -> "${manualReadoutItemName(item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT"
+                isLaps && item.value <= 0 -> GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+                isLaps -> formatGt7Ps5RemainingFuelLapsReadoutText(item.textTemplate, item.value)
+                else -> formatGt7Ps5RemainingFuelReadoutText(item.textTemplate, item.value)
+            }
+        return if (isLaps) {
+            Gt7Ps5RemainingFuelLapsCurrentValue(item.value ?: 0, text)
+        } else {
+            Gt7Ps5RemainingFuelCurrentValue(item.value ?: 0, text)
+        }
+    }
+
+    /** 自動読み上げの設定やタイミングに依存せず、追跡中の平均消費から現在の残り周回数を返す。 */
+    fun currentRemainingFuelLaps(state: Gt7Ps5NarratorState): Int? {
+        val fuelState = state.fuelTrackingState
+        val startFuel = fuelState.raceStartFuel ?: return null
+        val startLap = fuelState.raceStartLap ?: return null
+        val lapsCompleted = fuelState.currentLap - startLap
+        if (lapsCompleted <= 0) return null
+        val consumedFuel = startFuel + fuelState.totalRefueled - fuelState.currentGasLevel
+        if (consumedFuel <= Gt7Ps5FuelUnit(0f)) return null
+        return remainingFuelLaps(fuelState, consumedFuel, lapsCompleted)
+    }
+
+    private fun remainingFuelLaps(
+        fuelState: Gt7Ps5FuelTrackingState,
+        consumedFuel: Gt7Ps5FuelUnit,
+        lapsCompleted: Int,
+    ): Int {
+        val avgConsumption = consumedFuel / (lapsCompleted + CURRENT_LAP_CONSUMPTION_WEIGHT)
+        return (fuelState.currentGasLevel / avgConsumption).toInt()
+    }
 
     /** 未受信・鮮度切れ・不正な燃料値は手動読み上げのデータなしとして扱う。 */
     fun currentRemainingFuelPercent(telemetry: Gt7Ps5TelemetryData?): Int? {
@@ -368,8 +398,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         if (lapsCompleted <= 0) return RemainingFuelLapsEvaluation(state.lastFuelEvaluationLap, null)
         val consumedFuel = startFuel + fuelState.totalRefueled - fuelState.currentGasLevel
         if (consumedFuel <= Gt7Ps5FuelUnit(0f)) return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
-        val avgConsumption = consumedFuel / (lapsCompleted + CURRENT_LAP_CONSUMPTION_WEIGHT)
-        val remainingLapsFloor = (fuelState.currentGasLevel / avgConsumption).toInt()
+        val remainingLapsFloor = remainingFuelLaps(fuelState, consumedFuel, lapsCompleted)
         if (remainingLapsFloor < 0 || remainingLapsFloor > settings.remainingFuelLapsThreshold) {
             return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
         }

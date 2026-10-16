@@ -304,6 +304,25 @@ internal class Gt7Ps5NarratorViewModel(
             }
         }.launchIn(viewModelScope)
 
+    private fun manualReadoutValue(
+        key: String,
+        telemetry: Gt7Ps5TelemetryData,
+        state: Gt7Ps5NarratorState,
+    ): Int? =
+        when (key) {
+            Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
+                determineGt7Ps5NarratorReadout.currentRemainingFuelPercent(telemetry)
+            }
+
+            Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
+                determineGt7Ps5NarratorReadout.currentRemainingFuelLaps(state)
+            }
+
+            else -> {
+                null
+            }
+        }
+
     private suspend fun readManualReadout(set: ManualReadoutSet?) {
         if (set == null || selectedSimulator.value !is Simulator.Gt7Ps5) return
         val observedAtMs = currentTimeMs()
@@ -311,10 +330,10 @@ internal class Gt7Ps5NarratorViewModel(
         val settings = currentSettings
         val telemetry =
             latestTelemetry?.takeIf { observedAtMs - latestTelemetryReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
-        val percent = determineGt7Ps5NarratorReadout.currentRemainingFuelPercent(telemetry)
         val items =
             set.itemKeys.map { key ->
-                Gt7Ps5ManualReadoutItem(key, set.itemTexts[key] ?: manualReadoutItemTextDefault(key), percent)
+                val value = telemetry?.let { manualReadoutValue(key, it, state) }
+                Gt7Ps5ManualReadoutItem(key, set.itemTexts[key] ?: manualReadoutItemTextDefault(key), value)
             }
         val decision = determineGt7Ps5NarratorReadout.determineManualReadout(state, items)
         eventProcessor.processManualReadout(
