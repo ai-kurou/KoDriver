@@ -48,7 +48,7 @@ class AppScreenContentTest {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
                 selectedSimulatorId = selectedSimulatorId.value,
-                manualReadoutContent = { Text("手動画面: $it") },
+                manualReadoutContent = { simulatorId, _ -> Text("手動画面: $simulatorId") },
             )
         }
 

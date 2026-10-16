@@ -2,16 +2,20 @@ package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
@@ -99,5 +103,55 @@ class ManualReadoutContentTest {
         rule.onNodeWithText("詳細 target").assertDoesNotExist()
         rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertExists()
         rule.runOnIdle { assertEquals(listOf("target"), deleted) }
+    }
+
+    @Test
+    fun `再タップは選択中なら選択解除だけを未選択ならスクロールだけを要求する`() {
+        var clearCount = 0
+        var scrollCount = 0
+        handleManualReadoutTabReselected("target", { clearCount++ }, { scrollCount++ })
+        assertEquals(1, clearCount)
+        assertEquals(0, scrollCount)
+        handleManualReadoutTabReselected(null, { clearCount++ }, { scrollCount++ })
+        assertEquals(1, clearCount)
+        assertEquals(1, scrollCount)
+    }
+
+    @Test
+    fun `スクロール要求が増えると一覧を先頭へ戻し同じ要求では位置を維持する`() {
+        val request = mutableIntStateOf(0)
+        val listState = LazyListState()
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    ManualReadoutContentScaffold(
+                        uiState = ManualReadoutListUiState(sets = List(40) { ManualReadoutSet("set-$it") }),
+                        simulatorName = "LMU",
+                        onAddSet = {},
+                        onReadSet = {},
+                        onSetClick = {},
+                        onClearSelectedSet = {},
+                        scrollToTopRequest = request.intValue,
+                        listState = listState,
+                        detailContent = { _, _, _ -> },
+                    )
+                }
+            }
+        }
+        rule.onNode(hasScrollToIndexAction()).performScrollToIndex(25)
+        rule.runOnIdle {
+            assertEquals(25, listState.firstVisibleItemIndex)
+            request.intValue++
+        }
+        rule.waitForIdle()
+        rule.runOnIdle {
+            assertEquals(0, listState.firstVisibleItemIndex)
+            assertEquals(0, listState.firstVisibleItemScrollOffset)
+        }
+        rule.onNode(hasScrollToIndexAction()).performScrollToIndex(25)
+        rule.runOnIdle { assertEquals(25, listState.firstVisibleItemIndex) }
+        rule.runOnIdle { request.intValue++ }
+        rule.waitForIdle()
+        rule.runOnIdle { assertEquals(0, listState.firstVisibleItemIndex) }
     }
 }

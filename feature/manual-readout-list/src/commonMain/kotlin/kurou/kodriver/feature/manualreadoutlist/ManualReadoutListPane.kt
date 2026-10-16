@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -115,6 +117,7 @@ internal fun ManualReadoutListPaneContent(
     onSetClick: (String) -> Unit = {},
     onDeleteSet: (String) -> Unit = {},
     showHotkeyChip: Boolean = isManualReadoutHotkeySupported(),
+    listState: LazyListState = rememberLazyListState(),
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
@@ -133,6 +136,7 @@ internal fun ManualReadoutListPaneContent(
                 }
             } else {
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                     contentPadding = PaddingValues(bottom = 56.dp + KoDriverSpacing.large),
                 ) {
