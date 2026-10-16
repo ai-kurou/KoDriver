@@ -69,3 +69,12 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 ## デバッグ読み上げ
 
 `DebugReadoutRequestCard` は項目ドロップダウン、自由文言の OutlinedTextField と読み上げボタンを提供する。domain に依存せずキーの value を文字列で受け取り、既存の `readoutItemDisplayName` で表示する。選択・入力・送信はコールバックで通知し、空白のみではボタンを無効化する。ラベルは composeResources の日本語文字列を使う。
+
+## デバッグ状態の共通部品
+
+- `DebugStateUnavailableContent` は未取得文言を文字列で受け取り、装飾とともに表示する。リソースの解決は feature が行う。
+- `DebugStateHeatTile` は必須の `heatLevel: HeatLevel?` を受け取り、`null` は中立色で表示する。`HeatLevel` とテーマ色への変換 `heatColor` は共通とし、温度・摩耗の閾値判定は各 feature に残す。
+- `DebugStateStatusChip` は文言とアクセント色を受け取る。
+- `DebugStateCardFrame` はタイトル・記号・アクセント色を受け取る。カードキーから色・記号への変換は各 feature の責務とする。`showHandle` で右上の点状装飾を切り替え、GT7 は非表示を維持する。
+- `SimulatorInfoContent` は `simulatorId` を受け取り、既存の `simulatorDisplayName` で表示名を解決する。
+- 各 feature の既存関数は薄いラッパーとして維持し、温度判定の既定引数と既存テストの呼び出しを保つ。LMU 固有の `DebugStateWearMeter` は共通化しない。

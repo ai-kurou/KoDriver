@@ -1,18 +1,9 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import kurou.kodriver.core.designsystem.KoDriverExtendedColors
+import kurou.kodriver.core.designsystem.HeatLevel
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNKNOWN_DEFAULT
-
-internal enum class HeatLevel {
-    COOL,
-    OK,
-    WARM,
-    HOT,
-}
 
 private const val COOL_TEMPERATURE_CELSIUS = 70.0
 private const val HOT_TEMPERATURE_CELSIUS = 110.0
@@ -48,14 +39,3 @@ internal fun wearHeatLevel(remainingPercent: Double): HeatLevel =
         remainingPercent < HEALTHY_REMAINING_PERCENT -> HeatLevel.WARM
         else -> HeatLevel.OK
     }
-
-@Composable
-internal fun heatColor(level: HeatLevel): Color {
-    val colors = KoDriverExtendedColors.current
-    return when (level) {
-        HeatLevel.COOL -> colors.heatCool
-        HeatLevel.OK -> colors.heatOk
-        HeatLevel.WARM -> colors.heatWarm
-        HeatLevel.HOT -> colors.heatHot
-    }
-}
