@@ -16,6 +16,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Rule
 import org.junit.Test
@@ -24,6 +25,50 @@ import kotlin.test.assertEquals
 class ManualReadoutListPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `対応環境では割り当て済みと未設定のチップを表示する`() {
+        showHotkeySets(showHotkeyChip = true)
+
+        rule.onNodeWithText("Ctrl+Shift+A", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithText("未設定", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsDisplayed()
+    }
+
+    @Test
+    fun `非対応環境では割り当て済みも未設定もチップを表示しない`() {
+        showHotkeySets(showHotkeyChip = false)
+
+        rule.onNodeWithText("Ctrl+Shift+A", useUnmergedTree = true).assertDoesNotExist()
+        rule.onNodeWithText("未設定", useUnmergedTree = true).assertDoesNotExist()
+        rule.onNodeWithText("セット 1").assertIsDisplayed()
+        rule.onNodeWithText("セット 2").assertIsDisplayed()
+    }
+
+    private fun showHotkeySets(showHotkeyChip: Boolean) {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState =
+                        ManualReadoutListUiState(
+                            sets =
+                                listOf(
+                                    ManualReadoutSet(
+                                        id = "assigned",
+                                        hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_SHIFT,
+                                        hotkeyVirtualKeyCode = 0x41,
+                                    ),
+                                    ManualReadoutSet(id = "unassigned"),
+                                ),
+                        ),
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                    showHotkeyChip = showHotkeyChip,
+                )
+            }
+        }
+    }
 
     @Test
     fun `読み上げ可能な一覧のボタンは項目の有無に関係なく対応するセットIDを渡す`() {
