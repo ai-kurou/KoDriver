@@ -17,7 +17,6 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -54,17 +53,16 @@ fun ManualReadoutContent(
         koinViewModel(key = simulatorId, parameters = { parametersOf(simulatorId) })
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var scrollToTopRequest by remember { mutableIntStateOf(0) }
+    // 再タップ回数は AppScreen 側で保持され続けるため、タブ再表示時の初期値は再タップとして扱わない。
+    val initialTabReselectRequest = remember { tabReselectRequest }
     LaunchedEffect(tabReselectRequest) {
-        if (tabReselectRequest > 0) {
+        if (tabReselectRequest > initialTabReselectRequest) {
             handleManualReadoutTabReselected(
                 selectedSetId = uiState.selectedSetId,
                 clearSelectedSet = viewModel::clearSelectedSet,
                 requestScrollToTop = { scrollToTopRequest++ },
             )
         }
-    }
-    DisposableEffect(viewModel) {
-        onDispose { viewModel.clearSelectedSet() }
     }
     ManualReadoutContentScaffold(
         uiState = uiState,

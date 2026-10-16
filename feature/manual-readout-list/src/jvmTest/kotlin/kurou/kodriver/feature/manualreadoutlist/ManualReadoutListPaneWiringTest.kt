@@ -79,7 +79,7 @@ class ManualReadoutListPaneWiringTest {
     private val gt7Repository: ManualReadoutSetPreferencesRepository = mockk()
 
     @Test
-    fun `Contentはシミュレーター切替と離脱時に選択を解除して再表示では一覧を表示する`() {
+    fun `Contentはシミュレーターごとの選択を保持して離脱後の再表示でも詳細を表示する`() {
         val sets = MutableStateFlow(listOf(ManualReadoutSet("lmu-set")) + List(39) { ManualReadoutSet("set-$it") })
         every { lmuRepository.observeSets() } returns sets
         coEvery { lmuRepository.deleteSet("lmu-set") } answers { sets.update { emptyList() } }
@@ -118,34 +118,35 @@ class ManualReadoutListPaneWiringTest {
                     }
                 }
             }
+            rule.onNodeWithText("セット 1").assertIsDisplayed().performClick()
+            rule.onNodeWithText("詳細 lmu-set").assertIsDisplayed()
+            rule.runOnIdle { simulatorId = Simulator.Gt7Ps5.id }
+            rule.waitForIdle()
+            rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
+            rule.onNodeWithText("詳細 gt7-set").assertDoesNotExist()
+            rule.onNodeWithText("セット 1").assertIsDisplayed()
+            rule.runOnIdle { simulatorId = Simulator.LmuWindows.id }
+            rule.waitForIdle()
+            rule.onNodeWithText("詳細 lmu-set").assertIsDisplayed()
+            rule.runOnIdle { showContent = false }
+            rule.waitForIdle()
+            rule.runOnIdle { showContent = true }
+            rule.waitForIdle()
+            rule.onNodeWithText("詳細 lmu-set").assertIsDisplayed()
+            rule.runOnIdle { tabReselectRequest++ }
+            rule.waitForIdle()
+            rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
             rule.onNode(hasScrollToIndexAction()).performScrollToIndex(25)
             rule.onNodeWithText("セット 1").assertDoesNotExist()
             rule.runOnIdle { tabReselectRequest++ }
             rule.waitForIdle()
             rule.onNodeWithText("セット 1").assertIsDisplayed().performClick()
-            rule.onNodeWithText("詳細 lmu-set").assertExists()
-            rule.runOnIdle { tabReselectRequest++ }
-            rule.waitForIdle()
-            rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
-            rule.onNodeWithText("セット 1").assertIsDisplayed().performClick()
-            rule.onNodeWithText("詳細 lmu-set").assertExists()
-            rule.runOnIdle { simulatorId = Simulator.Gt7Ps5.id }
-            rule.waitForIdle()
-            rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
-            rule.onNodeWithText("セット 1").performClick()
-            rule.onNodeWithText("詳細 gt7-set").assertExists()
-            rule.runOnIdle { simulatorId = Simulator.LmuWindows.id }
-            rule.waitForIdle()
-            rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
-            rule.onNodeWithText("セット 1").performClick()
-            rule.onNodeWithText("詳細 lmu-set").assertExists()
+            rule.onNodeWithText("詳細 lmu-set").assertIsDisplayed()
             rule.runOnIdle { showContent = false }
             rule.waitForIdle()
             rule.runOnIdle { showContent = true }
             rule.waitForIdle()
-            rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
-            rule.onNodeWithText("セット 1").assertIsDisplayed().performClick()
-            rule.onNodeWithText("詳細 lmu-set").assertExists()
+            rule.onNodeWithText("詳細 lmu-set").assertIsDisplayed()
             rule.onNodeWithText("セット 1").performTouchInput { longClick() }
             rule.onNodeWithText("削除").performClick()
             rule.onNodeWithText("削除").performClick()
