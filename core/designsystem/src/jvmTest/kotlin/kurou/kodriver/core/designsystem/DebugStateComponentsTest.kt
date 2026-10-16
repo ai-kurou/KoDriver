@@ -124,4 +124,27 @@ class DebugStateComponentsTest {
             rule.onNodeWithText(it).assertIsDisplayed()
         }
     }
+
+    @Test
+    fun `車輪温度タイルは値があれば値を、未取得なら-を文言に埋め込んで表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                Column {
+                    DebugStateWheelTemperatureTile(
+                        text = { "FL $it" },
+                        formattedCelsius = "85.5",
+                        heatLevel = HeatLevel.OK,
+                    )
+                    DebugStateWheelTemperatureTile(
+                        text = { "FR $it" },
+                        formattedCelsius = null,
+                        heatLevel = null,
+                    )
+                }
+            }
+        }
+
+        rule.onNodeWithText("FL 85.5").assertIsDisplayed()
+        rule.onNodeWithText("FR -").assertIsDisplayed()
+    }
 }
