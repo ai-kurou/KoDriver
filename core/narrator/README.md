@@ -46,15 +46,17 @@
 `autoReadoutOrder` に含まれないキーは最も優先度が低いものとして扱います。
 
 **戻り値の `Boolean` だけでは4経路を区別できません**（経路1・3・4がいずれも `true` になります）。テレメトリログへ
-保存する `NarrationOutcome` のように4経路を区別したい呼び出し側は、`speak` に渡された `queue` の値と `stop` が
-呼ばれたかどうかを各ラムダの中で捕捉して判別します（3つの `XxxNarratorEventProcessor` の private な
-`speakWithPriority` ラッパーがこれを行っています）。特に経路4は、再生中の読み上げが無いためそのまま読み上げた
-だけで `stop()` は呼ばれておらず、経路3の割り込み再生とは異なります。両者を取り違えると通常の読み上げが
-「割り込み再生」として記録されます（PR #1626 で修正済み）。
+保存する `NarrationOutcome` のように4経路を区別したい呼び出し側は、同ファイルの
+`speakWithOutcome<KEY, OUTCOME>(...)` を利用します。`speakWithPriority` を呼び、`speak` に渡された `queue` の値と
+`stop` が呼ばれたかどうかを捕捉して、呼び出し側から渡された `SpeakOutcomes`（`skipped` / `queued` / `interrupted` / `spoken`）の値を返します。
+特に経路4は `stop()` が呼ばれない通常再生であり、経路3の割り込み再生と取り違えないようにしています（PR #1626）。
 
-`NarratorEngine` と同様に `:core:domain` の `SpeechEvent` / `ReadoutItemKey` へ依存しないよう、イベントのキーは
-呼び出し側から値として渡し、`speak` / `stop` の実行や現在再生中のキーの取得もラムダで受け取ります。この制約の
-ため、この関数自体が `:core:domain` の `NarrationOutcome` を返すことはできません。
+`NarratorEngine` と同様に `:core:domain` に依存しないよう、イベントのキーと結果の型を型パラメータで受け取り、
+`speak` / `stop` の実行や現在再生中のキーの取得もラムダで受け取ります。各 feature が `NarrationOutcome` の各値を渡します。
+
+`runCatchingTelemetryLogSave`（`RunCatchingTelemetryLogSave.kt`）は、ログ保存処理を suspend ラムダで受け取ります。
+ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めず、`captureNarratorError` で例外を記録します。
+`CancellationException` は再スローします。シミュレーター固有の保存引数や UseCase は各 feature に残します。
 
 `TelemetryLogJson`（`TelemetryLogJson.kt`）は、3つの narrator feature が読み上げイベントをテレメトリログとして
 保存する際に使う kotlinx.serialization の共通設定（`encodeDefaults` / `explicitNulls`）です。UDP/共有メモリ由来の

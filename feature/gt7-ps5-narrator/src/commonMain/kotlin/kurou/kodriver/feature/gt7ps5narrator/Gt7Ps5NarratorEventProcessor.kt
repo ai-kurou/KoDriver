@@ -1,15 +1,15 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
-import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kurou.kodriver.core.narrator.SpeakOutcomes
 import kurou.kodriver.core.narrator.TelemetryLogJson
 import kurou.kodriver.core.narrator.TelemetryLogJsonCurrentField
 import kurou.kodriver.core.narrator.TelemetryLogJsonPreviousField
 import kurou.kodriver.core.narrator.buildTelemetryLogJson
-import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.runCatchingNarratorError
-import kurou.kodriver.core.narrator.speakWithPriority
+import kurou.kodriver.core.narrator.runCatchingTelemetryLogSave
+import kurou.kodriver.core.narrator.speakWithOutcome
 import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
@@ -107,37 +107,28 @@ internal class Gt7Ps5NarratorEventProcessor(
      * 読み上げの処理結果を返す。キュー追加・通常再生・割り込み再生・優先度負けによる読み上げなしの4種を
      * 区別し、テレメトリログの narrationOutcome として保存される。
      *
-     * 割り込み再生かどうかは共有関数の戻り値からは分からないため、[stop] が呼ばれたかどうかで判定する。
+     * 割り込み再生かどうかの判定は [speakWithOutcome] に委譲する。
      */
     private fun speakWithPriority(
         event: SpeechEvent,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-    ): NarrationOutcome {
-        var wasQueued: Boolean? = null
-        var didStop = false
-        val spoken =
-            speakWithPriority(
-                eventKey = event.readoutItemKey,
-                currentKey = { ttsEngine.currentReadoutItemKey },
-                autoReadoutOrder = autoReadoutOrder,
-                queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
-                speak = { queue ->
-                    wasQueued = queue
-                    ttsEngine.speak(event, queue)
-                },
-                stop = {
-                    didStop = true
-                    ttsEngine.stop()
-                },
-            )
-        return when {
-            !spoken -> NarrationOutcome.SKIPPED
-            wasQueued == true -> NarrationOutcome.QUEUED
-            didStop -> NarrationOutcome.INTERRUPTED
-            else -> NarrationOutcome.SPOKEN
-        }
-    }
+    ): NarrationOutcome =
+        speakWithOutcome(
+            eventKey = event.readoutItemKey,
+            currentKey = { ttsEngine.currentReadoutItemKey },
+            autoReadoutOrder = autoReadoutOrder,
+            queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
+            speak = { queue -> ttsEngine.speak(event, queue) },
+            stop = { ttsEngine.stop() },
+            outcomes =
+                SpeakOutcomes(
+                    skipped = NarrationOutcome.SKIPPED,
+                    queued = NarrationOutcome.QUEUED,
+                    interrupted = NarrationOutcome.INTERRUPTED,
+                    spoken = NarrationOutcome.SPOKEN,
+                ),
+        )
 
     /** 文言解決に失敗したイベントだけをスキップし、後続の読み上げとログ保存を継続する。 */
     private suspend fun readoutTextSafely(event: SpeechEvent): String? = runCatchingNarratorError { readoutText(event) }
@@ -149,7 +140,7 @@ internal class Gt7Ps5NarratorEventProcessor(
         narrationOutcome: NarrationOutcome,
         telemetryJson: String,
     ) {
-        try {
+        runCatchingTelemetryLogSave {
             saveTelemetryLog(
                 createdAt = createdAt,
                 narrationOutcome = narrationOutcome,
@@ -158,11 +149,6 @@ internal class Gt7Ps5NarratorEventProcessor(
                 narratedText = narratedText,
                 telemetryJson = telemetryJson,
             )
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            // ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めない。記録のみ行う。
-            captureNarratorError(e)
         }
     }
 }

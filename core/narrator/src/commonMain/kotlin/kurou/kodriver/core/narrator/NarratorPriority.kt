@@ -21,10 +21,8 @@ package kurou.kodriver.core.narrator
  * [currentKey] はキュー再生が有効な場合には呼び出し不要なため、遅延評価できるよう関数で受け取る。
  *
  * **戻り値の `Boolean` だけでは上の4経路を区別できない**（経路1・3・4がいずれも true になる）。テレメトリログへ
- * 保存する `NarrationOutcome` のように4経路を区別したい呼び出し側は、[speak] に渡された `queue` の値と [stop] が
- * 呼ばれたかどうかを各ラムダの中で捕捉して判別すること。`:core:narrator` は `:core:domain` に依存しないため、
- * この関数自体が `NarrationOutcome` を返すことはできない。経路4を経路3と取り違えると、通常の読み上げが
- * 「割り込み再生」として記録される（PR #1626 で修正済み）。
+ * 保存する `NarrationOutcome` のように4経路を区別したい呼び出し側は、[speakWithOutcome] を利用する。
+ * `:core:narrator` は `:core:domain` に依存しないため、結果の型と値は呼び出し側から渡す。
  *
  * @return 読み上げ（キュー追加・通常再生・割り込み再生のいずれか）を実行した場合 true、
  *   優先度に負けて読み上げなかった場合（経路2）は false
@@ -50,4 +48,55 @@ fun <KEY> speakWithPriority(
     }
     speak(false)
     return true
+}
+
+/** [speakWithOutcome] が返す4経路それぞれの結果値。 */
+data class SpeakOutcomes<OUTCOME>(
+    val skipped: OUTCOME,
+    val queued: OUTCOME,
+    val interrupted: OUTCOME,
+    val spoken: OUTCOME,
+)
+
+/**
+ * [speakWithPriority] の4経路を、呼び出し側が指定した [OUTCOME] の値へ変換する。
+ *
+ * 読み上げなしは [SpeakOutcomes.skipped]、キュー追加は [SpeakOutcomes.queued]、停止を伴う割り込み再生は [SpeakOutcomes.interrupted]、
+ * それ以外の通常再生は [SpeakOutcomes.spoken] を返す。結果の型と値を受け取ることで `:core:domain` に依存しない。
+ *
+ * 経路4（再生中のイベントなし）では [stop] が呼ばれないため、通常再生として扱う。
+ * 経路3と取り違えると通常の読み上げが「割り込み再生」として記録される（PR #1626）。
+ */
+fun <KEY, OUTCOME> speakWithOutcome(
+    eventKey: KEY,
+    currentKey: () -> KEY?,
+    autoReadoutOrder: List<KEY>,
+    queueEnabled: Boolean,
+    speak: (queue: Boolean) -> Unit,
+    stop: () -> Unit,
+    outcomes: SpeakOutcomes<OUTCOME>,
+): OUTCOME {
+    var wasQueued: Boolean? = null
+    var didStop = false
+    val didSpeak =
+        speakWithPriority(
+            eventKey = eventKey,
+            currentKey = currentKey,
+            autoReadoutOrder = autoReadoutOrder,
+            queueEnabled = queueEnabled,
+            speak = { queue ->
+                wasQueued = queue
+                speak(queue)
+            },
+            stop = {
+                didStop = true
+                stop()
+            },
+        )
+    return when {
+        !didSpeak -> outcomes.skipped
+        wasQueued == true -> outcomes.queued
+        didStop -> outcomes.interrupted
+        else -> outcomes.spoken
+    }
 }
