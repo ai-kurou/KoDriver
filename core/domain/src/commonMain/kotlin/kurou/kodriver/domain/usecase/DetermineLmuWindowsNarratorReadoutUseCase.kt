@@ -582,10 +582,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val percentage =
             data
-                ?.wheels
-                ?.values
-                ?.minOfOrNull { it.value }
-                ?.let { (it * PERCENTAGE_SCALE).roundToInt() }
+                ?.let { it.wheels.values.minOrNull() }
+                ?.let { (it.value * PERCENTAGE_SCALE).roundToInt() }
         return LmuWindowsNarratorReadoutDecision(
             state = state,
             events =

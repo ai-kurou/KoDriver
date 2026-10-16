@@ -746,14 +746,10 @@ internal class LmuWindowsNarratorViewModel(
                     } else {
                         itemKeys.forEach { key ->
                             val template = set.itemTexts[key] ?: manualReadoutItemTextDefault(key)
-                            when (key) {
-                                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> {
-                                    readRemainingVirtualEnergyCurrentValue(manual = true, textTemplate = template)
-                                }
-
-                                LmuWindowsReadoutItemKey.TyreWear.Root.value -> {
-                                    readTyreWearCurrentValue(template)
-                                }
+                            if (key == LmuWindowsReadoutItemKey.TyreWear.Root.value) {
+                                readTyreWearCurrentValue(template)
+                            } else {
+                                readRemainingVirtualEnergyCurrentValue(manual = true, textTemplate = template)
                             }
                         }
                     }
