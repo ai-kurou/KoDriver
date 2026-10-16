@@ -76,6 +76,13 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 `onConfirm` は確認ボタン、`onDismiss` はキャンセルボタンとダイアログの閉じる要求を通知する。表示状態と削除・リセット処理は呼び出し側で管理する。
 
+## ヒント行・ヘルプシート行
+
+- `KoDriverHintRow` はラベル・ヘルプアイコンボタン・区切り線と、省略可能な `trailingText`（`labelSmall`）を表示する。ボタンを押すと `sheetContent` を `ModalBottomSheet` に表示する。
+- 開閉は部品内の一時的な UI 状態として `rememberSaveable` で保持し、保存状態からの再生成時に復元する。業務状態は従来どおり feature の ViewModel が管理する。
+- `KoDriverHintSheetRow` は同じ見た目のアイコンバッジとタイトル・説明を表示する。文字列リソースは呼び出し側で解決して渡す。
+- 表示と操作は `src/jvmTest` の `KoDriverHintRowTest`、実際の画面レイアウトは両 list feature の既存スクリーンショットテストで確認する。
+
 ## デバッグ状態の共通部品
 
 - `DebugStateUnavailableContent` は未取得文言を文字列で受け取り、装飾とともに表示する。リソースの解決は feature が行う。
