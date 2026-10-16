@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
@@ -822,9 +823,9 @@ internal class LmuWindowsNarratorViewModel(
                     }
                 val celsius =
                     if (key == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) {
-                        brakeTemperature?.let { data -> data.wheels.values.maxOfOrNull { it.value } }
+                        brakeTemperature?.let { data -> maxFiniteCelsius(data.wheels.values) }
                     } else if (key == LmuWindowsReadoutItemKey.TyreTemperature.Root.value) {
-                        tyreTemperature?.let { data -> data.wheels.values.maxOfOrNull { it.value } }
+                        tyreTemperature?.let { data -> maxFiniteCelsius(data.wheels.values) }
                     } else {
                         null
                     }
@@ -950,6 +951,13 @@ internal class LmuWindowsNarratorViewModel(
                 pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
             )
 }
+
+/** 非有限値（NaN・無限大）を除いた最高温度。有効な値が無ければ null（データ無し扱い）。 */
+private fun maxFiniteCelsius(readings: Collection<CelsiusReading>): Float? =
+    readings
+        .map { it.value }
+        .filter { it.isFinite() }
+        .maxOrNull()
 
 /**
  * バーチャルエナジー・タイヤ摩耗のピットタイミング警告が同一tickで両方発火した場合、

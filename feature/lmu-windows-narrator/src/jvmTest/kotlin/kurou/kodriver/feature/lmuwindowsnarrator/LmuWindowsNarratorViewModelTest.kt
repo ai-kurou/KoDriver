@@ -3456,6 +3456,50 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `手動タイヤ温度は非有限値を除外して最高値を読み有効値が無ければデータ無しにする`() =
+        runTest(testDispatcher) {
+            val temperature = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.TyreTemperature.Root
+            createViewModel(
+                tyreTemperatureChannel = temperature,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("temperature", listOf(key.value))),
+                enabledOverrides = mapOf(key to false),
+                ttsEngine = mockTts(spoken),
+            )
+            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "temperature")
+            temperature.send(tyreTemperature(fl = Double.NaN, fr = 80.0, rl = Double.POSITIVE_INFINITY, rr = 70.0))
+            requests.send(request)
+            temperature.send(tyreTemperature(fl = Double.NaN, fr = Double.NaN, rl = Double.NaN, rr = Double.NaN))
+            requests.send(request)
+            assertEquals(listOf("タイヤ温度80℃", "データがありません"), spoken.map { it.narratedText })
+        }
+
+    @Test
+    fun `手動ブレーキ温度は非有限値を除外して最高値を読み有効値が無ければデータ無しにする`() =
+        runTest(testDispatcher) {
+            val temperature = Channel<LmuWindowsBrakeTemperatureData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.BrakeTemperature.Root
+            createViewModel(
+                brakeTemperatureChannel = temperature,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("brake", listOf(key.value))),
+                enabledOverrides = mapOf(key to false),
+                ttsEngine = mockTts(spoken),
+            )
+            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "brake")
+            temperature.send(brakeTemperature(fl = Double.NaN, fr = 400.0, rl = Double.POSITIVE_INFINITY, rr = 300.0))
+            requests.send(request)
+            temperature.send(brakeTemperature(fl = Double.NaN, fr = Double.NaN, rl = Double.NaN, rr = Double.NaN))
+            requests.send(request)
+            assertEquals(listOf("ブレーキ温度400℃", "データがありません"), spoken.map { it.narratedText })
+        }
+
+    @Test
     fun `手動ブレーキ温度はシミュレーター切り替えで古い値を破棄する`() =
         runTest(testDispatcher) {
             val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
