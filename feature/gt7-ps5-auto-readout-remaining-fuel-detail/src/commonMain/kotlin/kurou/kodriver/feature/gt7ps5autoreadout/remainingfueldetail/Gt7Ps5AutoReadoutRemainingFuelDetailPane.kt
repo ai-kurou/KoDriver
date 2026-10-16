@@ -1,21 +1,15 @@
 package kurou.kodriver.feature.gt7ps5autoreadout.remainingfueldetail
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,11 +19,9 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.core.designsystem.ReadoutTextField
+import kurou.kodriver.core.designsystem.PlaceholderReadoutTextField
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.core.designsystem.rememberPendingText
-import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
@@ -108,11 +100,28 @@ internal fun Gt7Ps5AutoReadoutRemainingFuelDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    RemainingFuelReadoutField(
-                        text = uiState.readoutText,
-                        available = uiState.isTextToSpeechAvailable,
+                    PlaceholderReadoutTextField(
+                        label = stringResource(Res.string.remaining_fuel_text_label),
+                        savedText = uiState.readoutText,
+                        defaultText = GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT,
+                        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                        isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                         onTextChanged = onReadoutTextChanged,
                         onPreviewClick = onReadoutTextPreviewClicked,
+                        placeholder = GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER,
+                        insertLabel = stringResource(Res.string.remaining_fuel_percent_insert),
+                        placeholderHint = stringResource(Res.string.remaining_fuel_percent_placeholder_hint),
+                        resetContentDescription = stringResource(Res.string.remaining_fuel_text_reset_to_default),
+                        previewContentDescription = stringResource(Res.string.remaining_fuel_text_preview),
+                        selectedContentDescription = stringResource(Res.string.remaining_fuel_text_selected_icon),
+                        unavailableText = stringResource(Res.string.remaining_fuel_text_unavailable),
+                        supportingText = stringResource(Res.string.remaining_fuel_text_supporting),
+                        unknownPlaceholdersText = { currentText ->
+                            findUnknownGt7Ps5RemainingFuelReadoutPlaceholders(currentText)
+                                .joinToString("、")
+                                .takeIf { it.isNotEmpty() }
+                                ?.let { stringResource(Res.string.remaining_fuel_text_unknown_placeholders, it) }
+                        },
                     )
                     HorizontalDivider(
                         modifier =
@@ -139,64 +148,6 @@ internal fun Gt7Ps5AutoReadoutRemainingFuelDetailPaneContent(
                     )
                 }
             },
-        )
-    }
-}
-
-@Composable
-private fun RemainingFuelReadoutField(
-    text: String,
-    available: Boolean,
-    onTextChanged: (String) -> Unit,
-    onPreviewClick: (String) -> Unit,
-) {
-    val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
-    val currentText = textState.currentText
-    val insertState = rememberTextInsertState()
-    val changeText: (String) -> Unit = {
-        textState.change(it)
-        onTextChanged(it)
-    }
-    ReadoutTextField(
-        label = stringResource(Res.string.remaining_fuel_text_label),
-        text = currentText,
-        defaultText = GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT,
-        isTextToSpeechAvailable = available,
-        onTextChanged = changeText,
-        onPreviewClick = onPreviewClick,
-        insertState = insertState,
-        unknownPlaceholdersText =
-            findUnknownGt7Ps5RemainingFuelReadoutPlaceholders(currentText)
-                .joinToString("、")
-                .takeIf { it.isNotEmpty() }
-                ?.let { stringResource(Res.string.remaining_fuel_text_unknown_placeholders, it) },
-        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-        resetContentDescription = stringResource(Res.string.remaining_fuel_text_reset_to_default),
-        previewContentDescription = stringResource(Res.string.remaining_fuel_text_preview),
-        selectedContentDescription = stringResource(Res.string.remaining_fuel_text_selected_icon),
-        unavailableText = stringResource(Res.string.remaining_fuel_text_unavailable),
-        supportingText = stringResource(Res.string.remaining_fuel_text_supporting),
-    )
-    Row(
-        modifier = Modifier.padding(bottom = KoDriverSpacing.small),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-    ) {
-        AssistChip(
-            onClick = {
-                insertState.insert(GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER)
-            },
-            label = { Text(stringResource(Res.string.remaining_fuel_percent_insert)) },
-            enabled =
-                available &&
-                    currentText.length + GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER.length <=
-                    READOUT_CUSTOM_TEXT_MAX_LENGTH,
-        )
-        Text(
-            text = stringResource(Res.string.remaining_fuel_percent_placeholder_hint),
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

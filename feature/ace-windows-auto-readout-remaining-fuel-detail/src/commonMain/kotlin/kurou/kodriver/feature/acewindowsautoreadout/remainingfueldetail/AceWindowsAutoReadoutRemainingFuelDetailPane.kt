@@ -1,35 +1,27 @@
 package kurou.kodriver.feature.acewindowsautoreadout.remainingfueldetail
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
-import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.PlaceholderReadoutTextField
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.core.designsystem.rememberPendingText
-import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
@@ -106,11 +98,28 @@ internal fun AceWindowsAutoReadoutRemainingFuelDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    RemainingFuelReadoutField(
-                        text = uiState.readoutText,
-                        available = uiState.isTextToSpeechAvailable,
+                    PlaceholderReadoutTextField(
+                        label = stringResource(Res.string.remaining_fuel_text_label),
+                        savedText = uiState.readoutText,
+                        defaultText = ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT,
+                        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                        isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                         onTextChanged = onReadoutTextChanged,
                         onPreviewClick = { onReadoutTextPreviewClicked(it, uiState.thresholdPercentage) },
+                        placeholder = ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER,
+                        insertLabel = stringResource(Res.string.remaining_fuel_percent_insert),
+                        placeholderHint = stringResource(Res.string.remaining_fuel_percent_placeholder_hint),
+                        resetContentDescription = stringResource(Res.string.remaining_fuel_text_reset_to_default),
+                        previewContentDescription = stringResource(Res.string.remaining_fuel_text_preview),
+                        selectedContentDescription = stringResource(Res.string.remaining_fuel_text_selected_icon),
+                        unavailableText = stringResource(Res.string.remaining_fuel_text_unavailable),
+                        supportingText = stringResource(Res.string.remaining_fuel_text_supporting),
+                        unknownPlaceholdersText = { currentText ->
+                            findUnknownAceWindowsRemainingFuelReadoutPlaceholders(currentText)
+                                .joinToString("、")
+                                .takeIf { it.isNotEmpty() }
+                                ?.let { stringResource(Res.string.remaining_fuel_text_unknown_placeholders, it) }
+                        },
                     )
                     HorizontalDivider(
                         modifier =
@@ -138,82 +147,6 @@ internal fun AceWindowsAutoReadoutRemainingFuelDetailPaneContent(
                 }
             },
         )
-    }
-}
-
-@Composable
-private fun RemainingFuelReadoutField(
-    text: String,
-    available: Boolean,
-    onTextChanged: (String) -> Unit,
-    onPreviewClick: (String) -> Unit,
-) {
-    val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
-    val currentText = textState.currentText
-    val insertState = rememberTextInsertState()
-    val changeText: (String) -> Unit = {
-        textState.change(it)
-        onTextChanged(it)
-    }
-    val unknownPlaceholders = findUnknownAceWindowsRemainingFuelReadoutPlaceholders(currentText).joinToString("、")
-    Column {
-        val label = stringResource(Res.string.remaining_fuel_text_label)
-        DetailPaneLabeledTextField(
-            label = label,
-            value = currentText,
-            defaultValue = ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT,
-            onResetToDefault = { changeText(ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT) },
-            resetContentDescription = stringResource(Res.string.remaining_fuel_text_reset_to_default),
-            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            onValueChangeFinished = changeText,
-            onPreviewClick = onPreviewClick,
-            insertState = insertState,
-            enabled = available,
-            selected = currentText.isNotBlank(),
-            supportingText =
-                when {
-                    !available -> {
-                        stringResource(Res.string.remaining_fuel_text_unavailable)
-                    }
-
-                    unknownPlaceholders.isNotEmpty() -> {
-                        stringResource(
-                            Res.string.remaining_fuel_text_unknown_placeholders,
-                            unknownPlaceholders,
-                        )
-                    }
-
-                    currentText.isBlank() -> {
-                        stringResource(Res.string.remaining_fuel_text_supporting)
-                    }
-
-                    else -> {
-                        null
-                    }
-                },
-            previewContentDescription = stringResource(Res.string.remaining_fuel_text_preview),
-            selectedContentDescription = stringResource(Res.string.remaining_fuel_text_selected_icon),
-        )
-        Row(
-            modifier = Modifier.padding(bottom = KoDriverSpacing.small),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-        ) {
-            AssistChip(
-                onClick = { insertState.insert(ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER) },
-                label = { Text(stringResource(Res.string.remaining_fuel_percent_insert)) },
-                enabled =
-                    available &&
-                        currentText.length + ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER.length <=
-                        READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            )
-            Text(
-                text = stringResource(Res.string.remaining_fuel_percent_placeholder_hint),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
     }
 }
 
