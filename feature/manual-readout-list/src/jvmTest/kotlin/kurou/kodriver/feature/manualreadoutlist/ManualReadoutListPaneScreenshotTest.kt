@@ -49,13 +49,14 @@ class ManualReadoutListPaneScreenshotTest {
                                         canReadSets = true,
                                         sets =
                                             listOf(
-                                                ManualReadoutSet(id = "set-1"),
+                                                ManualReadoutSet(id = "set-1", hotkeyVirtualKeyCode = 0x41),
                                                 ManualReadoutSet(id = "set-2", itemKeys = listOf("SESSION", "FLAG")),
                                             ),
                                     ),
                                 simulatorName = "LMU",
                                 onAddSet = {},
                                 onReadSet = {},
+                                showHotkeyChip = true,
                             )
                         }
                     }

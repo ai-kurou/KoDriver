@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutlist
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -35,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -45,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -53,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_title
@@ -73,6 +77,7 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete_confirm
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_empty_title
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_hotkey_unassigned
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_item_count
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_no_items
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set
@@ -116,6 +121,7 @@ internal fun ManualReadoutListPaneContent(
     modifier: Modifier = Modifier,
     onSetClick: (String) -> Unit = {},
     onDeleteSet: (String) -> Unit = {},
+    showHotkeyChip: Boolean = isManualReadoutHotkeySupported(),
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
@@ -141,6 +147,8 @@ internal fun ManualReadoutListPaneContent(
                         ManualReadoutSetRow(
                             setNumber = index + 1,
                             itemCount = set.itemKeys.size,
+                            set = set,
+                            showHotkeyChip = showHotkeyChip,
                             canReadSet = uiState.canReadSets,
                             onReadSet = { onReadSet(set.id) },
                             onSetClick = { onSetClick(set.id) },
@@ -164,12 +172,14 @@ internal fun ManualReadoutListPaneContent(
     }
 }
 
-/** セット番号と項目数を表示する。LMU のセットは読み上げボタンから依頼を送る。 */
+/** セット番号と項目数、対応環境ではホットキーを表示する。LMU のセットは読み上げボタンから依頼を送る。 */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ManualReadoutSetRow(
     setNumber: Int,
     itemCount: Int,
+    set: ManualReadoutSet,
+    showHotkeyChip: Boolean,
     canReadSet: Boolean,
     onReadSet: () -> Unit,
     onSetClick: () -> Unit,
@@ -247,6 +257,9 @@ private fun ManualReadoutSetRow(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (showHotkeyChip) {
+                    ManualReadoutHotkeyChip(set)
+                }
             }
             IconButton(onClick = onReadSet, enabled = canReadSet) {
                 Icon(
@@ -255,6 +268,29 @@ private fun ManualReadoutSetRow(
                 )
             }
         }
+    }
+}
+
+/** 行の操作を妨げない、表示専用のホットキーチップ。 */
+@Composable
+private fun ManualReadoutHotkeyChip(set: ManualReadoutSet) {
+    val label = manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode)
+    Surface(
+        shape = MaterialTheme.shapes.small,
+        color = if (label == null) Color.Transparent else MaterialTheme.colorScheme.secondaryContainer,
+        contentColor =
+            if (label == null) {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+                MaterialTheme.colorScheme.onSecondaryContainer
+            },
+        border = if (label == null) BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant) else null,
+    ) {
+        Text(
+            text = label ?: stringResource(Res.string.manual_readout_list_hotkey_unassigned),
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
+        )
     }
 }
 
