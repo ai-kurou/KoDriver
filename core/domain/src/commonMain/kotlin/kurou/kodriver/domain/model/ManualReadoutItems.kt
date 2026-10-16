@@ -30,3 +30,18 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
             ""
         }
     }
+
+/** 手動読み上げ項目の名前。未対応の項目は空文字を返す。 */
+fun manualReadoutItemName(itemKey: String): String =
+    when (itemKey) {
+        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> "バーチャルエナジー残量"
+        LmuWindowsReadoutItemKey.TyreWear.Root.value -> "タイヤ摩耗"
+        else -> ""
+    }
+
+/** 鮮度判定済みの手動読み上げ項目。残存率は0〜1で、未受信・鮮度切れは null。 */
+data class LmuWindowsManualReadoutItem(
+    val key: String,
+    val textTemplate: String,
+    val ratio: Double?,
+)

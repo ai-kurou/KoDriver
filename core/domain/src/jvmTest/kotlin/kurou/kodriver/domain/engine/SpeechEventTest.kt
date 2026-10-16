@@ -50,6 +50,7 @@ class SpeechEventTest {
                 LmuWindowsBrakeWearLow(30),
                 LmuWindowsRemainingVirtualEnergyWarning(50),
                 LmuWindowsRemainingVirtualEnergyCurrentValue(42),
+                LmuWindowsManualReadoutText(LmuWindowsReadoutItemKey.TyreWear.Root, "連結本文"),
                 LmuWindowsMyBestLap(83_456L),
                 LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
             )
@@ -220,13 +221,20 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `現在のタイヤ摩耗は既定文言と既存のRootキーを持ち解決済み文言を反映する`() {
-        val event = LmuWindowsTyreWearCurrentValue(42)
-        assertEquals("残量42%", event.withResolvedText("残量42%").narratedText)
-        assertEquals("", event.withResolvedText("").narratedText)
-        assertEquals(42, event.percentage)
-        assertEquals("タイヤ摩耗残り42%", event.narratedText)
-        assertEquals(LmuWindowsReadoutItemKey.TyreWear.Root, event.readoutItemKey)
+    fun `手動連結イベントは指定キーと本文を保持し解決済み文言を優先する`() {
+        listOf(
+            LmuWindowsReadoutItemKey.TyreWear.Root,
+            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+        ).forEach { key ->
+            val event = LmuWindowsManualReadoutText(key, "タイヤ80%、VE50%")
+            assertEquals(key, event.readoutItemKey)
+            assertEquals(null, event.resolvedText)
+            assertEquals("タイヤ80%、VE50%", event.narratedText)
+            assertEquals("解決済み", event.withResolvedText("解決済み").narratedText)
+            assertEquals("", event.withResolvedText("").narratedText)
+            assertEquals(" ", event.withResolvedText(" ").narratedText)
+            assertEquals(event, event.withResolvedText("解決済み").copy(resolvedText = null))
+        }
     }
 
     @Test

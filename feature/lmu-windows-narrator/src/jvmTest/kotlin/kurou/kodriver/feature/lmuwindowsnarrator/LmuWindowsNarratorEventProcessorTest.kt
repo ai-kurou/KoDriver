@@ -32,6 +32,7 @@ import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
 import kurou.kodriver.domain.engine.LmuWindowsCarRight
 import kurou.kodriver.domain.engine.LmuWindowsCarRightSustained
 import kurou.kodriver.domain.engine.LmuWindowsFullCourseYellow
+import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
@@ -41,7 +42,6 @@ import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
-import kurou.kodriver.domain.engine.LmuWindowsTyreWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
@@ -195,6 +195,99 @@ class LmuWindowsNarratorEventProcessorTest {
             checkTextToSpeechAvailable = checkTextToSpeechAvailable,
             speakText = speakText,
         )
+
+    @Test
+    fun `手動セットは連結文を一回キューへ追加し状態設定時刻をログに保存する`() =
+        runTest {
+            val key = LmuWindowsReadoutItemKey.TyreWear.Root
+            val text = "タイヤ80%、VE50%"
+            val event = LmuWindowsManualReadoutText(key, text)
+            val resolved = event.withResolvedText(text)
+            val json = slot<String>()
+            every { ttsEngine.speak(resolved, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.LmuWindows,
+                    key,
+                    text,
+                    NarrationOutcome.QUEUED,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor().processManualReadout(
+                listOf(event),
+                emptyList(),
+                mapOf(key to true),
+                123L,
+                logContext(),
+            )
+            val root = Json.parseToJsonElement(json.captured).jsonObject
+            assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
+            assertEquals("123", root["observedAtMs"]!!.jsonPrimitive.content)
+            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.LmuWindows,
+                    key,
+                    text,
+                    NarrationOutcome.QUEUED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `手動連結イベントは自動タイヤ摩耗警告の前回値を変更しない`() =
+        runTest {
+            val key = LmuWindowsReadoutItemKey.TyreWear.Root
+            val processor = createProcessor()
+            processor.processTyreWear(tyreWear(frontLeft = 0.9), emptyList(), emptyList(), emptyMap(), 0L, logContext())
+            val manual = LmuWindowsManualReadoutText(key, "データがありません")
+            val warning = LmuWindowsTyreWearWarning(50)
+            val events = listOf(manual, warning)
+            val logs = mutableListOf<String>()
+            events.forEach { event ->
+                every { ttsEngine.speak(event.withResolvedText(event.narratedText), true) } just Runs
+                coEvery {
+                    telemetryLogRepository.saveTelemetryLog(
+                        123L,
+                        Simulator.LmuWindows,
+                        key,
+                        event.narratedText,
+                        NarrationOutcome.QUEUED,
+                        capture(logs),
+                    )
+                } just Runs
+            }
+            processor.processManualReadout(listOf(manual), emptyList(), mapOf(key to true), 123L, logContext())
+            processor.processTyreWear(
+                tyreWear(frontLeft = 0.4),
+                listOf(warning),
+                emptyList(),
+                mapOf(key to true),
+                123L,
+                logContext(),
+            )
+            val root = Json.parseToJsonElement(logs.last()).jsonObject
+            assertWheelValues(root["previousTyreWear"]!!.jsonObject["wheels"]!!.jsonObject, 0.9, 0.9, 0.9, 0.9)
+            events.forEachIndexed { index, event ->
+                verify(exactly = 1) { ttsEngine.speak(event.withResolvedText(event.narratedText), true) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        123L,
+                        Simulator.LmuWindows,
+                        key,
+                        event.narratedText,
+                        NarrationOutcome.QUEUED,
+                        logs[index],
+                    )
+                }
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
 
     @Test
     fun `読み上げたイベントを直前と現在の接近データとともに保存する`() =
@@ -3214,65 +3307,6 @@ class LmuWindowsNarratorEventProcessorTest {
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
-    fun `手動タイヤ摩耗はデータ有無によらずキューへ追加し警告の前回値を変更しない`() =
-        runTest {
-            val key = LmuWindowsReadoutItemKey.TyreWear.Root
-            val processor = createProcessor()
-            val previous = tyreWear(frontLeft = 0.9)
-            processor.processTyreWear(previous, emptyList(), emptyList(), emptyMap(), 0L, logContext())
-            listOf(tyreWear(frontLeft = 0.4), tyreWear(frontLeft = 0.2), null).forEachIndexed { index, data ->
-                val percentage = 40 - index * 20
-                val event =
-                    LmuWindowsTyreWearCurrentValue(
-                        percentage,
-                        if (data == null) "データがありません" else "タイヤ摩耗残り$percentage%",
-                    )
-                val json = slot<String>()
-                val time = index.toLong()
-                every { ttsEngine.speak(event, true) } just Runs
-                coEvery {
-                    telemetryLogRepository.saveTelemetryLog(
-                        time,
-                        Simulator.LmuWindows,
-                        key,
-                        event.narratedText,
-                        NarrationOutcome.QUEUED,
-                        capture(json),
-                    )
-                } just Runs
-                processor.processTyreWearCurrentValue(
-                    data,
-                    listOf(event),
-                    emptyList(),
-                    mapOf(key to true),
-                    time,
-                    logContext(),
-                )
-                if (data != null) {
-                    val root = Json.parseToJsonElement(json.captured).jsonObject
-                    assertWheelValues(root["previousTyreWear"]!!.jsonObject["wheels"]!!.jsonObject, 0.9, 0.9, 0.9, 0.9)
-                } else {
-                    assertEquals(
-                        setOf("state", "settings", "observedAtMs"),
-                        Json.parseToJsonElement(json.captured).jsonObject.keys,
-                    )
-                }
-                verify(exactly = 1) { ttsEngine.speak(event, true) }
-                coVerify(exactly = 1) {
-                    telemetryLogRepository.saveTelemetryLog(
-                        time,
-                        Simulator.LmuWindows,
-                        key,
-                        event.narratedText,
-                        NarrationOutcome.QUEUED,
-                        json.captured,
-                    )
-                }
             }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }

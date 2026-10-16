@@ -5,7 +5,6 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DE
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
@@ -268,21 +267,6 @@ data class LmuWindowsRemainingVirtualEnergyCurrentValue(
         copy(resolvedText = text)
 }
 
-/** 最も摩耗したタイヤの現在の残り（%）を読み上げる手動読み上げイベント。 */
-data class LmuWindowsTyreWearCurrentValue(
-    val percentage: Int,
-    override val resolvedText: String? = null,
-) : LmuWindowsSpeechEvent {
-    override val readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root
-    override val narratedText =
-        resolvedText ?: formatLmuWindowsTyreWearReadoutText(
-            LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT,
-            percentage,
-        )
-
-    override fun withResolvedText(text: String): LmuWindowsTyreWearCurrentValue = copy(resolvedText = text)
-}
-
 data class LmuWindowsMyBestLap(
     val lapTimeMs: Long,
     override val resolvedText: String? = null,
@@ -307,4 +291,15 @@ data class LmuWindowsPitTimingWarning(
     override val narratedText = defaultLmuWindowsPitTimingReadoutText(source, laps)
 
     override fun withResolvedText(text: String): LmuWindowsPitTimingWarning = copy(resolvedText = text)
+}
+
+/** セット内の項目を保存順に連結した手動読み上げイベント。 */
+data class LmuWindowsManualReadoutText(
+    override val readoutItemKey: LmuWindowsReadoutItemKey,
+    val text: String,
+    override val resolvedText: String? = null,
+) : LmuWindowsSpeechEvent {
+    override val narratedText = resolvedText ?: text
+
+    override fun withResolvedText(text: String): LmuWindowsManualReadoutText = copy(resolvedText = text)
 }

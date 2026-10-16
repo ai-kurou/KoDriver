@@ -8,6 +8,7 @@ import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
 import kurou.kodriver.domain.engine.LmuWindowsCarRight
 import kurou.kodriver.domain.engine.LmuWindowsCarRightSustained
 import kurou.kodriver.domain.engine.LmuWindowsFullCourseYellow
+import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
@@ -33,6 +34,7 @@ import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -63,42 +65,55 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
 
     @Test
-    fun `手動タイヤ摩耗は最小残存率を四捨五入し警告状態を維持する`() {
-        val state = LmuWindowsNarratorState(tyreWearWarned = true)
-        val data =
-            LmuWindowsTyreWearData(
-                mapOf(
-                    WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(0.805),
-                    WheelIndex.FRONT_RIGHT to LmuWindowsTyreWearRatio(0.424),
-                    WheelIndex.REAR_LEFT to LmuWindowsTyreWearRatio(0.425),
-                    WheelIndex.REAR_RIGHT to LmuWindowsTyreWearRatio(0.9),
-                ),
+    fun `手動セットは比率を整数パーセントへ四捨五入して警告状態を維持する`() {
+        val state = LmuWindowsNarratorState(tyreWearWarned = true, remainingVirtualEnergyWarned = true)
+        val keys =
+            listOf(
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                LmuWindowsReadoutItemKey.TyreWear.Root,
             )
-        val decision = useCase.determineManualTyreWearCurrentValue(state, data)
-        assertEquals(state, decision.state)
-        assertEquals("タイヤ摩耗残り42%", decision.events.single().narratedText)
-        assertEquals(
-            "残り42%",
-            useCase
-                .determineManualTyreWearCurrentValue(state, data, "残り{percent}%")
-                .events
-                .single()
-                .narratedText,
-        )
-        assertEquals(
-            "タイヤ摩耗残り43%",
-            useCase
-                .determineManualTyreWearCurrentValue(
-                    state,
-                    LmuWindowsTyreWearData(mapOf(WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(0.425))),
-                ).events
-                .single()
-                .narratedText,
-        )
-        listOf(null, LmuWindowsTyreWearData(emptyMap())).forEach {
-            val noData = useCase.determineManualTyreWearCurrentValue(state, it, "残り{percent}%")
-            assertEquals(state, noData.state)
-            assertEquals("データがありません", noData.events.single().narratedText)
+        keys.forEach { key ->
+            listOf(0.0 to "0", 0.424 to "42", 0.425 to "43", 1.0 to "100").forEach { (ratio, percent) ->
+                val decision =
+                    useCase.determineManualReadout(
+                        state,
+                        listOf(LmuWindowsManualReadoutItem(key.value, "残り{percent}%", ratio)),
+                    )
+                assertEquals(state, decision.state)
+                assertEquals("残り$percent%", decision.events.single().narratedText)
+                assertEquals(key, decision.events.single().readoutItemKey)
+            }
+        }
+    }
+
+    @Test
+    fun `手動セットは順序と文言を維持して一イベントへ連結し欠損は項目名で伝える`() {
+        val energy = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+        val tyre = LmuWindowsReadoutItemKey.TyreWear.Root
+        val energyItem = LmuWindowsManualReadoutItem(energy.value, "VE{percent}%", 0.5)
+        val tyreItem = LmuWindowsManualReadoutItem(tyre.value, "タイヤ{percent}%", 0.8)
+        val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true, tyreWearWarned = true)
+        val cases =
+            listOf(
+                Triple(listOf(energyItem, tyreItem), energy, "VE50%、タイヤ80%"),
+                Triple(listOf(tyreItem, energyItem), tyre, "タイヤ80%、VE50%"),
+                Triple(listOf(energyItem.copy(ratio = null), tyreItem), energy, "バーチャルエナジー残量はデータがありません、タイヤ80%"),
+                Triple(listOf(tyreItem.copy(ratio = null), energyItem), tyre, "タイヤ摩耗はデータがありません、VE50%"),
+                Triple(listOf(energyItem.copy(ratio = null), tyreItem.copy(ratio = null)), energy, "データがありません"),
+                Triple(listOf(tyreItem.copy(ratio = null)), tyre, "データがありません"),
+                Triple(emptyList(), energy, "読み上げる項目がありません"),
+                Triple(listOf(LmuWindowsManualReadoutItem("unknown", "無視", 1.0)), energy, "読み上げる項目がありません"),
+                Triple(listOf(energyItem.copy(textTemplate = "")), energy, ""),
+                Triple(listOf(energyItem.copy(textTemplate = " "), tyreItem), energy, "タイヤ80%"),
+                Triple(listOf(energyItem.copy(textTemplate = ""), tyreItem.copy(textTemplate = " ")), energy, ""),
+            )
+        cases.forEach { (items, key, text) ->
+            val decision = useCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            val event = LmuWindowsManualReadoutText(key, text)
+            assertEquals(listOf(event), decision.events)
+            assertEquals(text, event.narratedText)
+            assertEquals(event.copy(resolvedText = "解決済み"), event.withResolvedText("解決済み"))
         }
     }
 
@@ -2785,19 +2800,6 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             state = decision.state
             assertEquals(null, state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption)
         }
-    }
-
-    @Test
-    fun `手動読み上げの対象項目がない場合は固定文言を読み上げ状態を維持する`() {
-        val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
-        val decision = useCase.determineManualReadoutNoItems(state)
-
-        assertEquals(state, decision.state)
-        assertEquals(
-            listOf(LmuWindowsRemainingVirtualEnergyCurrentValue(0, "読み上げる項目がありません")),
-            decision.events,
-        )
-        assertEquals("読み上げる項目がありません", decision.events.single().narratedText)
     }
 
     @Test
