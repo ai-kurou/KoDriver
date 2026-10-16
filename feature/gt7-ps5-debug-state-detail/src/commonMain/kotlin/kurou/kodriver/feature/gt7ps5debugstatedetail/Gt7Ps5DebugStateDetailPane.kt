@@ -10,13 +10,13 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DebugReadoutRequestCard
+import kurou.kodriver.core.designsystem.DebugStateCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -38,7 +38,6 @@ import sh.calvin.reorderable.rememberReorderableLazyGridState
 
 private val NARROW_WIDTH_UPPER_BOUND = 400.dp
 private val MEDIUM_WIDTH_UPPER_BOUND = 700.dp
-private const val DISABLED_CARD_ALPHA = 0.38f
 
 internal const val DEBUG_STATE_GRID_TEST_TAG = "debug_state_grid"
 
@@ -117,6 +116,16 @@ internal fun Gt7Ps5DebugStateDetailPaneContent(
                                 cardKey = cardKey,
                                 uiState = uiState,
                                 enabled = cardKey in uiState.enabledCardKeys,
+                                titles = debugStateCardTitles,
+                                contents = debugStateCardContents,
+                                frame = { title, cardModifier, content ->
+                                    DebugStateCardFrame(
+                                        cardKey = cardKey,
+                                        title = title,
+                                        modifier = cardModifier,
+                                        content = content,
+                                    )
+                                },
                                 modifier = Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle(),
                             )
                         }
@@ -146,23 +155,6 @@ private val debugStateCardContents: Map<Gt7Ps5DebugStateCardKey, @Composable (Gt
         Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE to { uiState -> TyreTemperatureContent(uiState.gt7Ps5.telemetry) },
         Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION to { uiState -> FuelConsumptionContent(uiState.gt7Ps5.telemetry) },
     )
-
-@Composable
-private fun DebugStateCard(
-    cardKey: Gt7Ps5DebugStateCardKey,
-    uiState: Gt7Ps5DebugStateDetailUiState,
-    enabled: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    DebugStateCardFrame(
-        cardKey = cardKey,
-        title = stringResource(debugStateCardTitles.getValue(cardKey)),
-        modifier = modifier.alpha(if (enabled) 1f else DISABLED_CARD_ALPHA),
-        content = {
-            debugStateCardContents.getValue(cardKey)(uiState)
-        },
-    )
-}
 
 @Preview(showBackground = true)
 @Composable

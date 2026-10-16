@@ -91,6 +91,7 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 ## デバッグ状態の共通部品
 
+- `DebugStateCard` はキーに対応するタイトルリソースと内容のマップを受け取り、無効時は透明度を0.38にする。枠は `frame` で渡し、カードキー固有の装飾は各 feature に残す。
 - `DebugStateUnavailableContent` は未取得文言を文字列で受け取り、装飾とともに表示する。リソースの解決は feature が行う。
 - `DebugStateHeatTile` は必須の `heatLevel: HeatLevel?` を受け取り、`null` は中立色で表示する。`HeatLevel` とテーマ色への変換 `heatColor` は共通とし、温度・摩耗の閾値判定は各 feature に残す。
 - `DebugStateStatusChip` は文言とアクセント色を受け取る。
