@@ -19,6 +19,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -191,6 +192,48 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
+    fun `手動燃料は未受信なら項目名付きのデータなしを読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(false, selectedFuel = true, expectedText = "残り燃料はデータがありません")
+        }
+
+    @Test
+    fun `手動燃料は鮮度期限内なら保存文言で整数の現在値を読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                true,
+                selectedFuel = true,
+                template = "残り{percent}%",
+                telemetry = Gt7Ps5TelemetryData(1, 5, 90_000, Gt7Ps5FuelUnit(21.25f), Gt7Ps5FuelUnit(50f)),
+                ageMs = 5_000L,
+                expectedText = "残り43%",
+            )
+        }
+
+    @Test
+    fun `手動燃料は鮮度期限を超えると値を読まない`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                false,
+                selectedFuel = true,
+                telemetry = Gt7Ps5TelemetryData(1, 5, 90_000, Gt7Ps5FuelUnit(42f), Gt7Ps5FuelUnit(100f)),
+                ageMs = 5_001L,
+                expectedText = "残り燃料はデータがありません",
+            )
+        }
+
+    @Test
+    fun `手動燃料は既定文言で燃料ゼロも現在値として読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                false,
+                selectedFuel = true,
+                telemetry = Gt7Ps5TelemetryData(1, 5, 90_000, Gt7Ps5FuelUnit(0f), Gt7Ps5FuelUnit(100f)),
+                expectedText = "燃料は残り0パーセント",
+            )
+        }
+
+    @Test
     fun `一覧の依頼はキュー設定が無効でも項目なし文言を末尾に追加してログ保存する`() =
         runTest(testDispatcher) {
             assertManualReadout(hotkey = false)
@@ -202,11 +245,30 @@ class Gt7Ps5NarratorViewModelTest {
             assertManualReadout(hotkey = true)
         }
 
-    private suspend fun TestScope.assertManualReadout(hotkey: Boolean) {
+    private suspend fun TestScope.assertManualReadout(
+        hotkey: Boolean,
+        selectedFuel: Boolean = false,
+        template: String? = null,
+        telemetry: Gt7Ps5TelemetryData? = null,
+        ageMs: Long = 0L,
+        expectedText: String = "読み上げる項目がありません",
+    ) {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root
-        val event = Gt7Ps5ManualReadoutText(key, "読み上げる項目がありません", "読み上げる項目がありません")
+        manualSets.update {
+            listOf(
+                ManualReadoutSet(
+                    "set-1",
+                    if (selectedFuel) listOf(key.value) else emptyList(),
+                    template?.let { mapOf(key.value to it) } ?: emptyMap(),
+                ),
+            )
+        }
+        val event = Gt7Ps5ManualReadoutText(key, expectedText, expectedText)
         val json = slot<String>()
-        stubReadoutDefaults(queueEnabledOverrides = mapOf(key to false))
+        stubReadoutDefaults(
+            enabledOverrides = mapOf(key to false, Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled to false),
+            queueEnabledOverrides = mapOf(key to false),
+        )
         every { ttsEngine.speak(event, true) } just Runs
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
@@ -219,8 +281,13 @@ class Gt7Ps5NarratorViewModelTest {
             )
         } just Runs
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val viewModel = createViewModel(channel, ttsEngine, currentTimeMs = { 100L })
+        var now = 100L - ageMs
+        val viewModel = createViewModel(channel, ttsEngine, currentTimeMs = { now })
         try {
+            runCurrent()
+            telemetry?.let { channel.send(it) }
+            runCurrent()
+            now = 100L
             val request = ManualReadoutRequest(Simulator.Gt7Ps5.id, "set-1")
             runCurrent()
             if (hotkey) {

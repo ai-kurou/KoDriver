@@ -37,8 +37,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
+import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
@@ -63,6 +65,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_move_up
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_play
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_stop
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remaining_fuel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remove_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_temperature
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_wear
@@ -78,6 +81,11 @@ private data class ManualReadoutItemPresentation(
 
 private val itemPresentations =
     mapOf(
+        Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_remaining_fuel,
+                Res.string.manual_readout_category_energy,
+            ),
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
             ManualReadoutItemPresentation(Res.string.manual_readout_energy, Res.string.manual_readout_category_energy),
         LmuWindowsReadoutItemKey.TyreWear.Root.value to
@@ -111,6 +119,10 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
             val text = uiState.itemTexts[itemKey] ?: manualReadoutItemTextDefault(itemKey)
             text.takeIf { it.isNotBlank() }?.let {
                 when (itemKey) {
+                    Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
+                        formatGt7Ps5RemainingFuelReadoutText(it, PREVIEW_ENERGY_PERCENT)
+                    }
+
                     LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> {
                         formatLmuWindowsRemainingVirtualEnergyReadoutText(it, PREVIEW_ENERGY_PERCENT)
                     }

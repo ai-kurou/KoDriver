@@ -68,11 +68,20 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 
 GT7 の手動読み上げは、一覧の ▶ と Windows のセットホットキーからの依頼を合流し、
 `Simulator.Gt7Ps5.id` 宛てで保存済みセットが見つかり、GT7 が選択中の場合だけ処理する。
-`manualReadoutItemKeys` の GT7 対応項目は0件のままなので、テレメトリ未受信でも固定文言
-「読み上げる項目がありません」を `Gt7Ps5ManualReadoutText` の1イベントで読み上げる。
-自動読み上げの設定・判定状態は変更せず、キュー設定に関係なく末尾へ追加し、ログを保存する。
-自動項目キーは追加せず、開始音とログのキーには既存の `RemainingFuel.Root` を使う。
-GT7 の個別項目は別 PR で追加する。
+`manualReadoutItemKeys(Simulator.Gt7Ps5.id)` は「残り燃料」の
+`Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value` に対応する。詳細画面で保存したセットの
+`itemKeys`・`itemTexts` を ViewModel が参照し、`Gt7Ps5ManualReadoutItem` を判定へ渡す。
+最新テレメトリの `gasLevel / gasCapacity * 100` を四捨五入して0〜100に制限する。
+未受信・受信から5秒超・不正な燃料値は null とし「残り燃料はデータがありません」を読む。
+既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` の
+「燃料は残り{percent}パーセント」で、既存の燃料用フォーマット関数を再利用する。
+判定は対応項目を最大3件、保存順に空欄を除いて「、」で連結し、
+`Gt7Ps5ManualReadoutText` の1イベントを返す。現在値イベントは `Gt7Ps5RemainingFuelCurrentValue`。
+対応項目なしの場合は従来どおり「読み上げる項目がありません」を読む。
+自動読み上げのスイッチ・警告済み状態は変更せず、常にキュー末尾へ追加して同じ本文をログに保存する。
+開始音とログには、項目なしの場合も既存の `RemainingFuel.Root` を使う。
+GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持ち衝突しない。
+手動項目の選択・文言はシミュレーター別のセット設定に保存し、自動項目のスイッチとは独立して判定する。
 
 `processManualReadout` のログ JSON は `state`・`settings`・`observedAtMs` の3フィールドで、
 状態と設定は `toRawTelemetryLogJson` を使い、テレメトリの前回値・現在値を含めない。

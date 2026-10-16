@@ -45,4 +45,5 @@
     <string name="manual_readout_brake_temperature">ブレーキ温度</string>
     <string name="manual_readout_celsius_insert">{celsius} を挿入</string>
     <string name="manual_readout_celsius_hint">{celsius} は現在の項目の最高温度（℃）に置き換わります</string>
+    <string name="manual_readout_remaining_fuel">残り燃料</string>
 </resources>
