@@ -9,16 +9,18 @@ class ManualReadoutItemsTest {
         assertEquals("バーチャルエナジー残量", manualReadoutItemName(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value))
         assertEquals("タイヤ摩耗", manualReadoutItemName(LmuWindowsReadoutItemKey.TyreWear.Root.value))
         assertEquals("ブレーキ残量", manualReadoutItemName(LmuWindowsReadoutItemKey.BrakeWear.Root.value))
+        assertEquals("ブレーキ温度", manualReadoutItemName(LmuWindowsReadoutItemKey.BrakeTemperature.Root.value))
         assertEquals("", manualReadoutItemName("unknown"))
     }
 
     @Test
-    fun `LMUは残量とタイヤ摩耗とブレーキ残量の順に選択でき未対応シミュレーターは空を返す`() {
+    fun `LMUは残量とタイヤ摩耗とブレーキ残量とブレーキ温度の順に選択でき未対応シミュレーターは空を返す`() {
         assertEquals(
             listOf(
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
                 LmuWindowsReadoutItemKey.TyreWear.Root.value,
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value,
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root.value,
             ),
             manualReadoutItemKeys(Simulator.LmuWindows.id),
         )
@@ -33,6 +35,10 @@ class ManualReadoutItemsTest {
         assertEquals("バーチャルエナジー残量は42パーセント", formatLmuWindowsRemainingVirtualEnergyReadoutText(template, 42))
         assertEquals("タイヤ摩耗残り{percent}%", manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.TyreWear.Root.value))
         assertEquals("ブレーキ残量{percent}%", manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.BrakeWear.Root.value))
+        assertEquals(
+            "ブレーキ温度{celsius}℃",
+            manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.BrakeTemperature.Root.value),
+        )
         assertEquals("", manualReadoutItemTextDefault("unknown"))
         assertEquals(emptyMap(), ManualReadoutSet("set-1").itemTexts)
     }

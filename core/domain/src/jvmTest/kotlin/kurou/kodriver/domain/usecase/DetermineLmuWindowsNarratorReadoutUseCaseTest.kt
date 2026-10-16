@@ -65,6 +65,34 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
 
     @Test
+    fun `手動ブレーキ温度は四捨五入と欠損と保存順を反映し警告状態を維持する`() {
+        val key = LmuWindowsReadoutItemKey.BrakeTemperature.Root
+        val tyre = LmuWindowsReadoutItemKey.TyreWear.Root
+        val state = LmuWindowsNarratorState(brakeOverheating = true)
+        val temperature = LmuWindowsManualReadoutItem(key.value, "ブレーキ温度{celsius}℃", null, 500.5f)
+        val tyreItem = LmuWindowsManualReadoutItem(tyre.value, "タイヤ{percent}%", 0.8)
+        val cases =
+            listOf(
+                Triple(listOf(temperature), key, "ブレーキ温度501℃"),
+                Triple(listOf(temperature.copy(celsius = 500.4f)), key, "ブレーキ温度500℃"),
+                Triple(listOf(temperature, tyreItem), key, "ブレーキ温度501℃、タイヤ80%"),
+                Triple(listOf(tyreItem, temperature), tyre, "タイヤ80%、ブレーキ温度501℃"),
+                Triple(listOf(temperature.copy(celsius = null), tyreItem), key, "ブレーキ温度はデータがありません、タイヤ80%"),
+                Triple(listOf(temperature, tyreItem.copy(ratio = null)), key, "ブレーキ温度501℃、タイヤ摩耗はデータがありません"),
+                Triple(listOf(temperature.copy(celsius = null)), key, "データがありません"),
+                Triple(listOf(temperature.copy(celsius = null), tyreItem.copy(ratio = null)), key, "データがありません"),
+                Triple(listOf(temperature.copy(textTemplate = "")), key, ""),
+                Triple(listOf(temperature.copy(textTemplate = "温度{celsius}℃ {unknown}")), key, "温度501℃ {unknown}"),
+            )
+        cases.forEach { (items, firstKey, text) ->
+            val decision = useCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            assertEquals(firstKey, decision.events.single().readoutItemKey)
+            assertEquals(text, decision.events.single().narratedText)
+        }
+    }
+
+    @Test
     fun `手動ブレーキ残量は最小パーセントを四捨五入し警告状態を維持する`() {
         val state = LmuWindowsNarratorState(brakeWearWarned = true)
         val data =

@@ -45,6 +45,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
@@ -548,6 +549,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             when (supportedItems.firstOrNull()?.key) {
                 LmuWindowsReadoutItemKey.TyreWear.Root.value -> LmuWindowsReadoutItemKey.TyreWear.Root
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value -> LmuWindowsReadoutItemKey.BrakeWear.Root
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> LmuWindowsReadoutItemKey.BrakeTemperature.Root
                 else -> LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
             }
         val text =
@@ -556,32 +558,20 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                     LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
                 }
 
-                supportedItems.all { it.ratio == null } -> {
+                supportedItems.all {
+                    if (it.key == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) {
+                        it.celsius == null
+                    } else {
+                        it.ratio == null
+                    }
+                } -> {
                     LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
                 }
 
                 else -> {
                     supportedItems
-                        .map { item ->
-                            val percentage = item.ratio?.let { (it * PERCENTAGE_SCALE).roundToInt() }
-                            when {
-                                percentage == null -> {
-                                    "${manualReadoutItemName(item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
-                                }
-
-                                item.key == LmuWindowsReadoutItemKey.BrakeWear.Root.value -> {
-                                    formatLmuWindowsBrakeWearReadoutText(item.textTemplate, percentage)
-                                }
-
-                                item.key == LmuWindowsReadoutItemKey.TyreWear.Root.value -> {
-                                    formatLmuWindowsTyreWearReadoutText(item.textTemplate, percentage)
-                                }
-
-                                else -> {
-                                    formatLmuWindowsRemainingVirtualEnergyReadoutText(item.textTemplate, percentage)
-                                }
-                            }
-                        }.filter { it.isNotBlank() }
+                        .map { item -> manualReadoutItemText(item) }
+                        .filter { it.isNotBlank() }
                         .joinToString("、")
                 }
             }
@@ -589,6 +579,29 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             state = state,
             events = listOf(LmuWindowsManualReadoutText(key, text)),
         )
+    }
+
+    private fun manualReadoutItemText(item: LmuWindowsManualReadoutItem): String {
+        val noDataText = "${manualReadoutItemName(item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
+        if (item.key == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) {
+            return item.celsius?.let {
+                formatLmuWindowsBrakeTemperatureReadoutText(item.textTemplate, it.roundToInt())
+            } ?: noDataText
+        }
+        val percentage = item.ratio?.let { (it * PERCENTAGE_SCALE).roundToInt() } ?: return noDataText
+        return when (item.key) {
+            LmuWindowsReadoutItemKey.BrakeWear.Root.value -> {
+                formatLmuWindowsBrakeWearReadoutText(item.textTemplate, percentage)
+            }
+
+            LmuWindowsReadoutItemKey.TyreWear.Root.value -> {
+                formatLmuWindowsTyreWearReadoutText(item.textTemplate, percentage)
+            }
+
+            else -> {
+                formatLmuWindowsRemainingVirtualEnergyReadoutText(item.textTemplate, percentage)
+            }
+        }
     }
 
     /** 自動読み上げスイッチに関係なく現在の残量（未受信・鮮度切れならデータ無し）を読み上げ、警告済み状態を維持する。 */
