@@ -105,8 +105,11 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         Gt7Ps5RemainingFuelCurrentValue(
             percent = item.percent ?: 0,
             resolvedText =
-                item.percent?.let { formatGt7Ps5RemainingFuelReadoutText(item.textTemplate, it) }
-                    ?: "${manualReadoutItemName(item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT",
+                when {
+                    item.textTemplate.isBlank() -> ""
+                    item.percent == null -> "${manualReadoutItemName(item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT"
+                    else -> formatGt7Ps5RemainingFuelReadoutText(item.textTemplate, item.percent)
+                },
         )
 
     /** 未受信・鮮度切れ・不正な燃料値は手動読み上げのデータなしとして扱う。 */

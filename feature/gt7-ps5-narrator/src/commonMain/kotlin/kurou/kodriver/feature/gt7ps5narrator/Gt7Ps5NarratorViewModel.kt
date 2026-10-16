@@ -145,6 +145,8 @@ internal class Gt7Ps5NarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.Gt7Ps5) {
+                    latestTelemetry = null
+                    latestTelemetryReceivedAtMs = 0L
                     emptyFlow()
                 } else {
                     myBestLapUseCases.observeGt7Ps5()

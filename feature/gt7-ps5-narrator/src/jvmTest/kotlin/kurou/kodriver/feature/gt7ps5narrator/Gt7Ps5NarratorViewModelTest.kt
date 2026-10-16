@@ -369,6 +369,76 @@ class Gt7Ps5NarratorViewModelTest {
         }
 
     @Test
+    fun `手動燃料はGT7を外した時点で現在値を破棄し再選択後の未受信はデータなしにする`() =
+        runTest(testDispatcher) {
+            val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root
+            manualSets.update { listOf(ManualReadoutSet("set-1", listOf(key.value))) }
+            val selected = MutableStateFlow<Simulator>(Simulator.Gt7Ps5)
+            stubReadoutDefaults(
+                enabledOverrides = mapOf(key to false, Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled to false),
+                queueEnabledOverrides = mapOf(key to false),
+            )
+            every { simulatorPreferencesRepository.selectedSimulator() } returns selected
+            every {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every {
+                autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.LmuWindows.id)
+            } returns MutableStateFlow(emptyList())
+            val text = "残り燃料はデータがありません"
+            val event = Gt7Ps5ManualReadoutText(key, text, text)
+            val json = slot<String>()
+            every { ttsEngine.speak(event, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    event.text,
+                    NarrationOutcome.QUEUED,
+                    capture(json),
+                )
+            } just Runs
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val viewModel = createViewModel(channel, ttsEngine, currentTimeMs = { 100L })
+            try {
+                runCurrent()
+                channel.send(Gt7Ps5TelemetryData(1, 5, 90_000, Gt7Ps5FuelUnit(42f), Gt7Ps5FuelUnit(100f)))
+                runCurrent()
+                selected.value = Simulator.LmuWindows
+                runCurrent()
+                selected.value = Simulator.Gt7Ps5
+                runCurrent()
+                manualRequests.emit(ManualReadoutRequest(Simulator.Gt7Ps5.id, "set-1"))
+                runCurrent()
+                verify(exactly = 1) { ttsEngine.speak(event, true) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        100L,
+                        Simulator.Gt7Ps5,
+                        key,
+                        event.text,
+                        NarrationOutcome.QUEUED,
+                        json.captured,
+                    )
+                }
+                verify(exactly = 1) { manualRequestRepository.observeRequests() }
+                verify(exactly = 1) { manualHotkeyRepository.pressStream() }
+                verify(exactly = 1) { manualSetRepository.observeSets() }
+                confirmVerified(
+                    ttsEngine,
+                    telemetryLogRepository,
+                    manualRequestRepository,
+                    manualHotkeyRepository,
+                    manualSetRepository,
+                )
+            } finally {
+                viewModel.viewModelScope.cancel()
+                channel.close()
+            }
+        }
+
+    @Test
     fun `自由文言の解決に失敗しても次のテレメトリを収集して読み上げる`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
