@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
 internal class LmuWindowsConnectionViewModel(

@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 
 internal class LmuWindowsRemainingVirtualEnergyPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsRemainingVirtualEnergyPreferences>,

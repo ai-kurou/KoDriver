@@ -8,21 +8,21 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsTyreWearReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearReadoutTextUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 internal data class TyreWearUseCases(

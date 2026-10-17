@@ -1,6 +1,6 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
 /**
  * LmuWindowsVehicleApproachThresholdsPreferences Repository の永続化実装を生成する。

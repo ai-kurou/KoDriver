@@ -19,11 +19,11 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
+import kurou.kodriver.domain.lmuwindows.usecase.CheckLmuWindowsConnectionUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
-import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest

@@ -7,8 +7,8 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_game_phase_countdown
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_game_phase_formation

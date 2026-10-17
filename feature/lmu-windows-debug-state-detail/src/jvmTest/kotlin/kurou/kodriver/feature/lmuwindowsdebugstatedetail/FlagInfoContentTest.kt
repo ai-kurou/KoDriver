@@ -4,11 +4,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.SectorFlagState
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
+import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
+import kurou.kodriver.domain.lmuwindows.model.SessionPhase
+import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

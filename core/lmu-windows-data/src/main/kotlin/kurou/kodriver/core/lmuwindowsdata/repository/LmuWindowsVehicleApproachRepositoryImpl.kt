@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_MINIMUM_METERS_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_MINIMUM_METERS_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.model.LateralDistanceMeters
-import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import java.nio.ByteBuffer
 import kotlin.math.PI
 import kotlin.math.abs

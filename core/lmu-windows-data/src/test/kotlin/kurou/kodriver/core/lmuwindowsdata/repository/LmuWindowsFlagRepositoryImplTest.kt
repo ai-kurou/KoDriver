@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
-import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.SectorFlagState
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
+import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
+import kurou.kodriver.domain.lmuwindows.model.SessionPhase
+import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicInteger

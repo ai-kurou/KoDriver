@@ -21,7 +21,7 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextRange
 import kurou.kodriver.buildlogic.screenshottest.assertEditableTextEquals
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

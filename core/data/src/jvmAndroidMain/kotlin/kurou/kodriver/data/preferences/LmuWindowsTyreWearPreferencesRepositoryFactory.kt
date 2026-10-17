@@ -1,6 +1,6 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreWearPreferencesRepository
 
 /**
  * LmuWindowsTyreWearPreferences Repository の永続化実装を生成する。

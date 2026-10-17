@@ -5,9 +5,9 @@ import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWheelDoubleField
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
-import kurou.kodriver.domain.model.LmuWindowsTyreWearData
-import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
-import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearRatio
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreWearRepository
 import java.nio.ByteBuffer
 
 internal class LmuWindowsTyreWearRepositoryImpl(

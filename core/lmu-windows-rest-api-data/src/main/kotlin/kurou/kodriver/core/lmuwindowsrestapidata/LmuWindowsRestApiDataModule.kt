@@ -5,7 +5,7 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
 import kurou.kodriver.core.lmuwindowsrestapidata.datasource.LmuWindowsRestApiRepairAndRefuelDataSource
 import kurou.kodriver.core.lmuwindowsrestapidata.repository.LmuWindowsRestApiBrakeWearRepository
-import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 

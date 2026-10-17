@@ -2,12 +2,12 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_SELECTED_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
-import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
-import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_SELECTED_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsAllVehicleClasses
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 
 internal class LmuWindowsVehicleClassBrakeWearPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleClassBrakeWearPreferences>,

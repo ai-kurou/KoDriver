@@ -1,10 +1,10 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.SectorFlagState
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
+import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
+import kurou.kodriver.domain.lmuwindows.model.SessionPhase
+import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import org.junit.Test
 import kotlin.test.assertEquals
 

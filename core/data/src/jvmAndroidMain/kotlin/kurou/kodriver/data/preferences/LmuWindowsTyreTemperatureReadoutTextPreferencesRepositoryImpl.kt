@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
 
 internal class LmuWindowsTyreTemperatureReadoutTextPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsTyreTemperaturePreferences>,
