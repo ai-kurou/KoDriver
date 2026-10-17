@@ -143,6 +143,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             val nextState = if (refueled) state.copy(lastRemainingFuelLaps = laps) else state
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
+        // 無効中も基準を進め、再有効化だけで同じ残り周回数を読み直さない。
         val nextState = state.copy(lastRemainingFuelLaps = laps)
         if (!settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) ||
             !settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled)

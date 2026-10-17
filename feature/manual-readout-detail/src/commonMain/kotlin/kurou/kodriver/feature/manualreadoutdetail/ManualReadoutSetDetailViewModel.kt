@@ -59,6 +59,8 @@ internal class ManualReadoutSetDetailViewModel(
     private val availableItemKeys = manualReadoutItemKeys(simulatorId)
     private val deleted = MutableStateFlow(false)
     private val hotkeyConflict = MutableStateFlow<ManualReadoutHotkeyConflict?>(null)
+
+    // セット全体の取得→変更→保存を直列化し、項目・文言・キーの連続操作による上書きや削除後の更新を防ぐ。
     private val mutationMutex = Mutex()
 
     val uiState =

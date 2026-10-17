@@ -140,6 +140,7 @@ internal object LmuWindowsMapper {
 
     fun map(buffer: ByteBuffer): LmuWindowsTelemetryData? {
         val vehicleBase = findPlayerVehicleBase(buffer) ?: return null
+        // Telemetry と Scoring の車両順は別々に探索する。Scoring に自車がなければ走行データは返し、時刻系だけ0にする。
         val vehicleScoringBase = findPlayerVehicleScoringBase(buffer)
 
         return LmuWindowsTelemetryData(

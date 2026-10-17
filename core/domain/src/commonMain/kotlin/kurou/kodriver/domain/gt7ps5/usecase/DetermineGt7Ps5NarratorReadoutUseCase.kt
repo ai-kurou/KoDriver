@@ -98,6 +98,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                     .filter { it.isNotBlank() }
                     .joinToString("、")
             }
+        // セット全体を1イベントにまとめ、項目の構成にかかわらず開始音・ログのキーは残り燃料に統一する。
         return Gt7Ps5NarratorReadoutDecision(
             state = state,
             events = listOf(Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, text)),
@@ -140,6 +141,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         consumedFuel: Gt7Ps5FuelUnit,
         lapsCompleted: Int,
     ): Int {
+        // 消費量には走行中のラップ分も含まれるため、完走周回数に固定の0.9周を加えて平均を求める。
+        // 自動警告と手動読み上げで同じ推定式を使い、残り周回数は整数に切り捨てる。
         val avgConsumption = consumedFuel / (lapsCompleted + CURRENT_LAP_CONSUMPTION_WEIGHT)
         return (fuelState.currentGasLevel / avgConsumption).toInt()
     }
@@ -198,6 +201,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         settings: Gt7Ps5NarratorReadoutSettings,
         observedAtMs: Long,
     ): Gt7Ps5NarratorReadoutDecision {
+        // 手動読み上げもこの追跡状態から推定するため、自動読み上げが無効でも追跡を更新する。
         val fuelTrackingState = trackFuel(state.fuelTrackingState, telemetry, observedAtMs)
         val stateAfterTracking =
             when {
@@ -386,6 +390,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         state: Gt7Ps5NarratorState,
         settings: Gt7Ps5NarratorReadoutSettings,
     ): RemainingFuelLapsEvaluation {
+        // 評価時刻・推定材料が揃うまでは前回の評価済み周回を返し、同じ周回の後続パケットで再試行する。
+        // 推定後は閾値外・重複・設定無効でも現在周回を評価済みにし、その周回では再評価しない。
         val fuelState = state.fuelTrackingState
         if (fuelState.currentLap == state.lastFuelEvaluationLap) {
             return RemainingFuelLapsEvaluation(

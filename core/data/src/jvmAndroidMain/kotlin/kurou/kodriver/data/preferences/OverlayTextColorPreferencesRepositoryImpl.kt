@@ -10,6 +10,7 @@ import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 internal class OverlayTextColorPreferencesRepositoryImpl(
     private val dataStore: DataStore<OverlayTextColorPreferences>,
 ) : OverlayTextColorPreferencesRepository {
+    // 保存値とは別の一時値をオーバーレイと共有する。null で解除した時点の最新の保存値へ戻す。
     private val previewOverlayTextColor = MutableStateFlow<Long?>(null)
 
     override fun observeOverlayTextColor(): Flow<Long> =

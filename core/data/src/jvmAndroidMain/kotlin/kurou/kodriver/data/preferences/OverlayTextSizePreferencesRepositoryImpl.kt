@@ -11,6 +11,7 @@ import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 internal class OverlayTextSizePreferencesRepositoryImpl(
     private val dataStore: DataStore<OverlayTextSizePreferences>,
 ) : OverlayTextSizePreferencesRepository {
+    // 保存値とは別の一時値をオーバーレイと共有する。null で解除した時点の最新の保存値へ戻す。
     private val previewOverlayTextSize = MutableStateFlow<OverlayTextSize?>(null)
 
     override fun observeOverlayTextSize(): Flow<OverlayTextSize> =

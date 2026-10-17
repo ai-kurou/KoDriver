@@ -263,6 +263,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): ApproachSideStatesResult {
         var announce = false
         var sustainedAnnounce = false
+        // 現在並走している車両だけを残す。離れた車両の履歴を破棄し、再接近時は待機時間から計り直す。
         val states =
             vehicleIds.associateWith { id ->
                 val prev = previous[id]
@@ -394,6 +395,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val data = input.tyreCarcassTemperature
         val raceFlags = input.raceFlags
+        // 低温が続く間は繰り返さず、選択フェーズへ入った瞬間だけ警告する。初回受信は遷移とみなさない。
         val previousGamePhase = state.previousGamePhaseForTyreLowWarning
         val enteringTargetPhase =
             previousGamePhase != null &&
@@ -439,6 +441,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             state = state.copy(tyreWearWarned = anyWorn),
             events =
                 if (shouldAnnounce) {
+                    // 自動摩耗警告の文言には実測残量ではなく、越えた設定閾値を渡す（手動の現在値とは異なる）。
                     listOf(LmuWindowsTyreWearWarning(percentage = settings.tyreWearThresholdPercentage))
                 } else {
                     emptyList()
@@ -788,7 +791,10 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         )
     }
 
-    /** 周回ゲートを通過したピットタイミング警告の読み上げ履歴を記録する。 */
+    /**
+     * ソース選択・周回ゲートを通過した警告だけを ViewModel から記録する。
+     * 候補の生成時に記録すると、採用されなかったソースまで読み上げ済みになってしまう。
+     */
     fun recordPitTimingAnnounced(
         state: LmuWindowsNarratorState,
         event: LmuWindowsPitTimingWarning,
@@ -1014,6 +1020,7 @@ private fun trackPitTimingValue(
             if (currentLap != state.currentLap) {
                 // ラップが変わるタイミングで、直前のラップがバーチャルエナジー補充・タイヤ交換なしで完走していれば
                 // その消費量を今後の残り周回数推定の基準として採用する。
+                // 境界直後の現在値ではなく前回観測値までを前周の消費とし、境界をまたぐ補充も除外する。
                 val completedLapConsumption = state.currentLapStartValue - state.currentValue
                 val lastValidLapConsumption =
                     if (
@@ -1057,6 +1064,8 @@ private fun trackPitTimingValue(
         }
     }
 
+// 時刻・有効な完走周の消費量が揃うまでは再試行し、推定後は設定無効などで読まなくても周回を評価済みにする。
+// 読み上げ履歴の確定はここでは行わず、recordPitTimingAnnounced に委ねる。
 private fun calculatePitTimingRemainingLaps(
     trackingState: LmuWindowsPitTimingTrackingState,
     lastEvaluationLap: Int,

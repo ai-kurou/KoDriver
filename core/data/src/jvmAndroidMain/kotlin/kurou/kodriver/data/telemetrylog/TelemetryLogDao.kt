@@ -29,6 +29,7 @@ internal interface TelemetryLogDao {
     )
     fun observeLatestNarratedTelemetryLog(excludedNarrationOutcome: String): Flow<TelemetryLogEntity?>
 
+    // 詳細比較の「前回」は同じシミュレーター内で探す。同一時刻のログは id で順序を確定し、一覧の並びと揃える。
     @Query(
         """
         SELECT * FROM telemetry_logs

@@ -75,6 +75,7 @@ class ManualReadoutHotkeyRepositoryImpl(
                 keys.mapValues { (request, key) -> Registration(key.first, key.second, counts[request] ?: 0) }
             }.distinctUntilChanged().collect { desired ->
                 val removed = active.keys.filter { active.getValue(it).first != desired[it] }
+                // 旧登録の UnregisterHotKey 完了を待ってから新登録を始め、自分の登録との競合を避ける。
                 for (request in removed) {
                     active.remove(request)?.second?.cancelAndJoin()
                 }
@@ -116,6 +117,7 @@ class ManualReadoutHotkeyRepositoryImpl(
     ): Flow<HotkeyRegistrationState> =
         flow {
             coroutineScope {
+                // 登録状態だけを見る画面も WhileSubscribed の購読者とし、OS への登録処理を動かす。
                 launch { presses.collect { } }
                 emitAll(
                     states
