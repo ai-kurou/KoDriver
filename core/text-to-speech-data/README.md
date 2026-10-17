@@ -72,3 +72,10 @@ SecurityExceptionはSentryへ記録します。androidMainには、Windowsの音
 <!-- MODULE-GRAPH-END -->
 
 音声一覧には`isDefault`を付け、詳細画面で既定音声の重複表示を避ける。Windowsは読み上げと同じ日本語の`SelectVoiceByHints`で選択された音声、Androidは日本語の初期化時に`setLanguage`で選ばれた音声のIDを保持し、一覧のIDと照合する。試聴・個別音声の指定で保持したIDは変えず、エンジンの再初期化時に取得し直す。既定情報を取得できない場合は音声を除外しない。
+
+## 常駐セッションのテスト
+
+`ResidentSpeechSessionTest` は `Process` のFakeで標準入出力・生存状態・EOF・入出力失敗を制御し、
+要求の送信、送信順の完了、停止対象の判定、失敗時の未完了要求の完了とセッション終了を検証します。
+応答処理はLatchで待ち合わせ、テスト終了時に読み取りThreadの終了も確認します。
+外部プロセスやWindows音声合成は起動しません。実際のPowerShellとの接続はWindows環境での確認が必要です。
