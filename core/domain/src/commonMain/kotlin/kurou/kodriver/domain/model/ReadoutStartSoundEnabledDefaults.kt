@@ -1,5 +1,7 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_READOUT_START_SOUND_ENABLED_STATE_DEFAULT
+
 // auto-readout-list（AutoReadoutListViewModel）が参照するデフォルト値。
 // 車両接近アナウンスは接近車両ごとに頻繁に再生されるため開始音をデフォルトOFFとし、
 // それ以外の ReadoutItemKey.TopLevel はデフォルトONとする。

@@ -7,12 +7,12 @@ import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelLapsPreferencesR
 import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutSetPreferencesRepository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5MyBestLapPreferencesRepository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelPreferencesRepository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named

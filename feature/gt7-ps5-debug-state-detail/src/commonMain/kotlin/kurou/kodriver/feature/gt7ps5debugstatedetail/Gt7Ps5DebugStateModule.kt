@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.gt7ps5debugstatedetail
 
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5VehicleClassUseCase
 import org.koin.core.module.Module
 
 /**

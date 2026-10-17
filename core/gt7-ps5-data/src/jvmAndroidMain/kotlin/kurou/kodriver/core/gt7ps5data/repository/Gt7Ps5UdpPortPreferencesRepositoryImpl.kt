@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.core.gt7ps5data.model.Gt7Ps5UdpPortPreferences
-import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import java.io.IOException
 
 internal class Gt7Ps5UdpPortPreferencesRepositoryImpl(

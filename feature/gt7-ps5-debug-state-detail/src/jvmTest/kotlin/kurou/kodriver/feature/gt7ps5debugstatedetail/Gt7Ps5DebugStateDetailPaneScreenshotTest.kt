@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5VehicleClassData
 import org.junit.Test
 
 class Gt7Ps5DebugStateDetailPaneScreenshotTest {

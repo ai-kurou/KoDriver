@@ -1,5 +1,8 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_AUTO_READOUT_ENABLED_STATE_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_QUEUE_ENABLED_STATE_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_READOUT_START_SOUND_ENABLED_STATE_DEFAULT
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

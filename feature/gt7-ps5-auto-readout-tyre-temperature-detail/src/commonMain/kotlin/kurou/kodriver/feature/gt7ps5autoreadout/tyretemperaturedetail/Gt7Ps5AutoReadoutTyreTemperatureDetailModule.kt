@@ -1,14 +1,14 @@
 package kurou.kodriver.feature.gt7ps5autoreadout.tyretemperaturedetail
 
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5TyreTemperatureEnabledStateUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5TyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.SaveGt7Ps5TyreTemperatureEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveGt7Ps5TyreTemperatureHighThresholdUseCase
-import kurou.kodriver.domain.usecase.SaveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named

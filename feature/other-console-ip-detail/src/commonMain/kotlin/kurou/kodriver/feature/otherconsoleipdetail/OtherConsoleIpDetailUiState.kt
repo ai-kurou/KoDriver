@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.otherconsoleipdetail
 
-import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
 
 /**
  * OtherConsoleIpDetail 画面の表示状態。
