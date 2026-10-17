@@ -43,6 +43,7 @@ import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
@@ -74,6 +75,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remove_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_temperature
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_wear
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_virtual_energy_laps
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableColumn
@@ -86,6 +88,11 @@ private data class ManualReadoutItemPresentation(
 
 private val itemPresentations =
     mapOf(
+        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_virtual_energy_laps,
+                Res.string.manual_readout_category_energy,
+            ),
         LmuWindowsReadoutItemKey.MyBestLap.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_my_best_lap,
@@ -127,6 +134,7 @@ private val itemPresentations =
             ),
     )
 
+private const val PREVIEW_VIRTUAL_ENERGY_LAPS = 3
 private const val PREVIEW_BEST_LAP_TIME_MS = 83_456L
 private const val PREVIEW_TYRE_TEMPERATURE_CELSIUS = 90
 private const val PREVIEW_BRAKE_TEMPERATURE_CELSIUS = 500
@@ -141,6 +149,10 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
             val text = uiState.itemTexts[itemKey] ?: manualReadoutItemTextDefault(itemKey)
             text.takeIf { it.isNotBlank() }?.let {
                 when (itemKey) {
+                    LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> {
+                        formatLmuWindowsPitTimingReadoutText(it, PREVIEW_VIRTUAL_ENERGY_LAPS)
+                    }
+
                     LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
                         formatLmuWindowsMyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS)
                     }

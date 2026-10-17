@@ -815,7 +815,8 @@ internal class LmuWindowsNarratorViewModel(
         val items =
             set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }.map { key ->
                 val ratio =
-                    if (key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
+                    if (key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
+                        key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
                         isLmuWindowsManualReadoutTemperatureItem(key)
                     ) {
                         null
@@ -842,6 +843,12 @@ internal class LmuWindowsNarratorViewModel(
                     ratio,
                     celsius,
                     lapTimeMs = bestLapTimeMs.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value },
+                    remainingLaps =
+                        if (key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value && energy != null) {
+                            narratorUseCases.determineReadout.manualPitTimingVirtualEnergyRemainingLaps(narratorState)
+                        } else {
+                            null
+                        },
                 )
             }
         val state = narratorState

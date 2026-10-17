@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
@@ -109,7 +110,14 @@ internal class ManualReadoutSetDetailViewModel(
 
     fun onPreviewClicked() {
         val state = uiState.value
-        val key = state.selectedItemKeys.firstOrNull()?.let { ReadoutItemKey.fromValue(it) } ?: return
+        val key =
+            state.selectedItemKeys.firstOrNull()?.let {
+                if (it == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) {
+                    LmuWindowsReadoutItemKey.PitTiming.Root
+                } else {
+                    ReadoutItemKey.fromValue(it)
+                }
+            } ?: return
         preview.onPreviewClicked(manualReadoutPreview(state), key)
     }
 

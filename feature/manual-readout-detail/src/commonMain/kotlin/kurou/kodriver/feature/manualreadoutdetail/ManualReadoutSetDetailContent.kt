@@ -39,9 +39,11 @@ import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5RemainingFuelLapsRead
 import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5TyreTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsMyBestLapReadoutPlaceholders
+import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsPitTimingReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -223,6 +225,10 @@ private fun unknownPlaceholders(
     text: String,
 ): List<String> =
     when {
+        itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> {
+            findUnknownLmuWindowsPitTimingReadoutPlaceholders(text)
+        }
+
         itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
             findUnknownLmuWindowsMyBestLapReadoutPlaceholders(text)
         }
@@ -246,6 +252,7 @@ private fun unknownPlaceholders(
 
 private fun insertPlaceholder(itemKey: String): String =
     when {
+        itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
         itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
@@ -262,7 +269,9 @@ internal fun ManualReadoutItemTextField(
     itemKey: String,
 ) {
     val isLapTime = itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value
-    val isLaps = itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
+    val isLaps =
+        itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value ||
+            itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
     val isTemperature =
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value || isLmuWindowsManualReadoutTemperatureItem(itemKey)
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)

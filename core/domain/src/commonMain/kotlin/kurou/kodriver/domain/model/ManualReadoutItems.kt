@@ -9,6 +9,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_MY_BEST
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT
 
 /** シミュレーターで実装済みの手動読み上げ対象項目。 */
 fun manualReadoutItemKeys(simulatorId: String): List<String> =
@@ -21,6 +22,7 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root.value,
                 LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
                 LmuWindowsReadoutItemKey.MyBestLap.Root.value,
+                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value,
             )
         }
 
@@ -40,6 +42,10 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
 /** 手動読み上げ項目の既定文言。未対応の項目は空文字を返す。 */
 fun manualReadoutItemTextDefault(itemKey: String): String =
     when (itemKey) {
+        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> {
+            LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT
+        }
+
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
             GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
         }
@@ -84,6 +90,7 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
 /** 手動読み上げ項目の名前。未対応の項目は空文字を返す。 */
 fun manualReadoutItemName(itemKey: String): String =
     when (itemKey) {
+        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> "エナジーの残り周回数"
         Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> "残り燃料の周回数"
@@ -96,13 +103,14 @@ fun manualReadoutItemName(itemKey: String): String =
         else -> ""
     }
 
-/** 鮮度判定済みの手動読み上げ項目。残存率は0〜1、温度は℃、ラップタイムはmsで、未受信・鮮度切れは null。 */
+/** 鮮度判定済みの手動読み上げ項目。残存率は0〜1、温度は℃、ラップタイムはms、残り周回数は整数で、未受信・鮮度切れは null。 */
 data class LmuWindowsManualReadoutItem(
     val key: String,
     val textTemplate: String,
     val ratio: Double?,
     val celsius: Float? = null,
     val lapTimeMs: Long? = null,
+    val remainingLaps: Int? = null,
 )
 
 /** 摂氏温度を使う手動読み上げ項目かを判定する。 */
