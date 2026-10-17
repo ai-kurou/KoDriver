@@ -13,7 +13,7 @@ import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
  * `wearables.brakes`（ブレーキ残り厚さ）を一定間隔でポーリングして流す。
  *
  * 取得に失敗（LMU 未起動・HTTP エラー・JSON 不正など）した回、または 4 輪分が揃っていない回は null を流し、
- * 次の周期で再取得する。
+ * 次の周期で再取得する。失敗周期を省略すると下流が直前の正常値を最新値として扱い続けるため、null も通知する。
  */
 internal class LmuWindowsRestApiBrakeWearRepository(
     private val dataSource: LmuWindowsRestApiRepairAndRefuelDataSource,

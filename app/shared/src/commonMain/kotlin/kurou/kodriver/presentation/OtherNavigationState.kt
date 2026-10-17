@@ -33,6 +33,8 @@ internal class OtherNavigationState(
 internal fun rememberOtherNavigationState(
     initial: OtherPaneDestination = OtherPaneDestination.List,
 ): OtherNavigationState =
+    // 選択状態は ViewModel から同期されるため、ペイン側だけを rememberSaveable で復元しない。
+    // 設計理由は docs/list-detail-navigation-pattern.md を参照。
     remember {
         OtherNavigationState(NavBackStack(initial))
     }

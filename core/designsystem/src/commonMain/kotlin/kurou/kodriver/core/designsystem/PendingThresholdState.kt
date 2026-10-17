@@ -45,6 +45,7 @@ class PendingThresholdState internal constructor(
         if (savedValue == lastSaved) return
         lastSaved = savedValue
         if (pendingValues.isNotEmpty()) {
+            // 同じ値へ戻す連続操作もあるため、最初の一致までを消費して後続の保存待ちを残す。
             val firstMatch = pendingValues.indexOf(savedValue)
             if (firstMatch >= 0) {
                 pendingValues = pendingValues.drop(firstMatch + 1)

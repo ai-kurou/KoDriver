@@ -52,6 +52,7 @@ class PendingTextState internal constructor(
         if (pendingTexts.isEmpty()) {
             currentText = savedText
         } else {
+            // 同じ値へ戻す連続操作もあるため、最初の一致までを消費して後続の保存待ちを残す。
             val firstMatch = pendingTexts.indexOf(savedText)
             if (firstMatch >= 0) {
                 pendingTexts = pendingTexts.drop(firstMatch + 1)

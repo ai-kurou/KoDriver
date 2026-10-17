@@ -78,6 +78,7 @@ internal class Gt7Ps5UdpSource(
 
                 while (true) {
                     try {
+                        // receive は length を受信サイズへ書き換えるため、短いパケットの後も全長を受け取れるよう戻す。
                         dgram.length = buf.size
                         socket.receive(dgram)
                         val decrypted = decrypt(buf.copyOf(dgram.length)) ?: continue

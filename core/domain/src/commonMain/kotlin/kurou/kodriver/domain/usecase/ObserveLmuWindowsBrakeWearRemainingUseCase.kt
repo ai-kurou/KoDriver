@@ -52,6 +52,7 @@ class ObserveLmuWindowsBrakeWearRemainingUseCase(
                     is Event.Wear -> {
                         val wear = event.value
                         if (wear == null) {
+                            // 一時的な取得失敗はデータ無しとして通知し、新品厚さの観測履歴は復帰後も引き継ぐ。
                             emit(null)
                         } else {
                             maxThickness =

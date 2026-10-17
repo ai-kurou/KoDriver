@@ -908,6 +908,7 @@ internal class LmuWindowsNarratorViewModel(
                         currentLap = telemetry.timing.currentLap,
                         events = selectLowerPitTimingEvent(virtualEnergyDecision.events, tyreWearDecision.events),
                     )
+                // 採用された警告だけ履歴へ反映する。優先度・音声再生の成否はこの周回ゲートとは別に扱う。
                 narratorState =
                     pitTimingEvents
                         .filterIsInstance<LmuWindowsPitTimingWarning>()

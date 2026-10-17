@@ -63,6 +63,7 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         lateralMaximumMeters: Double,
     ): LmuWindowsVehicleApproachData {
         val plrBase = LmuWindowsMapper.vehicleTelemetryBase(playerIdx)
+        // LMU の地面上の座標 (X, Z) を (X, -Z) に投影し、姿勢行列の第3行から自車の yaw を求める。
         val plrPosX = buffer.getDouble(plrBase + OFF_POS_X)
         val plrPosY = -buffer.getDouble(plrBase + OFF_POS_Z)
         val plrOriYaw =
@@ -90,6 +91,7 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
             val dx = optPosX - plrPosX
             val dy = optPosY - plrPosY
 
+            // 自車基準へ回転した relX は左右（負が左）、relY は前後。高さ方向は並走判定に使わない。
             val relX = cosYaw * dx - sinYaw * dy
             val relY = cosYaw * dy + sinYaw * dx
 
@@ -99,6 +101,7 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
             if (absRelX < lateralMinimumMeters) continue
             if (absRelX > lateralMaximumMeters) continue
             if (relX < 0) {
+                // インデックスは Narrator の接近継続時間を車両ごとに追跡するキーとして渡す。
                 leftVehicleIds.add(i)
                 if (absRelX < nearestLeftMeters) nearestLeftMeters = absRelX
             } else {

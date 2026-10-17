@@ -10,6 +10,7 @@ import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepos
 internal class OverlayBackgroundOpacityPreferencesRepositoryImpl(
     private val dataStore: DataStore<OverlayBackgroundOpacityPreferences>,
 ) : OverlayBackgroundOpacityPreferencesRepository {
+    // 保存値とは別の一時値をオーバーレイと共有する。null で解除した時点の最新の保存値へ戻す。
     private val previewOverlayBackgroundOpacity = MutableStateFlow<Int?>(null)
 
     override fun observeOverlayBackgroundOpacity(): Flow<Int> =
