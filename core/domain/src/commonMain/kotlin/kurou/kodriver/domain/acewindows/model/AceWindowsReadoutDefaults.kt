@@ -44,6 +44,9 @@ val ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
         AceWindowsReadoutItemKey.MyBestLap.Root to false,
     )
 
+/** 手動読み上げの対応項目がない場合の固定文言。 */
+const val ACE_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT = "読み上げる項目がありません"
+
 /** 一覧画面の TopLevel 項目と Narrator が共有する読み上げ順序の初期値。 */
 internal fun aceWindowsDefaultAutoReadoutOrder(): List<ReadoutItemKey> =
     ReadoutItemKey.entries

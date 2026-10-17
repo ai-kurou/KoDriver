@@ -6,8 +6,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
@@ -31,16 +33,26 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperature
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+
+internal data class ManualReadoutUseCases(
+    val observeRequests: ObserveManualReadoutRequestsUseCase,
+    val observeHotkeyPresses: ObserveManualReadoutHotkeyPressesUseCase,
+    val observeSets: ObserveManualReadoutSetsUseCase,
+)
 
 internal data class MyBestLapUseCases(
     val observeBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
@@ -97,6 +109,7 @@ internal class AceWindowsNarratorViewModel(
     private val eventProcessor: AceWindowsNarratorEventProcessor,
     private val determineAceWindowsNarratorReadout: DetermineAceWindowsNarratorReadoutUseCase =
         DetermineAceWindowsNarratorReadoutUseCase(),
+    manualReadoutUseCases: ManualReadoutUseCases,
     observeDebugReadoutRequest: ObserveDebugReadoutRequestUseCase,
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
@@ -238,6 +251,34 @@ internal class AceWindowsNarratorViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val manualReadoutRequestJob =
+        merge(
+            manualReadoutUseCases.observeRequests(),
+            manualReadoutUseCases.observeHotkeyPresses(),
+        ).onEach { request ->
+            if (request.simulatorId == Simulator.AceWindows.id) {
+                val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
+                readManualReadout(set)
+            }
+        }.launchIn(viewModelScope)
+
+    private suspend fun readManualReadout(set: ManualReadoutSet?) {
+        if (set == null || selectedSimulator.value !is Simulator.AceWindows) return
+        val observedAtMs = currentTimeMs()
+        val state = narratorState
+        val settings = currentSettings
+        // ACE の項目は未実装のため、解決済みの全セットで項目なし文言を読む。
+        val decision = determineAceWindowsNarratorReadout.determineManualReadout(state)
+        eventProcessor.processManualReadout(
+            events = decision.events,
+            autoReadoutOrder = autoReadoutOrder.value,
+            queueEnabledStates = queueEnabledStates.value + (decision.events.first().readoutItemKey to true),
+            observedAtMs = observedAtMs,
+            logContext = AceWindowsTelemetryLogContext(state, settings, decision.state),
+        )
+    }
 
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob =

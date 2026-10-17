@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.acewindows.usecase
 
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
@@ -15,6 +16,7 @@ import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
 import kurou.kodriver.domain.engine.AceWindowsMyBestLap
 import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
@@ -90,6 +92,20 @@ data class AceWindowsNarratorReadoutDecision(
  * （[AceWindowsNarratorState.personalBestMs]）の2段構えで二重読み上げを防ぐ。
  */
 class DetermineAceWindowsNarratorReadoutUseCase {
+    /** ACE の手動項目は未実装のため、警告済み状態を維持して項目なし文言を返す。 */
+    fun determineManualReadout(state: AceWindowsNarratorState): AceWindowsNarratorReadoutDecision =
+        AceWindowsNarratorReadoutDecision(
+            state = state,
+            events =
+                listOf(
+                    AceWindowsManualReadoutText(
+                        // 自動読み上げの一覧・並び順にキーを追加せず、開始音とログに既存の Root を使う。
+                        readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
+                        text = ACE_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT,
+                    ),
+                ),
+        )
+
     fun determineMyBestLap(
         state: AceWindowsNarratorState,
         data: AceWindowsBestLapTimeData,

@@ -31,6 +31,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutListModuleTest {
@@ -83,7 +84,7 @@ class ManualReadoutListModuleTest {
                     try {
                         val state = viewModel.uiState.first { it.sets.isNotEmpty() }
                         assertEquals(listOf(ManualReadoutSet(id = simulator.id)), state.sets)
-                        assertEquals(simulator != Simulator.AceWindows, state.canReadSets)
+                        assertTrue(state.canReadSets)
                         val request = ManualReadoutRequest(simulator.id, simulator.id)
                         coEvery { requestRepository.request(request) } returns Unit
                         viewModel.readSet(simulator.id)

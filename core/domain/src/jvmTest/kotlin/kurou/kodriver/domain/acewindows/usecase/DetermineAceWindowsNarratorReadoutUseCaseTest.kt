@@ -13,6 +13,7 @@ import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
 import kurou.kodriver.domain.engine.AceWindowsMyBestLap
 import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
@@ -37,6 +38,18 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class DetermineAceWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineAceWindowsNarratorReadoutUseCase()
+
+    @Test
+    fun `手動読み上げは固定の項目なし文言を返し自動判定の状態を変更しない`() {
+        val state = AceWindowsNarratorState(personalBestMs = 80_000, previousLapCount = 5)
+        val decision = useCase.determineManualReadout(state)
+        assertEquals(state, decision.state)
+        assertTrue(state === decision.state)
+        assertEquals(
+            listOf(AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")),
+            decision.events,
+        )
+    }
 
     @Test
     fun `周回数が減少したら自己ベストをリセットして新セッションの更新を読み上げる`() {
