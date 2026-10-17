@@ -9,12 +9,14 @@ import com.sun.jna.platform.win32.Ole32
 import com.sun.jna.platform.win32.WinNT.HRESULT
 import com.sun.jna.ptr.PointerByReference
 
-/** JNAの実呼び出しのみを担うWindows専用実装。ユニットテストとカバレッジの対象外。 */
-internal class JnaWasapiComBridge : WasapiComBridge {
-    override fun initialize(flags: Int): HRESULT = Ole32.INSTANCE.CoInitializeEx(null, flags)
+/** JNAの実呼び出しを担う。Ole32は呼び出し時に取得し、非Windowsでも境界を検証できる。 */
+internal class JnaWasapiComBridge(
+    private val ole32: () -> Ole32 = { Ole32.INSTANCE },
+) : WasapiComBridge {
+    override fun initialize(flags: Int): HRESULT = ole32().CoInitializeEx(null, flags)
 
     override fun uninitialize() {
-        Ole32.INSTANCE.CoUninitialize()
+        ole32().CoUninitialize()
     }
 
     override fun createInstance(
@@ -22,7 +24,7 @@ internal class JnaWasapiComBridge : WasapiComBridge {
         context: Int,
         interfaceId: IID,
         result: PointerByReference,
-    ): HRESULT = Ole32.INSTANCE.CoCreateInstance(classId, null, context, interfaceId, result)
+    ): HRESULT = ole32().CoCreateInstance(classId, null, context, interfaceId, result)
 
     override fun invoke(
         pointer: Pointer,

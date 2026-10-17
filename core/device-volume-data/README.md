@@ -23,5 +23,11 @@ KoDriver自体のアナウンス音量設定とは異なり、OS側の再生音�
 COM初期化結果に応じた終了処理、各取得段階と音量操作の失敗時のリソース解放を検証する。
 `JnaWasapiNativeApiTest` は `WasapiComBridge` のFakeを使い、COM初期化結果、GUID、
 vtable番号・引数、戻りポインター・音量値、HRESULTの確認と例外伝播、解放先を検証する。
-JNAを直接呼ぶ `JnaWasapiComBridge` と `WasapiComInvoker` のみをルートのKover集計から除外する。
+`JnaWasapiComBridgeTest` は遅延取得する `Ole32` をモックに差し替え、COM初期化・終了・生成の
+引数、HRESULT、出力ポインター、例外伝播を検証する。JNAのメモリとコールバックで疑似COMの
+vtableを構成し、指定スロットの呼び出しと `Release` は実際のJNA経路を通して検証する。
+HRESULTの成功確認は直接実行し、失敗確認はWindowsのエラーメッセージ取得を避けるため
+`COMUtils.checkRC` を差し替えて例外伝播を検証する。
+`JnaWasapiComBridge` と `WasapiComInvoker` はKover集計対象とする。
+既定の `Ole32.INSTANCE` の取得だけはWindows専用のため、非Windowsのユニットテストでは実行しない。
 実際のWASAPI接続はWindows環境での確認が必要。
