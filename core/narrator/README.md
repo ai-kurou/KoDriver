@@ -74,3 +74,11 @@ Float/Double フィールドが NaN/Infinity を取りうる GT7/ACE では、
 LMU・GT7・ACEの読み上げ文言イベントは共通のsealed interface `ReadoutTextEvent` を実装する。
 LMUは `ReadoutTextEvent` の型判定を `isCustomSpeakEvent` に渡し、フラッグ・車両接近・ピットタイミングを含む全自由文字列イベントを処理する。
 本文は判定時に確定してイベントへ保持し、キュー再生でもログと一致させる。共通エンジンの `customSpeakEvents` パラメータは維持する。
+
+## JVM音声再生のテスト
+
+`JvmSoundPlayer` は `JvmAudioBackend`、IO Dispatcher、エラー報告関数を差し替え可能にし、
+音声デバイスを使わずに再生・音量・末尾の無音・キャンセル・異常時の解放を検証します。
+音量設定や再生開始の失敗時にもデバイスを閉じ、停止・解放が失敗しても再生状態を解除します。
+実際のJava Sound呼び出しを担う `JavaSoundAudioBackend` はカバレッジ対象外です。
+実デバイスの音声出力とBluetoothでの音切れ改善は実機での確認が必要です。
