@@ -21,5 +21,7 @@ KoDriver自体のアナウンス音量設定とは異なり、OS側の再生音�
 
 `WasapiMasterVolumeSourceTest` は `WasapiNativeApi` のFakeを使い、音量の取得・設定、
 COM初期化結果に応じた終了処理、各取得段階と音量操作の失敗時のリソース解放を検証する。
-JNAを直接呼ぶ `JnaWasapiNativeApi` とCOMラッパーはユニットテスト対象外とし、
-ルートのKover集計から除外する。実際のWASAPI接続はWindows環境での確認が必要。
+`JnaWasapiNativeApiTest` は `WasapiComBridge` のFakeを使い、COM初期化結果、GUID、
+vtable番号・引数、戻りポインター・音量値、HRESULTの確認と例外伝播、解放先を検証する。
+JNAを直接呼ぶ `JnaWasapiComBridge` と `WasapiComInvoker` のみをルートのKover集計から除外する。
+実際のWASAPI接続はWindows環境での確認が必要。
