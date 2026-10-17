@@ -100,6 +100,38 @@ class ManualReadoutSetDetailViewModelTest {
     }
 
     @Test
+    fun `GT7の残り燃料周回数は項目追加と編集文言をセットへ保存する`() =
+        runTest(dispatcher) {
+            val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
+            val original = ManualReadoutSet("target")
+            val added = original.copy(itemKeys = listOf(key))
+            val edited = added.copy(itemTexts = mapOf(key to "残り{laps}周"))
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(added) } answers { sets.update { listOf(added) } }
+            coEvery { repository.updateSet(edited) } answers { sets.update { listOf(edited) } }
+            val vm = viewModel(Simulator.Gt7Ps5.id)
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                assertEquals(
+                    manualReadoutItemKeys(Simulator.Gt7Ps5.id),
+                    vm.uiState.first { !it.isLoading }.availableItemKeys,
+                )
+                vm.addItem(key)
+                assertEquals(listOf(key), vm.uiState.first().selectedItemKeys)
+                vm.updateItemText(key, "残り{laps}周")
+                assertEquals(edited.itemTexts, vm.uiState.first().itemTexts)
+                verify(exactly = 3) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(added) }
+                coVerify(exactly = 1) { repository.updateSet(edited) }
+                confirmVerified(repository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
     fun `GT7の残り燃料は項目追加と編集文言をセットへ保存する`() =
         runTest(dispatcher) {
             val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
@@ -113,7 +145,10 @@ class ManualReadoutSetDetailViewModelTest {
             val vm = viewModel(Simulator.Gt7Ps5.id)
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
-                assertEquals(listOf(key), vm.uiState.first { !it.isLoading }.availableItemKeys)
+                assertEquals(
+                    manualReadoutItemKeys(Simulator.Gt7Ps5.id),
+                    vm.uiState.first { !it.isLoading }.availableItemKeys,
+                )
                 vm.addItem(key)
                 assertEquals(listOf(key), vm.uiState.first().selectedItemKeys)
                 vm.updateItemText(key, "残り{percent}%")

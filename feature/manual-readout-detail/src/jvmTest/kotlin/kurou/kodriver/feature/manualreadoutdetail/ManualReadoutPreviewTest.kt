@@ -9,6 +9,15 @@ import kotlin.test.assertEquals
 
 class ManualReadoutPreviewTest {
     @Test
+    fun `GT7の残り燃料周回数は3周でプレビューし空欄は読まない`() {
+        val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
+        val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
+        assertEquals("燃料は残り約3周", manualReadoutPreview(state))
+        assertEquals("あと3周", manualReadoutPreview(state.copy(itemTexts = mapOf(key to "あと{laps}周"))))
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+    }
+
+    @Test
     fun `GT7の残り燃料の既定文言と編集文言はサンプル値に置換する`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))

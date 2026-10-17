@@ -40,6 +40,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
+import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
@@ -66,6 +67,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_play
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_stop
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remaining_fuel
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remaining_fuel_laps
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remove_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_temperature
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_wear
@@ -84,6 +86,11 @@ private val itemPresentations =
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel,
+                Res.string.manual_readout_category_energy,
+            ),
+        Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_remaining_fuel_laps,
                 Res.string.manual_readout_category_energy,
             ),
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
@@ -112,6 +119,7 @@ private const val PREVIEW_BRAKE_TEMPERATURE_CELSIUS = 500
 private const val PREVIEW_BRAKE_WEAR_PERCENT = 50
 private const val PREVIEW_TYRE_WEAR_PERCENT = 50
 private const val PREVIEW_ENERGY_PERCENT = 50
+private const val PREVIEW_REMAINING_FUEL_LAPS = 3
 
 internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): String =
     uiState.selectedItemKeys
@@ -121,6 +129,10 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
                 when (itemKey) {
                     Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
                         formatGt7Ps5RemainingFuelReadoutText(it, PREVIEW_ENERGY_PERCENT)
+                    }
+
+                    Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
+                        formatGt7Ps5RemainingFuelLapsReadoutText(it, PREVIEW_REMAINING_FUEL_LAPS)
                     }
 
                     LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> {
@@ -212,6 +224,7 @@ internal fun ManualReadoutItemsCard(
                                     defaultText = manualReadoutItemTextDefault(itemKey),
                                     onTextChanged = { onItemTextChanged(itemKey, it) },
                                     isTemperature = isLmuWindowsManualReadoutTemperatureItem(itemKey),
+                                    isLaps = itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
                                 )
                             }
                         }

@@ -103,16 +103,30 @@ Android は非対応実装を使い、キー未割り当て・非対応時は登
 GT7 の手動読み上げは、一覧の ▶ と Windows のセットホットキーからの依頼を合流し、
 `Simulator.Gt7Ps5.id` 宛てで保存済みセットが見つかり、GT7 が選択中の場合だけ処理する。
 `manualReadoutItemKeys(Simulator.Gt7Ps5.id)` は「残り燃料」の
-`Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value` に対応する。詳細画面で保存したセットの
+`Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value`、続いて「残り燃料の周回数」の
+`Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value` に対応する。詳細画面で保存したセットの
 `itemKeys`・`itemTexts` を ViewModel が参照し、`Gt7Ps5ManualReadoutItem` を判定へ渡す。
 最新テレメトリの `gasLevel / gasCapacity * 100` を四捨五入して0〜100に制限する。
 未受信・受信から5秒超・不正な燃料値は null とし「残り燃料はデータがありません」を読む。
 既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` の
 「燃料は残り{percent}パーセント」で、既存の燃料用フォーマット関数を再利用する。
 判定は対応項目を最大3件、保存順に空欄を除いて「、」で連結し、
-`Gt7Ps5ManualReadoutText` の1イベントを返す。現在値イベントは `Gt7Ps5RemainingFuelCurrentValue`。
+`Gt7Ps5ManualReadoutText` の1イベントを返す。現在値イベントは `Gt7Ps5RemainingFuelCurrentValue` と `Gt7Ps5RemainingFuelLapsCurrentValue`。
 対応項目なしの場合は従来どおり「読み上げる項目がありません」を読む。
 自動読み上げのスイッチ・警告済み状態は変更せず、常にキュー末尾へ追加して同じ本文をログに保存する。
 開始音とログには、項目なしの場合も既存の `RemainingFuel.Root` を使う。
 GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持ち衝突しない。
 手動項目の選択・文言はシミュレーター別のセット設定に保存し、自動項目のスイッチとは独立して判定する。
+
+
+手動の残り燃料周回数は `currentRemainingFuelLaps(state)` で `fuelTrackingState` から算出する。
+開始燃料＋総給油量－現在燃料を、完走周回数＋`CURRENT_LAP_CONSUMPTION_WEIGHT`（0.9）で割った平均消費を使い、
+現在燃料÷平均消費を整数へ切り捨てる。開始燃料・開始周回が未設定、完走周回数が0以下、消費燃料が0以下なら null。
+最終受信から5秒以内だけ推定値を使い、未受信・鮮度切れは「残り燃料の周回数はデータがありません」を読む。
+`Gt7Ps5ManualReadoutItem.value` の単位は残り燃料が％、残り燃料の周回数が周。
+既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）で、
+`formatGt7Ps5RemainingFuelLapsReadoutText` で置換する。0周以下は「燃料残り1周未満」。
+テンプレートが空欄なら、0周以下やデータなしでも読まない。
+自動側のしきい値・重複抑止・周回内タイミング・有効スイッチは手動側に適用しない。
+テレメトリごとに `determineRemainingFuelLaps` が呼ばれ、有効スイッチの判定より前に燃料追跡が更新されるため、
+自動読み上げが無効でも手動用の追跡が続く。

@@ -26,6 +26,84 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     private val useCase = DetermineGt7Ps5NarratorReadoutUseCase()
 
     @Test
+    fun `手動周回数は現在値とゼロ以下とデータなしと空欄を区別する`() {
+        val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
+        val cases =
+            listOf(
+                Gt7Ps5ManualReadoutItem(key, "あと{laps}周", 3) to "あと3周",
+                Gt7Ps5ManualReadoutItem(key, "あと{laps}周", 0) to "燃料残り1周未満",
+                Gt7Ps5ManualReadoutItem(key, "あと{laps}周", -1) to "燃料残り1周未満",
+                Gt7Ps5ManualReadoutItem(key, "あと{laps}周", null) to "残り燃料の周回数はデータがありません",
+                Gt7Ps5ManualReadoutItem(key, " ", null) to "",
+                Gt7Ps5ManualReadoutItem(key, "", 0) to "",
+            )
+        cases.forEach { (item, expected) ->
+            val state = Gt7Ps5NarratorState(lastAnnouncedRemainingLaps = 3)
+            val decision = useCase.determineManualReadout(state, listOf(item))
+            assertTrue(state === decision.state)
+            assertEquals(expected, decision.events.single().narratedText)
+        }
+        assertEquals(
+            "燃料は残り42パーセント、あと3周",
+            useCase
+                .determineManualReadout(
+                    Gt7Ps5NarratorState(),
+                    listOf(
+                        Gt7Ps5ManualReadoutItem(
+                            Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value,
+                            "燃料は残り{percent}パーセント",
+                            42,
+                        ),
+                        Gt7Ps5ManualReadoutItem(key, "あと{laps}周", 3),
+                    ),
+                ).events
+                .single()
+                .narratedText,
+        )
+    }
+
+    @Test
+    fun `現在周回数は平均消費と給油を考慮し算出できない場合はnullにする`() {
+        val fuel =
+            Gt7Ps5FuelTrackingState(
+                raceStartFuel = Gt7Ps5FuelUnit(100f),
+                raceStartLap = 1,
+                currentLap = 3,
+                currentGasLevel = Gt7Ps5FuelUnit(50f),
+            )
+        val cases =
+            listOf(
+                fuel to 2,
+                fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(90f)) to 26,
+                fuel.copy(totalRefueled = Gt7Ps5FuelUnit(50f)) to 1,
+                fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(0f)) to 0,
+                fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(1f)) to 0,
+                fuel.copy(raceStartFuel = null) to null,
+                fuel.copy(raceStartLap = null) to null,
+                fuel.copy(currentLap = 1) to null,
+                fuel.copy(currentLap = 0) to null,
+                fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(100f)) to null,
+                fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(101f)) to null,
+                fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(Float.NaN)) to null,
+                fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(-1f)) to null,
+                fuel.copy(raceStartFuel = Gt7Ps5FuelUnit(Float.POSITIVE_INFINITY)) to null,
+                fuel.copy(totalRefueled = Gt7Ps5FuelUnit(Float.NaN)) to null,
+            )
+        cases.forEach { (tracking, expected) ->
+            assertEquals(
+                expected,
+                useCase.currentRemainingFuelLaps(
+                    Gt7Ps5NarratorState(
+                        fuelTrackingState = tracking,
+                        lastFuelEvaluationLap = 3,
+                        lastAnnouncedRemainingLaps = 2,
+                    ),
+                ),
+            )
+        }
+    }
+
+    @Test
     fun `手動燃料は編集文言とデータなしを保存順に連結し空欄と他シムのキーを除外する`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
         val state = Gt7Ps5NarratorState(remainingFuelWarned = true)

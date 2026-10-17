@@ -192,6 +192,43 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
+    fun `手動周回数は自動無効でも追跡した現在値を鮮度期限内に読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                false,
+                selectedLaps = true,
+                initialTelemetry = Gt7Ps5TelemetryData(1, 1, 90_000, Gt7Ps5FuelUnit(100f), Gt7Ps5FuelUnit(100f)),
+                telemetry = Gt7Ps5TelemetryData(3, 5, 90_000, Gt7Ps5FuelUnit(50f), Gt7Ps5FuelUnit(100f)),
+                ageMs = 5_000L,
+                expectedText = "燃料は残り約2周",
+            )
+        }
+
+    @Test
+    fun `手動周回数は5秒超でデータなしにする`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                false,
+                selectedLaps = true,
+                initialTelemetry = Gt7Ps5TelemetryData(1, 1, 90_000, Gt7Ps5FuelUnit(100f), Gt7Ps5FuelUnit(100f)),
+                telemetry = Gt7Ps5TelemetryData(3, 5, 90_000, Gt7Ps5FuelUnit(50f), Gt7Ps5FuelUnit(100f)),
+                ageMs = 5_001L,
+                expectedText = "残り燃料の周回数はデータがありません",
+            )
+        }
+
+    @Test
+    fun `手動周回数は追跡に必要な周回がなければデータなしにする`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                true,
+                selectedLaps = true,
+                telemetry = Gt7Ps5TelemetryData(1, 1, 90_000, Gt7Ps5FuelUnit(50f), Gt7Ps5FuelUnit(100f)),
+                expectedText = "残り燃料の周回数はデータがありません",
+            )
+        }
+
+    @Test
     fun `手動燃料は未受信なら項目名付きのデータなしを読む`() =
         runTest(testDispatcher) {
             assertManualReadout(false, selectedFuel = true, expectedText = "残り燃料はデータがありません")
@@ -245,9 +282,12 @@ class Gt7Ps5NarratorViewModelTest {
             assertManualReadout(hotkey = true)
         }
 
+    @Suppress("LongParameterList")
     private suspend fun TestScope.assertManualReadout(
         hotkey: Boolean,
         selectedFuel: Boolean = false,
+        selectedLaps: Boolean = false,
+        initialTelemetry: Gt7Ps5TelemetryData? = null,
         template: String? = null,
         telemetry: Gt7Ps5TelemetryData? = null,
         ageMs: Long = 0L,
@@ -258,15 +298,30 @@ class Gt7Ps5NarratorViewModelTest {
             listOf(
                 ManualReadoutSet(
                     "set-1",
-                    if (selectedFuel) listOf(key.value) else emptyList(),
-                    template?.let { mapOf(key.value to it) } ?: emptyMap(),
+                    if (selectedLaps) {
+                        listOf(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value)
+                    } else if (selectedFuel) {
+                        listOf(key.value)
+                    } else {
+                        emptyList()
+                    },
+                    template?.let {
+                        val itemKey = if (selectedLaps) Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root else key
+                        mapOf(itemKey.value to it)
+                    } ?: emptyMap(),
                 ),
             )
         }
         val event = Gt7Ps5ManualReadoutText(key, expectedText, expectedText)
         val json = slot<String>()
         stubReadoutDefaults(
-            enabledOverrides = mapOf(key to false, Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled to false),
+            enabledOverrides =
+                mapOf(
+                    key to false,
+                    Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled to false,
+                    Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to false,
+                    Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled to false,
+                ),
             queueEnabledOverrides = mapOf(key to false),
         )
         every { ttsEngine.speak(event, true) } just Runs
@@ -284,6 +339,8 @@ class Gt7Ps5NarratorViewModelTest {
         var now = 100L - ageMs
         val viewModel = createViewModel(channel, ttsEngine, currentTimeMs = { now })
         try {
+            runCurrent()
+            initialTelemetry?.let { channel.send(it) }
             runCurrent()
             telemetry?.let { channel.send(it) }
             runCurrent()
