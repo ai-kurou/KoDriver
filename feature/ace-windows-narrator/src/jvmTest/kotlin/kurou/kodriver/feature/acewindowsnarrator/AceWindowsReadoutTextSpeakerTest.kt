@@ -33,6 +33,7 @@ import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
 import kurou.kodriver.domain.engine.AceWindowsMyBestLap
 import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
@@ -46,6 +47,7 @@ import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
@@ -105,6 +107,39 @@ class AceWindowsReadoutTextSpeakerTest {
             checkTextToSpeechAvailable = checkAvailable,
             speakText = speakText,
         )
+
+    @Test
+    fun `手動イベントの本文と解決済み文言を再生する`() =
+        runTest {
+            val event = AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText(event.text, volume = 80) } just Runs
+            coEvery { speakText("解決済み", volume = 80) } just Runs
+
+            assertEquals(event.text, speaker.readoutText(event))
+            speaker(event, 80)
+            val resolved = event.withResolvedText("解決済み")
+            assertEquals("解決済み", speaker.readoutText(resolved))
+            speaker(resolved, 80)
+            assertNull(speaker.readoutText(event.withResolvedText(" ")))
+            speaker(event.withResolvedText(" "), 80)
+
+            coVerify(exactly = 3) { checkAvailable() }
+            coVerify(exactly = 1) { speakText(event.text, volume = 80) }
+            coVerify(exactly = 1) { speakText("解決済み", volume = 80) }
+            confirmVerified(checkAvailable, speakText)
+        }
+
+    @Test
+    fun `TTS利用不可なら手動イベントを読み上げない`() =
+        runTest {
+            val event = AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(event))
+            speaker(event, 80)
+            coVerify(exactly = 2) { checkAvailable() }
+            confirmVerified(checkAvailable, speakText)
+        }
 
     @Test
     fun `保存文言をそのまま指定音量で読み上げる`() =

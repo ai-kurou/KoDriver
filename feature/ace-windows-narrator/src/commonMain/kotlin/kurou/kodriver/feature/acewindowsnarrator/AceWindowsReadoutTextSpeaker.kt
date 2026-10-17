@@ -11,6 +11,7 @@ import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsFlagSpeechEvent
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
 import kurou.kodriver.domain.engine.AceWindowsMyBestLap
 import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
@@ -69,6 +70,7 @@ internal class AceWindowsReadoutTextSpeaker(
     private suspend fun aceWindowsText(event: AceWindowsSpeechEvent): String =
         event.resolvedText
             ?: when (event) {
+                is AceWindowsManualReadoutText -> event.text
                 is AceWindowsFlagSpeechEvent -> flagText(event)
                 is AceWindowsVehicleApproach -> readoutTexts.vehicleApproach().first()
                 is AceWindowsTyreOverheat -> tyreOverheatText(event)

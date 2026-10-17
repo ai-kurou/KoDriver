@@ -190,3 +190,14 @@ data class AceWindowsMyBestLap(
 
     override fun withResolvedText(text: String): AceWindowsMyBestLap = copy(resolvedText = text)
 }
+
+/** セット内の項目を保存順に連結する手動読み上げイベント。 */
+data class AceWindowsManualReadoutText(
+    override val readoutItemKey: AceWindowsReadoutItemKey,
+    val text: String,
+    override val resolvedText: String? = null,
+) : AceWindowsSpeechEvent {
+    override val narratedText = resolvedText ?: text
+
+    override fun withResolvedText(text: String): AceWindowsManualReadoutText = copy(resolvedText = text)
+}

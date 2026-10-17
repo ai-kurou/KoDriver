@@ -87,7 +87,7 @@ Android と非 Windows ではホットキー押下を通知しない。
 
 セット詳細で保存した `ManualReadoutSet.hotkeyVirtualKeyCode` は、Windows の
 `ManualReadoutHotkeyRepositoryImpl` が全シミュレーターの設定から観測して登録する。
-押下は `ManualReadoutRequest(simulatorId, setId)` で配信し、LMU・GT7 Narrator はタブからの依頼と
+押下は `ManualReadoutRequest(simulatorId, setId)` で配信し、LMU・GT7・ACE Narrator はタブからの依頼と
 `merge` して同じ処理へ渡す。自分宛ての保存済みセットの項目と文言を参照し、手動読み上げの判定を使う。
 セット詳細は同じ Repository の登録状態を観測し、競合・失敗時の再試行もセット識別子付きで委譲する。
 Android は非対応実装を使い、キー未割り当て・非対応時は登録状態を表示しない。
@@ -144,3 +144,11 @@ GT7 の手動「タイヤ温度」は `TyreTemperature.Root` を使い、`curren
 （「タイヤ温度{celsius}℃」）で、既存の GT7 用フォーマッターとプレースホルダー検証を使う。
 詳細のカテゴリはタイヤ、プレビューは90℃。空文言は読まず、自動のしきい値・ヒステリシス・重複抑止・
 スイッチ判定は適用しない。最大3項目を「、」で連結し、開始音・ログのキーは `RemainingFuel.Root` を維持する。
+
+ACE の手動読み上げは、一覧の ▶ と Windows のセットホットキーからの依頼を合流し、
+`Simulator.AceWindows.id` 宛てで保存済みセットが見つかり、ACE が選択中の場合だけ処理する。
+`manualReadoutItemKeys` の ACE 対応項目は0件のままなので、テレメトリ未受信でも固定文言
+「読み上げる項目がありません」を `AceWindowsManualReadoutText` の1イベントで読み上げる。
+自動読み上げの設定・判定状態は変更せず、キュー設定に関係なく末尾へ追加し、ログを保存する。
+自動項目キーは追加せず、開始音とログのキーには既存の `RemainingFuel.Root` を使う。
+ACE の個別項目は別 PR で追加する。

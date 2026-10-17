@@ -29,6 +29,20 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class SpeechEventTest {
     @Test
+    fun `ACEの手動文言はキーと本文を保持し解決済み文言を優先する`() {
+        val key = AceWindowsReadoutItemKey.RemainingFuel.Root
+        val event = AceWindowsManualReadoutText(key, "読み上げる項目がありません")
+        assertEquals(key, event.readoutItemKey)
+        assertEquals("読み上げる項目がありません", event.narratedText)
+        val resolved = event.withResolvedText("解決済み")
+        assertEquals("解決済み", resolved.resolvedText)
+        assertEquals("解決済み", resolved.narratedText)
+        assertEquals(event.text, resolved.text)
+        assertEquals(key, resolved.readoutItemKey)
+        assertEquals("", event.withResolvedText("").narratedText)
+    }
+
+    @Test
     fun `GT7の手動タイヤ温度は既定文言と解決済み文言と空文言を扱う`() {
         val event = Gt7Ps5TyreTemperatureCurrentValue(90)
         assertEquals(Gt7Ps5ReadoutItemKey.TyreTemperature.Root, event.readoutItemKey)

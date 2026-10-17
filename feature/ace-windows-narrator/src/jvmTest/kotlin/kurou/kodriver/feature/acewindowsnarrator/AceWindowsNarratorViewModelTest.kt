@@ -19,8 +19,10 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.Json
@@ -62,6 +64,7 @@ import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
 import kurou.kodriver.domain.engine.AceWindowsMyBestLap
 import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
@@ -80,18 +83,26 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.ManualReadoutRequest
+import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
+import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
+import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
+import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -104,6 +115,13 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsNarratorViewModelTest {
+    private val manualRequests = MutableSharedFlow<ManualReadoutRequest>()
+    private val manualHotkeyPresses = MutableSharedFlow<ManualReadoutRequest>()
+    private val manualSets = MutableStateFlow(listOf(ManualReadoutSet("set-1")))
+    private val manualRequestRepository: ManualReadoutRequestRepository = mockk()
+    private val manualHotkeyRepository: ManualReadoutHotkeyRepository = mockk()
+    private val manualSetRepository: ManualReadoutSetPreferencesRepository = mockk()
+
     private val debugRequests = MutableSharedFlow<DebugReadoutRequest>()
     private val debugRequestRepository: DebugReadoutRequestRepository = mockk()
 
@@ -176,7 +194,16 @@ class AceWindowsNarratorViewModelTest {
             remainingFuelLapsRepository.remainingFuelLapsStream()
         } returns remainingFuelLapsChannel.receiveAsFlow()
         every { debugRequestRepository.observeRequests() } returns debugRequests
+        every { manualRequestRepository.observeRequests() } returns manualRequests
+        every { manualHotkeyRepository.pressStream() } returns manualHotkeyPresses
+        every { manualSetRepository.observeSets() } returns manualSets
         return AceWindowsNarratorViewModel(
+            manualReadoutUseCases =
+                ManualReadoutUseCases(
+                    ObserveManualReadoutRequestsUseCase(manualRequestRepository),
+                    ObserveManualReadoutHotkeyPressesUseCase(manualHotkeyRepository),
+                    ObserveManualReadoutSetsUseCase(manualSetRepository),
+                ),
             observeDebugReadoutRequest = ObserveDebugReadoutRequestUseCase(debugRequestRepository),
             myBestLapUseCases =
                 MyBestLapUseCases(
@@ -238,6 +265,113 @@ class AceWindowsNarratorViewModelTest {
             currentTimeMs = currentTimeMs,
         )
     }
+
+    @Test
+    fun `一覧の依頼はキュー設定が無効でも項目なし文言を末尾に追加してログ保存する`() =
+        runTest(testDispatcher) {
+            assertManualReadout(hotkey = false)
+        }
+
+    @Test
+    fun `ホットキーの依頼も項目なし文言を末尾に追加してログ保存する`() =
+        runTest(testDispatcher) {
+            assertManualReadout(hotkey = true)
+        }
+
+    private suspend fun TestScope.assertManualReadout(hotkey: Boolean) {
+        val key = AceWindowsReadoutItemKey.RemainingFuel.Root
+        val event = AceWindowsManualReadoutText(key, "読み上げる項目がありません", "読み上げる項目がありません")
+        val json = slot<String>()
+        stubReadoutDefaults(thresholdPercentage = 30, queueEnabledOverrides = mapOf(key to false))
+        every { ttsEngine.speak(event, true) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                100L,
+                Simulator.AceWindows,
+                key,
+                event.text,
+                NarrationOutcome.QUEUED,
+                capture(json),
+            )
+        } just Runs
+        val viewModel = createViewModel(Channel(Channel.UNLIMITED), ttsEngine, currentTimeMs = { 100L })
+        try {
+            val request = ManualReadoutRequest(Simulator.AceWindows.id, "set-1")
+            runCurrent()
+            if (hotkey) {
+                manualHotkeyPresses.emit(request)
+            } else {
+                manualRequests.emit(request)
+            }
+            runCurrent()
+            val logged = Json.parseToJsonElement(json.captured).jsonObject
+            assertEquals(setOf("state", "settings", "observedAtMs"), logged.keys)
+            assertEquals("100", logged.getValue("observedAtMs").jsonPrimitive.content)
+            verify(exactly = 1) { ttsEngine.speak(event, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    key,
+                    event.text,
+                    NarrationOutcome.QUEUED,
+                    json.captured,
+                )
+            }
+            verify(exactly = 1) { manualRequestRepository.observeRequests() }
+            verify(exactly = 1) { manualHotkeyRepository.pressStream() }
+            verify(exactly = 1) { manualSetRepository.observeSets() }
+            confirmVerified(
+                ttsEngine,
+                telemetryLogRepository,
+                manualRequestRepository,
+                manualHotkeyRepository,
+                manualSetRepository,
+            )
+        } finally {
+            viewModel.viewModelScope.cancel()
+        }
+    }
+
+    @Test
+    fun `別シミュレーター宛てとセットなしとACE未選択の依頼は読み上げない`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.AceWindows)
+            stubReadoutDefaults(thresholdPercentage = 30)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns selected
+            every {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every {
+                autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.LmuWindows.id)
+            } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel(Channel(Channel.UNLIMITED), ttsEngine)
+            try {
+                runCurrent()
+                manualRequests.emit(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
+                manualRequests.emit(ManualReadoutRequest(Simulator.AceWindows.id, "missing"))
+                runCurrent()
+                selected.value = Simulator.LmuWindows
+                runCurrent()
+                manualRequests.emit(ManualReadoutRequest(Simulator.AceWindows.id, "set-1"))
+                manualHotkeyPresses.emit(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
+                manualHotkeyPresses.emit(ManualReadoutRequest(Simulator.AceWindows.id, "missing"))
+                manualHotkeyPresses.emit(ManualReadoutRequest(Simulator.AceWindows.id, "set-1"))
+                runCurrent()
+                verify(exactly = 1) { manualRequestRepository.observeRequests() }
+                verify(exactly = 1) { manualHotkeyRepository.pressStream() }
+                verify(exactly = 4) { manualSetRepository.observeSets() }
+                confirmVerified(
+                    ttsEngine,
+                    telemetryLogRepository,
+                    manualRequestRepository,
+                    manualHotkeyRepository,
+                    manualSetRepository,
+                )
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
+        }
 
     @Test
     fun `自由文言の解決に失敗しても次のテレメトリを収集して読み上げる`() =
@@ -535,6 +669,7 @@ class AceWindowsNarratorViewModelTest {
         vehicleApproachThresholdMeters: Double = 10.0,
         remainingFuelLapsThreshold: Int = 3,
         selectedSimulator: Simulator = Simulator.AceWindows,
+        queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(selectedSimulator)
         every {
@@ -549,7 +684,9 @@ class AceWindowsNarratorViewModelTest {
         every {
             remainingFuelLapsPreferencesRepository.observeThresholdLaps()
         } returns MutableStateFlow(remainingFuelLapsThreshold)
-        every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+        every {
+            queuePreferencesRepository.observeQueueEnabledStates()
+        } returns MutableStateFlow(queueEnabledOverrides)
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
         every {
             tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()

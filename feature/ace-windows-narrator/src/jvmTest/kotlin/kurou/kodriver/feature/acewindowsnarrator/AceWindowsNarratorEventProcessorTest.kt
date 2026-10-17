@@ -30,6 +30,7 @@ import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
 import kurou.kodriver.domain.engine.AceWindowsMyBestLap
 import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
@@ -64,6 +65,116 @@ class AceWindowsNarratorEventProcessorTest {
     private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
     private val ttsEngine: TextToSpeechEngine = mockk()
+
+    @Test
+    fun `手動イベントをキューに追加しテレメトリなしのログを保存する`() =
+        runTest {
+            val event = AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")
+            val resolved = event.withResolvedText(event.text)
+            val json = slot<String>()
+            every { ttsEngine.speak(resolved, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    event.readoutItemKey,
+                    event.text,
+                    NarrationOutcome.QUEUED,
+                    capture(json),
+                )
+            } just Runs
+
+            createProcessor().processManualReadout(
+                listOf(event),
+                emptyList(),
+                mapOf(event.readoutItemKey to true),
+                100L,
+                logContext(),
+            )
+
+            val logged = Json.parseToJsonElement(json.captured).jsonObject
+            assertEquals(setOf("state", "settings", "observedAtMs"), logged.keys)
+            assertEquals("100", logged.getValue("observedAtMs").toString())
+            assertEquals(true, logged.getValue("state").jsonObject.containsKey("raw"))
+            assertEquals(true, logged.getValue("settings").jsonObject.containsKey("raw"))
+            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    event.readoutItemKey,
+                    event.text,
+                    NarrationOutcome.QUEUED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `手動文言が空白なら読み上げずログにスキップを保存する`() =
+        runTest {
+            val event = AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, " ")
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor().processManualReadout(listOf(event), emptyList(), emptyMap(), 0L, logContext())
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `手動文言が解決できなければ読み上げずログにスキップを保存する`() =
+        runTest {
+            val event = AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor { null }.processManualReadout(listOf(event), emptyList(), emptyMap(), 0L, logContext())
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `手動イベントがなければ発話もログ保存もしない`() =
+        runTest {
+            createProcessor().processManualReadout(emptyList(), emptyList(), emptyMap(), 0L, logContext())
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
 
     @Test
     fun `直前の燃料データがないイベントはnullとして保存する`() =

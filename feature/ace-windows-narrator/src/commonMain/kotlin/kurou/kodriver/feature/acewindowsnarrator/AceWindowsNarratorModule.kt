@@ -41,6 +41,9 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
@@ -66,7 +69,7 @@ import org.koin.dsl.module
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
  *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / RemainingFuelLapsUseCases /
- *   SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases /
+ *   ManualReadoutUseCases / SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases /
  *   AceWindowsFlagReadoutTextUseCases / AceWindowsRemainingFuelReadoutTextUseCases / AceWindowsReadoutTextUseCases）、
  *   それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・
@@ -82,6 +85,8 @@ import org.koin.dsl.module
 val aceWindowsNarratorModule: Module =
     module {
         factory { ObserveDebugReadoutRequestUseCase(get()) }
+        factory { ObserveManualReadoutRequestsUseCase(get()) }
+        factory { ObserveManualReadoutHotkeyPressesUseCase(get()) }
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
         viewModel {
             AceWindowsNarratorViewModel(
@@ -94,6 +99,7 @@ val aceWindowsNarratorModule: Module =
                 get(),
                 get(),
                 get(),
+                manualReadoutUseCases = get(),
                 observeDebugReadoutRequest = get(),
             )
         }
@@ -102,6 +108,13 @@ val aceWindowsNarratorModule: Module =
         factory { MyBestLapUseCases(get()) }
         factory { RemainingFuelUseCases(get(), get()) }
         factory { RemainingFuelLapsUseCases(get(), get()) }
+        factory {
+            ManualReadoutUseCases(
+                get(),
+                get(),
+                ObserveManualReadoutSetsUseCase(get(named(Simulator.AceWindows.id))),
+            )
+        }
         factory { SimulatorUseCases(get()) }
         factory { ReadoutListUseCases(get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
