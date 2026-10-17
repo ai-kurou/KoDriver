@@ -29,4 +29,9 @@ class ManualReadoutDefaultsTest {
 
         assertEquals(name, name.takeManualReadoutSetName())
     }
+
+    @Test
+    fun `改行は除去する`() {
+        assertEquals("ABCD", "A\nB\r\nC\rD".takeManualReadoutSetName())
+    }
 }
