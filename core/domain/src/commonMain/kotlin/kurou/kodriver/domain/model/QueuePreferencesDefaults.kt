@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_QUEUE_ENABLED_STATE_DEFAULT
 
 // listPane（AutoReadoutListViewModel）が参照するデフォルト値。

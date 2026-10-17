@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import androidx.compose.runtime.Composable
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
+import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kotlin.math.round
 
 @Composable

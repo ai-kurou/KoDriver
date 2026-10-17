@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsMyBestLapPreferencesRepository
 
 internal class AceWindowsMyBestLapPreferencesRepositoryImpl(
     private val dataStore: DataStore<MyBestLapPreferences>,

@@ -1,12 +1,12 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
-import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
+import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
+import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
+import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 
 data class AceWindowsDebugState(
     val fuel: AceWindowsFuelData? = null,

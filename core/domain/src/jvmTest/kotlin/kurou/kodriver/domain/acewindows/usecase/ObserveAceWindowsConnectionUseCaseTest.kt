@@ -1,0 +1,67 @@
+package kurou.kodriver.domain.acewindows.usecase
+
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeout
+import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.model.FuelPercent
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+class ObserveAceWindowsConnectionUseCaseTest {
+    private val repository: AceWindowsFuelRepository = mockk()
+
+    @Test
+    fun `接続確認結果と燃料データを返す`() =
+        runTest {
+            val fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0))
+            every { repository.fuelStream() } returns MutableStateFlow(fuel)
+            coEvery { repository.isConnected() } returns true
+            val useCase = createUseCase(repository)
+
+            val state = withTimeout(1_000L) { useCase().first { it.fuel == fuel } }
+
+            assertTrue(state.isConnected)
+            assertEquals(fuel, state.fuel)
+            coVerify(exactly = 1) { repository.isConnected() }
+            verify(exactly = 1) { repository.fuelStream() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `接続確認で例外が発生した場合は未接続として監視を継続する`() =
+        runTest {
+            every { repository.fuelStream() } returns emptyFlow()
+            coEvery { repository.isConnected() } throws RuntimeException("connection check failed") andThen true
+            val useCase = createUseCase(repository)
+
+            val firstState = withTimeout(5_000L) { useCase().first() }
+            assertFalse(firstState.isConnected)
+            assertNull(firstState.fuel)
+
+            val connectedState = withTimeout(5_000L) { useCase().first { it.isConnected } }
+            assertTrue(connectedState.isConnected)
+
+            coVerify(exactly = 2) { repository.isConnected() }
+            verify(exactly = 2) { repository.fuelStream() }
+            confirmVerified(repository)
+        }
+
+    private fun createUseCase(repository: AceWindowsFuelRepository) =
+        ObserveAceWindowsConnectionUseCase(
+            checkAceWindowsConnection = CheckAceWindowsConnectionUseCase(repository),
+            observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
+        )
+}

@@ -1,12 +1,12 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
-import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
 import org.koin.core.module.Module
 
 /**

@@ -1,12 +1,12 @@
 package kurou.kodriver.feature.acewindowsautoreadout.vehicleapproachdetail
 
+import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
+import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachEnabledStateUseCase
+import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
-import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named

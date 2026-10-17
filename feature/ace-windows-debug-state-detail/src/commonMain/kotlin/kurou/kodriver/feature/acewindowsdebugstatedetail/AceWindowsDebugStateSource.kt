@@ -6,20 +6,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
-import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
+import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
+import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
+import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
 
 internal data class AceWindowsDebugStateUseCases(
     val observeFuel: ObserveAceWindowsFuelUseCase,

@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
-import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 
 @Composable
 internal fun BestLapContent(aceWindowsBestLapTime: AceWindowsBestLapTimeData?) {

@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import kurou.kodriver.core.designsystem.HeatLevel
-import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 
 private const val COOL_TEMPERATURE_CELSIUS = 70.0
 private const val HOT_TEMPERATURE_CELSIUS = 110.0

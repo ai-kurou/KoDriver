@@ -4,8 +4,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
-import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertTrue

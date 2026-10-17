@@ -2,8 +2,8 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 
 internal class AceWindowsFlagPreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsFlagPreferences>,

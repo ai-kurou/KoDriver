@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.repository.AceWindowsFuelRepository
-import kurou.kodriver.domain.usecase.CheckAceWindowsConnectionUseCase
+import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.acewindows.usecase.CheckAceWindowsConnectionUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

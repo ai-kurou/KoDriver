@@ -1,8 +1,8 @@
 package kurou.kodriver.core.acewindowsdata.mapper
 
-import kurou.kodriver.domain.model.AceWindowsCarLocation
-import kurou.kodriver.domain.model.AceWindowsFlagType
-import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
+import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.WheelIndex

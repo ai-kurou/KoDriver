@@ -1,11 +1,11 @@
 package kurou.kodriver.feature.acewindowsautoreadout.mybestlapdetail
 
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.SaveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel

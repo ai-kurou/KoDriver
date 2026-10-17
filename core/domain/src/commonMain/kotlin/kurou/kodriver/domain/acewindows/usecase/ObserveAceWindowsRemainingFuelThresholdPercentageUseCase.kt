@@ -1,0 +1,10 @@
+package kurou.kodriver.domain.acewindows.usecase
+
+import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
+
+class ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(
+    private val repository: AceWindowsRemainingFuelPreferencesRepository,
+) {
+    operator fun invoke(): Flow<Int> = repository.observeThresholdPercentage()
+}
