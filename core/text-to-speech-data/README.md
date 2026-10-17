@@ -56,8 +56,10 @@ Androidの`AndroidVoiceListRepository`も登録し、`ja`言語・オフライ�
 キャッシュしません。初期化失敗・一覧がnull・取得例外の場合は空の一覧を返します（キャンセルは再スローします）。
 出力の解析は独立した純粋関数としてユニットテストで検証します。
 
-`SapiSpeechSynthesizer`はWindows専用の外部プロセスを起動するためユニットテストの対象外とし、読み上げ制御の
-ロジックは差し替え可能な`WindowsSpeechSynthesizer`を介して`WindowsTextToSpeechRepository`側で検証します。
+`SapiSpeechSynthesizer`はOS判定・プロセス起動・エラー報告・完了待機をコンストラクターで差し替え、
+利用可否、音声一覧取得と後片付け、常駐プロセスの再利用・再起動、キュー待機と割り込みをユニットテストします。
+偽プロセスの応答と待機開始を同期して制御するため、実際のPowerShellや音声デバイスは不要です。
+PowerShellスクリプトとWindows SAPIの実際の連携はWindows環境で確認します。
 
 Windowsの音声設定の起動は、jvmMainの`WindowsSpeechSettingsSenderRepository`が担当します。
 `rundll32`経由で`ms-settings:speech`を開き、非Windowsでは何もしません。起動時のIOException・
