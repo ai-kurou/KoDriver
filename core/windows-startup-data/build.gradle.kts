@@ -17,3 +17,15 @@ dependencies {
     testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutinesTest)
 }
+
+kover {
+    reports {
+        filters {
+            excludes {
+                classes("kurou.kodriver.core.windowsstartupdata.windows.JnaStartupRegistryApi")
+                classes("kurou.kodriver.core.windowsstartupdata.WindowsStartupDataModuleKt*")
+                classes("kurou.kodriver.core.windowsstartupdata.NoOpStartupEnabledRepository")
+            }
+        }
+    }
+}

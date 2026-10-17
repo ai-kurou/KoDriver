@@ -101,6 +101,7 @@ fun ManualReadoutSetDetailContent(
         onMoveItem = viewModel::moveItem,
         onDelete = viewModel::deleteSet,
         onItemTextChanged = viewModel::updateItemText,
+        onNameChanged = viewModel::updateName,
         onPreviewClick = viewModel::onPreviewClicked,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
@@ -118,6 +119,7 @@ internal fun ManualReadoutSetDetailPane(
     onRemoveItem: (String) -> Unit = {},
     onMoveItem: (Int, Int) -> Unit = { _, _ -> },
     onItemTextChanged: (String, String) -> Unit = { _, _ -> },
+    onNameChanged: (String) -> Unit = {},
     onPreviewClick: () -> Unit = {},
     onAssignHotkey: (Int) -> Unit = {},
     onSelectModifiers: (ManualReadoutHotkeyModifiers) -> Unit = {},
@@ -140,7 +142,7 @@ internal fun ManualReadoutSetDetailPane(
     DetailPaneScaffold(
         title =
             if (number != null) {
-                stringResource(Res.string.manual_readout_set_title, number)
+                uiState.name.ifBlank { stringResource(Res.string.manual_readout_set_title, number) }
             } else {
                 stringResource(Res.string.manual_readout_title)
             },
@@ -166,6 +168,7 @@ internal fun ManualReadoutSetDetailPane(
             verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
         ) {
             if (number != null) {
+                ManualReadoutSetNameRow(uiState.name, number, onNameChanged)
                 if (uiState.availableItemKeys.isEmpty()) {
                     Text(stringResource(Res.string.manual_readout_no_items))
                 }

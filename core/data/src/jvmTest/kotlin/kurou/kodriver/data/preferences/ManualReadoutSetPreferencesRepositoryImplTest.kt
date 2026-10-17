@@ -36,6 +36,30 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
     }
 
     @Test
+    fun `セット名を追加と更新と一覧保存で保持し旧データは名前なしになる`() =
+        runTest {
+            dataStore.updateData {
+                ManualReadoutSetPreferences(listOf(ManualReadoutSetPreference("legacy")))
+            }
+            assertEquals(
+                "",
+                repository
+                    .observeSets()
+                    .first()
+                    .single()
+                    .name,
+            )
+            val named = ManualReadoutSet("named", name = "レース用")
+            repository.addSet(named)
+            assertEquals(named, repository.observeSets().first().last())
+            val renamed = named.copy(name = "予選用")
+            repository.updateSet(renamed)
+            assertEquals(renamed, repository.observeSets().first().last())
+            repository.saveSets(listOf(named, renamed.copy(id = "duplicate", name = named.name)))
+            assertEquals(listOf("レース用", "レース用"), repository.observeSets().first().map { it.name })
+        }
+
+    @Test
     fun `空の保存済み一覧へセットを追加できる`() =
         runTest {
             val set = ManualReadoutSet("set-1", listOf("SESSION", "REMOVED_KEY"), mapOf("SESSION" to "残量{percent}%"))

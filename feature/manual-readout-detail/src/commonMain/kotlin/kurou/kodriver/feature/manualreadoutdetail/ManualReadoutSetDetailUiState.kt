@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 
 internal data class ManualReadoutSetDetailUiState(
     val setNumber: Int? = null,
+    val name: String = "",
     val availableItemKeys: List<String> = emptyList(),
     val selectedItemKeys: List<String> = emptyList(),
     val itemTexts: Map<String, String> = emptyMap(),

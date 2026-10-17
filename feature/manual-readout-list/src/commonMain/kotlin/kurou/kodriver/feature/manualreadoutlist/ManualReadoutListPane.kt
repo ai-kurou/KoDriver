@@ -76,6 +76,7 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_item_count
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_no_items
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set_named
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -240,7 +241,7 @@ private fun ManualReadoutSetRow(
                 verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
             ) {
                 Text(
-                    text = stringResource(Res.string.manual_readout_list_set_title, setNumber),
+                    text = set.name.ifBlank { stringResource(Res.string.manual_readout_list_set_title, setNumber) },
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -261,7 +262,12 @@ private fun ManualReadoutSetRow(
             IconButton(onClick = onReadSet, enabled = canReadSet) {
                 Icon(
                     imageVector = Icons.Filled.PlayArrow,
-                    contentDescription = stringResource(Res.string.manual_readout_list_readout_set, setNumber),
+                    contentDescription =
+                        if (set.name.isBlank()) {
+                            stringResource(Res.string.manual_readout_list_readout_set, setNumber)
+                        } else {
+                            stringResource(Res.string.manual_readout_list_readout_set_named, set.name)
+                        },
                 )
             }
         }
