@@ -75,6 +75,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remove_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_temperature
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_wear
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_wear_laps
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_virtual_energy_laps
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -92,6 +93,11 @@ private val itemPresentations =
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_virtual_energy_laps,
                 Res.string.manual_readout_category_energy,
+            ),
+        LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_tyre_wear_laps,
+                Res.string.manual_readout_category_tyre,
             ),
         LmuWindowsReadoutItemKey.MyBestLap.Root.value to
             ManualReadoutItemPresentation(
@@ -134,7 +140,7 @@ private val itemPresentations =
             ),
     )
 
-private const val PREVIEW_VIRTUAL_ENERGY_LAPS = 3
+private const val PREVIEW_PIT_TIMING_LAPS = 3
 private const val PREVIEW_BEST_LAP_TIME_MS = 83_456L
 private const val PREVIEW_TYRE_TEMPERATURE_CELSIUS = 90
 private const val PREVIEW_BRAKE_TEMPERATURE_CELSIUS = 500
@@ -149,8 +155,10 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
             val text = uiState.itemTexts[itemKey] ?: manualReadoutItemTextDefault(itemKey)
             text.takeIf { it.isNotBlank() }?.let {
                 when (itemKey) {
-                    LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> {
-                        formatLmuWindowsPitTimingReadoutText(it, PREVIEW_VIRTUAL_ENERGY_LAPS)
+                    LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value,
+                    LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
+                    -> {
+                        formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS)
                     }
 
                     LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {

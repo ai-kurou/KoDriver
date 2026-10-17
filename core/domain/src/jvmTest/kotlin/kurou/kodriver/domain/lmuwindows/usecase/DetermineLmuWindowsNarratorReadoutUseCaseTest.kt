@@ -128,6 +128,70 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動タイヤ摩耗周回数は蓄積値だけを読み自動条件と状態を変更しない`() {
+        val tracking =
+            LmuWindowsPitTimingTrackingState(currentLap = 2, currentValue = 0.75, lastValidLapConsumption = 0.1)
+        val state = LmuWindowsNarratorState(pitTimingTyreWearTrackingState = tracking)
+        assertEquals(7, useCase.manualPitTimingTyreWearRemainingLaps(state))
+        listOf(
+            tracking.copy(currentLap = -1),
+            tracking.copy(lastValidLapConsumption = null),
+            tracking.copy(lastValidLapConsumption = 0.0),
+            tracking.copy(lastValidLapConsumption = -0.1),
+            tracking.copy(currentValue = -0.2),
+            tracking.copy(currentValue = Double.NaN),
+            tracking.copy(currentValue = Double.POSITIVE_INFINITY),
+            tracking.copy(lastValidLapConsumption = Double.NaN),
+            tracking.copy(lastValidLapConsumption = Double.POSITIVE_INFINITY),
+        ).forEach {
+            val invalidState = state.copy(pitTimingTyreWearTrackingState = it)
+            assertEquals(null, useCase.manualPitTimingTyreWearRemainingLaps(invalidState))
+        }
+        val lessThanOneLap = state.copy(pitTimingTyreWearTrackingState = tracking.copy(currentValue = 0.05))
+        assertEquals(0, useCase.manualPitTimingTyreWearRemainingLaps(lessThanOneLap))
+        assertEquals(tracking, state.pitTimingTyreWearTrackingState)
+        val energyOnly = LmuWindowsNarratorState(pitTimingVirtualEnergyTrackingState = tracking)
+        assertEquals(null, useCase.manualPitTimingTyreWearRemainingLaps(energyOnly))
+    }
+
+    @Test
+    fun `手動タイヤ摩耗周回数は文言と欠損と保存順を反映しPitTimingのRootを使う`() {
+        val key = LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
+        val root = LmuWindowsReadoutItemKey.PitTiming.Root
+        val tyre = LmuWindowsReadoutItemKey.TyreWear.Root
+        val state = LmuWindowsNarratorState(lastAnnouncedPitTimingTyreWearLaps = 2)
+        val laps = LmuWindowsManualReadoutItem(key, "あと{laps}周 {unknown}", null, remainingLaps = 3)
+        val wear = LmuWindowsManualReadoutItem(tyre.value, "タイヤ{percent}%", 0.8)
+        listOf(
+            Triple(listOf(laps), root, "あと3周 {unknown}"),
+            Triple(listOf(laps.copy(remainingLaps = 0)), root, "タイヤ残り1周未満"),
+            Triple(listOf(laps, wear), root, "あと3周 {unknown}、タイヤ80%"),
+            Triple(listOf(wear, laps), tyre, "タイヤ80%、あと3周 {unknown}"),
+            Triple(
+                listOf(laps.copy(remainingLaps = null, ratio = 1.0), wear),
+                root,
+                "タイヤ摩耗の残り周回数はデータがありません、タイヤ80%",
+            ),
+            Triple(
+                listOf(laps.copy(remainingLaps = -1), wear),
+                root,
+                "タイヤ摩耗の残り周回数はデータがありません、タイヤ80%",
+            ),
+            Triple(listOf(laps.copy(remainingLaps = null)), root, "データがありません"),
+            Triple(listOf(laps.copy(remainingLaps = -1), wear.copy(ratio = null)), root, "データがありません"),
+            Triple(listOf(laps.copy(textTemplate = "")), root, ""),
+            Triple(listOf(laps.copy(textTemplate = "", remainingLaps = 0)), root, ""),
+            Triple(listOf(laps, wear.copy(ratio = null)), root, "あと3周 {unknown}、タイヤ摩耗はデータがありません"),
+            Triple(listOf(laps.copy(textTemplate = "タイヤは残り約{laps}周")), root, "タイヤは残り約3周"),
+        ).forEach { (items, firstKey, text) ->
+            val decision = useCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            assertEquals(firstKey, decision.events.single().readoutItemKey)
+            assertEquals(text, decision.events.single().narratedText)
+        }
+    }
+
+    @Test
     fun `手動自己ベストは正のラップタイムを読み欠損と保存順を反映し自動状態を維持する`() {
         val key = LmuWindowsReadoutItemKey.MyBestLap.Root
         val tyre = LmuWindowsReadoutItemKey.TyreWear.Root

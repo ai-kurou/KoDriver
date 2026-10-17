@@ -59,4 +59,6 @@
     <string name="manual_readout_laptime_hint">{laptime} はセッションの自己ベストラップタイムに置き換わります</string>
     <string name="manual_readout_virtual_energy_laps_hint">{laps}は残りエナジーで走れる周回数に置き換わります。</string>
     <string name="manual_readout_virtual_energy_laps">エナジーの残り周回数</string>
+    <string name="manual_readout_tyre_wear_laps_hint">{laps}は残りタイヤ摩耗で走れる周回数に置き換わります。</string>
+    <string name="manual_readout_tyre_wear_laps">タイヤ摩耗の残り周回数</string>
 </resources>

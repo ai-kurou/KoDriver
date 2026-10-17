@@ -27,6 +27,24 @@ class ManualReadoutPreviewTest {
     }
 
     @Test
+    fun `タイヤ摩耗周回数はサンプル周回数に置換し空欄を除いて保存順に連結する`() {
+        val key = LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
+        val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
+        assertEquals("タイヤは残り約3周", manualReadoutPreview(state))
+        assertEquals(
+            "あと3 {unknown}",
+            manualReadoutPreview(state.copy(itemTexts = mapOf(key to "あと{laps} {unknown}"))),
+        )
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+        assertEquals(
+            "タイヤは残り約3周、タイヤ温度90℃",
+            manualReadoutPreview(
+                state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.TyreTemperature.Root.value)),
+            ),
+        )
+    }
+
+    @Test
     fun `自己ベストはサンプルラップタイムに置換し空欄を除いて保存順に連結する`() {
         val key = LmuWindowsReadoutItemKey.MyBestLap.Root.value
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))

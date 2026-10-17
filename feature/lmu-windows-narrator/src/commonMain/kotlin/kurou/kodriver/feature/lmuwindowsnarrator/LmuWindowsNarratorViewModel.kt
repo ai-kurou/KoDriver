@@ -817,6 +817,7 @@ internal class LmuWindowsNarratorViewModel(
             set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }.map { key ->
                 val ratio =
                     if (key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
+                        key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value ||
                         key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
                         isLmuWindowsManualReadoutTemperatureItem(key)
                     ) {
@@ -845,13 +846,12 @@ internal class LmuWindowsNarratorViewModel(
                     celsius,
                     lapTimeMs = bestLapTimeMs.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value },
                     remainingLaps =
-                        if (key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value && energy != null &&
-                            observedAtMs - latestPitTimingUpdatedAtMs <= CURRENT_VALUE_MAX_AGE_MS
-                        ) {
-                            narratorUseCases.determineReadout.manualPitTimingVirtualEnergyRemainingLaps(narratorState)
-                        } else {
-                            null
-                        },
+                        manualRemainingLaps(
+                            key = key,
+                            hasEnergy = energy != null,
+                            hasTyreWear = tyreWear != null,
+                            pitTimingFresh = observedAtMs - latestPitTimingUpdatedAtMs <= CURRENT_VALUE_MAX_AGE_MS,
+                        ),
                 )
             }
         val state = narratorState
@@ -866,6 +866,30 @@ internal class LmuWindowsNarratorViewModel(
             logContext = LmuWindowsTelemetryLogContext(state, settings, decision.state),
         )
     }
+
+    private fun manualRemainingLaps(
+        key: String,
+        hasEnergy: Boolean,
+        hasTyreWear: Boolean,
+        pitTimingFresh: Boolean,
+    ): Int? =
+        when {
+            !pitTimingFresh -> {
+                null
+            }
+
+            key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value && hasEnergy -> {
+                narratorUseCases.determineReadout.manualPitTimingVirtualEnergyRemainingLaps(narratorState)
+            }
+
+            key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value && hasTyreWear -> {
+                narratorUseCases.determineReadout.manualPitTimingTyreWearRemainingLaps(narratorState)
+            }
+
+            else -> {
+                null
+            }
+        }
 
     private suspend fun readRemainingVirtualEnergyCurrentValue() {
         if (selectedSimulator.value !is Simulator.LmuWindows) return

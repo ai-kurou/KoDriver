@@ -17,6 +17,14 @@ class ManualReadoutItemsTest {
     }
 
     @Test
+    fun `LMUのタイヤ摩耗周回数は名前と既定文言を持つ`() {
+        val key = LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
+        assertEquals("タイヤ摩耗の残り周回数", manualReadoutItemName(key))
+        assertEquals("タイヤは残り約{laps}周", manualReadoutItemTextDefault(key))
+        assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
+    }
+
+    @Test
     fun `LMUの自己ベストは手動専用文言と名前と省略可能なラップタイムを持つ`() {
         val key = LmuWindowsReadoutItemKey.MyBestLap.Root.value
         assertEquals("自己ベストラップ", manualReadoutItemName(key))
@@ -79,7 +87,7 @@ class ManualReadoutItemsTest {
     }
 
     @Test
-    fun `LMUは残量とタイヤ摩耗とブレーキ残量とブレーキ温度とタイヤ温度と自己ベストとエナジー周回数の順に選択でき未対応シミュレーターは空を返す`() {
+    fun `LMUは残量とタイヤ摩耗とブレーキ残量とブレーキ温度とタイヤ温度と自己ベストとエナジー周回数とタイヤ摩耗周回数の順に選択でき未対応シミュレーターは空を返す`() {
         assertEquals(
             listOf(
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
@@ -89,6 +97,7 @@ class ManualReadoutItemsTest {
                 LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
                 LmuWindowsReadoutItemKey.MyBestLap.Root.value,
                 LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value,
+                LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
             ),
             manualReadoutItemKeys(Simulator.LmuWindows.id),
         )

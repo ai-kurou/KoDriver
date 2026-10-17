@@ -112,7 +112,9 @@ internal class ManualReadoutSetDetailViewModel(
         val state = uiState.value
         val key =
             state.selectedItemKeys.firstOrNull()?.let {
-                if (it == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) {
+                if (it == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
+                    it == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
+                ) {
                     LmuWindowsReadoutItemKey.PitTiming.Root
                 } else {
                     ReadoutItemKey.fromValue(it)
