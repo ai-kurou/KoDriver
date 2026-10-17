@@ -87,6 +87,47 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動自己ベストラップはテレメトリのベストラップを返し0以下と未受信はデータなしにする`() {
+        assertEquals(83_456, useCase.currentBestLapTimeMs(telemetry(bestLapTimeMs = 83_456)))
+        assertEquals(null, useCase.currentBestLapTimeMs(telemetry(bestLapTimeMs = 0)))
+        assertEquals(null, useCase.currentBestLapTimeMs(telemetry(bestLapTimeMs = -1)))
+        assertEquals(null, useCase.currentBestLapTimeMs(null))
+    }
+
+    @Test
+    fun `手動自己ベストラップは文言とデータなしと空欄を扱い複数項目を連結し自動状態を維持する`() {
+        val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root.value
+        val state = Gt7Ps5NarratorState(personalBestMs = 80_000)
+        val cases =
+            listOf(
+                Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(key), 83_456) to "自己ベストラップ 1分23秒456",
+                Gt7Ps5ManualReadoutItem(key, "ベスト{laptime}", 83_456) to "ベスト1分23秒456",
+                Gt7Ps5ManualReadoutItem(key, "ベスト{laptime}", null) to "自己ベストラップはデータがありません",
+                Gt7Ps5ManualReadoutItem(key, "", 83_456) to "",
+                Gt7Ps5ManualReadoutItem(key, " ", null) to "",
+            )
+        cases.forEach { (item, expected) ->
+            val decision = useCase.determineManualReadout(state, listOf(item))
+            assertTrue(state === decision.state)
+            assertEquals(expected, decision.events.single().narratedText)
+            assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, decision.events.single().readoutItemKey)
+        }
+        val items =
+            listOf(
+                Gt7Ps5ManualReadoutItem(Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value, "{percent}%", 42),
+                Gt7Ps5ManualReadoutItem(key, "{laptime}", 83_456),
+            )
+        assertEquals(
+            "42%、1分23秒456",
+            useCase
+                .determineManualReadout(state, items)
+                .events
+                .single()
+                .narratedText,
+        )
+    }
+
+    @Test
     fun `手動周回数は現在値とゼロ以下とデータなしと空欄を区別する`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
         val cases =

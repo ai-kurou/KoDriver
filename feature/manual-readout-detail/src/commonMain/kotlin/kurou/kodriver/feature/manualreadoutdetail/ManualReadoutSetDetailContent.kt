@@ -33,8 +33,10 @@ import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
+import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5MyBestLapReadoutPlaceholders
 import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders
 import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5TyreTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
@@ -236,6 +238,10 @@ private fun unknownPlaceholders(
             findUnknownLmuWindowsMyBestLapReadoutPlaceholders(text)
         }
 
+        itemKey == Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
+            findUnknownGt7Ps5MyBestLapReadoutPlaceholders(text)
+        }
+
         itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
             findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders(text)
         }
@@ -261,6 +267,7 @@ private fun insertPlaceholder(itemKey: String): String =
     when {
         isLmuWindowsManualReadoutLapsItem(itemKey) -> LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
         itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
+        itemKey == Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
         isLmuWindowsManualReadoutTemperatureItem(itemKey) -> LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
@@ -284,7 +291,8 @@ internal fun ManualReadoutItemTextField(
     onTextChanged: (String) -> Unit,
     itemKey: String,
 ) {
-    val isLapTime = itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value
+    val isLapTime =
+        itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value || itemKey == Gt7Ps5ReadoutItemKey.MyBestLap.Root.value
     val isLaps =
         itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value ||
             isLmuWindowsManualReadoutLapsItem(itemKey)

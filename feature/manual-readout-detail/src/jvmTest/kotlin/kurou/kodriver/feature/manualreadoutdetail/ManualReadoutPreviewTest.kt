@@ -63,6 +63,24 @@ class ManualReadoutPreviewTest {
     }
 
     @Test
+    fun `GT7の自己ベストはサンプルラップタイムに置換し空欄を除いて保存順に連結する`() {
+        val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root.value
+        val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
+        assertEquals("自己ベストラップ 1分23秒456", manualReadoutPreview(state))
+        assertEquals(
+            "記録1分23秒456 {unknown}",
+            manualReadoutPreview(state.copy(itemTexts = mapOf(key to "記録{laptime} {unknown}"))),
+        )
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+        assertEquals(
+            "自己ベストラップ 1分23秒456、タイヤ温度90℃",
+            manualReadoutPreview(
+                state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.TyreTemperature.Root.value)),
+            ),
+        )
+    }
+
+    @Test
     fun `GT7の残り燃料周回数は3周でプレビューし空欄は読まない`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
