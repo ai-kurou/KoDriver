@@ -34,13 +34,17 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders
+import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5TyreTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
+import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_celsius_hint
@@ -209,15 +213,47 @@ internal fun ManualReadoutSetDeleteConfirmDialog(
     )
 }
 
+private fun unknownPlaceholders(
+    itemKey: String,
+    text: String,
+): List<String> =
+    when {
+        itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
+            findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders(text)
+        }
+
+        itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
+            findUnknownGt7Ps5TyreTemperatureReadoutPlaceholders(text)
+        }
+
+        isLmuWindowsManualReadoutTemperatureItem(itemKey) -> {
+            findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders(text)
+        }
+
+        else -> {
+            findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders(text)
+        }
+    }
+
+private fun insertPlaceholder(itemKey: String): String =
+    when {
+        itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
+        itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
+        isLmuWindowsManualReadoutTemperatureItem(itemKey) -> LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
+        else -> LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
+    }
+
 /** 選択中の項目の文言を編集し、入力ごとに保存する。 */
 @Composable
 internal fun ManualReadoutItemTextField(
     text: String,
     defaultText: String,
     onTextChanged: (String) -> Unit,
-    isTemperature: Boolean = false,
-    isLaps: Boolean = false,
+    itemKey: String,
 ) {
+    val isLaps = itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
+    val isTemperature =
+        itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value || isLmuWindowsManualReadoutTemperatureItem(itemKey)
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
     val insertState = rememberTextInsertState()
@@ -225,12 +261,7 @@ internal fun ManualReadoutItemTextField(
         textState.change(it)
         onTextChanged(it)
     }
-    val unknown =
-        when {
-            isLaps -> findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders(currentText)
-            isTemperature -> findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders(currentText)
-            else -> findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders(currentText)
-        }.joinToString("、")
+    val unknown = unknownPlaceholders(itemKey, currentText).joinToString("、")
     Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
         DetailPaneLabeledTextField(
             label = stringResource(Res.string.manual_readout_text_label),
@@ -255,15 +286,7 @@ internal fun ManualReadoutItemTextField(
         ) {
             AssistChip(
                 onClick = {
-                    insertState.insert(
-                        if (isLaps) {
-                            GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
-                        } else if (isTemperature) {
-                            LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
-                        } else {
-                            LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
-                        },
-                    )
+                    insertState.insert(insertPlaceholder(itemKey))
                 },
                 label = {
                     Text(

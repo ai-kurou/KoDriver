@@ -192,6 +192,51 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
+    fun `手動タイヤ温度は未受信ならデータなしを読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(false, selectedTemperature = true, expectedText = "タイヤ温度はデータがありません")
+        }
+
+    @Test
+    fun `手動タイヤ温度は5秒以内の現在値を保存文言で読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                true,
+                selectedTemperature = true,
+                template = "温度{celsius}℃",
+                telemetry =
+                    Gt7Ps5TelemetryData(
+                        1,
+                        1,
+                        90_000,
+                        Gt7Ps5FuelUnit(50f),
+                        Gt7Ps5FuelUnit(100f),
+                        tyreTemperature =
+                            Gt7Ps5TyreTemperatureData(
+                                CelsiusReading(Float.NaN),
+                                CelsiusReading(88f),
+                                CelsiusReading(90.5f),
+                                CelsiusReading(80f),
+                            ),
+                    ),
+                ageMs = 5_000L,
+                expectedText = "温度91℃",
+            )
+        }
+
+    @Test
+    fun `手動タイヤ温度は5秒超でデータなしを読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                false,
+                selectedTemperature = true,
+                telemetry = Gt7Ps5TelemetryData(1, 1, 90_000, Gt7Ps5FuelUnit(50f), Gt7Ps5FuelUnit(100f)),
+                ageMs = 5_001L,
+                expectedText = "タイヤ温度はデータがありません",
+            )
+        }
+
+    @Test
     fun `手動周回数は自動無効でも追跡した現在値を鮮度期限内に読む`() =
         runTest(testDispatcher) {
             assertManualReadout(
@@ -287,6 +332,7 @@ class Gt7Ps5NarratorViewModelTest {
         hotkey: Boolean,
         selectedFuel: Boolean = false,
         selectedLaps: Boolean = false,
+        selectedTemperature: Boolean = false,
         initialTelemetry: Gt7Ps5TelemetryData? = null,
         template: String? = null,
         telemetry: Gt7Ps5TelemetryData? = null,
@@ -298,7 +344,9 @@ class Gt7Ps5NarratorViewModelTest {
             listOf(
                 ManualReadoutSet(
                     "set-1",
-                    if (selectedLaps) {
+                    if (selectedTemperature) {
+                        listOf(Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value)
+                    } else if (selectedLaps) {
                         listOf(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value)
                     } else if (selectedFuel) {
                         listOf(key.value)
@@ -306,7 +354,12 @@ class Gt7Ps5NarratorViewModelTest {
                         emptyList()
                     },
                     template?.let {
-                        val itemKey = if (selectedLaps) Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root else key
+                        val itemKey =
+                            when {
+                                selectedTemperature -> Gt7Ps5ReadoutItemKey.TyreTemperature.Root
+                                selectedLaps -> Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root
+                                else -> key
+                            }
                         mapOf(itemKey.value to it)
                     } ?: emptyMap(),
                 ),
@@ -321,6 +374,8 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled to false,
                     Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to false,
                     Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled to false,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.Root to false,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning to false,
                 ),
             queueEnabledOverrides = mapOf(key to false),
         )

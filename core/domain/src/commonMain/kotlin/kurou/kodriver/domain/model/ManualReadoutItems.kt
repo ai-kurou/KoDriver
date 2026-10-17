@@ -2,6 +2,7 @@ package kurou.kodriver.domain.model
 
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
@@ -25,6 +26,7 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
             listOf(
                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value,
                 Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
+                Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value,
             )
         }
 
@@ -42,6 +44,10 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
 
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
             GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
+        }
+
+        Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
+            GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
         }
 
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> {
@@ -72,6 +78,7 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
 /** 手動読み上げ項目の名前。未対応の項目は空文字を返す。 */
 fun manualReadoutItemName(itemKey: String): String =
     when (itemKey) {
+        Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> "残り燃料の周回数"
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> "バーチャルエナジー残量"
@@ -95,7 +102,7 @@ fun isLmuWindowsManualReadoutTemperatureItem(itemKey: String): Boolean =
     itemKey == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value ||
         itemKey == LmuWindowsReadoutItemKey.TyreTemperature.Root.value
 
-/** 鮮度判定済みの GT7 手動読み上げ項目。残り燃料は％、残り燃料の周回数は周。未受信・鮮度切れは null。 */
+/** 鮮度判定済みの GT7 手動読み上げ項目。残り燃料は％、残り燃料の周回数は周、タイヤ温度は℃。未受信・鮮度切れは null。 */
 data class Gt7Ps5ManualReadoutItem(
     val key: String,
     val textTemplate: String,

@@ -8,6 +8,14 @@ import kotlin.test.assertEquals
 
 class ManualReadoutItemsTest {
     @Test
+    fun `GT7のタイヤ温度は名前と既定文言を持つ`() {
+        val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value
+        assertEquals("タイヤ温度", manualReadoutItemName(key))
+        assertEquals("タイヤ温度{celsius}℃", manualReadoutItemTextDefault(key))
+        assertEquals(emptySet(), manualReadoutItemKeys(Simulator.LmuWindows.id).toSet().intersect(setOf(key)))
+    }
+
+    @Test
     fun `GT7の周回数は名前と既定文言を持ちLMUと衝突しない`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
         assertEquals("残り燃料の周回数", manualReadoutItemName(key))
@@ -69,6 +77,7 @@ class ManualReadoutItemsTest {
             listOf(
                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value,
                 Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
+                Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value,
             ),
             manualReadoutItemKeys(Simulator.Gt7Ps5.id),
         )

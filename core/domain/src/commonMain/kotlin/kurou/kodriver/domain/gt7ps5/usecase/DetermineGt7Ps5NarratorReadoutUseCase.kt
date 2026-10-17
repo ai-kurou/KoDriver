@@ -7,6 +7,7 @@ import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsCurrentValue
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
+import kurou.kodriver.domain.engine.Gt7Ps5TyreTemperatureCurrentValue
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_NO_ITEMS_TEXT
@@ -15,6 +16,7 @@ import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
+import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
@@ -106,20 +108,57 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
     }
 
     private fun manualCurrentValue(item: Gt7Ps5ManualReadoutItem): ReadoutTextEvent {
-        val isLaps = item.key == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
-        val text =
-            when {
-                item.textTemplate.isBlank() -> ""
-                item.value == null -> "${manualReadoutItemName(item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT"
-                isLaps && item.value <= 0 -> GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
-                isLaps -> formatGt7Ps5RemainingFuelLapsReadoutText(item.textTemplate, item.value)
-                else -> formatGt7Ps5RemainingFuelReadoutText(item.textTemplate, item.value)
+        val value = item.value ?: 0
+        val event =
+            when (item.key) {
+                Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
+                    Gt7Ps5TyreTemperatureCurrentValue(
+                        value,
+                        formatGt7Ps5TyreTemperatureReadoutText(item.textTemplate, value),
+                    )
+                }
+
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
+                    val text =
+                        if (value <= 0) {
+                            GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+                        } else {
+                            formatGt7Ps5RemainingFuelLapsReadoutText(item.textTemplate, value)
+                        }
+                    Gt7Ps5RemainingFuelLapsCurrentValue(value, text)
+                }
+
+                else -> {
+                    Gt7Ps5RemainingFuelCurrentValue(
+                        value,
+                        formatGt7Ps5RemainingFuelReadoutText(item.textTemplate, value),
+                    )
+                }
             }
-        return if (isLaps) {
-            Gt7Ps5RemainingFuelLapsCurrentValue(item.value ?: 0, text)
-        } else {
-            Gt7Ps5RemainingFuelCurrentValue(item.value ?: 0, text)
+        return when {
+            item.textTemplate.isBlank() -> {
+                event.withResolvedText("")
+            }
+
+            item.value == null -> {
+                event.withResolvedText("${manualReadoutItemName(item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT")
+            }
+
+            else -> {
+                event
+            }
         }
+    }
+
+    /** 有限かつ0以外の最高タイヤ温度を四捨五入する。未受信・鮮度切れ・全輪が非有限値または0（取得不能）の場合はデータなし。 */
+    fun currentMaxTyreTemperatureCelsius(telemetry: Gt7Ps5TelemetryData?): Int? {
+        val temperature = telemetry?.tyreTemperature ?: return null
+        return listOf(
+            temperature.frontLeftCelsius,
+            temperature.frontRightCelsius,
+            temperature.rearLeftCelsius,
+            temperature.rearRightCelsius,
+        ).map { it.value }.filter { it.isFinite() && it != 0f }.maxOrNull()?.roundToInt()
     }
 
     /** 自動読み上げの設定やタイミングに依存せず、追跡中の平均消費から現在の残り周回数を返す。 */

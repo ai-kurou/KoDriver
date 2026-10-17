@@ -309,10 +309,18 @@ internal class Gt7Ps5NarratorViewModel(
         telemetry: Gt7Ps5TelemetryData,
         state: Gt7Ps5NarratorState,
     ): Int? =
-        if (key == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value) {
-            determineGt7Ps5NarratorReadout.currentRemainingFuelLaps(state)
-        } else {
-            determineGt7Ps5NarratorReadout.currentRemainingFuelPercent(telemetry)
+        when (key) {
+            Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
+                determineGt7Ps5NarratorReadout.currentMaxTyreTemperatureCelsius(telemetry)
+            }
+
+            Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
+                determineGt7Ps5NarratorReadout.currentRemainingFuelLaps(state)
+            }
+
+            else -> {
+                determineGt7Ps5NarratorReadout.currentRemainingFuelPercent(telemetry)
+            }
         }
 
     private suspend fun readManualReadout(set: ManualReadoutSet?) {
