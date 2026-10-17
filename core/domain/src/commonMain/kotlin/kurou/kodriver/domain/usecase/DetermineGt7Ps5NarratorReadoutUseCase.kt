@@ -128,6 +128,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         val startLap = fuelState.raceStartLap ?: return null
         val lapsCompleted = fuelState.currentLap - startLap
         if (lapsCompleted <= 0) return null
+        val trackedFuel = listOf(startFuel, fuelState.totalRefueled, fuelState.currentGasLevel)
+        if (trackedFuel.any { !it.value.isFinite() || it.value < 0f }) return null
         val consumedFuel = startFuel + fuelState.totalRefueled - fuelState.currentGasLevel
         if (consumedFuel <= Gt7Ps5FuelUnit(0f)) return null
         return remainingFuelLaps(fuelState, consumedFuel, lapsCompleted)

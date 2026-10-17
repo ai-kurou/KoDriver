@@ -309,18 +309,10 @@ internal class Gt7Ps5NarratorViewModel(
         telemetry: Gt7Ps5TelemetryData,
         state: Gt7Ps5NarratorState,
     ): Int? =
-        when (key) {
-            Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
-                determineGt7Ps5NarratorReadout.currentRemainingFuelPercent(telemetry)
-            }
-
-            Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
-                determineGt7Ps5NarratorReadout.currentRemainingFuelLaps(state)
-            }
-
-            else -> {
-                null
-            }
+        if (key == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value) {
+            determineGt7Ps5NarratorReadout.currentRemainingFuelLaps(state)
+        } else {
+            determineGt7Ps5NarratorReadout.currentRemainingFuelPercent(telemetry)
         }
 
     private suspend fun readManualReadout(set: ManualReadoutSet?) {

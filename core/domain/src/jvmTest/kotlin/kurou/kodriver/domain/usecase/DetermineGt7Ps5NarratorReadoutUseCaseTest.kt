@@ -84,6 +84,10 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 fuel.copy(currentLap = 0) to null,
                 fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(100f)) to null,
                 fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(101f)) to null,
+                fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(Float.NaN)) to null,
+                fuel.copy(currentGasLevel = Gt7Ps5FuelUnit(-1f)) to null,
+                fuel.copy(raceStartFuel = Gt7Ps5FuelUnit(Float.POSITIVE_INFINITY)) to null,
+                fuel.copy(totalRefueled = Gt7Ps5FuelUnit(Float.NaN)) to null,
             )
         cases.forEach { (tracking, expected) ->
             assertEquals(
