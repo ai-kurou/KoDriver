@@ -19,6 +19,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -278,9 +279,54 @@ class AceWindowsNarratorViewModelTest {
             assertManualReadout(hotkey = true)
         }
 
-    private suspend fun TestScope.assertManualReadout(hotkey: Boolean) {
+    @Test
+    fun `手動燃料は受信から5秒以内なら現在値を読み上げる`() =
+        runTest(testDispatcher) {
+            assertManualReadout(hotkey = false, fuelAgeMs = 5_000L, expectedText = "燃料は残り43パーセント")
+        }
+
+    @Test
+    fun `手動燃料は5秒を超えたらデータなしを読み上げる`() =
+        runTest(testDispatcher) {
+            assertManualReadout(hotkey = false, fuelAgeMs = 5_001L, expectedText = "残り燃料はデータがありません")
+        }
+
+    @Test
+    fun `手動燃料は未受信ならデータなしを読み上げる`() =
+        runTest(testDispatcher) {
+            assertManualReadout(hotkey = true, expectedText = "残り燃料はデータがありません")
+        }
+
+    @Test
+    fun `手動燃料は保存順に編集文言を連結する`() =
+        runTest(testDispatcher) {
+            assertManualReadout(hotkey = false, fuelAgeMs = 0L, expectedText = "後43、後43", concatenate = true)
+        }
+
+    @Test
+    fun `シミュレーターを切り替えると手動燃料の現在値をクリアする`() =
+        runTest(testDispatcher) {
+            assertManualReadout(hotkey = false, fuelAgeMs = 0L, expectedText = "残り燃料はデータがありません", switchSimulator = true)
+        }
+
+    private suspend fun TestScope.assertManualReadout(
+        hotkey: Boolean,
+        fuelAgeMs: Long? = null,
+        expectedText: String = "読み上げる項目がありません",
+        concatenate: Boolean = false,
+        switchSimulator: Boolean = false,
+    ) {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root
-        val event = AceWindowsManualReadoutText(key, "読み上げる項目がありません", "読み上げる項目がありません")
+        val event = AceWindowsManualReadoutText(key, expectedText, expectedText)
+        val items = if (concatenate) listOf(key.value, key.value) else listOf(key.value)
+        if (expectedText != "読み上げる項目がありません") {
+            manualSets.update { listOf(ManualReadoutSet("set-1", items)) }
+        }
+        if (concatenate) {
+            manualSets.update {
+                listOf(ManualReadoutSet("set-1", items, mapOf(key.value to "後{percent}")))
+            }
+        }
         val json = slot<String>()
         stubReadoutDefaults(thresholdPercentage = 30, queueEnabledOverrides = mapOf(key to false))
         every { ttsEngine.speak(event, true) } just Runs
@@ -294,43 +340,69 @@ class AceWindowsNarratorViewModelTest {
                 capture(json),
             )
         } just Runs
-        val viewModel = createViewModel(Channel(Channel.UNLIMITED), ttsEngine, currentTimeMs = { 100L })
+        val selected = MutableStateFlow<Simulator>(Simulator.AceWindows)
+        every { simulatorPreferencesRepository.selectedSimulator() } returns selected
+        every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            MutableStateFlow(emptyMap())
+        every { autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.Gt7Ps5.id) } returns
+            MutableStateFlow(emptyList())
+        var nowMs = 100L - (fuelAgeMs ?: 0L)
+        val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+        val viewModel = createViewModel(fuelChannel, ttsEngine, currentTimeMs = { nowMs })
         try {
             val request = ManualReadoutRequest(Simulator.AceWindows.id, "set-1")
             runCurrent()
+            if (fuelAgeMs != null) {
+                fuelChannel.send(AceWindowsFuelData(FuelPercent(42.5)))
+                runCurrent()
+            }
+            nowMs = 100L
+            if (switchSimulator) {
+                selected.update { Simulator.Gt7Ps5 }
+                runCurrent()
+                selected.update { Simulator.AceWindows }
+                runCurrent()
+            }
             if (hotkey) {
                 manualHotkeyPresses.emit(request)
             } else {
                 manualRequests.emit(request)
             }
             runCurrent()
-            val logged = Json.parseToJsonElement(json.captured).jsonObject
-            assertEquals(setOf("state", "settings", "observedAtMs"), logged.keys)
-            assertEquals("100", logged.getValue("observedAtMs").jsonPrimitive.content)
-            verify(exactly = 1) { ttsEngine.speak(event, true) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    100L,
-                    Simulator.AceWindows,
-                    key,
-                    event.text,
-                    NarrationOutcome.QUEUED,
-                    json.captured,
-                )
-            }
-            verify(exactly = 1) { manualRequestRepository.observeRequests() }
-            verify(exactly = 1) { manualHotkeyRepository.pressStream() }
-            verify(exactly = 1) { manualSetRepository.observeSets() }
-            confirmVerified(
-                ttsEngine,
-                telemetryLogRepository,
-                manualRequestRepository,
-                manualHotkeyRepository,
-                manualSetRepository,
-            )
+            verifyManualReadout(event, json.captured)
         } finally {
             viewModel.viewModelScope.cancel()
         }
+    }
+
+    private suspend fun verifyManualReadout(
+        event: AceWindowsManualReadoutText,
+        json: String,
+    ) {
+        val logged = Json.parseToJsonElement(json).jsonObject
+        assertEquals(setOf("state", "settings", "observedAtMs"), logged.keys)
+        assertEquals("100", logged.getValue("observedAtMs").jsonPrimitive.content)
+        verify(exactly = 1) { ttsEngine.speak(event, true) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                100L,
+                Simulator.AceWindows,
+                event.readoutItemKey,
+                event.text,
+                NarrationOutcome.QUEUED,
+                json,
+            )
+        }
+        verify(exactly = 1) { manualRequestRepository.observeRequests() }
+        verify(exactly = 1) { manualHotkeyRepository.pressStream() }
+        verify(exactly = 1) { manualSetRepository.observeSets() }
+        confirmVerified(
+            ttsEngine,
+            telemetryLogRepository,
+            manualRequestRepository,
+            manualHotkeyRepository,
+            manualSetRepository,
+        )
     }
 
     @Test

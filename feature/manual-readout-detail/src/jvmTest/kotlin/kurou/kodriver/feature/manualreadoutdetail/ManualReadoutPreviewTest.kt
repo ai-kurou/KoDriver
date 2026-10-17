@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -86,6 +87,18 @@ class ManualReadoutPreviewTest {
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
         assertEquals("燃料は残り約3周", manualReadoutPreview(state))
         assertEquals("あと3周", manualReadoutPreview(state.copy(itemTexts = mapOf(key to "あと{laps}周"))))
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+    }
+
+    @Test
+    fun `ACEの残り燃料の既定文言と編集文言はサンプル値に置換する`() {
+        val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
+        val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
+        assertEquals("燃料は残り50パーセント", manualReadoutPreview(state))
+        assertEquals(
+            "残り50% {unknown}",
+            manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}% {unknown}"))),
+        )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
     }
 

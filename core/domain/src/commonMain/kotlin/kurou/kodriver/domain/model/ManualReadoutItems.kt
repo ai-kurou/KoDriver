@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
@@ -29,6 +30,10 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
             )
         }
 
+        Simulator.AceWindows.id -> {
+            listOf(AceWindowsReadoutItemKey.RemainingFuel.Root.value)
+        }
+
         Simulator.Gt7Ps5.id -> {
             listOf(
                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value,
@@ -46,28 +51,16 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
 /** 手動読み上げ項目の既定文言。未対応の項目は空文字を返す。 */
 fun manualReadoutItemTextDefault(itemKey: String): String =
     when (itemKey) {
+        AceWindowsReadoutItemKey.RemainingFuel.Root.value -> {
+            ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
+        }
+
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> {
             LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT
         }
 
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value -> {
             LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT
-        }
-
-        Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
-            GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
-        }
-
-        Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
-            GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
-        }
-
-        Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
-            GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
-        }
-
-        Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
-            GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
         }
 
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> {
@@ -95,6 +88,29 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
         }
 
         else -> {
+            gt7ManualReadoutItemTextDefault(itemKey)
+        }
+    }
+
+private fun gt7ManualReadoutItemTextDefault(itemKey: String): String =
+    when (itemKey) {
+        Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
+            GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
+        }
+
+        Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
+            GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
+        }
+
+        Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
+            GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
+        }
+
+        Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
+            GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
+        }
+
+        else -> {
             ""
         }
     }
@@ -104,16 +120,22 @@ fun manualReadoutItemName(itemKey: String): String =
     when (itemKey) {
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> "エナジーの残り周回数"
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value -> "タイヤ摩耗の残り周回数"
-        Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
-        Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> "自己ベストラップ"
-        Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
-        Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> "残り燃料の周回数"
+        AceWindowsReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> "バーチャルエナジー残量"
         LmuWindowsReadoutItemKey.TyreWear.Root.value -> "タイヤ摩耗"
         LmuWindowsReadoutItemKey.BrakeWear.Root.value -> "ブレーキ残量"
         LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> "ブレーキ温度"
         LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
         LmuWindowsReadoutItemKey.MyBestLap.Root.value -> "自己ベストラップ"
+        else -> gt7ManualReadoutItemName(itemKey)
+    }
+
+private fun gt7ManualReadoutItemName(itemKey: String): String =
+    when (itemKey) {
+        Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
+        Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> "自己ベストラップ"
+        Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
+        Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> "残り燃料の周回数"
         else -> ""
     }
 
@@ -134,6 +156,13 @@ fun isLmuWindowsManualReadoutTemperatureItem(itemKey: String): Boolean =
 
 /** 鮮度判定済みの GT7 手動読み上げ項目。残り燃料は％、残り燃料の周回数は周、タイヤ温度は℃、自己ベストラップはms。未受信・鮮度切れは null。 */
 data class Gt7Ps5ManualReadoutItem(
+    val key: String,
+    val textTemplate: String,
+    val value: Int?,
+)
+
+/** 鮮度判定済みの ACE 手動読み上げ項目。残り燃料は整数％、未受信・鮮度切れ・不正値は null。 */
+data class AceWindowsManualReadoutItem(
     val key: String,
     val textTemplate: String,
     val value: Int?,

@@ -33,6 +33,8 @@ import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
+import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsRemainingFuelReadoutPlaceholders
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
@@ -47,6 +49,7 @@ import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsBrakeTemperat
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsMyBestLapReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsPitTimingReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
@@ -230,6 +233,10 @@ private fun unknownPlaceholders(
     text: String,
 ): List<String> =
     when {
+        itemKey == AceWindowsReadoutItemKey.RemainingFuel.Root.value -> {
+            findUnknownAceWindowsRemainingFuelReadoutPlaceholders(text)
+        }
+
         isLmuWindowsManualReadoutLapsItem(itemKey) -> {
             findUnknownLmuWindowsPitTimingReadoutPlaceholders(text)
         }
@@ -265,6 +272,7 @@ private fun isLmuWindowsManualReadoutLapsItem(itemKey: String): Boolean =
 
 private fun insertPlaceholder(itemKey: String): String =
     when {
+        itemKey == AceWindowsReadoutItemKey.RemainingFuel.Root.value -> ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
         isLmuWindowsManualReadoutLapsItem(itemKey) -> LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
         itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER

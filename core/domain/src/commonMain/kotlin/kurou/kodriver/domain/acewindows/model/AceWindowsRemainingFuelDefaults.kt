@@ -13,3 +13,6 @@ const val ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT = "燃料は残り{per
 
 /** ACE の燃料残量警告文言で残量パーセントを表すプレースホルダー。 */
 const val ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER = "{percent}"
+
+/** ACE の手動読み上げで使う燃料残量の既定文言。 */
+const val ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT = "燃料は残り{percent}パーセント"

@@ -88,6 +88,11 @@ class ManualReadoutSetDetailWiringTest {
     }
 
     @Test
+    fun `ACEのContentは残り燃料の追加と文言編集と試聴と削除を配線する`() {
+        assertItemWiring(Simulator.AceWindows, "残り燃料")
+    }
+
+    @Test
     fun `GT7のContentは残り燃料の追加と文言編集と試聴と削除を配線する`() {
         assertItemWiring(Simulator.Gt7Ps5, "残り燃料")
     }

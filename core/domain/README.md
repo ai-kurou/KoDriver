@@ -158,8 +158,16 @@ GT7 の手動「自己ベストラップ」は `MyBestLap.Root` を使い、`cur
 
 ACE の手動読み上げは、一覧の ▶ と Windows のセットホットキーからの依頼を合流し、
 `Simulator.AceWindows.id` 宛てで保存済みセットが見つかり、ACE が選択中の場合だけ処理する。
-`manualReadoutItemKeys` の ACE 対応項目は0件のままなので、テレメトリ未受信でも固定文言
-「読み上げる項目がありません」を `AceWindowsManualReadoutText` の1イベントで読み上げる。
-自動読み上げの設定・判定状態は変更せず、キュー設定に関係なく末尾へ追加し、ログを保存する。
-自動項目キーは追加せず、開始音とログのキーには既存の `RemainingFuel.Root` を使う。
-ACE の個別項目は別 PR で追加する。
+`manualReadoutItemKeys(Simulator.AceWindows.id)` は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root.value`
+（`ace_windows_auto_remaining_fuel`）を返し、手動の「残り燃料」を選択できる。
+`currentRemainingFuelPercent(data)` は `AceWindowsFuelData.remainingPercent`（0〜100）を四捨五入した整数％を返す。
+未受信・受信から5秒超・非有限・0未満・100超は null とし、シミュレーター切替時は最新値と受信時刻をクリアする。
+鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` を保存順に最大3件処理し、
+手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）か
+セットの編集文言を `formatAceWindowsRemainingFuelReadoutText` で置換する。
+空白文言を除外して「、」で連結し、`AceWindowsManualReadoutText` の1イベントにまとめる。
+値が null の項目は「残り燃料はデータがありません」を読む（全項目がデータ無しでも同じ）。
+対応項目なしは
+「読み上げる項目がありません」、全項目が空白なら空文字とする。
+自動読み上げのスイッチ・閾値・`remainingFuelWarned` 等の判定状態は変更せず、
+開始音・ログ・常時キュー末尾追加には既存の `RemainingFuel.Root` を使う。

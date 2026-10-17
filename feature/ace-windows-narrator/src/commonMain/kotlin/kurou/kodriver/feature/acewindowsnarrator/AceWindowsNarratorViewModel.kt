@@ -17,6 +17,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_TH
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
@@ -33,10 +34,12 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperature
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
@@ -177,6 +180,8 @@ internal class AceWindowsNarratorViewModel(
             )
 
     private var narratorState = AceWindowsNarratorState()
+    private var latestFuel: AceWindowsFuelData? = null
+    private var latestFuelReceivedAtMs = 0L
 
     private val currentSettings: AceWindowsNarratorReadoutSettings
         get() =
@@ -197,7 +202,13 @@ internal class AceWindowsNarratorViewModel(
     private val fuelFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator !is Simulator.AceWindows) emptyFlow() else remainingFuelUseCases.observeAceWindowsFuel()
+                if (simulator !is Simulator.AceWindows) {
+                    latestFuel = null
+                    latestFuelReceivedAtMs = 0L
+                    emptyFlow()
+                } else {
+                    remainingFuelUseCases.observeAceWindowsFuel()
+                }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val remainingFuelLapsFlow =
@@ -269,8 +280,13 @@ internal class AceWindowsNarratorViewModel(
         val observedAtMs = currentTimeMs()
         val state = narratorState
         val settings = currentSettings
-        // ACE の項目は未実装のため、解決済みの全セットで項目なし文言を読む。
-        val decision = determineAceWindowsNarratorReadout.determineManualReadout(state)
+        val fuel = latestFuel?.takeIf { observedAtMs - latestFuelReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
+        val value = determineAceWindowsNarratorReadout.currentRemainingFuelPercent(fuel)
+        val items =
+            set.itemKeys.map { key ->
+                AceWindowsManualReadoutItem(key, set.itemTexts[key] ?: manualReadoutItemTextDefault(key), value)
+            }
+        val decision = determineAceWindowsNarratorReadout.determineManualReadout(state, items)
         eventProcessor.processManualReadout(
             events = decision.events,
             autoReadoutOrder = autoReadoutOrder.value,
@@ -314,6 +330,8 @@ internal class AceWindowsNarratorViewModel(
         fuelFlow
             .onEach { fuel ->
                 val observedAtMs = currentTimeMs()
+                latestFuel = fuel
+                latestFuelReceivedAtMs = observedAtMs
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
@@ -454,3 +472,5 @@ internal class AceWindowsNarratorViewModel(
                 )
             }.launchIn(viewModelScope)
 }
+
+private const val CURRENT_VALUE_MAX_AGE_MS = 5_000L

@@ -25,6 +25,7 @@ import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
@@ -38,6 +39,81 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class DetermineAceWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineAceWindowsNarratorReadoutUseCase()
+
+    @Test
+    fun `手動燃料は編集文言と現在値を保存順に連結し空白と非対応キーを除外する`() {
+        val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
+        val state = AceWindowsNarratorState(remainingFuelWarned = true, lastRemainingFuelLaps = 2)
+        val items =
+            listOf(
+                AceWindowsManualReadoutItem("unknown", "非対応", 1),
+                AceWindowsManualReadoutItem(key, "あと{percent}% {unknown}", 42),
+                AceWindowsManualReadoutItem(key, "  ", null),
+                AceWindowsManualReadoutItem(key, "残量", null),
+                AceWindowsManualReadoutItem(key, "上限超過", 1),
+            )
+        val decision = useCase.determineManualReadout(state, items)
+        assertTrue(state === decision.state)
+        assertEquals(
+            listOf(
+                AceWindowsManualReadoutText(
+                    AceWindowsReadoutItemKey.RemainingFuel.Root,
+                    "あと42% {unknown}、残り燃料はデータがありません",
+                ),
+            ),
+            decision.events,
+        )
+    }
+
+    @Test
+    fun `手動燃料の単一項目とデータなしと空テンプレートと非対応キーを処理する`() {
+        val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
+        val cases =
+            listOf(
+                listOf(AceWindowsManualReadoutItem(key, "燃料{percent}%", 42)) to "燃料42%",
+                listOf(AceWindowsManualReadoutItem(key, "燃料{percent}%", null)) to "残り燃料はデータがありません",
+                listOf(
+                    AceWindowsManualReadoutItem(key, "燃料{percent}%", null),
+                    AceWindowsManualReadoutItem(key, "残量{percent}%", null),
+                ) to "残り燃料はデータがありません、残り燃料はデータがありません",
+                listOf(
+                    AceWindowsManualReadoutItem(key, "", 42),
+                    AceWindowsManualReadoutItem(key, "残量{percent}%", null),
+                ) to "残り燃料はデータがありません",
+                listOf(AceWindowsManualReadoutItem(key, "", 42)) to "",
+                listOf(AceWindowsManualReadoutItem(key, "  ", null)) to "",
+                listOf(AceWindowsManualReadoutItem("unknown", "非対応", 42)) to "読み上げる項目がありません",
+                emptyList<AceWindowsManualReadoutItem>() to "読み上げる項目がありません",
+            )
+        cases.forEach { (items, text) ->
+            val decision = useCase.determineManualReadout(AceWindowsNarratorState(), items)
+            assertEquals(
+                listOf(AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, text)),
+                decision.events,
+            )
+        }
+    }
+
+    @Test
+    fun `手動燃料の現在値は四捨五入し未受信と非有限と範囲外はデータなしになる`() {
+        assertEquals(null, useCase.currentRemainingFuelPercent(null))
+        val cases =
+            listOf(
+                0.0 to 0,
+                100.0 to 100,
+                99.5 to 100,
+                42.49 to 42,
+                42.5 to 43,
+                -0.01 to null,
+                100.01 to null,
+                Double.NaN to null,
+                Double.POSITIVE_INFINITY to null,
+                Double.NEGATIVE_INFINITY to null,
+            )
+        cases.forEach { (percent, expected) ->
+            assertEquals(expected, useCase.currentRemainingFuelPercent(AceWindowsFuelData(FuelPercent(percent))))
+        }
+    }
 
     @Test
     fun `手動読み上げは固定の項目なし文言を返し自動判定の状態を変更しない`() {
