@@ -147,7 +147,7 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値に戻る`() =
         runTest {
-            highThresholdFlow.update { Celsius(105) }
+            highThresholdFlow.update { Celsius(110) }
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
             coEvery {
@@ -160,7 +160,7 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailViewModelTest {
             viewModel.onHighThresholdReset()
 
             assertEquals(
-                100,
+                105,
                 viewModel.uiState.first().highThresholdCelsius,
             )
             verify(exactly = 1) { repository.observeEnabledStates() }
