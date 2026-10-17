@@ -27,7 +27,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
-import kurou.kodriver.domain.model.MANUAL_READOUT_SET_NAME_MAX_LENGTH
+import kurou.kodriver.domain.model.takeManualReadoutSetName
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_set_name
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_set_name_confirm
@@ -62,7 +62,7 @@ internal fun ManualReadoutSetNameRow(
         LaunchedEffect(Unit) { focusRequester.requestFocus() }
         OutlinedTextField(
             value = input,
-            onValueChange = { input = it.take(MANUAL_READOUT_SET_NAME_MAX_LENGTH) },
+            onValueChange = { input = it.takeManualReadoutSetName() },
             singleLine = true,
             label = { Text(stringResource(Res.string.manual_readout_set_name)) },
             placeholder = { Text(defaultName) },

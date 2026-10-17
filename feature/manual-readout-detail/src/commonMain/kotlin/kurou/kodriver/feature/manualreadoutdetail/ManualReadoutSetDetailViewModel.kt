@@ -13,13 +13,13 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
-import kurou.kodriver.domain.model.MANUAL_READOUT_SET_NAME_MAX_LENGTH
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.isManualReadoutHotkeyVirtualKeyCode
 import kurou.kodriver.domain.model.manualReadoutItemKeys
+import kurou.kodriver.domain.model.takeManualReadoutSetName
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
@@ -152,7 +152,7 @@ internal class ManualReadoutSetDetailViewModel(
             mutationMutex.withLock {
                 if (deleted.value) return@withLock
                 val set = observeSets().first().find { it.id == setId } ?: return@withLock
-                updateSet(set.copy(name = name.trim().take(MANUAL_READOUT_SET_NAME_MAX_LENGTH)))
+                updateSet(set.copy(name = name.trim().takeManualReadoutSetName()))
             }
         }
     }
