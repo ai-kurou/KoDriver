@@ -5,9 +5,9 @@ import kotlinx.coroutines.SupervisorJob
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5PacketSource
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5UdpSource
 import kurou.kodriver.core.gt7ps5data.repository.Gt7Ps5RepositoryImpl
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5Repository
-import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 

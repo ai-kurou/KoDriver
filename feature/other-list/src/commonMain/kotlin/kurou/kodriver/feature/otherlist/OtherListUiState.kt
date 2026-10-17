@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.otherlist
 
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
-import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT

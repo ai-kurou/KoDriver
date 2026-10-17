@@ -1,9 +1,9 @@
 package kurou.kodriver.core.gt7ps5data.mapper
 
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5FuelUnit
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 

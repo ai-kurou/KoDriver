@@ -1,10 +1,10 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelReadoutTextUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
 
 internal data class Gt7Ps5ReadoutTextUseCases(
     val remainingFuelLaps: ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase,

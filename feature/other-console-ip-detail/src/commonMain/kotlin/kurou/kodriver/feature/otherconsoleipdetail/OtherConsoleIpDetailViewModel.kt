@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.SaveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.SaveGt7Ps5UdpPortUseCase
 
 internal class OtherConsoleIpDetailViewModel(
     observeConsoleAddress: ObserveConsoleAddressUseCase,

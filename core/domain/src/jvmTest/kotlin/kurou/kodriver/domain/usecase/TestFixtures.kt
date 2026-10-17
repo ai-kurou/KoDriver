@@ -1,9 +1,9 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5FuelUnit
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit

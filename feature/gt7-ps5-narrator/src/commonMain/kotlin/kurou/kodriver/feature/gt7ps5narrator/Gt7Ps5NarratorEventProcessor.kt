@@ -14,13 +14,13 @@ import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorReadoutSettings
+import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.model.DebugReadoutRequest
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
-import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
 internal data class Gt7Ps5TelemetryLogContext(
@@ -183,7 +183,7 @@ internal class Gt7Ps5NarratorEventProcessor(
 
 /**
  * GT7 の読み上げ判定入力（[Gt7Ps5TelemetryData]）は判定ロジック（
- * [kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase] の各 determine* 関数）と
+ * [kurou.kodriver.domain.gt7ps5.usecase.DetermineGt7Ps5NarratorReadoutUseCase] の各 determine* 関数）と
  * 共有しているため、フィールドを手動で選ばず [TelemetryLogJsonAllowingSpecialFloatingPoint] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */

@@ -48,8 +48,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_ALTERNATE
-import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_ALTERNATE
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.Res
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_description_prefix
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_description_simhub_link

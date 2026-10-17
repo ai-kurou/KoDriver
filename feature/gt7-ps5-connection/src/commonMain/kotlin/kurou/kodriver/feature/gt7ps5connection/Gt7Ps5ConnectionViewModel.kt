@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
 internal class Gt7Ps5ConnectionViewModel(

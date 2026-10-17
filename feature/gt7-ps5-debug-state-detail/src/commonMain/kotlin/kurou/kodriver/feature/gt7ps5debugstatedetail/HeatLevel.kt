@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.gt7ps5debugstatedetail
 
 import kurou.kodriver.core.designsystem.HeatLevel
-import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 
 private const val COOL_TEMPERATURE_CELSIUS = 70.0
 private const val HOT_TEMPERATURE_CELSIUS = 110.0

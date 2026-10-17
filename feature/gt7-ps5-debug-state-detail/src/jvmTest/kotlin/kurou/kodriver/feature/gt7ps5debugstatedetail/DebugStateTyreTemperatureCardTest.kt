@@ -4,9 +4,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

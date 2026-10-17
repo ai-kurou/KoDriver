@@ -12,8 +12,8 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5UdpPortPreferencesSerializer
 import kurou.kodriver.core.gt7ps5data.model.Gt7Ps5UdpPortPreferences
-import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_ALTERNATE
-import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_ALTERNATE
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
 import java.io.IOException
 import java.nio.file.Files
 import kotlin.test.AfterTest

@@ -1,0 +1,39 @@
+package kurou.kodriver.domain.gt7ps5.usecase
+
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class ObserveGt7Ps5UdpPortUseCaseTest {
+    private val repo: Gt7Ps5UdpPortPreferencesRepository = mockk()
+
+    @Test
+    fun `初期値を返す・保存済みの値を返す`() =
+        runTest {
+            val state = MutableStateFlow(33740)
+            every { repo.port() } returns state
+            listOf(33740, 33741).forEach { port ->
+                coEvery { repo.savePort(port) } answers { state.update { port } }
+            }
+            val useCase = ObserveGt7Ps5UdpPortUseCase(repo)
+
+            assertEquals(33740, useCase().first())
+
+            repo.savePort(33741)
+            assertEquals(33741, useCase().first())
+
+            verify(exactly = 2) { repo.port() }
+            coVerify(exactly = 1) { repo.savePort(33741) }
+            confirmVerified(repo)
+        }
+}

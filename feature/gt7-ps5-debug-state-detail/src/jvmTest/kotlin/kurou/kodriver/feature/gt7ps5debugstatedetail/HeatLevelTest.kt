@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.gt7ps5debugstatedetail
 
 import kurou.kodriver.core.designsystem.HeatLevel
-import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

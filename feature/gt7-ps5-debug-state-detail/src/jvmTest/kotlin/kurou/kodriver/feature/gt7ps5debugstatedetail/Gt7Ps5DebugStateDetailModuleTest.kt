@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5VehicleClassUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5Repository
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import org.junit.After
 import org.junit.Before

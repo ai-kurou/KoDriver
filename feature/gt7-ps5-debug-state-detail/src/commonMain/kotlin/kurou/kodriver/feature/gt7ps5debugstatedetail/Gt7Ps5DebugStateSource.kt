@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5VehicleClassData
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5VehicleClassUseCase
 
 internal data class Gt7Ps5DebugStateUseCases(
     val observeTelemetry: ObserveGt7Ps5UseCase,

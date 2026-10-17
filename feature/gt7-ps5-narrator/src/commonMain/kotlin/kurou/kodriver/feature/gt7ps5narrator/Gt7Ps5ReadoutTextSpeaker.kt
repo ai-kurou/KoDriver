@@ -11,10 +11,10 @@ import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5SpeechEvent
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
-import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
-import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
-import kurou.kodriver.domain.model.formatGt7Ps5TyreTemperatureReadoutText
+import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
+import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
+import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
+import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 

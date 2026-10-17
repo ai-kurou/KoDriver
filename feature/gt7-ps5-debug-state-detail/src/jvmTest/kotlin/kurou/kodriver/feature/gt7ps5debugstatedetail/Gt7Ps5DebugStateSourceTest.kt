@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5VehicleClassData
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5VehicleClassUseCase
 import org.junit.Test
 import kotlin.test.assertEquals
 

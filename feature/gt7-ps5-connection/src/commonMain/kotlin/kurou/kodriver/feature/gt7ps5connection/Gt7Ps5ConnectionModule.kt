@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.gt7ps5connection
 
-import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5ConnectionUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.gt7ps5.usecase.CheckGt7Ps5ConnectionUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5ConnectionUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

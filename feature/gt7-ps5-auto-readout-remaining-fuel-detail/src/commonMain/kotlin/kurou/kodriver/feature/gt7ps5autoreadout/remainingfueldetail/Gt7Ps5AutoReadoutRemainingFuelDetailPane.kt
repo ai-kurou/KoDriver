@@ -22,11 +22,11 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.PlaceholderReadoutTextField
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER
-import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5RemainingFuelReadoutPlaceholders
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
-import kurou.kodriver.domain.model.findUnknownGt7Ps5RemainingFuelReadoutPlaceholders
 import kurou.kodriver.feature.gt7ps5autoreadout.remainingfueldetail.generated.resources.Res
 import kurou.kodriver.feature.gt7ps5autoreadout.remainingfueldetail.generated.resources.remaining_fuel_description
 import kurou.kodriver.feature.gt7ps5autoreadout.remainingfueldetail.generated.resources.remaining_fuel_percent_insert

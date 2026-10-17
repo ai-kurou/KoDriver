@@ -1,5 +1,8 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
+
 /** シミュレーターで実装済みの手動読み上げ対象項目。 */
 fun manualReadoutItemKeys(simulatorId: String): List<String> =
     when (simulatorId) {

@@ -1,5 +1,7 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_AUTO_READOUT_ENABLED_STATE_DEFAULT
+
 // listPane（AutoReadoutListViewModel）・Narrator（LmuWindowsNarratorViewModel / Gt7Ps5NarratorViewModel）が
 // 同じデフォルト値を参照するための、シミュレーターごとのデフォルト有効状態。
 // listPaneに表示される ReadoutItemKey は必ずここに列挙すること（省略＝デフォルトtrue、ではない）。
