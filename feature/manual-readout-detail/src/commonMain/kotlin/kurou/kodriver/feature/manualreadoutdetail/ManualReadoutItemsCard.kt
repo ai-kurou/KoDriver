@@ -42,6 +42,7 @@ import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
@@ -56,6 +57,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_brake
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_energy
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_lap
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_tyre
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_drag_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_empty_hint
@@ -64,6 +66,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_items_title
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_move_down
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_move_up
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_my_best_lap
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_play
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_stop
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remaining_fuel
@@ -83,6 +86,11 @@ private data class ManualReadoutItemPresentation(
 
 private val itemPresentations =
     mapOf(
+        LmuWindowsReadoutItemKey.MyBestLap.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_my_best_lap,
+                Res.string.manual_readout_category_lap,
+            ),
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel,
@@ -119,6 +127,7 @@ private val itemPresentations =
             ),
     )
 
+private const val PREVIEW_BEST_LAP_TIME_MS = 83_456L
 private const val PREVIEW_TYRE_TEMPERATURE_CELSIUS = 90
 private const val PREVIEW_BRAKE_TEMPERATURE_CELSIUS = 500
 private const val PREVIEW_BRAKE_WEAR_PERCENT = 50
@@ -132,6 +141,10 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
             val text = uiState.itemTexts[itemKey] ?: manualReadoutItemTextDefault(itemKey)
             text.takeIf { it.isNotBlank() }?.let {
                 when (itemKey) {
+                    LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
+                        formatLmuWindowsMyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS)
+                    }
+
                     Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
                         formatGt7Ps5RemainingFuelReadoutText(it, PREVIEW_ENERGY_PERCENT)
                     }

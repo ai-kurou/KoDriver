@@ -8,6 +8,15 @@ import kotlin.test.assertEquals
 
 class ManualReadoutItemsTest {
     @Test
+    fun `LMUの自己ベストは手動専用文言と名前と省略可能なラップタイムを持つ`() {
+        val key = LmuWindowsReadoutItemKey.MyBestLap.Root.value
+        assertEquals("自己ベストラップ", manualReadoutItemName(key))
+        assertEquals("自己ベストラップ {laptime}", manualReadoutItemTextDefault(key))
+        assertEquals(null, LmuWindowsManualReadoutItem(key, "", null).lapTimeMs)
+        assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
+    }
+
+    @Test
     fun `GT7のタイヤ温度は名前と既定文言を持つ`() {
         val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value
         assertEquals("タイヤ温度", manualReadoutItemName(key))
@@ -61,7 +70,7 @@ class ManualReadoutItemsTest {
     }
 
     @Test
-    fun `LMUは残量とタイヤ摩耗とブレーキ残量とブレーキ温度とタイヤ温度の順に選択でき未対応シミュレーターは空を返す`() {
+    fun `LMUは残量とタイヤ摩耗とブレーキ残量とブレーキ温度とタイヤ温度と自己ベストの順に選択でき未対応シミュレーターは空を返す`() {
         assertEquals(
             listOf(
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
@@ -69,6 +78,7 @@ class ManualReadoutItemsTest {
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value,
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root.value,
                 LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
+                LmuWindowsReadoutItemKey.MyBestLap.Root.value,
             ),
             manualReadoutItemKeys(Simulator.LmuWindows.id),
         )

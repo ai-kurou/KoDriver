@@ -38,10 +38,13 @@ import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACE
 import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders
 import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5TyreTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders
+import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsMyBestLapReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
@@ -55,6 +58,8 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_title
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_laps_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_laps_insert
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_laptime_hint
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_laptime_insert
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_no_items
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_percent_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_percent_insert
@@ -218,6 +223,10 @@ private fun unknownPlaceholders(
     text: String,
 ): List<String> =
     when {
+        itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
+            findUnknownLmuWindowsMyBestLapReadoutPlaceholders(text)
+        }
+
         itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
             findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders(text)
         }
@@ -237,6 +246,7 @@ private fun unknownPlaceholders(
 
 private fun insertPlaceholder(itemKey: String): String =
     when {
+        itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
         isLmuWindowsManualReadoutTemperatureItem(itemKey) -> LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
@@ -251,6 +261,7 @@ internal fun ManualReadoutItemTextField(
     onTextChanged: (String) -> Unit,
     itemKey: String,
 ) {
+    val isLapTime = itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value
     val isLaps = itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
     val isTemperature =
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value || isLmuWindowsManualReadoutTemperatureItem(itemKey)
@@ -291,7 +302,9 @@ internal fun ManualReadoutItemTextField(
                 label = {
                     Text(
                         stringResource(
-                            if (isLaps) {
+                            if (isLapTime) {
+                                Res.string.manual_readout_laptime_insert
+                            } else if (isLaps) {
                                 Res.string.manual_readout_laps_insert
                             } else if (isTemperature) {
                                 Res.string.manual_readout_celsius_insert
@@ -307,7 +320,9 @@ internal fun ManualReadoutItemTextField(
             Text(
                 text =
                     stringResource(
-                        if (isLaps) {
+                        if (isLapTime) {
+                            Res.string.manual_readout_laptime_hint
+                        } else if (isLaps) {
                             Res.string.manual_readout_laps_hint
                         } else if (isTemperature) {
                             Res.string.manual_readout_celsius_hint
