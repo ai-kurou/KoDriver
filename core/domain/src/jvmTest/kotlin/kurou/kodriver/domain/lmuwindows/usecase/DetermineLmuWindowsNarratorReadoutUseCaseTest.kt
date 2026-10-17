@@ -77,6 +77,10 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             tracking.copy(lastValidLapConsumption = 0.0),
             tracking.copy(lastValidLapConsumption = -0.1),
             tracking.copy(currentValue = -0.2),
+            tracking.copy(currentValue = Double.NaN),
+            tracking.copy(currentValue = Double.POSITIVE_INFINITY),
+            tracking.copy(lastValidLapConsumption = Double.NaN),
+            tracking.copy(lastValidLapConsumption = Double.POSITIVE_INFINITY),
         ).forEach {
             val invalidState = state.copy(pitTimingVirtualEnergyTrackingState = it)
             assertEquals(null, useCase.manualPitTimingVirtualEnergyRemainingLaps(invalidState))

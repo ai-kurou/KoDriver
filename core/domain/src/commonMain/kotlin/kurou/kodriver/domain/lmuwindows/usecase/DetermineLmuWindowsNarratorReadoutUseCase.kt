@@ -612,8 +612,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val tracking = state.pitTimingVirtualEnergyTrackingState
         if (tracking.currentLap == -1) return null
         val consumption = tracking.lastValidLapConsumption ?: return null
-        if (consumption <= 0.0) return null
-        return (tracking.currentValue / consumption).toInt().takeIf { it >= 0 }
+        if (!consumption.isFinite() || consumption <= 0.0) return null
+        if (!tracking.currentValue.isFinite() || tracking.currentValue < 0.0) return null
+        return (tracking.currentValue / consumption).toInt()
     }
 
     private fun manualVirtualEnergyLapsText(item: LmuWindowsManualReadoutItem): String? =

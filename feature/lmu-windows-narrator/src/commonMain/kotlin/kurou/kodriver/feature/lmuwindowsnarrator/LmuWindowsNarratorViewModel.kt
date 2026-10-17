@@ -232,6 +232,7 @@ internal class LmuWindowsNarratorViewModel(
 
     private var latestBestLapTimeMs: Long? = null
     private var latestBestLapReceivedAtMs: Long = 0L
+    private var latestPitTimingUpdatedAtMs: Long = 0L
 
     private val lmuTelemetryFlow =
         selectedSimulator
@@ -844,7 +845,9 @@ internal class LmuWindowsNarratorViewModel(
                     celsius,
                     lapTimeMs = bestLapTimeMs.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value },
                     remainingLaps =
-                        if (key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value && energy != null) {
+                        if (key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value && energy != null &&
+                            observedAtMs - latestPitTimingUpdatedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                        ) {
                             narratorUseCases.determineReadout.manualPitTimingVirtualEnergyRemainingLaps(narratorState)
                         } else {
                             null
@@ -899,6 +902,7 @@ internal class LmuWindowsNarratorViewModel(
         ) { telemetry, virtualEnergy, tyreWear -> Triple(telemetry, virtualEnergy, tyreWear) }
             .onEach { (telemetry, virtualEnergy, tyreWear) ->
                 val observedAtMs = currentTimeMs()
+                latestPitTimingUpdatedAtMs = observedAtMs
                 val state = narratorState
                 val settings = currentSettings
                 val virtualEnergyDecision =
