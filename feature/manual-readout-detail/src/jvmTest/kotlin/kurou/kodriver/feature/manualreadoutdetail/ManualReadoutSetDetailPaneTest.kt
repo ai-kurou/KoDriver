@@ -5,15 +5,18 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
@@ -37,6 +40,83 @@ import kotlin.test.assertEquals
 class ManualReadoutSetDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `名前なしから鉛筆で編集し確定とDoneと空欄を保存する`() {
+        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 2))
+        val saved = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = {},
+                    onDelete = {},
+                    onNameChanged = {
+                        saved.add(it)
+                        state.value = state.value.copy(name = it)
+                    },
+                    showHotkey = false,
+                )
+            }
+        }
+        rule.onNodeWithTag("manual_readout_set_name").assertTextEquals("セット 2")
+        rule.onAllNodesWithText("セット 2").assertCountEquals(2)
+        rule.onNodeWithContentDescription("セット名を編集").performClick()
+        rule.onNodeWithTag("manual_readout_set_name_input").performTextReplacement("レース用")
+        assertEquals(emptyList(), saved)
+        rule.onNodeWithContentDescription("確定").performClick()
+        rule.onNodeWithTag("manual_readout_set_name").assertTextEquals("レース用")
+        rule.onAllNodesWithText("レース用").assertCountEquals(2)
+        rule.onNodeWithTag("manual_readout_set_name").performClick()
+        rule.onNodeWithTag("manual_readout_set_name_input").performTextReplacement("あ".repeat(21))
+        rule.onNodeWithTag("manual_readout_set_name_input").performImeAction()
+        rule.onNodeWithTag("manual_readout_set_name").assertTextEquals("あ".repeat(20))
+        rule.onNodeWithContentDescription("セット名を編集").performClick()
+        rule.onNodeWithTag("manual_readout_set_name_input").performTextReplacement("")
+        rule.onNodeWithTag("manual_readout_set_name_input").performImeAction()
+        rule.onNodeWithTag("manual_readout_set_name").assertTextEquals("セット 2")
+        assertEquals(listOf("レース用", "あ".repeat(20), ""), saved)
+    }
+
+    @Test
+    fun `名前編集のフォーカス喪失で一度だけ確定する`() {
+        val saved = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = ManualReadoutSetDetailUiState(setNumber = 1, name = "予選用"),
+                    onAddItem = {},
+                    onDelete = {},
+                    onNameChanged = { saved.add(it) },
+                    showHotkey = true,
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("セット名を編集").performClick()
+        rule.onNodeWithTag("manual_readout_set_name_input").performTextReplacement("決勝用")
+        rule.onNodeWithTag("manual_readout_hotkey_key").performClick()
+        rule.onNodeWithTag("manual_readout_set_name_input").assertDoesNotExist()
+        assertEquals(listOf("決勝用"), saved)
+    }
+
+    @Test
+    fun `名前のある競合セットはシミュレーター名と名前で表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState =
+                        ManualReadoutSetDetailUiState(
+                            setNumber = 1,
+                            hotkeyConflict = ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2, "燃料用"),
+                        ),
+                    onAddItem = {},
+                    onDelete = {},
+                    showHotkey = true,
+                )
+            }
+        }
+        rule.onNodeWithText("Gran Turismo 7（PS5） の「燃料用」で使用中のため割り当てできません").assertExists()
+    }
 
     @Test
     fun `GT7の残り燃料を追加して文言を編集し既定文言に戻せる`() {

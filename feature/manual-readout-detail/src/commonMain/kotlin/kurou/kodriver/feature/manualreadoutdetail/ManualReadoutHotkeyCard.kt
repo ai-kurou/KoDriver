@@ -34,6 +34,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_none
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_other_set
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_other_set_named
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_registration_conflict
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_registration_failed
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_registration_registered
@@ -81,11 +82,19 @@ internal fun ManualReadoutHotkeyCard(
                 val conflictText =
                     when (val conflict = state.hotkeyConflict) {
                         is ManualReadoutHotkeyConflict.OtherSet -> {
-                            stringResource(
-                                Res.string.manual_readout_hotkey_other_set,
-                                simulatorDisplayName(conflict.simulatorId),
-                                conflict.setNumber,
-                            )
+                            if (conflict.name.isBlank()) {
+                                stringResource(
+                                    Res.string.manual_readout_hotkey_other_set,
+                                    simulatorDisplayName(conflict.simulatorId),
+                                    conflict.setNumber,
+                                )
+                            } else {
+                                stringResource(
+                                    Res.string.manual_readout_hotkey_other_set_named,
+                                    simulatorDisplayName(conflict.simulatorId),
+                                    conflict.name,
+                                )
+                            }
                         }
 
                         ManualReadoutHotkeyConflict.DebugHotkey -> {

@@ -14,6 +14,7 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
             prefs.sets.map {
                 ManualReadoutSet(
                     id = it.id,
+                    name = it.name,
                     itemKeys = it.itemKeys,
                     itemTexts = it.itemTexts,
                     hotkeyVirtualKeyCode = it.hotkeyVirtualKeyCode,
@@ -51,4 +52,4 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
 }
 
 private fun ManualReadoutSet.toPreference() =
-    ManualReadoutSetPreference(id, itemKeys, itemTexts, hotkeyVirtualKeyCode, hotkeyModifiers.value)
+    ManualReadoutSetPreference(id, itemKeys, itemTexts, hotkeyVirtualKeyCode, hotkeyModifiers.value, name)

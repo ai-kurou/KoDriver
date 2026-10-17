@@ -13,6 +13,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
+import kurou.kodriver.domain.model.MANUAL_READOUT_SET_NAME_MAX_LENGTH
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
@@ -81,6 +82,7 @@ internal class ManualReadoutSetDetailViewModel(
                 }
             ManualReadoutSetDetailUiState(
                 setNumber = if (index >= 0) index + 1 else null,
+                name = set?.name.orEmpty(),
                 availableItemKeys = availableItemKeys,
                 selectedItemKeys = sets.getOrNull(index)?.itemKeys.orEmpty(),
                 itemTexts = sets.getOrNull(index)?.itemTexts.orEmpty(),
@@ -141,6 +143,16 @@ internal class ManualReadoutSetDetailViewModel(
                 val set = observeSets().first().find { it.id == setId } ?: return@withLock
                 val keys = transform(set.itemKeys)
                 if (keys != set.itemKeys) updateSet(set.copy(itemKeys = keys))
+            }
+        }
+    }
+
+    fun updateName(name: String) {
+        viewModelScope.launch {
+            mutationMutex.withLock {
+                if (deleted.value) return@withLock
+                val set = observeSets().first().find { it.id == setId } ?: return@withLock
+                updateSet(set.copy(name = name.trim().take(MANUAL_READOUT_SET_NAME_MAX_LENGTH)))
             }
         }
     }
@@ -218,13 +230,18 @@ internal class ManualReadoutSetDetailViewModel(
             sets.indexOfFirst {
                 it.id != setId && it.hotkeyVirtualKeyCode == virtualKeyCode && it.hotkeyModifiers == modifiers
             }
-        if (ownIndex >= 0) return ManualReadoutHotkeyConflict.OtherSet(simulatorId, ownIndex + 1)
+        if (ownIndex >= 0) {
+            return ManualReadoutHotkeyConflict.OtherSet(simulatorId, ownIndex + 1, sets[ownIndex].name)
+        }
         observeOtherSimulatorSets.forEach { (otherSimulatorId, observeOtherSets) ->
+            val otherSets = observeOtherSets().first()
             val index =
-                observeOtherSets().first().indexOfFirst {
+                otherSets.indexOfFirst {
                     it.hotkeyVirtualKeyCode == virtualKeyCode && it.hotkeyModifiers == modifiers
                 }
-            if (index >= 0) return ManualReadoutHotkeyConflict.OtherSet(otherSimulatorId, index + 1)
+            if (index >= 0) {
+                return ManualReadoutHotkeyConflict.OtherSet(otherSimulatorId, index + 1, otherSets[index].name)
+            }
         }
         return null
     }

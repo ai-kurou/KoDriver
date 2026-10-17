@@ -27,6 +27,27 @@ class ManualReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `名前ありは名前を名前なしは番号を表示し読み上げボタンにも使う`() {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState =
+                        ManualReadoutListUiState(
+                            sets = listOf(ManualReadoutSet("named", name = "燃料用"), ManualReadoutSet("unnamed")),
+                        ),
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                )
+            }
+        }
+        rule.onNodeWithText("燃料用").assertIsDisplayed()
+        rule.onNodeWithText("セット 2").assertIsDisplayed()
+        rule.onNodeWithContentDescription("燃料用 を読み上げ").assertIsDisplayed()
+        rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsDisplayed()
+    }
+
+    @Test
     fun `対応環境では割り当て済みと未設定のチップを表示する`() {
         showHotkeySets(showHotkeyChip = true)
 
