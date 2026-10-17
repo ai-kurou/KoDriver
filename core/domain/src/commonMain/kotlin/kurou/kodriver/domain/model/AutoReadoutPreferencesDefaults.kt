@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_AUTO_READOUT_ENABLED_STATE_DEFAULT
 
 // listPane（AutoReadoutListViewModel）・Narrator（LmuWindowsNarratorViewModel / Gt7Ps5NarratorViewModel）が

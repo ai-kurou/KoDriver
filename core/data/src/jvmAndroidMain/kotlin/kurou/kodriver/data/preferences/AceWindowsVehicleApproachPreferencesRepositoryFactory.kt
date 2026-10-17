@@ -1,6 +1,6 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachPreferencesRepository
 
 /**
  * AceWindowsVehicleApproachPreferences Repository の永続化実装を生成する。

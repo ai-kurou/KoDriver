@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import androidx.compose.runtime.Composable
-import kurou.kodriver.domain.model.AceWindowsStatusData
+import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 
 @Composable
 internal fun VehicleLocationContent(aceWindowsStatus: AceWindowsStatusData?) {

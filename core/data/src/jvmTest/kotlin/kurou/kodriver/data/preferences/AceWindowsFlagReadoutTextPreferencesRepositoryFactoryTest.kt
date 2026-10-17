@@ -2,8 +2,8 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
-import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagReadoutTextKey
+import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test

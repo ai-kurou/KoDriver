@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMemorySource
 import kurou.kodriver.core.acewindowsdata.mapper.AceWindowsMapper
-import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
-import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
 
 internal class AceWindowsBestLapTimeRepositoryImpl(
     private val source: AceWindowsGraphicsSharedMemorySource,

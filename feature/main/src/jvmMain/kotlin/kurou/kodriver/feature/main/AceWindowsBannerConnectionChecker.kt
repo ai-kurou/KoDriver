@@ -4,8 +4,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kurou.kodriver.domain.acewindows.usecase.CheckAceWindowsConnectionUseCase
 import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
-import kurou.kodriver.domain.usecase.CheckAceWindowsConnectionUseCase
 
 /**
  * AceWindowsBanner の接続状態を監視する実装。

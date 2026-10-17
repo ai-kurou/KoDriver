@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsPreferencesRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 
 internal class AceWindowsRemainingFuelLapsPreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsRemainingFuelLapsPreferences>,

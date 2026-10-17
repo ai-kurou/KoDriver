@@ -1,6 +1,10 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
 import kotlinx.coroutines.flow.first
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
@@ -20,10 +24,6 @@ import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.formatAceWindowsMyBestLapReadoutText
-import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelLapsReadoutText
-import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelReadoutText
-import kurou.kodriver.domain.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 

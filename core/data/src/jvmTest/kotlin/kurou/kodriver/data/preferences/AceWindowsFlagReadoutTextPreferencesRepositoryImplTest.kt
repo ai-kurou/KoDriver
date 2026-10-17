@@ -9,7 +9,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagReadoutTextKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test

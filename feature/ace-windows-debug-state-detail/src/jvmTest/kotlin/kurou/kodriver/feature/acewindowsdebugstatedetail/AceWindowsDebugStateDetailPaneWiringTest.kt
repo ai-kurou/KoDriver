@@ -26,9 +26,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.AceWindowsCarLocation
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
+import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
+import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule

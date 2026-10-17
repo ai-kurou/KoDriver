@@ -1,6 +1,6 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 
 /**
  * AceWindowsFlagPreferences Repository の永続化実装を生成する。

@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.acewindowsconnection
 
-import kurou.kodriver.domain.usecase.CheckAceWindowsConnectionUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsConnectionUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.acewindows.usecase.CheckAceWindowsConnectionUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsConnectionUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

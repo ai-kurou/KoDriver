@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.acewindows.model.aceWindowsDefaultAutoReadoutOrder
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5DefaultAutoReadoutOrder
 
 /**

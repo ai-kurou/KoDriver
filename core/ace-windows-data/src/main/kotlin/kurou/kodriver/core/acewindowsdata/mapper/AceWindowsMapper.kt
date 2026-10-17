@@ -1,16 +1,16 @@
 package kurou.kodriver.core.acewindowsdata.mapper
 
-import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
-import kurou.kodriver.domain.model.AceWindowsCarLocation
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFlagType
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
-import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.AceWindowsStatusType
-import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
+import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
+import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
+import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
+import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.WheelIndex

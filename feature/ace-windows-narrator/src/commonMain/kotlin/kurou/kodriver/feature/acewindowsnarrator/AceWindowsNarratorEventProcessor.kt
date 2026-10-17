@@ -10,22 +10,22 @@ import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.runCatchingTelemetryLogSave
 import kurou.kodriver.core.narrator.speakWithOutcome
 import kurou.kodriver.core.narrator.toRawTelemetryLogJson
+import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
+import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
+import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorReadoutSettings
+import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
-import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
-import kurou.kodriver.domain.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
 internal data class AceWindowsTelemetryLogContext(

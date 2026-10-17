@@ -12,20 +12,20 @@ import kurou.kodriver.core.acewindowsdata.repository.AceWindowsRemainingFuelLaps
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsStatusRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsTyreCarcassTemperatureRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsVehicleApproachRepositoryImpl
-import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
-import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
-import kurou.kodriver.domain.repository.AceWindowsFlagRepository
-import kurou.kodriver.domain.repository.AceWindowsFuelRepository
-import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
-import kurou.kodriver.domain.repository.AceWindowsStatusRepository
-import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
-import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
+import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
+import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
+import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
+import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachRepository
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
