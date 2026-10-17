@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
@@ -116,6 +117,11 @@ private val itemPresentations =
             ),
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
             ManualReadoutItemPresentation(Res.string.manual_readout_energy, Res.string.manual_readout_category_energy),
+        Gt7Ps5ReadoutItemKey.MyBestLap.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_my_best_lap,
+                Res.string.manual_readout_category_lap,
+            ),
         Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_tyre_temperature,
@@ -165,18 +171,6 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
                         formatLmuWindowsMyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS)
                     }
 
-                    Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
-                        formatGt7Ps5RemainingFuelReadoutText(it, PREVIEW_ENERGY_PERCENT)
-                    }
-
-                    Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
-                        formatGt7Ps5RemainingFuelLapsReadoutText(it, PREVIEW_REMAINING_FUEL_LAPS)
-                    }
-
-                    Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
-                        formatGt7Ps5TyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS)
-                    }
-
                     LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> {
                         formatLmuWindowsRemainingVirtualEnergyReadoutText(it, PREVIEW_ENERGY_PERCENT)
                     }
@@ -198,11 +192,37 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
                     }
 
                     else -> {
-                        it
+                        gt7ManualReadoutPreview(itemKey, it)
                     }
                 }
             }
         }.joinToString("、")
+
+private fun gt7ManualReadoutPreview(
+    itemKey: String,
+    text: String,
+): String =
+    when (itemKey) {
+        Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
+            formatGt7Ps5RemainingFuelReadoutText(text, PREVIEW_ENERGY_PERCENT)
+        }
+
+        Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
+            formatGt7Ps5RemainingFuelLapsReadoutText(text, PREVIEW_REMAINING_FUEL_LAPS)
+        }
+
+        Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
+            formatGt7Ps5MyBestLapReadoutText(text, PREVIEW_BEST_LAP_TIME_MS.toInt())
+        }
+
+        Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
+            formatGt7Ps5TyreTemperatureReadoutText(text, PREVIEW_TYRE_TEMPERATURE_CELSIUS)
+        }
+
+        else -> {
+            text
+        }
+    }
 
 @Composable
 internal fun ManualReadoutItemsCard(

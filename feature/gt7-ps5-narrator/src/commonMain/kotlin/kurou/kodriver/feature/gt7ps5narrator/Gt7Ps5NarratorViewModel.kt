@@ -314,6 +314,10 @@ internal class Gt7Ps5NarratorViewModel(
                 determineGt7Ps5NarratorReadout.currentMaxTyreTemperatureCelsius(telemetry)
             }
 
+            Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
+                determineGt7Ps5NarratorReadout.currentBestLapTimeMs(telemetry)
+            }
+
             Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
                 determineGt7Ps5NarratorReadout.currentRemainingFuelLaps(state)
             }

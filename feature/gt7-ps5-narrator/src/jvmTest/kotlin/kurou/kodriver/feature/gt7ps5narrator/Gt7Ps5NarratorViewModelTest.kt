@@ -237,6 +237,49 @@ class Gt7Ps5NarratorViewModelTest {
         }
 
     @Test
+    fun `手動自己ベストラップは5秒以内のベストラップを保存文言で読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                true,
+                selectedBestLap = true,
+                template = "ベスト{laptime}",
+                telemetry = Gt7Ps5TelemetryData(1, 1, 83_456, Gt7Ps5FuelUnit(50f), Gt7Ps5FuelUnit(100f)),
+                ageMs = 5_000L,
+                expectedText = "ベスト1分23秒456",
+            )
+        }
+
+    @Test
+    fun `手動自己ベストラップは未受信ならデータなしを読む`() =
+        runTest(testDispatcher) {
+            val noData = "自己ベストラップはデータがありません"
+            assertManualReadout(false, selectedBestLap = true, expectedText = noData)
+        }
+
+    @Test
+    fun `手動自己ベストラップは5秒超でデータなしを読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                false,
+                selectedBestLap = true,
+                telemetry = Gt7Ps5TelemetryData(1, 1, 83_456, Gt7Ps5FuelUnit(50f), Gt7Ps5FuelUnit(100f)),
+                ageMs = 5_001L,
+                expectedText = "自己ベストラップはデータがありません",
+            )
+        }
+
+    @Test
+    fun `手動自己ベストラップは0以下をデータなしにする`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                false,
+                selectedBestLap = true,
+                telemetry = Gt7Ps5TelemetryData(1, 1, -1, Gt7Ps5FuelUnit(50f), Gt7Ps5FuelUnit(100f)),
+                expectedText = "自己ベストラップはデータがありません",
+            )
+        }
+
+    @Test
     fun `手動周回数は自動無効でも追跡した現在値を鮮度期限内に読む`() =
         runTest(testDispatcher) {
             assertManualReadout(
@@ -333,6 +376,7 @@ class Gt7Ps5NarratorViewModelTest {
         selectedFuel: Boolean = false,
         selectedLaps: Boolean = false,
         selectedTemperature: Boolean = false,
+        selectedBestLap: Boolean = false,
         initialTelemetry: Gt7Ps5TelemetryData? = null,
         template: String? = null,
         telemetry: Gt7Ps5TelemetryData? = null,
@@ -340,28 +384,20 @@ class Gt7Ps5NarratorViewModelTest {
         expectedText: String = "読み上げる項目がありません",
     ) {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root
+        val itemKey =
+            when {
+                selectedBestLap -> Gt7Ps5ReadoutItemKey.MyBestLap.Root
+                selectedTemperature -> Gt7Ps5ReadoutItemKey.TyreTemperature.Root
+                selectedLaps -> Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root
+                else -> key
+            }
+        val selected = selectedBestLap || selectedTemperature || selectedLaps || selectedFuel
         manualSets.update {
             listOf(
                 ManualReadoutSet(
                     "set-1",
-                    if (selectedTemperature) {
-                        listOf(Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value)
-                    } else if (selectedLaps) {
-                        listOf(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value)
-                    } else if (selectedFuel) {
-                        listOf(key.value)
-                    } else {
-                        emptyList()
-                    },
-                    template?.let {
-                        val itemKey =
-                            when {
-                                selectedTemperature -> Gt7Ps5ReadoutItemKey.TyreTemperature.Root
-                                selectedLaps -> Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root
-                                else -> key
-                            }
-                        mapOf(itemKey.value to it)
-                    } ?: emptyMap(),
+                    if (selected) listOf(itemKey.value) else emptyList(),
+                    template?.let { mapOf(itemKey.value to it) } ?: emptyMap(),
                 ),
             )
         }
@@ -376,6 +412,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled to false,
                     Gt7Ps5ReadoutItemKey.TyreTemperature.Root to false,
                     Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning to false,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root to false,
                 ),
             queueEnabledOverrides = mapOf(key to false),
         )

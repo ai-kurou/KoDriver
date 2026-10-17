@@ -14,6 +14,7 @@ import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
@@ -96,7 +97,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 GT7_PS5_MANUAL_READOUT_NO_ITEMS_TEXT
             } else {
                 supportedItems
-                    .map { item -> manualCurrentValue(item).narratedText }
+                    .map { item -> manualCurrentValue(item).let { it.resolvedText ?: it.narratedText } }
                     .filter { it.isNotBlank() }
                     .joinToString("、")
             }
@@ -116,6 +117,10 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                         value,
                         formatGt7Ps5TyreTemperatureReadoutText(item.textTemplate, value),
                     )
+                }
+
+                Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
+                    Gt7Ps5MyBestLap(value, formatGt7Ps5MyBestLapReadoutText(item.textTemplate, value))
                 }
 
                 Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
@@ -149,6 +154,9 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             }
         }
     }
+
+    /** 自己ベストラップ（ms）。未受信・鮮度切れ・0以下（未確定）の場合はデータなし。 */
+    fun currentBestLapTimeMs(telemetry: Gt7Ps5TelemetryData?): Int? = telemetry?.bestLapTimeMs?.takeIf { it > 0 }
 
     /** 有限かつ0以外の最高タイヤ温度を四捨五入する。未受信・鮮度切れ・全輪が非有限値または0（取得不能）の場合はデータなし。 */
     fun currentMaxTyreTemperatureCelsius(telemetry: Gt7Ps5TelemetryData?): Int? {
