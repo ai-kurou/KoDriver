@@ -24,6 +24,7 @@ kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
         }
+        withHostTest {}
         lint {
             abortOnError = true
             warningsAsErrors = false
@@ -56,6 +57,16 @@ kotlin {
             implementation(libs.junit)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesTest)
+        }
+        named("androidHostTest") {
+            dependencies {
+                implementation(libs.kotlin.testJunit)
+                implementation(libs.junit)
+                implementation(libs.mockk)
+                implementation(libs.robolectric)
+                implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
+                implementation(libs.kotlinx.coroutinesTest)
+            }
         }
     }
 }
