@@ -33,18 +33,25 @@ class RegistryStartupRegistrySourceTest {
     }
 
     @Test
-    fun `標準のコマンド取得関数は現在のプロセスの起動コマンドを登録する`() {
+    fun `標準のコマンド取得結果に応じて登録または例外を返す`() {
         val source = RegistryStartupRegistrySource(registry)
         val expectedCommand =
             ProcessHandle
                 .current()
                 .info()
                 .command()
-                .orElseThrow()
+                .orElse(null)
 
-        source.register()
+        if (expectedCommand == null) {
+            val exception = assertFailsWith<IllegalStateException> { source.register() }
 
-        assertEquals(mapOf(entry to expectedCommand), registry.values)
+            assertEquals("実行中のアプリケーションの起動コマンドを取得できません", exception.message)
+            assertTrue(registry.values.isEmpty())
+        } else {
+            source.register()
+
+            assertEquals(mapOf(entry to expectedCommand), registry.values)
+        }
     }
 
     @Test
