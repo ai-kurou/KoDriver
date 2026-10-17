@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.isDialog
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
@@ -19,6 +21,25 @@ import kurou.kodriver.domain.model.manualReadoutItemKeys
 import org.junit.Test
 
 class ManualReadoutSetDetailPaneScreenshotTest {
+    @Test
+    fun `セット名のインライン編集`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                        ManualReadoutSetDetailPane(
+                            uiState = ManualReadoutSetDetailUiState(setNumber = 1, name = "決勝用"),
+                            onAddItem = {},
+                            onDelete = {},
+                            showHotkey = false,
+                        )
+                    }
+                }
+            }
+            onNodeWithContentDescription("セット名を編集").performClick()
+            onRoot().captureRoboImage()
+        }
+
     @Test
     fun `GT7の残り燃料と周回数の文言`() = screenshot(manualReadoutItemKeys(Simulator.Gt7Ps5.id), selected = true)
 

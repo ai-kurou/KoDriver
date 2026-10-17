@@ -8,6 +8,7 @@ package kurou.kodriver.domain.model
  * @property itemTexts 項目キーごとの文言テンプレート。未保存の項目には既定文言を使う。
  * @property hotkeyModifiers ホットキーの修飾キー。
  * @property hotkeyVirtualKeyCode ホットキーの仮想キーコード。null は割り当てなし。
+ * @property name 表示専用のセット名。空文字は名前なし。
  */
 data class ManualReadoutSet(
     val id: String,
@@ -15,4 +16,5 @@ data class ManualReadoutSet(
     val itemTexts: Map<String, String> = emptyMap(),
     val hotkeyVirtualKeyCode: Int? = null,
     val hotkeyModifiers: ManualReadoutHotkeyModifiers = MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT,
+    val name: String = "",
 )

@@ -5,6 +5,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -91,6 +92,14 @@ class ManualReadoutSetDetailWiringTest {
         assertItemWiring(Simulator.Gt7Ps5, "残り燃料")
     }
 
+    private fun renameSet(name: String) {
+        rule.onNodeWithContentDescription("セット名を編集").performClick()
+        rule.onNodeWithTag("manual_readout_set_name_input").performTextReplacement(name)
+        rule.onNodeWithContentDescription("確定").performClick()
+        rule.waitForIdle()
+        rule.onAllNodesWithText(name)[0].assertIsDisplayed()
+    }
+
     private fun assertItemWiring(
         targetSimulator: Simulator,
         itemName: String,
@@ -107,6 +116,7 @@ class ManualReadoutSetDetailWiringTest {
         val edited = selected.copy(itemTexts = mapOf(key to "残量{percent}%"))
         val reset = edited.copy(itemTexts = mapOf(key to manualReadoutItemTextDefault(key)))
         val removed = reset.copy(itemKeys = emptyList())
+        val named = removed.copy(name = "レース用")
         val sets = MutableStateFlow(listOf(original))
         every { repository.observeSets() } returns sets
         every { debugRepository.observeVirtualKeyCode() } returns MutableStateFlow(0x70)
@@ -114,6 +124,7 @@ class ManualReadoutSetDetailWiringTest {
         coEvery { repository.updateSet(edited) } answers { sets.value = listOf(edited) }
         coEvery { repository.updateSet(reset) } answers { sets.value = listOf(reset) }
         coEvery { repository.updateSet(removed) } answers { sets.value = listOf(removed) }
+        coEvery { repository.updateSet(named) } answers { sets.value = listOf(named) }
         coEvery { repository.deleteSet("target") } returns Unit
         val owner =
             object : ViewModelStoreOwner {
@@ -155,7 +166,7 @@ class ManualReadoutSetDetailWiringTest {
                     }
                 }
             }
-            rule.onNodeWithText("セット 1").assertIsDisplayed()
+            rule.onAllNodesWithText("セット 1")[0].assertIsDisplayed()
             rule.onNodeWithContentDescription("戻る").performClick()
             rule.runOnIdle { assertEquals(1, backed) }
             rule.onNodeWithText("＋ 項目を追加").performClick()
@@ -170,15 +181,17 @@ class ManualReadoutSetDetailWiringTest {
             rule.onNodeWithText(manualReadoutItemTextDefault(key)).assertIsDisplayed()
             rule.onNodeWithContentDescription("${itemName}を削除").performClick()
             rule.onNode(hasSetTextAction()).assertDoesNotExist()
+            renameSet("レース用")
             rule.onNodeWithContentDescription("セットを削除").performClick()
             rule.onNodeWithText("削除").performClick()
             rule.waitForIdle()
             rule.runOnIdle { assertEquals(1, returned) }
-            verify(exactly = 5) { repository.observeSets() }
+            verify(exactly = 6) { repository.observeSets() }
             coVerify(exactly = 1) { repository.updateSet(selected) }
             coVerify(exactly = 1) { repository.updateSet(edited) }
             coVerify(exactly = 1) { repository.updateSet(reset) }
             coVerify(exactly = 1) { repository.updateSet(removed) }
+            coVerify(exactly = 1) { repository.updateSet(named) }
             coVerify(exactly = 1) { repository.deleteSet("target") }
             verify(exactly = 1) { volumeRepository.volume() }
             coVerify(exactly = 1) { playStartSound(ReadoutItemKey.fromValue(key)!!) }
