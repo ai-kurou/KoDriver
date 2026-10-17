@@ -5,9 +5,9 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
-import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

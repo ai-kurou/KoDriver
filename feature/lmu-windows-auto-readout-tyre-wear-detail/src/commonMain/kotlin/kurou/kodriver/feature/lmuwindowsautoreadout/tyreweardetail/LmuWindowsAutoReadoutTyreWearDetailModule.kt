@@ -1,14 +1,14 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.tyreweardetail
 
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsTyreWearReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearReadoutTextUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel

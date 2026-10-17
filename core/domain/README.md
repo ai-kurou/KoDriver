@@ -4,8 +4,8 @@
 
 シミュレーター固有コードの配置先は `kurou.kodriver.domain.<lmuwindows|acewindows|gt7ps5>.{model,repository,usecase}` とする。
 共通コードは `kurou.kodriver.domain` 直下の `model` / `repository` / `usecase` / `engine` に置く。
-GT7・ACE は移動済み。LMU は未移動で、順次移動予定。
-`ReadoutItemKey` のシミュレーター別サブタイプと `Gt7Ps5SpeechEvent`・`AceWindowsSpeechEvents` は共通パッケージに残す。
+GT7・ACE・LMU はすべて移動済み。
+`ReadoutItemKey` のシミュレーター別サブタイプと `Gt7Ps5SpeechEvent`・`AceWindowsSpeechEvents`・`LmuWindowsSpeechEvents` は共通パッケージに残す。
 sealed の直接サブタイプは同一パッケージ・同一モジュールに置く必要があるため。
 
 ## オーバーレイ文字サイズのプレビュー

@@ -1,5 +1,9 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
+import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
+import kurou.kodriver.domain.lmuwindows.model.SessionPhase
+import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

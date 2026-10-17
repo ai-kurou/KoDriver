@@ -2,9 +2,9 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test

@@ -1,16 +1,16 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
-import kurou.kodriver.domain.model.LmuWindowsPitStatusData
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
-import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 
 data class LmuWindowsDebugState(
     val raceFlags: LmuWindowsRaceFlagsData? = null,

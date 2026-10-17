@@ -3,20 +3,20 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TyreTemperatureData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsInputsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTimingData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleData
+import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
+import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
+import kurou.kodriver.domain.lmuwindows.model.SessionPhase
+import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.LmuWindowsEngineData
-import kurou.kodriver.domain.model.LmuWindowsFuelData
-import kurou.kodriver.domain.model.LmuWindowsFuelUnit
-import kurou.kodriver.domain.model.LmuWindowsInputsData
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTimingData
-import kurou.kodriver.domain.model.LmuWindowsTyreData
-import kurou.kodriver.domain.model.LmuWindowsVehicleData
-import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.SectorFlagState
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.SessionYellowFlagState
 
 internal fun fakeGt7Ps5TelemetryData(
     lapCount: Int = 0,

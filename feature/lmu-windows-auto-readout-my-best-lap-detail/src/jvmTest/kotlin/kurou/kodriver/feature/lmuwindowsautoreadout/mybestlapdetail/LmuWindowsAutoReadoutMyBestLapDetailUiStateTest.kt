@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.mybestlapdetail
 
-import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

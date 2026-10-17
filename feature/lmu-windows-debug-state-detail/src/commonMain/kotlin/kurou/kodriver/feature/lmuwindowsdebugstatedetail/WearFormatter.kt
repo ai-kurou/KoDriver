@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.math.round
 

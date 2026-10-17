@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
 internal class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleApproachThresholdsPreferences>,

@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_pit_timing_tyre_wear_remaining_laps
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_pit_timing_virtual_energy_remaining_laps

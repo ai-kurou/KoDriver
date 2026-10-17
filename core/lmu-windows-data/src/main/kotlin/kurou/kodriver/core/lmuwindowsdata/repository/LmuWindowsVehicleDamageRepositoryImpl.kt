@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
-import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
-import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageRepository
 import java.nio.ByteBuffer
 
 internal class LmuWindowsVehicleDamageRepositoryImpl(

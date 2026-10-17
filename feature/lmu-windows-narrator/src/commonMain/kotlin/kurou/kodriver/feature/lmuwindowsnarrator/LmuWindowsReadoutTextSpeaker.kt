@@ -31,14 +31,14 @@ import kurou.kodriver.domain.engine.LmuWindowsVehicleApproachSpeechEvent
 import kurou.kodriver.domain.engine.LmuWindowsVehicleDamageSpeechEvent
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.PitTimingSource
-import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
-import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
-import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
-import kurou.kodriver.domain.model.formatLmuWindowsPitTimingReadoutText
-import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
-import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
-import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 

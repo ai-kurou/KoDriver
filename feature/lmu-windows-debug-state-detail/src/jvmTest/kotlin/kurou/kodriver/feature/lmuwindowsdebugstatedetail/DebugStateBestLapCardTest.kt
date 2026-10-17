@@ -6,14 +6,14 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollToIndex
-import kurou.kodriver.domain.model.LmuWindowsEngineData
-import kurou.kodriver.domain.model.LmuWindowsFuelData
-import kurou.kodriver.domain.model.LmuWindowsFuelUnit
-import kurou.kodriver.domain.model.LmuWindowsInputsData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTimingData
-import kurou.kodriver.domain.model.LmuWindowsTyreData
-import kurou.kodriver.domain.model.LmuWindowsVehicleData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsInputsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTimingData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleData
 import org.junit.Rule
 import org.junit.Test
 

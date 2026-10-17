@@ -1,16 +1,16 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitStatusUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreDetachedUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import org.koin.core.module.Module
 
 /**

@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
 
 internal class LmuWindowsPitTimingReadoutTextPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsPitTimingPreferences>,

@@ -13,9 +13,10 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
-import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertFalse

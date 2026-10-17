@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kurou.kodriver.core.lmuwindowsrestapidata.datasource.LmuWindowsRestApiRepairAndRefuelDataSource
 import kurou.kodriver.core.lmuwindowsrestapidata.mapper.LmuWindowsRestApiBrakeWearMapper
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
-import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 
 /**
  * `wearables.brakes`（ブレーキ残り厚さ）を一定間隔でポーリングして流す。

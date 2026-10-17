@@ -5,7 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 
 // 表示するフラッグが変わらないテレメトリの更新ではフェードし直さないよう、表示内容だけをキーにする。
 internal fun flagInfoContentKey(raceFlags: LmuWindowsRaceFlagsData?): List<ActiveRaceFlag>? =

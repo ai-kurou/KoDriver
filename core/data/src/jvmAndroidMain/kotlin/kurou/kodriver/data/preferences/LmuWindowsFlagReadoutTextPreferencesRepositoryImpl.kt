@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 
 internal class LmuWindowsFlagReadoutTextPreferencesRepositoryImpl(
     private val dataStore: DataStore<FlagReadoutTextPreferences>,

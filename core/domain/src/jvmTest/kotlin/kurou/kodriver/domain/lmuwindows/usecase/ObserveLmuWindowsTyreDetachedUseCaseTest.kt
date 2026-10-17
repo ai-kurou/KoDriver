@@ -1,0 +1,65 @@
+package kurou.kodriver.domain.lmuwindows.usecase
+
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreDetachedRepository
+import kurou.kodriver.domain.model.WheelIndex
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class ObserveLmuWindowsTyreDetachedUseCaseTest {
+    private val repo: LmuWindowsTyreDetachedRepository = mockk()
+
+    @Test
+    fun `invoke はリポジトリの tyreDetachedStream を返す`() =
+        runTest {
+            val expected =
+                LmuWindowsTyreDetachedData(
+                    wheels = mapOf(WheelIndex.FRONT_LEFT to true),
+                )
+            every { repo.tyreDetachedStream() } returns flowOf(expected)
+            val useCase = ObserveLmuWindowsTyreDetachedUseCase(repo)
+
+            val result = useCase().first()
+
+            assertEquals(expected, result)
+            verify(exactly = 1) { repo.tyreDetachedStream() }
+            confirmVerified(repo)
+        }
+
+    @Test
+    fun `invoke は空のフローをそのまま返す`() =
+        runTest {
+            every { repo.tyreDetachedStream() } returns flowOf()
+            val useCase = ObserveLmuWindowsTyreDetachedUseCase(repo)
+
+            val results = buildList { useCase().collect { add(it) } }
+
+            assertTrue(results.isEmpty())
+            verify(exactly = 1) { repo.tyreDetachedStream() }
+            confirmVerified(repo)
+        }
+
+    @Test
+    fun `複数のデータを順番通りに流す`() =
+        runTest {
+            val data1 = LmuWindowsTyreDetachedData(wheels = mapOf(WheelIndex.FRONT_LEFT to false))
+            val data2 = LmuWindowsTyreDetachedData(wheels = mapOf(WheelIndex.FRONT_LEFT to true))
+            val data3 = LmuWindowsTyreDetachedData(wheels = mapOf(WheelIndex.FRONT_LEFT to false))
+            every { repo.tyreDetachedStream() } returns flowOf(data1, data2, data3)
+            val useCase = ObserveLmuWindowsTyreDetachedUseCase(repo)
+
+            val results = buildList { useCase().collect { add(it) } }
+
+            assertEquals(listOf(data1, data2, data3), results)
+            verify(exactly = 1) { repo.tyreDetachedStream() }
+            confirmVerified(repo)
+        }
+}
