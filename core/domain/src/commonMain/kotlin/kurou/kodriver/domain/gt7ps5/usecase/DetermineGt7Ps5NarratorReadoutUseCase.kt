@@ -150,7 +150,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         }
     }
 
-    /** 有限値の最高タイヤ温度を四捨五入する。未受信・鮮度切れ・全輪非有限値はデータなし。 */
+    /** 有限かつ0以外の最高タイヤ温度を四捨五入する。未受信・鮮度切れ・全輪が非有限値または0（取得不能）の場合はデータなし。 */
     fun currentMaxTyreTemperatureCelsius(telemetry: Gt7Ps5TelemetryData?): Int? {
         val temperature = telemetry?.tyreTemperature ?: return null
         return listOf(
@@ -158,7 +158,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             temperature.frontRightCelsius,
             temperature.rearLeftCelsius,
             temperature.rearRightCelsius,
-        ).map { it.value }.filter { it.isFinite() }.maxOrNull()?.roundToInt()
+        ).map { it.value }.filter { it.isFinite() && it != 0f }.maxOrNull()?.roundToInt()
     }
 
     /** 自動読み上げの設定やタイミングに依存せず、追跡中の平均消費から現在の残り周回数を返す。 */

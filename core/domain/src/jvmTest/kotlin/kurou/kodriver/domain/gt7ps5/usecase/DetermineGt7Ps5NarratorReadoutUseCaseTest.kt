@@ -35,6 +35,9 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 listOf(80f, 70f, 60f, 92.5f) to 93,
                 listOf(Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, 90.5f) to 91,
                 listOf(Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NaN) to null,
+                listOf(0f, 0f, 0f, 0f) to null,
+                listOf(0f, Float.NaN, 0f, 0f) to null,
+                listOf(0f, 0f, 85.4f, 0f) to 85,
             )
         cases.forEach { (values, expected) ->
             val wheels = values.map { CelsiusReading(it) }
