@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit
  * その際は読み上げの打ち切り要求を送ってから例外を再送出する。
  * 常駐プロセスが終了した場合は、次の [speak] で起動し直す。アプリ終了時は標準入力が閉じられて常駐プロセスも終了する。
  *
- * Windows専用の外部プロセスを起動するためユニットテストの対象外とし、
- * 読み上げ制御のロジックは [WindowsSpeechSynthesizer] を差し替えられる呼び出し側で検証する。
+ * OS判定・プロセス起動・完了待機を差し替え、外部プロセスなしで制御のユニットテストを行う。
  *
  * `queue = true` で前の発話の終了を待つ間は [lock] を保持しない。保持したままだと、待っている間に
  * 別スレッドからの `queue = false` の [speak] 呼び出しが [lock] を取得できず、
@@ -34,28 +33,34 @@ import java.util.concurrent.TimeUnit
  * 割り込んでいる可能性があるため、待機後は [requestToken] で自分がまだ最新の要求かを確認し、
  * 既に別の呼び出しに追い越されていれば要求を送らない。
  */
-internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
+internal class SapiSpeechSynthesizer(
+    private val isWindows: Boolean = System.getProperty("os.name").lowercase().startsWith("windows"),
+    private val startProcess: (ProcessBuilder) -> Process = ProcessBuilder::start,
+    private val captureException: (Throwable) -> Unit = Sentry::captureException,
+    private val awaitCompletion: (CompletableFuture<Unit>) -> Unit = { it.get() },
+) : WindowsSpeechSynthesizer {
     private val lock = Any()
     private var session: ResidentSpeechSession? = null
     private var requestToken = 0L
 
     override fun isAvailable(): Boolean {
-        if (!IS_WINDOWS) return false
+        if (!isWindows) return false
         return try {
             val process =
-                ProcessBuilder(
-                    POWERSHELL,
-                    "-NoProfile",
-                    "-NonInteractive",
-                    "-Command",
-                    "Add-Type -AssemblyName System.Speech; " +
-                        "\$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
-                        "\$voices = \$s.GetInstalledVoices(); " +
-                        "if (-not (\$voices | Where-Object { " +
-                        "\$_.Enabled -and \$_.VoiceInfo.Culture.Name -eq '$TTS_CULTURE_NAME' })) { exit 1 }",
-                ).redirectErrorStream(true)
-                    .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-                    .start()
+                startProcess(
+                    ProcessBuilder(
+                        POWERSHELL,
+                        "-NoProfile",
+                        "-NonInteractive",
+                        "-Command",
+                        "Add-Type -AssemblyName System.Speech; " +
+                            "\$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
+                            "\$voices = \$s.GetInstalledVoices(); " +
+                            "if (-not (\$voices | Where-Object { " +
+                            "\$_.Enabled -and \$_.VoiceInfo.Culture.Name -eq '$TTS_CULTURE_NAME' })) { exit 1 }",
+                    ).redirectErrorStream(true)
+                        .redirectOutput(ProcessBuilder.Redirect.DISCARD),
+                )
             try {
                 if (!process.waitFor(AVAILABILITY_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                     process.destroyForcibly()
@@ -71,7 +76,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     }
 
     override fun listVoices(): List<TextToSpeechVoice> {
-        if (!IS_WINDOWS) return emptyList()
+        if (!isWindows) return emptyList()
         return try {
             // 終了待ち中に標準出力のバッファが満杯になるのを避けるため、一時ファイルへ出力する。
             val output = Files.createTempFile("kodriver-voices-", ".txt")
@@ -82,22 +87,23 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
             }
         } catch (e: Exception) {
             // 取得失敗は音声が一つも表示されない原因になるため、握り潰さずSentryへ報告する。
-            Sentry.captureException(e)
+            captureException(e)
             emptyList()
         }
     }
 
     private fun readVoices(output: Path): List<TextToSpeechVoice> {
         val process =
-            ProcessBuilder(
-                POWERSHELL,
-                "-NoProfile",
-                "-NonInteractive",
-                "-Command",
-                buildListVoicesScript(),
-            ).redirectError(ProcessBuilder.Redirect.DISCARD)
-                .redirectOutput(output.toFile())
-                .start()
+            startProcess(
+                ProcessBuilder(
+                    POWERSHELL,
+                    "-NoProfile",
+                    "-NonInteractive",
+                    "-Command",
+                    buildListVoicesScript(),
+                ).redirectError(ProcessBuilder.Redirect.DISCARD)
+                    .redirectOutput(output.toFile()),
+            )
         try {
             if (!process.waitFor(AVAILABILITY_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                 // 出力ファイルを掴んだまま残ると呼び出し元の削除に失敗するため、終了を待ってから戻る。
@@ -112,7 +118,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     }
 
     override fun warmUp() {
-        if (!IS_WINDOWS) return
+        if (!isWindows) return
         synchronized(lock) { usableSession() }
     }
 
@@ -124,7 +130,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
         speed: Float,
         pitch: Float,
     ) {
-        if (!IS_WINDOWS) return
+        if (!isWindows) return
         val token = synchronized(lock) { ++requestToken }
         val request = buildSpeakRequest(text, volume, voiceId, speedToSapiRate(speed), pitch)
         val future = enqueue(token, request, queue) ?: return
@@ -158,7 +164,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     /** [lock] を保持せずに [target] の完了を待つ。割り込まれた場合は、まだ現在の読み上げであれば打ち切る。 */
     private fun await(target: CompletableFuture<Unit>) {
         try {
-            target.get()
+            awaitCompletion(target)
         } catch (e: InterruptedException) {
             synchronized(lock) { session?.stopIfCurrent(target) }
             throw e
@@ -170,16 +176,18 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
         session?.takeIf { it.isUsable }?.let { return it }
         return try {
             val process =
-                ProcessBuilder(
-                    POWERSHELL,
-                    "-NoProfile",
-                    "-NonInteractive",
-                    "-EncodedCommand",
-                    encodeResidentSpeakScript(),
-                ).redirectErrorStream(true).start()
+                startProcess(
+                    ProcessBuilder(
+                        POWERSHELL,
+                        "-NoProfile",
+                        "-NonInteractive",
+                        "-EncodedCommand",
+                        encodeResidentSpeakScript(),
+                    ).redirectErrorStream(true),
+                )
             ResidentSpeechSession(process, lock).also { session = it }
         } catch (e: IOException) {
-            Sentry.captureException(e)
+            captureException(e)
             null
         }
     }
@@ -192,6 +200,5 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
 
         /** タイムアウトで強制終了したプロセスの終了を待つ上限。 */
         const val DESTROY_WAIT_TIMEOUT_SECONDS = 5L
-        val IS_WINDOWS = System.getProperty("os.name").lowercase().startsWith("windows")
     }
 }

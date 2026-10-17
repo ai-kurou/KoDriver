@@ -17,6 +17,8 @@ internal class FakeResidentSpeechProcess : Process() {
     private val destroyed = CountDownLatch(1)
     private var readerThread: Thread? = null
     private val written = ByteArrayOutputStream()
+    private val pending = ByteArrayOutputStream()
+    private val requestLines = LinkedBlockingQueue<String>()
 
     @Volatile
     var alive = true
@@ -61,13 +63,18 @@ internal class FakeResidentSpeechProcess : Process() {
             override fun write(value: Int) {
                 if (failWrite) throw IOException("write failed")
                 written.write(value)
+                pending.write(value)
             }
 
             override fun flush() {
                 if (failFlush) throw IOException("flush failed")
                 flushCount++
+                requestLines.add(pending.toString(Charsets.US_ASCII.name()).removeSuffix("\n"))
+                pending.reset()
             }
         }
+
+    fun awaitRequest(): String = requireNotNull(requestLines.poll(5, TimeUnit.SECONDS))
 
     fun respond(line: String) {
         (line + "\n").toByteArray(Charsets.UTF_8).forEach { events.add(ReadEvent.Byte(it.toInt() and 0xff)) }
