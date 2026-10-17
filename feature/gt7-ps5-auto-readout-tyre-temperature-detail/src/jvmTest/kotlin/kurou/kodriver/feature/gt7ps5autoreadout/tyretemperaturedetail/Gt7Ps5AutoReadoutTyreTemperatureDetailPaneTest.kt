@@ -109,7 +109,7 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailPaneTest {
         }
         rule.onNodeWithText("過熱警告").assertIsDisplayed()
         rule.onNodeWithText("高温閾値設定").performScrollTo().assertIsDisplayed()
-        rule.onNodeWithText("高温閾値: 100°C").assertIsDisplayed()
+        rule.onNodeWithText("高温閾値: 105°C").assertIsDisplayed()
         rule.onNodeWithText("タイヤ過熱警告の文言").assertIsDisplayed()
         rule.onNodeWithText(DEFAULT_TEXT).assertIsDisplayed()
         rule.onNodeWithText("{celsius} は判定時の全輪の最高タイヤ温度（摂氏）に置き換わります（整数に丸めます）").assertIsDisplayed()
@@ -389,13 +389,13 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailPaneTest {
 
         rule
             .onNode(
-                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 100f, range = 90f..110f, steps = 19)),
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 105f, range = 90f..120f, steps = 29)),
             ).performScrollTo()
             .performSemanticsAction(SemanticsActions.SetProgress) {
-                it(105f)
+                it(120f)
             }
 
-        assertEquals(105, changedCelsius)
+        assertEquals(120, changedCelsius)
     }
 
     @Test
@@ -404,7 +404,7 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailPaneTest {
         rule.setContent {
             KoDriverTheme {
                 Gt7Ps5AutoReadoutTyreTemperatureDetailPaneContent(
-                    uiState = Gt7Ps5AutoReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 105),
+                    uiState = Gt7Ps5AutoReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 110),
                     onHighThresholdReset = { resetCalled = true },
                 )
             }

@@ -11,32 +11,34 @@ import kotlin.test.assertFailsWith
 
 class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
     @Test
-    fun `デフォルト値は100度`() {
+    fun `デフォルト値は105度`() {
         assertEquals(
             Gt7Ps5TyreTemperaturePreferences(
-                highThresholdCelsius = 100,
+                highThresholdCelsius = 105,
             ),
             Gt7Ps5TyreTemperaturePreferencesSerializer.defaultValue,
         )
     }
 
     @Test
-    fun `書き込んだ値を読み出せる`() =
+    fun `保存済みの閾値と新しい上限値を変更せず読み出せる`() =
         runTest {
-            val original = Gt7Ps5TyreTemperaturePreferences(highThresholdCelsius = 95)
-            val output = ByteArrayOutputStream()
-            Gt7Ps5TyreTemperaturePreferencesSerializer.writeTo(original, output)
+            for (celsius in listOf(95, 100, 120)) {
+                val original = Gt7Ps5TyreTemperaturePreferences(highThresholdCelsius = celsius)
+                val output = ByteArrayOutputStream()
+                Gt7Ps5TyreTemperaturePreferencesSerializer.writeTo(original, output)
 
-            val restored =
-                Gt7Ps5TyreTemperaturePreferencesSerializer.readFrom(
-                    ByteArrayInputStream(output.toByteArray()),
-                )
+                val restored =
+                    Gt7Ps5TyreTemperaturePreferencesSerializer.readFrom(
+                        ByteArrayInputStream(output.toByteArray()),
+                    )
 
-            assertEquals(original, restored)
+                assertEquals(original, restored)
+            }
         }
 
     @Test
-    fun `閾値が省略されたデータは100度を使う`() =
+    fun `閾値が省略されたデータは105度を使う`() =
         runTest {
             // 旧デフォルト値のみの空データと、フィールド3に文言だけを保存した旧データ。
             for ((bytes, text) in listOf(
@@ -44,13 +46,13 @@ class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
                 byteArrayOf(0x1A, 0x04, 0x74, 0x65, 0x73, 0x74) to "test",
             )) {
                 val restored = Gt7Ps5TyreTemperaturePreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
-                assertEquals(100, restored.highThresholdCelsius)
+                assertEquals(105, restored.highThresholdCelsius)
                 assertEquals(text, restored.overheatReadoutText)
             }
         }
 
     @Test
-    fun `新規設定の100度は書き込み後も維持する`() =
+    fun `新規設定の105度は書き込み後も維持する`() =
         runTest {
             val original = Gt7Ps5TyreTemperaturePreferencesSerializer.defaultValue
             val output = ByteArrayOutputStream()
