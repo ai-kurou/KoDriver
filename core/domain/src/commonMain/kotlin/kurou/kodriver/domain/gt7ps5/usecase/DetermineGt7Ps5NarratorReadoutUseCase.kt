@@ -166,6 +166,10 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 state
             }
         val stateWithCurrentBestLap = sessionState.copy(previousBestLapTimeMs = current, previousLapCount = currentLap)
+        // リザルト画面などで周回数が飛んだ場合は、自己ベストを読み上げず追跡値だけ更新する。
+        if (state.previousLapCount != null && currentLap - state.previousLapCount >= MY_BEST_LAP_SKIP_LAP_COUNT_DELTA) {
+            return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        }
         val previous = sessionState.previousBestLapTimeMs
         if (previous == null) return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         if (current <= 0) return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
@@ -429,6 +433,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             telemetry.gasLevel.value * 100f <= thresholdPercentage * telemetry.gasCapacity.value
 
     private companion object {
+        const val MY_BEST_LAP_SKIP_LAP_COUNT_DELTA = 2
         const val REMAINING_FUEL_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000
         const val CURRENT_LAP_CONSUMPTION_WEIGHT = 0.9f
         const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f

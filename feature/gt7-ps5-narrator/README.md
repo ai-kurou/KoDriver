@@ -34,6 +34,7 @@ Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を
 `{laptime}` は判定時の更新後の `bestLapTimeMs` を「1分23秒456」の形式に置換する。1分未満では分を省略し、
 ミリ秒は3桁固定、60分以上も時間にせず分で表す。解決した文言は `resolvedText` に保持し、キュー待機中も発話とログを一致させる。
 判定条件と `MyBestLap.Root` / `DetailEnabled` の有効状態は従来どおり。開始音・優先度・キューは `MyBestLap.Root` を参照する。
+リザルト画面などで周回数が一度に2以上増えた場合は、自己ベストを読み上げず前回タイム・周回数だけ更新し、読み上げ済み自己ベストは変更しない。
 空白文言・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` を記録する。formal/casual の収録WAVは削除し、
 WAVへフォールバックしない。共有protoの `voiceType` は旧データの互換性のため残すが、どのシミュレーターも参照せず、GT7は `readoutText` を使用する。
 

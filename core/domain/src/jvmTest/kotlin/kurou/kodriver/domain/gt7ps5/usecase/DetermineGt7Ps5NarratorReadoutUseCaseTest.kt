@@ -214,6 +214,30 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `周回数が2以上増えたら自己ベストを読み上げず追跡値だけ更新する`() {
+        for (currentLap in listOf(2, 5)) {
+            val state =
+                Gt7Ps5NarratorState(
+                    personalBestMs = 140_000,
+                    previousBestLapTimeMs = -1,
+                    previousLapCount = 0,
+                )
+            val decision =
+                useCase.determineMyBestLap(
+                    state = state,
+                    telemetry = telemetry(bestLapTimeMs = 135_354, lapCount = currentLap),
+                    settings = settings(),
+                )
+
+            assertEquals(emptyList<SpeechEvent>(), decision.events)
+            assertEquals(
+                state.copy(previousBestLapTimeMs = 135_354, previousLapCount = currentLap),
+                decision.state,
+            )
+        }
+    }
+
+    @Test
     fun `周回数が同じか増加した場合は自己ベストをリセットしない`() {
         for (currentLap in listOf(5, 6)) {
             val decision =
