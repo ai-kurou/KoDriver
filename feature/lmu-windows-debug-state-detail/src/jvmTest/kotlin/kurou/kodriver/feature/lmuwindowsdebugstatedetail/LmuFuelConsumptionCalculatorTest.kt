@@ -103,7 +103,7 @@ class LmuFuelConsumptionCalculatorTest {
     }
 
     @Test
-    fun `LMU バーチャルエナジー残量を割合で返す`() {
+    fun `LMU バーチャルエネルギー残量を割合で返す`() {
         assertEquals(
             50.0,
             calculateLmuVirtualEnergyRemainingPercent(

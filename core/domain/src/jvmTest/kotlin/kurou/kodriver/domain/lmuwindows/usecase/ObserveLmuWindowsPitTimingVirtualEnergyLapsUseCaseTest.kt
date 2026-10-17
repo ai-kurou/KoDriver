@@ -15,7 +15,7 @@ class ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCaseTest {
     private val repository: LmuWindowsPitTimingPreferencesRepository = mockk()
 
     @Test
-    fun `バーチャルエナジー予想残り周回数を監視できる`() =
+    fun `バーチャルエネルギー予想残り周回数を監視できる`() =
         runTest {
             every { repository.observeVirtualEnergyLaps() } returns MutableStateFlow(5)
             val useCase = ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository)

@@ -16,7 +16,7 @@ class LmuWindowsRemainingVirtualEnergyPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `バーチャルエナジー残量設定が正しいファイルに書き込まれる`() =
+    fun `バーチャルエネルギー残量設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createLmuWindowsRemainingVirtualEnergyPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(thresholdPercentage = 50) }

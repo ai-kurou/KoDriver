@@ -8,10 +8,10 @@ import kotlin.test.assertEquals
 
 class ManualReadoutItemsTest {
     @Test
-    fun `LMUのエナジー周回数は名前と既定文言と省略可能な周回数を持つ`() {
+    fun `LMUのエネルギー周回数は名前と既定文言と省略可能な周回数を持つ`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
-        assertEquals("エナジーの残り周回数", manualReadoutItemName(key))
-        assertEquals("エナジーは残り約{laps}周", manualReadoutItemTextDefault(key))
+        assertEquals("エネルギーの残り周回数", manualReadoutItemName(key))
+        assertEquals("エネルギーは残り約{laps}周", manualReadoutItemTextDefault(key))
         assertEquals(null, LmuWindowsManualReadoutItem(key, "", null).remainingLaps)
         assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
     }
@@ -87,7 +87,7 @@ class ManualReadoutItemsTest {
 
     @Test
     fun `項目名は詳細画面の日本語名と一致し未対応キーは空になる`() {
-        assertEquals("バーチャルエナジー残量", manualReadoutItemName(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value))
+        assertEquals("バーチャルエネルギー残量", manualReadoutItemName(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value))
         assertEquals("タイヤ摩耗", manualReadoutItemName(LmuWindowsReadoutItemKey.TyreWear.Root.value))
         assertEquals("ブレーキ残量", manualReadoutItemName(LmuWindowsReadoutItemKey.BrakeWear.Root.value))
         assertEquals("ブレーキ温度", manualReadoutItemName(LmuWindowsReadoutItemKey.BrakeTemperature.Root.value))
@@ -96,7 +96,7 @@ class ManualReadoutItemsTest {
     }
 
     @Test
-    fun `LMUは残量とタイヤ摩耗とブレーキ残量とブレーキ温度とタイヤ温度と自己ベストとエナジー周回数とタイヤ摩耗周回数の順に選択でき未対応シミュレーターは空を返す`() {
+    fun `LMUは残量とタイヤ摩耗とブレーキ残量とブレーキ温度とタイヤ温度と自己ベストとエネルギー周回数とタイヤ摩耗周回数の順に選択でき未対応シミュレーターは空を返す`() {
         assertEquals(
             listOf(
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
@@ -126,7 +126,7 @@ class ManualReadoutItemsTest {
     @Test
     fun `残量項目の既定文言は従来と同じ発話になり未知項目は空になる`() {
         val template = manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value)
-        assertEquals("バーチャルエナジー残量は42パーセント", formatLmuWindowsRemainingVirtualEnergyReadoutText(template, 42))
+        assertEquals("バーチャルエネルギー残量は42パーセント", formatLmuWindowsRemainingVirtualEnergyReadoutText(template, 42))
         assertEquals("タイヤ摩耗残り{percent}%", manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.TyreWear.Root.value))
         assertEquals("ブレーキ残量{percent}%", manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.BrakeWear.Root.value))
         assertEquals(

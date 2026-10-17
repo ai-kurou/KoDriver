@@ -275,21 +275,21 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `LMUタイヤ・エナジー系のnarratedTextはChipと同じ文言を返す`() {
+    fun `LMUタイヤ・エネルギー系のnarratedTextはChipと同じ文言を返す`() {
         assertEquals("ブレーキ温度800℃以上", LmuWindowsBrakeOverheat(800).narratedText)
         assertEquals("タイヤ過熱 100度", LmuWindowsTyreOverheat(100).narratedText)
         assertEquals("タイヤ低温 60度", LmuWindowsTyreCold(60).narratedText)
         assertEquals("タイヤ残存率50%以下", LmuWindowsTyreWearWarning(50).narratedText)
-        assertEquals("バーチャルエナジー残量50%以下", LmuWindowsRemainingVirtualEnergyWarning(50).narratedText)
+        assertEquals("バーチャルエネルギー残量50%以下", LmuWindowsRemainingVirtualEnergyWarning(50).narratedText)
     }
 
     @Test
-    fun `現在のエナジー残量は既定文言と既存のRootキーを持ち解決済み文言を反映する`() {
+    fun `現在のエネルギー残量は既定文言と既存のRootキーを持ち解決済み文言を反映する`() {
         val event = LmuWindowsRemainingVirtualEnergyCurrentValue(42)
         assertEquals("残量42%", event.withResolvedText("残量42%").narratedText)
         assertEquals("", event.withResolvedText("").narratedText)
         assertEquals(42, event.percentage)
-        assertEquals("バーチャルエナジー残量は42パーセント", event.narratedText)
+        assertEquals("バーチャルエネルギー残量は42パーセント", event.narratedText)
         assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, event.readoutItemKey)
     }
 
@@ -388,7 +388,7 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `バーチャルエナジーの1以上の周回数は通常既定文言を置換する`() {
+    fun `バーチャルエネルギーの1以上の周回数は通常既定文言を置換する`() {
         listOf(1, 3).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT.replace("{laps}", laps.toString()),
@@ -398,7 +398,7 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `バーチャルエナジーの0以下の周回数は切迫既定文言を返す`() {
+    fun `バーチャルエネルギーの0以下の周回数は切迫既定文言を返す`() {
         listOf(0, -1).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,

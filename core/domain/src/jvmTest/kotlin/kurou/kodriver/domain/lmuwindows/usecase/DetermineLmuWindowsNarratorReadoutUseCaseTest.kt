@@ -66,7 +66,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
 
     @Test
-    fun `手動エナジー周回数は蓄積値だけを読み自動条件と状態を変更しない`() {
+    fun `手動エネルギー周回数は蓄積値だけを読み自動条件と状態を変更しない`() {
         val tracking =
             LmuWindowsPitTimingTrackingState(currentLap = 2, currentValue = 0.75, lastValidLapConsumption = 0.1)
         val state = LmuWindowsNarratorState(pitTimingVirtualEnergyTrackingState = tracking)
@@ -91,7 +91,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `手動エナジー周回数は文言と欠損と保存順を反映しPitTimingのRootを使う`() {
+    fun `手動エネルギー周回数は文言と欠損と保存順を反映しPitTimingのRootを使う`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
         val root = LmuWindowsReadoutItemKey.PitTiming.Root
         val tyre = LmuWindowsReadoutItemKey.TyreWear.Root
@@ -100,25 +100,25 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val wear = LmuWindowsManualReadoutItem(tyre.value, "タイヤ{percent}%", 0.8)
         listOf(
             Triple(listOf(energy), root, "あと3周 {unknown}"),
-            Triple(listOf(energy.copy(remainingLaps = 0)), root, "エナジー残り1周未満"),
+            Triple(listOf(energy.copy(remainingLaps = 0)), root, "エネルギー残り1周未満"),
             Triple(listOf(energy, wear), root, "あと3周 {unknown}、タイヤ80%"),
             Triple(listOf(wear, energy), tyre, "タイヤ80%、あと3周 {unknown}"),
             Triple(
                 listOf(energy.copy(remainingLaps = null, ratio = 1.0), wear),
                 root,
-                "エナジーの残り周回数はデータがありません、タイヤ80%",
+                "エネルギーの残り周回数はデータがありません、タイヤ80%",
             ),
             Triple(
                 listOf(energy.copy(remainingLaps = -1), wear),
                 root,
-                "エナジーの残り周回数はデータがありません、タイヤ80%",
+                "エネルギーの残り周回数はデータがありません、タイヤ80%",
             ),
             Triple(listOf(energy.copy(remainingLaps = null)), root, "データがありません"),
             Triple(listOf(energy.copy(remainingLaps = -1), wear.copy(ratio = null)), root, "データがありません"),
             Triple(listOf(energy.copy(textTemplate = "")), root, ""),
             Triple(listOf(energy.copy(textTemplate = "", remainingLaps = 0)), root, ""),
             Triple(listOf(energy, wear.copy(ratio = null)), root, "あと3周 {unknown}、タイヤ摩耗はデータがありません"),
-            Triple(listOf(energy.copy(textTemplate = "エナジーは残り約{laps}周")), root, "エナジーは残り約3周"),
+            Triple(listOf(energy.copy(textTemplate = "エネルギーは残り約{laps}周")), root, "エネルギーは残り約3周"),
         ).forEach { (items, firstKey, text) ->
             val decision = useCase.determineManualReadout(state, items)
             assertEquals(state, decision.state)
@@ -420,7 +420,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             listOf(
                 Triple(listOf(energyItem, tyreItem), energy, "VE50%、タイヤ80%"),
                 Triple(listOf(tyreItem, energyItem), tyre, "タイヤ80%、VE50%"),
-                Triple(listOf(energyItem.copy(ratio = null), tyreItem), energy, "バーチャルエナジー残量はデータがありません、タイヤ80%"),
+                Triple(listOf(energyItem.copy(ratio = null), tyreItem), energy, "バーチャルエネルギー残量はデータがありません、タイヤ80%"),
                 Triple(listOf(tyreItem.copy(ratio = null), energyItem), tyre, "タイヤ摩耗はデータがありません、VE50%"),
                 Triple(listOf(energyItem.copy(ratio = null), tyreItem.copy(ratio = null)), energy, "データがありません"),
                 Triple(listOf(tyreItem.copy(ratio = null)), tyre, "データがありません"),
@@ -2108,7 +2108,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `現在のエナジー残量は閾値や警告済み状態に関係なく四捨五入して毎回読み上げる`() {
+    fun `現在のエネルギー残量は閾値や警告済み状態に関係なく四捨五入して毎回読み上げる`() {
         listOf(false, true).forEach { warned ->
             val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = warned)
             listOf(0.0 to 0, 0.424 to 42, 0.425 to 43, 1.0 to 100).forEach { (ratio, percentage) ->
@@ -2128,7 +2128,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `現在のエナジー残量は一覧または詳細スイッチが無効なら読み上げず状態を維持する`() {
+    fun `現在のエネルギー残量は一覧または詳細スイッチが無効なら読み上げず状態を維持する`() {
         listOf(
             LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
             LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
@@ -2147,7 +2147,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `手動のエナジー残量はスイッチ設定なしで四捨五入して毎回読み上げ状態を維持する`() {
+    fun `手動のエネルギー残量はスイッチ設定なしで四捨五入して毎回読み上げ状態を維持する`() {
         listOf(false, true).forEach { warned ->
             val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = warned)
             listOf(0.0 to 0, 0.424 to 42, 0.425 to 43, 1.0 to 100).forEach { (ratio, percentage) ->
@@ -2235,7 +2235,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `バーチャルエナジー残量項目が無効なら読み上げない`() {
+    fun `バーチャルエネルギー残量項目が無効なら読み上げない`() {
         val decision =
             useCase.determineRemainingVirtualEnergy(
                 state = LmuWindowsNarratorState(),
@@ -2254,7 +2254,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `バーチャルエナジー残量のdetailPaneスイッチが無効なら読み上げない`() {
+    fun `バーチャルエネルギー残量のdetailPaneスイッチが無効なら読み上げない`() {
         val decision =
             useCase.determineRemainingVirtualEnergy(
                 state = LmuWindowsNarratorState(),
@@ -2460,7 +2460,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `バーチャルエナジーのピットタイミング読み上げ記録は対応する履歴だけを更新する`() {
+    fun `バーチャルエネルギーのピットタイミング読み上げ記録は対応する履歴だけを更新する`() {
         val state =
             pitTimingBoundaryState().copy(
                 lastAnnouncedPitTimingVirtualEnergyLaps = 3,
@@ -2495,7 +2495,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `バーチャルエナジー予想残り周回数は直近に完走したラップの消費率を使って最速ラップの30秒前を過ぎたら読み上げる`() {
+    fun `バーチャルエネルギー予想残り周回数は直近に完走したラップの消費率を使って最速ラップの30秒前を過ぎたら読み上げる`() {
         val firstLapDecision =
             useCase.determinePitTimingVirtualEnergy(
                 state = pitTimingBoundaryState(),
@@ -2590,7 +2590,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `バーチャルエナジー予想残り周回数は読み上げタイミング前なら読み上げない`() {
+    fun `バーチャルエネルギー予想残り周回数は読み上げタイミング前なら読み上げない`() {
         val firstLapDecision =
             useCase.determinePitTimingVirtualEnergy(
                 state = pitTimingBoundaryState(),
@@ -2621,7 +2621,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `ピットタイミング項目が無効ならバーチャルエナジー予想残り周回数を読み上げない`() {
+    fun `ピットタイミング項目が無効ならバーチャルエネルギー予想残り周回数を読み上げない`() {
         val firstLapDecision =
             useCase.determinePitTimingVirtualEnergy(
                 state = pitTimingBoundaryState(),
@@ -2714,7 +2714,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `ラップ数が戻ったらバーチャルエナジー予想残り周回数の読み上げ履歴をリセットする`() {
+    fun `ラップ数が戻ったらバーチャルエネルギー予想残り周回数の読み上げ履歴をリセットする`() {
         val state =
             LmuWindowsNarratorState(
                 lastAnnouncedPitTimingVirtualEnergyLaps = 2,
@@ -2748,7 +2748,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `セッションが変わったらラップ数が戻らなくてもバーチャルエナジーの基準値をリセットする`() {
+    fun `セッションが変わったらラップ数が戻らなくてもバーチャルエネルギーの基準値をリセットする`() {
         val qualifyingDecision =
             useCase.determinePitTimingVirtualEnergy(
                 state = LmuWindowsNarratorState(),
@@ -2778,7 +2778,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `閾値未満のバーチャルエナジー残量増加は補充とみなさず消費量の推定に含めない`() {
+    fun `閾値未満のバーチャルエネルギー残量増加は補充とみなさず消費量の推定に含めない`() {
         val firstDecision =
             useCase.determinePitTimingVirtualEnergy(
                 state = LmuWindowsNarratorState(),

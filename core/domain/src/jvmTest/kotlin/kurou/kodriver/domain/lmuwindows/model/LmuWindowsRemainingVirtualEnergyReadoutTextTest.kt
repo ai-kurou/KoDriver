@@ -7,7 +7,7 @@ class LmuWindowsRemainingVirtualEnergyReadoutTextTest {
     @Test
     fun `既定文言の閾値を置換する`() {
         assertEquals(
-            "バーチャルエナジー残量30%以下",
+            "バーチャルエネルギー残量30%以下",
             formatLmuWindowsRemainingVirtualEnergyReadoutText(
                 LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT,
                 30,
@@ -17,7 +17,7 @@ class LmuWindowsRemainingVirtualEnergyReadoutTextTest {
 
     @Test
     fun `プレースホルダーがなければ文言を維持する`() {
-        assertEquals("エナジー警告", formatLmuWindowsRemainingVirtualEnergyReadoutText("エナジー警告", 1))
+        assertEquals("エネルギー警告", formatLmuWindowsRemainingVirtualEnergyReadoutText("エネルギー警告", 1))
     }
 
     @Test

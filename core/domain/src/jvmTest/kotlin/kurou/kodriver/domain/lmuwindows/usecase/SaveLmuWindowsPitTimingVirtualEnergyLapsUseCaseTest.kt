@@ -11,7 +11,7 @@ class SaveLmuWindowsPitTimingVirtualEnergyLapsUseCaseTest {
     private val repository: LmuWindowsPitTimingPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
-    fun `バーチャルエナジー予想残り周回数を保存できる`() =
+    fun `バーチャルエネルギー予想残り周回数を保存できる`() =
         runTest {
             SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository)(1)
 

@@ -91,7 +91,7 @@ class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("バーチャルエナジー残量が設定した閾値以下になった場合に音声でお知らせします。\n読み上げる文言は下の欄で設定できます。").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー残量が設定した閾値以下になった場合に音声でお知らせします。\n読み上げる文言は下の欄で設定できます。").assertIsDisplayed()
     }
 
     @Test
@@ -105,7 +105,7 @@ class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPaneTest {
         }
         rule.onNodeWithText("残量警告").assertIsDisplayed()
         rule.onNodeWithText("残量が閾値以下になったときの文言").assertIsDisplayed()
-        rule.onNodeWithText("バーチャルエナジー残量{percent}%以下").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー残量{percent}%以下").assertIsDisplayed()
         rule.onNodeWithText("{percent} は残量閾値(%)に置き換わります").assertIsDisplayed()
         rule.onNodeWithText("{percent}を挿入").assertIsNotEnabled()
     }

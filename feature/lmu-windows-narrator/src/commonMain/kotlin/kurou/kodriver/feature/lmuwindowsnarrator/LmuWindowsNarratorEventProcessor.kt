@@ -654,7 +654,7 @@ private fun buildTelemetryLogJson(
     )
 
 /**
- * バーチャルエナジー残量判定入力（[LmuWindowsVirtualEnergyData]）は判定ロジック（
+ * バーチャルエネルギー残量判定入力（[LmuWindowsVirtualEnergyData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineRemainingVirtualEnergy]）と
  * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。

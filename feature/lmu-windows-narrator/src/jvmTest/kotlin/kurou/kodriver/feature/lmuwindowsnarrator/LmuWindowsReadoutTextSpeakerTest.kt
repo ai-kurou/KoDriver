@@ -157,9 +157,9 @@ class LmuWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `エナジーの残り周回数から始まる手動セットは連結本文を一回だけ読み上げる`() =
+    fun `エネルギーの残り周回数から始まる手動セットは連結本文を一回だけ読み上げる`() =
         runTest {
-            val text = "エナジーは残り約3周、タイヤ80%"
+            val text = "エネルギーは残り約3周、タイヤ80%"
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText(text, volume = VOLUME) } just Runs
             speaker(LmuWindowsManualReadoutText(LmuWindowsReadoutItemKey.PitTiming.Root, text), VOLUME)
@@ -171,7 +171,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `タイヤ摩耗の残り周回数から始まる手動セットは連結本文を一回だけ読み上げる`() =
         runTest {
-            val text = "タイヤは残り約3周、エナジー50%"
+            val text = "タイヤは残り約3周、エネルギー50%"
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText(text, volume = VOLUME) } just Runs
             speaker(LmuWindowsManualReadoutText(LmuWindowsReadoutItemKey.PitTiming.Root, text), VOLUME)
@@ -305,19 +305,19 @@ class LmuWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `現在のエナジー残量は警告設定を取得せず既定文言で読み上げる`() =
+    fun `現在のエネルギー残量は警告設定を取得せず既定文言で読み上げる`() =
         runTest {
             coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("バーチャルエナジー残量は42パーセント", volume = VOLUME) } just Runs
+            coEvery { speakText("バーチャルエネルギー残量は42パーセント", volume = VOLUME) } just Runs
             speaker(LmuWindowsRemainingVirtualEnergyCurrentValue(42), VOLUME)
             verify(exactly = 0) { observeRemainingText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("バーチャルエナジー残量は42パーセント", volume = VOLUME) }
+            coVerify(exactly = 1) { speakText("バーチャルエネルギー残量は42パーセント", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `現在のエナジー残量は解決済み本文を読み上げる`() =
+    fun `現在のエネルギー残量は解決済み本文を読み上げる`() =
         runTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("残量42%", volume = VOLUME) } just Runs
@@ -331,18 +331,18 @@ class LmuWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `現在のエナジー残量のTTS利用不可では読み上げない`() =
+    fun `現在のエネルギー残量のTTS利用不可では読み上げない`() =
         runTest {
             coEvery { checkTextToSpeechAvailable() } returns false
             assertNull(speaker.readoutText(LmuWindowsRemainingVirtualEnergyCurrentValue(42)))
             speaker(LmuWindowsRemainingVirtualEnergyCurrentValue(42), VOLUME)
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 0) { speakText("バーチャルエナジー残量は42パーセント", volume = VOLUME) }
+            coVerify(exactly = 0) { speakText("バーチャルエネルギー残量は42パーセント", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `現在のエナジー残量の解決済み本文が空白ならTTSを確認せず読み上げない`() =
+    fun `現在のエネルギー残量の解決済み本文が空白ならTTSを確認せず読み上げない`() =
         runTest {
             val event = LmuWindowsRemainingVirtualEnergyCurrentValue(42, resolvedText = " ")
             assertNull(speaker.readoutText(event))
