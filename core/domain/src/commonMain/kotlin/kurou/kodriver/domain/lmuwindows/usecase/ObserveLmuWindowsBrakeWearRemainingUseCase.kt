@@ -9,12 +9,12 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearWheelRemaining
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.lmuwindows.model.calculateBrakeWearRemainingPercent
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeFailureThicknessDefault
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.WheelIndex
 
 /**
  * ブレーキの残量（厚さと%）を流す。取得できなかった周期は null を流す。

@@ -13,10 +13,10 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.WheelIndex
 import kotlin.math.roundToInt
 import kotlin.test.Test
 import kotlin.test.assertEquals

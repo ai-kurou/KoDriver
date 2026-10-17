@@ -1,8 +1,8 @@
 package kurou.kodriver.domain.acewindows.model
 
 import kotlinx.serialization.Serializable
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.WheelIndex
 
 /**
  * Assetto Corsa EVO の Windows 共有メモリから読み取ったタイヤのカーカス平均温度。

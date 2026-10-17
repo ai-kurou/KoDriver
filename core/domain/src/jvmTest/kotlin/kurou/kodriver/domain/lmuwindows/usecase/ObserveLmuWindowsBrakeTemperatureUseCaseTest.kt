@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

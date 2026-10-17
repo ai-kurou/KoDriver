@@ -47,7 +47,6 @@ import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
 import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
@@ -57,6 +56,7 @@ import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

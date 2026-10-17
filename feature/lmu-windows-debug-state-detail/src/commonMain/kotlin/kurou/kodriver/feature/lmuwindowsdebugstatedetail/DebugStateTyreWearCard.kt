@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWheelData
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_tyre_wear_fl
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_tyre_wear_fr

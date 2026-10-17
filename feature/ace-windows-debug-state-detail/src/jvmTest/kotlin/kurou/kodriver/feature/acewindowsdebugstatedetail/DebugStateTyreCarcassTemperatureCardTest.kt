@@ -5,8 +5,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Rule
 import org.junit.Test
 

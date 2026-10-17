@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMemorySource
 import kurou.kodriver.core.windowssharedmemory.datasource.FakeWindowsSharedMemoryReader
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
+import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

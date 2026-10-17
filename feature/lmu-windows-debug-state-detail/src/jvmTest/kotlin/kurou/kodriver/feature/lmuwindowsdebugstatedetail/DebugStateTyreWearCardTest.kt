@@ -14,9 +14,9 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleData
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.PressureKpa
+import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Rule
 import org.junit.Test
 

@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearRatio
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreWearRepository
+import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

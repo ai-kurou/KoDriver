@@ -2,9 +2,9 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWheelData
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.PressureKpa
+import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

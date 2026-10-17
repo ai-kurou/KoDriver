@@ -12,9 +12,9 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyRatio
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.PressureKpa
+import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

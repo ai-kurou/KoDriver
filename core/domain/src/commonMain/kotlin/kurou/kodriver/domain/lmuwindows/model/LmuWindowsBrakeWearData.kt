@@ -2,6 +2,7 @@ package kurou.kodriver.domain.lmuwindows.model
 
 import kotlinx.serialization.Serializable
 import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.WheelIndex
 
 /**
  * LMU のホイールごとのブレーキ残り厚さ。

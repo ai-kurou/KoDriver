@@ -2,6 +2,7 @@ package kurou.kodriver.domain.lmuwindows.model
 
 import kotlinx.serialization.Serializable
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.WheelIndex
 
 /**
  * LMU のホイールごとのブレーキ温度。

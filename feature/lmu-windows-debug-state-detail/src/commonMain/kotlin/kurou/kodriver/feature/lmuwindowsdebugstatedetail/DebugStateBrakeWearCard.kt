@@ -10,7 +10,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearWheelRemaining
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_wear_fl
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_wear_fr

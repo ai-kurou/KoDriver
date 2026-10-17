@@ -5,7 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_damage_overheating
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_damage_part_detached

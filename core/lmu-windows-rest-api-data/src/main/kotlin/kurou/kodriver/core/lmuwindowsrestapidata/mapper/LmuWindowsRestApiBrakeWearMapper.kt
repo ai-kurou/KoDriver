@@ -2,8 +2,8 @@ package kurou.kodriver.core.lmuwindowsrestapidata.mapper
 
 import kurou.kodriver.core.lmuwindowsrestapidata.dto.RepairAndRefuelResponseDto
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.WheelIndex
 
 internal object LmuWindowsRestApiBrakeWearMapper {
     /**

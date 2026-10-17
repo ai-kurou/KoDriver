@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.WheelIndex
 import kotlin.math.round
 
 internal fun wheelCarcassTemperatureText(

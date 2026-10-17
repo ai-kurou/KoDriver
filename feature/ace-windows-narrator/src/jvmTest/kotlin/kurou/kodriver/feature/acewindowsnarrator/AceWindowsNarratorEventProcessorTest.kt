@@ -44,7 +44,6 @@ import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugReadoutRequest
@@ -52,6 +51,7 @@ import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.Test

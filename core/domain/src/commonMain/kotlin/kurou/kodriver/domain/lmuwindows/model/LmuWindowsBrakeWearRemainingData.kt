@@ -2,6 +2,7 @@ package kurou.kodriver.domain.lmuwindows.model
 
 import kotlinx.serialization.Serializable
 import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.WheelIndex
 
 /** 1輪分のブレーキ残量。[remainingPercent] は 0〜100（小数を含む）。 */
 @Serializable
