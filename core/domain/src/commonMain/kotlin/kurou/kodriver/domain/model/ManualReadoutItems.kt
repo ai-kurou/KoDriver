@@ -5,6 +5,7 @@ import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT
@@ -19,6 +20,7 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value,
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root.value,
                 LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
+                LmuWindowsReadoutItemKey.MyBestLap.Root.value,
             )
         }
 
@@ -70,6 +72,10 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
             LMU_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
         }
 
+        LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
+            LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
+        }
+
         else -> {
             ""
         }
@@ -86,15 +92,17 @@ fun manualReadoutItemName(itemKey: String): String =
         LmuWindowsReadoutItemKey.BrakeWear.Root.value -> "ブレーキ残量"
         LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> "ブレーキ温度"
         LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
+        LmuWindowsReadoutItemKey.MyBestLap.Root.value -> "自己ベストラップ"
         else -> ""
     }
 
-/** 鮮度判定済みの手動読み上げ項目。残存率は0〜1、温度は℃で、未受信・鮮度切れは null。 */
+/** 鮮度判定済みの手動読み上げ項目。残存率は0〜1、温度は℃、ラップタイムはmsで、未受信・鮮度切れは null。 */
 data class LmuWindowsManualReadoutItem(
     val key: String,
     val textTemplate: String,
     val ratio: Double?,
     val celsius: Float? = null,
+    val lapTimeMs: Long? = null,
 )
 
 /** 摂氏温度を使う手動読み上げ項目かを判定する。 */

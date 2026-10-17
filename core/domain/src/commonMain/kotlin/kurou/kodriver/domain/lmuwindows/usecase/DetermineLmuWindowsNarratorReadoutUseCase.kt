@@ -41,6 +41,7 @@ import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
@@ -557,6 +558,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 LmuWindowsReadoutItemKey.TyreWear.Root.value -> LmuWindowsReadoutItemKey.TyreWear.Root
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value -> LmuWindowsReadoutItemKey.BrakeWear.Root
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> LmuWindowsReadoutItemKey.BrakeTemperature.Root
+                LmuWindowsReadoutItemKey.MyBestLap.Root.value -> LmuWindowsReadoutItemKey.MyBestLap.Root
                 LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> LmuWindowsReadoutItemKey.TyreTemperature.Root
                 else -> LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
             }
@@ -567,7 +569,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 }
 
                 supportedItems.all {
-                    if (isLmuWindowsManualReadoutTemperatureItem(it.key)) {
+                    if (it.key == LmuWindowsReadoutItemKey.MyBestLap.Root.value) {
+                        it.lapTimeMs == null || it.lapTimeMs <= 0
+                    } else if (isLmuWindowsManualReadoutTemperatureItem(it.key)) {
                         it.celsius == null
                     } else {
                         it.ratio == null
@@ -591,6 +595,11 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     private fun manualReadoutItemText(item: LmuWindowsManualReadoutItem): String {
         val noDataText = "${manualReadoutItemName(item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
+        if (item.key == LmuWindowsReadoutItemKey.MyBestLap.Root.value) {
+            return item.lapTimeMs?.takeIf { it > 0 }?.let {
+                formatLmuWindowsMyBestLapReadoutText(item.textTemplate, it)
+            } ?: noDataText
+        }
         if (isLmuWindowsManualReadoutTemperatureItem(item.key)) {
             return item.celsius?.let {
                 if (item.key == LmuWindowsReadoutItemKey.TyreTemperature.Root.value) {

@@ -64,13 +64,13 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 依頼の `simulatorId` が `Simulator.LmuWindows.id` で、選択中のシミュレーターも LMU の場合だけ処理する。
 同じ UseCase 群の `ObserveManualReadoutSetsUseCase` は `named(Simulator.LmuWindows.id)` の Repository を参照する。
 依頼ごとに保存済みセットを取得し、`setId` に対応するセットの `itemKeys` に
-`RemainingVirtualEnergy.Root.value`・`TyreWear.Root.value`・`BrakeWear.Root.value`・`BrakeTemperature.Root.value` を保存順に走査し、各項目の現在値の文を「、」で連結し、1依頼につき1イベントで読み上げる。
+`RemainingVirtualEnergy.Root.value`・`TyreWear.Root.value`・`BrakeWear.Root.value`・`BrakeTemperature.Root.value`・`TyreTemperature.Root.value`・`MyBestLap.Root.value` を保存順に走査し、各項目の現在値の文を「、」で連結し、1依頼につき1イベントで読み上げる。
 セットが見つからない場合は何もしない。いずれの対応項目も含まれない場合は `determineManualReadout` で項目なし文言を読み上げる。
 対象セットの `itemTexts` から文言テンプレートを取得し、未保存なら
 `manualReadoutItemTextDefault` の項目ごとの既定値を使う。
-手動判定時に `{percent}` を四捨五入した現在残量、`{celsius}` を四捨五入した項目ごとの最高温度へ置換し、イベントの `resolvedText` と `narratedText` に反映する。
+手動判定時に `{percent}` を四捨五入した現在残量、`{celsius}` を四捨五入した項目ごとの最高温度、`{laptime}` をセッションの自己ベストラップタイムへ置換し、イベントの `resolvedText` と `narratedText` に反映する。
 キュー待機中も解決済み文言を維持し、発話とテレメトリログは同じ文言になる。空白文言は発話せずスキップとしてログに残す。
-`readManualReadout` が最新値と受信から5秒以内の鮮度を確認し、項目キー・テンプレート・残存率または摂氏温度（データ無しは null）を
+`readManualReadout` が最新値と受信から5秒以内の鮮度を確認し、項目キー・テンプレート・残存率・摂氏温度・ラップタイムms（データ無しは null）を
 `determineManualReadout` へ渡し、同UseCase内で既存の `PERCENTAGE_SCALE` により整数%へ四捨五入して連結する。
 連結イベントを `processManualReadout` へ1回だけ渡す。先頭の対応項目のキーをイベントに使い、そのキーのキュー設定を true にする。
 手動はタブの操作・セットホットキー押下ともに自動読み上げスイッチを無視し、ユーザーのキュー設定に関係なく常にキューの末尾に並ぶ。
@@ -82,7 +82,7 @@ Android でも WebSocket で受信した値を使う。未受信・鮮度切れ�
 JVM テストで連続依頼・警告状態の維持・未受信・鮮度の境界・宛先と選択中シミュレーターの照合・
 未受信・鮮度切れそれぞれのタブ依頼とセットホットキー押下のデータ無し発話（queue=true）・ログ保存・切り替え後の古い値の破棄・セット別文言・空白文言・F9との分離・タブの操作とセットホットキー押下のキューとログ、Koin の UseCase 群の解決を確認する。
 
-LMU の手動依頼（一覧の ▶・セットホットキー）で、対象セットにバーチャルエナジー残量・タイヤ摩耗・ブレーキ残量・ブレーキ温度・タイヤ温度のいずれのキーも含まれない場合は、データの有無に関係なく「読み上げる項目がありません」を開始音付きで読み上げる。文言は編集不可の `LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT` を使い、データ無しと同じ経路で常にキュー末尾へ追加してログを保存する。存在しないセット ID は読み上げない。
+LMU の手動依頼（一覧の ▶・セットホットキー）で、対象セットにバーチャルエナジー残量・タイヤ摩耗・ブレーキ残量・ブレーキ温度・タイヤ温度・自己ベストラップのいずれのキーも含まれない場合は、データの有無に関係なく「読み上げる項目がありません」を開始音付きで読み上げる。文言は編集不可の `LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT` を使い、データ無しと同じ経路で常にキュー末尾へ追加してログを保存する。存在しないセット ID は読み上げない。
 
 タイヤ摩耗は共有前の Flow で最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。受信から5秒以内なら最小残存率を domain に渡し、UseCase で整数%に丸めて他の項目と同じ連結用イベントで処理する。既定文言は「タイヤ摩耗残り{percent}%」。未受信・鮮度切れ・空の wheels はデータ無しとして扱う。自動警告の前回値・警告済み状態は変更しない。
 
@@ -92,6 +92,10 @@ LMU の手動依頼（一覧の ▶・セットホットキー）で、対象セ
 
 手動タイヤ温度は `TyreTemperature.Root` に対応し、`LmuWindowsTyreCarcassTemperatureData.wheels` の `CelsiusReading.value` の最大カーカス温度を四捨五入した整数℃を、既定文言「タイヤ温度{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱・低温警告の前回値・警告済み状態は変更しない。
 
+手動自己ベストラップは `LmuWindowsReadoutItemKey.MyBestLap.Root.value` に対応し、セッションの `timing.bestLapTimeMs` を読む。既定文言は `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」）。既存の `formatLmuWindowsMyBestLapReadoutText` で `{laptime}` を「1分23秒456」形式に置換する。未受信・最後の受信から `CURRENT_VALUE_MAX_AGE_MS`（5秒）超・0以下はデータ無しとし、複数項目では「自己ベストラップはデータがありません」を連結、全項目がデータ無しなら「データがありません」のみ。自動の `MyBestLap.Root` / `DetailEnabled` スイッチとは独立し、`determineMyBestLap`・`personalBestMs` の自動更新判定の状態は変更しない。保存順に連結した1イベントを常にキュー末尾へ追加し、開始音・優先度・ログには先頭項目のキーを使う。
+
 ブレーキ温度も共有前の Flow で最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。手動セットは共通の `LmuWindowsManualReadoutText` / `processManualReadout` を使い、温度用の単独現在値イベントは追加しない。
 
 タイヤ温度は既存の自動警告用購読を流用し、受信時に手動用の最新値と時刻を保持する。フラッグ更新では受信時刻を更新せず、`CURRENT_VALUE_MAX_AGE_MS`（5秒）で鮮度を判定する。
+
+自己ベストは `lmuTelemetryFlow` の共有前に受信値と受信時刻を保持し、シミュレーター切り替えで破棄する。手動依頼時に鮮度を判定し、`LmuWindowsManualReadoutItem.lapTimeMs` へ渡す。手動イベントは `LmuWindowsManualReadoutText` として Speaker / EventProcessor の共通経路を通るため、自動自己ベストの文言解決・有効判定は適用しない。

@@ -53,4 +53,8 @@
     <string name="manual_readout_set_name_edit">セット名を編集</string>
     <string name="manual_readout_set_name_confirm">確定</string>
     <string name="manual_readout_hotkey_other_set_named">%1$s の「%2$s」で使用中のため割り当てできません</string>
+    <string name="manual_readout_my_best_lap">自己ベストラップ</string>
+    <string name="manual_readout_category_lap">ラップ</string>
+    <string name="manual_readout_laptime_insert">ラップタイム挿入</string>
+    <string name="manual_readout_laptime_hint">{laptime} はセッションの自己ベストラップタイムに置き換わります</string>
 </resources>

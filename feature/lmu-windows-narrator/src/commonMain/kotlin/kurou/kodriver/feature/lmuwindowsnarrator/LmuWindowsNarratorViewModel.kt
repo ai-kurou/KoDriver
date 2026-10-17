@@ -230,13 +230,20 @@ internal class LmuWindowsNarratorViewModel(
             .observeQueueEnabledStates()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
+    private var latestBestLapTimeMs: Long? = null
+    private var latestBestLapReceivedAtMs: Long = 0L
+
     private val lmuTelemetryFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
+                latestBestLapTimeMs = null
                 if (simulator !is Simulator.LmuWindows) {
                     emptyFlow()
                 } else {
-                    vehicleApproachUseCases.observeLmuWindows()
+                    vehicleApproachUseCases.observeLmuWindows().onEach {
+                        latestBestLapTimeMs = it.timing.bestLapTimeMs
+                        latestBestLapReceivedAtMs = currentTimeMs()
+                    }
                 }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
@@ -801,10 +808,16 @@ internal class LmuWindowsNarratorViewModel(
             latestTyreTemperature?.takeIf {
                 observedAtMs - latestTyreTemperatureReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
             }
+        val bestLapTimeMs =
+            latestBestLapTimeMs?.takeIf {
+                observedAtMs - latestBestLapReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS && it > 0
+            }
         val items =
             set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }.map { key ->
                 val ratio =
-                    if (isLmuWindowsManualReadoutTemperatureItem(key)) {
+                    if (key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
+                        isLmuWindowsManualReadoutTemperatureItem(key)
+                    ) {
                         null
                     } else if (key == LmuWindowsReadoutItemKey.BrakeWear.Root.value) {
                         brakeWear?.let { data ->
@@ -822,18 +835,13 @@ internal class LmuWindowsNarratorViewModel(
                         energy?.remainingRatio?.value
                     }
                 val celsius =
-                    if (key == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) {
-                        brakeTemperature?.let { data -> maxFiniteCelsius(data.wheels.values) }
-                    } else if (key == LmuWindowsReadoutItemKey.TyreTemperature.Root.value) {
-                        tyreTemperature?.let { data -> maxFiniteCelsius(data.wheels.values) }
-                    } else {
-                        null
-                    }
+                    manualReadoutCelsius(key, brakeTemperature?.wheels?.values, tyreTemperature?.wheels?.values)
                 LmuWindowsManualReadoutItem(
                     key,
                     set.itemTexts[key] ?: manualReadoutItemTextDefault(key),
                     ratio,
                     celsius,
+                    lapTimeMs = bestLapTimeMs.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value },
                 )
             }
         val state = narratorState
@@ -952,6 +960,18 @@ internal class LmuWindowsNarratorViewModel(
                 pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
             )
 }
+
+/** 温度系の手動読み上げ項目の最高温度。温度系以外、またはデータ無しなら null。 */
+private fun manualReadoutCelsius(
+    key: String,
+    brakeReadings: Collection<CelsiusReading>?,
+    tyreReadings: Collection<CelsiusReading>?,
+): Float? =
+    when (key) {
+        LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> brakeReadings?.let { maxFiniteCelsius(it) }
+        LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> tyreReadings?.let { maxFiniteCelsius(it) }
+        else -> null
+    }
 
 /** 非有限値（NaN・無限大）を除いた最高温度。有効な値が無ければ null（データ無し扱い）。 */
 private fun maxFiniteCelsius(readings: Collection<CelsiusReading>): Float? =

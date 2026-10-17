@@ -66,6 +66,36 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
 
     @Test
+    fun `手動自己ベストは正のラップタイムを読み欠損と保存順を反映し自動状態を維持する`() {
+        val key = LmuWindowsReadoutItemKey.MyBestLap.Root
+        val tyre = LmuWindowsReadoutItemKey.TyreWear.Root
+        val state = LmuWindowsNarratorState(personalBestMs = 80_000L)
+        val best = LmuWindowsManualReadoutItem(key.value, "自己ベストラップ {laptime}", null, lapTimeMs = 83_456L)
+        val wear = LmuWindowsManualReadoutItem(tyre.value, "タイヤ{percent}%", 0.8)
+        val cases =
+            listOf(
+                Triple(listOf(best), key, "自己ベストラップ 1分23秒456"),
+                Triple(listOf(best, wear), key, "自己ベストラップ 1分23秒456、タイヤ80%"),
+                Triple(listOf(wear, best), tyre, "タイヤ80%、自己ベストラップ 1分23秒456"),
+                Triple(listOf(best.copy(lapTimeMs = null, ratio = 1.0), wear), key, "自己ベストラップはデータがありません、タイヤ80%"),
+                Triple(listOf(best.copy(lapTimeMs = 0), wear), key, "自己ベストラップはデータがありません、タイヤ80%"),
+                Triple(listOf(best.copy(lapTimeMs = -1), wear), key, "自己ベストラップはデータがありません、タイヤ80%"),
+                Triple(listOf(best, wear.copy(ratio = null)), key, "自己ベストラップ 1分23秒456、タイヤ摩耗はデータがありません"),
+                Triple(listOf(best.copy(lapTimeMs = null)), key, "データがありません"),
+                Triple(listOf(best.copy(lapTimeMs = 0)), key, "データがありません"),
+                Triple(listOf(best.copy(lapTimeMs = -1), wear.copy(ratio = null)), key, "データがありません"),
+                Triple(listOf(best.copy(textTemplate = "")), key, ""),
+                Triple(listOf(best.copy(textTemplate = "記録{laptime} {unknown}")), key, "記録1分23秒456 {unknown}"),
+            )
+        cases.forEach { (items, firstKey, text) ->
+            val decision = useCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            assertEquals(firstKey, decision.events.single().readoutItemKey)
+            assertEquals(text, decision.events.single().narratedText)
+        }
+    }
+
+    @Test
     fun `LMUの手動判定はGT7の残り燃料キーを読み上げ対象にしない`() {
         val state = LmuWindowsNarratorState()
         val decision =
