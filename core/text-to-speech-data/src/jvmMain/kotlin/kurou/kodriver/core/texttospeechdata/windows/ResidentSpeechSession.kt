@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
  * 待っている要求をすべて完了させて以降は使えない状態にする。
  *
  * 排他は呼び出し元（[SapiSpeechSynthesizer]）が保持する [lock] と共有する。
- * Windows専用の外部プロセスを起動するためユニットテストの対象外。
+ * プロセスの起動は呼び出し元が担当し、テストではProcessのFakeで入出力と終了を制御する。
  */
 internal class ResidentSpeechSession(
     private val process: Process,
