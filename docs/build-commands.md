@@ -16,6 +16,10 @@
 # Kover 対象モジュールのテストとカバレッジレポート生成
 ./gradlew koverXmlReport
 
+# CI の unit-test と同様にスクリーンショットテストを除外してカバレッジレポート生成
+# verifyRoborazzi* / recordRoborazzi* タスクを指定した場合は、このプロパティによる除外は行わない
+./gradlew koverXmlReport -PexcludeScreenshotTests=true
+
 # 完了報告・PR 作成前の必須チェック一式（全モジュールのdetekt・ktlintCheck・
 # assertModuleGraph・assertArchitectureDocModuleList・全ユニットテスト（カバレッジ付き）・
 # 両アプリのビルド・デスクトップ統合テスト）
