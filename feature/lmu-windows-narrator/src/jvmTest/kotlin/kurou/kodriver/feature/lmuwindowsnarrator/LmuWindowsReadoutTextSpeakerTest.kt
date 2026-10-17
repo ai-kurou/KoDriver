@@ -157,6 +157,18 @@ class LmuWindowsReadoutTextSpeakerTest {
         }
 
     @Test
+    fun `エナジーの残り周回数から始まる手動セットは連結本文を一回だけ読み上げる`() =
+        runTest {
+            val text = "エナジーは残り約3周、タイヤ80%"
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText(text, volume = VOLUME) } just Runs
+            speaker(LmuWindowsManualReadoutText(LmuWindowsReadoutItemKey.PitTiming.Root, text), VOLUME)
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText(text, volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
     fun `自己ベストラップから始まる手動セットは連結本文を一回だけ読み上げる`() =
         runTest {
             val text = "自己ベストラップ 1分23秒456、タイヤ80%"

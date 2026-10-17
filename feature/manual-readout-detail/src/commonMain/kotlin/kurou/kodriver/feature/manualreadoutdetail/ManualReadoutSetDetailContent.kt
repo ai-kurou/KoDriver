@@ -39,9 +39,11 @@ import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5RemainingFuelLapsRead
 import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5TyreTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsMyBestLapReadoutPlaceholders
+import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsPitTimingReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -70,6 +72,8 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_text_reset
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_text_unknown
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_title
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_virtual_energy_laps_hint
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -223,6 +227,10 @@ private fun unknownPlaceholders(
     text: String,
 ): List<String> =
     when {
+        itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> {
+            findUnknownLmuWindowsPitTimingReadoutPlaceholders(text)
+        }
+
         itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
             findUnknownLmuWindowsMyBestLapReadoutPlaceholders(text)
         }
@@ -246,6 +254,7 @@ private fun unknownPlaceholders(
 
 private fun insertPlaceholder(itemKey: String): String =
     when {
+        itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
         itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
@@ -254,6 +263,13 @@ private fun insertPlaceholder(itemKey: String): String =
     }
 
 /** 選択中の項目の文言を編集し、入力ごとに保存する。 */
+private fun lapsHintResource(itemKey: String): StringResource =
+    if (itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) {
+        Res.string.manual_readout_virtual_energy_laps_hint
+    } else {
+        Res.string.manual_readout_laps_hint
+    }
+
 @Composable
 internal fun ManualReadoutItemTextField(
     text: String,
@@ -262,7 +278,9 @@ internal fun ManualReadoutItemTextField(
     itemKey: String,
 ) {
     val isLapTime = itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value
-    val isLaps = itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
+    val isLaps =
+        itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value ||
+            itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
     val isTemperature =
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value || isLmuWindowsManualReadoutTemperatureItem(itemKey)
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
@@ -323,7 +341,7 @@ internal fun ManualReadoutItemTextField(
                         if (isLapTime) {
                             Res.string.manual_readout_laptime_hint
                         } else if (isLaps) {
-                            Res.string.manual_readout_laps_hint
+                            lapsHintResource(itemKey)
                         } else if (isTemperature) {
                             Res.string.manual_readout_celsius_hint
                         } else {

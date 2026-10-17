@@ -1,10 +1,10 @@
 # manual-readout-detail
 
-手動読み上げセットの詳細画面。シミュレーター ID とセット ID を受け取り、セット名（未設定時は一覧上の番号）によるタイトルと保存済みの選択項目を表示する。LMU は「バーチャルエナジー残量」「タイヤ摩耗」「ブレーキ残量」「ブレーキ温度」「タイヤ温度」「自己ベストラップ」の6項目、GT7 は「残り燃料」「残り燃料の周回数」の2項目、ACE は未対応の説明を表示する。「その他」詳細と同じ `DetailPaneScaffold` を使い、`canNavigateBack` が true の場合に戻るボタンを表示し、`onBack` を通知する。「読み上げる項目」カードには `selectedItemKeys` の順で選択済み項目のみを表示し、各行にドラッグハンドル・項目名・削除ボタンと既存の文言入力欄を置く。
+手動読み上げセットの詳細画面。シミュレーター ID とセット ID を受け取り、セット名（未設定時は一覧上の番号）によるタイトルと保存済みの選択項目を表示する。LMU は「バーチャルエナジー残量」「タイヤ摩耗」「ブレーキ残量」「ブレーキ温度」「タイヤ温度」「自己ベストラップ」「エナジーの残り周回数」の7項目、GT7 は「残り燃料」「残り燃料の周回数」の2項目、ACE は未対応の説明を表示する。「その他」詳細と同じ `DetailPaneScaffold` を使い、`canNavigateBack` が true の場合に戻るボタンを表示し、`onBack` を通知する。「読み上げる項目」カードには `selectedItemKeys` の順で選択済み項目のみを表示し、各行にドラッグハンドル・項目名・削除ボタンと既存の文言入力欄を置く。
 
-「＋ 項目を追加」から Desktop / Android 共通の `AlertDialog` を開き、未選択項目をカテゴリ別に表示する。カテゴリと表示名の対応は feature 内で管理し、現在は「エネルギー」の LMU「バーチャルエナジー残量」・GT7「残り燃料」「残り燃料の周回数」と「タイヤ」の「タイヤ摩耗」「タイヤ温度」、「ブレーキ」の「ブレーキ残量」「ブレーキ温度」、「ラップ」の LMU「自己ベストラップ」。選択すると末尾へ追加して閉じる。未選択項目がない場合、または domain の `MANUAL_READOUT_SET_ITEM_MAX`（3件）に達した場合は追加ボタンを無効化し、上限時は説明を表示する。未選択時は短い説明と追加ボタンを表示する。
+「＋ 項目を追加」から Desktop / Android 共通の `AlertDialog` を開き、未選択項目をカテゴリ別に表示する。カテゴリと表示名の対応は feature 内で管理し、現在は「エネルギー」の LMU「バーチャルエナジー残量」「エナジーの残り周回数」・GT7「残り燃料」「残り燃料の周回数」と「タイヤ」の「タイヤ摩耗」「タイヤ温度」、「ブレーキ」の「ブレーキ残量」「ブレーキ温度」、「ラップ」の LMU「自己ベストラップ」。選択すると末尾へ追加して閉じる。未選択項目がない場合、または domain の `MANUAL_READOUT_SET_ITEM_MAX`（3件）に達した場合は追加ボタンを無効化し、上限時は説明を表示する。未選択時は短い説明と追加ボタンを表示する。
 
-`libs.reorderable` の `ReorderableColumn` でドラッグ終了時に `moveItem` を呼び、`ManualReadoutSet.itemKeys` の順序を保存する。最大3項目のため、画面のスクロール内で通常の Column として配置する。試聴文は選択順に空欄を除いて「、」でつなぎ、domain の置換関数で仮想エネルギー・タイヤ摩耗・ブレーキ残量・GT7 の残り燃料のパーセントをサンプル値50に、ブレーキ温度の `{celsius}` をサンプル値500℃に、タイヤ温度の `{celsius}` をサンプル値90℃に、自己ベストの `{laptime}` を83456ms（1分23秒456）に置換する。選択項目がある場合は区切り線の下に空でない試聴文を大きめに表示し、その下に試聴ボタンを右寄せで配置する。項目がなければ試聴ボタンを表示しない。Narrator の読み上げロジックは変更しない。
+`libs.reorderable` の `ReorderableColumn` でドラッグ終了時に `moveItem` を呼び、`ManualReadoutSet.itemKeys` の順序を保存する。最大3項目のため、画面のスクロール内で通常の Column として配置する。試聴文は選択順に空欄を除いて「、」でつなぎ、domain の置換関数で仮想エネルギー・タイヤ摩耗・ブレーキ残量・GT7 の残り燃料のパーセントをサンプル値50に、ブレーキ温度の `{celsius}` をサンプル値500℃に、タイヤ温度の `{celsius}` をサンプル値90℃に、自己ベストの `{laptime}` を83456ms（1分23秒456）に、エナジーの `{laps}` を3周に置換する。選択項目がある場合は区切り線の下に空でない試聴文を大きめに表示し、その下に試聴ボタンを右寄せで配置する。項目がなければ試聴ボタンを表示しない。Narrator の読み上げロジックは変更しない。
 
 `ManualReadoutSetDetailViewModel` は `ObserveManualReadoutSetsUseCase` で対象セットを観測し、`UpdateManualReadoutSetUseCase` で追加・削除・並べ替えと項目ごとの文言を保存する。追加は重複・未対応キー・3件上限を検証する。未知キーは保持し、連続操作は直前の保存結果を参照する。セットが見つからない場合は説明を表示する。上部バー右端の削除アイコン（`DetailPaneScaffold` の `actions`）から確認ダイアログを開き、`DeleteManualReadoutSetUseCase` を実行し、削除完了時に Content の `onDeleted` を通知する。
 
@@ -42,6 +42,8 @@ LMU の手動セットは `determineManualReadout` で各項目の文を保存�
 
 手動自己ベストラップは `LmuWindowsReadoutItemKey.MyBestLap.Root.value` に対応し、セッションの `timing.bestLapTimeMs` を読む。既定文言は `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」）。既存の `formatLmuWindowsMyBestLapReadoutText` で `{laptime}` を「1分23秒456」形式に置換する。未受信・最後の受信から `CURRENT_VALUE_MAX_AGE_MS`（5秒）超・0以下はデータ無しとし、複数項目では「自己ベストラップはデータがありません」を連結、全項目がデータ無しなら「データがありません」のみ。自動の `MyBestLap.Root` / `DetailEnabled` スイッチとは独立し、`determineMyBestLap`・`personalBestMs` の自動更新判定の状態は変更しない。保存順に連結した1イベントを常にキュー末尾へ追加し、開始音・優先度・ログには先頭項目のキーを使う。
 
+手動エナジー残り周回数は `LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value` に対応し、蓄積済みの `pitTimingVirtualEnergyTrackingState` から `(currentValue / lastValidLapConsumption).toInt()` で算出する。既定文言は `LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT`（「エナジーは残り約{laps}周」）で、1周以上なら `formatLmuWindowsPitTimingReadoutText` で置換し、0周なら固定文言「エナジー残り1周未満」を読む。蓄積前（`currentLap == -1`）、消費量が null・0以下、算出結果が負、最新エナジーが未受信・受信から5秒超の場合はデータ無しとし、複数項目では「エナジーの残り周回数はデータがありません」を連結、全項目がデータ無しなら「データがありません」のみ。自動のスイッチ・閾値・ベストラップ経過時間には依存せず、追跡状態・自動判定状態（`lastAnnouncedPitTimingVirtualEnergyLaps` 等）は変更しない。保存順の1イベントを常にキュー末尾へ追加し、先頭がこの項目なら開始音・優先度・ログには `PitTiming.Root` を使う。タイヤ摩耗の残り周回数は対象外。
+
 ブレーキ温度・タイヤ温度の文言欄は `{celsius}` の挿入・最高温度への置換説明と、温度用の未知プレースホルダー検出を使う。1セットの選択上限は従来どおり3件。
 
 GT7 の残り燃料は `Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value` を使い、既定文言は「燃料は残り{percent}パーセント」。`{percent}` の挿入・現在の残量（%）の説明は LMU の割合項目と共通で、文言編集・リセット・試聴に対応する。保存した項目と文言は GT7 Narrator の `determineManualReadout` が参照する。未受信・受信から5秒超は「残り燃料はデータがありません」、対応項目なしは「読み上げる項目がありません」を読む。
@@ -64,3 +66,5 @@ GT7 の手動「タイヤ温度」は `TyreTemperature.Root` を使い、`curren
 名前は表示専用で、読み上げ文には含めない。ACE・LMU・GT7 共通仕様。
 
 自己ベストの文言欄には「ラップタイム挿入」チップと `{laptime}` の置換ヒントを表示する。未知プレースホルダー検出は `findUnknownLmuWindowsMyBestLapReadoutPlaceholders` を再利用し、`{percent}`・`{celsius}`・`{laps}` は未知として警告する。試聴は83456msを使い、先頭項目が自己ベストなら `MyBestLap.Root` の開始音で再生する。
+
+エナジーの残り周回数は energy カテゴリに表示し、`{laps}` 用のヒント・挿入ボタンを共用する。未知プレースホルダー検出は `findUnknownLmuWindowsPitTimingReadoutPlaceholders`、試聴は3周と `formatLmuWindowsPitTimingReadoutText` を使い、先頭項目なら `PitTiming.Root` の開始音を再生する。

@@ -232,6 +232,7 @@ internal class LmuWindowsNarratorViewModel(
 
     private var latestBestLapTimeMs: Long? = null
     private var latestBestLapReceivedAtMs: Long = 0L
+    private var latestPitTimingUpdatedAtMs: Long = 0L
 
     private val lmuTelemetryFlow =
         selectedSimulator
@@ -815,7 +816,8 @@ internal class LmuWindowsNarratorViewModel(
         val items =
             set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }.map { key ->
                 val ratio =
-                    if (key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
+                    if (key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
+                        key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
                         isLmuWindowsManualReadoutTemperatureItem(key)
                     ) {
                         null
@@ -842,6 +844,14 @@ internal class LmuWindowsNarratorViewModel(
                     ratio,
                     celsius,
                     lapTimeMs = bestLapTimeMs.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value },
+                    remainingLaps =
+                        if (key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value && energy != null &&
+                            observedAtMs - latestPitTimingUpdatedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                        ) {
+                            narratorUseCases.determineReadout.manualPitTimingVirtualEnergyRemainingLaps(narratorState)
+                        } else {
+                            null
+                        },
                 )
             }
         val state = narratorState
@@ -892,6 +902,7 @@ internal class LmuWindowsNarratorViewModel(
         ) { telemetry, virtualEnergy, tyreWear -> Triple(telemetry, virtualEnergy, tyreWear) }
             .onEach { (telemetry, virtualEnergy, tyreWear) ->
                 val observedAtMs = currentTimeMs()
+                latestPitTimingUpdatedAtMs = observedAtMs
                 val state = narratorState
                 val settings = currentSettings
                 val virtualEnergyDecision =
