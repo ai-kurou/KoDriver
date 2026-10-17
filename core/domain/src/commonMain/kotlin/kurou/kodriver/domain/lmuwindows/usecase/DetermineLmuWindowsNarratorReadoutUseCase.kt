@@ -26,6 +26,7 @@ import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
@@ -557,12 +558,20 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val supportedItems = items.filter { it.key in manualReadoutItemKeys(Simulator.LmuWindows.id) }
         val key =
             when (supportedItems.firstOrNull()?.key) {
-                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> LmuWindowsReadoutItemKey.PitTiming.Root
+                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value,
+                LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
+                -> LmuWindowsReadoutItemKey.PitTiming.Root
+
                 LmuWindowsReadoutItemKey.TyreWear.Root.value -> LmuWindowsReadoutItemKey.TyreWear.Root
+
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value -> LmuWindowsReadoutItemKey.BrakeWear.Root
+
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> LmuWindowsReadoutItemKey.BrakeTemperature.Root
+
                 LmuWindowsReadoutItemKey.MyBestLap.Root.value -> LmuWindowsReadoutItemKey.MyBestLap.Root
+
                 LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> LmuWindowsReadoutItemKey.TyreTemperature.Root
+
                 else -> LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
             }
         val text =
@@ -590,7 +599,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     private fun isManualReadoutItemWithoutData(item: LmuWindowsManualReadoutItem): Boolean =
         when {
-            item.key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> {
+            isManualRemainingLapsItem(item.key) -> {
                 item.remainingLaps == null || item.remainingLaps < 0
             }
 
@@ -608,8 +617,14 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         }
 
     /** 自動判定の条件や状態を変更せず、蓄積済みのエナジー消費量から残り周回数を読む。 */
-    fun manualPitTimingVirtualEnergyRemainingLaps(state: LmuWindowsNarratorState): Int? {
-        val tracking = state.pitTimingVirtualEnergyTrackingState
+    fun manualPitTimingVirtualEnergyRemainingLaps(state: LmuWindowsNarratorState): Int? =
+        manualPitTimingRemainingLaps(state.pitTimingVirtualEnergyTrackingState)
+
+    /** 自動判定の条件や状態を変更せず、蓄積済みのタイヤ摩耗量から残り周回数を読む。 */
+    fun manualPitTimingTyreWearRemainingLaps(state: LmuWindowsNarratorState): Int? =
+        manualPitTimingRemainingLaps(state.pitTimingTyreWearTrackingState)
+
+    private fun manualPitTimingRemainingLaps(tracking: LmuWindowsPitTimingTrackingState): Int? {
         if (tracking.currentLap == -1) return null
         val consumption = tracking.lastValidLapConsumption ?: return null
         if (!consumption.isFinite() || consumption <= 0.0) return null
@@ -617,23 +632,30 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         return (tracking.currentValue / consumption).toInt()
     }
 
-    private fun manualVirtualEnergyLapsText(item: LmuWindowsManualReadoutItem): String? =
+    private fun isManualRemainingLapsItem(key: String): Boolean =
+        key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
+            key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
+
+    private fun manualRemainingLapsText(item: LmuWindowsManualReadoutItem): String? =
         item.remainingLaps?.takeIf { it >= 0 }?.let {
             if (it == 0 && item.textTemplate.isNotBlank()) {
-                LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
+                if (item.key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) {
+                    LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT
+                } else {
+                    LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
+                }
             } else {
                 formatLmuWindowsPitTimingReadoutText(item.textTemplate, it)
             }
         }
 
     private fun isManualLapBasedItem(key: String): Boolean =
-        key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
-            key == LmuWindowsReadoutItemKey.MyBestLap.Root.value
+        isManualRemainingLapsItem(key) || key == LmuWindowsReadoutItemKey.MyBestLap.Root.value
 
-    /** エナジー残り周回数・自己ベストラップの文。データ無しは null。 */
+    /** エナジー・タイヤ摩耗の残り周回数と自己ベストラップの文。データ無しは null。 */
     private fun manualLapBasedText(item: LmuWindowsManualReadoutItem): String? =
-        if (item.key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) {
-            manualVirtualEnergyLapsText(item)
+        if (isManualRemainingLapsItem(item.key)) {
+            manualRemainingLapsText(item)
         } else {
             item.lapTimeMs?.takeIf { it > 0 }?.let { formatLmuWindowsMyBestLapReadoutText(item.textTemplate, it) }
         }

@@ -787,6 +787,99 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `手動タイヤ摩耗周回数は蓄積前と鮮度切れをデータ無しにし自動スイッチに依存しない`() =
+        runTest(testDispatcher) {
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyres = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val key = LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
+            val root = LmuWindowsReadoutItemKey.PitTiming.Root
+            var currentTime = 0L
+            createViewModel(
+                telemetryChannel = telemetry,
+                remainingVirtualEnergyChannel = energy,
+                tyreWearChannel = tyres,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("laps", listOf(key))),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(root to false),
+                pitTimingEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.PitTiming.TyreWear to false),
+                currentTimeMs = { currentTime },
+            )
+            stubTelemetryLogSave(logs, createdAt = 0L, root)
+            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "laps")
+            requests.send(request)
+            energy.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyres.send(tyreWear(fl = 1.0))
+            telemetry.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
+            telemetry.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            requests.send(request)
+            tyres.send(tyreWear(fl = 0.8))
+            telemetry.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            requests.send(request)
+            requests.send(request)
+            assertEquals(logs[2].telemetryJson, logs[3].telemetryJson)
+            currentTime = 5_000L
+            stubTelemetryLogSave(logs, createdAt = currentTime, root)
+            requests.send(request)
+            currentTime = 5_001L
+            stubTelemetryLogSave(logs, createdAt = currentTime, root)
+            requests.send(request)
+            assertEquals(
+                listOf(
+                    "データがありません",
+                    "データがありません",
+                    "タイヤは残り約4周",
+                    "タイヤは残り約4周",
+                    "タイヤは残り約4周",
+                    "データがありません",
+                ),
+                spoken.map { it.narratedText },
+            )
+            assertEquals(List(6) { root }, spoken.map { it.readoutItemKey })
+        }
+
+    @Test
+    fun `手動タイヤ摩耗周回数を読んでも同じ周回の自動ピット判定を抑制しない`() =
+        runTest(testDispatcher) {
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyres = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            var currentTime = 0L
+            createViewModel(
+                telemetryChannel = telemetry,
+                remainingVirtualEnergyChannel = energy,
+                tyreWearChannel = tyres,
+                manualRequestChannel = requests,
+                manualSets =
+                    listOf(ManualReadoutSet("laps", listOf(LmuWindowsReadoutItemKey.PitTiming.TyreWear.value))),
+                pitTimingTyreWearLapsThreshold = 3,
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.PitTiming.Root to true),
+                currentTimeMs = { currentTime },
+            )
+            energy.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyres.send(tyreWear(fl = 1.0))
+            telemetry.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
+            telemetry.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            tyres.send(tyreWear(fl = 0.8))
+            telemetry.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            tyres.send(tyreWear(fl = 0.5))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "laps"))
+            currentTime = 60_000L
+            tyres.send(tyreWear(fl = 0.5))
+            assertEquals(
+                listOf("タイヤは残り約2周", "タイヤ摩耗のため2周以内にピットイン"),
+                spoken.map { it.narratedText },
+            )
+        }
+
+    @Test
     fun `手動タイヤ温度は過熱と低温の自動警告状態を維持しフラッグ通知で鮮度を更新しない`() =
         runTest(testDispatcher) {
             val temperature = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)

@@ -72,6 +72,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_text_reset
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_text_unknown
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_title
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_tyre_wear_laps_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_virtual_energy_laps_hint
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -227,7 +228,7 @@ private fun unknownPlaceholders(
     text: String,
 ): List<String> =
     when {
-        itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> {
+        isLmuWindowsManualReadoutLapsItem(itemKey) -> {
             findUnknownLmuWindowsPitTimingReadoutPlaceholders(text)
         }
 
@@ -252,9 +253,13 @@ private fun unknownPlaceholders(
         }
     }
 
+private fun isLmuWindowsManualReadoutLapsItem(itemKey: String): Boolean =
+    itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
+        itemKey == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
+
 private fun insertPlaceholder(itemKey: String): String =
     when {
-        itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
+        isLmuWindowsManualReadoutLapsItem(itemKey) -> LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
         itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
@@ -266,6 +271,8 @@ private fun insertPlaceholder(itemKey: String): String =
 private fun lapsHintResource(itemKey: String): StringResource =
     if (itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) {
         Res.string.manual_readout_virtual_energy_laps_hint
+    } else if (itemKey == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) {
+        Res.string.manual_readout_tyre_wear_laps_hint
     } else {
         Res.string.manual_readout_laps_hint
     }
@@ -280,7 +287,7 @@ internal fun ManualReadoutItemTextField(
     val isLapTime = itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value
     val isLaps =
         itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value ||
-            itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
+            isLmuWindowsManualReadoutLapsItem(itemKey)
     val isTemperature =
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value || isLmuWindowsManualReadoutTemperatureItem(itemKey)
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)

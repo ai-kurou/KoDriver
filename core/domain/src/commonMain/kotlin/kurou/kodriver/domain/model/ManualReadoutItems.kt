@@ -8,6 +8,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_BRAKE_W
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT
 
@@ -23,6 +24,7 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
                 LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
                 LmuWindowsReadoutItemKey.MyBestLap.Root.value,
                 LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value,
+                LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
             )
         }
 
@@ -44,6 +46,10 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
     when (itemKey) {
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> {
             LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT
+        }
+
+        LmuWindowsReadoutItemKey.PitTiming.TyreWear.value -> {
+            LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT
         }
 
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
@@ -91,6 +97,7 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
 fun manualReadoutItemName(itemKey: String): String =
     when (itemKey) {
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> "エナジーの残り周回数"
+        LmuWindowsReadoutItemKey.PitTiming.TyreWear.value -> "タイヤ摩耗の残り周回数"
         Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> "残り燃料の周回数"

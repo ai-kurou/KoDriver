@@ -285,6 +285,49 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `タイヤ摩耗の残り周回数から始まる手動セットはRootキーで一回キューへ追加しログを保存する`() =
+        runTest {
+            val key = LmuWindowsReadoutItemKey.PitTiming.Root
+            val text = "タイヤは残り約3周、VE50%"
+            val event = LmuWindowsManualReadoutText(key, text)
+            val resolved = event.withResolvedText(text)
+            val json = slot<String>()
+            every { ttsEngine.speak(resolved, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.LmuWindows,
+                    key,
+                    text,
+                    NarrationOutcome.QUEUED,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor().processManualReadout(
+                listOf(event),
+                emptyList(),
+                mapOf(key to true),
+                123L,
+                logContext(),
+            )
+            val root = Json.parseToJsonElement(json.captured).jsonObject
+            assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
+            assertEquals("123", root["observedAtMs"]!!.jsonPrimitive.content)
+            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.LmuWindows,
+                    key,
+                    text,
+                    NarrationOutcome.QUEUED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `自己ベストラップから始まる手動セットはRootキーで一回キューへ追加しログを保存する`() =
         runTest {
             val key = LmuWindowsReadoutItemKey.MyBestLap.Root
