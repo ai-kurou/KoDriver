@@ -492,9 +492,8 @@ kover {
                 classes("*PreviewParameterProvider")
                 classes("kurou.kodriver.core.windowshotkeydata.JnaHotkeyNativeApi")
                 classes("kurou.kodriver.core.windowsstartupdata.windows.JnaStartupRegistryApi")
-                classes("kurou.kodriver.core.devicevolumedata.windows.JnaWasapiNativeApi*")
-                classes("kurou.kodriver.core.devicevolumedata.windows.MMDevice*")
-                classes("kurou.kodriver.core.devicevolumedata.windows.AudioEndpointVolume")
+                classes("kurou.kodriver.core.devicevolumedata.windows.JnaWasapiComBridge")
+                classes("kurou.kodriver.core.devicevolumedata.windows.WasapiComInvoker")
             }
         }
     }
