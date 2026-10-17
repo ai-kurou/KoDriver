@@ -16,3 +16,10 @@ KoDriver自体のアナウンス音量設定とは異なり、OS側の再生音�
 
 ![Module Graph](../../docs/graphs/core-device-volume-data.svg)
 <!-- MODULE-GRAPH-END -->
+
+## テスト
+
+`WasapiMasterVolumeSourceTest` は `WasapiNativeApi` のFakeを使い、音量の取得・設定、
+COM初期化結果に応じた終了処理、各取得段階と音量操作の失敗時のリソース解放を検証する。
+JNAを直接呼ぶ `JnaWasapiNativeApi` とCOMラッパーはユニットテスト対象外とし、
+ルートのKover集計から除外する。実際のWASAPI接続はWindows環境での確認が必要。
