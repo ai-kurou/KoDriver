@@ -72,10 +72,14 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithTag("manual_readout_set_name_input").performImeAction()
         rule.onNodeWithTag("manual_readout_set_name").assertTextEquals("あ".repeat(20))
         rule.onNodeWithContentDescription("セット名を編集").performClick()
+        rule.onNodeWithTag("manual_readout_set_name_input").performTextReplacement("   " + "い".repeat(20))
+        rule.onNodeWithTag("manual_readout_set_name_input").performImeAction()
+        rule.onNodeWithTag("manual_readout_set_name").assertTextEquals("い".repeat(20))
+        rule.onNodeWithContentDescription("セット名を編集").performClick()
         rule.onNodeWithTag("manual_readout_set_name_input").performTextReplacement("")
         rule.onNodeWithTag("manual_readout_set_name_input").performImeAction()
         rule.onNodeWithTag("manual_readout_set_name").assertTextEquals("セット 2")
-        assertEquals(listOf("レース用", "あ".repeat(20), ""), saved)
+        assertEquals(listOf("レース用", "あ".repeat(20), "い".repeat(20), ""), saved)
     }
 
     @Test

@@ -62,7 +62,7 @@ internal fun ManualReadoutSetNameRow(
         LaunchedEffect(Unit) { focusRequester.requestFocus() }
         OutlinedTextField(
             value = input,
-            onValueChange = { input = it.takeManualReadoutSetName() },
+            onValueChange = { input = it.trimStart().takeManualReadoutSetName() },
             singleLine = true,
             label = { Text(stringResource(Res.string.manual_readout_set_name)) },
             placeholder = { Text(defaultName) },
