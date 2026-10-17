@@ -618,7 +618,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     private fun manualVirtualEnergyLapsText(item: LmuWindowsManualReadoutItem): String? =
         item.remainingLaps?.takeIf { it >= 0 }?.let {
-            if (it == 0) {
+            if (it == 0 && item.textTemplate.isNotBlank()) {
                 LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
             } else {
                 formatLmuWindowsPitTimingReadoutText(item.textTemplate, it)

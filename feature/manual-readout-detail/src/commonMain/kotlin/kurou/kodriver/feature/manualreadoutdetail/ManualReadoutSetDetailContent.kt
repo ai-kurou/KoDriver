@@ -72,6 +72,8 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_text_reset
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_text_unknown
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_title
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_virtual_energy_laps_hint
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -261,6 +263,13 @@ private fun insertPlaceholder(itemKey: String): String =
     }
 
 /** 選択中の項目の文言を編集し、入力ごとに保存する。 */
+private fun lapsHintResource(itemKey: String): StringResource =
+    if (itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) {
+        Res.string.manual_readout_virtual_energy_laps_hint
+    } else {
+        Res.string.manual_readout_laps_hint
+    }
+
 @Composable
 internal fun ManualReadoutItemTextField(
     text: String,
@@ -332,7 +341,7 @@ internal fun ManualReadoutItemTextField(
                         if (isLapTime) {
                             Res.string.manual_readout_laptime_hint
                         } else if (isLaps) {
-                            Res.string.manual_readout_laps_hint
+                            lapsHintResource(itemKey)
                         } else if (isTemperature) {
                             Res.string.manual_readout_celsius_hint
                         } else {

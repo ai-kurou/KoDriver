@@ -117,7 +117,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("エナジーの残り周回数").performClick()
         rule.onNodeWithText(defaultText).assertExists()
-        rule.onNodeWithText("{laps}は残り燃料で走れる周回数に置き換わります。").assertExists()
+        rule.onNodeWithText("{laps}は残りエナジーで走れる周回数に置き換わります。").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {laps}（そのまま読み上げます）").assertDoesNotExist()
         rule.onNode(hasSetTextAction()).performTextReplacement("")
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()

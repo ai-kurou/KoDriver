@@ -112,6 +112,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             Triple(listOf(energy.copy(remainingLaps = null)), root, "データがありません"),
             Triple(listOf(energy.copy(remainingLaps = -1), wear.copy(ratio = null)), root, "データがありません"),
             Triple(listOf(energy.copy(textTemplate = "")), root, ""),
+            Triple(listOf(energy.copy(textTemplate = "", remainingLaps = 0)), root, ""),
             Triple(listOf(energy, wear.copy(ratio = null)), root, "あと3周 {unknown}、タイヤ摩耗はデータがありません"),
             Triple(listOf(energy.copy(textTemplate = "エナジーは残り約{laps}周")), root, "エナジーは残り約3周"),
         ).forEach { (items, firstKey, text) ->

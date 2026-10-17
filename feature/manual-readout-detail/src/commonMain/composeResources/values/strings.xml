@@ -57,5 +57,6 @@
     <string name="manual_readout_category_lap">ラップ</string>
     <string name="manual_readout_laptime_insert">ラップタイム挿入</string>
     <string name="manual_readout_laptime_hint">{laptime} はセッションの自己ベストラップタイムに置き換わります</string>
+    <string name="manual_readout_virtual_energy_laps_hint">{laps}は残りエナジーで走れる周回数に置き換わります。</string>
     <string name="manual_readout_virtual_energy_laps">エナジーの残り周回数</string>
 </resources>
