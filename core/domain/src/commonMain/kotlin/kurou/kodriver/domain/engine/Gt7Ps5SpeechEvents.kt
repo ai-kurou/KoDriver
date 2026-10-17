@@ -2,6 +2,7 @@ package kurou.kodriver.domain.engine
 
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
@@ -114,4 +115,19 @@ data class Gt7Ps5RemainingFuelLapsCurrentValue(
         }
 
     override fun withResolvedText(text: String): Gt7Ps5RemainingFuelLapsCurrentValue = copy(resolvedText = text)
+}
+
+/** GT7 の現在の最高タイヤ温度。手動読み上げではセット内の文言を優先する。 */
+data class Gt7Ps5TyreTemperatureCurrentValue(
+    val celsius: Int,
+    override val resolvedText: String? = null,
+) : Gt7Ps5SpeechEvent {
+    override val readoutItemKey = Gt7Ps5ReadoutItemKey.TyreTemperature.Root
+    override val narratedText =
+        resolvedText ?: formatGt7Ps5TyreTemperatureReadoutText(
+            GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT,
+            celsius,
+        )
+
+    override fun withResolvedText(text: String): Gt7Ps5TyreTemperatureCurrentValue = copy(resolvedText = text)
 }

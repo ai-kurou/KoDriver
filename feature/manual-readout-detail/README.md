@@ -50,3 +50,10 @@ GT7 の「残り燃料の周回数」は `Gt7Ps5ReadoutItemKey.RemainingFuelLaps
 試聴では3周に置換する。エネルギーカテゴリで残り燃料の次に選択できる。
 実際の手動読み上げでは0周以下は「燃料残り1周未満」、推定不能・鮮度切れは項目名付きのデータなし文言を読む。
 空欄なら値の有無にかかわらず読まない。
+
+GT7 の手動「タイヤ温度」は `TyreTemperature.Root` を使い、`currentMaxTyreTemperatureCelsius(telemetry)` で
+4輪の有限値の最高温度を `roundToInt()` した整数℃を取得する。未受信・5秒超・全輪非有限値は
+「タイヤ温度はデータがありません」。既定文言は `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`
+（「タイヤ温度{celsius}℃」）で、既存の GT7 用フォーマッターとプレースホルダー検証を使う。
+詳細のカテゴリはタイヤ、プレビューは90℃。空文言は読まず、自動のしきい値・ヒステリシス・重複抑止・
+スイッチ判定は適用しない。最大3項目を「、」で連結し、開始音・ログのキーは `RemainingFuel.Root` を維持する。

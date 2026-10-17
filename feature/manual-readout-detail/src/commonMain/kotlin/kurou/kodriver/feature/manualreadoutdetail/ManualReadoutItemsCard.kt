@@ -39,6 +39,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
+import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
@@ -47,7 +48,6 @@ import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutTex
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
-import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_add_item
@@ -95,6 +95,11 @@ private val itemPresentations =
             ),
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
             ManualReadoutItemPresentation(Res.string.manual_readout_energy, Res.string.manual_readout_category_energy),
+        Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_tyre_temperature,
+                Res.string.manual_readout_category_tyre,
+            ),
         LmuWindowsReadoutItemKey.TyreWear.Root.value to
             ManualReadoutItemPresentation(Res.string.manual_readout_tyre_wear, Res.string.manual_readout_category_tyre),
         LmuWindowsReadoutItemKey.BrakeWear.Root.value to
@@ -133,6 +138,10 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
 
                     Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
                         formatGt7Ps5RemainingFuelLapsReadoutText(it, PREVIEW_REMAINING_FUEL_LAPS)
+                    }
+
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
+                        formatGt7Ps5TyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS)
                     }
 
                     LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> {
@@ -223,8 +232,7 @@ internal fun ManualReadoutItemsCard(
                                     text = uiState.itemTexts[itemKey] ?: manualReadoutItemTextDefault(itemKey),
                                     defaultText = manualReadoutItemTextDefault(itemKey),
                                     onTextChanged = { onItemTextChanged(itemKey, it) },
-                                    isTemperature = isLmuWindowsManualReadoutTemperatureItem(itemKey),
-                                    isLaps = itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
+                                    itemKey = itemKey,
                                 )
                             }
                         }

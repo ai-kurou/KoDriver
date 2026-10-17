@@ -21,6 +21,7 @@ import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsCurrentValue
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
+import kurou.kodriver.domain.engine.Gt7Ps5TyreTemperatureCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
@@ -57,6 +58,22 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             checkAvailable,
             speakText,
         )
+
+    @Test
+    fun `手動タイヤ温度は自動読み上げ文言を参照せず既定文言と解決済み文言を読む`() =
+        runTest {
+            val event = Gt7Ps5TyreTemperatureCurrentValue(90)
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("タイヤ温度90℃", volume = 80) } just Runs
+            coEvery { speakText("温度90℃", volume = 80) } just Runs
+            assertEquals("タイヤ温度90℃", speaker.readoutText(event))
+            speaker(event, 80)
+            speaker(event.withResolvedText("温度90℃"), 80)
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("タイヤ温度90℃", volume = 80) }
+            coVerify(exactly = 1) { speakText("温度90℃", volume = 80) }
+            confirmVerified(checkAvailable, speakText, observeText, observeEmptyText)
+        }
 
     @Test
     fun `手動燃料周回数は自動読み上げ文言を参照せず既定文言と解決済み文言を読む`() =

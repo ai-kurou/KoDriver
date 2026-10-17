@@ -29,6 +29,16 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class SpeechEventTest {
     @Test
+    fun `GT7の手動タイヤ温度は既定文言と解決済み文言と空文言を扱う`() {
+        val event = Gt7Ps5TyreTemperatureCurrentValue(90)
+        assertEquals(Gt7Ps5ReadoutItemKey.TyreTemperature.Root, event.readoutItemKey)
+        assertEquals("タイヤ温度90℃", event.narratedText)
+        assertEquals("温度90℃", event.withResolvedText("温度90℃").narratedText)
+        assertEquals("", event.withResolvedText("").narratedText)
+        assertEquals(event, event.withResolvedText("変更").copy(resolvedText = null))
+    }
+
+    @Test
     fun `GT7の手動周回数は現在値と1周未満と解決済み文言を保持する`() {
         val event = Gt7Ps5RemainingFuelLapsCurrentValue(3)
         assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root, event.readoutItemKey)

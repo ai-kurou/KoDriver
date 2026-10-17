@@ -10,6 +10,7 @@ import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5SpeechEvent
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
+import kurou.kodriver.domain.engine.Gt7Ps5TyreTemperatureCurrentValue
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
@@ -66,6 +67,7 @@ internal class Gt7Ps5ReadoutTextSpeaker(
         val text =
             when (event) {
                 is Gt7Ps5RemainingFuelLapsCurrentValue -> event.narratedText
+                is Gt7Ps5TyreTemperatureCurrentValue -> event.narratedText
                 is Gt7Ps5RemainingFuelCurrentValue -> event.narratedText
                 is Gt7Ps5ManualReadoutText -> event.resolvedText ?: event.text
                 is Gt7Ps5RemainingFuelWarning -> remainingFuelText(event)

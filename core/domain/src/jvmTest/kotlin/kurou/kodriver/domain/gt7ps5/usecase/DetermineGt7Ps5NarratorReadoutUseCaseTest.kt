@@ -26,6 +26,64 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     private val useCase = DetermineGt7Ps5NarratorReadoutUseCase()
 
     @Test
+    fun `手動タイヤ温度は有限値の最高温度を四捨五入し無効な全輪と未受信はデータなしにする`() {
+        val cases =
+            listOf(
+                listOf(90.4f, 80f, 70f, 60f) to 90,
+                listOf(80f, 90.5f, 70f, 60f) to 91,
+                listOf(80f, 70f, 91.5f, 60f) to 92,
+                listOf(80f, 70f, 60f, 92.5f) to 93,
+                listOf(Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, 90.5f) to 91,
+                listOf(Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NaN) to null,
+            )
+        cases.forEach { (values, expected) ->
+            val wheels = values.map { CelsiusReading(it) }
+            assertEquals(
+                expected,
+                useCase.currentMaxTyreTemperatureCelsius(
+                    telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(wheels[0], wheels[1], wheels[2], wheels[3])),
+                ),
+            )
+        }
+        assertEquals(null, useCase.currentMaxTyreTemperatureCelsius(null))
+    }
+
+    @Test
+    fun `手動タイヤ温度は文言とデータなしと空欄を扱い自動警告状態を維持する`() {
+        val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value
+        val state = Gt7Ps5NarratorState(tyreOverheating = true)
+        val cases =
+            listOf(
+                Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(key), 90) to "タイヤ温度90℃",
+                Gt7Ps5ManualReadoutItem(key, "温度{celsius}℃", 91) to "温度91℃",
+                Gt7Ps5ManualReadoutItem(key, "温度{celsius}℃", null) to "タイヤ温度はデータがありません",
+                Gt7Ps5ManualReadoutItem(key, "", 90) to "",
+                Gt7Ps5ManualReadoutItem(key, " ", null) to "",
+            )
+        cases.forEach { (item, expected) ->
+            val decision = useCase.determineManualReadout(state, listOf(item))
+            assertTrue(state === decision.state)
+            assertEquals(expected, decision.events.single().narratedText)
+            assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, decision.events.single().readoutItemKey)
+        }
+        val items =
+            listOf(
+                Gt7Ps5ManualReadoutItem(Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value, "{percent}%", 42),
+                Gt7Ps5ManualReadoutItem(key, "{celsius}℃", 90),
+                Gt7Ps5ManualReadoutItem(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value, "{laps}周", 3),
+                Gt7Ps5ManualReadoutItem(key, "除外", 90),
+            )
+        assertEquals(
+            "42%、90℃、3周",
+            useCase
+                .determineManualReadout(state, items)
+                .events
+                .single()
+                .narratedText,
+        )
+    }
+
+    @Test
     fun `手動周回数は現在値とゼロ以下とデータなしと空欄を区別する`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
         val cases =
