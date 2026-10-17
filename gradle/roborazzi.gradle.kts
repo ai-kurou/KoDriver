@@ -12,6 +12,8 @@ tasks.withType<Test>().configureEach {
     if (excludeScreenshotTests && !isRecordMode && !isVerifyMode && !isRecordModeAndroid && !isVerifyModeAndroid) {
         filter {
             excludeTestsMatching("*ScreenshotTest")
+            // スクリーンショットテストしかないテストタスクは除外後に0件になるが、失敗扱いにしない
+            isFailOnNoMatchingTests = false
         }
     }
     val isAndroidHostTest = name.contains("AndroidHostTest", ignoreCase = true)
