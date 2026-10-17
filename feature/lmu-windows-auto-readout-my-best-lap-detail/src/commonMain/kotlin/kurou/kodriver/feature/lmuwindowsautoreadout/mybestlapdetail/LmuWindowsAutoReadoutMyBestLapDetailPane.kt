@@ -17,10 +17,10 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.PlaceholderReadoutTextField
-import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
-import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsMyBestLapReadoutPlaceholders
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
-import kurou.kodriver.domain.model.findUnknownLmuWindowsMyBestLapReadoutPlaceholders
 import kurou.kodriver.feature.lmuwindowsautoreadout.mybestlapdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsautoreadout.mybestlapdetail.generated.resources.my_best_lap_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.mybestlapdetail.generated.resources.my_best_lap_enabled

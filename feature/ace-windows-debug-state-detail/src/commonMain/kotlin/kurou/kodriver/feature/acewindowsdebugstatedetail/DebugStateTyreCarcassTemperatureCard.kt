@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_tyre_carcass_temperature_fl
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_tyre_carcass_temperature_fr

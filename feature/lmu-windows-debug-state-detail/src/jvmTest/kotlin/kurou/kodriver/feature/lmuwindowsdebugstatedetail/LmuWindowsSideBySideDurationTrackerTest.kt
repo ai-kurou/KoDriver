@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LateralDistanceMeters
-import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

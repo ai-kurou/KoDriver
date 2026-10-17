@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail
 
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

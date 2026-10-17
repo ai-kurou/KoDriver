@@ -2,7 +2,7 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 
 @Composable
 internal fun VehicleClassContent(lmuWindowsVehicleClass: LmuWindowsVehicleClassData?) {

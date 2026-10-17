@@ -1,8 +1,8 @@
 package kurou.kodriver.core.lmuwindowsdata.mapper
 
-import kurou.kodriver.domain.model.LmuWindowsFuelUnit
-import kurou.kodriver.domain.model.LmuWindowsPitState
-import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitState
+import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test

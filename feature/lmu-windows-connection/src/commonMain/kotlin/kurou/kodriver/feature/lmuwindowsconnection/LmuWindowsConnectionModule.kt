@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsconnection
 
-import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsConnectionUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.CheckLmuWindowsConnectionUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import org.koin.dsl.module
 

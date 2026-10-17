@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.acewindows.model
 
 import kotlinx.serialization.Serializable
-import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 
 /**
  * Assetto Corsa EVO の周辺車両との位置関係。

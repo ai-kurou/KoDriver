@@ -4,9 +4,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
-import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
-import kurou.kodriver.domain.model.WheelIndex
-import kurou.kodriver.domain.repository.LmuWindowsTyreDetachedRepository
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
+import kurou.kodriver.domain.lmuwindows.model.WheelIndex
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreDetachedRepository
 import java.nio.ByteBuffer
 
 internal class LmuWindowsTyreDetachedRepositoryImpl(

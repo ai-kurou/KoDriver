@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 
 internal class LmuWindowsVehicleApproachReadoutTextPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleApproachPreferences>,

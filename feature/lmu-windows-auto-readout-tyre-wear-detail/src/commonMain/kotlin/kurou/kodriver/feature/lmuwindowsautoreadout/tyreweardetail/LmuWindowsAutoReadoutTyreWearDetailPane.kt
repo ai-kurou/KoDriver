@@ -22,11 +22,11 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.PlaceholderReadoutTextField
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_PERCENT_PLACEHOLDER
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_PERCENT_PLACEHOLDER
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsTyreWearReadoutPlaceholders
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
-import kurou.kodriver.domain.model.findUnknownLmuWindowsTyreWearReadoutPlaceholders
 import kurou.kodriver.feature.lmuwindowsautoreadout.tyreweardetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsautoreadout.tyreweardetail.generated.resources.tyre_wear_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.tyreweardetail.generated.resources.tyre_wear_percent_insert

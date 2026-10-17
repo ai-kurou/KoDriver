@@ -7,9 +7,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.SessionPhase
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test

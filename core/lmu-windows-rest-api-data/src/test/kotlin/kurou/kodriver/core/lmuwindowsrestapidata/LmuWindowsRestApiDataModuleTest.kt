@@ -1,6 +1,6 @@
 package kurou.kodriver.core.lmuwindowsrestapidata
 
-import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import org.koin.dsl.koinApplication
 import kotlin.test.Test
 import kotlin.test.assertSame

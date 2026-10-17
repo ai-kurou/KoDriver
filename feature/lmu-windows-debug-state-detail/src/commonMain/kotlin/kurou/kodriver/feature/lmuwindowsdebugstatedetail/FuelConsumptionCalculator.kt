@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 
 private const val PERCENT_MULTIPLIER = 100.0
 

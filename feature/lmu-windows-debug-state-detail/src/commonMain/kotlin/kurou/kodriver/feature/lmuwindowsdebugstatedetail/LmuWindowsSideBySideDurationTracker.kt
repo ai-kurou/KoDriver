@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 
 /** デバッグ画面で観測した、左右それぞれの最長並走時間。 */
 data class LmuWindowsSideBySideDurations(

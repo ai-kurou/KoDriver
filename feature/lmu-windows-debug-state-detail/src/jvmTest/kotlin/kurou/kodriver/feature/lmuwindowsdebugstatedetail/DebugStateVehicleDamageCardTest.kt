@@ -4,9 +4,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
-import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
-import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.lmuwindows.model.WheelIndex
 import org.junit.Rule
 import org.junit.Test
 

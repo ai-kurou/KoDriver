@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import androidx.compose.runtime.Composable
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kotlin.math.round
 
 @Composable

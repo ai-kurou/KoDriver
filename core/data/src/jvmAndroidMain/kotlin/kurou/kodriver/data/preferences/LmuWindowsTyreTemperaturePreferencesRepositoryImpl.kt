@@ -2,10 +2,10 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.lmuwindows.model.SessionPhase
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
-import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 
 internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsTyreTemperaturePreferences>,

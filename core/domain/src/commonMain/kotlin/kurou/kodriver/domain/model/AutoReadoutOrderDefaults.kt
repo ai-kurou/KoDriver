@@ -2,6 +2,7 @@ package kurou.kodriver.domain.model
 
 import kurou.kodriver.domain.acewindows.model.aceWindowsDefaultAutoReadoutOrder
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5DefaultAutoReadoutOrder
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsDefaultAutoReadoutOrder
 
 /**
  * 読み上げ順序（優先度）の初期値。一覧画面と Narrator が同じ実効順序を使うため、`:core:domain` に置く。

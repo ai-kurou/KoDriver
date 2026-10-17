@@ -9,8 +9,8 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
-import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsAllVehicleClasses
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
 import org.junit.Test
 
 class LmuWindowsAutoReadoutBrakeWearDetailPaneScreenshotTest {

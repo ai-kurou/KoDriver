@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.brakeweardetail
 
-import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_SELECTED_DEFAULT
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_SELECTED_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 
 internal data class LmuWindowsAutoReadoutBrakeWearDetailUiState(
     val vehicleClassLowThresholdPercent: Map<LmuWindowsVehicleClassData, Int> = emptyMap(),

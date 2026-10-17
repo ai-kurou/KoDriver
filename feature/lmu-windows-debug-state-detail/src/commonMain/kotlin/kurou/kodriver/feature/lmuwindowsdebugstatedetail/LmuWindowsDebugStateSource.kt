@@ -12,23 +12,23 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
-import kurou.kodriver.domain.model.LmuWindowsPitStatusData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
-import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitStatusUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreDetachedUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 
 internal data class LmuWindowsDebugStateUseCases(
     val observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,

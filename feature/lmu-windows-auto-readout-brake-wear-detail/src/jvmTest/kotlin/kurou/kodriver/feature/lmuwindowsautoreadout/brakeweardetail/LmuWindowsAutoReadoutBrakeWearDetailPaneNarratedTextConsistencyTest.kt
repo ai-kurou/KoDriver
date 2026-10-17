@@ -5,8 +5,8 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
-import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
