@@ -89,6 +89,8 @@ confirmVerified(jmdns)
 
 Kover でカバレッジを計測する。新しいモジュールを追加した場合、ルートの `build.gradle.kts` の `dependencies { }` ブロックに `kover(project(":module:name"))` を追加しないとカバレッジ集計から除外される。
 
+CI の `unit-test` ジョブは `-PexcludeScreenshotTests=true` でスクリーンショットテストを除外している。
+
 ```bash
 # ローカルでカバレッジレポート生成
 ./gradlew koverXmlReport
