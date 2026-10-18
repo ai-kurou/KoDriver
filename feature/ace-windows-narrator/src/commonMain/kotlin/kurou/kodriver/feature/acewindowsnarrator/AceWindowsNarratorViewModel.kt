@@ -18,6 +18,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_THRESHO
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
@@ -35,6 +36,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperature
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
@@ -182,6 +184,8 @@ internal class AceWindowsNarratorViewModel(
     private var narratorState = AceWindowsNarratorState()
     private var latestFuel: AceWindowsFuelData? = null
     private var latestFuelReceivedAtMs = 0L
+    private var latestFuelLaps: AceWindowsRemainingFuelLapsData? = null
+    private var latestFuelLapsReceivedAtMs = 0L
 
     private val currentSettings: AceWindowsNarratorReadoutSettings
         get() =
@@ -215,6 +219,8 @@ internal class AceWindowsNarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.AceWindows) {
+                    latestFuelLaps = null
+                    latestFuelLapsReceivedAtMs = 0L
                     emptyFlow()
                 } else {
                     remainingFuelLapsUseCases.observeAceWindowsRemainingFuelLaps()
@@ -281,9 +287,13 @@ internal class AceWindowsNarratorViewModel(
         val state = narratorState
         val settings = currentSettings
         val fuel = latestFuel?.takeIf { observedAtMs - latestFuelReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
-        val value = determineAceWindowsNarratorReadout.currentRemainingFuelPercent(fuel)
+        val fuelLaps = latestFuelLaps?.takeIf { observedAtMs - latestFuelLapsReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
+        val percent = determineAceWindowsNarratorReadout.currentRemainingFuelPercent(fuel)
+        val laps = determineAceWindowsNarratorReadout.currentRemainingFuelLaps(fuelLaps)
         val items =
             set.itemKeys.map { key ->
+                val value =
+                    if (key == AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value) laps else percent
                 AceWindowsManualReadoutItem(key, set.itemTexts[key] ?: manualReadoutItemTextDefault(key), value)
             }
         val decision = determineAceWindowsNarratorReadout.determineManualReadout(state, items)
@@ -361,6 +371,8 @@ internal class AceWindowsNarratorViewModel(
         remainingFuelLapsFlow
             .onEach { remainingFuelLaps ->
                 val observedAtMs = currentTimeMs()
+                latestFuelLaps = remainingFuelLaps
+                latestFuelLapsReceivedAtMs = observedAtMs
                 val state = narratorState
                 val settings = currentSettings
                 val decision =

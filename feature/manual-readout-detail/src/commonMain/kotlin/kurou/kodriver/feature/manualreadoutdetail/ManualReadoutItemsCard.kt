@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
@@ -112,6 +113,11 @@ private val itemPresentations =
                 Res.string.manual_readout_remaining_fuel,
                 Res.string.manual_readout_category_energy,
             ),
+        AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_remaining_fuel_laps,
+                Res.string.manual_readout_category_energy,
+            ),
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel,
@@ -161,6 +167,7 @@ private const val PREVIEW_BRAKE_WEAR_PERCENT = 50
 private const val PREVIEW_TYRE_WEAR_PERCENT = 50
 private const val PREVIEW_ENERGY_PERCENT = 50
 private const val PREVIEW_REMAINING_FUEL_LAPS = 3
+private const val PREVIEW_ACE_REMAINING_FUEL_LAPS = 5
 
 internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): String =
     uiState.selectedItemKeys
@@ -212,6 +219,10 @@ private fun otherManualReadoutPreview(
     when (itemKey) {
         AceWindowsReadoutItemKey.RemainingFuel.Root.value -> {
             formatAceWindowsRemainingFuelReadoutText(text, PREVIEW_ENERGY_PERCENT)
+        }
+
+        AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> {
+            formatAceWindowsRemainingFuelLapsReadoutText(text, PREVIEW_ACE_REMAINING_FUEL_LAPS)
         }
 
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {

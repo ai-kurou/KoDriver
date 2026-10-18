@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
@@ -31,7 +32,10 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
         }
 
         Simulator.AceWindows.id -> {
-            listOf(AceWindowsReadoutItemKey.RemainingFuel.Root.value)
+            listOf(
+                AceWindowsReadoutItemKey.RemainingFuel.Root.value,
+                AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value,
+            )
         }
 
         Simulator.Gt7Ps5.id -> {
@@ -51,10 +55,6 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
 /** 手動読み上げ項目の既定文言。未対応の項目は空文字を返す。 */
 fun manualReadoutItemTextDefault(itemKey: String): String =
     when (itemKey) {
-        AceWindowsReadoutItemKey.RemainingFuel.Root.value -> {
-            ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
-        }
-
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> {
             LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT
         }
@@ -85,6 +85,21 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
 
         LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
             LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
+        }
+
+        else -> {
+            aceManualReadoutItemTextDefault(itemKey)
+        }
+    }
+
+private fun aceManualReadoutItemTextDefault(itemKey: String): String =
+    when (itemKey) {
+        AceWindowsReadoutItemKey.RemainingFuel.Root.value -> {
+            ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
+        }
+
+        AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> {
+            ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
         }
 
         else -> {
@@ -120,13 +135,19 @@ fun manualReadoutItemName(itemKey: String): String =
     when (itemKey) {
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> "エネルギーの残り周回数"
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value -> "タイヤ摩耗の残り周回数"
-        AceWindowsReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> "バーチャルエネルギー残量"
         LmuWindowsReadoutItemKey.TyreWear.Root.value -> "タイヤ摩耗"
         LmuWindowsReadoutItemKey.BrakeWear.Root.value -> "ブレーキ残量"
         LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> "ブレーキ温度"
         LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
         LmuWindowsReadoutItemKey.MyBestLap.Root.value -> "自己ベストラップ"
+        else -> aceManualReadoutItemName(itemKey)
+    }
+
+private fun aceManualReadoutItemName(itemKey: String): String =
+    when (itemKey) {
+        AceWindowsReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
+        AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> "残り燃料の周回数"
         else -> gt7ManualReadoutItemName(itemKey)
     }
 

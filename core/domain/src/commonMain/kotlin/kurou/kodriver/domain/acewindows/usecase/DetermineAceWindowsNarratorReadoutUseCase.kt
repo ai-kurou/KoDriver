@@ -12,6 +12,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
@@ -24,6 +25,7 @@ import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
 import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelCurrentValue
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelWarning
 import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
@@ -122,14 +124,37 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         )
     }
 
-    private fun manualCurrentValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
+    private fun manualCurrentValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent =
+        when (item.key) {
+            AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> manualRemainingFuelLapsValue(item)
+            else -> manualRemainingFuelValue(item)
+        }
+
+    private fun manualRemainingFuelValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
         val value = item.value ?: 0
         val event =
             AceWindowsRemainingFuelCurrentValue(
                 value,
                 formatAceWindowsRemainingFuelReadoutText(item.textTemplate, value),
             )
-        return when {
+        return withManualNoDataText(item, event)
+    }
+
+    private fun manualRemainingFuelLapsValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
+        val laps = item.value ?: 0
+        val event =
+            AceWindowsRemainingFuelLapsCurrentValue(
+                laps,
+                formatAceWindowsRemainingFuelLapsReadoutText(item.textTemplate, laps),
+            )
+        return withManualNoDataText(item, event)
+    }
+
+    private fun withManualNoDataText(
+        item: AceWindowsManualReadoutItem,
+        event: ReadoutTextEvent,
+    ): ReadoutTextEvent =
+        when {
             item.textTemplate.isBlank() -> {
                 event.withResolvedText("")
             }
@@ -142,13 +167,22 @@ class DetermineAceWindowsNarratorReadoutUseCase {
                 event
             }
         }
-    }
 
     /** 未受信・鮮度切れ・範囲外や非有限の燃料値は手動読み上げのデータなしとして扱う。 */
     fun currentRemainingFuelPercent(data: AceWindowsFuelData?): Int? {
         val percent = data?.remainingPercent?.value ?: return null
         if (!percent.isFinite() || percent < 0.0 || percent > 100.0) return null
         return percent.roundToInt()
+    }
+
+    /**
+     * 未受信・鮮度切れ・非有限・0以下の燃料残り周回数は手動読み上げのデータなしとして扱う。
+     * 0以下は消費実績がない間の値のため、燃料切れと区別できない。
+     */
+    fun currentRemainingFuelLaps(data: AceWindowsRemainingFuelLapsData?): Int? {
+        val remaining = data?.remainingLaps ?: return null
+        if (!remaining.isFinite() || remaining <= 0f || remaining >= Int.MAX_VALUE.toFloat()) return null
+        return floor(remaining).toInt()
     }
 
     fun determineMyBestLap(
