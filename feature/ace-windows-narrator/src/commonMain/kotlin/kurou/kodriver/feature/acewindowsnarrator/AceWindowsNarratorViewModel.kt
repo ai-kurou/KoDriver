@@ -188,7 +188,6 @@ internal class AceWindowsNarratorViewModel(
     private var latestFuelLaps: AceWindowsRemainingFuelLapsData? = null
     private var latestFuelLapsReceivedAtMs = 0L
     private var latestBestLap: AceWindowsBestLapTimeData? = null
-    private var latestBestLapReceivedAtMs = 0L
 
     private val currentSettings: AceWindowsNarratorReadoutSettings
         get() =
@@ -205,7 +204,6 @@ internal class AceWindowsNarratorViewModel(
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.AceWindows) {
                     latestBestLap = null
-                    latestBestLapReceivedAtMs = 0L
                     emptyFlow()
                 } else {
                     myBestLapUseCases.observeBestLapTime()
@@ -299,8 +297,8 @@ internal class AceWindowsNarratorViewModel(
         val fuelLaps = latestFuelLaps?.takeIf { observedAtMs - latestFuelLapsReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
         val percent = determineAceWindowsNarratorReadout.currentRemainingFuelPercent(fuel)
         val laps = determineAceWindowsNarratorReadout.currentRemainingFuelLaps(fuelLaps)
-        val bestLap = latestBestLap?.takeIf { observedAtMs - latestBestLapReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
-        val bestLapTimeMs = determineAceWindowsNarratorReadout.currentBestLapTimeMs(bestLap)
+        // 自己ベストは変化しない間サーバーから再送されない（Android）ため、他の項目と違い鮮度判定をしない。
+        val bestLapTimeMs = determineAceWindowsNarratorReadout.currentBestLapTimeMs(latestBestLap)
         val items =
             set.itemKeys.map { key ->
                 val value =
@@ -327,7 +325,6 @@ internal class AceWindowsNarratorViewModel(
             .onEach { bestLapTime ->
                 val observedAtMs = currentTimeMs()
                 latestBestLap = bestLapTime
-                latestBestLapReceivedAtMs = observedAtMs
                 val state = narratorState
                 val settings = currentSettings
                 val decision =

@@ -365,12 +365,12 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `手動自己ベストラップは5秒を超えたらデータなしを読み上げる`() =
+    fun `手動自己ベストラップは5秒を超えても最後に受信した値を読み上げる`() =
         runTest(testDispatcher) {
             assertManualReadout(
                 hotkey = false,
-                lapsAgeMs = 5_001L,
-                expectedText = "自己ベストラップはデータがありません",
+                lapsAgeMs = 60_000L,
+                expectedText = "自己ベストラップ 1分23秒456",
                 itemKeys = listOf(AceWindowsReadoutItemKey.MyBestLap.Root.value),
             )
         }
