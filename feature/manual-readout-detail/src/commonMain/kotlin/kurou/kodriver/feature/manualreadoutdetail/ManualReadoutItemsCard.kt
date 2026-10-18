@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
@@ -104,6 +105,11 @@ private val itemPresentations =
                 Res.string.manual_readout_category_tyre,
             ),
         LmuWindowsReadoutItemKey.MyBestLap.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_my_best_lap,
+                Res.string.manual_readout_category_lap,
+            ),
+        AceWindowsReadoutItemKey.MyBestLap.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_my_best_lap,
                 Res.string.manual_readout_category_lap,
@@ -231,6 +237,10 @@ private fun otherManualReadoutPreview(
 
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
             formatGt7Ps5RemainingFuelLapsReadoutText(text, PREVIEW_REMAINING_FUEL_LAPS)
+        }
+
+        AceWindowsReadoutItemKey.MyBestLap.Root.value -> {
+            formatAceWindowsMyBestLapReadoutText(text, PREVIEW_BEST_LAP_TIME_MS.toInt())
         }
 
         Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {

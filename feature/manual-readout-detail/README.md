@@ -86,3 +86,4 @@ ACE の「残り燃料」は `AceWindowsReadoutItemKey.RemainingFuel.Root.value`
 保存項目・文言は ACE Narrator が参照し、受信から5秒超・未受信・不正値はデータ無しとして扱う。
 全項目がデータ無しなら「データがありません」、対応項目なしなら「読み上げる項目がありません」を読む。
 ACE の「残り燃料の周回数」は `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value` を使い、既定文言は `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、挿入プレースホルダーは `ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER`、未知プレースホルダー検出は `findUnknownAceWindowsRemainingFuelLapsReadoutPlaceholders` を使う。試聴は5周のサンプル値で置換する。
+ACE の「自己ベストラップ」は `AceWindowsReadoutItemKey.MyBestLap.Root.value` を使い、共有の `manual_readout_my_best_lap` 表示と `formatAceWindowsMyBestLapReadoutText` による試聴を行う。
