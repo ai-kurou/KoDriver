@@ -59,17 +59,25 @@ class HotkeyRepositoryImplTest {
         }
 
     @Test
-    fun `競合後は同じキーでも再試行で再登録され登録済みでは再登録しない`() =
+    fun `競合または失敗後は同じキーでも再試行で再登録され登録済みでは再登録しない`() =
         runTest {
-            val source = RecordingSource(HotkeyRegistrationState.Conflict)
-            val repository = HotkeyRepositoryImpl(source, RecordingPreferences(), backgroundScope)
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                repository.registrationStateStream().collect { }
+            val retryableStates =
+                listOf(
+                    HotkeyRegistrationState.Conflict,
+                    HotkeyRegistrationState.Failed(5),
+                )
+            for (state in retryableStates) {
+                val source = RecordingSource(state)
+                val repository = HotkeyRepositoryImpl(source, RecordingPreferences(), backgroundScope)
+                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                    repository.registrationStateStream().collect { }
+                }
+                testScheduler.runCurrent()
+                repository.retryRegistration()
+                testScheduler.runCurrent()
+                assertEquals(listOf(GlobalHotkey(7, 0x70), GlobalHotkey(7, 0x70)), source.requested)
             }
-            testScheduler.runCurrent()
-            repository.retryRegistration()
-            testScheduler.runCurrent()
-            assertEquals(listOf(GlobalHotkey(7, 0x70), GlobalHotkey(7, 0x70)), source.requested)
+
             val registered = RecordingSource()
             val other = HotkeyRepositoryImpl(registered, RecordingPreferences(), backgroundScope)
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
