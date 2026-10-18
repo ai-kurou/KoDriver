@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.SoundPool
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -15,10 +16,14 @@ import kotlin.coroutines.resume
 /**
  * WAV 音声を再生する Android 向け実装。
  */
-class AndroidSoundPlayer(
+class AndroidSoundPlayer internal constructor(
     private val context: Context,
+    private val soundPool: SoundPool,
+    private val ioDispatcher: CoroutineDispatcher,
+    private val captureError: (Throwable) -> Unit,
 ) : SoundPlayer {
-    private val soundPool =
+    constructor(context: Context) : this(
+        context,
         SoundPool
             .Builder()
             .setMaxStreams(2)
@@ -28,7 +33,10 @@ class AndroidSoundPlayer(
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                     .build(),
-            ).build()
+            ).build(),
+        Dispatchers.IO,
+        ::captureNarratorError,
+    )
 
     private var currentStreamId: Int = 0
 
@@ -46,7 +54,7 @@ class AndroidSoundPlayer(
         volume: Int,
     ) {
         val temp =
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 File.createTempFile("snd_", ".wav", context.cacheDir).also { it.writeBytes(bytes) }
             }
         try {
@@ -57,7 +65,7 @@ class AndroidSoundPlayer(
             val streamId = soundPool.play(soundId, v, v, 1, 0, 1.0f)
             if (streamId == 0) {
                 soundPool.unload(soundId)
-                captureNarratorError(IllegalStateException("SoundPool.play() failed"))
+                captureError(IllegalStateException("SoundPool.play() failed"))
                 return
             }
             currentStreamId = streamId
@@ -74,7 +82,7 @@ class AndroidSoundPlayer(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            captureNarratorError(e)
+            captureError(e)
         } finally {
             temp.delete()
         }
@@ -85,7 +93,7 @@ class AndroidSoundPlayer(
     private suspend fun loadSound(path: String): Int {
         val soundId = withTimeoutOrNull(LOAD_TIMEOUT_MS) { awaitLoad(path) }
         if (soundId == null) {
-            captureNarratorError(IllegalStateException("SoundPool load timed out: $path"))
+            captureError(IllegalStateException("SoundPool load timed out: $path"))
             return 0
         }
         return soundId
@@ -105,7 +113,7 @@ class AndroidSoundPlayer(
                         if (status == 0) {
                             cont.resume(loadedId)
                         } else {
-                            captureNarratorError(IllegalStateException("SoundPool load failed: status=$status"))
+                            captureError(IllegalStateException("SoundPool load failed: status=$status"))
                             soundPool.unload(loadedId)
                             cont.resume(0)
                         }
@@ -128,7 +136,7 @@ class AndroidSoundPlayer(
      */
     private fun playbackDurationMs(bytes: ByteArray): Long =
         wavDurationMs(bytes) ?: run {
-            captureNarratorError(IllegalStateException("WAV duration unknown: ${bytes.size} bytes"))
+            captureError(IllegalStateException("WAV duration unknown: ${bytes.size} bytes"))
             FALLBACK_DURATION_MS
         }
 

@@ -139,7 +139,7 @@ private fun vehicleDamageDisplayName(readoutItemKeyValue: String): String? =
         else -> null
     }
 
-/** LMU にのみ存在し、サブ項目を持たない単独の設定項目（ピットタイミング・バーチャルエナジー残量・タイヤ摩耗）。 */
+/** LMU にのみ存在し、サブ項目を持たない単独の設定項目（ピットタイミング・バーチャルエネルギー残量・タイヤ摩耗）。 */
 @Composable
 private fun lmuStandaloneDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {

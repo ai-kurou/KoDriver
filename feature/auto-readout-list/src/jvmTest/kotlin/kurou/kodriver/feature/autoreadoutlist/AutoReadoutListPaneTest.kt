@@ -133,7 +133,7 @@ class AutoReadoutListPaneTest {
             }
         }
 
-        rule.onNodeWithContentDescription("バーチャルエナジー残量").performClick()
+        rule.onNodeWithContentDescription("バーチャルエネルギー残量").performClick()
 
         assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, clicked.single())
     }
@@ -503,7 +503,7 @@ class AutoReadoutListPaneTest {
 
     @Test
     fun `スマホ幅（411dp）で長い項目名が1行に収まる`() {
-        val names = listOf("ピットタイミング", "バーチャルエナジー残量", "自己ベストラップ")
+        val names = listOf("ピットタイミング", "バーチャルエネルギー残量", "自己ベストラップ")
         rule.setContent {
             KoDriverTheme {
                 Box(modifier = Modifier.requiredSize(411.dp, 3000.dp)) {

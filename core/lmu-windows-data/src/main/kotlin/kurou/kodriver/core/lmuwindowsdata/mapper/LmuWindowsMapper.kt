@@ -225,7 +225,7 @@ internal object LmuWindowsMapper {
     /** 指定オフセットの符号なし8bit整数 (uint8) を返す。 */
     private fun ByteBuffer.readUint8(offset: Int): Int = get(offset).toInt() and 0xFF
 
-    /** プレイヤー車両のバーチャルエナジー残量割合 (0.0-1.0) を返す。 */
+    /** プレイヤー車両のバーチャルエネルギー残量割合 (0.0-1.0) を返す。 */
     internal fun readVirtualEnergyRatio(
         buffer: ByteBuffer,
         vehicleBase: Int,

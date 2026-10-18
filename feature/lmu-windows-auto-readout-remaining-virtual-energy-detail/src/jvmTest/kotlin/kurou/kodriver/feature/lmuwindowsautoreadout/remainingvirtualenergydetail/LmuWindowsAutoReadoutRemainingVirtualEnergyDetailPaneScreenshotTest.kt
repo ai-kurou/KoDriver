@@ -42,7 +42,7 @@ class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPaneScreenshotTest {
                             LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPaneContent(
                                 uiState =
                                     LmuWindowsAutoReadoutRemainingVirtualEnergyDetailUiState(
-                                        readoutText = "エナジー残量{percent}%以下です",
+                                        readoutText = "エネルギー残量{percent}%以下です",
                                         isTextToSpeechAvailable = true,
                                     ),
                             )

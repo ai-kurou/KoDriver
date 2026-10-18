@@ -1812,7 +1812,7 @@ class ApplicationTest {
         }
 
     @Test
-    fun `バーチャルエナジー残量をJSONでWebSocketへ送信する`() =
+    fun `バーチャルエネルギー残量をJSONでWebSocketへ送信する`() =
         testApplication {
             val repository = FakeLmuWindowsVirtualEnergyRepository()
             application {
@@ -1905,7 +1905,7 @@ class ApplicationTest {
         }
 
     @Test
-    fun `バーチャルエナジー残量の同一値は重複して送信されない`() =
+    fun `バーチャルエネルギー残量の同一値は重複して送信されない`() =
         testApplication {
             val repository = FakeLmuWindowsVirtualEnergyRepository()
             application {

@@ -206,7 +206,7 @@ git clone --recursive https://github.com/TinyPedal/TinyPedal.git
 | ドライバー統計 | `.stats` ファイル(グローバル設定フォルダ) |
 | デルタベスト | `.csv`(`deltabest` フォルダ) |
 | 燃料消費デルタ | `.fuel` ファイル |
-| バーチャルエナジー消費デルタ | `.energy` ファイル |
+| バーチャルエネルギー消費デルタ | `.energy` ファイル |
 | セクターベスト | `.sector` ファイル |
 | トラックマップ | `.svg` ファイル |
 | ペースノート | `.tppn` ファイル |
@@ -312,7 +312,7 @@ ACC では REST API の代わりに UDP API(ブロードキャスト API)から�
 |:--|:--|
 | Delta Module | ベストラップとのタイム差計算。最小記録距離(推奨 5〜10m)、スムージング(デフォルト 30 サンプル)、ペース計算(6 サンプル平均)を設定可能 |
 | Force Module | G フォース・ダウンフォース・制動力の計算。重力加速度値、最大 G 値のリセット遅延、平均 G の算出 |
-| Fuel Module | 燃料・バーチャルエナジー消費の追跡と給油量推定。記録距離間隔、燃料重量計算用の燃料密度(`fuel_density`)を設定可能 |
+| Fuel Module | 燃料・バーチャルエネルギー消費の追跡と給油量推定。記録距離間隔、燃料重量計算用の燃料密度(`fuel_density`)を設定可能 |
 | Hybrid Module | ハイブリッド車のバッテリー・電動モーター監視 |
 | Mapping Module | 走行ルートからトラックマップを自動記録・生成(SVG)。Track map / Navigation ウィジェットの元データ。ノード間の最小記録距離(`minimum_node_distance`)を設定可能 |
 | Notes Module | ペースノート・トラックノートの読み込みと位置照合 |
@@ -377,8 +377,8 @@ ACC では REST API の代わりに UDP API(ブロードキャスト API)から�
 | 図解 | ウィジェット | 表示内容 |
 |:--|:--|:--|
 | <img src="images/tinypedal/widget-fuel.svg" width="400"> | Fuel | 燃料使用量・残量・必要給油量・必要ピット回数(`pits` / `early` 列) |
-| <img src="images/tinypedal/widget-virtual-energy.svg" width="400"> | Virtual energy | バーチャルエナジー(LMU のハイパーカー等)の使用量・残量・補給量 |
-| <img src="images/tinypedal/widget-fuel-energy-saver.svg" width="400"> | Fuel energy saver | 燃料またはバーチャルエナジーの節約目標情報 |
+| <img src="images/tinypedal/widget-virtual-energy.svg" width="400"> | Virtual energy | バーチャルエネルギー(LMU のハイパーカー等)の使用量・残量・補給量 |
+| <img src="images/tinypedal/widget-fuel-energy-saver.svg" width="400"> | Fuel energy saver | 燃料またはバーチャルエネルギーの節約目標情報 |
 | <img src="images/tinypedal/widget-battery.svg" width="400"> | Battery | バッテリー使用量 |
 | <img src="images/tinypedal/widget-electric-motor.svg" width="400"> | Electric motor | 電動モーターの使用状況 |
 | <img src="images/tinypedal/widget-pit-stop-estimate.svg" width="400"> | Pit stop estimate | 推定ピットストップ所要時間と補給量。`show_estimated_laps_and_minutes` で、MFD の給油設定どおりに補給した場合の次スティントの走行可能ラップ数・分数を表示 |

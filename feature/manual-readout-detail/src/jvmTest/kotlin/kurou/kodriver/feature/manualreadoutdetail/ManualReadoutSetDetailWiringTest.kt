@@ -84,7 +84,7 @@ class ManualReadoutSetDetailWiringTest {
 
     @Test
     fun `Contentは項目保存と削除と一覧へ戻る通知を配線する`() {
-        assertItemWiring(Simulator.LmuWindows, "バーチャルエナジー残量")
+        assertItemWiring(Simulator.LmuWindows, "バーチャルエネルギー残量")
     }
 
     @Test

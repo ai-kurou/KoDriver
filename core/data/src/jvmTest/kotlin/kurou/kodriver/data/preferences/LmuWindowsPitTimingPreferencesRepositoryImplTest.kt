@@ -45,7 +45,7 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `保存したバーチャルエナジー予想残り周回数を取得できる`() =
+    fun `保存したバーチャルエネルギー予想残り周回数を取得できる`() =
         runTest {
             repository.saveVirtualEnergyLaps(1)
 

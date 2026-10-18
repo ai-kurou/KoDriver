@@ -3,7 +3,7 @@
     <string name="manual_readout_set_title">セット %1$d</string>
     <string name="manual_readout_set_missing">セットが見つかりません</string>
     <string name="manual_readout_no_items">このシミュレーターで選べる項目はまだありません</string>
-    <string name="manual_readout_energy">バーチャルエナジー残量</string>
+    <string name="manual_readout_energy">バーチャルエネルギー残量</string>
     <string name="manual_readout_delete">セットを削除</string>
     <string name="manual_readout_delete_title">セットを削除しますか？</string>
     <string name="manual_readout_delete_body">この操作は取り消せません。</string>
@@ -57,8 +57,8 @@
     <string name="manual_readout_category_lap">ラップ</string>
     <string name="manual_readout_laptime_insert">ラップタイム挿入</string>
     <string name="manual_readout_laptime_hint">{laptime} はセッションの自己ベストラップタイムに置き換わります</string>
-    <string name="manual_readout_virtual_energy_laps_hint">{laps}は残りエナジーで走れる周回数に置き換わります。</string>
-    <string name="manual_readout_virtual_energy_laps">エナジーの残り周回数</string>
+    <string name="manual_readout_virtual_energy_laps_hint">{laps}は残りエネルギーで走れる周回数に置き換わります。</string>
+    <string name="manual_readout_virtual_energy_laps">エネルギーの残り周回数</string>
     <string name="manual_readout_tyre_wear_laps_hint">{laps}は残りタイヤ摩耗で走れる周回数に置き換わります。</string>
     <string name="manual_readout_tyre_wear_laps">タイヤ摩耗の残り周回数</string>
 </resources>

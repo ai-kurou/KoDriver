@@ -73,8 +73,8 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneResetTest {
         setResetTestContent(
             initialState =
                 LmuWindowsAutoReadoutPitTimingDetailUiState(
-                    virtualEnergyText = "編集済みエナジー",
-                    virtualEnergyImminentText = "編集済み必須エナジー",
+                    virtualEnergyText = "編集済みエネルギー",
+                    virtualEnergyImminentText = "編集済み必須エネルギー",
                     tyreWearText = "編集済みタイヤ",
                     tyreWearImminentText = "編集済み必須タイヤ",
                     isTextToSpeechAvailable = false,
@@ -94,11 +94,17 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneResetTest {
 
     @Test
     fun `両通常文言はlaps挿入直後にリセットすると表示も既定値に戻る`() {
+        val editedTexts = mapOf(0 to "エネルギー", 2 to "タイヤ")
         val changes = mutableListOf<Pair<Int, String>>()
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsAutoReadoutPitTimingDetailPaneContent(
-                    uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                    uiState =
+                        LmuWindowsAutoReadoutPitTimingDetailUiState(
+                            isTextToSpeechAvailable = true,
+                            virtualEnergyText = editedTexts.getValue(0),
+                            tyreWearText = editedTexts.getValue(2),
+                        ),
                     onVirtualEnergyTextChanged = { changes += 0 to it },
                     onTyreWearTextChanged = { changes += 2 to it },
                 )
@@ -111,7 +117,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneResetTest {
                 .onAllNodes(
                     hasSetTextAction(),
                 )[fieldIndex]
-                .assertEditableTextEquals(defaultTexts[fieldIndex] + "{laps}")
+                .assertEditableTextEquals(editedTexts.getValue(fieldIndex) + "{laps}")
             rule
                 .onAllNodesWithContentDescription("デフォルトに戻す")[textResetIndices[fieldIndex]]
                 .performScrollTo()
@@ -124,7 +130,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneResetTest {
         }
         assertEquals(
             listOf(0, 2).flatMap { index ->
-                listOf(index to defaultTexts[index] + "{laps}", index to defaultTexts[index])
+                listOf(index to editedTexts.getValue(index) + "{laps}", index to defaultTexts[index])
             },
             changes,
         )

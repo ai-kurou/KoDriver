@@ -15,7 +15,7 @@ class ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCaseTest {
     private val repository: LmuWindowsPitTimingReadoutTextPreferencesRepository = mockk()
 
     @Test
-    fun `バーチャルエナジー読み上げ文言を監視できる`() =
+    fun `バーチャルエネルギー読み上げ文言を監視できる`() =
         runTest {
             every { repository.observeVirtualEnergyReadoutText() } returns MutableStateFlow("ピットイン")
             val useCase = ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase(repository)

@@ -1016,7 +1016,7 @@ private fun maxFiniteCelsius(readings: Collection<CelsiusReading>): Float? =
         .maxOrNull()
 
 /**
- * バーチャルエナジー・タイヤ摩耗のピットタイミング警告が同一tickで両方発火した場合、
+ * バーチャルエネルギー・タイヤ摩耗のピットタイミング警告が同一tickで両方発火した場合、
  * 予想残り周回数が低い方（＝ピット作業がより緊急な方）のみを1回読み上げる。
  */
 private fun selectLowerPitTimingEvent(

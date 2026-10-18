@@ -102,7 +102,7 @@ class ManualReadoutSetDetailViewModelTest {
     }
 
     @Test
-    fun `LMUのエナジー周回数は項目追加と編集文言をセットへ保存する`() =
+    fun `LMUのエネルギー周回数は項目追加と編集文言をセットへ保存する`() =
         runTest(dispatcher) {
             val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
             val original = ManualReadoutSet("target")
@@ -891,7 +891,7 @@ class ManualReadoutSetDetailViewModelTest {
         }
 
     @Test
-    fun `エナジー周回数のプレビューは先頭キーの開始音と置換済み本文を現在の音量で再生する`() =
+    fun `エネルギー周回数のプレビューは先頭キーの開始音と置換済み本文を現在の音量で再生する`() =
         runTest(dispatcher) {
             val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
             every { repository.observeSets() } returns

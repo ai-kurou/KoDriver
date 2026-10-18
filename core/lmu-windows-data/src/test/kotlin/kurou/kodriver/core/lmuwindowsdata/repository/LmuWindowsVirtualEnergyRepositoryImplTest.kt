@@ -28,7 +28,7 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリからバーチャルエナジー残量割合を読み取る`() =
+    fun `共有メモリからバーチャルエネルギー残量割合を読み取る`() =
         runBlocking {
             val reader =
                 FakeVirtualEnergyMemoryReader(
@@ -43,7 +43,7 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
         }
 
     @Test
-    fun `playerIndexに応じた車両スロットからバーチャルエナジー残量割合を読み取る`() =
+    fun `playerIndexに応じた車両スロットからバーチャルエネルギー残量割合を読み取る`() =
         runBlocking {
             val reader =
                 FakeVirtualEnergyMemoryReader(

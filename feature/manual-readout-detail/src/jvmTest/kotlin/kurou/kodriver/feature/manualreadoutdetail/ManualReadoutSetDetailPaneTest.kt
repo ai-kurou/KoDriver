@@ -43,7 +43,7 @@ class ManualReadoutSetDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `エナジーの残り周回数を追加すると既定文言とプレビューを表示する`() {
+    fun `エネルギーの残り周回数を追加すると既定文言とプレビューを表示する`() {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
@@ -61,8 +61,8 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("エナジーの残り周回数").performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("エナジーは残り約3周")
+        rule.onNodeWithText("エネルギーの残り周回数").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("エネルギーは残り約3周")
     }
 
     @Test
@@ -135,7 +135,7 @@ class ManualReadoutSetDetailPaneTest {
     }
 
     @Test
-    fun `エナジーの残り周回数の文言欄は周回数の挿入と警告とリセットと文字数上限を扱う`() {
+    fun `エネルギーの残り周回数の文言欄は周回数の挿入と警告とリセットと文字数上限を扱う`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
         val defaultText = manualReadoutItemTextDefault(key)
         val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
@@ -162,9 +162,9 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("エナジーの残り周回数").performClick()
+        rule.onNodeWithText("エネルギーの残り周回数").performClick()
         rule.onNodeWithText(defaultText).assertExists()
-        rule.onNodeWithText("{laps}は残りエナジーで走れる周回数に置き換わります。").assertExists()
+        rule.onNodeWithText("{laps}は残りエネルギーで走れる周回数に置き換わります。").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {laps}（そのまま読み上げます）").assertDoesNotExist()
         rule.onNode(hasSetTextAction()).performTextReplacement("")
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
@@ -177,7 +177,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{laps}を挿入").performClick()
         rule.onNodeWithText("30/30").assertExists()
-        rule.onNodeWithContentDescription("エナジーの残り周回数を削除").performClick()
+        rule.onNodeWithContentDescription("エネルギーの残り周回数を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
             assertEquals(
@@ -618,7 +618,7 @@ class ManualReadoutSetDetailPaneTest {
         rule
             .onNodeWithTag("manual_readout_preview_sentence")
             .assertExists()
-            .assertTextEquals("バーチャルエナジー残量は50パーセント")
+            .assertTextEquals("バーチャルエネルギー残量は50パーセント")
         rule.runOnIdle { state.value = state.value.copy(itemTexts = mapOf(key to "")) }
         rule.onNodeWithTag("manual_readout_preview_sentence").assertDoesNotExist()
     }
@@ -703,7 +703,7 @@ class ManualReadoutSetDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("バーチャルエナジー残量").assertDoesNotExist()
+        rule.onNodeWithText("バーチャルエネルギー残量").assertDoesNotExist()
         rule.onNodeWithText("試聴").assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("エネルギー").assertExists()
@@ -711,14 +711,14 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("ブレーキ").assertExists()
         rule.onNodeWithText("ラップ").assertExists()
         rule.onNodeWithText("自己ベストラップ").assertExists()
-        rule.onNodeWithText("エナジーの残り周回数").assertExists()
+        rule.onNodeWithText("エネルギーの残り周回数").assertExists()
         rule.onNodeWithText("タイヤ摩耗の残り周回数").assertExists()
         rule.onNodeWithText("ブレーキ残量").assertExists()
         rule.onNodeWithText("ブレーキ温度").assertExists()
         rule.onNodeWithText("タイヤ温度").assertExists()
         rule.onNodeWithText("タイヤ摩耗").assertExists()
         rule.onNodeWithText("キャンセル").performClick()
-        rule.onNodeWithText("バーチャルエナジー残量").assertDoesNotExist()
+        rule.onNodeWithText("バーチャルエネルギー残量").assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("タイヤ摩耗").performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤ摩耗残り50%")
@@ -1009,7 +1009,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("バーチャルエナジー残量").performClick()
+        rule.onNodeWithText("バーチャルエネルギー残量").performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("")
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
@@ -1022,7 +1022,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{percent} を挿入").performClick()
         rule.onNodeWithText("30/30").assertExists()
-        rule.onNodeWithContentDescription("バーチャルエナジー残量を削除").performClick()
+        rule.onNodeWithContentDescription("バーチャルエネルギー残量を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
             assertEquals(

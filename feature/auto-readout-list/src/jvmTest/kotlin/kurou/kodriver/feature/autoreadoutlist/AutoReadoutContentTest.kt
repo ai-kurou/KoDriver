@@ -258,7 +258,7 @@ class AutoReadoutContentTest {
     }
 
     @Test
-    fun `バーチャルエナジー残量をタップすると選択コールバックを呼ぶ`() {
+    fun `バーチャルエネルギー残量をタップすると選択コールバックを呼ぶ`() {
         var veText by mutableStateOf("")
         val selected = mutableListOf<ReadoutItemKey>()
 

@@ -33,7 +33,7 @@ class ReadoutItemDisplayTest {
             "lmu_windows_auto_tyre_temperature_overheat_warning" to "過熱警告",
             "lmu_windows_auto_tyre_temperature_low_warning" to "低温警告",
             "lmu_windows_auto_pit_timing" to "ピットタイミング",
-            "lmu_windows_auto_remaining_virtual_energy" to "バーチャルエナジー残量",
+            "lmu_windows_auto_remaining_virtual_energy" to "バーチャルエネルギー残量",
             "lmu_windows_auto_tyre_wear" to "タイヤ摩耗",
             "lmu_windows_auto_my_best_lap" to "自己ベストラップ",
             "gt7_ps5_auto_my_best_lap" to "自己ベストラップ",

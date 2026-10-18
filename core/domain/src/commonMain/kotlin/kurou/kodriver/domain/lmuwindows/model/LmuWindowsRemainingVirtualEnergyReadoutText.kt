@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.lmuwindows.model
 
-/** バーチャルエナジー残量警告文言の閾値プレースホルダーを置換する。 */
+/** バーチャルエネルギー残量警告文言の閾値プレースホルダーを置換する。 */
 fun formatLmuWindowsRemainingVirtualEnergyReadoutText(
     template: String,
     percentage: Int,

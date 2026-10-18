@@ -59,12 +59,12 @@ class LmuWindowsRemainingVirtualEnergyPreferencesRepositoryImplTest {
                 repository.observeReadoutText().first(),
             )
             repository.saveThresholdPercentage(50)
-            listOf("残量{percent}%", "", " ", "エナジー警告").forEach { text ->
+            listOf("残量{percent}%", "", " ", "エネルギー警告").forEach { text ->
                 repository.saveReadoutText(text)
                 assertEquals(text, repository.observeReadoutText().first())
                 assertEquals(50, repository.observeThresholdPercentage().first())
             }
             repository.saveThresholdPercentage(80)
-            assertEquals("エナジー警告", repository.observeReadoutText().first())
+            assertEquals("エネルギー警告", repository.observeReadoutText().first())
         }
 }
