@@ -81,6 +81,21 @@ class SapiSpeechAvailabilityTest {
     }
 
     @Test
+    fun `利用可否確認の例外を報告して利用不可を返す`() {
+        val failure = IOException("起動失敗")
+        val captured = mutableListOf<Throwable>()
+        val synthesizer =
+            SapiSpeechSynthesizer(
+                isWindows = true,
+                startProcess = { throw failure },
+                captureException = captured::add,
+            )
+
+        assertFalse(synthesizer.isAvailable())
+        assertEquals(listOf(failure), captured)
+    }
+
+    @Test
     fun `終了待機に失敗してもプロセスを破棄する`() {
         val process = FakeSpeechCommandProcess(waitFailure = IOException("待機失敗"))
         assertFalse(SapiSpeechSynthesizer(isWindows = true, startProcess = { process }).isAvailable())

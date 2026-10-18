@@ -70,7 +70,9 @@ internal class SapiSpeechSynthesizer(
             } finally {
                 process.destroy()
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            // 利用可否の誤判定につながるため、プロセス起動・待機の例外をSentryへ報告する。
+            captureException(e)
             false
         }
     }
