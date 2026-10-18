@@ -143,6 +143,19 @@ class ManualReadoutSetDetailPaneScreenshotTest {
 class ManualReadoutSetDetailPaneAceScreenshotTest {
     @Test
     fun `ACEの残り燃料の文言`() = screenshot(manualReadoutItemKeys(Simulator.AceWindows.id), selected = true)
+
+    @Test
+    fun `ACEの項目追加ダイアログ`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
+                        ManualReadoutItemPickerDialog(manualReadoutItemKeys(Simulator.AceWindows.id), {}, {})
+                    }
+                }
+            }
+            onNode(isDialog()).captureRoboImage()
+        }
 }
 
 private fun screenshot(
