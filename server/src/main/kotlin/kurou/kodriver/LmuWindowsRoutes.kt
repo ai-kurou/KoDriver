@@ -15,22 +15,22 @@ internal fun Route.lmuWindowsRoutes(useCases: KoDriverServerUseCases) {
     telemetryWebSocket(KoDriverServerFeature.DAMAGE, Simulator.LmuWindows) {
         useCases.lmuWindows.observeLmuWindowsVehicleDamage()
     }
-    telemetryWebSocket(KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE, Simulator.LmuWindows) {
+    telemetryWebSocket(KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE, Simulator.LmuWindows, distinct = false) {
         useCases.lmuWindows.observeLmuWindowsTyreCarcassTemperature()
     }
-    telemetryWebSocket(KoDriverServerFeature.BRAKE_TEMPERATURE, Simulator.LmuWindows) {
+    telemetryWebSocket(KoDriverServerFeature.BRAKE_TEMPERATURE, Simulator.LmuWindows, distinct = false) {
         useCases.lmuWindows.observeLmuWindowsBrakeTemperature()
     }
     telemetryWebSocket(KoDriverServerFeature.VEHICLE_CLASS, Simulator.LmuWindows) {
         useCases.lmuWindows.observeLmuWindowsVehicleClass()
     }
-    telemetryWebSocket(KoDriverServerFeature.TYRE_WEAR, Simulator.LmuWindows) {
+    telemetryWebSocket(KoDriverServerFeature.TYRE_WEAR, Simulator.LmuWindows, distinct = false) {
         useCases.lmuWindows.observeLmuWindowsTyreWear()
     }
     telemetryWebSocket(KoDriverServerFeature.MY_BEST_LAP, Simulator.LmuWindows) {
         useCases.lmuWindows.observeLmuWindows().map { it.timing }
     }
-    telemetryWebSocket(KoDriverServerFeature.VIRTUAL_ENERGY, Simulator.LmuWindows) {
+    telemetryWebSocket(KoDriverServerFeature.VIRTUAL_ENERGY, Simulator.LmuWindows, distinct = false) {
         useCases.lmuWindows.observeLmuWindowsVirtualEnergy()
     }
     telemetryWebSocket(KoDriverServerFeature.PIT_STATUS, Simulator.LmuWindows) {

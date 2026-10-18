@@ -2,6 +2,7 @@ package kurou.kodriver.core.lmuwindowsdata.datasource
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryPollingSource
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import kurou.kodriver.core.windowssharedmemory.datasource.WindowsSharedMemoryReader
@@ -29,7 +30,9 @@ internal class LmuWindowsSharedMemorySource(
     private var lastKnownEt: Double = Double.NaN
     private var lastEtChangeTimeMs: Long = 0L
 
-    val bufferFlow: Flow<ByteBuffer> = pollingSource.bufferFlow
+    // mCurrentET advances with simulator time; repeated polls of a stopped frame must not refresh telemetry.
+    val bufferFlow: Flow<ByteBuffer> =
+        pollingSource.bufferFlow.distinctUntilChangedBy { it.getDouble(CURRENT_ET_OFFSET) }
 
     suspend fun isConnected(): Boolean =
         pollingSource.withReaderLock { reader ->

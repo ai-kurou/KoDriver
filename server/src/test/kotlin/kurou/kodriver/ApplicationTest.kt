@@ -1138,7 +1138,7 @@ class ApplicationTest {
         }
 
     @Test
-    fun `カーカス温度情報の同一値は重複して送信されない`() =
+    fun `カーカス温度情報は同一値も継続して送信される`() =
         testApplication {
             val repository = FakeLmuWindowsTyreCarcassTemperatureRepository()
             application {
@@ -1229,9 +1229,11 @@ class ApplicationTest {
 
                     val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
                     val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val third = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
                     assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_1, first)
-                    assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_2, second)
+                    assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_1, second)
+                    assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_2, third)
                 }
         }
 
@@ -1332,7 +1334,7 @@ class ApplicationTest {
         }
 
     @Test
-    fun `ブレーキ温度情報の同一値は重複して送信されない`() =
+    fun `ブレーキ温度情報は同一値も継続して送信される`() =
         testApplication {
             val repository = FakeLmuWindowsBrakeTemperatureRepository()
             application {
@@ -1423,9 +1425,11 @@ class ApplicationTest {
 
                     val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
                     val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val third = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
                     assertEquals(BRAKE_TEMPERATURE_JSON_1, first)
-                    assertEquals(BRAKE_TEMPERATURE_JSON_2, second)
+                    assertEquals(BRAKE_TEMPERATURE_JSON_1, second)
+                    assertEquals(BRAKE_TEMPERATURE_JSON_2, third)
                 }
         }
 
@@ -1717,7 +1721,7 @@ class ApplicationTest {
         }
 
     @Test
-    fun `摩耗情報の同一値は重複して送信されない`() =
+    fun `摩耗情報は同一値も継続して送信される`() =
         testApplication {
             val repository = FakeLmuWindowsTyreWearRepository()
             application {
@@ -1805,9 +1809,11 @@ class ApplicationTest {
 
                     val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
                     val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val third = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
                     assertEquals(TYRE_WEAR_JSON_1, first)
-                    assertEquals(TYRE_WEAR_JSON_2, second)
+                    assertEquals(TYRE_WEAR_JSON_1, second)
+                    assertEquals(TYRE_WEAR_JSON_2, third)
                 }
         }
 
@@ -1905,7 +1911,7 @@ class ApplicationTest {
         }
 
     @Test
-    fun `バーチャルエネルギー残量の同一値は重複して送信されない`() =
+    fun `バーチャルエネルギー残量は同一値も継続して送信される`() =
         testApplication {
             val repository = FakeLmuWindowsVirtualEnergyRepository()
             application {
@@ -1993,9 +1999,11 @@ class ApplicationTest {
 
                     val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
                     val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val third = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
                     assertEquals(VIRTUAL_ENERGY_JSON_1, first)
-                    assertEquals(VIRTUAL_ENERGY_JSON_2, second)
+                    assertEquals(VIRTUAL_ENERGY_JSON_1, second)
+                    assertEquals(VIRTUAL_ENERGY_JSON_2, third)
                 }
         }
 
@@ -2096,7 +2104,7 @@ class ApplicationTest {
         }
 
     @Test
-    fun `ACE燃料残量の同一値は重複して送信されない`() =
+    fun `ACE燃料残量は同一値も継続して送信される`() =
         testApplication {
             val repository = FakeAceWindowsFuelRepository()
             application {
@@ -2187,9 +2195,11 @@ class ApplicationTest {
 
                     val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
                     val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val third = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
                     assertEquals(ACE_FUEL_JSON_1, first)
-                    assertEquals(ACE_FUEL_JSON_2, second)
+                    assertEquals(ACE_FUEL_JSON_1, second)
+                    assertEquals(ACE_FUEL_JSON_2, third)
                 }
         }
 
@@ -2844,10 +2854,13 @@ class ApplicationTest {
                     install(WebSockets)
                 }.webSocket("/ws/ace_windows/remaining_fuel_laps") {
                     repository.emit(aceRemainingFuelLapsData)
+                    repository.emit(aceRemainingFuelLapsData)
 
                     val message = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val repeatedMessage = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
                     assertEquals(ACE_REMAINING_FUEL_LAPS_JSON, message)
+                    assertEquals(ACE_REMAINING_FUEL_LAPS_JSON, repeatedMessage)
                 }
         }
 

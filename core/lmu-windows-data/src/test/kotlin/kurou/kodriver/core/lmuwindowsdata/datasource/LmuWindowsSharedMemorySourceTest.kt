@@ -1,5 +1,6 @@
 package kurou.kodriver.core.lmuwindowsdata.datasource
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
@@ -7,10 +8,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -39,6 +42,35 @@ class LmuWindowsSharedMemorySourceTest {
             val source = makeSource(reader)
 
             source.bufferFlow.first()
+        }
+
+    @Test
+    fun `同じ mCurrentET の古いバッファは再配信せず新しい mCurrentET のバッファを配信する`() =
+        runBlocking {
+            val reader = FakeSharedMemoryReader(initialOpen = true, currentEt = 1.0)
+            val source = makeSource(reader)
+            var emitCount = 0
+            val secondEmission = CompletableDeferred<Unit>()
+
+            val job =
+                launch {
+                    source.bufferFlow.collect {
+                        emitCount++
+                        if (emitCount == 2) secondEmission.complete(Unit)
+                    }
+                }
+
+            withTimeout(1_000) {
+                while (emitCount == 0) delay(1)
+            }
+            delay(10)
+            assertEquals(1, emitCount)
+
+            reader.currentEt = 2.0
+            withTimeout(1_000) { secondEmission.await() }
+            job.cancelAndJoin()
+
+            assertEquals(2, emitCount)
         }
 
     @Test
