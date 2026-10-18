@@ -56,6 +56,7 @@ GT7の燃料残り周回数・燃料残量・タイヤ温度・自己ベスト�
 `LmuWindowsPitTimingReadoutTextPreferencesRepository` は予告・直前の読み上げ文言を扱う。
 Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStoreを共有する。
 フィールド・ProtoNumberは維持する。保存ファイル名の `auto_` 導入時は設定を意図的に初期化し、旧ファイルの移行は行わない。
+手動読み上げの残り周回数推定は、商が1,000周を超える場合をデータなしとして扱う。
 
 ## LMUタイヤ温度設定
 

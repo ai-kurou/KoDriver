@@ -25,6 +25,7 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
@@ -629,7 +630,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val consumption = tracking.lastValidLapConsumption ?: return null
         if (!consumption.isFinite() || consumption <= 0.0) return null
         if (!tracking.currentValue.isFinite() || tracking.currentValue < 0.0) return null
-        return (tracking.currentValue / consumption).toInt()
+        val remainingLaps = tracking.currentValue / consumption
+        if (!remainingLaps.isFinite() || remainingLaps > LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX) return null
+        return remainingLaps.toInt()
     }
 
     private fun isManualRemainingLapsItem(key: String): Boolean =
