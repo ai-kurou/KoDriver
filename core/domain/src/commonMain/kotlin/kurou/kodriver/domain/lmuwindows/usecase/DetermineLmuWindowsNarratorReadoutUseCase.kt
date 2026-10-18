@@ -25,7 +25,6 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
@@ -51,6 +50,7 @@ import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutTex
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
@@ -577,7 +577,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val text =
             when {
                 supportedItems.isEmpty() -> {
-                    LMU_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
+                    MANUAL_READOUT_NO_ITEMS_TEXT
                 }
 
                 supportedItems.all { isManualReadoutItemWithoutData(it) } -> {

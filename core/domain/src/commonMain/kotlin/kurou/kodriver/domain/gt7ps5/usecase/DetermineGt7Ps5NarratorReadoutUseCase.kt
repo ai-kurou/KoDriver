@@ -10,7 +10,6 @@ import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.Gt7Ps5TyreTemperatureCurrentValue
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT
-import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
@@ -21,6 +20,7 @@ import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -94,7 +94,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         val supportedItems = items.filter { it.key in supportedKeys }.take(MANUAL_READOUT_SET_ITEM_MAX)
         val text =
             if (supportedItems.isEmpty()) {
-                GT7_PS5_MANUAL_READOUT_NO_ITEMS_TEXT
+                MANUAL_READOUT_NO_ITEMS_TEXT
             } else {
                 supportedItems
                     .map { item -> manualCurrentValue(item).let { it.resolvedText ?: it.narratedText } }

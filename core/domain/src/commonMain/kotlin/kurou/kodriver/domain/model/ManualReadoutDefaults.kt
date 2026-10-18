@@ -1,5 +1,8 @@
 package kurou.kodriver.domain.model
 
+/** 手動読み上げの対象項目がない場合の固定文言。 */
+const val MANUAL_READOUT_NO_ITEMS_TEXT = "読み上げる項目がありません"
+
 /** 1セットに追加できる手動読み上げ項目数の上限。 */
 const val MANUAL_READOUT_SET_ITEM_MAX = 3
 

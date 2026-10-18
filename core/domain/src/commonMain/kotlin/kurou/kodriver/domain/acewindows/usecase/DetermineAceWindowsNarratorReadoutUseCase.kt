@@ -1,7 +1,6 @@
 package kurou.kodriver.domain.acewindows.usecase
 
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
-import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
@@ -38,6 +37,7 @@ import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -111,7 +111,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         val supportedItems = items.filter { it.key in supportedKeys }.take(MANUAL_READOUT_SET_ITEM_MAX)
         val text =
             if (supportedItems.isEmpty()) {
-                ACE_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
+                MANUAL_READOUT_NO_ITEMS_TEXT
             } else {
                 supportedItems
                     .map { item -> manualCurrentValue(item).let { it.resolvedText ?: it.narratedText } }
