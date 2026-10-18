@@ -16,3 +16,6 @@ const val ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER = "{celsius}"
 
 /** ACE (Assetto Corsa EVO) のタイヤ過熱警告の読み上げ文言のデフォルト値。 */
 const val ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT = "タイヤ過熱 {celsius}度"
+
+/** ACE の手動読み上げで使うタイヤ温度の既定文言。 */
+const val ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT = "タイヤ温度{celsius}℃"

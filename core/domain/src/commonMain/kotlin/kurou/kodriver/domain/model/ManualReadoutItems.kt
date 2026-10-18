@@ -3,6 +3,7 @@ package kurou.kodriver.domain.model
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
@@ -37,6 +38,7 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
                 AceWindowsReadoutItemKey.RemainingFuel.Root.value,
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value,
                 AceWindowsReadoutItemKey.MyBestLap.Root.value,
+                AceWindowsReadoutItemKey.TyreTemperature.Root.value,
             )
         }
 
@@ -104,6 +106,10 @@ private fun aceManualReadoutItemTextDefault(itemKey: String): String =
             ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
         }
 
+        AceWindowsReadoutItemKey.TyreTemperature.Root.value -> {
+            ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
+        }
+
         AceWindowsReadoutItemKey.MyBestLap.Root.value -> {
             ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
         }
@@ -155,6 +161,7 @@ private fun aceManualReadoutItemName(itemKey: String): String =
         AceWindowsReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
         AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> "残り燃料の周回数"
         AceWindowsReadoutItemKey.MyBestLap.Root.value -> "自己ベストラップ"
+        AceWindowsReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
         else -> gt7ManualReadoutItemName(itemKey)
     }
 

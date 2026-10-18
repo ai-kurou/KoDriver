@@ -40,6 +40,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
@@ -140,6 +141,11 @@ private val itemPresentations =
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_my_best_lap,
                 Res.string.manual_readout_category_lap,
+            ),
+        AceWindowsReadoutItemKey.TyreTemperature.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_tyre_temperature,
+                Res.string.manual_readout_category_tyre,
             ),
         Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value to
             ManualReadoutItemPresentation(
@@ -245,6 +251,10 @@ private fun otherManualReadoutPreview(
 
         Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
             formatGt7Ps5MyBestLapReadoutText(text, PREVIEW_BEST_LAP_TIME_MS.toInt())
+        }
+
+        AceWindowsReadoutItemKey.TyreTemperature.Root.value -> {
+            formatAceWindowsTyreTemperatureReadoutText(text, PREVIEW_TYRE_TEMPERATURE_CELSIUS)
         }
 
         Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {

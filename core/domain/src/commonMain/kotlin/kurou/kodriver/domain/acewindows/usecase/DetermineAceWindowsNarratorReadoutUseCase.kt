@@ -14,6 +14,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
@@ -30,6 +31,7 @@ import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelWarning
 import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
+import kurou.kodriver.domain.engine.AceWindowsTyreTemperatureCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
@@ -130,8 +132,29 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         when (item.key) {
             AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> manualRemainingFuelLapsValue(item)
             AceWindowsReadoutItemKey.MyBestLap.Root.value -> manualMyBestLapValue(item)
+            AceWindowsReadoutItemKey.TyreTemperature.Root.value -> manualTyreTemperatureValue(item)
             else -> manualRemainingFuelValue(item)
         }
+
+    private fun manualTyreTemperatureValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
+        val celsius = item.value ?: 0
+        val event =
+            AceWindowsTyreTemperatureCurrentValue(
+                celsius,
+                formatAceWindowsTyreTemperatureReadoutText(item.textTemplate, celsius),
+            )
+        return withManualNoDataText(item, event)
+    }
+
+    /** 未受信・鮮度切れ・全輪が非有限または0以下の場合はデータなしとして扱う。 */
+    fun currentMaxTyreTemperatureCelsius(data: AceWindowsTyreCarcassTemperatureData?): Int? {
+        val wheels = data?.wheels ?: return null
+        return wheels.values
+            .map { it.value }
+            .filter { it.isFinite() && it > 0f }
+            .maxOrNull()
+            ?.roundToInt()
+    }
 
     private fun manualMyBestLapValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
         val lapTimeMs = item.value ?: 0
