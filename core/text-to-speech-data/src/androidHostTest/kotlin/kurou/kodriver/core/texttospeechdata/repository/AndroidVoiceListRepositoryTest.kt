@@ -51,7 +51,7 @@ class AndroidVoiceListRepositoryTest {
             verify(exactly = 2) { voice.isNetworkConnectionRequired }
             verify(exactly = 2) { voice.features }
             verify(exactly = 6) { voice.name }
-            assertEquals(listOf(defaultVoiceIdFailure), reportedExceptions)
+            assertEquals(listOf<Throwable>(defaultVoiceIdFailure), reportedExceptions)
             confirmVerified(engineProvider, engine, voice, defaultVoiceIdProvider)
         }
 
@@ -224,7 +224,7 @@ class AndroidVoiceListRepositoryTest {
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
             verify(exactly = 1) { defaultVoiceIdProvider() }
-            assertEquals(listOf(failure), reportedExceptions)
+            assertEquals(listOf<Throwable>(failure), reportedExceptions)
             confirmVerified(engineProvider, engine, defaultVoiceIdProvider)
         }
 
@@ -241,7 +241,7 @@ class AndroidVoiceListRepositoryTest {
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
             verify(exactly = 1) { defaultVoiceIdProvider() }
-            assertEquals(listOf(failure), reportedExceptions)
+            assertEquals(listOf<Throwable>(failure), reportedExceptions)
             confirmVerified(engineProvider, engine, defaultVoiceIdProvider)
         }
 
