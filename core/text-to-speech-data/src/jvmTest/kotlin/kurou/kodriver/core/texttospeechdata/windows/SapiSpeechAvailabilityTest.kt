@@ -92,7 +92,7 @@ class SapiSpeechAvailabilityTest {
             )
 
         assertFalse(synthesizer.isAvailable())
-        assertEquals(listOf(failure), captured)
+        assertEquals(listOf<Throwable>(failure), captured)
     }
 
     @Test
