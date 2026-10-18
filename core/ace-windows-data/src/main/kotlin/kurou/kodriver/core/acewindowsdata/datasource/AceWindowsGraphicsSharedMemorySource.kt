@@ -2,6 +2,7 @@ package kurou.kodriver.core.acewindowsdata.datasource
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryPollingSource
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import kurou.kodriver.core.windowssharedmemory.datasource.WindowsSharedMemoryReader
@@ -34,7 +35,9 @@ internal class AceWindowsGraphicsSharedMemorySource(
     private var lastKnownPacketId: Int? = null
     private var lastPacketIdChangeTimeMs: Long = 0L
 
-    val bufferFlow: Flow<ByteBuffer> = pollingSource.bufferFlow
+    // packetId advances once per simulator frame; repeated polls of a stopped frame must not refresh telemetry.
+    val bufferFlow: Flow<ByteBuffer> =
+        pollingSource.bufferFlow.distinctUntilChangedBy { it.getInt(PACKET_ID_OFFSET) }
 
     suspend fun isConnected(): Boolean =
         pollingSource.withReaderLock { reader ->

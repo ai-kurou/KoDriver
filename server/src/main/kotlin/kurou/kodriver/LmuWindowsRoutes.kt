@@ -15,10 +15,10 @@ internal fun Route.lmuWindowsRoutes(useCases: KoDriverServerUseCases) {
     telemetryWebSocket(KoDriverServerFeature.DAMAGE, Simulator.LmuWindows) {
         useCases.lmuWindows.observeLmuWindowsVehicleDamage()
     }
-    telemetryWebSocket(KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE, Simulator.LmuWindows) {
+    telemetryWebSocket(KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE, Simulator.LmuWindows, distinct = false) {
         useCases.lmuWindows.observeLmuWindowsTyreCarcassTemperature()
     }
-    telemetryWebSocket(KoDriverServerFeature.BRAKE_TEMPERATURE, Simulator.LmuWindows) {
+    telemetryWebSocket(KoDriverServerFeature.BRAKE_TEMPERATURE, Simulator.LmuWindows, distinct = false) {
         useCases.lmuWindows.observeLmuWindowsBrakeTemperature()
     }
     telemetryWebSocket(KoDriverServerFeature.VEHICLE_CLASS, Simulator.LmuWindows) {
