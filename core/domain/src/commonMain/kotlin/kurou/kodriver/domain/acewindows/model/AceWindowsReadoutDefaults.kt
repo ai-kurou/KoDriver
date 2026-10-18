@@ -63,3 +63,6 @@ private fun aceWindowsOrderIndex(key: AceWindowsReadoutItemKey.TopLevel): Int =
         AceWindowsReadoutItemKey.TyreTemperature.Root -> 4
         AceWindowsReadoutItemKey.MyBestLap.Root -> 5
     }
+
+/** ACE の手動読み上げで現在値が取得できない場合の文言。 */
+const val ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT = "データがありません"

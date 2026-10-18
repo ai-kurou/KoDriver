@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.acewindows.usecase
 
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
@@ -11,6 +12,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
@@ -21,6 +23,7 @@ import kurou.kodriver.domain.engine.AceWindowsMyBestLap
 import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
 import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelWarning
 import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
@@ -30,9 +33,14 @@ import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import kurou.kodriver.domain.engine.LmuWindowsCarLeft
 import kurou.kodriver.domain.engine.LmuWindowsCarRight
 import kurou.kodriver.domain.engine.ReadoutTextEvent
+import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.manualReadoutItemKeys
+import kurou.kodriver.domain.model.manualReadoutItemName
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -92,19 +100,56 @@ data class AceWindowsNarratorReadoutDecision(
  * （[AceWindowsNarratorState.personalBestMs]）の2段構えで二重読み上げを防ぐ。
  */
 class DetermineAceWindowsNarratorReadoutUseCase {
-    /** ACE の手動項目は未実装のため、警告済み状態を維持して項目なし文言を返す。 */
-    fun determineManualReadout(state: AceWindowsNarratorState): AceWindowsNarratorReadoutDecision =
-        AceWindowsNarratorReadoutDecision(
+    /** セットの対応項目を保存順に連結し、自動読み上げの警告済み状態を維持する。 */
+    fun determineManualReadout(
+        state: AceWindowsNarratorState,
+        items: List<AceWindowsManualReadoutItem> = emptyList(),
+    ): AceWindowsNarratorReadoutDecision {
+        val supportedKeys = manualReadoutItemKeys(Simulator.AceWindows.id)
+        val supportedItems = items.filter { it.key in supportedKeys }.take(MANUAL_READOUT_SET_ITEM_MAX)
+        val text =
+            if (supportedItems.isEmpty()) {
+                ACE_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT
+            } else {
+                supportedItems
+                    .map { item -> manualCurrentValue(item).let { it.resolvedText ?: it.narratedText } }
+                    .filter { it.isNotBlank() }
+                    .joinToString("、")
+            }
+        return AceWindowsNarratorReadoutDecision(
             state = state,
-            events =
-                listOf(
-                    AceWindowsManualReadoutText(
-                        // 自動読み上げの一覧・並び順にキーを追加せず、開始音とログに既存の Root を使う。
-                        readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
-                        text = ACE_WINDOWS_MANUAL_READOUT_NO_ITEMS_TEXT,
-                    ),
-                ),
+            events = listOf(AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, text)),
         )
+    }
+
+    private fun manualCurrentValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
+        val value = item.value ?: 0
+        val event =
+            AceWindowsRemainingFuelCurrentValue(
+                value,
+                formatAceWindowsRemainingFuelReadoutText(item.textTemplate, value),
+            )
+        return when {
+            item.textTemplate.isBlank() -> {
+                event.withResolvedText("")
+            }
+
+            item.value == null -> {
+                event.withResolvedText("${manualReadoutItemName(item.key)}は$ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT")
+            }
+
+            else -> {
+                event
+            }
+        }
+    }
+
+    /** 未受信・鮮度切れ・範囲外や非有限の燃料値は手動読み上げのデータなしとして扱う。 */
+    fun currentRemainingFuelPercent(data: AceWindowsFuelData?): Int? {
+        val percent = data?.remainingPercent?.value ?: return null
+        if (!percent.isFinite() || percent < 0.0 || percent > 100.0) return null
+        return percent.roundToInt()
+    }
 
     fun determineMyBestLap(
         state: AceWindowsNarratorState,

@@ -68,43 +68,6 @@ class ManualReadoutSetDetailPaneScreenshotTest {
     @Test
     fun `1ペインで戻るボタンを表示`() = screenshot(manualReadoutItemKeys(Simulator.LmuWindows.id), size = DpSize(360.dp, 640.dp))
 
-    private fun screenshot(
-        keys: List<String>,
-        canNavigateBack: Boolean = true,
-        size: DpSize = DpSize(1560.dp, 1080.dp),
-        selected: Boolean = false,
-        itemTexts: Map<String, String> = emptyMap(),
-        hotkey: Pair<Int?, ManualReadoutHotkeyConflict?>? = null,
-        registration: HotkeyRegistrationState = HotkeyRegistrationState.Unsupported,
-    ) = composeScreenshotTest {
-        setContent {
-            KoDriverTheme {
-                Surface {
-                    Box(modifier = Modifier.requiredSize(size.width, size.height)) {
-                        ManualReadoutSetDetailPane(
-                            uiState =
-                                ManualReadoutSetDetailUiState(
-                                    setNumber = 1,
-                                    availableItemKeys = keys,
-                                    selectedItemKeys =
-                                        if (selected) keys.take(MANUAL_READOUT_SET_ITEM_MAX) else emptyList(),
-                                    itemTexts = itemTexts,
-                                    hotkeyVirtualKeyCode = hotkey?.first,
-                                    hotkeyConflict = hotkey?.second,
-                                    hotkeyRegistrationState = registration,
-                                ),
-                            showHotkey = hotkey != null,
-                            onAddItem = {},
-                            onDelete = {},
-                            canNavigateBack = canNavigateBack,
-                        )
-                    }
-                }
-            }
-        }
-        onRoot().captureRoboImage()
-    }
-
     @Test
     fun `削除ダイアログ`() =
         composeScreenshotTest {
@@ -175,4 +138,46 @@ class ManualReadoutSetDetailPaneScreenshotTest {
     @Test
     fun `ホットキー登録競合と再試行`() =
         screenshot(emptyList(), hotkey = 0x41 to null, registration = HotkeyRegistrationState.Conflict)
+}
+
+class ManualReadoutSetDetailPaneAceScreenshotTest {
+    @Test
+    fun `ACEの残り燃料の文言`() = screenshot(manualReadoutItemKeys(Simulator.AceWindows.id), selected = true)
+}
+
+private fun screenshot(
+    keys: List<String>,
+    canNavigateBack: Boolean = true,
+    size: DpSize = DpSize(1560.dp, 1080.dp),
+    selected: Boolean = false,
+    itemTexts: Map<String, String> = emptyMap(),
+    hotkey: Pair<Int?, ManualReadoutHotkeyConflict?>? = null,
+    registration: HotkeyRegistrationState = HotkeyRegistrationState.Unsupported,
+) = composeScreenshotTest {
+    setContent {
+        KoDriverTheme {
+            Surface {
+                Box(modifier = Modifier.requiredSize(size.width, size.height)) {
+                    ManualReadoutSetDetailPane(
+                        uiState =
+                            ManualReadoutSetDetailUiState(
+                                setNumber = 1,
+                                availableItemKeys = keys,
+                                selectedItemKeys =
+                                    if (selected) keys.take(MANUAL_READOUT_SET_ITEM_MAX) else emptyList(),
+                                itemTexts = itemTexts,
+                                hotkeyVirtualKeyCode = hotkey?.first,
+                                hotkeyConflict = hotkey?.second,
+                                hotkeyRegistrationState = registration,
+                            ),
+                        showHotkey = hotkey != null,
+                        onAddItem = {},
+                        onDelete = {},
+                        canNavigateBack = canNavigateBack,
+                    )
+                }
+            }
+        }
+    }
+    onRoot().captureRoboImage()
 }

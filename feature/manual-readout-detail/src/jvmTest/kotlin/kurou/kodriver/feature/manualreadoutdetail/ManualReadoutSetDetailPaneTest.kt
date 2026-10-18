@@ -23,6 +23,7 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.text.TextRange
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -448,6 +449,46 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("Gran Turismo 7（PS5） の「燃料用」で使用中のため割り当てできません").assertExists()
+    }
+
+    @Test
+    fun `ACEの残り燃料を追加して文言を編集し既定文言に戻せる`() {
+        val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    setNumber = 1,
+                    availableItemKeys = manualReadoutItemKeys(Simulator.AceWindows.id),
+                ),
+            )
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
+                    onItemTextChanged = { item, text ->
+                        state.value = state.value.copy(itemTexts = mapOf(item to text))
+                    },
+                    onDelete = {},
+                    showHotkey = false,
+                )
+            }
+        }
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("残り燃料").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
+        rule.onNodeWithText("{percent} は現在の残量（%）に置き換わります").assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("残り{percent}%")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("残り50%")
+        assertEquals("残り{percent}%", state.value.itemTexts[key])
+        rule.onNode(hasSetTextAction()).performTextReplacement("残り{other}%")
+        rule.onNodeWithText("未対応のプレースホルダー: {other}（そのまま読み上げます）").assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("")
+        rule.onNodeWithText("{percent} を挿入").performClick()
+        rule.onNodeWithText("{percent}").assertExists()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("50")
+        rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
     }
 
     @Test

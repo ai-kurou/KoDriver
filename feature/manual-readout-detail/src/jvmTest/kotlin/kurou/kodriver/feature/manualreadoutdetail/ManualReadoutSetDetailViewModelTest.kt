@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -328,6 +329,38 @@ class ManualReadoutSetDetailViewModelTest {
                 vm.addItem(key)
                 assertEquals(listOf(key), vm.uiState.first().selectedItemKeys)
                 vm.updateItemText(key, "残り{laps}周")
+                assertEquals(edited.itemTexts, vm.uiState.first().itemTexts)
+                verify(exactly = 3) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(added) }
+                coVerify(exactly = 1) { repository.updateSet(edited) }
+                confirmVerified(repository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `ACEの残り燃料は項目追加と編集文言をセットへ保存する`() =
+        runTest(dispatcher) {
+            val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
+            val original = ManualReadoutSet("target")
+            val added = original.copy(itemKeys = listOf(key))
+            val edited = added.copy(itemTexts = mapOf(key to "残り{percent}%"))
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(added) } answers { sets.update { listOf(added) } }
+            coEvery { repository.updateSet(edited) } answers { sets.update { listOf(edited) } }
+            val vm = viewModel(Simulator.AceWindows.id)
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                assertEquals(
+                    manualReadoutItemKeys(Simulator.AceWindows.id),
+                    vm.uiState.first { !it.isLoading }.availableItemKeys,
+                )
+                vm.addItem(key)
+                assertEquals(listOf(key), vm.uiState.first().selectedItemKeys)
+                vm.updateItemText(key, "残り{percent}%")
                 assertEquals(edited.itemTexts, vm.uiState.first().itemTexts)
                 verify(exactly = 3) { repository.observeSets() }
                 coVerify(exactly = 1) { repository.updateSet(added) }

@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
@@ -48,6 +49,7 @@ import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutTe
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
@@ -104,6 +106,11 @@ private val itemPresentations =
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_my_best_lap,
                 Res.string.manual_readout_category_lap,
+            ),
+        AceWindowsReadoutItemKey.RemainingFuel.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_remaining_fuel,
+                Res.string.manual_readout_category_energy,
             ),
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
@@ -192,17 +199,21 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
                     }
 
                     else -> {
-                        gt7ManualReadoutPreview(itemKey, it)
+                        otherManualReadoutPreview(itemKey, it)
                     }
                 }
             }
         }.joinToString("、")
 
-private fun gt7ManualReadoutPreview(
+private fun otherManualReadoutPreview(
     itemKey: String,
     text: String,
 ): String =
     when (itemKey) {
+        AceWindowsReadoutItemKey.RemainingFuel.Root.value -> {
+            formatAceWindowsRemainingFuelReadoutText(text, PREVIEW_ENERGY_PERCENT)
+        }
+
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
             formatGt7Ps5RemainingFuelReadoutText(text, PREVIEW_ENERGY_PERCENT)
         }

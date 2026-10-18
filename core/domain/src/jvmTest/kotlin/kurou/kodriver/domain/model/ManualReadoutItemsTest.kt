@@ -8,6 +8,17 @@ import kotlin.test.assertEquals
 
 class ManualReadoutItemsTest {
     @Test
+    fun `ACEの残り燃料は既存キーと手動専用文言と名前を持つ`() {
+        val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
+        assertEquals("ace_windows_auto_remaining_fuel", key)
+        assertEquals("残り燃料", manualReadoutItemName(key))
+        assertEquals("燃料は残り{percent}パーセント", manualReadoutItemTextDefault(key))
+        assertEquals(42, AceWindowsManualReadoutItem(key, "", 42).value)
+        assertEquals(null, AceWindowsManualReadoutItem(key, "", null).value)
+        assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
+    }
+
+    @Test
     fun `LMUのエネルギー周回数は名前と既定文言と省略可能な周回数を持つ`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
         assertEquals("エネルギーの残り周回数", manualReadoutItemName(key))
@@ -110,7 +121,10 @@ class ManualReadoutItemsTest {
             ),
             manualReadoutItemKeys(Simulator.LmuWindows.id),
         )
-        assertEquals(emptyList(), manualReadoutItemKeys(Simulator.AceWindows.id))
+        assertEquals(
+            listOf(AceWindowsReadoutItemKey.RemainingFuel.Root.value),
+            manualReadoutItemKeys(Simulator.AceWindows.id),
+        )
         assertEquals(
             listOf(
                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value,
