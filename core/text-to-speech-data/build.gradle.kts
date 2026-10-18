@@ -54,5 +54,9 @@ kotlin {
                 implementation(libs.mockk)
             }
         }
+        androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.sentry.bom))
+            implementation(libs.sentry)
+        }
     }
 }
