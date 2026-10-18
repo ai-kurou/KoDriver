@@ -15,7 +15,7 @@ class ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCaseTest {
     private val repository: LmuWindowsRemainingVirtualEnergyPreferencesRepository = mockk()
 
     @Test
-    fun `バーチャルエナジー読み上げ文言を監視できる`() =
+    fun `バーチャルエネルギー読み上げ文言を監視できる`() =
         runTest {
             every { repository.observeReadoutText() } returns MutableStateFlow("残量{percent}%")
             val useCase = ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase(repository)

@@ -235,7 +235,7 @@ data class LmuWindowsBrakeWearLow(
 }
 
 /**
- * バーチャルエナジー残量警告。[percentage] は実際の残量ではなく設定した閾値（%）。
+ * バーチャルエネルギー残量警告。[percentage] は実際の残量ではなく設定した閾値（%）。
  * [resolvedText] は判定時に解決済みの読み上げ文言。キュー待機中に設定が変わっても、ログと発話内容を一致させるために使う。
  */
 data class LmuWindowsRemainingVirtualEnergyWarning(
@@ -252,7 +252,7 @@ data class LmuWindowsRemainingVirtualEnergyWarning(
     override fun withResolvedText(text: String): LmuWindowsRemainingVirtualEnergyWarning = copy(resolvedText = text)
 }
 
-/** バーチャルエナジーの現在の残量（%）を読み上げるイベント。 */
+/** バーチャルエネルギーの現在の残量（%）を読み上げるイベント。 */
 data class LmuWindowsRemainingVirtualEnergyCurrentValue(
     val percentage: Int,
     override val resolvedText: String? = null,
@@ -295,7 +295,7 @@ data class LmuWindowsMyBestLap(
 }
 
 /**
- * LMU のバーチャルエナジーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。
+ * LMU のバーチャルエネルギーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。
  * [narratedText] はログ用の既定文言。実際の読み上げ文言はソースごとの設定値から取得する。
  */
 data class LmuWindowsPitTimingWarning(

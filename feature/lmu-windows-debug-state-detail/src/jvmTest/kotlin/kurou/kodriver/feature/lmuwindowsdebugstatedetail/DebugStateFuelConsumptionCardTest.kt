@@ -22,7 +22,7 @@ class DebugStateFuelConsumptionCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `バーチャルエナジー残量と消費率と残り周数を表示する`() {
+    fun `バーチャルエネルギー残量と消費率と残り周数を表示する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
@@ -51,7 +51,7 @@ class DebugStateFuelConsumptionCardTest {
     }
 
     @Test
-    fun `消費率を計算できなくてもバーチャルエナジー残量を表示する`() {
+    fun `消費率を計算できなくてもバーチャルエネルギー残量を表示する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(

@@ -6,7 +6,7 @@ Le Mans Ultimate（LMU）は Studio 397 純正の共有メモリインターフ�
 
 ## rF2SharedMemoryMapPlugin との関係
 
-rFactor 2 で使われる [TheIronWolfModding/rF2SharedMemoryMapPlugin](https://github.com/TheIronWolfModding/rF2SharedMemoryMapPlugin) は `$rFactor2SMMP_Telemetry$` / `$rFactor2SMMP_Scoring$` など機能別の複数セグメントを公開する**サードパーティプラグイン**であり、LMU 内蔵の `LMU_Data` とは別物である。ただし、内部の車両テレメトリ（`TelemInfoV01`）・スコアリング（`ScoringInfoV01` / `VehicleScoringInfoV01`）構造体はどちらも rFactor 2 エンジンの `InternalsPlugin.hpp` に由来するため、多くのフィールド名・意味は共通している。一方で LMU 版は末尾に LMU 固有フィールド（バーチャルエナジー、TC/ABS 車載設定、ギャップ情報など）が追加されており、配列サイズやオフセットも rF2 プラグイン版とは一致しない。
+rFactor 2 で使われる [TheIronWolfModding/rF2SharedMemoryMapPlugin](https://github.com/TheIronWolfModding/rF2SharedMemoryMapPlugin) は `$rFactor2SMMP_Telemetry$` / `$rFactor2SMMP_Scoring$` など機能別の複数セグメントを公開する**サードパーティプラグイン**であり、LMU 内蔵の `LMU_Data` とは別物である。ただし、内部の車両テレメトリ（`TelemInfoV01`）・スコアリング（`ScoringInfoV01` / `VehicleScoringInfoV01`）構造体はどちらも rFactor 2 エンジンの `InternalsPlugin.hpp` に由来するため、多くのフィールド名・意味は共通している。一方で LMU 版は末尾に LMU 固有フィールド（バーチャルエネルギー、TC/ABS 車載設定、ギャップ情報など）が追加されており、配列サイズやオフセットも rF2 プラグイン版とは一致しない。
 
 rF2 プラグイン側にのみ存在する構造体（`rF2Rules`, `rF2MultiRules`, `rF2ForceFeedback`, `rF2Graphics`, `rF2PitInfo`, `rF2Weather`, `rF2Extended` など）は **`LMU_Data` には含まれない**。
 
@@ -426,7 +426,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | `mTrackLimitsSteps` | uint8 | +767 | — | 正規化トラックリミットポイント（TrackLimitPoints × TrackLimitStepsPerPoint） |
 | `mRegen` | float | +768 | kW | 回生量 |
 | `mStateOfCharge` | float | +772 | % | バッテリー充電状態 |
-| `mVirtualEnergy` | float | +776 | 0.0–1.0 | バーチャルエナジー残量割合 |
+| `mVirtualEnergy` | float | +776 | 0.0–1.0 | バーチャルエネルギー残量割合 |
 | `mTimeGapCarAhead` | float | +780 | s | 前方車両とのギャップ |
 | `mTimeGapCarBehind` | float | +784 | s | 後方車両とのギャップ |
 | `mTimeGapPlaceAhead` | float | +788 | s | 前順位車両とのギャップ |
@@ -591,7 +591,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | パーツ脱落 | `mDetached` | vehicleBase+542 |
 | 最終衝突強度 | `mLastImpactMagnitude` | vehicleBase+560 |
 | 姿勢行列（第2行 X/Z） | `mOri[2]` | vehicleBase+280/296 |
-| バーチャルエナジー残量 | `mVirtualEnergy` | vehicleBase+776 |
+| バーチャルエネルギー残量 | `mVirtualEnergy` | vehicleBase+776 |
 
 ---
 

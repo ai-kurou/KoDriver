@@ -20,7 +20,7 @@
     <string name="readout_item_my_best_lap">自己ベストラップ</string>
     <string name="readout_item_remaining_fuel_laps">燃料残り周回数</string>
     <string name="readout_item_pit_timing">ピットタイミング</string>
-    <string name="readout_item_remaining_virtual_energy">バーチャルエナジー残量</string>
+    <string name="readout_item_remaining_virtual_energy">バーチャルエネルギー残量</string>
     <string name="readout_item_tyre_wear">タイヤ摩耗</string>
     <string name="readout_item_brake_temperature">ブレーキ温度</string>
     <string name="readout_item_brake_wear">ブレーキ摩耗</string>

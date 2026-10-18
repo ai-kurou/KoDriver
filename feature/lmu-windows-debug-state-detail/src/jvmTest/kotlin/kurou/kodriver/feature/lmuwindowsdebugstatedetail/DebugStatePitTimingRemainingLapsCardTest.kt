@@ -27,7 +27,7 @@ class DebugStatePitTimingRemainingLapsCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `LMUだがバーチャルエナジーとタイヤ摩耗のデータが取得できない場合はハイフンを表示する`() {
+    fun `LMUだがバーチャルエネルギーとタイヤ摩耗のデータが取得できない場合はハイフンを表示する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
@@ -42,12 +42,12 @@ class DebugStatePitTimingRemainingLapsCardTest {
         }
 
         rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("バーチャルエナジー: 残り -周").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー: 残り -周").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗: 残り -周").assertIsDisplayed()
     }
 
     @Test
-    fun `バーチャルエナジーとタイヤ摩耗の予想残り周回数を表示する`() {
+    fun `バーチャルエネルギーとタイヤ摩耗の予想残り周回数を表示する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
@@ -74,12 +74,12 @@ class DebugStatePitTimingRemainingLapsCardTest {
         }
 
         rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("バーチャルエナジー: 残り 5.0周").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー: 残り 5.0周").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗: 残り 7.5周").assertIsDisplayed()
     }
 
     @Test
-    fun `バーチャルエナジーだけ未取得でもタイヤ摩耗の残り周回数を表示する`() {
+    fun `バーチャルエネルギーだけ未取得でもタイヤ摩耗の残り周回数を表示する`() {
         rule.setContent {
             MaterialTheme {
                 PitTimingRemainingLapsContent(
@@ -89,12 +89,12 @@ class DebugStatePitTimingRemainingLapsCardTest {
             }
         }
 
-        rule.onNodeWithText("バーチャルエナジー: 残り -周").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー: 残り -周").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗: 残り 7.5周").assertIsDisplayed()
     }
 
     @Test
-    fun `ホイールが空でもバーチャルエナジーの残り周回数を表示する`() {
+    fun `ホイールが空でもバーチャルエネルギーの残り周回数を表示する`() {
         rule.setContent {
             MaterialTheme {
                 PitTimingRemainingLapsContent(
@@ -104,7 +104,7 @@ class DebugStatePitTimingRemainingLapsCardTest {
             }
         }
 
-        rule.onNodeWithText("バーチャルエナジー: 残り 5.0周").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー: 残り 5.0周").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗: 残り -周").assertIsDisplayed()
     }
 

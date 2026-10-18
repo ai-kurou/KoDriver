@@ -242,10 +242,10 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `エナジーの残り周回数から始まる手動セットはRootキーで一回キューへ追加しログを保存する`() =
+    fun `エネルギーの残り周回数から始まる手動セットはRootキーで一回キューへ追加しログを保存する`() =
         runTest {
             val key = LmuWindowsReadoutItemKey.PitTiming.Root
-            val text = "エナジーは残り約3周、VE50%"
+            val text = "エネルギーは残り約3周、VE50%"
             val event = LmuWindowsManualReadoutText(key, text)
             val resolved = event.withResolvedText(text)
             val json = slot<String>()
@@ -860,7 +860,7 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `読み上げたバーチャルエナジー残量イベントを直前と現在の残量データとともに保存する`() =
+    fun `読み上げたバーチャルエネルギー残量イベントを直前と現在の残量データとともに保存する`() =
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null

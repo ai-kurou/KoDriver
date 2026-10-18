@@ -498,7 +498,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
         }
 
     @Test
-    fun `バーチャルエナジー情報を購読すると uiState に反映される`() =
+    fun `バーチャルエネルギー情報を購読すると uiState に反映される`() =
         runTest {
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))

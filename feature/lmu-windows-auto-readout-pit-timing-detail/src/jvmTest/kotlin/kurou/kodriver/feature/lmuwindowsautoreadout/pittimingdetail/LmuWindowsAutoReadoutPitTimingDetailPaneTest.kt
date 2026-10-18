@@ -118,14 +118,14 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
         rule
             .onNodeWithText(
                 "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
-                    "毎周ベストラップの30秒前に、バーチャルエナジー残量・タイヤ摩耗の予想残り周回数を判定し、" +
+                    "毎周ベストラップの30秒前に、バーチャルエネルギー残量・タイヤ摩耗の予想残り周回数を判定し、" +
                     "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。\n" +
                     "燃料残量はこの機能の判定対象に含みません。\n" +
-                    "読み上げる文言は、バーチャルエナジー・タイヤ摩耗それぞれ下の欄で設定できます。",
+                    "読み上げる文言は、バーチャルエネルギー・タイヤ摩耗それぞれ下の欄で設定できます。",
             ).assertIsDisplayed()
-        rule.onNodeWithText("バーチャルエナジー").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗").performScrollTo().assertIsDisplayed()
-        rule.onNodeWithText("バーチャルエナジー予想残り周回数").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー予想残り周回数").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗予想残り周回数").performScrollTo().assertIsDisplayed()
         rule.onAllNodesWithText("残り約: 3 周").assertCountEquals(2)
         rule.onAllNodesWithText("通常（残り1周以上）").assertCountEquals(2)
@@ -157,8 +157,8 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
                 LmuWindowsAutoReadoutPitTimingDetailPaneContent(
                     uiState =
                         LmuWindowsAutoReadoutPitTimingDetailUiState(
-                            virtualEnergyText = "通常エナジー",
-                            virtualEnergyImminentText = "必須エナジー",
+                            virtualEnergyText = "通常エネルギー",
+                            virtualEnergyImminentText = "必須エネルギー",
                             tyreWearText = "通常タイヤ",
                             tyreWearImminentText = "必須タイヤ",
                             isTextToSpeechAvailable = true,
@@ -189,7 +189,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
     }
 
     @Test
-    fun `バーチャルエナジーのスイッチをタップするとコールバックが呼ばれる`() {
+    fun `バーチャルエネルギーのスイッチをタップするとコールバックが呼ばれる`() {
         var virtualEnergyEnabled = true
         rule.setContent {
             KoDriverTheme {
@@ -200,7 +200,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("バーチャルエナジー").performClick()
+        rule.onNodeWithText("バーチャルエネルギー").performClick()
 
         assert(!virtualEnergyEnabled)
     }
@@ -223,7 +223,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
     }
 
     @Test
-    fun `バーチャルエナジーのスライダーを動かすとコールバックが呼ばれる`() {
+    fun `バーチャルエネルギーのスライダーを動かすとコールバックが呼ばれる`() {
         var virtualEnergyLaps = 3
         rule.setContent {
             KoDriverTheme {
@@ -278,12 +278,12 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             }
         }
 
-        rule.onNodeWithContentDescription("バーチャルエナジー予想残り周回数の計算方法の説明を表示").performScrollTo().performClick()
+        rule.onNodeWithContentDescription("バーチャルエネルギー予想残り周回数の計算方法の説明を表示").performScrollTo().performClick()
 
         rule
             .onNodeWithText(
-                "直近に完走した1周分の消費量をもとに、バーチャルエナジー残量またはタイヤ残存率から予想残り周回数を算出します。" +
-                    "バーチャルエナジー残量の増加やタイヤ交換を検出した周は、消費量の計算に使いません。" +
+                "直近に完走した1周分の消費量をもとに、バーチャルエネルギー残量またはタイヤ残存率から予想残り周回数を算出します。" +
+                    "バーチャルエネルギー残量の増加やタイヤ交換を検出した周は、消費量の計算に使いません。" +
                     "その後、補充・交換なしで1周を完走すると、推定に使う消費量を更新します。",
             ).assertIsDisplayed()
     }

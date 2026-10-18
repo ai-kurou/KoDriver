@@ -102,13 +102,13 @@ fun manualReadoutItemTextDefault(itemKey: String): String =
 /** 手動読み上げ項目の名前。未対応の項目は空文字を返す。 */
 fun manualReadoutItemName(itemKey: String): String =
     when (itemKey) {
-        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> "エナジーの残り周回数"
+        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> "エネルギーの残り周回数"
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value -> "タイヤ摩耗の残り周回数"
         Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> "タイヤ温度"
         Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> "自己ベストラップ"
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> "残り燃料の周回数"
-        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> "バーチャルエナジー残量"
+        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> "バーチャルエネルギー残量"
         LmuWindowsReadoutItemKey.TyreWear.Root.value -> "タイヤ摩耗"
         LmuWindowsReadoutItemKey.BrakeWear.Root.value -> "ブレーキ残量"
         LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> "ブレーキ温度"

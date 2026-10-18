@@ -9,17 +9,17 @@ import kotlin.test.assertEquals
 
 class ManualReadoutPreviewTest {
     @Test
-    fun `エナジー周回数はサンプル周回数に置換し空欄を除いて保存順に連結する`() {
+    fun `エネルギー周回数はサンプル周回数に置換し空欄を除いて保存順に連結する`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
-        assertEquals("エナジーは残り約3周", manualReadoutPreview(state))
+        assertEquals("エネルギーは残り約3周", manualReadoutPreview(state))
         assertEquals(
             "あと3 {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "あと{laps} {unknown}"))),
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "エナジーは残り約3周、タイヤ温度90℃",
+            "エネルギーは残り約3周、タイヤ温度90℃",
             manualReadoutPreview(
                 state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.TyreTemperature.Root.value)),
             ),
@@ -185,7 +185,7 @@ class ManualReadoutPreviewTest {
     fun `既定文言と編集文言の残量はサンプル値に置換し未知トークンは保持する`() {
         val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
-        assertEquals("バーチャルエナジー残量は50パーセント", manualReadoutPreview(state))
+        assertEquals("バーチャルエネルギー残量は50パーセント", manualReadoutPreview(state))
         assertEquals(
             "残り50% {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}% {unknown}"))),

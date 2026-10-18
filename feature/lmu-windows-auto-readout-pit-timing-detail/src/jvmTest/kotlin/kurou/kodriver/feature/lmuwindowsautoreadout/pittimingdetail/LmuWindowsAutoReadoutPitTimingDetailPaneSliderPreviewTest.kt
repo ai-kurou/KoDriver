@@ -23,7 +23,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneSliderPreviewTest {
     val rule = createComposeRule()
 
     @Test
-    fun `バーチャルエナジーのスライダー変更がuiStateに反映される前でも表示中の周回数で試聴する`() {
+    fun `バーチャルエネルギーのスライダー変更がuiStateに反映される前でも表示中の周回数で試聴する`() {
         val previews = mutableListOf<Pair<String, Int>>()
         rule.setContent {
             KoDriverTheme {

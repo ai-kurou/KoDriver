@@ -43,7 +43,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
- * フラッグ・車両接近・ピットタイミング・バーチャルエナジー残量警告・タイヤ摩耗警告・ブレーキ過熱警告・タイヤ温度警告・車両故障警告・自己ベストラップ更新の自由文字列をOS標準TTSで読み上げる、
+ * フラッグ・車両接近・ピットタイミング・バーチャルエネルギー残量警告・タイヤ摩耗警告・ブレーキ過熱警告・タイヤ温度警告・車両故障警告・自己ベストラップ更新の自由文字列をOS標準TTSで読み上げる、
  * [NarratorEngine][kurou.kodriver.core.narrator.NarratorEngine] 用のフック。
  * 空欄またはTTSが利用できない場合は本文を読み上げない。
  * LMU イベントと [DebugReadoutText] を対象とし、LMU の各グループを網羅的に解決する。
@@ -69,7 +69,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [LmuWindowsBrakeOverheat] : 設定した温度閾値の警告
  * - [LmuWindowsBrakeWearLow] : 設定したブレーキ残量閾値の警告
  * - [LmuWindowsTyreWearWarning] : 設定した残存率閾値の警告
- * - [LmuWindowsPitTimingWarning] : バーチャルエナジー・タイヤ摩耗由来のピットタイミング
+ * - [LmuWindowsPitTimingWarning] : バーチャルエネルギー・タイヤ摩耗由来のピットタイミング
  */
 internal class LmuWindowsReadoutTextSpeaker(
     private val readoutTexts: LmuWindowsReadoutTextUseCases,

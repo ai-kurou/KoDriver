@@ -695,7 +695,7 @@ class LmuWindowsNarratorViewModelTest {
     // --- 自己ベストラップ ---
 
     @Test
-    fun `手動エナジー周回数は蓄積前と鮮度切れをデータ無しにし自動スイッチに依存しない`() =
+    fun `手動エネルギー周回数は蓄積前と鮮度切れをデータ無しにし自動スイッチに依存しない`() =
         runTest(testDispatcher) {
             val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
             val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
@@ -740,9 +740,9 @@ class LmuWindowsNarratorViewModelTest {
                 listOf(
                     "データがありません",
                     "データがありません",
-                    "エナジーは残り約4周",
-                    "エナジーは残り約4周",
-                    "エナジーは残り約4周",
+                    "エネルギーは残り約4周",
+                    "エネルギーは残り約4周",
+                    "エネルギーは残り約4周",
                     "データがありません",
                 ),
                 spoken.map { it.narratedText },
@@ -751,7 +751,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `手動エナジー周回数を読んでも同じ周回の自動ピット判定を抑制しない`() =
+    fun `手動エネルギー周回数を読んでも同じ周回の自動ピット判定を抑制しない`() =
         runTest(testDispatcher) {
             val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
             val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
@@ -781,7 +781,7 @@ class LmuWindowsNarratorViewModelTest {
             currentTime = 60_000L
             energy.send(remainingVirtualEnergy(remainingRatio = 0.5))
             assertEquals(
-                listOf("エナジーは残り約2周", "エナジー切れのため2周以内にピットイン"),
+                listOf("エネルギーは残り約2周", "エネルギー切れのため2周以内にピットイン"),
                 spoken.map { it.narratedText },
             )
         }
@@ -957,7 +957,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(tyreWear(fl = 0.7))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "mixed"))
             assertEquals(
-                listOf("記録1分23秒456、バーチャルエナジー残量は80パーセント、タイヤ摩耗残り70%"),
+                listOf("記録1分23秒456、バーチャルエネルギー残量は80パーセント、タイヤ摩耗残り70%"),
                 spoken.map { it.narratedText },
             )
             assertEquals(key, spoken.single().readoutItemKey)
@@ -998,7 +998,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(tyreWear(fl = 0.7))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "mixed"))
             assertEquals(
-                listOf("温度91℃、バーチャルエナジー残量は80パーセント、タイヤ摩耗残り70%"),
+                listOf("温度91℃、バーチャルエネルギー残量は80パーセント、タイヤ摩耗残り70%"),
                 spoken.map { it.narratedText },
             )
             assertEquals(key, spoken.single().readoutItemKey)
@@ -1039,7 +1039,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(tyreWear(fl = 0.7))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "mixed"))
             assertEquals(
-                listOf("温度501℃、バーチャルエナジー残量は80パーセント、タイヤ摩耗残り70%"),
+                listOf("温度501℃、バーチャルエネルギー残量は80パーセント、タイヤ摩耗残り70%"),
                 spoken.map { it.narratedText },
             )
             assertEquals(key, spoken.single().readoutItemKey)
@@ -1081,7 +1081,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(tyreWear(fl = 0.7))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "mixed"))
             assertEquals(
-                listOf("ブレーキ50%、バーチャルエナジー残量は80パーセント、タイヤ摩耗残り70%"),
+                listOf("ブレーキ50%、バーチャルエネルギー残量は80パーセント、タイヤ摩耗残り70%"),
                 spoken.map { it.narratedText },
             )
             assertEquals(key, spoken.single().readoutItemKey)
@@ -1121,9 +1121,9 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(
                 listOf(
                     "データがありません",
-                    "バーチャルエナジー残量は50パーセント、タイヤ摩耗はデータがありません",
-                    "バーチャルエナジー残量は50パーセント、タイヤ摩耗残り80%",
-                    "バーチャルエナジー残量はデータがありません、タイヤ摩耗残り80%",
+                    "バーチャルエネルギー残量は50パーセント、タイヤ摩耗はデータがありません",
+                    "バーチャルエネルギー残量は50パーセント、タイヤ摩耗残り80%",
+                    "バーチャルエネルギー残量はデータがありません、タイヤ摩耗残り80%",
                     "データがありません",
                 ),
                 spoken.map { it.narratedText },
@@ -2738,10 +2738,10 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"finalState":{""")
         }
 
-    // --- バーチャルエナジー残量 ---
+    // --- バーチャルエネルギー残量 ---
 
     @Test
-    fun `閾値以下のバーチャルエナジー残量が来ると RemainingVirtualEnergyWarning を読み上げる`() =
+    fun `閾値以下のバーチャルエネルギー残量が来ると RemainingVirtualEnergyWarning を読み上げる`() =
         runTest(testDispatcher) {
             val channel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -2778,7 +2778,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `残量が閾値より上に戻るとバーチャルエナジー残量を再度読み上げる`() =
+    fun `残量が閾値より上に戻るとバーチャルエネルギー残量を再度読み上げる`() =
         runTest(testDispatcher) {
             val channel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -2804,7 +2804,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `バーチャルエナジー残量項目が無効なら読み上げない`() =
+    fun `バーチャルエネルギー残量項目が無効なら読み上げない`() =
         runTest(testDispatcher) {
             val channel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -2822,7 +2822,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `バーチャルエナジー残量の読み上げでテレメトリログを保存する`() =
+    fun `バーチャルエネルギー残量の読み上げでテレメトリログを保存する`() =
         runTest(testDispatcher) {
             val channel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -3056,7 +3056,7 @@ class LmuWindowsNarratorViewModelTest {
             energy.send(remainingVirtualEnergy(remainingRatio = 0.2))
 
             assertEquals(
-                listOf("バーチャルエナジー残量は80パーセント", "バーチャルエナジー残量は20パーセント", "バーチャルエナジー残量は20パーセント"),
+                listOf("バーチャルエネルギー残量は80パーセント", "バーチャルエネルギー残量は20パーセント", "バーチャルエネルギー残量は20パーセント"),
                 events.filterIsInstance<LmuWindowsManualReadoutText>().map { it.narratedText },
             )
             assertEquals(4, events.size)
@@ -3243,8 +3243,8 @@ class LmuWindowsNarratorViewModelTest {
                 ttsEngine.speak(
                     LmuWindowsManualReadoutText(
                         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
-                        "バーチャルエナジー残量は80パーセント",
-                        "バーチャルエナジー残量は80パーセント",
+                        "バーチャルエネルギー残量は80パーセント",
+                        "バーチャルエネルギー残量は80パーセント",
                     ),
                     queue = true,
                 )
@@ -3271,8 +3271,8 @@ class LmuWindowsNarratorViewModelTest {
                 ttsEngine.speak(
                     LmuWindowsManualReadoutText(
                         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
-                        "バーチャルエナジー残量は80パーセント",
-                        "バーチャルエナジー残量は80パーセント",
+                        "バーチャルエネルギー残量は80パーセント",
+                        "バーチャルエネルギー残量は80パーセント",
                     ),
                     queue = false,
                 )
@@ -3514,8 +3514,8 @@ class LmuWindowsNarratorViewModelTest {
                 ttsEngine.speak(
                     LmuWindowsManualReadoutText(
                         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
-                        "バーチャルエナジー残量は80パーセント",
-                        "バーチャルエナジー残量は80パーセント",
+                        "バーチャルエネルギー残量は80パーセント",
+                        "バーチャルエネルギー残量は80パーセント",
                     ),
                     queue = false,
                 )
@@ -4041,7 +4041,7 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エナジー切れのため必ずピットイン",
+                        resolvedText = "エネルギー切れのため必ずピットイン",
                     ),
                 ),
                 spokenTexts,
@@ -4084,7 +4084,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `バーチャルエナジーのピットタイミングが無効ならRoot有効でもPitTimingWarningを読み上げない`() =
+    fun `バーチャルエネルギーのピットタイミングが無効ならRoot有効でもPitTimingWarningを読み上げない`() =
         runTest(testDispatcher) {
             val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
             val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
@@ -4204,7 +4204,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `給油後はピットタイミングのバーチャルエナジー予想残り周回数を再度読み上げる`() =
+    fun `給油後はピットタイミングのバーチャルエネルギー予想残り周回数を再度読み上げる`() =
         runTest(testDispatcher) {
             val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
             val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
@@ -4254,12 +4254,12 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エナジー切れのため必ずピットイン",
+                        resolvedText = "エネルギー切れのため必ずピットイン",
                     ),
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エナジー切れのため必ずピットイン",
+                        resolvedText = "エネルギー切れのため必ずピットイン",
                     ),
                 ),
                 spokenTexts,
@@ -4332,7 +4332,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `バーチャルエナジーとタイヤ摩耗が同時に閾値以下になった場合は予想残り周回数が低い方のみ読み上げる`() =
+    fun `バーチャルエネルギーとタイヤ摩耗が同時に閾値以下になった場合は予想残り周回数が低い方のみ読み上げる`() =
         runTest(testDispatcher) {
             val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
             val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
@@ -4364,7 +4364,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreWearChannel.send(tyreWear(fl = 0.8))
             telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
             currentTime = 150_000L
-            // 消費率(0.2/ラップ)基準で バーチャルエナジー予想残り0周、タイヤ摩耗予想残り1周となるようにする
+            // 消費率(0.2/ラップ)基準で バーチャルエネルギー予想残り0周、タイヤ摩耗予想残り1周となるようにする
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
             tyreWearChannel.send(tyreWear(fl = 0.25))
 
@@ -4373,7 +4373,7 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エナジー切れのため必ずピットイン",
+                        resolvedText = "エネルギー切れのため必ずピットイン",
                     ),
                 ),
                 spokenTexts,
@@ -4485,7 +4485,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `バーチャルエナジーとタイヤ摩耗が同時に閾値以下になり残り周回数が同じ場合はバーチャルエナジーを読み上げる`() =
+    fun `バーチャルエネルギーとタイヤ摩耗が同時に閾値以下になり残り周回数が同じ場合はバーチャルエネルギーを読み上げる`() =
         runTest(testDispatcher) {
             val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
             val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
@@ -4533,7 +4533,7 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エナジー切れのため必ずピットイン",
+                        resolvedText = "エネルギー切れのため必ずピットイン",
                     ),
                 ),
                 spokenTexts,
@@ -4581,7 +4581,7 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エナジー切れのため必ずピットイン",
+                        resolvedText = "エネルギー切れのため必ずピットイン",
                     ),
                 ),
                 spokenTexts,
@@ -4598,7 +4598,7 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エナジー切れのため必ずピットイン",
+                        resolvedText = "エネルギー切れのため必ずピットイン",
                     ),
                     LmuWindowsPitTimingWarning(
                         0,
@@ -4959,12 +4959,12 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "blank"))
             hotkey.send(Unit)
             assertEquals(
-                listOf("残り80%、{unknown}", "バーチャルエナジー残量は80パーセント", "バーチャルエナジー残量は80パーセント"),
+                listOf("残り80%、{unknown}", "バーチャルエネルギー残量は80パーセント", "バーチャルエネルギー残量は80パーセント"),
                 spoken.map { it.narratedText },
             )
             assertEquals(5, logs.size)
             assertEquals(
-                listOf("残り80%、{unknown}", "バーチャルエナジー残量は80パーセント", "", "", "バーチャルエナジー残量は80パーセント"),
+                listOf("残り80%、{unknown}", "バーチャルエネルギー残量は80パーセント", "", "", "バーチャルエネルギー残量は80パーセント"),
                 logs.map { it.narratedText },
             )
             assertEquals(
@@ -5000,7 +5000,7 @@ class LmuWindowsNarratorViewModelTest {
             presses.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
             testScheduler.runCurrent()
             assertEquals(
-                "バーチャルエナジー残量は80パーセント",
+                "バーチャルエネルギー残量は80パーセント",
                 events.filterIsInstance<LmuWindowsManualReadoutText>().single().narratedText,
             )
             assertEquals(1, spoken.size)
