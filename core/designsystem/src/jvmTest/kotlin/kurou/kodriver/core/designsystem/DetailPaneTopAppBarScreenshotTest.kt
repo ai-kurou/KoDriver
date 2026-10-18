@@ -3,6 +3,7 @@ package kurou.kodriver.core.designsystem
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.unit.dp
@@ -60,6 +61,26 @@ class DetailPaneTopAppBarScreenshotTest {
                                 title = "車両接近",
                                 canNavigateBack = false,
                                 onBack = {},
+                            )
+                        }
+                    }
+                }
+            }
+            onAllNodes(isRoot()).get(0).captureRoboImage()
+        }
+
+    @Test
+    fun `20文字のセット名は操作ありで末尾を省略する`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 64.dp)) {
+                            DetailPaneTopAppBar(
+                                title = "WWWWWWWWWWWWWWWWWWWW",
+                                canNavigateBack = true,
+                                onBack = {},
+                                actions = { Text("保存") },
                             )
                         }
                     }

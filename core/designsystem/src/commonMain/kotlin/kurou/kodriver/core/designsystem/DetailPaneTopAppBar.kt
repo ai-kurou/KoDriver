@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.generated.resources.Res
 import kurou.kodriver.core.designsystem.generated.resources.navigate_back
@@ -37,7 +38,7 @@ fun DetailPaneTopAppBar(
     val haptic = LocalHapticFeedback.current
     TopAppBar(
         modifier = modifier,
-        title = { Text(title) },
+        title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(
