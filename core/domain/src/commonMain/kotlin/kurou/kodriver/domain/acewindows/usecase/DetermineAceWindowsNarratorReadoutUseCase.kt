@@ -12,6 +12,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
@@ -21,6 +22,7 @@ import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
 import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
 import kurou.kodriver.domain.engine.AceWindowsMyBestLap
+import kurou.kodriver.domain.engine.AceWindowsMyBestLapCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
 import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
@@ -127,8 +129,19 @@ class DetermineAceWindowsNarratorReadoutUseCase {
     private fun manualCurrentValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent =
         when (item.key) {
             AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> manualRemainingFuelLapsValue(item)
+            AceWindowsReadoutItemKey.MyBestLap.Root.value -> manualMyBestLapValue(item)
             else -> manualRemainingFuelValue(item)
         }
+
+    private fun manualMyBestLapValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
+        val lapTimeMs = item.value ?: 0
+        val event =
+            AceWindowsMyBestLapCurrentValue(
+                lapTimeMs,
+                formatAceWindowsMyBestLapReadoutText(item.textTemplate, lapTimeMs),
+            )
+        return withManualNoDataText(item, event)
+    }
 
     private fun manualRemainingFuelValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
         val value = item.value ?: 0
@@ -174,6 +187,9 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         if (!percent.isFinite() || percent < 0.0 || percent > 100.0) return null
         return percent.roundToInt()
     }
+
+    /** 未受信または未計測の自己ベストラップは手動読み上げのデータなしとして扱う。 */
+    fun currentBestLapTimeMs(data: AceWindowsBestLapTimeData?): Int? = data?.bestLapTimeMs?.takeIf { it > 0 }
 
     /**
      * 未受信・鮮度切れ・非有限・0以下の燃料残り周回数は手動読み上げのデータなしとして扱う。

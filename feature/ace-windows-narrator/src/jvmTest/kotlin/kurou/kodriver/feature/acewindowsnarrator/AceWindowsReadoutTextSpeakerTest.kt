@@ -35,6 +35,7 @@ import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
 import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
 import kurou.kodriver.domain.engine.AceWindowsMyBestLap
+import kurou.kodriver.domain.engine.AceWindowsMyBestLapCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
 import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
@@ -129,6 +130,19 @@ class AceWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 3) { checkAvailable() }
             coVerify(exactly = 1) { speakText(event.narratedText, volume = 80) }
             coVerify(exactly = 1) { speakText("解決済み", volume = 80) }
+            confirmVerified(checkAvailable, speakText)
+        }
+
+    @Test
+    fun `手動自己ベストラップ本文を再生する`() =
+        runTest {
+            val event = AceWindowsMyBestLapCurrentValue(83_456)
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText(event.narratedText, volume = 80) } just Runs
+            assertEquals(event.narratedText, speaker.readoutText(event))
+            speaker(event, 80)
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText(event.narratedText, volume = 80) }
             confirmVerified(checkAvailable, speakText)
         }
 

@@ -139,6 +139,24 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動自己ベストラップを整形しデータなしと空テンプレートを扱う`() {
+        val key = AceWindowsReadoutItemKey.MyBestLap.Root.value
+        val cases =
+            listOf(
+                AceWindowsManualReadoutItem(key, "自己ベスト {laptime}", 83_456) to "自己ベスト 1分23秒456",
+                AceWindowsManualReadoutItem(key, "", null) to "",
+                AceWindowsManualReadoutItem(key, "自己ベスト {laptime}", null) to "自己ベストラップはデータがありません",
+            )
+        cases.forEach { (item, expected) ->
+            val decision = useCase.determineManualReadout(AceWindowsNarratorState(), listOf(item))
+            assertEquals(expected, decision.events.single().let { (it as AceWindowsManualReadoutText).text })
+        }
+        assertEquals(null, useCase.currentBestLapTimeMs(null))
+        assertEquals(null, useCase.currentBestLapTimeMs(AceWindowsBestLapTimeData(0)))
+        assertEquals(83_456, useCase.currentBestLapTimeMs(AceWindowsBestLapTimeData(83_456)))
+    }
+
+    @Test
     fun `手動燃料周回数の現在値は切り捨て未受信と0以下と非有限と上限超過はデータなしになる`() {
         assertEquals(null, useCase.currentRemainingFuelLaps(null))
         val cases =

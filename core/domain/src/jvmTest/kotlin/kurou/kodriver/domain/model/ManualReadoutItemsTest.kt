@@ -28,6 +28,13 @@ class ManualReadoutItemsTest {
     }
 
     @Test
+    fun `ACEの自己ベストラップは自己ベスト文言を使う`() {
+        val key = AceWindowsReadoutItemKey.MyBestLap.Root.value
+        assertEquals("自己ベストラップ", manualReadoutItemName(key))
+        assertEquals("自己ベストラップ {laptime}", manualReadoutItemTextDefault(key))
+    }
+
+    @Test
     fun `LMUのエネルギー周回数は名前と既定文言と省略可能な周回数を持つ`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
         assertEquals("エネルギーの残り周回数", manualReadoutItemName(key))
@@ -134,6 +141,7 @@ class ManualReadoutItemsTest {
             listOf(
                 AceWindowsReadoutItemKey.RemainingFuel.Root.value,
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value,
+                AceWindowsReadoutItemKey.MyBestLap.Root.value,
             ),
             manualReadoutItemKeys(Simulator.AceWindows.id),
         )

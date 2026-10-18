@@ -353,6 +353,40 @@ class AceWindowsNarratorViewModelTest {
             )
         }
 
+    @Test
+    fun `手動自己ベストラップは受信から5秒以内ならラップタイムを読み上げる`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                lapsAgeMs = 5_000L,
+                expectedText = "自己ベストラップ 1分23秒456",
+                itemKeys = listOf(AceWindowsReadoutItemKey.MyBestLap.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動自己ベストラップは5秒を超えたらデータなしを読み上げる`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                lapsAgeMs = 5_001L,
+                expectedText = "自己ベストラップはデータがありません",
+                itemKeys = listOf(AceWindowsReadoutItemKey.MyBestLap.Root.value),
+            )
+        }
+
+    @Test
+    fun `シミュレーターを切り替えると手動自己ベストラップの現在値をクリアする`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = true,
+                lapsAgeMs = 0L,
+                expectedText = "自己ベストラップはデータがありません",
+                switchSimulator = true,
+                itemKeys = listOf(AceWindowsReadoutItemKey.MyBestLap.Root.value),
+            )
+        }
+
     private suspend fun TestScope.assertManualReadout(
         hotkey: Boolean,
         fuelAgeMs: Long? = null,
@@ -395,11 +429,13 @@ class AceWindowsNarratorViewModelTest {
         var nowMs = 100L - (fuelAgeMs ?: 0L)
         val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
         val lapsChannel = Channel<AceWindowsRemainingFuelLapsData>(Channel.UNLIMITED)
+        val bestLapChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
         val viewModel =
             createViewModel(
                 fuelChannel,
                 ttsEngine,
                 remainingFuelLapsChannel = lapsChannel,
+                bestLapTimeChannel = bestLapChannel,
                 currentTimeMs = { nowMs },
             )
         try {
@@ -411,7 +447,11 @@ class AceWindowsNarratorViewModelTest {
             }
             if (lapsAgeMs != null) {
                 nowMs = 100L - lapsAgeMs
-                lapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 5.9f))
+                if (AceWindowsReadoutItemKey.MyBestLap.Root.value in items) {
+                    bestLapChannel.send(AceWindowsBestLapTimeData(83_456))
+                } else {
+                    lapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 5.9f))
+                }
                 runCurrent()
             }
             nowMs = 100L

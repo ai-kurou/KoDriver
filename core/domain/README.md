@@ -174,6 +174,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 `manualReadoutItemKeys(Simulator.AceWindows.id)` は続けて既存の `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`）を返し、手動の「残り燃料の周回数」を選択できる。
 `currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・0以下・上限超過は null（データなし）とする。
 手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）を `formatAceWindowsRemainingFuelLapsReadoutText` で置換し、値が null の項目は「残り燃料の周回数はデータがありません」を読む。
+`AceWindowsReadoutItemKey.MyBestLap.Root` も手動項目に含め、最新の `AceWindowsBestLapTimeData.bestLapTimeMs` を5秒以内・正値の場合に `formatAceWindowsMyBestLapReadoutText` で整形する。既定文言は `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」）。
 
 ## エネルギーの日本語表記
 

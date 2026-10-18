@@ -10,6 +10,14 @@ import kotlin.test.assertEquals
 
 class ManualReadoutPreviewTest {
     @Test
+    fun `ACE自己ベストラップをサンプルタイムに置換する`() {
+        val key = AceWindowsReadoutItemKey.MyBestLap.Root.value
+        val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
+        assertEquals("自己ベストラップ 1分23秒456", manualReadoutPreview(state))
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+    }
+
+    @Test
     fun `エネルギー周回数はサンプル周回数に置換し空欄を除いて保存順に連結する`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))

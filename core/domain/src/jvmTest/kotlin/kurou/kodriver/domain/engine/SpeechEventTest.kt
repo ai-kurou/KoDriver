@@ -91,6 +91,15 @@ class SpeechEventTest {
     }
 
     @Test
+    fun `ACEの手動自己ベストラップイベントはRootキーと既定文言を持つ`() {
+        val event = AceWindowsMyBestLapCurrentValue(83_456)
+        assertEquals(AceWindowsReadoutItemKey.MyBestLap.Root, event.readoutItemKey)
+        assertEquals("自己ベストラップ 1分23秒456", event.narratedText)
+        assertEquals("PB", event.withResolvedText("PB").narratedText)
+        assertEquals(83_456, event.lapTimeMs)
+    }
+
+    @Test
     fun `GT7の手動燃料残量はRootキーと既定文言と解決済み本文を持つ`() {
         val event = Gt7Ps5RemainingFuelCurrentValue(42)
         assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)

@@ -5,6 +5,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BLACK_WHITE_FLAG_READO
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
@@ -232,4 +233,17 @@ data class AceWindowsRemainingFuelLapsCurrentValue(
         )
 
     override fun withResolvedText(text: String): AceWindowsRemainingFuelLapsCurrentValue = copy(resolvedText = text)
+}
+
+/** ACE の自己ベストラップ現在値。手動読み上げではセット内の文言を優先する。 */
+data class AceWindowsMyBestLapCurrentValue(
+    val lapTimeMs: Int,
+    override val resolvedText: String? = null,
+) : AceWindowsSpeechEvent {
+    override val readoutItemKey = AceWindowsReadoutItemKey.MyBestLap.Root
+    override val narratedText =
+        resolvedText
+            ?: formatAceWindowsMyBestLapReadoutText(ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT, lapTimeMs)
+
+    override fun withResolvedText(text: String): AceWindowsMyBestLapCurrentValue = copy(resolvedText = text)
 }

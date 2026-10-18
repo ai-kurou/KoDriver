@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
@@ -35,6 +36,7 @@ fun manualReadoutItemKeys(simulatorId: String): List<String> =
             listOf(
                 AceWindowsReadoutItemKey.RemainingFuel.Root.value,
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value,
+                AceWindowsReadoutItemKey.MyBestLap.Root.value,
             )
         }
 
@@ -102,6 +104,10 @@ private fun aceManualReadoutItemTextDefault(itemKey: String): String =
             ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
         }
 
+        AceWindowsReadoutItemKey.MyBestLap.Root.value -> {
+            ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
+        }
+
         else -> {
             gt7ManualReadoutItemTextDefault(itemKey)
         }
@@ -148,6 +154,7 @@ private fun aceManualReadoutItemName(itemKey: String): String =
     when (itemKey) {
         AceWindowsReadoutItemKey.RemainingFuel.Root.value -> "残り燃料"
         AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> "残り燃料の周回数"
+        AceWindowsReadoutItemKey.MyBestLap.Root.value -> "自己ベストラップ"
         else -> gt7ManualReadoutItemName(itemKey)
     }
 
