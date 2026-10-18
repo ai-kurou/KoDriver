@@ -39,6 +39,7 @@ import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
 import kurou.kodriver.domain.engine.AceWindowsRedFlag
 import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelCurrentValue
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelWarning
 import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
@@ -108,6 +109,28 @@ class AceWindowsReadoutTextSpeakerTest {
             checkTextToSpeechAvailable = checkAvailable,
             speakText = speakText,
         )
+
+    @Test
+    fun `手動燃料周回数の本文と解決済み文言を再生する`() =
+        runTest {
+            val event = AceWindowsRemainingFuelLapsCurrentValue(5)
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText(event.narratedText, volume = 80) } just Runs
+            coEvery { speakText("解決済み", volume = 80) } just Runs
+
+            assertEquals(event.narratedText, speaker.readoutText(event))
+            speaker(event, 80)
+            val resolved = event.withResolvedText("解決済み")
+            assertEquals("解決済み", speaker.readoutText(resolved))
+            speaker(resolved, 80)
+            assertNull(speaker.readoutText(event.withResolvedText(" ")))
+            speaker(event.withResolvedText(" "), 80)
+
+            coVerify(exactly = 3) { checkAvailable() }
+            coVerify(exactly = 1) { speakText(event.narratedText, volume = 80) }
+            coVerify(exactly = 1) { speakText("解決済み", volume = 80) }
+            confirmVerified(checkAvailable, speakText)
+        }
 
     @Test
     fun `手動燃料現在値の本文と解決済み文言を再生する`() =
@@ -249,6 +272,7 @@ class AceWindowsReadoutTextSpeakerTest {
     fun `全ACEイベントは自由文言対象になる`() {
         listOf(
             AceWindowsRemainingFuelLapsWarning(3),
+            AceWindowsRemainingFuelLapsCurrentValue(3),
             AceWindowsRemainingFuelWarning(20),
             AceWindowsWhiteFlag(),
             AceWindowsGreenFlag(),

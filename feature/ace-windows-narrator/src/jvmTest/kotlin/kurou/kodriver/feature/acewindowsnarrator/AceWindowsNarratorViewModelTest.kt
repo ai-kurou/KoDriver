@@ -309,16 +309,62 @@ class AceWindowsNarratorViewModelTest {
             assertManualReadout(hotkey = false, fuelAgeMs = 0L, expectedText = "残り燃料はデータがありません", switchSimulator = true)
         }
 
+    @Test
+    fun `手動燃料周回数は受信から5秒以内なら切り捨てた周回数を読み上げる`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                lapsAgeMs = 5_000L,
+                expectedText = "燃料は残り約5周",
+                itemKeys = listOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動燃料周回数は5秒を超えたらデータなしを読み上げる`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                lapsAgeMs = 5_001L,
+                expectedText = "残り燃料の周回数はデータがありません",
+                itemKeys = listOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動燃料周回数は未受信ならデータなしを読み上げる`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = true,
+                expectedText = "残り燃料の周回数はデータがありません",
+                itemKeys = listOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
+            )
+        }
+
+    @Test
+    fun `シミュレーターを切り替えると手動燃料周回数の現在値をクリアする`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                lapsAgeMs = 0L,
+                expectedText = "残り燃料の周回数はデータがありません",
+                switchSimulator = true,
+                itemKeys = listOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
+            )
+        }
+
     private suspend fun TestScope.assertManualReadout(
         hotkey: Boolean,
         fuelAgeMs: Long? = null,
         expectedText: String = "読み上げる項目がありません",
         concatenate: Boolean = false,
         switchSimulator: Boolean = false,
+        lapsAgeMs: Long? = null,
+        itemKeys: List<String>? = null,
     ) {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root
         val event = AceWindowsManualReadoutText(key, expectedText, expectedText)
-        val items = if (concatenate) listOf(key.value, key.value) else listOf(key.value)
+        val items = itemKeys ?: if (concatenate) listOf(key.value, key.value) else listOf(key.value)
         if (expectedText != "読み上げる項目がありません") {
             manualSets.update { listOf(ManualReadoutSet("set-1", items)) }
         }
@@ -348,12 +394,24 @@ class AceWindowsNarratorViewModelTest {
             MutableStateFlow(emptyList())
         var nowMs = 100L - (fuelAgeMs ?: 0L)
         val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-        val viewModel = createViewModel(fuelChannel, ttsEngine, currentTimeMs = { nowMs })
+        val lapsChannel = Channel<AceWindowsRemainingFuelLapsData>(Channel.UNLIMITED)
+        val viewModel =
+            createViewModel(
+                fuelChannel,
+                ttsEngine,
+                remainingFuelLapsChannel = lapsChannel,
+                currentTimeMs = { nowMs },
+            )
         try {
             val request = ManualReadoutRequest(Simulator.AceWindows.id, "set-1")
             runCurrent()
             if (fuelAgeMs != null) {
                 fuelChannel.send(AceWindowsFuelData(FuelPercent(42.5)))
+                runCurrent()
+            }
+            if (lapsAgeMs != null) {
+                nowMs = 100L - lapsAgeMs
+                lapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 5.9f))
                 runCurrent()
             }
             nowMs = 100L

@@ -19,6 +19,15 @@ class ManualReadoutItemsTest {
     }
 
     @Test
+    fun `ACEの燃料残り周回数は名前と手動専用文言を持ちキーは自動読み上げと共通`() {
+        val key = AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value
+        assertEquals("ace_windows_auto_remaining_fuel_laps", key)
+        assertEquals("残り燃料の周回数", manualReadoutItemName(key))
+        assertEquals("燃料は残り約{laps}周", manualReadoutItemTextDefault(key))
+        assertEquals(5, AceWindowsManualReadoutItem(key, "", 5).value)
+    }
+
+    @Test
     fun `LMUのエネルギー周回数は名前と既定文言と省略可能な周回数を持つ`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
         assertEquals("エネルギーの残り周回数", manualReadoutItemName(key))
@@ -122,7 +131,10 @@ class ManualReadoutItemsTest {
             manualReadoutItemKeys(Simulator.LmuWindows.id),
         )
         assertEquals(
-            listOf(AceWindowsReadoutItemKey.RemainingFuel.Root.value),
+            listOf(
+                AceWindowsReadoutItemKey.RemainingFuel.Root.value,
+                AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value,
+            ),
             manualReadoutItemKeys(Simulator.AceWindows.id),
         )
         assertEquals(

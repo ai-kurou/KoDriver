@@ -116,6 +116,48 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動燃料周回数は現在値を文言に整形し燃料と保存順に連結しデータなしと空テンプレートを処理する`() {
+        val fuelKey = AceWindowsReadoutItemKey.RemainingFuel.Root.value
+        val lapsKey = AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value
+        val cases =
+            listOf(
+                listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", 5)) to "約5周",
+                listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", null)) to "残り燃料の周回数はデータがありません",
+                listOf(AceWindowsManualReadoutItem(lapsKey, "", 5)) to "",
+                listOf(
+                    AceWindowsManualReadoutItem(fuelKey, "燃料{percent}%", 42),
+                    AceWindowsManualReadoutItem(lapsKey, "約{laps}周", 5),
+                ) to "燃料42%、約5周",
+            )
+        cases.forEach { (items, text) ->
+            val decision = useCase.determineManualReadout(AceWindowsNarratorState(), items)
+            assertEquals(
+                listOf(AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, text)),
+                decision.events,
+            )
+        }
+    }
+
+    @Test
+    fun `手動燃料周回数の現在値は切り捨て未受信と0以下と非有限と上限超過はデータなしになる`() {
+        assertEquals(null, useCase.currentRemainingFuelLaps(null))
+        val cases =
+            listOf(
+                0.5f to 0,
+                2.9f to 2,
+                3f to 3,
+                0f to null,
+                -0.5f to null,
+                Float.NaN to null,
+                Float.POSITIVE_INFINITY to null,
+                Int.MAX_VALUE.toFloat() to null,
+            )
+        cases.forEach { (laps, expected) ->
+            assertEquals(expected, useCase.currentRemainingFuelLaps(AceWindowsRemainingFuelLapsData(laps)))
+        }
+    }
+
+    @Test
     fun `手動読み上げは固定の項目なし文言を返し自動判定の状態を変更しない`() {
         val state = AceWindowsNarratorState(personalBestMs = 80_000, previousLapCount = 5)
         val decision = useCase.determineManualReadout(state)

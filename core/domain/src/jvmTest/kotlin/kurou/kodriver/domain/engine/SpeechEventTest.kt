@@ -79,6 +79,18 @@ class SpeechEventTest {
     }
 
     @Test
+    fun `ACEの手動燃料周回数はRootキーと既定文言と解決済み本文を持つ`() {
+        val event = AceWindowsRemainingFuelLapsCurrentValue(5)
+        assertEquals(AceWindowsReadoutItemKey.RemainingFuelLaps.Root, event.readoutItemKey)
+        assertEquals("燃料は残り約5周", event.narratedText)
+        val resolved = event.withResolvedText("約5周")
+        assertEquals("約5周", resolved.resolvedText)
+        assertEquals("約5周", resolved.narratedText)
+        assertEquals(5, resolved.laps)
+        assertEquals("", event.withResolvedText("").narratedText)
+    }
+
+    @Test
     fun `GT7の手動燃料残量はRootキーと既定文言と解決済み本文を持つ`() {
         val event = Gt7Ps5RemainingFuelCurrentValue(42)
         assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)

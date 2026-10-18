@@ -33,7 +33,9 @@ import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
+import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsRemainingFuelLapsReadoutPlaceholders
 import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsRemainingFuelReadoutPlaceholders
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
@@ -237,6 +239,10 @@ private fun unknownPlaceholders(
             findUnknownAceWindowsRemainingFuelReadoutPlaceholders(text)
         }
 
+        itemKey == AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> {
+            findUnknownAceWindowsRemainingFuelLapsReadoutPlaceholders(text)
+        }
+
         isLmuWindowsManualReadoutLapsItem(itemKey) -> {
             findUnknownLmuWindowsPitTimingReadoutPlaceholders(text)
         }
@@ -273,6 +279,7 @@ private fun isLmuWindowsManualReadoutLapsItem(itemKey: String): Boolean =
 private fun insertPlaceholder(itemKey: String): String =
     when {
         itemKey == AceWindowsReadoutItemKey.RemainingFuel.Root.value -> ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
+        itemKey == AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER
         isLmuWindowsManualReadoutLapsItem(itemKey) -> LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
         itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
         itemKey == Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER
@@ -303,6 +310,7 @@ internal fun ManualReadoutItemTextField(
         itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value || itemKey == Gt7Ps5ReadoutItemKey.MyBestLap.Root.value
     val isLaps =
         itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value ||
+            itemKey == AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value ||
             isLmuWindowsManualReadoutLapsItem(itemKey)
     val isTemperature =
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value || isLmuWindowsManualReadoutTemperatureItem(itemKey)
