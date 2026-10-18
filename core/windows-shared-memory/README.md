@@ -13,3 +13,15 @@ Windows共有メモリからテレメトリを取得する各データモジュ�
 
 ![Module Graph](../../docs/graphs/core-windows-shared-memory.svg)
 <!-- MODULE-GRAPH-END -->
+
+## Kernel32の遅延初期化テスト
+
+`Kernel32FileMappingTest` は `INSTANCE` の初回参照までライブラリを取得しないこと、
+`kernel32` を指定したJNAプロキシを一度だけ生成して再利用すること、
+ロード失敗を伝播し次の参照で再試行することを検証します。
+`Native.load` は実行し、DLL取得の境界である `NativeLibrary.getInstance` だけをモック化します。
+モックは各テストの `finally` で解除します。
+
+`by lazy` の保持値が他のテストへ残らないよう、対象インターフェースとその生成クラスだけを
+テストごとのクラスローダーで読み込み、リフレクションで `INSTANCE` を参照します。
+JNAやKotlinのクラスは通常のクラスローダーを共有します。本物のWindows DLLは読み込みません。
