@@ -53,7 +53,7 @@ Windows専用の`WindowsVoiceListRepository`は、有効なSAPI音声のID（`Vo
 `GetAvailableVoicesUseCase`が`ja-JP`の音声だけに絞り込み、表示名の昇順に並べます。
 Androidの`AndroidVoiceListRepository`も登録し、`ja`言語・オフライン可・インストール済みの音声だけを返します。
 `engineOrNull`で読み上げ用の`TextToSpeech`を1インスタンス共有し、一覧は再読み込みで導入状態を反映できるよう
-キャッシュしません。初期化失敗・一覧がnull・取得例外の場合は空の一覧を返します（キャンセルは再スローします）。
+キャッシュしません。初期化失敗・一覧がnull・取得例外の場合は空の一覧を返し、一覧・既定音声IDの取得例外はSentryへ記録します（キャンセルは再スローします）。
 出力の解析は独立した純粋関数としてユニットテストで検証します。
 
 `SapiSpeechSynthesizer`はOS判定・プロセス起動・エラー報告・完了待機をコンストラクターで差し替え、

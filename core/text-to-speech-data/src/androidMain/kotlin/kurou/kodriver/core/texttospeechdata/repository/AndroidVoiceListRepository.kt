@@ -1,6 +1,7 @@
 package kurou.kodriver.core.texttospeechdata.repository
 
 import android.speech.tts.TextToSpeech
+import io.sentry.Sentry
 import kotlinx.coroutines.CancellationException
 import kurou.kodriver.domain.model.TTS_CULTURE_NAME
 import kurou.kodriver.domain.model.TextToSpeechVoice
@@ -14,6 +15,7 @@ import kurou.kodriver.domain.repository.VoiceListRepository
 internal class AndroidVoiceListRepository(
     private val engineProvider: suspend () -> TextToSpeech?,
     private val defaultVoiceIdProvider: () -> String?,
+    private val captureException: (Throwable) -> Unit = Sentry::captureException,
 ) : VoiceListRepository {
     override suspend fun availableVoices(): List<TextToSpeechVoice> {
         val engine = engineProvider() ?: return emptyList()
@@ -22,7 +24,8 @@ internal class AndroidVoiceListRepository(
                 engine.voices
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                captureException(e)
                 null
             }
         val defaultVoiceId =
@@ -30,7 +33,8 @@ internal class AndroidVoiceListRepository(
                 defaultVoiceIdProvider()
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                captureException(e)
                 null
             }
         return voices

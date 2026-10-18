@@ -24,15 +24,17 @@ class AndroidVoiceListRepositoryTest {
     private val engineProvider: suspend () -> TextToSpeech? = mockk()
     private val voice: Voice = mockk()
     private val defaultVoiceIdProvider: () -> String? = mockk()
-    private val repository = AndroidVoiceListRepository(engineProvider, defaultVoiceIdProvider)
+    private val reportedExceptions = mutableListOf<Throwable>()
+    private val repository =
+        AndroidVoiceListRepository(engineProvider, defaultVoiceIdProvider, reportedExceptions::add)
 
     @Test
     fun `システム既定と同じIDの音声を識別し取得不能なら既定扱いにしない`() =
         runTest {
+            val defaultVoiceIdFailure = IllegalStateException("default")
             coEvery { engineProvider() } returns engine
             every { engine.voices } returns setOf(voice)
-            every { defaultVoiceIdProvider() } returns "ja-jp-x-jab-local" andThenThrows
-                IllegalStateException("default")
+            every { defaultVoiceIdProvider() } returns "ja-jp-x-jab-local" andThenThrows defaultVoiceIdFailure
             every { voice.locale } returns Locale.JAPANESE
             every { voice.isNetworkConnectionRequired } returns false
             every { voice.features } returns emptySet()
@@ -49,6 +51,7 @@ class AndroidVoiceListRepositoryTest {
             verify(exactly = 2) { voice.isNetworkConnectionRequired }
             verify(exactly = 2) { voice.features }
             verify(exactly = 6) { voice.name }
+            assertEquals(listOf<Throwable>(defaultVoiceIdFailure), reportedExceptions)
             confirmVerified(engineProvider, engine, voice, defaultVoiceIdProvider)
         }
 
@@ -64,6 +67,7 @@ class AndroidVoiceListRepositoryTest {
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
             verify(exactly = 1) { defaultVoiceIdProvider() }
+            assertEquals(emptyList(), reportedExceptions)
             confirmVerified(engineProvider, engine, defaultVoiceIdProvider)
         }
 
@@ -188,6 +192,7 @@ class AndroidVoiceListRepositoryTest {
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
             verify(exactly = 1) { defaultVoiceIdProvider() }
+            assertEquals(emptyList(), reportedExceptions)
             confirmVerified(engineProvider, engine, defaultVoiceIdProvider)
         }
 
@@ -209,15 +214,34 @@ class AndroidVoiceListRepositoryTest {
     @Test
     fun `音声一覧取得の例外なら空を返す`() =
         runTest {
+            val failure = IllegalStateException("voices")
             coEvery { engineProvider() } returns engine
             every { defaultVoiceIdProvider() } returns null
-            every { engine.voices } throws IllegalStateException("voices")
+            every { engine.voices } throws failure
 
             assertEquals(emptyList(), repository.availableVoices())
 
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
             verify(exactly = 1) { defaultVoiceIdProvider() }
+            assertEquals(listOf<Throwable>(failure), reportedExceptions)
+            confirmVerified(engineProvider, engine, defaultVoiceIdProvider)
+        }
+
+    @Test
+    fun `既定音声ID取得の例外なら空一覧への変換と合わせてSentry報告する`() =
+        runTest {
+            val failure = IllegalStateException("defaultVoiceId")
+            coEvery { engineProvider() } returns engine
+            every { engine.voices } returns emptySet()
+            every { defaultVoiceIdProvider() } throws failure
+
+            assertEquals(emptyList(), repository.availableVoices())
+
+            coVerify(exactly = 1) { engineProvider() }
+            verify(exactly = 1) { engine.voices }
+            verify(exactly = 1) { defaultVoiceIdProvider() }
+            assertEquals(listOf<Throwable>(failure), reportedExceptions)
             confirmVerified(engineProvider, engine, defaultVoiceIdProvider)
         }
 
@@ -243,6 +267,7 @@ class AndroidVoiceListRepositoryTest {
 
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
+            assertEquals(emptyList(), reportedExceptions)
             confirmVerified(engineProvider, engine, defaultVoiceIdProvider)
         }
 
