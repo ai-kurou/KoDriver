@@ -102,3 +102,8 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 - `DebugStateCardFrame` はタイトル・記号・アクセント色を受け取る。カードキーから色・記号への変換は各 feature の責務とする。`showHandle` で右上の点状装飾を切り替え、GT7 は非表示を維持する。
 - `SimulatorInfoContent` は `simulatorId` を受け取り、既存の `simulatorDisplayName` で表示名を解決する。
 - 各 feature の既存関数は薄いラッパーとして維持し、温度判定の既定引数と既存テストの呼び出しを保つ。LMU 固有の `DebugStateWearMeter` は共通化しない。
+
+## 詳細ペインのタイトル
+
+`DetailPaneTopAppBar` のタイトルは1行で表示し、バーの幅に収まらない場合は末尾を省略する。
+手動読み上げセット名などの長いタイトルでも、戻るボタン・操作領域と共存できるようにする。
