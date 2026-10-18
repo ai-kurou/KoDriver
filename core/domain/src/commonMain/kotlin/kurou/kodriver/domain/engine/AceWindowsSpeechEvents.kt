@@ -8,6 +8,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEX
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
@@ -246,4 +247,20 @@ data class AceWindowsMyBestLapCurrentValue(
             ?: formatAceWindowsMyBestLapReadoutText(ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT, lapTimeMs)
 
     override fun withResolvedText(text: String): AceWindowsMyBestLapCurrentValue = copy(resolvedText = text)
+}
+
+/** ACE のタイヤ温度現在値。手動読み上げではセット内の文言を優先する。 */
+data class AceWindowsTyreTemperatureCurrentValue(
+    val celsius: Int,
+    override val resolvedText: String? = null,
+) : AceWindowsSpeechEvent {
+    override val readoutItemKey = AceWindowsReadoutItemKey.TyreTemperature.Root
+    override val narratedText =
+        resolvedText
+            ?: formatAceWindowsTyreTemperatureReadoutText(
+                ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT,
+                celsius,
+            )
+
+    override fun withResolvedText(text: String): AceWindowsTyreTemperatureCurrentValue = copy(resolvedText = text)
 }

@@ -314,7 +314,7 @@ class AceWindowsNarratorViewModelTest {
         runTest(testDispatcher) {
             assertManualReadout(
                 hotkey = false,
-                lapsAgeMs = 5_000L,
+                valueAgeMs = 5_000L,
                 expectedText = "燃料は残り約5周",
                 itemKeys = listOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
             )
@@ -325,7 +325,7 @@ class AceWindowsNarratorViewModelTest {
         runTest(testDispatcher) {
             assertManualReadout(
                 hotkey = false,
-                lapsAgeMs = 5_001L,
+                valueAgeMs = 5_001L,
                 expectedText = "残り燃料の周回数はデータがありません",
                 itemKeys = listOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
             )
@@ -346,7 +346,7 @@ class AceWindowsNarratorViewModelTest {
         runTest(testDispatcher) {
             assertManualReadout(
                 hotkey = false,
-                lapsAgeMs = 0L,
+                valueAgeMs = 0L,
                 expectedText = "残り燃料の周回数はデータがありません",
                 switchSimulator = true,
                 itemKeys = listOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
@@ -358,7 +358,7 @@ class AceWindowsNarratorViewModelTest {
         runTest(testDispatcher) {
             assertManualReadout(
                 hotkey = false,
-                lapsAgeMs = 5_000L,
+                valueAgeMs = 5_000L,
                 expectedText = "自己ベストラップ 1分23秒456",
                 itemKeys = listOf(AceWindowsReadoutItemKey.MyBestLap.Root.value),
             )
@@ -369,7 +369,7 @@ class AceWindowsNarratorViewModelTest {
         runTest(testDispatcher) {
             assertManualReadout(
                 hotkey = false,
-                lapsAgeMs = 60_000L,
+                valueAgeMs = 60_000L,
                 expectedText = "自己ベストラップ 1分23秒456",
                 itemKeys = listOf(AceWindowsReadoutItemKey.MyBestLap.Root.value),
             )
@@ -380,10 +380,58 @@ class AceWindowsNarratorViewModelTest {
         runTest(testDispatcher) {
             assertManualReadout(
                 hotkey = true,
-                lapsAgeMs = 0L,
+                valueAgeMs = 0L,
                 expectedText = "自己ベストラップはデータがありません",
                 switchSimulator = true,
                 itemKeys = listOf(AceWindowsReadoutItemKey.MyBestLap.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動タイヤ温度は5秒以内なら最高温度を読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                expectedText = "タイヤ温度85℃",
+                valueAgeMs = 5_000L,
+                switchSimulator = false,
+                itemKeys = listOf(AceWindowsReadoutItemKey.TyreTemperature.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動タイヤ温度は未受信ならデータなしを読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                expectedText = "タイヤ温度はデータがありません",
+                valueAgeMs = null,
+                switchSimulator = false,
+                itemKeys = listOf(AceWindowsReadoutItemKey.TyreTemperature.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動タイヤ温度は5秒超ならデータなしを読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                expectedText = "タイヤ温度はデータがありません",
+                valueAgeMs = 5_001L,
+                switchSimulator = false,
+                itemKeys = listOf(AceWindowsReadoutItemKey.TyreTemperature.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動タイヤ温度はACE以外への切替で現在値をクリアする`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = true,
+                expectedText = "タイヤ温度はデータがありません",
+                valueAgeMs = 0L,
+                switchSimulator = true,
+                itemKeys = listOf(AceWindowsReadoutItemKey.TyreTemperature.Root.value),
             )
         }
 
@@ -393,7 +441,7 @@ class AceWindowsNarratorViewModelTest {
         expectedText: String = "読み上げる項目がありません",
         concatenate: Boolean = false,
         switchSimulator: Boolean = false,
-        lapsAgeMs: Long? = null,
+        valueAgeMs: Long? = null,
         itemKeys: List<String>? = null,
     ) {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root
@@ -430,12 +478,14 @@ class AceWindowsNarratorViewModelTest {
         val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
         val lapsChannel = Channel<AceWindowsRemainingFuelLapsData>(Channel.UNLIMITED)
         val bestLapChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
+        val tyreChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val viewModel =
             createViewModel(
                 fuelChannel,
                 ttsEngine,
                 remainingFuelLapsChannel = lapsChannel,
                 bestLapTimeChannel = bestLapChannel,
+                tyreCarcassTemperatureChannel = tyreChannel,
                 currentTimeMs = { nowMs },
             )
         try {
@@ -445,12 +495,20 @@ class AceWindowsNarratorViewModelTest {
                 fuelChannel.send(AceWindowsFuelData(FuelPercent(42.5)))
                 runCurrent()
             }
-            if (lapsAgeMs != null) {
-                nowMs = 100L - lapsAgeMs
-                if (AceWindowsReadoutItemKey.MyBestLap.Root.value in items) {
-                    bestLapChannel.send(AceWindowsBestLapTimeData(83_456))
-                } else {
-                    lapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 5.9f))
+            if (valueAgeMs != null) {
+                nowMs = 100L - valueAgeMs
+                when {
+                    AceWindowsReadoutItemKey.MyBestLap.Root.value in items -> {
+                        bestLapChannel.send(AceWindowsBestLapTimeData(83_456))
+                    }
+
+                    AceWindowsReadoutItemKey.TyreTemperature.Root.value in items -> {
+                        tyreChannel.send(tyreCarcassTemperature(84.5f))
+                    }
+
+                    else -> {
+                        lapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 5.9f))
+                    }
                 }
                 runCurrent()
             }

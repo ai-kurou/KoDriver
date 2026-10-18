@@ -20,6 +20,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRES
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
+import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
@@ -187,6 +188,8 @@ internal class AceWindowsNarratorViewModel(
     private var latestFuelReceivedAtMs = 0L
     private var latestFuelLaps: AceWindowsRemainingFuelLapsData? = null
     private var latestFuelLapsReceivedAtMs = 0L
+    private var latestTyreTemperature: AceWindowsTyreCarcassTemperatureData? = null
+    private var latestTyreTemperatureReceivedAtMs = 0L
     private var latestBestLap: AceWindowsBestLapTimeData? = null
 
     private val currentSettings: AceWindowsNarratorReadoutSettings
@@ -244,6 +247,8 @@ internal class AceWindowsNarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.AceWindows) {
+                    latestTyreTemperature = null
+                    latestTyreTemperatureReceivedAtMs = 0L
                     emptyFlow()
                 } else {
                     tyreTemperatureUseCases.observeAceWindowsTyreCarcassTemperature()
@@ -295,6 +300,11 @@ internal class AceWindowsNarratorViewModel(
         val settings = currentSettings
         val fuel = latestFuel?.takeIf { observedAtMs - latestFuelReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
         val fuelLaps = latestFuelLaps?.takeIf { observedAtMs - latestFuelLapsReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
+        val tyreTemperature =
+            latestTyreTemperature?.takeIf {
+                observedAtMs - latestTyreTemperatureReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+            }
+        val celsius = determineAceWindowsNarratorReadout.currentMaxTyreTemperatureCelsius(tyreTemperature)
         val percent = determineAceWindowsNarratorReadout.currentRemainingFuelPercent(fuel)
         val laps = determineAceWindowsNarratorReadout.currentRemainingFuelLaps(fuelLaps)
         // 自己ベストは変化しない間サーバーから再送されない（Android）ため、他の項目と違い鮮度判定をしない。
@@ -305,6 +315,7 @@ internal class AceWindowsNarratorViewModel(
                     when (key) {
                         AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> laps
                         AceWindowsReadoutItemKey.MyBestLap.Root.value -> bestLapTimeMs
+                        AceWindowsReadoutItemKey.TyreTemperature.Root.value -> celsius
                         else -> percent
                     }
                 AceWindowsManualReadoutItem(key, set.itemTexts[key] ?: manualReadoutItemTextDefault(key), value)
@@ -445,6 +456,8 @@ internal class AceWindowsNarratorViewModel(
         tyreTemperatureFlow
             .onEach { tyreCarcassTemperature ->
                 val observedAtMs = currentTimeMs()
+                latestTyreTemperature = tyreCarcassTemperature
+                latestTyreTemperatureReceivedAtMs = observedAtMs
                 val state = narratorState
                 val settings = currentSettings
                 val decision =

@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
@@ -143,6 +144,30 @@ class ManualReadoutSetDetailPaneScreenshotTest {
 class ManualReadoutSetDetailPaneAceScreenshotTest {
     @Test
     fun `ACEの残り燃料の文言`() = screenshot(manualReadoutItemKeys(Simulator.AceWindows.id), selected = true)
+
+    @Test
+    fun `ACEのタイヤ温度の文言欄と連結プレビュー`() =
+        screenshot(
+            listOf(
+                AceWindowsReadoutItemKey.TyreTemperature.Root.value,
+                AceWindowsReadoutItemKey.RemainingFuel.Root.value,
+                AceWindowsReadoutItemKey.MyBestLap.Root.value,
+            ),
+            selected = true,
+        )
+
+    @Test
+    fun `ACEの項目追加ダイアログ`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
+                        ManualReadoutItemPickerDialog(manualReadoutItemKeys(Simulator.AceWindows.id), {}, {})
+                    }
+                }
+            }
+            onNode(isDialog()).captureRoboImage()
+        }
 }
 
 private fun screenshot(

@@ -8,6 +8,13 @@ import kotlin.test.assertEquals
 
 class ManualReadoutItemsTest {
     @Test
+    fun `ACEのタイヤ温度はタイヤ温度文言を使う`() {
+        val key = AceWindowsReadoutItemKey.TyreTemperature.Root.value
+        assertEquals("タイヤ温度", manualReadoutItemName(key))
+        assertEquals("タイヤ温度{celsius}℃", manualReadoutItemTextDefault(key))
+    }
+
+    @Test
     fun `ACEの残り燃料は既存キーと手動専用文言と名前を持つ`() {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
         assertEquals("ace_windows_auto_remaining_fuel", key)
@@ -142,6 +149,7 @@ class ManualReadoutItemsTest {
                 AceWindowsReadoutItemKey.RemainingFuel.Root.value,
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value,
                 AceWindowsReadoutItemKey.MyBestLap.Root.value,
+                AceWindowsReadoutItemKey.TyreTemperature.Root.value,
             ),
             manualReadoutItemKeys(Simulator.AceWindows.id),
         )

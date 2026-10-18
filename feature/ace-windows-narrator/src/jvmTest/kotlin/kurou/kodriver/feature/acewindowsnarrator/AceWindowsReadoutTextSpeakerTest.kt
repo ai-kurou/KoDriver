@@ -44,6 +44,7 @@ import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelWarning
 import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
+import kurou.kodriver.domain.engine.AceWindowsTyreTemperatureCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
@@ -130,6 +131,19 @@ class AceWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 3) { checkAvailable() }
             coVerify(exactly = 1) { speakText(event.narratedText, volume = 80) }
             coVerify(exactly = 1) { speakText("解決済み", volume = 80) }
+            confirmVerified(checkAvailable, speakText)
+        }
+
+    @Test
+    fun `手動タイヤ温度本文を再生する`() =
+        runTest {
+            val event = AceWindowsTyreTemperatureCurrentValue(90)
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText(event.narratedText, volume = 80) } just Runs
+            assertEquals(event.narratedText, speaker.readoutText(event))
+            speaker(event, 80)
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText(event.narratedText, volume = 80) }
             confirmVerified(checkAvailable, speakText)
         }
 

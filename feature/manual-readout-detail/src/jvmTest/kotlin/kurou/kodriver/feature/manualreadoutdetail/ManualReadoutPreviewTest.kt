@@ -10,6 +10,15 @@ import kotlin.test.assertEquals
 
 class ManualReadoutPreviewTest {
     @Test
+    fun `ACEタイヤ温度をサンプル温度に置換する`() {
+        val key = AceWindowsReadoutItemKey.TyreTemperature.Root.value
+        val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))
+        assertEquals("タイヤ温度90℃", manualReadoutPreview(state))
+        assertEquals("温度90 {other}", manualReadoutPreview(state.copy(itemTexts = mapOf(key to "温度{celsius} {other}"))))
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+    }
+
+    @Test
     fun `ACE自己ベストラップをサンプルタイムに置換する`() {
         val key = AceWindowsReadoutItemKey.MyBestLap.Root.value
         val state = ManualReadoutSetDetailUiState(selectedItemKeys = listOf(key))

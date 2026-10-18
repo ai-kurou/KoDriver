@@ -36,9 +36,11 @@ import kurou.kodriver.core.designsystem.rememberTextInsertState
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsMyBestLapReadoutPlaceholders
 import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsRemainingFuelLapsReadoutPlaceholders
 import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsRemainingFuelReadoutPlaceholders
+import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsTyreTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
@@ -265,6 +267,10 @@ private fun unknownPlaceholders(
             findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders(text)
         }
 
+        itemKey == AceWindowsReadoutItemKey.TyreTemperature.Root.value -> {
+            findUnknownAceWindowsTyreTemperatureReadoutPlaceholders(text)
+        }
+
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
             findUnknownGt7Ps5TyreTemperatureReadoutPlaceholders(text)
         }
@@ -284,16 +290,49 @@ private fun isLmuWindowsManualReadoutLapsItem(itemKey: String): Boolean =
 
 private fun insertPlaceholder(itemKey: String): String =
     when {
-        itemKey == AceWindowsReadoutItemKey.RemainingFuel.Root.value -> ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
-        itemKey == AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER
-        isLmuWindowsManualReadoutLapsItem(itemKey) -> LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
-        itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
-        itemKey == AceWindowsReadoutItemKey.MyBestLap.Root.value -> ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
-        itemKey == Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER
-        itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
-        itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
-        isLmuWindowsManualReadoutTemperatureItem(itemKey) -> LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
-        else -> LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
+        itemKey == AceWindowsReadoutItemKey.RemainingFuel.Root.value -> {
+            ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
+        }
+
+        itemKey == AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> {
+            ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER
+        }
+
+        isLmuWindowsManualReadoutLapsItem(itemKey) -> {
+            LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
+        }
+
+        itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
+            LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
+        }
+
+        itemKey == AceWindowsReadoutItemKey.MyBestLap.Root.value -> {
+            ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
+        }
+
+        itemKey == Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
+            GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER
+        }
+
+        itemKey == Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
+            GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
+        }
+
+        itemKey == AceWindowsReadoutItemKey.TyreTemperature.Root.value -> {
+            ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
+        }
+
+        itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
+            GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
+        }
+
+        isLmuWindowsManualReadoutTemperatureItem(itemKey) -> {
+            LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
+        }
+
+        else -> {
+            LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
+        }
     }
 
 /** 選択中の項目の文言を編集し、入力ごとに保存する。 */
@@ -316,6 +355,11 @@ private fun isManualReadoutLapsItem(itemKey: String): Boolean =
         itemKey == AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value ||
         isLmuWindowsManualReadoutLapsItem(itemKey)
 
+private fun isManualReadoutTemperatureItem(itemKey: String): Boolean =
+    itemKey == AceWindowsReadoutItemKey.TyreTemperature.Root.value ||
+        itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value ||
+        isLmuWindowsManualReadoutTemperatureItem(itemKey)
+
 @Composable
 internal fun ManualReadoutItemTextField(
     text: String,
@@ -325,8 +369,7 @@ internal fun ManualReadoutItemTextField(
 ) {
     val isLapTime = isManualReadoutLapTimeItem(itemKey)
     val isLaps = isManualReadoutLapsItem(itemKey)
-    val isTemperature =
-        itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value || isLmuWindowsManualReadoutTemperatureItem(itemKey)
+    val isTemperature = isManualReadoutTemperatureItem(itemKey)
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
     val insertState = rememberTextInsertState()

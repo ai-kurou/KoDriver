@@ -41,6 +41,42 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineAceWindowsNarratorReadoutUseCase()
 
     @Test
+    fun `手動タイヤ温度は有限かつ正の最高温度を四捨五入する`() {
+        assertEquals(null, useCase.currentMaxTyreTemperatureCelsius(null))
+        assertEquals(null, useCase.currentMaxTyreTemperatureCelsius(AceWindowsTyreCarcassTemperatureData(emptyMap())))
+        listOf(Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, 0f, -1f).forEach { value ->
+            assertEquals(null, useCase.currentMaxTyreTemperatureCelsius(tyreCarcassTemperature(value)))
+        }
+        val data =
+            AceWindowsTyreCarcassTemperatureData(
+                mapOf(
+                    WheelIndex.FRONT_LEFT to CelsiusReading(Float.NaN),
+                    WheelIndex.FRONT_RIGHT to CelsiusReading(80f),
+                    WheelIndex.REAR_LEFT to CelsiusReading(89.5f),
+                    WheelIndex.REAR_RIGHT to CelsiusReading(0f),
+                ),
+            )
+        assertEquals(90, useCase.currentMaxTyreTemperatureCelsius(data))
+        assertEquals(89, useCase.currentMaxTyreTemperatureCelsius(tyreCarcassTemperature(89.4f)))
+    }
+
+    @Test
+    fun `手動タイヤ温度は文言とデータなしと空欄を扱い自動警告状態を維持する`() {
+        val key = AceWindowsReadoutItemKey.TyreTemperature.Root.value
+        val state = AceWindowsNarratorState(tyreOverheating = true)
+        listOf(
+            AceWindowsManualReadoutItem(key, "温度{celsius}℃ {other}", 90) to "温度90℃ {other}",
+            AceWindowsManualReadoutItem(key, "タイヤ温度{celsius}℃", null) to "タイヤ温度はデータがありません",
+            AceWindowsManualReadoutItem(key, "", null) to "",
+            AceWindowsManualReadoutItem(key, "", 90) to "",
+        ).forEach { (item, expected) ->
+            val decision = useCase.determineManualReadout(state, listOf(item))
+            assertEquals(state, decision.state)
+            assertEquals(expected, (decision.events.single() as AceWindowsManualReadoutText).text)
+        }
+    }
+
+    @Test
     fun `手動燃料は編集文言と現在値を保存順に連結し空白と非対応キーを除外する`() {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
         val state = AceWindowsNarratorState(remainingFuelWarned = true, lastRemainingFuelLaps = 2)
