@@ -13,6 +13,7 @@ dependencies {
 
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
     testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutinesTest)
 }
