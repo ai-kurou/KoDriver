@@ -17,9 +17,9 @@ WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパター�
 | `/ws/lmu_windows/brake_wear` | `ObserveLmuWindowsBrakeWearUseCase`（`LmuWindowsBrakeWearRepository`） | `LmuWindowsBrakeWearData?`（取得失敗時は JSON `null`。車両クラスとの受信順に依存しないよう、同一値も重複排除せず毎回配信） |
 | `/ws/lmu_windows/brake_temperature` | `ObserveLmuWindowsBrakeTemperatureUseCase`（`LmuWindowsBrakeTemperatureRepository`） | `LmuWindowsBrakeTemperatureData` |
 | `/ws/lmu_windows/vehicle_class` | `ObserveLmuWindowsVehicleClassUseCase`（`LmuWindowsVehicleClassRepository`） | `LmuWindowsVehicleClassData` |
-| `/ws/lmu_windows/tyre_wear` | `ObserveLmuWindowsTyreWearUseCase`（`LmuWindowsTyreWearRepository`） | `LmuWindowsTyreWearData` |
+| `/ws/lmu_windows/tyre_wear` | `ObserveLmuWindowsTyreWearUseCase`（`LmuWindowsTyreWearRepository`） | `LmuWindowsTyreWearData`（同一値も継続配信） |
 | `/ws/lmu_windows/my_best_lap` | `ObserveLmuWindowsUseCase`（`LmuWindowsRepository`）の `timing` | `LmuWindowsTimingData` |
-| `/ws/lmu_windows/virtual_energy` | `ObserveLmuWindowsVirtualEnergyUseCase`（`LmuWindowsVirtualEnergyRepository`） | `LmuWindowsVirtualEnergyData` |
+| `/ws/lmu_windows/virtual_energy` | `ObserveLmuWindowsVirtualEnergyUseCase`（`LmuWindowsVirtualEnergyRepository`） | `LmuWindowsVirtualEnergyData`（同一値も継続配信） |
 | `/ws/lmu_windows/pit_status` | `ObserveLmuWindowsPitStatusUseCase`（`LmuWindowsPitStatusRepository`） | `LmuWindowsPitStatusData` |
 | `/ws/lmu_windows/tyre_detached` | `ObserveLmuWindowsTyreDetachedUseCase`（`LmuWindowsTyreDetachedRepository`） | `LmuWindowsTyreDetachedData` |
 
@@ -27,15 +27,15 @@ WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパター�
 
 | パス | データソース（UseCase） | 送信型 |
 | --- | --- | --- |
-| `/ws/ace_windows/fuel` | `ObserveAceWindowsFuelUseCase`（`AceWindowsFuelRepository`） | `AceWindowsFuelData` |
+| `/ws/ace_windows/fuel` | `ObserveAceWindowsFuelUseCase`（`AceWindowsFuelRepository`） | `AceWindowsFuelData`（同一値も継続配信） |
 | `/ws/ace_windows/flags` | `ObserveAceWindowsFlagUseCase`（`AceWindowsFlagRepository`） | `AceWindowsFlagData` |
 | `/ws/ace_windows/status` | `ObserveAceWindowsStatusUseCase`（`AceWindowsStatusRepository`） | `AceWindowsStatusData` |
 | `/ws/ace_windows/tyre_carcass_temperature` | `ObserveAceWindowsTyreCarcassTemperatureUseCase`（`AceWindowsTyreCarcassTemperatureRepository`） | `AceWindowsTyreCarcassTemperatureData` |
 | `/ws/ace_windows/vehicle_approach` | `ObserveAceWindowsVehicleApproachUseCase`（`AceWindowsVehicleApproachRepository`） | `AceWindowsVehicleApproachData` |
 | `/ws/ace_windows/my_best_lap` | `ObserveAceWindowsBestLapTimeUseCase`（`AceWindowsBestLapTimeRepository`） | `AceWindowsBestLapTimeData` |
-| `/ws/ace_windows/remaining_fuel_laps` | `ObserveAceWindowsRemainingFuelLapsUseCase`（`AceWindowsRemainingFuelLapsRepository`） | `AceWindowsRemainingFuelLapsData` |
+| `/ws/ace_windows/remaining_fuel_laps` | `ObserveAceWindowsRemainingFuelLapsUseCase`（`AceWindowsRemainingFuelLapsRepository`） | `AceWindowsRemainingFuelLapsData`（同一値も継続配信） |
 
-全エンドポイント共通で、同一内容の連続値は送信しない。エンドポイントを追加・変更したときは、この表も同じ PR で更新すること。
+明記のないエンドポイントでは、同一内容の連続値は送信しない。読み上げ側で受信時刻を鮮度判定に使うエンドポイント（燃料、残り周回数、タイヤ摩耗、バーチャルエネルギー、ブレーキ摩耗）では同一値も継続配信する。エンドポイントを追加・変更したときは、この表も同じ PR で更新すること。
 
 LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws/<Simulator.id>/flags` 等へ接続する。外部端末から接続するには Windows ファイアウォールで TCP 8080 番ポートの受信を許可する必要がある場合がある。現時点では認証・暗号化を実装していないため、信頼できる LAN 内でのみ使用すること。
 

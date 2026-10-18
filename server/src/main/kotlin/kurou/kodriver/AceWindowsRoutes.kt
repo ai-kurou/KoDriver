@@ -5,7 +5,7 @@ import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
 
 internal fun Route.aceWindowsRoutes(useCases: KoDriverServerUseCases) {
-    telemetryWebSocket(KoDriverServerFeature.FUEL, Simulator.AceWindows) {
+    telemetryWebSocket(KoDriverServerFeature.FUEL, Simulator.AceWindows, distinct = false) {
         useCases.aceWindows.observeAceWindowsFuel()
     }
     telemetryWebSocket(KoDriverServerFeature.FLAGS, Simulator.AceWindows) {
@@ -23,7 +23,7 @@ internal fun Route.aceWindowsRoutes(useCases: KoDriverServerUseCases) {
     telemetryWebSocket(KoDriverServerFeature.MY_BEST_LAP, Simulator.AceWindows) {
         useCases.aceWindows.observeAceWindowsBestLapTime()
     }
-    telemetryWebSocket(KoDriverServerFeature.REMAINING_FUEL_LAPS, Simulator.AceWindows) {
+    telemetryWebSocket(KoDriverServerFeature.REMAINING_FUEL_LAPS, Simulator.AceWindows, distinct = false) {
         useCases.aceWindows.observeAceWindowsRemainingFuelLaps()
     }
 }
