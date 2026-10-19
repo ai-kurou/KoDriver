@@ -46,6 +46,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesCore)
             implementation(projects.core.designsystem)
+            implementation(libs.compose.animation)
             implementation(libs.compose.material.icons.extended)
         }
         jvmTest.dependencies {

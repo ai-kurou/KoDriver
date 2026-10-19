@@ -7,6 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -95,6 +97,30 @@ class AppScreenPrimarySimulatorItemTest {
         }
 
         rule.onNode(hasText("Le Mans Ultimate（Windows版）")).assertDoesNotExist()
+    }
+
+    @Test
+    fun `シミュレーターIDが変わると選択カードも切り替わる`() {
+        var simulatorId by mutableStateOf("lmu_windows")
+        rule.setContent {
+            AppScreenPrimarySimulatorIndicator(
+                simulatorId = simulatorId,
+                expanded = true,
+                onExpandedChange = {},
+                onSimulatorSelected = {},
+            )
+        }
+
+        val lmuCard = rule.onNode(hasText("Le Mans Ultimate（Windows版）"))
+        val gt7Card = rule.onNode(hasText("Gran Turismo 7（PS5）"))
+        lmuCard.assertIsSelected()
+        gt7Card.assertIsNotSelected()
+
+        simulatorId = "gt7_ps5"
+        rule.mainClock.advanceTimeBy(500)
+
+        lmuCard.assertIsNotSelected()
+        gt7Card.assertIsSelected()
     }
 
     @Test

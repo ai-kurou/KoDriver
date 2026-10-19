@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -34,6 +37,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -77,6 +82,7 @@ private val SimulatorCardImageBlur = 2.dp
 private val SimulatorCardSelectedBorderWidth = 2.dp
 private val SimulatorCardCheckBadgeSize = 28.dp
 private val SimulatorPopupBorderWidth = 1.dp
+private const val SIMULATOR_CARD_SELECTED_BORDER_ANIMATION_DURATION_MILLIS = 500
 
 /**
  * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレーターのアイコンと、
@@ -142,16 +148,20 @@ private fun SimulatorCard(
     modifier: Modifier = Modifier,
 ) {
     val displayName = simulatorDisplayName(simulatorId)
+    val borderColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+        animationSpec = tween(durationMillis = SIMULATOR_CARD_SELECTED_BORDER_ANIMATION_DURATION_MILLIS),
+        label = "simulatorCardBorderColor",
+    )
     Card(
         onClick = onClick,
-        modifier = modifier.width(SimulatorCardWidth).height(SimulatorCardHeight),
+        modifier =
+            modifier
+                .width(SimulatorCardWidth)
+                .height(SimulatorCardHeight)
+                .semantics { this.selected = selected },
         shape = MaterialTheme.shapes.extraLarge,
-        border =
-            if (selected) {
-                BorderStroke(SimulatorCardSelectedBorderWidth, MaterialTheme.colorScheme.primary)
-            } else {
-                null
-            },
+        border = BorderStroke(SimulatorCardSelectedBorderWidth, borderColor),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
