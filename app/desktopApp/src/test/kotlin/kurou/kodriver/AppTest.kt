@@ -7,6 +7,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
@@ -244,6 +245,7 @@ class AppTest {
 
         selectSimulator("Le Mans Ultimate（Windows版）")
         waitUntilDisplayed("シミュレーター接続待機中")
+        rule.onNodeWithText("シミュレーター接続待機中").assertHasNoClickAction()
         // Desktop ではサーバーIP設定への導線がないため、バナー表示のみ確認する。
     }
 
@@ -253,6 +255,7 @@ class AppTest {
 
         selectSimulator("Assetto Corsa EVO（Windows版）")
         waitUntilDisplayed("シミュレーター接続待機中")
+        rule.onNodeWithText("シミュレーター接続待機中").assertHasNoClickAction()
         // Desktop ではサーバーIP設定への導線がないため、バナー表示のみ確認する。
     }
 
