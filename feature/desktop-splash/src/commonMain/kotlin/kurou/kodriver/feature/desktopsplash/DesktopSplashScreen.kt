@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.desktopsplash
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,15 +55,21 @@ fun DesktopSplashScreen(
                 modifier = Modifier.size(APP_ICON_SIZE_DP.dp),
             )
             Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
+            val animatedProgress by animateFloatAsState(
+                targetValue = uiState.progress,
+                label = "desktopSplashProgress",
+            )
             LinearProgressIndicator(
-                progress = { uiState.progress },
+                progress = { animatedProgress },
                 modifier = Modifier.width(PROGRESS_INDICATOR_WIDTH_DP.dp),
             )
             Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
-            Text(
-                text = stringResource(uiState.step.displayNameRes),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Crossfade(targetState = uiState.step, label = "desktopSplashStep") { step ->
+                Text(
+                    text = stringResource(step.displayNameRes),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }
