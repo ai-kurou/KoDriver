@@ -248,17 +248,17 @@ class MainActivityTest {
 
     @Test
     fun `LMU選択時にアプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
-        assertDebugStateScreen("Le Mans Ultimate（Windows版）")
+        assertDebugStateScreen("Le Mans Ultimate（Windows版）", "ゲームフェーズ (LMUのみ)")
     }
 
     @Test
     fun `GT7選択時にアプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
-        assertDebugStateScreen("Gran Turismo 7（PS5）")
+        assertDebugStateScreen("Gran Turismo 7（PS5）", "車両クラス")
     }
 
     @Test
     fun `ACE選択時にアプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
-        assertDebugStateScreen("Assetto Corsa EVO（Windows版）")
+        assertDebugStateScreen("Assetto Corsa EVO（Windows版）", "車両位置")
     }
 
     @Test
@@ -342,7 +342,10 @@ class MainActivityTest {
     // Androidのコンパクト幅では詳細表示中は一覧ペインが画面上に存在せず、
     // 選択済み一覧項目の再タップを再現できないため移植していない。
 
-    private fun assertDebugStateScreen(simulatorName: String) {
+    private fun assertDebugStateScreen(
+        simulatorName: String,
+        simulatorSpecificText: String,
+    ) {
         launchActivity()
         selectSimulator(simulatorName)
         clickItem("その他")
@@ -361,6 +364,11 @@ class MainActivityTest {
             "Gran Turismo 7（PS5）",
             "Assetto Corsa EVO（Windows版）",
         ).filter { it != simulatorName }.forEach { waitUntilNotDisplayed(it) }
+        composeTestRule
+            .onNodeWithTag("debug_state_grid")
+            .performScrollToNode(hasText(simulatorSpecificText))
+        composeTestRule.waitForIdle()
+        waitUntilDisplayed(simulatorSpecificText)
         navigateBack()
     }
 
