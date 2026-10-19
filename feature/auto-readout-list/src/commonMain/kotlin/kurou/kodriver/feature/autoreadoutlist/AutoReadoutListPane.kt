@@ -2,6 +2,7 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -312,24 +313,29 @@ private fun AutoReadoutListItemCard(
     val tileContentColor by animateColorAsState(visualStyle.tileContentColor, label = "tileContentColor")
     val primary = MaterialTheme.colorScheme.primary
     val cardShape = CardDefaults.elevatedShape
-    val selectionModifier =
-        if (isSelected) {
-            Modifier
-                .shadow(
-                    elevation = 8.dp,
-                    shape = cardShape,
-                    ambientColor = primary,
-                    spotColor = primary,
-                ).border(1.dp, primary, cardShape)
-        } else {
-            Modifier
-        }
+    val selectionBorderColor by
+        animateColorAsState(
+            targetValue = if (isSelected) primary else Color.Transparent,
+            animationSpec = tween(durationMillis = 500),
+            label = "selectionBorderColor",
+        )
+    val selectionShadowElevation by
+        animateDpAsState(
+            targetValue = if (isSelected) 8.dp else 0.dp,
+            animationSpec = tween(durationMillis = 500),
+            label = "selectionShadowElevation",
+        )
     ElevatedCard(
         modifier =
             modifier
                 .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
                 .fillMaxWidth()
-                .then(selectionModifier),
+                .shadow(
+                    elevation = selectionShadowElevation,
+                    shape = cardShape,
+                    ambientColor = primary,
+                    spotColor = primary,
+                ).border(1.dp, selectionBorderColor, cardShape),
         colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
     ) {
         Row(

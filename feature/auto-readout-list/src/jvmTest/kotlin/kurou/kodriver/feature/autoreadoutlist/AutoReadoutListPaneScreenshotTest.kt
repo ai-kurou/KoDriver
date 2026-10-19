@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
@@ -139,6 +140,39 @@ class AutoReadoutListPaneScreenshotTest {
                     }
                 }
             }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `選択状態の切り替え中に枠線と影を表示する`() =
+        composeScreenshotTest {
+            val selectedItem = mutableStateOf<AutoReadoutListItemType?>(null)
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            AutoReadoutListPane(
+                                uiState =
+                                    AutoReadoutListUiState(
+                                        selectedSimulator = Simulator.LmuWindows,
+                                        items = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                                        selectedItem = selectedItem.value,
+                                    ),
+                                onMove = { _, _ -> },
+                                onReadoutEnabledChanged = { _, _ -> },
+                                onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
+                                onItemClick = { _ -> },
+                            )
+                        }
+                    }
+                }
+            }
+
+            mainClock.autoAdvance = false
+            selectedItem.value = LmuWindowsAutoReadoutListItemType.Flag
+            mainClock.advanceTimeBy(250)
+
             onRoot().captureRoboImage()
         }
 
