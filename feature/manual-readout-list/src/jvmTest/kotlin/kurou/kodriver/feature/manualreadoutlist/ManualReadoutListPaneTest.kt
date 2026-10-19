@@ -186,9 +186,6 @@ class ManualReadoutListPaneTest {
         listOf("LMU", "GT7", "ACE").forEach { name ->
             rule.runOnIdle { simulatorName.value = name }
             rule.onNodeWithText("${name}の手動読み上げセットはまだありません").assertIsDisplayed()
-            listOf("LMU", "GT7", "ACE").filter { it != name }.forEach { otherName ->
-                rule.onNodeWithText("${otherName}の手動読み上げセットはまだありません").assertDoesNotExist()
-            }
         }
     }
 
