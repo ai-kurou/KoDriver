@@ -26,6 +26,7 @@ import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
@@ -631,7 +632,13 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         if (!consumption.isFinite() || consumption <= 0.0) return null
         if (!tracking.currentValue.isFinite() || tracking.currentValue < 0.0) return null
         val remainingLaps = tracking.currentValue / consumption
-        if (!remainingLaps.isFinite() || remainingLaps > LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX) return null
+        if (!remainingLaps.isFinite()) return null
+        val maximumLaps = LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX.toDouble()
+        if (remainingLaps > maximumLaps) {
+            val roundingExcess = remainingLaps - maximumLaps
+            if (roundingExcess > LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE) return null
+            return LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
+        }
         return remainingLaps.toInt()
     }
 

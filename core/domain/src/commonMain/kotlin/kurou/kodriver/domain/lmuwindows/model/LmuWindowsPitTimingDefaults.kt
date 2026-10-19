@@ -8,6 +8,9 @@ const val LMU_WINDOWS_PIT_TIMING_LAPS_MAX = 5
 /** 手動読み上げの残り周回数をデータとして扱う上限。 */
 const val LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX = 1_000
 
+/** 手動読み上げの残り周回数上限との比較で許容する浮動小数点誤差（周）。 */
+const val LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE = 1e-9
+
 const val LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT = "エネルギー切れのため{laps}周以内にピットイン"
 const val LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT = "エネルギー切れのため必ずピットイン"
 const val LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER = "{laps}"

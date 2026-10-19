@@ -22,6 +22,8 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
@@ -43,7 +45,6 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyRatio
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
 import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
 import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
@@ -80,6 +81,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             tracking.copy(currentValue = -0.2),
             tracking.copy(currentValue = Double.NaN),
             tracking.copy(currentValue = Double.POSITIVE_INFINITY),
+            tracking.copy(currentValue = Double.MAX_VALUE, lastValidLapConsumption = Double.MIN_VALUE),
             tracking.copy(lastValidLapConsumption = Double.NaN),
             tracking.copy(lastValidLapConsumption = Double.POSITIVE_INFINITY),
             tracking.copy(lastValidLapConsumption = 1e-10),
@@ -89,19 +91,20 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         }
         val lessThanOneLap = state.copy(pitTimingVirtualEnergyTrackingState = tracking.copy(currentValue = 0.05))
         assertEquals(0, useCase.manualPitTimingVirtualEnergyRemainingLaps(lessThanOneLap))
-        val maximumLapsTracking = tracking.copy(
-            currentValue = LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX.toDouble() * 0.1,
-        )
+        val maximumLapsTracking =
+            tracking.copy(currentValue = 0.001, lastValidLapConsumption = 0.000001)
         val maximumLaps = state.copy(pitTimingVirtualEnergyTrackingState = maximumLapsTracking)
         assertEquals(
             LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX,
             useCase.manualPitTimingVirtualEnergyRemainingLaps(maximumLaps),
         )
-        val excessiveLaps = state.copy(
-            pitTimingVirtualEnergyTrackingState = tracking.copy(
-                currentValue = (LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX + 1) * 0.1,
-            ),
-        )
+        val excessiveLapsTracking =
+            tracking.copy(
+                currentValue =
+                    (LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX + 1) * 0.1 +
+                        LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE,
+            )
+        val excessiveLaps = state.copy(pitTimingVirtualEnergyTrackingState = excessiveLapsTracking)
         assertEquals(null, useCase.manualPitTimingVirtualEnergyRemainingLaps(excessiveLaps))
         assertEquals(tracking, state.pitTimingVirtualEnergyTrackingState)
     }
