@@ -2,6 +2,7 @@ package kurou.kodriver
 
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
@@ -171,6 +172,7 @@ class MainActivityTest {
         launchActivity()
         selectSimulator("Le Mans Ultimate（Windows版）")
         waitUntilDisplayed("Windows版KoDriverへ接続するIPアドレスが未設定です")
+        composeTestRule.onNodeWithText("Windows版KoDriverへ接続するIPアドレスが未設定です").assertHasClickAction()
         clickItem("Windows版KoDriverへ接続するIPアドレスが未設定です")
         waitUntilDisplayed("Windows版KoDriverが動作しているPCのIPアドレスを入力してください。")
         navigateBack()
@@ -181,6 +183,7 @@ class MainActivityTest {
         launchActivity()
         selectSimulator("Assetto Corsa EVO（Windows版）")
         waitUntilDisplayed("Windows版KoDriverへ接続するIPアドレスが未設定です")
+        composeTestRule.onNodeWithText("Windows版KoDriverへ接続するIPアドレスが未設定です").assertHasClickAction()
         clickItem("Windows版KoDriverへ接続するIPアドレスが未設定です")
         waitUntilDisplayed("Windows版KoDriverが動作しているPCのIPアドレスを入力してください。")
         navigateBack()
@@ -191,6 +194,7 @@ class MainActivityTest {
         launchActivity()
         selectSimulator("Gran Turismo 7（PS5）")
         waitUntilDisplayed("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
+        composeTestRule.onNodeWithText("ゲーム機・SimHubへ接続するIPアドレスが未設定です").assertHasClickAction()
         clickItem("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         waitUntilDisplayed("を実行しているPCのIPアドレスを入力してください。", substring = true)
         navigateBack()
