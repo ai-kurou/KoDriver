@@ -1,5 +1,11 @@
 package kurou.kodriver.core.windowssharedmemory.datasource
 
+import com.sun.jna.Pointer
+import com.sun.jna.platform.win32.WinNT.HANDLE
+import io.mockk.every
+import io.mockk.mockk
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -71,6 +77,36 @@ class WindowsSharedMemoryReaderTest {
     }
 
     @Test
+    fun `open 後の readBuffer は little endian の共有メモリバッファを返す`() {
+        val pointer = mockk<Pointer>()
+        val expected = ByteBuffer.allocate(1024)
+        every { pointer.getByteBuffer(0, 1024) } returns expected
+        val r = reader(FakeKernel32FileMapping(mapViewOfFileResult = pointer))
+
+        assertTrue(r.open())
+        val actual = r.readBuffer()
+
+        assertTrue(actual === expected)
+        assertEquals(ByteOrder.LITTLE_ENDIAN, actual?.order())
+    }
+
+    @Test
+    fun `handle が null のとき isOpen は false を返す`() {
+        val r = reader()
+        setField(r, "mappedPointer", mockk<Pointer>())
+
+        assertFalse(r.isOpen())
+    }
+
+    @Test
+    fun `mappedPointer が null のとき isOpen は false を返す`() {
+        val r = reader()
+        setField(r, "handle", HANDLE(Pointer.createConstant(1L)))
+
+        assertFalse(r.isOpen())
+    }
+
+    @Test
     fun `close は UnmapViewOfFile と CloseHandle を呼ぶ`() {
         val fake = FakeKernel32FileMapping()
         val r = reader(fake)
@@ -93,5 +129,16 @@ class WindowsSharedMemoryReaderTest {
         r.close()
 
         assertEquals(1, fake.closeHandleCallCount)
+    }
+
+    private fun setField(
+        reader: WindowsSharedMemoryReader,
+        name: String,
+        value: Any,
+    ) {
+        WindowsSharedMemoryReader::class.java.getDeclaredField(name).apply {
+            isAccessible = true
+            set(reader, value)
+        }
     }
 }
