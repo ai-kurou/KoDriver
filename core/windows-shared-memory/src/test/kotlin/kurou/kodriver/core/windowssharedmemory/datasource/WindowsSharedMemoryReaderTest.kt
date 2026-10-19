@@ -13,6 +13,8 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class WindowsSharedMemoryReaderTest {
+    private val pointer: Pointer = mockk()
+
     private fun reader(
         fake: FakeKernel32FileMapping = FakeKernel32FileMapping(),
         isWindows: Boolean = true,
@@ -78,9 +80,8 @@ class WindowsSharedMemoryReaderTest {
 
     @Test
     fun `open 後の readBuffer は little endian の共有メモリバッファを返す`() {
-        val pointer = mockk<Pointer>()
         val expected = ByteBuffer.allocate(1024)
-        every { pointer.getByteBuffer(0, 1024) } returns expected
+        every { pointer.getByteBuffer(0, 1024L) } returns expected
         val r = reader(FakeKernel32FileMapping(mapViewOfFileResult = pointer))
 
         assertTrue(r.open())
@@ -93,7 +94,7 @@ class WindowsSharedMemoryReaderTest {
     @Test
     fun `handle が null のとき isOpen は false を返す`() {
         val r = reader()
-        setField(r, "mappedPointer", mockk<Pointer>())
+        setField(r, "mappedPointer", pointer)
 
         assertFalse(r.isOpen())
     }
