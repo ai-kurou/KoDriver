@@ -14,7 +14,10 @@
 
 ## 主要なファイル
 
-- `ManualReadoutSetDetailPane.kt`: 詳細画面、項目ピッカー、文言入力、試聴、削除確認、ホットキーUI。
+- `ManualReadoutSetDetailContent.kt`: 詳細画面の構成、項目ピッカー、試聴、削除確認。
+- `ManualReadoutItemsCard.kt`: 項目の選択・並べ替え、文言入力とプレビュー。
+- `ManualReadoutSetNameRow.kt`: セット名の表示・編集。
+- `ManualReadoutHotkeyCard.kt`: Windows デスクトップ用ホットキーUI。
 - `ManualReadoutSetDetailViewModel.kt` / `ManualReadoutSetDetailUiState.kt`: セットの観測、編集内容の保存、プレビュー文の生成。
 - `ManualReadoutSetDetailModule.kt`: シミュレーター名付き依存を解決する Koin 定義。
 - `ManualReadoutSetDetailPaneTest.kt`, `ManualReadoutSetDetailViewModelTest.kt`, `ManualReadoutSetDetailModuleTest.kt`: UI、状態更新、DI と操作の検証。
