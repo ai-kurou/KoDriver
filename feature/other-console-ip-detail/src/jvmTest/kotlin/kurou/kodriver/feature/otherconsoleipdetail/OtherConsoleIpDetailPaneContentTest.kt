@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otherconsoleipdetail
 
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -43,6 +44,20 @@ class OtherConsoleIpDetailPaneContentTest {
                 onOpenSimHub = params.onOpenSimHub,
             )
         }
+    }
+
+    @Test
+    fun `保存失敗時にエラーメッセージが表示される`() {
+        setContent(ContentParams(uiState = OtherConsoleIpDetailUiState(saveFailed = true)))
+
+        rule.onNodeWithText("保存に失敗しました").assertIsDisplayed()
+    }
+
+    @Test
+    fun `保存失敗でない場合はエラーメッセージが表示されない`() {
+        setContent()
+
+        rule.onNodeWithText("保存に失敗しました").assertDoesNotExist()
     }
 
     @Test
