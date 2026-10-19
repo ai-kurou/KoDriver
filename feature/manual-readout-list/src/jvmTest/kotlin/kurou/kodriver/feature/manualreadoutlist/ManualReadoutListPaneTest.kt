@@ -170,7 +170,7 @@ class ManualReadoutListPaneTest {
     }
 
     @Test
-    fun `シミュレーター名を変更すると空状態の文言を更新する`() {
+    fun `LMUとGT7とACEに合わせて空状態の文言を更新する`() {
         val simulatorName = mutableStateOf("LMU")
         rule.setContent {
             KoDriverTheme {
@@ -183,10 +183,13 @@ class ManualReadoutListPaneTest {
             }
         }
 
-        rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertIsDisplayed()
-        rule.runOnIdle { simulatorName.value = "ACE" }
-        rule.onNodeWithText("ACEの手動読み上げセットはまだありません").assertIsDisplayed()
-        rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertDoesNotExist()
+        listOf("LMU", "GT7", "ACE").forEach { name ->
+            rule.runOnIdle { simulatorName.value = name }
+            rule.onNodeWithText("${name}の手動読み上げセットはまだありません").assertIsDisplayed()
+            listOf("LMU", "GT7", "ACE").filter { it != name }.forEach { otherName ->
+                rule.onNodeWithText("${otherName}の手動読み上げセットはまだありません").assertDoesNotExist()
+            }
+        }
     }
 
     @Test
