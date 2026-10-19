@@ -13,6 +13,7 @@ import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -538,6 +539,9 @@ class AppTest {
         rule.waitForIdle()
         node.performClick()
         rule.waitForIdle()
+        rule.waitUntil(timeoutMillis = 5_000L) {
+            rule.onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isEmpty()
+        }
     }
 }
 

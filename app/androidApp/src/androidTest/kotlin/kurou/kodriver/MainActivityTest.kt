@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -449,6 +450,9 @@ class MainActivityTest {
         composeTestRule.waitForIdle()
         node.performClick()
         composeTestRule.waitForIdle()
+        composeTestRule.waitUntil(timeoutMillis = 8_000L) {
+            composeTestRule.onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isEmpty()
+        }
     }
 
     private fun clickContentDescription(contentDescription: String) {

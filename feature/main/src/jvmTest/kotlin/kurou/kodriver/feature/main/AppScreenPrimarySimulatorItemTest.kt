@@ -18,6 +18,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class AppScreenPrimarySimulatorItemTest {
     @get:Rule
@@ -125,8 +126,9 @@ class AppScreenPrimarySimulatorItemTest {
 
     @Test
     fun `一覧の項目をタップすると選択コールバックが呼ばれてメニューが閉じる`() {
-        var selectedId: String? = null
+        var simulatorId by mutableStateOf("lmu_windows")
         var expanded by mutableStateOf(true)
+        rule.mainClock.autoAdvance = false
 
         val feedback = mutableListOf<HapticFeedbackType>()
         val haptic =
@@ -138,10 +140,10 @@ class AppScreenPrimarySimulatorItemTest {
         rule.setContent {
             CompositionLocalProvider(LocalHapticFeedback provides haptic) {
                 AppScreenPrimarySimulatorIndicator(
-                    simulatorId = "lmu_windows",
+                    simulatorId = simulatorId,
                     expanded = expanded,
                     onExpandedChange = { expanded = it },
-                    onSimulatorSelected = { selectedId = it },
+                    onSimulatorSelected = { simulatorId = it },
                 )
             }
         }
@@ -150,8 +152,31 @@ class AppScreenPrimarySimulatorItemTest {
         node.performScrollTo()
         node.performClick()
 
-        assertEquals("gt7_ps5", selectedId)
+        rule.mainClock.advanceTimeByFrame()
+        rule.onNode(hasText("Gran Turismo 7（PS5）")).assertIsSelected()
+        rule.onNode(hasText("Le Mans Ultimate（Windows版）")).assertIsNotSelected()
+        assertEquals("gt7_ps5", simulatorId)
+        assertTrue(expanded)
+        rule.mainClock.advanceTimeBy(500)
         assertFalse(expanded)
         assertEquals(listOf(HapticFeedbackType.ContextClick), feedback)
+    }
+
+    @Test
+    fun `選択中の項目をタップするとアニメーションを待たずにメニューが閉じる`() {
+        var expanded by mutableStateOf(true)
+        rule.mainClock.autoAdvance = false
+        rule.setContent {
+            AppScreenPrimarySimulatorIndicator(
+                simulatorId = "lmu_windows",
+                expanded = expanded,
+                onExpandedChange = { expanded = it },
+                onSimulatorSelected = {},
+            )
+        }
+
+        rule.onNode(hasText("Le Mans Ultimate（Windows版）")).performClick()
+
+        assertFalse(expanded)
     }
 }
