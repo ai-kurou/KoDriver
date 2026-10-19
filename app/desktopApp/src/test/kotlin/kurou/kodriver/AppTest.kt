@@ -345,6 +345,27 @@ class AppTest {
     }
 
     @Test
+    fun `GT7の手動タブにセットがない場合は空状態を表示する`() {
+        assertManualReadoutEmptyState("Gran Turismo 7（PS5）", "GT7")
+    }
+
+    @Test
+    fun `ACEの手動タブにセットがない場合は空状態を表示する`() {
+        assertManualReadoutEmptyState("Assetto Corsa EVO（Windows版）", "ACE")
+    }
+
+    private fun assertManualReadoutEmptyState(
+        simulatorDisplayName: String,
+        simulatorShortName: String,
+    ) {
+        setContent()
+        selectSimulator(simulatorDisplayName)
+        clickItem("手動")
+        waitUntilDisplayed("${simulatorShortName}の手動読み上げセットはまだありません")
+        waitUntilDisplayed("手動読み上げについて")
+    }
+
+    @Test
     fun `ログタブにログがある場合は一覧を表示する`() {
         fakeTelemetryLogRepository.emit(
             listOf(
