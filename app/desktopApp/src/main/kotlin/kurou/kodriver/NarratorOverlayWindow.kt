@@ -21,7 +21,6 @@ import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.presentation.NarratorOverlayScreen
 import kurou.kodriver.presentation.NarratorOverlayWindowBounds
@@ -43,7 +42,7 @@ private const val BOUNDS_SAVE_DEBOUNCE_MILLIS = 500L
 /**
  * [WindowState] から取り出した、オーバーレイウィンドウの現在の位置とサイズ（AWT のウィンドウ座標系）。
  */
-private data class NarratorOverlayWindowGeometry(
+internal data class NarratorOverlayWindowGeometry(
     val x: Int,
     val y: Int,
     val width: Int,
@@ -52,6 +51,46 @@ private data class NarratorOverlayWindowGeometry(
 
 private val NARRATOR_OVERLAY_MIN_SIZE = DpSize(200.dp, 80.dp)
 private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
+
+/** 保存位置が現在の画面構成で有効なら復元し、そうでなければ既定位置を返す。 */
+internal fun NarratorOverlayWindowBounds.initialWindowPosition(screenBounds: List<java.awt.Rectangle>): WindowPosition =
+    restorablePosition(screenBounds)
+        ?.let { WindowPosition.Absolute(it.x.dp, it.y.dp) }
+        // 位置が未保存、または保存時とモニタ構成が変わって画面外になる場合は既定位置に出す。
+        ?: WindowPosition.Aligned(Alignment.TopCenter)
+
+/** WindowState の位置とサイズを整数ピクセルの保存値へ変換する。未確定位置ではまだ保存しない。 */
+internal fun narratorOverlayWindowGeometry(
+    position: WindowPosition,
+    size: DpSize,
+): NarratorOverlayWindowGeometry? {
+    val absolutePosition = position as? WindowPosition.Absolute ?: return null
+    return NarratorOverlayWindowGeometry(
+        x = absolutePosition.x.value.roundToInt(),
+        y = absolutePosition.y.value.roundToInt(),
+        width = size.width.value.roundToInt(),
+        height = size.height.value.roundToInt(),
+    )
+}
+
+/** ドラッグ開始位置と現在のスクリーン座標から、ウィンドウの絶対位置を求める。 */
+internal fun draggedWindowLocation(
+    startWindowLocation: Point?,
+    startPointerLocation: Point?,
+    currentPointerLocation: Point?,
+): Point? {
+    if (startWindowLocation == null || startPointerLocation == null || currentPointerLocation == null) return null
+    return Point(
+        startWindowLocation.x + (currentPointerLocation.x - startPointerLocation.x),
+        startWindowLocation.y + (currentPointerLocation.y - startPointerLocation.y),
+    )
+}
+
+/** 設定と保存 bounds の読み込みが完了し、表示が有効なときだけウィンドウを生成する。 */
+internal fun narratorOverlayBoundsToDisplay(
+    visible: Boolean?,
+    bounds: NarratorOverlayWindowBounds?,
+): NarratorOverlayWindowBounds? = bounds.takeIf { visible == true }
 
 /**
  * ゲーム画面に重ねて表示するオーバーレイ専用ウィンドウ（デスクトップアプリのみ、常時表示）。
@@ -95,24 +134,12 @@ fun ApplicationScope.NarratorOverlayWindow(
     val windowState =
         rememberWindowState(
             size = DpSize(initialBounds.width.dp, initialBounds.height.dp),
-            position =
-                initialBounds
-                    .restorablePosition(currentScreenBounds())
-                    ?.let { WindowPosition.Absolute(it.x.dp, it.y.dp) }
-                    // 位置が未保存、または保存時とモニタ構成が変わって画面外になる場合は既定位置に出す。
-                    ?: WindowPosition.Aligned(Alignment.TopCenter),
+            position = initialBounds.initialWindowPosition(currentScreenBounds()),
         )
     LaunchedEffect(windowState, onBoundsChange) {
         snapshotFlow { windowState.position to windowState.size }
-            .mapNotNull { (position, size) -> (position as? WindowPosition.Absolute)?.let { it to size } }
-            .map { (position, size) ->
-                NarratorOverlayWindowGeometry(
-                    x = position.x.value.roundToInt(),
-                    y = position.y.value.roundToInt(),
-                    width = size.width.value.roundToInt(),
-                    height = size.height.value.roundToInt(),
-                )
-            }.distinctUntilChanged()
+            .mapNotNull { (position, size) -> narratorOverlayWindowGeometry(position, size) }
+            .distinctUntilChanged()
             .debounce(BOUNDS_SAVE_DEBOUNCE_MILLIS)
             .collect { geometry ->
                 onBoundsChange(geometry.x, geometry.y, geometry.width, geometry.height)
@@ -148,15 +175,14 @@ fun ApplicationScope.NarratorOverlayWindow(
                             },
                         ) { change, _ ->
                             change.consume()
-                            val startWindowLocation = dragStartWindowLocation ?: return@detectDragGestures
-                            val startPointerLocation = dragStartPointerScreenLocation ?: return@detectDragGestures
                             val currentPointerLocation =
                                 MouseInfo.getPointerInfo()?.location ?: return@detectDragGestures
                             window.location =
-                                Point(
-                                    startWindowLocation.x + (currentPointerLocation.x - startPointerLocation.x),
-                                    startWindowLocation.y + (currentPointerLocation.y - startPointerLocation.y),
-                                )
+                                draggedWindowLocation(
+                                    dragStartWindowLocation,
+                                    dragStartPointerScreenLocation,
+                                    currentPointerLocation,
+                                ) ?: return@detectDragGestures
                         }
                     },
         ) {
@@ -179,9 +205,10 @@ fun ApplicationScope.NarratorOverlayWindowHost(modifier: Modifier = Modifier) {
     val visible = rememberNarratorOverlayVisible()
     val bounds = rememberNarratorOverlayBounds()
     val saveBounds = rememberNarratorOverlayBoundsSaver()
-    if (visible == true && bounds != null) {
+    val visibleBounds = narratorOverlayBoundsToDisplay(visible, bounds)
+    if (visibleBounds != null) {
         NarratorOverlayWindow(
-            initialBounds = bounds,
+            initialBounds = visibleBounds,
             onBoundsChange = saveBounds,
             modifier = modifier,
         )
