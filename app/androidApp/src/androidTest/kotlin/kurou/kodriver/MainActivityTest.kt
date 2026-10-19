@@ -294,7 +294,7 @@ class MainActivityTest {
         simulatorDisplayName: String,
         simulatorShortName: String,
     ) {
-        setContent()
+        launchActivity()
         selectSimulator(simulatorDisplayName)
         waitUntilDisplayed("手動")
         clickItem("手動")
