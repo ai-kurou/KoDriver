@@ -4,9 +4,9 @@ package kurou.kodriver.feature.otherlist
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
@@ -21,12 +21,13 @@ class OtherListPaneAndroidAudioUsageTest {
     val rule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
-    fun `音声の用途を表示し詳細画面がない間は選択できない`() {
+    fun `音声の用途を選択できる`() {
+        var selectedItem: OtherListItemType? = null
         rule.setContent {
             KoDriverTheme {
                 OtherListPane(
                     uiState = OtherListUiState(items = listOf(OtherListItemType.AndroidAudioUsage)),
-                    onItemClick = {},
+                    onItemClick = { selectedItem = it },
                     onOverlayVisibleChange = {},
                     onKeepScreenOnChange = {},
                     onDynamicColorEnabledChange = {},
@@ -36,6 +37,7 @@ class OtherListPaneAndroidAudioUsageTest {
             }
         }
 
-        rule.onNodeWithText("音声の用途").assertIsDisplayed().assertIsNotEnabled()
+        rule.onNodeWithText("音声の用途").assertIsDisplayed().performClick()
+        rule.runOnIdle { org.junit.Assert.assertEquals(OtherListItemType.AndroidAudioUsage, selectedItem) }
     }
 }

@@ -323,6 +323,7 @@ private fun OtherListItemTrailingIcon(
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
         OtherListItemType.VoicePitch,
+        OtherListItemType.AndroidAudioUsage,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.Feedback,
         OtherListItemType.License,
@@ -339,7 +340,6 @@ private fun OtherListItemTrailingIcon(
         }
 
         OtherListItemType.OverlayTextColor,
-        OtherListItemType.AndroidAudioUsage,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
@@ -731,7 +731,7 @@ private fun OtherListItem(
             Modifier
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
-                .clickable(enabled = item != OtherListItemType.AndroidAudioUsage) {
+                .clickable {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     handleOtherListItemClick(
                         item = item,
@@ -795,7 +795,9 @@ private fun handleOtherListItemClick(
             onItemClick(item)
         }
 
-        OtherListItemType.AndroidAudioUsage -> {}
+        OtherListItemType.AndroidAudioUsage -> {
+            onItemClick(item)
+        }
 
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,

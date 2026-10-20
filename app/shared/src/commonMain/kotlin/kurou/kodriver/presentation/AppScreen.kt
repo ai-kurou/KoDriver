@@ -87,6 +87,7 @@ import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
 import kurou.kodriver.feature.manualreadoutdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
+import kurou.kodriver.feature.otherandroidaudiousagedetail.OtherAndroidAudioUsageDetailPane
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
@@ -368,64 +369,88 @@ private fun DefaultOtherContent(
         onOpenOverlayTextColorDialog = { showOverlayTextColorDialog = true },
         onOpenOverlayTextSizeDialog = { showOverlayTextSizeDialog = true },
         detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId, feedbackAttachRequestId ->
-            when (itemType) {
-                OtherListItemType.ServerIp -> {
-                    OtherServerIpDetailPane(canNavigateBack, onBack)
-                }
-
-                OtherListItemType.ConsoleIp -> {
-                    OtherConsoleIpDetailPane(canNavigateBack, onBack)
-                }
-
-                OtherListItemType.Volume,
-                OtherListItemType.Voice,
-                OtherListItemType.VoiceSpeed,
-                OtherListItemType.VoicePitch,
-                -> {
-                    OtherReadoutSettingsDetailPane(itemType, canNavigateBack, onBack)
-                }
-
-                OtherListItemType.OverlayBackgroundOpacity -> {
-                    OtherOverlayBackgroundOpacityDetailPane(canNavigateBack, onBack)
-                }
-
-                OtherListItemType.License -> {
-                    OtherLicenseDetailPane(canNavigateBack, onBack)
-                }
-
-                OtherListItemType.Feedback -> {
-                    OtherFeedbackDetailPane(
-                        canNavigateBack,
-                        onBack,
-                        telemetryLogId = feedbackTelemetryLogId,
-                        telemetryLogAttachRequestId = feedbackAttachRequestId,
-                    )
-                }
-
-                OtherListItemType.DebugState -> {
-                    DebugStateDetailPane(selectedSimulatorId, canNavigateBack, onBack)
-                }
-
-                OtherListItemType.OverlayTextColor,
-                OtherListItemType.OverlayVisible,
-                OtherListItemType.KeepScreenOn,
-                OtherListItemType.ReadoutStartSound,
-                OtherListItemType.Theme,
-                OtherListItemType.OverlayTextSize,
-                OtherListItemType.DynamicColor,
-                OtherListItemType.HapticFeedback,
-                OtherListItemType.Startup,
-                OtherListItemType.GitHubRepository,
-                OtherListItemType.ReleasePage,
-                OtherListItemType.AccessLocalNetworkPermission,
-                OtherListItemType.TtsEngineMissing,
-                OtherListItemType.TtsLanguageDataMissing,
-                OtherListItemType.WindowsSpeechUnavailable,
-                OtherListItemType.AndroidAudioUsage,
-                -> {}
-            }
+            DefaultOtherDetailContent(
+                itemType = itemType,
+                selectedSimulatorId = selectedSimulatorId,
+                canNavigateBack = canNavigateBack,
+                onBack = onBack,
+                feedbackTelemetryLogId = feedbackTelemetryLogId,
+                feedbackAttachRequestId = feedbackAttachRequestId,
+            )
         },
     )
+}
+
+@Composable
+internal fun DefaultOtherDetailContent(
+    itemType: OtherListItemType,
+    selectedSimulatorId: String,
+    canNavigateBack: Boolean,
+    onBack: () -> Unit,
+    feedbackTelemetryLogId: Long?,
+    feedbackAttachRequestId: Long,
+) {
+    when (itemType) {
+        OtherListItemType.ServerIp -> {
+            OtherServerIpDetailPane(canNavigateBack, onBack)
+        }
+
+        OtherListItemType.ConsoleIp -> {
+            OtherConsoleIpDetailPane(canNavigateBack, onBack)
+        }
+
+        OtherListItemType.Volume,
+        OtherListItemType.Voice,
+        OtherListItemType.VoiceSpeed,
+        OtherListItemType.VoicePitch,
+        -> {
+            OtherReadoutSettingsDetailPane(itemType, canNavigateBack, onBack)
+        }
+
+        OtherListItemType.OverlayBackgroundOpacity -> {
+            OtherOverlayBackgroundOpacityDetailPane(canNavigateBack, onBack)
+        }
+
+        OtherListItemType.License -> {
+            OtherLicenseDetailPane(canNavigateBack, onBack)
+        }
+
+        OtherListItemType.Feedback -> {
+            OtherFeedbackDetailPane(
+                canNavigateBack,
+                onBack,
+                telemetryLogId = feedbackTelemetryLogId,
+                telemetryLogAttachRequestId = feedbackAttachRequestId,
+            )
+        }
+
+        OtherListItemType.DebugState -> {
+            DebugStateDetailPane(selectedSimulatorId, canNavigateBack, onBack)
+        }
+
+        OtherListItemType.AndroidAudioUsage -> {
+            OtherAndroidAudioUsageDetailPane(canNavigateBack, onBack)
+        }
+
+        OtherListItemType.OverlayTextColor,
+        OtherListItemType.OverlayVisible,
+        OtherListItemType.KeepScreenOn,
+        OtherListItemType.ReadoutStartSound,
+        OtherListItemType.Theme,
+        OtherListItemType.OverlayTextSize,
+        OtherListItemType.DynamicColor,
+        OtherListItemType.HapticFeedback,
+        OtherListItemType.Startup,
+        OtherListItemType.GitHubRepository,
+        OtherListItemType.ReleasePage,
+        OtherListItemType.AccessLocalNetworkPermission,
+        OtherListItemType.TtsEngineMissing,
+        OtherListItemType.TtsLanguageDataMissing,
+        OtherListItemType.WindowsSpeechUnavailable,
+        -> {
+            Unit
+        }
+    }
 }
 
 /**
