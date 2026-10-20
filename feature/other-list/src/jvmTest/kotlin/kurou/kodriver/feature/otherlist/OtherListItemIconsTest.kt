@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.RecordVoiceOver
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.Wifi
 import kotlin.test.Test
@@ -42,7 +43,7 @@ class OtherListItemIconsTest {
                 OtherListItemType.Volume to Icons.AutoMirrored.Outlined.VolumeUp,
                 OtherListItemType.VoiceSpeed to Icons.Outlined.Speed,
                 OtherListItemType.VoicePitch to Icons.Outlined.GraphicEq,
-                OtherListItemType.AndroidAudioUsage to Icons.Outlined.GraphicEq,
+                OtherListItemType.AndroidAudioUsage to Icons.Outlined.Tune,
                 OtherListItemType.ReadoutStartSound to Icons.Outlined.MusicNote,
                 OtherListItemType.OverlayVisible to Icons.Outlined.Layers,
                 OtherListItemType.OverlayTextSize to Icons.Outlined.FormatSize,

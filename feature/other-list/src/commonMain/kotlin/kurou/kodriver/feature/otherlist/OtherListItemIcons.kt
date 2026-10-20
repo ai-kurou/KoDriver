@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.RecordVoiceOver
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -54,7 +55,7 @@ private fun otherReadoutSettingsItemLeadingIconVector(itemType: OtherListItemTyp
 
         OtherListItemType.VoicePitch -> Icons.Outlined.GraphicEq
 
-        OtherListItemType.AndroidAudioUsage -> Icons.Outlined.GraphicEq
+        OtherListItemType.AndroidAudioUsage -> Icons.Outlined.Tune
 
         OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
     }
