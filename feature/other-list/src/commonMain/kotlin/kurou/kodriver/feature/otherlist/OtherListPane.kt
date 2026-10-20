@@ -323,6 +323,7 @@ private fun OtherListItemTrailingIcon(
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
         OtherListItemType.VoicePitch,
+        OtherListItemType.AndroidAudioUsage,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.Feedback,
         OtherListItemType.License,
@@ -339,7 +340,6 @@ private fun OtherListItemTrailingIcon(
         }
 
         OtherListItemType.OverlayTextColor,
-        OtherListItemType.AndroidAudioUsage,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
