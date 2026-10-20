@@ -731,7 +731,7 @@ private fun OtherListItem(
             Modifier
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
-                .clickable(enabled = item != OtherListItemType.AndroidAudioUsage) {
+                .clickable {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     handleOtherListItemClick(
                         item = item,
@@ -795,7 +795,9 @@ private fun handleOtherListItemClick(
             onItemClick(item)
         }
 
-        OtherListItemType.AndroidAudioUsage -> {}
+        OtherListItemType.AndroidAudioUsage -> {
+            onItemClick(item)
+        }
 
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,

@@ -194,6 +194,34 @@ class OtherContentTest {
     }
 
     @Test
+    fun `音声の用途をクリックすると選択し詳細へ遷移する`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
+        var backEnabled = false
+        rule.setContent {
+            OtherContent(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.AndroidAudioUsage),
+                        selectedItem = selectedItem,
+                    ),
+                onItemSelected = { selectedItem = it },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { item, _, _, _, _ -> Text("Detail: ${item.id}") },
+            )
+        }
+
+        rule.onNodeWithText("音声の用途").assertExists().performClick()
+        rule.waitForIdle()
+
+        assertEquals(OtherListItemType.AndroidAudioUsage, selectedItem)
+        assertTrue(backEnabled)
+        rule.onNodeWithText("Detail: android_audio_usage").assertExists()
+    }
+
+    @Test
     fun `詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
         var backEnabled = false
         var githubRepositoryOpened = false

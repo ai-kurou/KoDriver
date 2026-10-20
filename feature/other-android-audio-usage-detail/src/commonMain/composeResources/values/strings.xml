@@ -1,0 +1,4 @@
+<resources>
+    <string name="audio_usage_title">音声の用途</string>
+    <string name="audio_usage_description">読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。</string>
+</resources>

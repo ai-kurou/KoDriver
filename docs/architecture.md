@@ -32,6 +32,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:server-connection` | KoDriver サーバー（Ktor）への接続状態確認を担当する | [図](graphs/feature-server-connection.svg) |
 | `:feature:lmu-windows-narrator` | 全読み上げ項目の自由文言によるOS標準TTS読み上げ・開始音のWAV再生とアナウンス制御を担当する | [図](graphs/feature-lmu-windows-narrator.svg) |
 | `:feature:other-license-detail` | その他画面のライセンス詳細表示 | [図](graphs/feature-other-license-detail.svg) |
+| `:feature:other-android-audio-usage-detail` | Android の読み上げ音声用途に関する説明詳細 | [図](graphs/feature-other-android-audio-usage-detail.svg) |
 | `:feature:other-list` | その他画面の一覧表示・選択状態管理 | [図](graphs/feature-other-list.svg) |
 | `:feature:other-readout-start-sound-detail` | その他画面の読み上げ開始音設定詳細 | [図](graphs/feature-other-readout-start-sound-detail.svg) |
 | `:feature:other-server-ip-detail` | その他画面のWindows版KoDriver接続先IP設定。LAN内サーバーの検出・選択、IPの手入力・疎通確認・保存 | [図](graphs/feature-other-server-ip-detail.svg) |

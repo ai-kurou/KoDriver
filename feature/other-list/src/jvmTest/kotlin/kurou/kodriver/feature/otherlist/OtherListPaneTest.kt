@@ -40,6 +40,26 @@ class OtherListPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `音声の用途をタップすると項目クリックコールバックを呼ぶ`() {
+        var clickedItem: OtherListItemType? = null
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.AndroidAudioUsage)),
+                onItemClick = { clickedItem = it },
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNodeWithText("音声の用途").performClick()
+
+        assertEquals(OtherListItemType.AndroidAudioUsage, clickedItem)
+    }
+
+    @Test
     fun `音量項目にはゲーム名タグを表示しない`() {
         rule.setContent {
             OtherListPane(

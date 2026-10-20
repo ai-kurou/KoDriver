@@ -57,6 +57,7 @@ kotlin {
             implementation(projects.feature.gt7Ps5DebugStateDetail)
             implementation(projects.feature.aceWindowsDebugStateDetail)
             implementation(projects.feature.otherLicenseDetail)
+            implementation(projects.feature.otherAndroidAudioUsageDetail)
             implementation(projects.feature.otherList)
             implementation(projects.feature.otherFeedbackDetail)
             implementation(projects.feature.otherServerIpDetail)

@@ -87,6 +87,7 @@ import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
 import kurou.kodriver.feature.manualreadoutdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
+import kurou.kodriver.feature.otherandroidaudiousagedetail.OtherAndroidAudioUsageDetailPane
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
@@ -406,6 +407,10 @@ private fun DefaultOtherContent(
                     DebugStateDetailPane(selectedSimulatorId, canNavigateBack, onBack)
                 }
 
+                OtherListItemType.AndroidAudioUsage -> {
+                    OtherAndroidAudioUsageDetailPane(canNavigateBack, onBack)
+                }
+
                 OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.KeepScreenOn,
@@ -421,7 +426,6 @@ private fun DefaultOtherContent(
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,
                 OtherListItemType.WindowsSpeechUnavailable,
-                OtherListItemType.AndroidAudioUsage,
                 -> {}
             }
         },
