@@ -34,7 +34,9 @@
     <string name="manual_readout_drag_item">%1$sを並べ替え</string>
     <string name="manual_readout_move_up">上へ移動</string>
     <string name="manual_readout_move_down">下へ移動</string>
-    <string name="manual_readout_item_limit">1セットに追加できる項目は%1$dつまでです</string>
+    <string name="manual_readout_item_count">%1$d / %2$d</string>
+    <string name="manual_readout_item_limit_available">最大%1$d項目まで追加できます</string>
+    <string name="manual_readout_item_limit">最大%1$d項目に達しました。追加するには、選択済みの項目を削除してください。</string>
     <string name="manual_readout_preview_play">試聴</string>
     <string name="manual_readout_preview_stop">試聴を停止</string>
     <string name="manual_readout_tyre_wear">タイヤ摩耗</string>

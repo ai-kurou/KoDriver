@@ -659,6 +659,8 @@ class ManualReadoutSetDetailPaneTest {
                 )
             }
         }
+        rule.onNodeWithText("0 / 3").assertExists()
+        rule.onNodeWithText("最大3項目まで追加できます").assertExists()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertDoesNotExist()
     }
 
@@ -682,7 +684,10 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").assertIsNotEnabled()
-        rule.onNodeWithText("1セットに追加できる項目は3つまでです").assertExists()
+        rule.onNodeWithText("3 / 3").assertExists()
+        rule
+            .onNodeWithText("最大3項目に達しました。追加するには、選択済みの項目を削除してください。")
+            .assertExists()
     }
 
     @Test

@@ -69,7 +69,9 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_drag_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_empty_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_energy
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_item_count
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_item_limit
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_item_limit_available
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_items_title
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_move_down
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_move_up
@@ -333,11 +335,33 @@ internal fun ManualReadoutItemsCard(
                         }
                     }
                 }
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        stringResource(
+                            Res.string.manual_readout_item_count,
+                            uiState.selectedItemKeys.size,
+                            MANUAL_READOUT_SET_ITEM_MAX,
+                        ),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                    Text(
+                        stringResource(
+                            if (atLimit) {
+                                Res.string.manual_readout_item_limit
+                            } else {
+                                Res.string.manual_readout_item_limit_available
+                            },
+                            MANUAL_READOUT_SET_ITEM_MAX,
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
                 TextButton(onClick = { showPicker = true }, enabled = remaining.isNotEmpty() && !atLimit) {
                     Text(stringResource(Res.string.manual_readout_add_item))
-                }
-                if (atLimit) {
-                    Text(stringResource(Res.string.manual_readout_item_limit, MANUAL_READOUT_SET_ITEM_MAX))
                 }
                 if (uiState.selectedItemKeys.isNotEmpty()) {
                     val preview = manualReadoutPreview(uiState)
