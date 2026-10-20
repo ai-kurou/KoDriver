@@ -36,9 +36,9 @@ description: 実装内容とベースブランチを指定して、専用ワー�
      3. Codexの完了結果で書き込み完了を確認する。`preSubmitChecks` は Codex 側では実行できない前提とし、Codex に成功報告を求めない。
      4. 戻ってきた変更はコミット前にClaudeが `git status --porcelain` で未追跡ファイルを列挙してその内容も読み、`git diff HEAD`（ステージ済みと未ステージの両方）で確認し、類似モジュールの実装と差分比較して、不整合を修正する。比較項目は `build.gradle.kts`、README、strings、UiState / ViewModel / Module、テスト構成（配置・スクリーンショットテストの要否）、既存にない独自の書き方とする。比較で見つけた差分と対応結果は、PR説明の補足または完了報告に残す。`preSubmitChecks`（手順7）・コミット・プッシュ・PR作成はClaudeが行う。
    - **Codexから指定モデルへの委任（Codex から実行し、第四引数が `sol` / `astra` / `luna` の場合のみ）**:
-     1. 手順5の調査結果から実装計画を立てる。作成したワークツリーで `codex exec -C <ワークツリーの絶対パス> --model <解決したID> --config model_reasoning_effort=low --sandbox workspace-write --approve-for-me -` を実行し、計画を標準入力で渡す。完了まで待ち、終了コードと最終報告を確認する。新しいワークツリーは作らない。
+     1. 手順5の調査結果から実装計画を立てる。作成したワークツリーで `codex exec -C <ワークツリーの絶対パス> --model <解決したID> --config model_reasoning_effort=low --approve-for-me -` を実行し、計画を標準入力で渡す。完了まで待ち、終了コードと最終報告を確認する。新しいワークツリーは作らない。
      2. 計画には上記「Codexへの委任」の手順2にある既存コード・テスト方針・変更範囲・秘匿情報・コミット禁止の条件を付ける。ただし Gradle 実行可否は子セッションの実際の環境に従い、元のセッションが手順7を実行することを明示する。
-     3. 委任先の実行が失敗した、または書き込み完了を確認できない場合は手順7以降へ進まず、状態を調べて解消する。成功した場合は元のセッションが `git status --porcelain` と `git diff HEAD` で未追跡ファイルを含む変更全体を確認し、近い責務の既存コードと比較して必要な修正を行う。手順7の `preSubmitChecks`、コミット・プッシュ・PR作成は元のセッションが行う。
+     3. 委任先の実行が失敗した、または書き込み完了を確認できない場合は手順7以降へ進まず、状態を調べて解消する。成功した場合は元のセッションが `git status --porcelain` で未追跡ファイルを列挙してその内容も読み、`git diff HEAD`（ステージ済みと未ステージの両方）で追跡済みファイルの変更を確認し、近い責務の既存コードと比較して必要な修正を行う。手順7の `preSubmitChecks`、コミット・プッシュ・PR作成は元のセッションが行う。
    - **Claudeサブエージェントへの委任（第四引数が `sonnet` / `opus` / `haiku` の場合のみ）**:
      1. 手順5の調査結果をもとに親（Claude）が実装計画を立て、その計画を、作成したワークツリーを作業ディレクトリとして `Agent`（`subagent_type` は常に `general-purpose` を明示、`model` に第四引数の値、`effort` に `low`）へ渡す。完了まで待ち、書き込みが終わったことを確認するまで手順8以降へ進まない。
      2. 計画の末尾には、Codex向けの定型文のうち、既存コード確認・テスト配置・独自の書き方の禁止・テスト方針・`moduleGraphAssert` 不変の部分を付ける。加えて次を明示する: 「手順7の `./gradlew preSubmitChecks` を実行して失敗を解消し、`./gradlew preSubmitChecks` の終了コード、`BUILD SUCCESSFUL` / `BUILD FAILED` の行、実行した全コマンドの末尾の出力を、要約せず原文のまま報告すること。コミット・プッシュ・PR作成は行わないこと。`local.properties` の `sdk.dir` 以外の値や署名鍵などの秘匿情報は読み取り・追加しないこと。」
