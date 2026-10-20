@@ -34,6 +34,7 @@ digraph G {
   ":feature:manual-readout-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:manual-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-android-audio-usage-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-console-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-feedback-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-license-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -82,6 +83,7 @@ digraph G {
   ":feature:manual-readout-detail" -> ":core:designsystem"
   ":feature:manual-readout-list" -> ":core:designsystem"
   ":feature:narrator-overlay" -> ":core:designsystem"
+  ":feature:other-android-audio-usage-detail" -> ":core:designsystem"
   ":feature:other-console-ip-detail" -> ":core:designsystem"
   ":feature:other-feedback-detail" -> ":core:designsystem"
   ":feature:other-license-detail" -> ":core:designsystem"
