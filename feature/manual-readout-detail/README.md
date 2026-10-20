@@ -1,30 +1,100 @@
 # manual-readout-detail
 
-手動読み上げセットの詳細・編集画面を提供する feature モジュール。シミュレーターIDとセットIDを受け取り、項目の選択・順序・読み上げ文・セット名・Windows デスクトップ用ホットキーを編集する。一覧画面とは `app:shared` の詳細スロットで接続する。
+手動読み上げセットの詳細・編集を担う feature モジュール。シミュレーター ID とセット ID を受け取り、セット名（未設定時は一覧上の番号）によるタイトルと保存済みの選択項目を表示する。LMU は「バーチャルエネルギー残量」「タイヤ摩耗」「ブレーキ残量」「ブレーキ温度」「タイヤ温度」「自己ベストラップ」「エネルギーの残り周回数」「タイヤ摩耗の残り周回数」の8項目、GT7 は「残り燃料」「残り燃料の周回数」「タイヤ温度」「自己ベストラップ」の4項目、ACE は「残り燃料」「残り燃料の周回数」「自己ベストラップ」「タイヤ温度」の4項目に対応する。「その他」詳細と同じ `DetailPaneScaffold` を使い、`canNavigateBack` が true の場合に戻るボタンを表示し、`onBack` を通知する。「読み上げる項目」カードには `selectedItemKeys` の順で選択済み項目のみを表示し、各行にドラッグハンドル・項目名・削除ボタンと既存の文言入力欄を置く。
 
-## 画面の責務
+「＋ 項目を追加」から Desktop / Android 共通の `AlertDialog` を開き、未選択項目をカテゴリ別に表示する。カテゴリと表示名の対応は feature 内で管理し、現在は「エネルギー」の LMU「バーチャルエネルギー残量」「エネルギーの残り周回数」・GT7「残り燃料」「残り燃料の周回数」・ACE「残り燃料」「残り燃料の周回数」と「タイヤ」の LMU「タイヤ摩耗」「タイヤ摩耗の残り周回数」「タイヤ温度」・GT7「タイヤ温度」・ACE「タイヤ温度」、「ブレーキ」の「ブレーキ残量」「ブレーキ温度」、「ラップ」の LMU・GT7・ACE「自己ベストラップ」。選択すると末尾へ追加して閉じる。未選択項目がない場合、または domain の `MANUAL_READOUT_SET_ITEM_MAX`（3件）に達した場合は追加ボタンを無効化し、上限時は説明を表示する。未選択時は短い説明と追加ボタンを表示する。
 
-- 選択済み項目を表示し、最大3項目まで追加、削除、ドラッグによる並べ替えを保存する。
-- 項目ごとの文言を編集し、既定文言へのリセット、プレースホルダーの挿入・検査を提供する。
-- 全項目の文言を選択順に連結した試聴文を表示・再生する。
-- セット名をインライン編集し、セット削除は確認後に実行する。
-- Windows デスクトップでのみ、セットごとのグローバルホットキーと登録状態を表示・編集する。
+`libs.reorderable` の `ReorderableColumn` でドラッグ終了時に `moveItem` を呼び、`ManualReadoutSet.itemKeys` の順序を保存する。最大3項目のため、画面のスクロール内で通常の Column として配置する。試聴文は選択順に空欄を除いて「、」でつなぎ、domain の置換関数で仮想エネルギー・タイヤ摩耗・ブレーキ残量・GT7 と ACE の残り燃料のパーセントをサンプル値50に、ブレーキ温度の `{celsius}` をサンプル値500℃に、タイヤ温度の `{celsius}` をサンプル値90℃に、自己ベストの `{laptime}` を83456ms（1分23秒456）に、エネルギー・タイヤ摩耗の `{laps}` を3周に置換する。選択項目がある場合は区切り線の下に空でない試聴文を大きめに表示し、その下に試聴ボタンを右寄せで配置する。項目がなければ試聴ボタンを表示しない。Narrator の読み上げロジックは変更しない。
 
-## 主要なファイル
+`ManualReadoutSetDetailViewModel` は `ObserveManualReadoutSetsUseCase` で対象セットを観測し、`UpdateManualReadoutSetUseCase` で追加・削除・並べ替えと項目ごとの文言を保存する。追加は重複・未対応キー・3件上限を検証する。未知キーは保持し、連続操作は直前の保存結果を参照する。セットが見つからない場合は説明を表示する。上部バー右端の削除アイコン（`DetailPaneScaffold` の `actions`）から確認ダイアログを開き、`DeleteManualReadoutSetUseCase` を実行し、削除完了時に Content の `onDeleted` を通知する。
 
-- `ManualReadoutSetDetailContent.kt`: 詳細画面の構成、項目ピッカー、試聴、削除確認。
-- `ManualReadoutItemsCard.kt`: 項目の選択・並べ替え、文言入力とプレビュー。
-- `ManualReadoutSetNameRow.kt`: セット名の表示・編集。
-- `ManualReadoutHotkeyCard.kt`: Windows デスクトップ用ホットキーUI。
-- `ManualReadoutSetDetailViewModel.kt` / `ManualReadoutSetDetailUiState.kt`: セットの観測、編集内容の保存、プレビュー文の生成。
-- `ManualReadoutSetDetailModule.kt`: シミュレーター名付き依存を解決する Koin 定義。
-- `ManualReadoutSetDetailPaneTest.kt`, `ManualReadoutSetDetailViewModelTest.kt`, `ManualReadoutSetDetailModuleTest.kt`: UI、状態更新、DI と操作の検証。
-- `ManualReadoutSetDetailPaneScreenshotTest.kt`: 詳細・項目ピッカー・文言・削除・ホットキー表示のスクリーンショット検証。
+文言は入力ごとに前後の空白を除去して30文字まで保存し、未保存なら項目の既定文言を表示する。
+空欄は読み上げず、リセットで既定文言へ戻す。選択を解除しても編集した文言は保持する。
+LMU の残量では `{percent}` を現在の残量（%）に置換し、挿入ボタンと未知プレースホルダーの警告を提供する。挿入はカーソル位置に行い、選択中ならその範囲を置き換え、挿入直後へカーソルを移動する。置換後に文字数上限を超える場合は挿入しない。挿入は共通の `TextInsertState` で行う。
+自動読み上げと同じ共通入力部品を使い、項目ごとの試聴ボタンは表示しない。
+「試聴」ボタン（他の設定画面と同じ `FilledTonalButton`、再生中は「試聴を停止」）で、試聴文全体を `ReadoutTextPreviewHelper` により試聴する。
+選択済み項目の先頭キーに対応する開始音を再生し、現在の音量で読み上げる。未知の先頭キーでは再生しない。
+再押しやペイン離脱で停止し、TTS 利用不可または試聴文が空のときはボタンを無効にする。
+DI は TTS・音量の Repository と、Narrator 登録済みの `named(simulatorId)` の開始音・読み上げ UseCase を消費する。
 
-一覧モジュールはこのモジュールに依存しない。Android・Desktop 共通の composition root が詳細モジュールを登録し、`app:shared` がスロットを接続する。
+`manualReadoutSetDetailModule` は `named(simulatorId)` の Repository を解決する。Android・Desktop 共通の `featureModules` に登録する。一覧モジュールはこのモジュールに依存せず、`app:shared` が詳細スロットに接続する。
+
+JVM テストで追加・削除・並べ替え・上限・未知キーのガードとプレビュー、ViewModel・Koin のパラメータ解決・項目選択・文言保存（空欄・正規化・上限・リセット）・削除確認・戻るボタンの表示とクリック・配線を検証する。Desktop スクリーンショットテストで項目あり・項目なし・戻るボタンなし・1ペインの戻るボタン・削除ダイアログ・項目追加ダイアログ・選択項目の既定文言・編集文言の警告・空欄を確認する。既存の画面全体のスクリーンショットは `showHotkey = false` で維持し、Windows デスクトップ向けにホットキー未割り当て・割り当て済み・他セット重複・デバッグ重複のケースを追加する。
+
+Windows デスクトップ版のみ（macOS/Linux では表示しない）「ホットキー」カードを表示する。読み取り専用の入力欄にフォーカスして数字0–9または英字A–Zを押すと、左のドロップダウンで選択した修飾キー（Ctrl + Alt + Shift / Ctrl + Alt / Ctrl + Shift / Alt + Shift）と組み合わせて割り当てる。入力欄はキー名のみ表示する。キー未割り当てでも修飾キーを保存できる。解除すると null を保存する。Android ではカードを表示しない。Content / Pane の `showHotkey` で表示を注入できる。
+
+OS のホットキーはシミュレーターをまたいで共有されるため、全シミュレーターの他セットとの「修飾キー＋キー」の重複をシミュレーター名とセット名（未設定時は一覧番号）で表示し、全シミュレーター共通のデバッグ用ホットキーとの重複は Ctrl + Alt + Shift の場合のみ拒否する。修飾キー変更時も同じ判定を行い、競合時は保存しない。保存後にデバッグ用ホットキーが同じ組み合わせへ変更された場合も、画面表示中は重複として表示し続ける。自セットの同じキーを再入力すると他セットとの重複エラーを解除する。保存は項目編集と同じ Mutex で直列化し、最新の保存状態を参照する。保存済みキーがある場合は登録中・登録済み・競合・失敗（エラーコード）を表示し、競合・失敗時に「再試行」を提供する。未割り当て・非対応時は登録状態を表示しない。
+`manualReadoutSetDetailModule` は共通の `ReadoutHotkeyPreferencesRepository` から `ObserveReadoutHotkeyVirtualKeyCodeUseCase` を、`ManualReadoutHotkeyRepository` から登録状態の購読・再試行 UseCase を解決する。JVM テストで状態の表示分岐と再試行の配線を、Desktop スクリーンショットで登録競合と再試行ボタンを確認する。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
 ![Module Graph](../../docs/graphs/feature-manual-readout-detail.svg)
 <!-- MODULE-GRAPH-END -->
+
+LMU の手動セットは `determineManualReadout` で各項目の文を保存順に「、」で連結し、`LmuWindowsManualReadoutText` の1イベントで読み上げる。項目のデータが無い場合は `manualReadoutItemName` の日本語名を使った「<項目名>はデータがありません」を連結する。全項目がデータ無しなら、1項目の場合も含め「データがありません」のみ。対象項目なしは「読み上げる項目がありません」を維持する。
+
+手動ブレーキ残量は `BrakeWear.Root` に対応し、4輪の `remainingPercent`（0〜100）の最小値を四捨五入して、既定文言「ブレーキ残量{percent}%」へ置換する。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。未受信・受信から5秒超・空の wheels はデータ無しとして扱い、自動警告の前回値・警告済み状態は変更しない。
+
+手動ブレーキ温度は `BrakeTemperature.Root` に対応し、`LmuWindowsBrakeTemperatureData.wheels` の最高温度を四捨五入した整数℃を、既定文言「ブレーキ温度{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱警告の前回値・警告済み状態は変更しない。
+
+手動タイヤ温度は `TyreTemperature.Root` に対応し、`LmuWindowsTyreCarcassTemperatureData.wheels` の `CelsiusReading.value` の最大カーカス温度を四捨五入した整数℃を、既定文言「タイヤ温度{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱・低温警告の前回値・警告済み状態は変更しない。
+
+手動自己ベストラップは `LmuWindowsReadoutItemKey.MyBestLap.Root.value` に対応し、セッションの `timing.bestLapTimeMs` を読む。既定文言は `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」）。既存の `formatLmuWindowsMyBestLapReadoutText` で `{laptime}` を「1分23秒456」形式に置換する。未受信・最後の受信から `CURRENT_VALUE_MAX_AGE_MS`（5秒）超・0以下はデータ無しとし、複数項目では「自己ベストラップはデータがありません」を連結、全項目がデータ無しなら「データがありません」のみ。自動の `MyBestLap.Root` / `DetailEnabled` スイッチとは独立し、`determineMyBestLap`・`personalBestMs` の自動更新判定の状態は変更しない。保存順に連結した1イベントを常にキュー末尾へ追加し、開始音・優先度・ログには先頭項目のキーを使う。
+
+手動エネルギー残り周回数は `LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value` に対応し、蓄積済みの `pitTimingVirtualEnergyTrackingState` から `(currentValue / lastValidLapConsumption).toInt()` で算出する。既定文言は `LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT`（「エネルギーは残り約{laps}周」）で、1周以上なら `formatLmuWindowsPitTimingReadoutText` で置換し、0周なら固定文言「エネルギー残り1周未満」を読む。蓄積前（`currentLap == -1`）、消費量が null・0以下、算出結果が負、最新エネルギーが未受信・受信から5秒超の場合はデータ無しとし、複数項目では「エネルギーの残り周回数はデータがありません」を連結、全項目がデータ無しなら「データがありません」のみ。自動のスイッチ・閾値・ベストラップ経過時間には依存せず、追跡状態・自動判定状態（`lastAnnouncedPitTimingVirtualEnergyLaps` 等）は変更しない。保存順の1イベントを常にキュー末尾へ追加し、先頭がこの項目なら開始音・優先度・ログには `PitTiming.Root` を使う。タイヤ摩耗の残り周回数は別項目として扱う。
+
+手動タイヤ摩耗残り周回数は `LmuWindowsReadoutItemKey.PitTiming.TyreWear.value`（項目名「タイヤ摩耗の残り周回数」）に対応し、蓄積済みの `pitTimingTyreWearTrackingState` からエネルギーと同じ式で算出する（共通の private ヘルパーを `manualPitTimingTyreWearRemainingLaps` から呼ぶ）。既定文言は `LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT`（「タイヤは残り約{laps}周」）で、1周以上なら `formatLmuWindowsPitTimingReadoutText` で置換し、0周なら固定文言「タイヤ残り1周未満」を読む（空欄テンプレートなら0周でも空文字）。蓄積前・消費量が null・0以下・非有限、算出結果が負、最新タイヤ摩耗が未受信・受信から5秒超の場合はデータ無しとし、`PitTiming.Root` を開始音・優先度・ログに使う。エネルギーの残り周回数とは別項目で、既存の「タイヤ摩耗」(%) 項目とも別。
+
+ブレーキ温度・タイヤ温度の文言欄は `{celsius}` の挿入・最高温度への置換説明と、温度用の未知プレースホルダー検出を使う。1セットの選択上限は従来どおり3件。
+
+GT7 の残り燃料は `Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value` を使い、既定文言は「燃料は残り{percent}パーセント」。`{percent}` の挿入・現在の残量（%）の説明は LMU の割合項目と共通で、文言編集・リセット・試聴に対応する。保存した項目と文言は GT7 Narrator の `determineManualReadout` が参照する。未受信・受信から5秒超は「残り燃料はデータがありません」、対応項目なしは「読み上げる項目がありません」を読む。
+
+
+GT7 の「残り燃料の周回数」は `Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value` を使う。
+既定文言は「燃料は残り約{laps}周」。編集欄の挿入チップ・説明・未知プレースホルダーの検証は `{laps}` に対応し、
+試聴では3周に置換する。エネルギーカテゴリで残り燃料の次に選択できる。
+実際の手動読み上げでは0周以下は「燃料残り1周未満」、推定不能・鮮度切れは項目名付きのデータなし文言を読む。
+空欄なら値の有無にかかわらず読まない。
+
+GT7 の手動「タイヤ温度」は `TyreTemperature.Root` を使い、`currentMaxTyreTemperatureCelsius(telemetry)` で
+4輪の有限値の最高温度を `roundToInt()` した整数℃を取得する。未受信・5秒超・全輪が非有限値または0（取得不能）は
+「タイヤ温度はデータがありません」。既定文言は `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`
+（「タイヤ温度{celsius}℃」）で、既存の GT7 用フォーマッターとプレースホルダー検証を使う。
+詳細のカテゴリはタイヤ、プレビューは90℃。空文言は読まず、自動のしきい値・ヒステリシス・重複抑止・
+スイッチ判定は適用しない。最大3項目を「、」で連結し、開始音・ログのキーは `RemainingFuel.Root` を維持する。
+
+GT7 の手動「自己ベストラップ」は `MyBestLap.Root` を使い、`currentBestLapTimeMs(telemetry)` でテレメトリの
+`bestLapTimeMs`（ms）を取得する。未受信・5秒超・0以下（未確定）は「自己ベストラップはデータがありません」。
+既定文言は `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」）で、
+既存の `Gt7Ps5MyBestLap` を手動文言を `resolvedText` に指定して再利用し、既存の GT7 用フォーマッターと
+プレースホルダー検証を使う。詳細のカテゴリはラップ、プレビューは83456ms。空文言は読まず、自動の
+`determineMyBestLap` の状態（personalBestMs 等）は変更しない。開始音・ログのキーは `RemainingFuel.Root` を維持する。
+
+セット名は詳細画面でインライン編集できる（最大20文字、重複可）。未設定時は「セット N」を表示する。
+名前は表示専用で、読み上げ文には含めない。ACE・LMU・GT7 共通仕様。
+
+自己ベストの文言欄には「ラップタイム挿入」チップと `{laptime}` の置換ヒントを表示する。未知プレースホルダー検出は `findUnknownLmuWindowsMyBestLapReadoutPlaceholders` を再利用し、`{percent}`・`{celsius}`・`{laps}` は未知として警告する。試聴は83456msを使い、先頭項目が自己ベストなら `MyBestLap.Root` の開始音で再生する。
+
+エネルギーの残り周回数は energy、タイヤ摩耗の残り周回数は tyre カテゴリに表示し、`{laps}` 用のヒント・挿入ボタンを共用する。未知プレースホルダー検出は `findUnknownLmuWindowsPitTimingReadoutPlaceholders`、試聴は3周と `formatLmuWindowsPitTimingReadoutText` を使い、先頭項目なら `PitTiming.Root` の開始音を再生する。
+
+ACE の「残り燃料」は `AceWindowsReadoutItemKey.RemainingFuel.Root.value` を使い、エネルギーカテゴリに表示する。
+既定文言は `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）。
+`ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER` の挿入、
+`findUnknownAceWindowsRemainingFuelReadoutPlaceholders` による警告、文言編集・リセット・試聴に対応する。
+プレビューは `PREVIEW_ENERGY_PERCENT`（50）を既存の ACE 用フォーマッターで置換し、空白文言は除外する。
+保存項目・文言は ACE Narrator が参照し、受信から5秒超・未受信・不正値はデータ無しとして扱う。
+全項目がデータ無しなら「データがありません」、対応項目なしなら「読み上げる項目がありません」を読む。
+ACE の「残り燃料の周回数」は `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value` を使い、既定文言は `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、挿入プレースホルダーは `ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER`、未知プレースホルダー検出は `findUnknownAceWindowsRemainingFuelLapsReadoutPlaceholders` を使う。試聴は5周のサンプル値で置換する。
+ACE の「自己ベストラップ」は `AceWindowsReadoutItemKey.MyBestLap.Root.value` を使い、共有の `manual_readout_my_best_lap` 表示と `formatAceWindowsMyBestLapReadoutText` による試聴を行う。
+
+ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`TyreTemperature` の順。
+手動「タイヤ温度」は既存の `AceWindowsReadoutItemKey.TyreTemperature.Root` を使い、
+`currentMaxTyreTemperatureCelsius` で `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい
+最高値を四捨五入した整数℃を取得する。未受信・受信から5秒超・有効な温度なし・ACE以外への切り替え後は
+「タイヤ温度はデータがありません」を読む。既定文言は `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`
+（「タイヤ温度{celsius}℃」）。既存の `formatAceWindowsTyreTemperatureReadoutText` と
+`findUnknownAceWindowsTyreTemperatureReadoutPlaceholders` を使い、詳細画面ではタイヤカテゴリ、プレビューは90℃。
+`AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
+自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
+開始音とログには既存の `RemainingFuel.Root` を使い、常にキュー末尾へ追加する。
