@@ -124,6 +124,7 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
    - モジュールグラフの検証（`assertModuleGraph`）
    - モジュール一覧とアーキテクチャドキュメントの一致確認（`assertArchitectureDocModuleList`）
    - 全ユニットテスト＋カバレッジレポート生成（`koverXmlReport`）
+   - Android アプリの lint（`:app:androidApp:lintDebug`）
    - Android アプリ・デスクトップアプリのビルド確認
    - デスクトップアプリの統合テスト（Koin モジュール構成の変更は `AppTest` に影響するため）
 3. `CLAUDE.md`・`README.md`・`docs/` 以下のドキュメントに変更が必要かを確認し、必要であれば更新する

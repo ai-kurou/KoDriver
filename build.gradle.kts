@@ -452,14 +452,15 @@ roborazziAggregateTasks.forEach { roborazziTask ->
 // 完了報告・PR 作成前に必須のチェック一式を 1 コマンドに集約する。
 // CLAUDE.md「コード変更時の必須確認」に対応: 全モジュールの detekt・ktlint、
 // モジュールグラフ検証、全ユニットテスト（Kover カバレッジ付き）、
-// Android / デスクトップアプリのビルド、デスクトップアプリの統合テスト。
+// Android lint、Android / デスクトップアプリのビルド、デスクトップアプリの統合テスト。
 val preSubmitChecks = tasks.register("preSubmitChecks") {
     group = "verification"
-    description = "Runs all mandatory pre-merge checks (detekt, ktlint, module graph, tests with coverage, app builds)."
+    description = "Runs all mandatory pre-merge checks (detekt, ktlint, Android lint, module graph, tests with coverage, app builds)."
     dependsOn(
         ":assertModuleGraph",
         ":assertArchitectureDocModuleList",
         ":koverXmlReport",
+        ":app:androidApp:lintDebug",
         ":app:androidApp:assembleDebug",
         ":app:desktopApp:jar",
         ":app:desktopApp:test",
