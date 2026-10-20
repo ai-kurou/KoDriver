@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollToNode
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
@@ -50,6 +51,29 @@ class OtherListPaneScreenshotTest {
 
         rule.activity.window.decorView
             .captureRoboImage(roborazziOptions = defaultRoborazziOptions)
+    }
+
+    @Test
+    fun `音声の用途の詳細遷移アイコンを表示`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        OtherListPane(
+                            uiState = OtherListUiState(items = listOf(OtherListItemType.AndroidAudioUsage)),
+                            onItemClick = {},
+                            onOverlayVisibleChange = {},
+                            onKeepScreenOnChange = {},
+                            onDynamicColorEnabledChange = {},
+                            onHapticFeedbackEnabledChange = {},
+                            onStartupEnabledChange = {},
+                        )
+                    }
+                }
+            }
+        }
+
+        rule.onNodeWithText("音声の用途").captureRoboImage(roborazziOptions = defaultRoborazziOptions)
     }
 
     @Test
