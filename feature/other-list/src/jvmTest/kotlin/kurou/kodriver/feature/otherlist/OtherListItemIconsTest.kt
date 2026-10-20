@@ -42,6 +42,7 @@ class OtherListItemIconsTest {
                 OtherListItemType.Volume to Icons.AutoMirrored.Outlined.VolumeUp,
                 OtherListItemType.VoiceSpeed to Icons.Outlined.Speed,
                 OtherListItemType.VoicePitch to Icons.Outlined.GraphicEq,
+                OtherListItemType.AndroidAudioUsage to Icons.Outlined.GraphicEq,
                 OtherListItemType.ReadoutStartSound to Icons.Outlined.MusicNote,
                 OtherListItemType.OverlayVisible to Icons.Outlined.Layers,
                 OtherListItemType.OverlayTextSize to Icons.Outlined.FormatSize,

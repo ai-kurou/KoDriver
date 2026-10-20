@@ -13,6 +13,7 @@ class OtherListItemTypeTest {
         assertEquals(OtherListItemType.Voice, OtherListItemType.fromId("voice"))
         assertEquals(OtherListItemType.VoiceSpeed, OtherListItemType.fromId("voice_speed"))
         assertEquals(OtherListItemType.VoicePitch, OtherListItemType.fromId("voice_pitch"))
+        assertEquals(OtherListItemType.AndroidAudioUsage, OtherListItemType.fromId("android_audio_usage"))
     }
 
     @Test
@@ -33,8 +34,8 @@ class OtherListItemTypeTest {
     }
 
     @Test
-    fun `entriesは全25項目を既存の宣言順で返す`() {
-        assertEquals(25, OtherListItemType.entries.size)
+    fun `entriesは全26項目を宣言順で返す`() {
+        assertEquals(26, OtherListItemType.entries.size)
         assertEquals(
             listOf(
                 OtherListItemType.AccessLocalNetworkPermission,
@@ -49,6 +50,7 @@ class OtherListItemTypeTest {
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
                 OtherListItemType.VoicePitch,
+                OtherListItemType.AndroidAudioUsage,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.OverlayTextSize,
@@ -79,6 +81,7 @@ class OtherListItemTypeTest {
                 "voice",
                 "voice_speed",
                 "voice_pitch",
+                "android_audio_usage",
                 "theme",
                 "overlay_visible",
                 "overlay_text_size",
@@ -98,13 +101,14 @@ class OtherListItemTypeTest {
     }
 
     @Test
-    fun `ReadoutSettingsには対応する8項目だけが所属する`() {
+    fun `ReadoutSettingsには対応する9項目だけが所属する`() {
         assertEquals(
             setOf(
                 OtherListItemType.Volume,
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
                 OtherListItemType.VoicePitch,
+                OtherListItemType.AndroidAudioUsage,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,

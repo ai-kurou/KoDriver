@@ -54,6 +54,8 @@ private fun otherReadoutSettingsItemLeadingIconVector(itemType: OtherListItemTyp
 
         OtherListItemType.VoicePitch -> Icons.Outlined.GraphicEq
 
+        OtherListItemType.AndroidAudioUsage -> Icons.Outlined.GraphicEq
+
         OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
     }
 

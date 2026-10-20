@@ -421,6 +421,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,
                 OtherListItemType.WindowsSpeechUnavailable,
+                OtherListItemType.AndroidAudioUsage,
                 -> {}
             }
         },
