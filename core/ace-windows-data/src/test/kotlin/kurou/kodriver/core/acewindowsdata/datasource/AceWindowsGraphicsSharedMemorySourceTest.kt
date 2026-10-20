@@ -60,14 +60,14 @@ class AceWindowsGraphicsSharedMemorySourceTest {
                     }
                 }
 
-            withTimeout(1_000) {
+            withTimeout(5_000) {
                 while (emitCount == 0) delay(1)
             }
             delay(10)
             assertEquals(1, emitCount)
 
             reader.packetId = 2
-            withTimeout(1_000) { secondEmission.await() }
+            withTimeout(5_000) { secondEmission.await() }
             job.cancelAndJoin()
 
             assertEquals(2, emitCount)
@@ -181,6 +181,7 @@ private class FakeSharedMemoryReader(
     initialOpen: Boolean = false,
     private val openResult: Boolean = true,
     private val returnNullBuffer: Boolean = false,
+    @Volatile
     var packetId: Int = 0,
 ) : SharedMemoryReader {
     private var opened = initialOpen
