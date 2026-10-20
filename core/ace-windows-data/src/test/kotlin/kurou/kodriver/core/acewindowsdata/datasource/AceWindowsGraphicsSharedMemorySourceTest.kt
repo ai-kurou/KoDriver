@@ -201,7 +201,8 @@ private class FakeSharedMemoryReader(
     initialOpen: Boolean = false,
     private val openResult: Boolean = true,
     private val returnNullBuffer: Boolean = false,
-    @Volatile var packetId: Int = 0,
+    @Volatile
+    var packetId: Int = 0,
 ) : SharedMemoryReader {
     private var opened = initialOpen
     var closeCalled = false
