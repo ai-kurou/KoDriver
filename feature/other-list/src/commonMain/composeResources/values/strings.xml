@@ -2,6 +2,7 @@
     <string name="item_volume">音量</string>
     <string name="item_volume_summary">アプリの音量: %1$d%　端末のマスター音量: %2$d%</string>
     <string name="item_voice">読み上げ音声</string>
+    <string name="item_android_audio_usage">音声の用途</string>
     <string name="item_keep_screen_on">テレメトリ受信中は画面をスリープさせない</string>
     <string name="item_readout_start_sound">読み上げ開始音</string>
     <string name="item_tts_engine_missing">音声合成アプリをインストール</string>

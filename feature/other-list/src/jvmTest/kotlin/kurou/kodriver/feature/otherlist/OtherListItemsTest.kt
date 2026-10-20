@@ -60,4 +60,9 @@ class OtherListItemsTest {
     fun `デスクトップでは読み上げ音声を一覧に含める`() {
         assertTrue(buildOtherListItems().contains(OtherListItemType.Voice))
     }
+
+    @Test
+    fun `デスクトップではAndroidの音声用途を一覧に含めない`() {
+        assertTrue(OtherListItemType.AndroidAudioUsage !in buildOtherListItems())
+    }
 }

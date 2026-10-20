@@ -133,6 +133,7 @@ private fun handleOtherItemClick(
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
         OtherListItemType.VoicePitch,
+        OtherListItemType.AndroidAudioUsage,
         // TtsLanguageDataMissingはOtherListPane側でOS設定画面を直接開くため、ここには到達しない。
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.OverlayBackgroundOpacity,

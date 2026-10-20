@@ -63,6 +63,7 @@ import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.console_ip_not_configured
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
+import kurou.kodriver.feature.otherlist.generated.resources.item_android_audio_usage
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
 import kurou.kodriver.feature.otherlist.generated.resources.item_debug_state
 import kurou.kodriver.feature.otherlist.generated.resources.item_dynamic_color
@@ -142,6 +143,7 @@ private fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
         OtherListItemType.VoicePitch,
+        OtherListItemType.AndroidAudioUsage,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
@@ -225,6 +227,7 @@ private fun otherReadoutSettingsItemDisplayName(itemType: OtherListItemType.Read
         OtherListItemType.Voice -> stringResource(Res.string.item_voice)
         OtherListItemType.VoiceSpeed -> stringResource(Res.string.item_voice_speed)
         OtherListItemType.VoicePitch -> stringResource(Res.string.item_voice_pitch)
+        OtherListItemType.AndroidAudioUsage -> stringResource(Res.string.item_android_audio_usage)
         OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
         OtherListItemType.TtsEngineMissing -> stringResource(Res.string.item_tts_engine_missing)
         OtherListItemType.TtsLanguageDataMissing -> stringResource(Res.string.item_tts_language_data_missing)
@@ -336,14 +339,13 @@ private fun OtherListItemTrailingIcon(
         }
 
         OtherListItemType.OverlayTextColor,
+        OtherListItemType.AndroidAudioUsage,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
         OtherListItemType.HapticFeedback,
         OtherListItemType.Startup,
-        -> {
-            Unit
-        }
+        -> {}
 
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
@@ -703,6 +705,7 @@ private fun OtherListItem(
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
                 OtherListItemType.VoicePitch,
+                OtherListItemType.AndroidAudioUsage,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,
@@ -728,7 +731,7 @@ private fun OtherListItem(
             Modifier
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
-                .clickable {
+                .clickable(enabled = item != OtherListItemType.AndroidAudioUsage) {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     handleOtherListItemClick(
                         item = item,
@@ -791,6 +794,8 @@ private fun handleOtherListItemClick(
         OtherListItemType.WindowsSpeechUnavailable -> {
             onItemClick(item)
         }
+
+        OtherListItemType.AndroidAudioUsage -> {}
 
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
