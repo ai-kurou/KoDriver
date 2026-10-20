@@ -36,6 +36,26 @@ class AceWindowsGraphicsSharedMemorySourceTest {
     // -------------------------------------------------------------------------
 
     @Test
+    fun `デフォルト reader は ACE Graphics 共有メモリ名とサイズで構成される`() {
+        var segmentName: String? = null
+        var sizeBytes: Int? = null
+        val reader = FakeSharedMemoryReader()
+        val source =
+            AceWindowsGraphicsSharedMemorySource(
+                readerFactory = { name, size ->
+                    segmentName = name
+                    sizeBytes = size
+                    reader
+                },
+                scope = CoroutineScope(SupervisorJob()),
+            )
+
+        assertTrue(source.reader === reader)
+        assertEquals("Local\\acevo_pmf_graphics", segmentName)
+        assertEquals(8_192, sizeBytes)
+    }
+
+    @Test
     fun `open 成功後に bufferFlow がバッファを emit する`() =
         runBlocking<Unit> {
             val reader = FakeSharedMemoryReader(initialOpen = true)

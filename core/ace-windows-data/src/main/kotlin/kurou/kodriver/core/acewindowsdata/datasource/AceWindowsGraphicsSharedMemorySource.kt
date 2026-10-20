@@ -17,11 +17,10 @@ import kotlin.time.Clock
 internal class AceWindowsGraphicsSharedMemorySource(
     pollingIntervalMs: Long = 16L,
     reconnectIntervalMs: Long = 1_000L,
+    readerFactory: (segmentName: String, sizeBytes: Int) -> SharedMemoryReader =
+        { segmentName, sizeBytes -> WindowsSharedMemoryReader(segmentName = segmentName, sizeBytes = sizeBytes) },
     internal val reader: SharedMemoryReader =
-        WindowsSharedMemoryReader(
-            segmentName = "Local\\acevo_pmf_graphics",
-            sizeBytes = GRAPHICS_SEGMENT_SIZE_BYTES,
-        ),
+        readerFactory("Local\\acevo_pmf_graphics", GRAPHICS_SEGMENT_SIZE_BYTES),
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
     scope: CoroutineScope,
 ) {
