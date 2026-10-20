@@ -2,6 +2,7 @@ package kurou.kodriver.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -92,6 +93,29 @@ class AppScreenScreenshotTest {
                     )
                 }
             }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `NavigationRail 手動読み上げタブ`() =
+        composeScreenshotTest {
+            setAppContent {
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationRail,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        manualReadoutContent = { _, _ -> Text("手動画面") },
+                    )
+                }
+            }
+            onNodeWithText("手動").performClick()
+            waitForIdle()
             onRoot().captureRoboImage()
         }
 
@@ -202,6 +226,29 @@ class AppScreenScreenshotTest {
                     )
                 }
             }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `NavigationBar 手動読み上げタブ`() =
+        composeScreenshotTest {
+            setAppContent {
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationBar,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        manualReadoutContent = { _, _ -> Text("手動画面") },
+                    )
+                }
+            }
+            onNodeWithText("手動").performClick()
+            waitForIdle()
             onRoot().captureRoboImage()
         }
 
