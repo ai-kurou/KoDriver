@@ -97,8 +97,14 @@ class ManualReadoutItemsTest {
     fun `GT7の残り燃料は既定文言と名前を持ちLMUのキーと衝突しない`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
         assertEquals("残り燃料", manualReadoutItemName(Simulator.Gt7Ps5.id, key))
-        assertEquals(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key))
-        assertEquals("燃料は残り42パーセント", formatGt7Ps5RemainingFuelReadoutText(manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key), 42))
+        assertEquals(
+            GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT,
+            manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key),
+        )
+        assertEquals(
+            "燃料は残り42パーセント",
+            formatGt7Ps5RemainingFuelReadoutText(manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key), 42),
+        )
         assertEquals(emptySet(), manualReadoutItemKeys(Simulator.LmuWindows.id).toSet().intersect(setOf(key)))
         assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
     }
@@ -121,11 +127,26 @@ class ManualReadoutItemsTest {
 
     @Test
     fun `項目名は詳細画面の日本語名と一致し未対応キーは空になる`() {
-        assertEquals("バーチャルエネルギー残量", manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value))
-        assertEquals("タイヤ摩耗", manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.TyreWear.Root.value))
-        assertEquals("ブレーキ残量", manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeWear.Root.value))
-        assertEquals("ブレーキ温度", manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeTemperature.Root.value))
-        assertEquals("タイヤ温度", manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.TyreTemperature.Root.value))
+        assertEquals(
+            "バーチャルエネルギー残量",
+            manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value),
+        )
+        assertEquals(
+            "タイヤ摩耗",
+            manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.TyreWear.Root.value),
+        )
+        assertEquals(
+            "ブレーキ残量",
+            manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeWear.Root.value),
+        )
+        assertEquals(
+            "ブレーキ温度",
+            manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeTemperature.Root.value),
+        )
+        assertEquals(
+            "タイヤ温度",
+            manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.TyreTemperature.Root.value),
+        )
         assertEquals("", manualReadoutItemName(Simulator.LmuWindows.id, "unknown"))
     }
 
@@ -167,10 +188,20 @@ class ManualReadoutItemsTest {
 
     @Test
     fun `残量項目の既定文言は従来と同じ発話になり未知項目は空になる`() {
-        val template = manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value)
+        val template =
+            manualReadoutItemTextDefault(
+                Simulator.LmuWindows.id,
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
+            )
         assertEquals("バーチャルエネルギー残量は42パーセント", formatLmuWindowsRemainingVirtualEnergyReadoutText(template, 42))
-        assertEquals("タイヤ摩耗残り{percent}%", manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.TyreWear.Root.value))
-        assertEquals("ブレーキ残量{percent}%", manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeWear.Root.value))
+        assertEquals(
+            "タイヤ摩耗残り{percent}%",
+            manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.TyreWear.Root.value),
+        )
+        assertEquals(
+            "ブレーキ残量{percent}%",
+            manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeWear.Root.value),
+        )
         assertEquals(
             "ブレーキ温度{celsius}℃",
             manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeTemperature.Root.value),

@@ -137,12 +137,16 @@ fun manualReadoutItemDefinition(
 ): ManualReadoutItemDefinition? = manualReadoutItemDefinitions[simulatorId]?.get(itemKey)
 
 /** 手動読み上げ項目の既定文言。未対応の項目は空文字を返す。 */
-fun manualReadoutItemTextDefault(simulatorId: String, itemKey: String): String =
-    manualReadoutItemDefinition(simulatorId, itemKey)?.textDefault.orEmpty()
+fun manualReadoutItemTextDefault(
+    simulatorId: String,
+    itemKey: String,
+): String = manualReadoutItemDefinition(simulatorId, itemKey)?.textDefault.orEmpty()
 
 /** 手動読み上げ項目の名前。未対応の項目は空文字を返す。 */
-fun manualReadoutItemName(simulatorId: String, itemKey: String): String =
-    manualReadoutItemDefinition(simulatorId, itemKey)?.name.orEmpty()
+fun manualReadoutItemName(
+    simulatorId: String,
+    itemKey: String,
+): String = manualReadoutItemDefinition(simulatorId, itemKey)?.name.orEmpty()
 
 /** 鮮度判定済みの手動読み上げ項目。残存率は0〜1、温度は℃、ラップタイムはms、残り周回数は整数で、未受信・鮮度切れは null。 */
 data class LmuWindowsManualReadoutItem(
