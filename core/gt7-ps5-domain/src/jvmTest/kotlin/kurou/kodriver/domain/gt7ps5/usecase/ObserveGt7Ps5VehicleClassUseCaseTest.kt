@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
-import kurou.kodriver.domain.usecase.fakeGt7Ps5TelemetryData
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
