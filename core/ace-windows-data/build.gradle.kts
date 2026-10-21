@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.core.aceWindowsDomain)
     implementation(projects.core.windowsSharedMemory)
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutinesCore)

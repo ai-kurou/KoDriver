@@ -1,0 +1,49 @@
+digraph G {
+  rankdir=TB
+  node [shape=box, style="rounded,filled"]
+  ":core:ace-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:ace-windows-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
+  ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":feature:ace-windows-auto-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:manual-readout-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":server" [fillcolor="#F8BBD0", color="#D81B60", penwidth=1]
+  ":server" -> ":core:domain"
+  ":server" -> ":core:ace-windows-domain"
+  ":core:ace-windows-data" -> ":core:domain"
+  ":core:ace-windows-data" -> ":core:ace-windows-domain"
+  ":core:ace-windows-domain" -> ":core:domain"
+  ":core:data" -> ":core:domain"
+  ":core:data" -> ":core:ace-windows-domain"
+  ":feature:ace-windows-auto-readout-flag-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-flag-detail" -> ":core:ace-windows-domain"
+  ":feature:ace-windows-auto-readout-my-best-lap-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-my-best-lap-detail" -> ":core:ace-windows-domain"
+  ":feature:ace-windows-auto-readout-remaining-fuel-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-remaining-fuel-detail" -> ":core:ace-windows-domain"
+  ":feature:ace-windows-auto-readout-remaining-fuel-laps-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-remaining-fuel-laps-detail" -> ":core:ace-windows-domain"
+  ":feature:ace-windows-auto-readout-tyre-temperature-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-tyre-temperature-detail" -> ":core:ace-windows-domain"
+  ":feature:ace-windows-auto-readout-vehicle-approach-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-vehicle-approach-detail" -> ":core:ace-windows-domain"
+  ":feature:ace-windows-connection" -> ":core:domain"
+  ":feature:ace-windows-connection" -> ":core:ace-windows-domain"
+  ":feature:ace-windows-debug-state-detail" -> ":core:domain"
+  ":feature:ace-windows-debug-state-detail" -> ":core:ace-windows-domain"
+  ":feature:ace-windows-narrator" -> ":core:domain"
+  ":feature:ace-windows-narrator" -> ":core:ace-windows-domain"
+  ":feature:main" -> ":core:domain"
+  ":feature:main" -> ":core:ace-windows-domain"
+  ":feature:manual-readout-detail" -> ":core:domain"
+  ":feature:manual-readout-detail" -> ":core:ace-windows-domain"
+}

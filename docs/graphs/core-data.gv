@@ -3,12 +3,15 @@ digraph G {
   node [shape=box, style="rounded,filled"]
   ":app:androidApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":app:desktopApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
+  ":core:ace-windows-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
   ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:lmu-windows-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":app:androidApp" -> ":core:data"
   ":app:desktopApp" -> ":core:data"
+  ":core:ace-windows-domain" -> ":core:domain"
   ":core:data" -> ":core:domain"
+  ":core:data" -> ":core:ace-windows-domain"
   ":core:data" -> ":core:lmu-windows-domain"
   ":core:lmu-windows-domain" -> ":core:domain"
 }

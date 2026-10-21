@@ -43,6 +43,7 @@ kotlin {
             kotlin.srcDir(generatedAppVersionDir)
         }
         commonMain.dependencies {
+            implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.lmuWindowsDomain)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesCore)
@@ -79,6 +80,7 @@ compose.resources {
 
 dependencies {
     testFixturesApi(projects.core.domain)
+    testFixturesApi(projects.core.aceWindowsDomain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))
