@@ -63,6 +63,10 @@ sealed interface OtherListItemType {
         override val id: String = "voice_pitch"
     }
 
+    data object AndroidAudioUsage : ReadoutSettings {
+        override val id: String = "android_audio_usage"
+    }
+
     data object Theme : AppSettings {
         override val id: String = "theme"
     }
@@ -131,6 +135,7 @@ sealed interface OtherListItemType {
                 Voice,
                 VoiceSpeed,
                 VoicePitch,
+                AndroidAudioUsage,
                 Theme,
                 OverlayVisible,
                 OverlayTextSize,

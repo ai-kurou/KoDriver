@@ -7,6 +7,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kurou.kodriver.core.texttospeechdata.windows.SapiSpeechSynthesizer
 import kurou.kodriver.core.texttospeechdata.windows.WindowsSpeechSynthesizer
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.model.VOICE_PITCH_MAX
 import kurou.kodriver.domain.model.VOICE_PITCH_MIN
@@ -63,6 +64,7 @@ internal class WindowsTextToSpeechRepository(
         voiceId: String,
         speed: Float,
         pitch: Float,
+        audioUsage: AndroidAudioUsage?,
     ) {
         if (text.isBlank()) return
         runInterruptible(Dispatchers.IO) {

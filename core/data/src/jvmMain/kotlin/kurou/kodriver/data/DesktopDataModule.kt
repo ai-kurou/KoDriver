@@ -8,6 +8,7 @@ import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.JvmKeepScreenOnEnabledRepository
+import kurou.kodriver.data.preferences.createAndroidAudioUsagePreferencesRepository
 import kurou.kodriver.data.preferences.createAutoReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
@@ -31,6 +32,7 @@ import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
+import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
@@ -88,6 +90,9 @@ val desktopDataModule =
         }
         single<QueuePreferencesRepository> {
             createQueuePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<AndroidAudioUsagePreferencesRepository> {
+            createAndroidAudioUsagePreferencesRepository(directory = kodriverDirectory)
         }
         single<ReadoutStartSoundEnabledPreferencesRepository> {
             createReadoutStartSoundEnabledPreferencesRepository(directory = kodriverDirectory)

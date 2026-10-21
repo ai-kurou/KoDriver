@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.first
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 
 /**
@@ -8,6 +9,7 @@ import kurou.kodriver.domain.repository.TextToSpeechRepository
  * 声の高さは保存済み設定を使う。
  * 読み上げ速度は保存済み設定を使う。
  * [invoke] の音声IDが未指定なら保存済み設定を使い、指定時はその音声で読み上げる。
+ * [invoke] の音声用途が未指定ならRepositoryの保存済み設定を使う。
  */
 class SpeakTextUseCase(
     private val repository: TextToSpeechRepository,
@@ -20,10 +22,11 @@ class SpeakTextUseCase(
         queue: Boolean = false,
         volume: Int = 100,
         voiceId: String? = null,
+        audioUsage: AndroidAudioUsage? = null,
     ) {
         if (text.isBlank()) return
         val speed = observeVoiceSpeed().first()
         val pitch = observeVoicePitch().first()
-        repository.speak(text, queue, volume, voiceId ?: observeVoice().first(), speed, pitch)
+        repository.speak(text, queue, volume, voiceId ?: observeVoice().first(), speed, pitch, audioUsage)
     }
 }

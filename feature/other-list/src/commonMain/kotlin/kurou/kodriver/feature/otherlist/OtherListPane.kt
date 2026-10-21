@@ -56,13 +56,21 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.otherlist.generated.resources.Res
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_alarm
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_assistant
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_communication
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_media
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_notification
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_ringtone
 import kurou.kodriver.feature.otherlist.generated.resources.console_ip_not_configured
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
+import kurou.kodriver.feature.otherlist.generated.resources.item_android_audio_usage
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
 import kurou.kodriver.feature.otherlist.generated.resources.item_debug_state
 import kurou.kodriver.feature.otherlist.generated.resources.item_dynamic_color
@@ -108,6 +116,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.theme_dark
 import kurou.kodriver.feature.otherlist.generated.resources.theme_light
 import kurou.kodriver.feature.otherlist.generated.resources.theme_system
 import kurou.kodriver.feature.otherlist.generated.resources.voice_system_default
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.round
 import kotlin.time.Duration.Companion.seconds
@@ -142,6 +151,7 @@ private fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
         OtherListItemType.VoicePitch,
+        OtherListItemType.AndroidAudioUsage,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
@@ -225,6 +235,7 @@ private fun otherReadoutSettingsItemDisplayName(itemType: OtherListItemType.Read
         OtherListItemType.Voice -> stringResource(Res.string.item_voice)
         OtherListItemType.VoiceSpeed -> stringResource(Res.string.item_voice_speed)
         OtherListItemType.VoicePitch -> stringResource(Res.string.item_voice_pitch)
+        OtherListItemType.AndroidAudioUsage -> stringResource(Res.string.item_android_audio_usage)
         OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
         OtherListItemType.TtsEngineMissing -> stringResource(Res.string.item_tts_engine_missing)
         OtherListItemType.TtsLanguageDataMissing -> stringResource(Res.string.item_tts_language_data_missing)
@@ -320,6 +331,7 @@ private fun OtherListItemTrailingIcon(
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
         OtherListItemType.VoicePitch,
+        OtherListItemType.AndroidAudioUsage,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.Feedback,
         OtherListItemType.License,
@@ -341,9 +353,7 @@ private fun OtherListItemTrailingIcon(
         OtherListItemType.DynamicColor,
         OtherListItemType.HapticFeedback,
         OtherListItemType.Startup,
-        -> {
-            Unit
-        }
+        -> {}
 
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
@@ -456,6 +466,10 @@ private fun otherVoiceSettingsItemSupportingContent(
             }
         }
 
+        OtherListItemType.AndroidAudioUsage -> {
+            { Text(stringResource(uiState.androidAudioUsage.labelRes)) }
+        }
+
         OtherListItemType.VoicePitch -> {
             {
                 val pitch = (round(uiState.voicePitch * 10) / 10).toString()
@@ -559,6 +573,7 @@ private fun otherListItemSupportingContent(
         OtherListItemType.Volume,
         OtherListItemType.VoiceSpeed,
         OtherListItemType.VoicePitch,
+        OtherListItemType.AndroidAudioUsage,
         OtherListItemType.Voice,
         OtherListItemType.OverlayTextSize,
         OtherListItemType.OverlayTextColor,
@@ -703,6 +718,7 @@ private fun OtherListItem(
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
                 OtherListItemType.VoicePitch,
+                OtherListItemType.AndroidAudioUsage,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,
@@ -789,6 +805,10 @@ private fun handleOtherListItemClick(
         }
 
         OtherListItemType.WindowsSpeechUnavailable -> {
+            onItemClick(item)
+        }
+
+        OtherListItemType.AndroidAudioUsage -> {
             onItemClick(item)
         }
 
@@ -938,3 +958,14 @@ private fun CenteredListItem(
         }
     }
 }
+
+private val AndroidAudioUsage.labelRes: StringResource
+    get() =
+        when (this) {
+            AndroidAudioUsage.MEDIA -> Res.string.audio_usage_media
+            AndroidAudioUsage.COMMUNICATION -> Res.string.audio_usage_communication
+            AndroidAudioUsage.RINGTONE -> Res.string.audio_usage_ringtone
+            AndroidAudioUsage.NOTIFICATION -> Res.string.audio_usage_notification
+            AndroidAudioUsage.ALARM -> Res.string.audio_usage_alarm
+            AndroidAudioUsage.ASSISTANT -> Res.string.audio_usage_assistant
+        }

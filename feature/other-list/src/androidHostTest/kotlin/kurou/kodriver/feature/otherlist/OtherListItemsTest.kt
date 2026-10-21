@@ -14,11 +14,12 @@ import kotlin.test.assertTrue
 @Config(sdk = [36])
 class OtherListItemsTest {
     @Test
-    fun `声の高さを読み上げ設定の最下部に含める`() {
+    fun `音声の用途を読み上げ設定の最下部に含める`() {
         val items = buildOtherListItems()
 
         assertEquals(OtherListItemType.VoicePitch, items[items.indexOf(OtherListItemType.VoiceSpeed) + 1])
-        assertEquals(OtherListItemType.Theme, items[items.indexOf(OtherListItemType.VoicePitch) + 1])
+        assertEquals(OtherListItemType.AndroidAudioUsage, items[items.indexOf(OtherListItemType.VoicePitch) + 1])
+        assertEquals(OtherListItemType.Theme, items[items.indexOf(OtherListItemType.AndroidAudioUsage) + 1])
     }
 
     @Test
@@ -56,6 +57,7 @@ class OtherListItemsTest {
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
                 OtherListItemType.VoicePitch,
+                OtherListItemType.AndroidAudioUsage,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
@@ -88,6 +90,7 @@ class OtherListItemsAndroid15Test {
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
                 OtherListItemType.VoicePitch,
+                OtherListItemType.AndroidAudioUsage,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
@@ -120,6 +123,7 @@ class OtherListItemsAndroid11Test {
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
                 OtherListItemType.VoicePitch,
+                OtherListItemType.AndroidAudioUsage,
                 OtherListItemType.Theme,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.GitHubRepository,

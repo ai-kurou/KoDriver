@@ -2,12 +2,16 @@ package kurou.kodriver.core.texttospeechdata
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import kotlinx.coroutines.flow.first
 import kurou.kodriver.core.texttospeechdata.repository.AndroidSpeechSettingsSenderRepository
 import kurou.kodriver.core.texttospeechdata.repository.AndroidTextToSpeechRepository
 import kurou.kodriver.core.texttospeechdata.repository.AndroidVoiceListRepository
+import kurou.kodriver.core.texttospeechdata.repository.androidAudioUsageToPlatformUsage
+import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.repository.VoiceListRepository
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -19,11 +23,22 @@ import org.koin.dsl.module
  */
 val textToSpeechDataModule =
     module {
+        // :core:narrator は :core:domain に依存せず、この同名 qualifier の Int provider を利用する。
+        single<suspend () -> Int>(named("android_sound_audio_usage")) {
+            {
+                androidAudioUsageToPlatformUsage(
+                    get<AndroidAudioUsagePreferencesRepository>().observeAndroidAudioUsage().first(),
+                )
+            }
+        }
         single<SpeechSettingsSenderRepository> { AndroidSpeechSettingsSenderRepository() }
         single {
             val context = get<Context>()
             AndroidTextToSpeechRepository(
                 textToSpeechFactory = { listener -> TextToSpeech(context, listener) },
+                audioUsageProvider = {
+                    get<AndroidAudioUsagePreferencesRepository>().observeAndroidAudioUsage().first()
+                },
             )
         } bind TextToSpeechRepository::class
         single<VoiceListRepository> {

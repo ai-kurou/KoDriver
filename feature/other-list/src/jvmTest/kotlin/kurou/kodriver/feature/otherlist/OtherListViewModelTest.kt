@@ -23,6 +23,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
+import kurou.kodriver.domain.model.ANDROID_AUDIO_USAGE_DEFAULT
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
@@ -36,6 +38,7 @@ import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
 import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
+import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
@@ -62,6 +65,7 @@ import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
@@ -141,6 +145,9 @@ class OtherListViewModelTest {
     private val voiceSpeedRepository: VoiceSpeedPreferencesRepository = mockk()
     private val voicePitchRepository: VoicePitchPreferencesRepository = mockk()
     private val voiceSpeedFlow = MutableStateFlow(VOICE_SPEED_DEFAULT)
+    private val audioUsageRepository: AndroidAudioUsagePreferencesRepository = mockk()
+    private val audioUsageFlow = MutableStateFlow(ANDROID_AUDIO_USAGE_DEFAULT)
+
     private val voicePitchFlow = MutableStateFlow(VOICE_PITCH_DEFAULT)
     private val soundVolumeRepository: SoundVolumePreferencesRepository = mockk()
     private val deviceVolumeRepository: DeviceVolumeRepository = mockk()
@@ -158,6 +165,7 @@ class OtherListViewModelTest {
         Dispatchers.setMain(dispatcher)
         every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
         every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+        every { audioUsageRepository.observeAndroidAudioUsage() } returns audioUsageFlow
         every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
         every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
         every {
@@ -199,6 +207,7 @@ class OtherListViewModelTest {
                     observeVoice = ObserveVoiceUseCase(voiceRepository),
                     observeVoiceSpeed = ObserveVoiceSpeedUseCase(voiceSpeedRepository),
                     observeVoicePitch = ObserveVoicePitchUseCase(voicePitchRepository),
+                    observeAndroidAudioUsage = ObserveAndroidAudioUsageUseCase(audioUsageRepository),
                     observeReadoutStartSoundType = ObserveReadoutStartSoundTypeUseCase(readoutStartSoundRepository),
                     observeSoundVolume = ObserveSoundVolumeUseCase(soundVolumeRepository),
                     observeThemeMode = ObserveThemeModeUseCase(themeRepository),
@@ -1628,6 +1637,32 @@ class OtherListViewModelTest {
             voicePitchFlow.update { 1.5f }
 
             assertEquals(1.5f, viewModel.uiState.first { it.voicePitch == 1.5f }.voicePitch)
+        }
+
+    @Test
+    fun `音声の用途は既定値から保存済み設定の変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel()
+            assertEquals(ANDROID_AUDIO_USAGE_DEFAULT, viewModel.uiState.first().androidAudioUsage)
+
+            audioUsageFlow.update { AndroidAudioUsage.ALARM }
+
+            assertEquals(
+                AndroidAudioUsage.ALARM,
+                viewModel.uiState.first { it.androidAudioUsage == AndroidAudioUsage.ALARM }.androidAudioUsage,
+            )
         }
 
     @Test

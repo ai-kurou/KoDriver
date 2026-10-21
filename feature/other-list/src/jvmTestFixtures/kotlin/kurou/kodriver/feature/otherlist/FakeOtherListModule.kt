@@ -2,18 +2,24 @@ package kurou.kodriver.feature.otherlist
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.model.ANDROID_AUDIO_USAGE_DEFAULT
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
+import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
 import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
+import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
+import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
+import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import org.koin.dsl.module
 
@@ -31,6 +37,9 @@ val fakeSpeechSettingsSenderRepository = FakeSpeechSettingsSenderRepository()
 val fakeOtherListModule =
     module {
         single<VoiceSpeedPreferencesRepository> { FakeVoiceSpeedPreferencesRepository() }
+        single<VoicePreferencesRepository> { FakeVoicePreferencesRepository() }
+        single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
+        single<AndroidAudioUsagePreferencesRepository> { FakeAndroidAudioUsagePreferencesRepository() }
         single<VoicePitchPreferencesRepository> { FakeVoicePitchPreferencesRepository() }
         single<ReadoutStartSoundPreferencesRepository> { FakeReadoutStartSoundPreferencesRepository() }
         single<StartupEnabledRepository> { FakeStartupEnabledRepository() }
@@ -64,6 +73,7 @@ class FakeTextToSpeechRepository : TextToSpeechRepository {
         voiceId: String,
         speed: Float,
         pitch: Float,
+        audioUsage: AndroidAudioUsage?,
     ) = Unit
 }
 
@@ -107,6 +117,26 @@ class FakeVoiceSpeedPreferencesRepository : VoiceSpeedPreferencesRepository {
     }
 }
 
+class FakeSoundVolumePreferencesRepository : SoundVolumePreferencesRepository {
+    private val volume = MutableStateFlow(100)
+
+    override fun volume() = volume
+
+    override suspend fun saveVolume(volume: Int) {
+        this.volume.update { volume }
+    }
+}
+
+class FakeVoicePreferencesRepository : VoicePreferencesRepository {
+    private val voiceId = MutableStateFlow(VOICE_ID_UNSPECIFIED)
+
+    override fun voiceId() = voiceId
+
+    override suspend fun saveVoiceId(voiceId: String) {
+        this.voiceId.update { voiceId }
+    }
+}
+
 class FakeVoicePitchPreferencesRepository : VoicePitchPreferencesRepository {
     private val speed = MutableStateFlow(VOICE_PITCH_DEFAULT)
 
@@ -114,5 +144,15 @@ class FakeVoicePitchPreferencesRepository : VoicePitchPreferencesRepository {
 
     override suspend fun saveVoicePitch(voicePitch: Float) {
         speed.update { voicePitch }
+    }
+}
+
+class FakeAndroidAudioUsagePreferencesRepository : AndroidAudioUsagePreferencesRepository {
+    private val usage = MutableStateFlow(ANDROID_AUDIO_USAGE_DEFAULT)
+
+    override fun observeAndroidAudioUsage() = usage
+
+    override suspend fun saveAndroidAudioUsage(androidAudioUsage: AndroidAudioUsage) {
+        usage.update { androidAudioUsage }
     }
 }

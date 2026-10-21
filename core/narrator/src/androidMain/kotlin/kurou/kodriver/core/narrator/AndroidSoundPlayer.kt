@@ -18,33 +18,28 @@ import kotlin.coroutines.resume
  */
 class AndroidSoundPlayer internal constructor(
     private val context: Context,
-    private val soundPool: SoundPool,
     private val ioDispatcher: CoroutineDispatcher,
     private val captureError: (Throwable) -> Unit,
+    private val usageProvider: suspend () -> Int,
+    private val soundPoolFactory: (usage: Int) -> SoundPool,
+    initialUsage: Int = AudioAttributes.USAGE_MEDIA,
 ) : SoundPlayer {
-    constructor(context: Context) : this(
-        context,
-        SoundPool
-            .Builder()
-            .setMaxStreams(2)
-            .setAudioAttributes(
-                AudioAttributes
-                    .Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build(),
-            ).build(),
-        Dispatchers.IO,
-        ::captureNarratorError,
-    )
-
-    private var currentStreamId: Int = 0
+    private var soundPool = soundPoolFactory(initialUsage)
+    private var soundPoolUsage = initialUsage
 
     private val loadLock = Any()
+    private var currentStreamId: Int = 0
 
-    // 前の音声をアンロードする前に次の音声をロードすることで、
-    // Bluetooth A2DP 接続のアイドル化を防ぐ
+    // 前の音声をアンロードする前に次の音声をロードすることで、Bluetooth A2DP 接続のアイドル化を防ぐ
     private var loadedSoundId: Int = 0
+
+    constructor(context: Context, usageProvider: suspend () -> Int = { AudioAttributes.USAGE_MEDIA }) : this(
+        context,
+        Dispatchers.IO,
+        ::captureNarratorError,
+        usageProvider,
+        ::createSoundPool,
+    )
 
     override val isPlaying: Boolean
         get() = currentStreamId != 0
@@ -53,45 +48,70 @@ class AndroidSoundPlayer internal constructor(
         bytes: ByteArray,
         volume: Int,
     ) {
-        val temp =
-            withContext(ioDispatcher) {
-                File.createTempFile("snd_", ".wav", context.cacheDir).also { it.writeBytes(bytes) }
-            }
+        var temp: File? = null
         try {
+            val usage =
+                try {
+                    usageProvider()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    AudioAttributes.USAGE_MEDIA
+                }
+            synchronized(loadLock) {
+                if (usage != soundPoolUsage) {
+                    soundPool.release()
+                    soundPool = soundPoolFactory(usage)
+                    soundPoolUsage = usage
+                    loadedSoundId = 0
+                    currentStreamId = 0
+                }
+            }
+            val playbackFile =
+                withContext(ioDispatcher) {
+                    File.createTempFile("snd_", ".wav", context.cacheDir).also { it.writeBytes(bytes) }
+                }
+            temp = playbackFile
             val durationMs = playbackDurationMs(bytes)
-            val soundId = loadSound(temp.absolutePath)
+            val pool = synchronized(loadLock) { soundPool }
+            val soundId = loadSound(pool, playbackFile.absolutePath)
             if (soundId == 0) return
             val v = (volume / 100.0f).coerceIn(0f, 1f)
-            val streamId = soundPool.play(soundId, v, v, 1, 0, 1.0f)
+            val streamId = pool.play(soundId, v, v, 1, 0, 1.0f)
             if (streamId == 0) {
-                soundPool.unload(soundId)
+                pool.unload(soundId)
                 captureError(IllegalStateException("SoundPool.play() failed"))
                 return
             }
-            currentStreamId = streamId
+            synchronized(loadLock) { currentStreamId = streamId }
             // 新しい音声の再生開始後に前の音声をアンロードする（セッションを維持）
-            val prevSoundId = loadedSoundId
-            loadedSoundId = soundId
-            if (prevSoundId != 0) soundPool.unload(prevSoundId)
+            val prevSoundId =
+                synchronized(loadLock) {
+                    loadedSoundId.also { loadedSoundId = soundId }
+                }
+            if (prevSoundId != 0) pool.unload(prevSoundId)
             try {
                 delay(durationMs)
             } finally {
-                soundPool.stop(streamId)
-                currentStreamId = 0
+                pool.stop(streamId)
+                synchronized(loadLock) { currentStreamId = 0 }
             }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             captureError(e)
         } finally {
-            temp.delete()
+            temp?.delete()
         }
     }
 
     // onLoadComplete が万一発火しなかった場合でも playJob を永久にサスペンドさせず、
     // 以後の読み上げ（優先度判定）を止めないための保険。
-    private suspend fun loadSound(path: String): Int {
-        val soundId = withTimeoutOrNull(LOAD_TIMEOUT_MS) { awaitLoad(path) }
+    private suspend fun loadSound(
+        pool: SoundPool,
+        path: String,
+    ): Int {
+        val soundId = withTimeoutOrNull(LOAD_TIMEOUT_MS) { awaitLoad(pool, path) }
         if (soundId == null) {
             captureError(IllegalStateException("SoundPool load timed out: $path"))
             return 0
@@ -99,30 +119,33 @@ class AndroidSoundPlayer internal constructor(
         return soundId
     }
 
-    private suspend fun awaitLoad(path: String): Int =
+    private suspend fun awaitLoad(
+        pool: SoundPool,
+        path: String,
+    ): Int =
         suspendCancellableCoroutine { cont ->
             // load() より先にリスナーを登録する。逆順だと、小さい WAV のロードが
             // リスナー登録前に完了して onLoadComplete が捨てられ、永久にサスペンドする。
             // リスナーは別スレッドから soundId 代入前に発火しうるため loadLock で待ち合わせる。
             var soundId = 0
-            soundPool.setOnLoadCompleteListener { _, loadedId, status ->
+            pool.setOnLoadCompleteListener { _, loadedId, status ->
                 val expectedId = synchronized(loadLock) { soundId }
                 if (loadedId == expectedId) {
-                    soundPool.setOnLoadCompleteListener(null)
+                    pool.setOnLoadCompleteListener(null)
                     if (cont.isActive) {
                         if (status == 0) {
                             cont.resume(loadedId)
                         } else {
                             captureError(IllegalStateException("SoundPool load failed: status=$status"))
-                            soundPool.unload(loadedId)
+                            pool.unload(loadedId)
                             cont.resume(0)
                         }
                     }
                 }
             }
-            synchronized(loadLock) { soundId = soundPool.load(path, 1) }
+            synchronized(loadLock) { soundId = pool.load(path, 1) }
             cont.invokeOnCancellation {
-                synchronized(loadLock) { soundId }.takeIf { it != 0 }?.let { soundPool.unload(it) }
+                synchronized(loadLock) { soundId }.takeIf { it != 0 }?.let { pool.unload(it) }
             }
         }
 
@@ -145,3 +168,15 @@ class AndroidSoundPlayer internal constructor(
         const val FALLBACK_DURATION_MS = 6_000L
     }
 }
+
+private fun createSoundPool(usage: Int): SoundPool =
+    SoundPool
+        .Builder()
+        .setMaxStreams(2)
+        .setAudioAttributes(
+            AudioAttributes
+                .Builder()
+                .setUsage(usage)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build(),
+        ).build()

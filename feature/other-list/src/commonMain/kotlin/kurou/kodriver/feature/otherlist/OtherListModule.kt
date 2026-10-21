@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherlist
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
@@ -71,6 +72,7 @@ val otherListModule =
                 if (OtherListItemType.ServerIp in buildOtherListItems()) get() else null,
                 get(),
                 get(),
+                get(),
             )
         }
 
@@ -82,6 +84,7 @@ val otherListModule =
         factory { ObserveVoiceUseCase(get()) }
         factory { ObserveVoiceSpeedUseCase(get()) }
         factory { ObserveVoicePitchUseCase(get()) }
+        factory { ObserveAndroidAudioUsageUseCase(get()) }
         factory { ObserveReadoutStartSoundTypeUseCase(get()) }
         factory { ObserveSoundVolumeUseCase(get()) }
         factory { SaveOverlayVisibleUseCase(get()) }

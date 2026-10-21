@@ -2,6 +2,7 @@
 
 package kurou.kodriver.core.texttospeechdata.repository
 
+import android.media.AudioAttributes
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
@@ -12,10 +13,12 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import java.util.Locale
 import kotlin.test.Test
@@ -27,6 +30,28 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidTextToSpeechRepositoryTest {
+    @Test
+    fun `保存済み用途をAndroidのAudioAttributes usageへ変換する`() {
+        assertEquals(AudioAttributes.USAGE_MEDIA, androidAudioUsageToPlatformUsage(AndroidAudioUsage.MEDIA))
+        assertEquals(
+            AudioAttributes.USAGE_VOICE_COMMUNICATION,
+            androidAudioUsageToPlatformUsage(AndroidAudioUsage.COMMUNICATION),
+        )
+        assertEquals(
+            AudioAttributes.USAGE_NOTIFICATION_RINGTONE,
+            androidAudioUsageToPlatformUsage(AndroidAudioUsage.RINGTONE),
+        )
+        assertEquals(
+            AudioAttributes.USAGE_NOTIFICATION,
+            androidAudioUsageToPlatformUsage(AndroidAudioUsage.NOTIFICATION),
+        )
+        assertEquals(AudioAttributes.USAGE_ALARM, androidAudioUsageToPlatformUsage(AndroidAudioUsage.ALARM))
+        assertEquals(
+            AudioAttributes.USAGE_ASSISTANT,
+            androidAudioUsageToPlatformUsage(AndroidAudioUsage.ASSISTANT),
+        )
+    }
+
     private val voice: Voice = mockk()
     private val customVoice: Voice = mockk()
     private val englishVoice: Voice = mockk()
@@ -39,9 +64,19 @@ class AndroidTextToSpeechRepositoryTest {
         requestedVolumes += volume
         params
     }
+    private val audioAttributes: AudioAttributes = mockk()
+    private val requestedAudioUsages = mutableListOf<AndroidAudioUsage>()
+    private val audioAttributesFactory: (AndroidAudioUsage) -> AudioAttributes = { usage ->
+        requestedAudioUsages += usage
+        audioAttributes
+    }
 
     private val createRepository: (Int) -> AndroidTextToSpeechRepository = { initStatus ->
-        AndroidTextToSpeechRepository(factory(initStatus), volumeParamsFactory = volumeParamsFactory)
+        AndroidTextToSpeechRepository(
+            factory(initStatus),
+            volumeParamsFactory = volumeParamsFactory,
+            audioAttributesFactory = audioAttributesFactory,
+        )
     }
 
     /** `OnInitListener` を同期的に [status] で呼び出してから [textToSpeech] を返すFakeのファクトリ。 */
@@ -55,6 +90,7 @@ class AndroidTextToSpeechRepositoryTest {
     @Test
     fun `端末の既定が英語でも日本語の初期音声を保持し個別音声の指定で変えない`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -105,6 +141,7 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech, voice, customVoice, englishVoice)
         }
 
@@ -219,6 +256,7 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.voice } returns null
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             val utteranceIdSlot = slot<String>()
             every {
                 textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_ADD, params, capture(utteranceIdSlot))
@@ -239,12 +277,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `読み上げが完了するまでspeakはsuspendする`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -278,12 +318,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `読み上げエラーでもspeakは完了する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -316,12 +358,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `再生中にキャンセルされた場合は読み上げを停止する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -351,12 +395,14 @@ class AndroidTextToSpeechRepositoryTest {
             verify(exactly = 1) { textToSpeech.stop() }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `発話要求自体が失敗した場合はハングせず即座に完了する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -378,12 +424,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `stopによる打ち切りでonStopが呼ばれた場合もspeakは完了する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -415,12 +463,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `新しい発話要求は打ち切られる古い発話をonStop等を待たず即座に完了させる`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -467,12 +517,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `再生開始前にキャンセルされた場合は再生中の別の発話を止めない`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -518,6 +570,7 @@ class AndroidTextToSpeechRepositoryTest {
             verify(exactly = 0) { textToSpeech.stop() }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
@@ -653,6 +706,7 @@ class AndroidTextToSpeechRepositoryTest {
     @Test
     fun `音声IDが一致すると指定音声を適用する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -679,12 +733,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech, voice)
         }
 
     @Test
     fun `音声IDが見つからないと日本語へ戻す`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -707,12 +763,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `音声の適用が失敗すると日本語へ戻す`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -739,12 +797,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech, voice)
         }
 
     @Test
     fun `同じ音声IDは重複して適用しない`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -778,12 +838,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech, voice)
         }
 
     @Test
     fun `指定音声から空に戻すと日本語を再適用する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -817,12 +879,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech, voice)
         }
 
     @Test
     fun `音声一覧がnullなら日本語へ戻す`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -845,12 +909,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `音声一覧の取得例外なら日本語へ戻す`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -873,12 +939,14 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `音声が見つからない場合は日本語へ戻し次の要求で再検索する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
@@ -911,6 +979,7 @@ class AndroidTextToSpeechRepositoryTest {
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech, voice)
         }
 
@@ -986,6 +1055,7 @@ class AndroidTextToSpeechRepositoryTest {
     @Test
     fun `速度は変更時だけ適用し範囲外は上下限に丸める`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.voice } returns null
@@ -1038,12 +1108,14 @@ class AndroidTextToSpeechRepositoryTest {
                 textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_5")
             }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `速度の適用失敗後は同じ値でも再試行する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.voice } returns null
@@ -1078,12 +1150,14 @@ class AndroidTextToSpeechRepositoryTest {
                 textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_3")
             }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `利用不可から再初期化したエンジンにも指定速度を適用する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returnsMany
                 listOf(TextToSpeech.LANG_NOT_SUPPORTED, TextToSpeech.LANG_AVAILABLE)
@@ -1111,12 +1185,14 @@ class AndroidTextToSpeechRepositoryTest {
                 textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_1")
             }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `高さは変更時だけ適用し範囲外は上下限に丸める`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.voice } returns null
@@ -1169,12 +1245,14 @@ class AndroidTextToSpeechRepositoryTest {
                 textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_5")
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `高さの適用失敗後は同じ値でも再試行する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.voice } returns null
@@ -1209,12 +1287,14 @@ class AndroidTextToSpeechRepositoryTest {
                 textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_3")
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 
     @Test
     fun `利用不可から再初期化したエンジンにも指定高さを適用する`() =
         runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returnsMany
                 listOf(TextToSpeech.LANG_NOT_SUPPORTED, TextToSpeech.LANG_AVAILABLE)
@@ -1242,6 +1322,138 @@ class AndroidTextToSpeechRepositoryTest {
                 textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_1")
             }
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `保存済み用途と明示用途を適用し同じ値は省略して変更時は再適用する`() =
+        runTest {
+            every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.voice } returns null
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_1") } returns
+                TextToSpeech.ERROR
+            every { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_2") } returns
+                TextToSpeech.ERROR
+            every { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_3") } returns
+                TextToSpeech.ERROR
+            every { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_4") } returns
+                TextToSpeech.ERROR
+            var storedUsage = AndroidAudioUsage.MEDIA
+            val repository =
+                AndroidTextToSpeechRepository(
+                    factory(TextToSpeech.SUCCESS),
+                    volumeParamsFactory = volumeParamsFactory,
+                    audioUsageProvider = { storedUsage },
+                    audioAttributesFactory = audioAttributesFactory,
+                )
+
+            repository.speak("試聴")
+            repository.speak("試聴")
+            repository.speak("試聴", audioUsage = AndroidAudioUsage.ALARM)
+            storedUsage = AndroidAudioUsage.COMMUNICATION
+            repository.speak("試聴")
+
+            assertEquals(
+                listOf(
+                    AndroidAudioUsage.MEDIA,
+                    AndroidAudioUsage.MEDIA,
+                    AndroidAudioUsage.ALARM,
+                    AndroidAudioUsage.COMMUNICATION,
+                ),
+                requestedAudioUsages,
+            )
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.voice }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_1") }
+            verify(exactly = 1) { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_2") }
+            verify(exactly = 1) { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_3") }
+            verify(exactly = 1) { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_4") }
+            verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
+            verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 3) { textToSpeech.setAudioAttributes(audioAttributes) }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `用途適用失敗後は再試行する`() =
+        runTest {
+            every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.voice } returns null
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returnsMany
+                listOf(TextToSpeech.ERROR, TextToSpeech.SUCCESS)
+            every { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_1") } returns
+                TextToSpeech.ERROR
+            every { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_2") } returns
+                TextToSpeech.ERROR
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            repository.speak("試聴", audioUsage = AndroidAudioUsage.ALARM)
+            repository.speak("試聴", audioUsage = AndroidAudioUsage.ALARM)
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.voice }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_1") }
+            verify(exactly = 1) { textToSpeech.speak("試聴", TextToSpeech.QUEUE_FLUSH, params, "kodriver_tts_2") }
+            verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
+            verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 2) { textToSpeech.setAudioAttributes(audioAttributes) }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `用途の解決中にキャンセルされても再生中の発話を完了扱いにしない`() =
+        runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.voice } returns null
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.speak("再生中", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1") } returns
+                TextToSpeech.SUCCESS
+            val usageGate = CompletableDeferred<AndroidAudioUsage>()
+            var resolveCount = 0
+            val repository =
+                AndroidTextToSpeechRepository(
+                    factory(TextToSpeech.SUCCESS),
+                    volumeParamsFactory = volumeParamsFactory,
+                    audioUsageProvider = {
+                        resolveCount++
+                        if (resolveCount == 1) AndroidAudioUsage.MEDIA else usageGate.await()
+                    },
+                    audioAttributesFactory = audioAttributesFactory,
+                )
+
+            val playing = launch { repository.speak("再生中", queue = true) }
+            runCurrent()
+            val interrupting = launch { repository.speak("割り込み", queue = false) }
+            runCurrent()
+            interrupting.cancel()
+            interrupting.join()
+            runCurrent()
+
+            assertTrue(interrupting.isCancelled)
+            assertTrue(playing.isActive)
+            listenerSlot.captured.onDone("kodriver_tts_1")
+            playing.join()
+            assertTrue(playing.isCompleted)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.voice }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.speak("再生中", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1") }
+            verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
+            verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 }

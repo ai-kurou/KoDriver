@@ -21,6 +21,7 @@ import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
@@ -72,6 +73,7 @@ data class OtherListSettingsUseCases(
     val observeServerIp: ObserveServerIpUseCase?,
     val observeConsoleAddress: ObserveConsoleAddressUseCase,
     val observeGt7Ps5UdpPort: ObserveGt7Ps5UdpPortUseCase,
+    val observeAndroidAudioUsage: ObserveAndroidAudioUsageUseCase,
 )
 
 /**
@@ -154,6 +156,8 @@ class OtherListViewModel(
             state.copy(voiceId = voiceId)
         }.combine(settingsUseCases.observeVoiceSpeed()) { state, voiceSpeed ->
             state.copy(voiceSpeed = voiceSpeed)
+        }.combine(settingsUseCases.observeAndroidAudioUsage()) { state, usage ->
+            state.copy(androidAudioUsage = usage)
         }.combine(settingsUseCases.observeVoicePitch()) { state, voicePitch ->
             state.copy(voicePitch = voicePitch)
         }.combine(settingsUseCases.observeOverlayTextSize()) { state, overlayTextSize ->

@@ -1,5 +1,6 @@
 package kurou.kodriver.core.texttospeechdata.repository
 
+import android.media.AudioAttributes
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
@@ -7,6 +8,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kurou.kodriver.domain.model.ANDROID_AUDIO_USAGE_DEFAULT
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.model.VOICE_PITCH_MAX
 import kurou.kodriver.domain.model.VOICE_PITCH_MIN
@@ -17,6 +20,24 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
+
+internal fun androidAudioUsageToPlatformUsage(usage: AndroidAudioUsage): Int =
+    when (usage) {
+        AndroidAudioUsage.MEDIA -> AudioAttributes.USAGE_MEDIA
+        AndroidAudioUsage.COMMUNICATION -> AudioAttributes.USAGE_VOICE_COMMUNICATION
+        AndroidAudioUsage.RINGTONE -> AudioAttributes.USAGE_NOTIFICATION_RINGTONE
+        AndroidAudioUsage.NOTIFICATION -> AudioAttributes.USAGE_NOTIFICATION
+        AndroidAudioUsage.ALARM -> AudioAttributes.USAGE_ALARM
+        AndroidAudioUsage.ASSISTANT -> AudioAttributes.USAGE_ASSISTANT
+    }
+
+private fun createAudioAttributes(usage: AndroidAudioUsage): AudioAttributes =
+    AudioAttributes
+        .Builder()
+        .setUsage(
+            androidAudioUsageToPlatformUsage(usage),
+        ).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+        .build()
 
 /**
  * Androidの [TextToSpeech] でテキストを読み上げる [TextToSpeechRepository]。
@@ -43,6 +64,8 @@ import java.util.concurrent.atomic.AtomicReference
  * @param locale 読み上げに使う言語。読み上げ文言は日本語のため既定は [Locale.JAPANESE]。
  * @param volumeParamsFactory 音量（0.0〜1.0）を [TextToSpeech.speak] のparamsへ変換する。
  *   `Bundle` はJVMホストテストでは動作しないため、テストではFakeを渡せるようにしている。
+ * @param audioUsageProvider 保存済みの音声用途を取得する。
+ * @param audioAttributesFactory 音声用途から [AudioAttributes] を生成する。ホストテストではFakeを渡す。
  */
 internal class AndroidTextToSpeechRepository(
     private val textToSpeechFactory: (TextToSpeech.OnInitListener) -> TextToSpeech,
@@ -50,12 +73,15 @@ internal class AndroidTextToSpeechRepository(
     private val volumeParamsFactory: (Float) -> Bundle = { volume ->
         Bundle().apply { putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, volume) }
     },
+    private val audioUsageProvider: suspend () -> AndroidAudioUsage = { ANDROID_AUDIO_USAGE_DEFAULT },
+    private val audioAttributesFactory: (AndroidAudioUsage) -> AudioAttributes = ::createAudioAttributes,
 ) : TextToSpeechRepository {
     private val mutex = Mutex()
     private val voiceLock = Any()
     private var appliedVoiceId: String? = null
     private var appliedSpeed: Float? = null
     private var appliedPitch: Float? = null
+    private var appliedAudioUsage: AndroidAudioUsage? = null
     private var defaultVoiceIdValue: String? = null
 
     /** 日本語の初期化で選ばれた音声ID。試聴や個別の音声指定では変えない。 */
@@ -100,9 +126,21 @@ internal class AndroidTextToSpeechRepository(
         voiceId: String,
         speed: Float,
         pitch: Float,
+        audioUsage: AndroidAudioUsage?,
     ) {
         if (text.isBlank()) return
         val engine = ensureInitialized() ?: return
+        // 用途の解決はDataStoreを読むsuspendポイントのため、発話の登録（pendingUtterances）や
+        // 既存発話の完了処理より前に行い、ここでキャンセルされても中途半端な状態を残さない。
+        val resolvedAudioUsage =
+            audioUsage ?: try {
+                audioUsageProvider()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                ANDROID_AUDIO_USAGE_DEFAULT
+            }
+        val audioAttributes = audioAttributesFactory(resolvedAudioUsage)
         val utteranceId = "kodriver_tts_${utteranceIdSequence.incrementAndGet()}"
         val completed = CompletableDeferred<Unit>()
         pendingUtterances[utteranceId] = completed
@@ -116,6 +154,7 @@ internal class AndroidTextToSpeechRepository(
                 applyVoice(engine, voiceId)
                 applySpeed(engine, speed.coerceIn(VOICE_SPEED_MIN, VOICE_SPEED_MAX))
                 applyPitch(engine, pitch.coerceIn(VOICE_PITCH_MIN, VOICE_PITCH_MAX))
+                applyAudioUsage(engine, resolvedAudioUsage, audioAttributes)
                 engine.speak(
                     text,
                     if (queue) TextToSpeech.QUEUE_ADD else TextToSpeech.QUEUE_FLUSH,
@@ -195,6 +234,15 @@ internal class AndroidTextToSpeechRepository(
         }
     }
 
+    private fun applyAudioUsage(
+        engine: TextToSpeech,
+        usage: AndroidAudioUsage,
+        attributes: AudioAttributes,
+    ) {
+        if (appliedAudioUsage == usage) return
+        if (engine.setAudioAttributes(attributes) == TextToSpeech.SUCCESS) appliedAudioUsage = usage
+    }
+
     /**
      * 初回呼び出し時のみ [TextToSpeech] を生成し、初期化完了を待つ。
      * 利用できない場合は `null` を返し、[unavailableReason] にその理由を記録する。以降の [speak] / [isAvailable] では再初期化せず、
@@ -219,6 +267,7 @@ internal class AndroidTextToSpeechRepository(
                 appliedVoiceId = null
                 appliedSpeed = null
                 appliedPitch = null
+                appliedAudioUsage = null
                 defaultVoiceIdValue = null
             }
             val status =

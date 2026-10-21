@@ -8,6 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kotlin.test.Test
@@ -23,16 +24,29 @@ class SpeakTextUseCaseTest {
         runTest {
             every { observeVoiceSpeed() } returns flowOf(1.5f)
             every { observeVoicePitch() } returns flowOf(0.75f)
-            coEvery { repository.speak("試聴", false, 42, "voice-b", 1.5f, 0.75f) } returns Unit
-            coEvery { repository.speak("試聴", false, 42, VOICE_ID_UNSPECIFIED, 1.5f, 0.75f) } returns Unit
+            coEvery { repository.speak("試聴", false, 42, "voice-b", 1.5f, 0.75f, null) } returns Unit
+            coEvery {
+                repository.speak(
+                    "試聴",
+                    false,
+                    42,
+                    VOICE_ID_UNSPECIFIED,
+                    1.5f,
+                    0.75f,
+                    AndroidAudioUsage.ALARM,
+                )
+            } returns
+                Unit
 
             val speakText = SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
             speakText("試聴", volume = 42, voiceId = "voice-b")
-            speakText("試聴", volume = 42, voiceId = VOICE_ID_UNSPECIFIED)
+            speakText("試聴", volume = 42, voiceId = VOICE_ID_UNSPECIFIED, audioUsage = AndroidAudioUsage.ALARM)
 
             verify(exactly = 0) { observeVoice() }
-            coVerify(exactly = 1) { repository.speak("試聴", false, 42, "voice-b", 1.5f, 0.75f) }
-            coVerify(exactly = 1) { repository.speak("試聴", false, 42, VOICE_ID_UNSPECIFIED, 1.5f, 0.75f) }
+            coVerify(exactly = 1) { repository.speak("試聴", false, 42, "voice-b", 1.5f, 0.75f, null) }
+            coVerify(
+                exactly = 1,
+            ) { repository.speak("試聴", false, 42, VOICE_ID_UNSPECIFIED, 1.5f, 0.75f, AndroidAudioUsage.ALARM) }
             verify(exactly = 2) { observeVoiceSpeed() }
             verify(exactly = 2) { observeVoicePitch() }
             confirmVerified(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
@@ -44,7 +58,7 @@ class SpeakTextUseCaseTest {
             every { observeVoiceSpeed() } returns flowOf(1.5f)
             every { observeVoicePitch() } returns flowOf(0.75f)
             every { observeVoice() } returns flowOf("voice-a")
-            coEvery { repository.speak("ベストラップ", true, 30, "voice-a", 1.5f, 0.75f) } returns Unit
+            coEvery { repository.speak("ベストラップ", true, 30, "voice-a", 1.5f, 0.75f, null) } returns Unit
 
             SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)(
                 "ベストラップ",
@@ -53,7 +67,7 @@ class SpeakTextUseCaseTest {
             )
 
             verify(exactly = 1) { observeVoice() }
-            coVerify(exactly = 1) { repository.speak("ベストラップ", true, 30, "voice-a", 1.5f, 0.75f) }
+            coVerify(exactly = 1) { repository.speak("ベストラップ", true, 30, "voice-a", 1.5f, 0.75f, null) }
             verify(exactly = 1) { observeVoiceSpeed() }
             verify(exactly = 1) { observeVoicePitch() }
             confirmVerified(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
@@ -65,12 +79,12 @@ class SpeakTextUseCaseTest {
             every { observeVoiceSpeed() } returns flowOf(1.0f)
             every { observeVoicePitch() } returns flowOf(1.0f)
             every { observeVoice() } returns flowOf(VOICE_ID_UNSPECIFIED)
-            coEvery { repository.speak("ベストラップ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) } returns Unit
+            coEvery { repository.speak("ベストラップ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f, null) } returns Unit
 
             SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)("ベストラップ")
 
             verify(exactly = 1) { observeVoice() }
-            coVerify(exactly = 1) { repository.speak("ベストラップ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
+            coVerify(exactly = 1) { repository.speak("ベストラップ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f, null) }
             verify(exactly = 1) { observeVoiceSpeed() }
             verify(exactly = 1) { observeVoicePitch() }
             confirmVerified(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
@@ -84,8 +98,8 @@ class SpeakTextUseCaseTest {
             speakText("  ")
 
             verify(exactly = 0) { observeVoice() }
-            coVerify(exactly = 0) { repository.speak("", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
-            coVerify(exactly = 0) { repository.speak("  ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
+            coVerify(exactly = 0) { repository.speak("", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f, null) }
+            coVerify(exactly = 0) { repository.speak("  ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f, null) }
             verify(exactly = 0) { observeVoiceSpeed() }
             verify(exactly = 0) { observeVoicePitch() }
             confirmVerified(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
