@@ -21,18 +21,21 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 
+internal fun androidAudioUsageToPlatformUsage(usage: AndroidAudioUsage): Int =
+    when (usage) {
+        AndroidAudioUsage.MEDIA -> AudioAttributes.USAGE_MEDIA
+        AndroidAudioUsage.COMMUNICATION -> AudioAttributes.USAGE_VOICE_COMMUNICATION
+        AndroidAudioUsage.RINGTONE -> AudioAttributes.USAGE_NOTIFICATION_RINGTONE
+        AndroidAudioUsage.NOTIFICATION -> AudioAttributes.USAGE_NOTIFICATION
+        AndroidAudioUsage.ALARM -> AudioAttributes.USAGE_ALARM
+        AndroidAudioUsage.ASSISTANT -> AudioAttributes.USAGE_ASSISTANT
+    }
+
 private fun createAudioAttributes(usage: AndroidAudioUsage): AudioAttributes =
     AudioAttributes
         .Builder()
         .setUsage(
-            when (usage) {
-                AndroidAudioUsage.MEDIA -> AudioAttributes.USAGE_MEDIA
-                AndroidAudioUsage.COMMUNICATION -> AudioAttributes.USAGE_VOICE_COMMUNICATION
-                AndroidAudioUsage.RINGTONE -> AudioAttributes.USAGE_NOTIFICATION_RINGTONE
-                AndroidAudioUsage.NOTIFICATION -> AudioAttributes.USAGE_NOTIFICATION
-                AndroidAudioUsage.ALARM -> AudioAttributes.USAGE_ALARM
-                AndroidAudioUsage.ASSISTANT -> AudioAttributes.USAGE_ASSISTANT
-            },
+            androidAudioUsageToPlatformUsage(usage),
         ).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
         .build()
 

@@ -4,6 +4,7 @@
 package kurou.kodriver.core.narrator
 
 import android.content.Context
+import android.media.AudioAttributes
 import android.media.SoundPool
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -11,6 +12,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -65,7 +67,10 @@ class AndroidSoundPlayerTest {
                 loadedFile = File(firstArg<String>())
                 7
             }
-            val player = AndroidSoundPlayer(context, soundPool, StandardTestDispatcher(testScheduler), errors::add)
+            val player =
+                AndroidSoundPlayer(context, StandardTestDispatcher(testScheduler), errors::add, {
+                    AudioAttributes.USAGE_MEDIA
+                }, { soundPool })
             every { soundPool.play(7, 0.5f, 0.5f, 1, 0, 1.0f) } returns 11
             every { soundPool.stop(11) } returns Unit
             val bytes = wav()
@@ -112,7 +117,10 @@ class AndroidSoundPlayerTest {
                 loadedFile = File(firstArg<String>())
                 7
             }
-            val player = AndroidSoundPlayer(context, soundPool, StandardTestDispatcher(testScheduler), errors::add)
+            val player =
+                AndroidSoundPlayer(context, StandardTestDispatcher(testScheduler), errors::add, {
+                    AudioAttributes.USAGE_MEDIA
+                }, { soundPool })
             every { soundPool.unload(7) } returns true
             val job = launch { player.play(wav(), 50) }
             runCurrent()
@@ -145,7 +153,10 @@ class AndroidSoundPlayerTest {
                 loadedFile = File(firstArg<String>())
                 7
             }
-            val player = AndroidSoundPlayer(context, soundPool, StandardTestDispatcher(testScheduler), errors::add)
+            val player =
+                AndroidSoundPlayer(context, StandardTestDispatcher(testScheduler), errors::add, {
+                    AudioAttributes.USAGE_MEDIA
+                }, { soundPool })
             every { soundPool.unload(7) } returns true
             val job = launch { player.play(wav(), 50) }
             runCurrent()
@@ -182,7 +193,10 @@ class AndroidSoundPlayerTest {
                 loadedFile = File(firstArg<String>())
                 7
             }
-            val player = AndroidSoundPlayer(context, soundPool, StandardTestDispatcher(testScheduler), errors::add)
+            val player =
+                AndroidSoundPlayer(context, StandardTestDispatcher(testScheduler), errors::add, {
+                    AudioAttributes.USAGE_MEDIA
+                }, { soundPool })
             every { soundPool.play(7, 0.5f, 0.5f, 1, 0, 1.0f) } returns 0
             every { soundPool.unload(7) } returns true
             val job = launch { player.play(wav(), 50) }
@@ -214,7 +228,10 @@ class AndroidSoundPlayerTest {
                 loadedFile = File(firstArg<String>())
                 7
             }
-            val player = AndroidSoundPlayer(context, soundPool, StandardTestDispatcher(testScheduler), errors::add)
+            val player =
+                AndroidSoundPlayer(context, StandardTestDispatcher(testScheduler), errors::add, {
+                    AudioAttributes.USAGE_MEDIA
+                }, { soundPool })
             every { soundPool.play(7, 0.5f, 0.5f, 1, 0, 1.0f) } returns 11
             every { soundPool.stop(11) } returns Unit
             val job = launch { player.play(byteArrayOf(1), 50) }
@@ -252,7 +269,10 @@ class AndroidSoundPlayerTest {
                 loadedFile = File(firstArg<String>())
                 7
             }
-            val player = AndroidSoundPlayer(context, soundPool, StandardTestDispatcher(testScheduler), errors::add)
+            val player =
+                AndroidSoundPlayer(context, StandardTestDispatcher(testScheduler), errors::add, {
+                    AudioAttributes.USAGE_MEDIA
+                }, { soundPool })
             every { soundPool.play(7, 0.5f, 0.5f, 1, 0, 1.0f) } returns 11
             every { soundPool.stop(11) } returns Unit
             val job = async { player.play(wav(), 50) }
@@ -288,7 +308,10 @@ class AndroidSoundPlayerTest {
                 loadedFile = File(firstArg<String>())
                 7
             }
-            val player = AndroidSoundPlayer(context, soundPool, StandardTestDispatcher(testScheduler), errors::add)
+            val player =
+                AndroidSoundPlayer(context, StandardTestDispatcher(testScheduler), errors::add, {
+                    AudioAttributes.USAGE_MEDIA
+                }, { soundPool })
             every { soundPool.unload(7) } returns true
             val job = async { player.play(wav(), 50) }
             runCurrent()
@@ -316,7 +339,10 @@ class AndroidSoundPlayerTest {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
-            val player = AndroidSoundPlayer(context, soundPool, StandardTestDispatcher(testScheduler), errors::add)
+            val player =
+                AndroidSoundPlayer(context, StandardTestDispatcher(testScheduler), errors::add, {
+                    AudioAttributes.USAGE_MEDIA
+                }, { soundPool })
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
                 loadedFile = File(firstArg<String>())
                 0
@@ -346,7 +372,10 @@ class AndroidSoundPlayerTest {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
-            val player = AndroidSoundPlayer(context, soundPool, StandardTestDispatcher(testScheduler), errors::add)
+            val player =
+                AndroidSoundPlayer(context, StandardTestDispatcher(testScheduler), errors::add, {
+                    AudioAttributes.USAGE_MEDIA
+                }, { soundPool })
             val failure = IllegalStateException("load exception")
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
                 loadedFile = File(firstArg<String>())
@@ -382,7 +411,10 @@ class AndroidSoundPlayerTest {
             every { soundPool.stop(11) } returns Unit
             every { soundPool.stop(12) } returns Unit
             every { soundPool.unload(7) } returns true
-            val player = AndroidSoundPlayer(context, soundPool, StandardTestDispatcher(testScheduler), errors::add)
+            val player =
+                AndroidSoundPlayer(context, StandardTestDispatcher(testScheduler), errors::add, {
+                    AudioAttributes.USAGE_MEDIA
+                }, { soundPool })
 
             val first = launch { player.play(wav(), -1) }
             runCurrent()
@@ -411,6 +443,155 @@ class AndroidSoundPlayerTest {
             }
             confirmVerified(soundPool)
         }
+
+    @Test
+    fun `用途変更時だけプールを差し替えて旧プールを解放する`() =
+        runTest {
+            val cacheDir = temporaryFolder.newFolder()
+            every { context.cacheDir } returns cacheDir
+            val replacementPool: SoundPool = mockk()
+            stubPlayablePool(replacementPool, cacheDir, soundId = 18, streamId = 28)
+            every { soundPool.release() } returns Unit
+            val createdUsages = mutableListOf<Int>()
+            val pools = listOf(soundPool, replacementPool)
+            val player =
+                AndroidSoundPlayer(
+                    context,
+                    StandardTestDispatcher(testScheduler),
+                    errors::add,
+                    { AudioAttributes.USAGE_ALARM },
+                    { usage ->
+                        createdUsages += usage
+                        pools[createdUsages.lastIndex]
+                    },
+                )
+            val job = launch { player.play(wav(), 50) }
+            runCurrent()
+            listener!!.onLoadComplete(replacementPool, 18, 0)
+            runCurrent()
+            advanceTimeBy(1_000)
+            job.join()
+
+            assertEquals(listOf(AudioAttributes.USAGE_MEDIA, AudioAttributes.USAGE_ALARM), createdUsages)
+            assertTrue(errors.isEmpty())
+            verify(exactly = 1) { soundPool.release() }
+            verifyPlayablePool(replacementPool, soundId = 18, streamId = 28)
+            confirmVerified(soundPool, replacementPool)
+        }
+
+    @Test
+    fun `同じ用途ではSoundPoolを再利用する`() =
+        runTest {
+            val cacheDir = temporaryFolder.newFolder()
+            every { context.cacheDir } returns cacheDir
+            stubPlayablePool(soundPool, cacheDir, soundId = 7, streamId = 11)
+            var calls = 0
+            val player =
+                AndroidSoundPlayer(
+                    context,
+                    StandardTestDispatcher(testScheduler),
+                    errors::add,
+                    { AudioAttributes.USAGE_MEDIA },
+                    {
+                        calls++
+                        soundPool
+                    },
+                )
+            val job = launch { player.play(wav(), 50) }
+            runCurrent()
+            listener!!.onLoadComplete(soundPool, 7, 0)
+            runCurrent()
+            advanceTimeBy(1_000)
+            job.join()
+
+            assertEquals(1, calls)
+            assertTrue(errors.isEmpty())
+            verifyPlayablePool(soundPool, soundId = 7, streamId = 11)
+            confirmVerified(soundPool)
+        }
+
+    @Test
+    fun `用途プロバイダの例外はMEDIAのままプールを変えずに再生する`() =
+        runTest {
+            val cacheDir = temporaryFolder.newFolder()
+            every { context.cacheDir } returns cacheDir
+            stubPlayablePool(soundPool, cacheDir, soundId = 7, streamId = 11)
+            val createdUsages = mutableListOf<Int>()
+            val player =
+                AndroidSoundPlayer(
+                    context,
+                    StandardTestDispatcher(testScheduler),
+                    errors::add,
+                    { throw IllegalStateException("usage unavailable") },
+                    { usage ->
+                        createdUsages += usage
+                        soundPool
+                    },
+                )
+            val job = launch { player.play(wav(), 50) }
+            runCurrent()
+            listener!!.onLoadComplete(soundPool, 7, 0)
+            runCurrent()
+            advanceTimeBy(1_000)
+            job.join()
+
+            assertEquals(listOf(AudioAttributes.USAGE_MEDIA), createdUsages)
+            assertTrue(errors.isEmpty())
+            verifyPlayablePool(soundPool, soundId = 7, streamId = 11)
+            confirmVerified(soundPool)
+        }
+
+    @Test
+    fun `用途解決中のキャンセルではプレイヤー状態を変更しない`() =
+        runTest {
+            val gate = CompletableDeferred<Int>()
+            val player =
+                AndroidSoundPlayer(
+                    context,
+                    StandardTestDispatcher(testScheduler),
+                    errors::add,
+                    { gate.await() },
+                    { soundPool },
+                )
+            val job = async { player.play(wav(), 50) }
+            runCurrent()
+            job.cancel()
+            assertFailsWith<CancellationException> { job.await() }
+
+            assertFalse(player.isPlaying)
+            assertTrue(errors.isEmpty())
+            confirmVerified(soundPool)
+        }
+
+    private fun stubPlayablePool(
+        pool: SoundPool,
+        cacheDir: File,
+        soundId: Int,
+        streamId: Int,
+    ) {
+        every { pool.setOnLoadCompleteListener(match { it != null }) } answers {
+            listener = firstArg()
+        }
+        every { pool.setOnLoadCompleteListener(null) } returns Unit
+        every { pool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
+            loadedFile = File(firstArg<String>())
+            soundId
+        }
+        every { pool.play(soundId, 0.5f, 0.5f, 1, 0, 1.0f) } returns streamId
+        every { pool.stop(streamId) } returns Unit
+    }
+
+    private fun verifyPlayablePool(
+        pool: SoundPool,
+        soundId: Int,
+        streamId: Int,
+    ) {
+        verify(exactly = 1) { pool.setOnLoadCompleteListener(match { it != null }) }
+        verify(exactly = 1) { pool.setOnLoadCompleteListener(null) }
+        verify(exactly = 1) { pool.load(loadedFile.absolutePath, 1) }
+        verify(exactly = 1) { pool.play(soundId, 0.5f, 0.5f, 1, 0, 1.0f) }
+        verify(exactly = 1) { pool.stop(streamId) }
+    }
 
     private fun wav(): ByteArray =
         ByteBuffer

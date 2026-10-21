@@ -30,6 +30,28 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidTextToSpeechRepositoryTest {
+    @Test
+    fun `保存済み用途をAndroidのAudioAttributes usageへ変換する`() {
+        assertEquals(AudioAttributes.USAGE_MEDIA, androidAudioUsageToPlatformUsage(AndroidAudioUsage.MEDIA))
+        assertEquals(
+            AudioAttributes.USAGE_VOICE_COMMUNICATION,
+            androidAudioUsageToPlatformUsage(AndroidAudioUsage.COMMUNICATION),
+        )
+        assertEquals(
+            AudioAttributes.USAGE_NOTIFICATION_RINGTONE,
+            androidAudioUsageToPlatformUsage(AndroidAudioUsage.RINGTONE),
+        )
+        assertEquals(
+            AudioAttributes.USAGE_NOTIFICATION,
+            androidAudioUsageToPlatformUsage(AndroidAudioUsage.NOTIFICATION),
+        )
+        assertEquals(AudioAttributes.USAGE_ALARM, androidAudioUsageToPlatformUsage(AndroidAudioUsage.ALARM))
+        assertEquals(
+            AudioAttributes.USAGE_ASSISTANT,
+            androidAudioUsageToPlatformUsage(AndroidAudioUsage.ASSISTANT),
+        )
+    }
+
     private val voice: Voice = mockk()
     private val customVoice: Voice = mockk()
     private val englishVoice: Voice = mockk()
