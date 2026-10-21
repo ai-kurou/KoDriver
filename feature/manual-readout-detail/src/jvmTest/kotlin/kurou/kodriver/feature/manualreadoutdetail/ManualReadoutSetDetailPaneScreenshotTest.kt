@@ -29,7 +29,12 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                         ManualReadoutSetDetailPane(
-                            uiState = ManualReadoutSetDetailUiState(setNumber = 1, name = "決勝用"),
+                            uiState =
+                                ManualReadoutSetDetailUiState(
+                                    simulatorId = Simulator.LmuWindows.id,
+                                    setNumber = 1,
+                                    name = "決勝用",
+                                ),
                             onAddItem = {},
                             onDelete = {},
                             showHotkey = false,
@@ -186,6 +191,7 @@ private fun screenshot(
                     ManualReadoutSetDetailPane(
                         uiState =
                             ManualReadoutSetDetailUiState(
+                                simulatorId = simulatorIdForKeys(keys),
                                 setNumber = 1,
                                 availableItemKeys = keys,
                                 selectedItemKeys =
@@ -206,3 +212,10 @@ private fun screenshot(
     }
     onRoot().captureRoboImage()
 }
+
+private fun simulatorIdForKeys(keys: List<String>): String =
+    when {
+        keys.any { it in manualReadoutItemKeys(Simulator.Gt7Ps5.id) } -> Simulator.Gt7Ps5.id
+        keys.any { it in manualReadoutItemKeys(Simulator.AceWindows.id) } -> Simulator.AceWindows.id
+        else -> Simulator.LmuWindows.id
+    }

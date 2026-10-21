@@ -10,16 +10,16 @@ class ManualReadoutItemsTest {
     @Test
     fun `ACEのタイヤ温度はタイヤ温度文言を使う`() {
         val key = AceWindowsReadoutItemKey.TyreTemperature.Root.value
-        assertEquals("タイヤ温度", manualReadoutItemName(key))
-        assertEquals("タイヤ温度{celsius}℃", manualReadoutItemTextDefault(key))
+        assertEquals("タイヤ温度", manualReadoutItemName(Simulator.AceWindows.id, key))
+        assertEquals("タイヤ温度{celsius}℃", manualReadoutItemTextDefault(Simulator.AceWindows.id, key))
     }
 
     @Test
     fun `ACEの残り燃料は既存キーと手動専用文言と名前を持つ`() {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
         assertEquals("ace_windows_auto_remaining_fuel", key)
-        assertEquals("残り燃料", manualReadoutItemName(key))
-        assertEquals("燃料は残り{percent}パーセント", manualReadoutItemTextDefault(key))
+        assertEquals("残り燃料", manualReadoutItemName(Simulator.AceWindows.id, key))
+        assertEquals("燃料は残り{percent}パーセント", manualReadoutItemTextDefault(Simulator.AceWindows.id, key))
         assertEquals(42, AceWindowsManualReadoutItem(key, "", 42).value)
         assertEquals(null, AceWindowsManualReadoutItem(key, "", null).value)
         assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
@@ -29,23 +29,23 @@ class ManualReadoutItemsTest {
     fun `ACEの燃料残り周回数は名前と手動専用文言を持ちキーは自動読み上げと共通`() {
         val key = AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value
         assertEquals("ace_windows_auto_remaining_fuel_laps", key)
-        assertEquals("残り燃料の周回数", manualReadoutItemName(key))
-        assertEquals("燃料は残り約{laps}周", manualReadoutItemTextDefault(key))
+        assertEquals("残り燃料の周回数", manualReadoutItemName(Simulator.AceWindows.id, key))
+        assertEquals("燃料は残り約{laps}周", manualReadoutItemTextDefault(Simulator.AceWindows.id, key))
         assertEquals(5, AceWindowsManualReadoutItem(key, "", 5).value)
     }
 
     @Test
     fun `ACEの自己ベストラップは自己ベスト文言を使う`() {
         val key = AceWindowsReadoutItemKey.MyBestLap.Root.value
-        assertEquals("自己ベストラップ", manualReadoutItemName(key))
-        assertEquals("自己ベストラップ {laptime}", manualReadoutItemTextDefault(key))
+        assertEquals("自己ベストラップ", manualReadoutItemName(Simulator.AceWindows.id, key))
+        assertEquals("自己ベストラップ {laptime}", manualReadoutItemTextDefault(Simulator.AceWindows.id, key))
     }
 
     @Test
     fun `LMUのエネルギー周回数は名前と既定文言と省略可能な周回数を持つ`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
-        assertEquals("エネルギーの残り周回数", manualReadoutItemName(key))
-        assertEquals("エネルギーは残り約{laps}周", manualReadoutItemTextDefault(key))
+        assertEquals("エネルギーの残り周回数", manualReadoutItemName(Simulator.LmuWindows.id, key))
+        assertEquals("エネルギーは残り約{laps}周", manualReadoutItemTextDefault(Simulator.LmuWindows.id, key))
         assertEquals(null, LmuWindowsManualReadoutItem(key, "", null).remainingLaps)
         assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
     }
@@ -53,16 +53,16 @@ class ManualReadoutItemsTest {
     @Test
     fun `LMUのタイヤ摩耗周回数は名前と既定文言を持つ`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
-        assertEquals("タイヤ摩耗の残り周回数", manualReadoutItemName(key))
-        assertEquals("タイヤは残り約{laps}周", manualReadoutItemTextDefault(key))
+        assertEquals("タイヤ摩耗の残り周回数", manualReadoutItemName(Simulator.LmuWindows.id, key))
+        assertEquals("タイヤは残り約{laps}周", manualReadoutItemTextDefault(Simulator.LmuWindows.id, key))
         assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
     }
 
     @Test
     fun `LMUの自己ベストは手動専用文言と名前と省略可能なラップタイムを持つ`() {
         val key = LmuWindowsReadoutItemKey.MyBestLap.Root.value
-        assertEquals("自己ベストラップ", manualReadoutItemName(key))
-        assertEquals("自己ベストラップ {laptime}", manualReadoutItemTextDefault(key))
+        assertEquals("自己ベストラップ", manualReadoutItemName(Simulator.LmuWindows.id, key))
+        assertEquals("自己ベストラップ {laptime}", manualReadoutItemTextDefault(Simulator.LmuWindows.id, key))
         assertEquals(null, LmuWindowsManualReadoutItem(key, "", null).lapTimeMs)
         assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
     }
@@ -70,16 +70,16 @@ class ManualReadoutItemsTest {
     @Test
     fun `GT7のタイヤ温度は名前と既定文言を持つ`() {
         val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value
-        assertEquals("タイヤ温度", manualReadoutItemName(key))
-        assertEquals("タイヤ温度{celsius}℃", manualReadoutItemTextDefault(key))
+        assertEquals("タイヤ温度", manualReadoutItemName(Simulator.Gt7Ps5.id, key))
+        assertEquals("タイヤ温度{celsius}℃", manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key))
         assertEquals(emptySet(), manualReadoutItemKeys(Simulator.LmuWindows.id).toSet().intersect(setOf(key)))
     }
 
     @Test
     fun `GT7の自己ベストラップは名前と既定文言を持ちLMUと衝突しない`() {
         val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root.value
-        assertEquals("自己ベストラップ", manualReadoutItemName(key))
-        assertEquals("自己ベストラップ {laptime}", manualReadoutItemTextDefault(key))
+        assertEquals("自己ベストラップ", manualReadoutItemName(Simulator.Gt7Ps5.id, key))
+        assertEquals("自己ベストラップ {laptime}", manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key))
         assertEquals(false, key == LmuWindowsReadoutItemKey.MyBestLap.Root.value)
         assertEquals(emptySet(), manualReadoutItemKeys(Simulator.LmuWindows.id).toSet().intersect(setOf(key)))
     }
@@ -87,8 +87,8 @@ class ManualReadoutItemsTest {
     @Test
     fun `GT7の周回数は名前と既定文言を持ちLMUと衝突しない`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
-        assertEquals("残り燃料の周回数", manualReadoutItemName(key))
-        assertEquals("燃料は残り約{laps}周", manualReadoutItemTextDefault(key))
+        assertEquals("残り燃料の周回数", manualReadoutItemName(Simulator.Gt7Ps5.id, key))
+        assertEquals("燃料は残り約{laps}周", manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key))
         assertEquals(emptySet(), manualReadoutItemKeys(Simulator.LmuWindows.id).toSet().intersect(setOf(key)))
         assertEquals(3, Gt7Ps5ManualReadoutItem(key, "", 3).value)
     }
@@ -96,9 +96,9 @@ class ManualReadoutItemsTest {
     @Test
     fun `GT7の残り燃料は既定文言と名前を持ちLMUのキーと衝突しない`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
-        assertEquals("残り燃料", manualReadoutItemName(key))
-        assertEquals(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, manualReadoutItemTextDefault(key))
-        assertEquals("燃料は残り42パーセント", formatGt7Ps5RemainingFuelReadoutText(manualReadoutItemTextDefault(key), 42))
+        assertEquals("残り燃料", manualReadoutItemName(Simulator.Gt7Ps5.id, key))
+        assertEquals(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key))
+        assertEquals("燃料は残り42パーセント", formatGt7Ps5RemainingFuelReadoutText(manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key), 42))
         assertEquals(emptySet(), manualReadoutItemKeys(Simulator.LmuWindows.id).toSet().intersect(setOf(key)))
         assertEquals(false, isLmuWindowsManualReadoutTemperatureItem(key))
     }
@@ -121,12 +121,12 @@ class ManualReadoutItemsTest {
 
     @Test
     fun `項目名は詳細画面の日本語名と一致し未対応キーは空になる`() {
-        assertEquals("バーチャルエネルギー残量", manualReadoutItemName(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value))
-        assertEquals("タイヤ摩耗", manualReadoutItemName(LmuWindowsReadoutItemKey.TyreWear.Root.value))
-        assertEquals("ブレーキ残量", manualReadoutItemName(LmuWindowsReadoutItemKey.BrakeWear.Root.value))
-        assertEquals("ブレーキ温度", manualReadoutItemName(LmuWindowsReadoutItemKey.BrakeTemperature.Root.value))
-        assertEquals("タイヤ温度", manualReadoutItemName(LmuWindowsReadoutItemKey.TyreTemperature.Root.value))
-        assertEquals("", manualReadoutItemName("unknown"))
+        assertEquals("バーチャルエネルギー残量", manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value))
+        assertEquals("タイヤ摩耗", manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.TyreWear.Root.value))
+        assertEquals("ブレーキ残量", manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeWear.Root.value))
+        assertEquals("ブレーキ温度", manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeTemperature.Root.value))
+        assertEquals("タイヤ温度", manualReadoutItemName(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.TyreTemperature.Root.value))
+        assertEquals("", manualReadoutItemName(Simulator.LmuWindows.id, "unknown"))
     }
 
     @Test
@@ -167,19 +167,19 @@ class ManualReadoutItemsTest {
 
     @Test
     fun `残量項目の既定文言は従来と同じ発話になり未知項目は空になる`() {
-        val template = manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value)
+        val template = manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value)
         assertEquals("バーチャルエネルギー残量は42パーセント", formatLmuWindowsRemainingVirtualEnergyReadoutText(template, 42))
-        assertEquals("タイヤ摩耗残り{percent}%", manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.TyreWear.Root.value))
-        assertEquals("ブレーキ残量{percent}%", manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.BrakeWear.Root.value))
+        assertEquals("タイヤ摩耗残り{percent}%", manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.TyreWear.Root.value))
+        assertEquals("ブレーキ残量{percent}%", manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeWear.Root.value))
         assertEquals(
             "ブレーキ温度{celsius}℃",
-            manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.BrakeTemperature.Root.value),
+            manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.BrakeTemperature.Root.value),
         )
         assertEquals(
             "タイヤ温度{celsius}℃",
-            manualReadoutItemTextDefault(LmuWindowsReadoutItemKey.TyreTemperature.Root.value),
+            manualReadoutItemTextDefault(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.TyreTemperature.Root.value),
         )
-        assertEquals("", manualReadoutItemTextDefault("unknown"))
+        assertEquals("", manualReadoutItemTextDefault(Simulator.LmuWindows.id, "unknown"))
         assertEquals(emptyMap(), ManualReadoutSet("set-1").itemTexts)
     }
 
@@ -189,8 +189,8 @@ class ManualReadoutItemsTest {
             val definitions = manualReadoutItemDefinitions.getValue(simulator.id)
             assertEquals(definitions.keys.toList(), manualReadoutItemKeys(simulator.id))
             definitions.values.forEach { definition ->
-                assertEquals(definition.name, manualReadoutItemName(definition.key))
-                assertEquals(definition.textDefault, manualReadoutItemTextDefault(definition.key))
+                assertEquals(definition.name, manualReadoutItemName(simulator.id, definition.key))
+                assertEquals(definition.textDefault, manualReadoutItemTextDefault(simulator.id, definition.key))
                 assertEquals(definition, manualReadoutItemDefinition(simulator.id, definition.key))
             }
         }

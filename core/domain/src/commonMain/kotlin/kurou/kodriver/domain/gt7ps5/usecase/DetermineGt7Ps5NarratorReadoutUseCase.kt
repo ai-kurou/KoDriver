@@ -146,7 +146,9 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             }
 
             item.value == null -> {
-                event.withResolvedText("${manualReadoutItemName(item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT")
+                event.withResolvedText(
+                    "${manualReadoutItemName(Simulator.Gt7Ps5.id, item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT",
+                )
             }
 
             else -> {

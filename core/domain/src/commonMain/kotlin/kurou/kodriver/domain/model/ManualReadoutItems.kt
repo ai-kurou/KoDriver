@@ -31,7 +31,7 @@ private fun manualReadoutItemDefinition(
 ) = ManualReadoutItemDefinition(key.value, name, textDefault)
 
 private fun manualReadoutItemDefinitions(vararg definitions: ManualReadoutItemDefinition) =
-    linkedMapOf(*definitions.map { it.key to it }.toTypedArray())
+    definitions.associateBy { it.key }
 
 /** シミュレーターごとの手動読み上げ項目定義。 */
 val manualReadoutItemDefinitions: Map<String, Map<String, ManualReadoutItemDefinition>> =
@@ -131,25 +131,18 @@ val manualReadoutItemDefinitions: Map<String, Map<String, ManualReadoutItemDefin
 fun manualReadoutItemKeys(simulatorId: String): List<String> =
     manualReadoutItemDefinitions[simulatorId]?.keys?.toList().orEmpty()
 
-/** 互換性用のキー検索。シミュレーターを指定する場合は同名キーの曖昧さを避けられる。 */
-fun manualReadoutItemDefinition(itemKey: String): ManualReadoutItemDefinition? =
-    manualReadoutItemDefinitions.values.firstNotNullOfOrNull { it[itemKey] }
-
 fun manualReadoutItemDefinition(
     simulatorId: String,
     itemKey: String,
 ): ManualReadoutItemDefinition? = manualReadoutItemDefinitions[simulatorId]?.get(itemKey)
 
 /** 手動読み上げ項目の既定文言。未対応の項目は空文字を返す。 */
-fun manualReadoutItemTextDefault(itemKey: String): String = manualReadoutItemDefinition(itemKey)?.textDefault.orEmpty()
-
-fun manualReadoutItemTextDefault(
-    simulatorId: String,
-    itemKey: String,
-): String = manualReadoutItemDefinition(simulatorId, itemKey)?.textDefault.orEmpty()
+fun manualReadoutItemTextDefault(simulatorId: String, itemKey: String): String =
+    manualReadoutItemDefinition(simulatorId, itemKey)?.textDefault.orEmpty()
 
 /** 手動読み上げ項目の名前。未対応の項目は空文字を返す。 */
-fun manualReadoutItemName(itemKey: String): String = manualReadoutItemDefinition(itemKey)?.name.orEmpty()
+fun manualReadoutItemName(simulatorId: String, itemKey: String): String =
+    manualReadoutItemDefinition(simulatorId, itemKey)?.name.orEmpty()
 
 /** 鮮度判定済みの手動読み上げ項目。残存率は0〜1、温度は℃、ラップタイムはms、残り周回数は整数で、未受信・鮮度切れは null。 */
 data class LmuWindowsManualReadoutItem(

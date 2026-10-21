@@ -225,12 +225,7 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
         .mapNotNull { itemKey ->
             val text = uiState.itemTexts[itemKey] ?: manualReadoutItemText(uiState, itemKey)
             text.takeIf { it.isNotBlank() }?.let {
-                val formatter =
-                    if (uiState.simulatorId.isBlank()) {
-                        previewFormatters.entries.firstOrNull { entry -> entry.key.second == itemKey }?.value
-                    } else {
-                        previewFormatters[uiState.simulatorId to itemKey]
-                    }
+                val formatter = previewFormatters[uiState.simulatorId to itemKey]
                 formatter?.invoke(it) ?: it
             }
         }.joinToString("、")
@@ -238,12 +233,7 @@ internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): Strin
 private fun manualReadoutItemText(
     uiState: ManualReadoutSetDetailUiState,
     itemKey: String,
-): String =
-    if (uiState.simulatorId.isBlank()) {
-        manualReadoutItemTextDefault(itemKey)
-    } else {
-        manualReadoutItemTextDefault(uiState.simulatorId, itemKey)
-    }
+): String = manualReadoutItemTextDefault(uiState.simulatorId, itemKey)
 
 @Composable
 internal fun ManualReadoutItemsCard(

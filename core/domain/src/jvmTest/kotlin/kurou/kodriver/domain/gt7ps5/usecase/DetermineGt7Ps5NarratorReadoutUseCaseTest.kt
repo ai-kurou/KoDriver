@@ -16,6 +16,7 @@ import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -57,7 +58,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         val state = Gt7Ps5NarratorState(tyreOverheating = true)
         val cases =
             listOf(
-                Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(key), 90) to "タイヤ温度90℃",
+                Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key), 90) to "タイヤ温度90℃",
                 Gt7Ps5ManualReadoutItem(key, "温度{celsius}℃", 91) to "温度91℃",
                 Gt7Ps5ManualReadoutItem(key, "温度{celsius}℃", null) to "タイヤ温度はデータがありません",
                 Gt7Ps5ManualReadoutItem(key, "", 90) to "",
@@ -100,7 +101,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         val state = Gt7Ps5NarratorState(personalBestMs = 80_000)
         val cases =
             listOf(
-                Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(key), 83_456) to "自己ベストラップ 1分23秒456",
+                Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key), 83_456) to "自己ベストラップ 1分23秒456",
                 Gt7Ps5ManualReadoutItem(key, "ベスト{laptime}", 83_456) to "ベスト1分23秒456",
                 Gt7Ps5ManualReadoutItem(key, "ベスト{laptime}", null) to "自己ベストラップはデータがありません",
                 Gt7Ps5ManualReadoutItem(key, "", 83_456) to "",
@@ -217,7 +218,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                     Gt7Ps5ManualReadoutItem(LmuWindowsReadoutItemKey.TyreWear.Root.value, "読まない", 50),
                     Gt7Ps5ManualReadoutItem(key, "あと{percent}% {unknown}", 42),
                     Gt7Ps5ManualReadoutItem(key, "", 20),
-                    Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(key), null),
+                    Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key), null),
                     Gt7Ps5ManualReadoutItem(key, "上限外", 10),
                 ),
             )
@@ -233,7 +234,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
         val cases =
             listOf(
-                listOf(Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(key), 0)) to "燃料は残り0パーセント",
+                listOf(Gt7Ps5ManualReadoutItem(key, manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key), 0)) to "燃料は残り0パーセント",
                 listOf(Gt7Ps5ManualReadoutItem(key, "任意", null)) to "残り燃料はデータがありません",
                 listOf(Gt7Ps5ManualReadoutItem(key, "  ", 100)) to "",
                 listOf(Gt7Ps5ManualReadoutItem(key, "", null)) to "",

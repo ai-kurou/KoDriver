@@ -47,6 +47,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
                     setNumber = 1,
                     availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
                 ),
@@ -70,6 +71,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
                     setNumber = 1,
                     availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
                 ),
@@ -93,6 +95,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
                     setNumber = 1,
                     availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
                 ),
@@ -116,6 +119,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.AceWindows.id,
                     setNumber = 1,
                     availableItemKeys = manualReadoutItemKeys(Simulator.AceWindows.id),
                 ),
@@ -139,6 +143,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.Gt7Ps5.id,
                     setNumber = 1,
                     availableItemKeys = manualReadoutItemKeys(Simulator.Gt7Ps5.id),
                 ),
@@ -160,8 +165,15 @@ class ManualReadoutSetDetailPaneTest {
     @Test
     fun `エネルギーの残り周回数の文言欄は周回数の挿入と警告とリセットと文字数上限を扱う`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
-        val defaultText = manualReadoutItemTextDefault(key)
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val defaultText = manualReadoutItemTextDefault(Simulator.LmuWindows.id, key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
         val saved = mutableListOf<Pair<String, String>>()
         rule.setContent {
             KoDriverTheme {
@@ -219,8 +231,15 @@ class ManualReadoutSetDetailPaneTest {
     @Test
     fun `タイヤ摩耗の残り周回数の文言欄は周回数の挿入と警告とリセットと文字数上限を扱う`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
-        val defaultText = manualReadoutItemTextDefault(key)
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val defaultText = manualReadoutItemTextDefault(Simulator.LmuWindows.id, key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
         val saved = mutableListOf<Pair<String, String>>()
         rule.setContent {
             KoDriverTheme {
@@ -278,8 +297,15 @@ class ManualReadoutSetDetailPaneTest {
     @Test
     fun `自己ベストラップの文言欄はラップタイムの挿入と警告とリセットと文字数上限を扱う`() {
         val key = LmuWindowsReadoutItemKey.MyBestLap.Root.value
-        val defaultText = manualReadoutItemTextDefault(key)
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val defaultText = manualReadoutItemTextDefault(Simulator.LmuWindows.id, key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
         val saved = mutableListOf<Pair<String, String>>()
         rule.setContent {
             KoDriverTheme {
@@ -337,8 +363,15 @@ class ManualReadoutSetDetailPaneTest {
     @Test
     fun `GT7の自己ベストラップの文言欄はラップタイムの挿入と警告とリセットと文字数上限を扱う`() {
         val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root.value
-        val defaultText = manualReadoutItemTextDefault(key)
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val defaultText = manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.Gt7Ps5.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
         val saved = mutableListOf<Pair<String, String>>()
         rule.setContent {
             KoDriverTheme {
@@ -395,7 +428,7 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `名前なしから鉛筆で編集し確定とDoneと空欄を保存する`() {
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 2))
+        val state = mutableStateOf(ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, setNumber = 2))
         val saved = mutableListOf<String>()
         rule.setContent {
             KoDriverTheme {
@@ -440,7 +473,12 @@ class ManualReadoutSetDetailPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
-                    uiState = ManualReadoutSetDetailUiState(setNumber = 1, name = "予選用"),
+                    uiState =
+                        ManualReadoutSetDetailUiState(
+                            simulatorId = Simulator.LmuWindows.id,
+                            setNumber = 1,
+                            name = "予選用",
+                        ),
                     onAddItem = {},
                     onDelete = {},
                     onNameChanged = { saved.add(it) },
@@ -462,6 +500,7 @@ class ManualReadoutSetDetailPaneTest {
                 ManualReadoutSetDetailPane(
                     uiState =
                         ManualReadoutSetDetailUiState(
+                            simulatorId = Simulator.Gt7Ps5.id,
                             setNumber = 1,
                             hotkeyConflict = ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2, "燃料用"),
                         ),
@@ -480,6 +519,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.AceWindows.id,
                     setNumber = 1,
                     availableItemKeys = manualReadoutItemKeys(Simulator.AceWindows.id),
                 ),
@@ -520,6 +560,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.Gt7Ps5.id,
                     setNumber = 1,
                     availableItemKeys = manualReadoutItemKeys(Simulator.Gt7Ps5.id),
                 ),
@@ -553,6 +594,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
                     setNumber = 1,
                     availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
                 ),
@@ -576,6 +618,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
                     setNumber = 1,
                     availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
                 ),
@@ -599,6 +642,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
                     setNumber = 1,
                     availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
                 ),
@@ -623,6 +667,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
                     setNumber = 1,
                     availableItemKeys = listOf(key),
                     selectedItemKeys = listOf(key),
@@ -652,7 +697,12 @@ class ManualReadoutSetDetailPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
-                    uiState = ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)),
+                    uiState =
+                        ManualReadoutSetDetailUiState(
+                            simulatorId = Simulator.LmuWindows.id,
+                            setNumber = 1,
+                            availableItemKeys = listOf(key),
+                        ),
                     onAddItem = {},
                     onDelete = {},
                     showHotkey = false,
@@ -672,6 +722,7 @@ class ManualReadoutSetDetailPaneTest {
                 ManualReadoutSetDetailPane(
                     uiState =
                         ManualReadoutSetDetailUiState(
+                            simulatorId = Simulator.LmuWindows.id,
                             setNumber = 1,
                             availableItemKeys = keys + "extra",
                             selectedItemKeys = keys,
@@ -697,7 +748,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
-                    uiState = ManualReadoutSetDetailUiState(setNumber = 1),
+                    uiState = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, setNumber = 1),
                     onAddItem = {},
                     onDelete = {},
                     showHotkey = false,
@@ -717,6 +768,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
                     setNumber = 2,
                     availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
                 ),
@@ -762,14 +814,20 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `未対応項目と見つからない状態を表示する`() {
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, isLoading = false))
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, setNumber = 1, isLoading = false),
+            )
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(state.value, {}, {})
             }
         }
         rule.onNodeWithText("このシミュレーターで選べる項目はまだありません").assertExists()
-        rule.runOnIdle { state.value = ManualReadoutSetDetailUiState(isLoading = false) }
+        rule.runOnIdle {
+            state.value =
+                ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, isLoading = false)
+        }
         rule.onNodeWithText("セットが見つかりません").assertExists()
         rule.onNodeWithContentDescription("セットを削除").assertDoesNotExist()
     }
@@ -777,8 +835,15 @@ class ManualReadoutSetDetailPaneTest {
     @Test
     fun `GT7の周回数の文言欄は周回数の挿入と警告とリセットと文字数上限を扱う`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
-        val defaultText = manualReadoutItemTextDefault(key)
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val defaultText = manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.Gt7Ps5.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
         val saved = mutableListOf<Pair<String, String>>()
         rule.setContent {
             KoDriverTheme {
@@ -836,8 +901,15 @@ class ManualReadoutSetDetailPaneTest {
     @Test
     fun `ACEのタイヤ温度の文言欄は摂氏の挿入と警告とリセットと文字数上限を扱う`() {
         val key = AceWindowsReadoutItemKey.TyreTemperature.Root.value
-        val defaultText = manualReadoutItemTextDefault(key)
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val defaultText = manualReadoutItemTextDefault(Simulator.AceWindows.id, key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.AceWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
         val saved = mutableListOf<Pair<String, String>>()
         rule.setContent {
             KoDriverTheme {
@@ -895,8 +967,15 @@ class ManualReadoutSetDetailPaneTest {
     @Test
     fun `GT7のタイヤ温度の文言欄は摂氏の挿入と警告とリセットと文字数上限を扱う`() {
         val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value
-        val defaultText = manualReadoutItemTextDefault(key)
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val defaultText = manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.Gt7Ps5.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
         val saved = mutableListOf<Pair<String, String>>()
         rule.setContent {
             KoDriverTheme {
@@ -954,8 +1033,15 @@ class ManualReadoutSetDetailPaneTest {
     @Test
     fun `タイヤ温度の文言欄は摂氏の挿入と警告とリセットと文字数上限を扱う`() {
         val key = LmuWindowsReadoutItemKey.TyreTemperature.Root.value
-        val defaultText = manualReadoutItemTextDefault(key)
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val defaultText = manualReadoutItemTextDefault(Simulator.LmuWindows.id, key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
         val saved = mutableListOf<Pair<String, String>>()
         rule.setContent {
             KoDriverTheme {
@@ -1013,8 +1099,15 @@ class ManualReadoutSetDetailPaneTest {
     @Test
     fun `温度の文言欄は摂氏の挿入と警告とリセットと文字数上限を扱う`() {
         val key = LmuWindowsReadoutItemKey.BrakeTemperature.Root.value
-        val defaultText = manualReadoutItemTextDefault(key)
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val defaultText = manualReadoutItemTextDefault(Simulator.LmuWindows.id, key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
         val saved = mutableListOf<Pair<String, String>>()
         rule.setContent {
             KoDriverTheme {
@@ -1071,8 +1164,15 @@ class ManualReadoutSetDetailPaneTest {
     @Test
     fun `選択時だけ文言欄を表示し入力と挿入と警告とリセットと文字数上限を扱う`() {
         val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
-        val defaultText = manualReadoutItemTextDefault(key)
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, availableItemKeys = listOf(key)))
+        val defaultText = manualReadoutItemTextDefault(Simulator.LmuWindows.id, key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
         val saved = mutableListOf<Pair<String, String>>()
         rule.setContent {
             KoDriverTheme {
@@ -1127,7 +1227,7 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `ホットキーの入力と解除と重複エラーと非表示を扱う`() {
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1))
+        val state = mutableStateOf(ManualReadoutSetDetailUiState(simulatorId = Simulator.Gt7Ps5.id, setNumber = 1))
         val showHotkey = mutableStateOf(true)
         val assigned = mutableListOf<Int>()
         var cleared = 0
@@ -1175,7 +1275,14 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `割り当て済みの登録状態と競合失敗時の再試行だけ表示する`() {
-        val state = mutableStateOf(ManualReadoutSetDetailUiState(setNumber = 1, hotkeyVirtualKeyCode = 0x41))
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    hotkeyVirtualKeyCode = 0x41,
+                ),
+            )
         var retries = 0
         rule.setContent {
             KoDriverTheme {
@@ -1219,6 +1326,7 @@ class ManualReadoutSetDetailPaneTest {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
                     setNumber = 1,
                     availableItemKeys = listOf(key),
                     selectedItemKeys = listOf(key),
@@ -1259,6 +1367,7 @@ class ManualReadoutSetDetailPaneTest {
                     "既定",
                     { text.value = it },
                     LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
+                    Simulator.LmuWindows.id,
                 )
             }
         }
@@ -1288,6 +1397,7 @@ class ManualReadoutSetDetailPaneTest {
                     "既定",
                     { text.value = it },
                     LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
+                    Simulator.LmuWindows.id,
                 )
             }
         }
@@ -1307,6 +1417,7 @@ class ManualReadoutSetDetailPaneTest {
                 ManualReadoutSetDetailPane(
                     uiState =
                         ManualReadoutSetDetailUiState(
+                            simulatorId = Simulator.LmuWindows.id,
                             setNumber = 1,
                             availableItemKeys = manualReadoutItemKeys(Simulator.LmuWindows.id),
                             selectedItemKeys = keys,

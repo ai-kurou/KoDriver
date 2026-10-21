@@ -329,12 +329,7 @@ internal val manualReadoutPlaceholderDefinitions =
 private fun manualReadoutPlaceholderDefinition(
     simulatorId: String,
     itemKey: String,
-): ManualReadoutPlaceholderDefinition? =
-    if (simulatorId.isBlank()) {
-        manualReadoutPlaceholderDefinitions.entries.firstOrNull { it.key.second == itemKey }?.value
-    } else {
-        manualReadoutPlaceholderDefinitions[simulatorId to itemKey]
-    }
+): ManualReadoutPlaceholderDefinition? = manualReadoutPlaceholderDefinitions[simulatorId to itemKey]
 
 internal fun unknownPlaceholders(
     simulatorId: String,
@@ -382,7 +377,7 @@ internal fun ManualReadoutItemTextField(
     defaultText: String,
     onTextChanged: (String) -> Unit,
     itemKey: String,
-    simulatorId: String = "",
+    simulatorId: String,
 ) {
     val isLapTime = isManualReadoutLapTimeItem(itemKey)
     val isLaps = isManualReadoutLapsItem(itemKey)

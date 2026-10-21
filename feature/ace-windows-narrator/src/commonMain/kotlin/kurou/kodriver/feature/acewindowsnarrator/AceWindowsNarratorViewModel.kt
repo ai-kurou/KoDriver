@@ -318,7 +318,11 @@ internal class AceWindowsNarratorViewModel(
                         AceWindowsReadoutItemKey.TyreTemperature.Root.value -> celsius
                         else -> percent
                     }
-                AceWindowsManualReadoutItem(key, set.itemTexts[key] ?: manualReadoutItemTextDefault(key), value)
+                AceWindowsManualReadoutItem(
+                    key,
+                    set.itemTexts[key] ?: manualReadoutItemTextDefault(Simulator.AceWindows.id, key),
+                    value,
+                )
             }
         val decision = determineAceWindowsNarratorReadout.determineManualReadout(state, items)
         eventProcessor.processManualReadout(

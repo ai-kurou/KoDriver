@@ -196,7 +196,9 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             }
 
             item.value == null -> {
-                event.withResolvedText("${manualReadoutItemName(item.key)}は$ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT")
+                event.withResolvedText(
+                    "${manualReadoutItemName(Simulator.AceWindows.id, item.key)}は$ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT",
+                )
             }
 
             else -> {
