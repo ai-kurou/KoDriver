@@ -4,10 +4,13 @@ digraph G {
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:designsystem" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:gt7-ps5-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:narrator" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":feature:gt7-ps5-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:gt7-ps5-narrator"
+  ":core:gt7-ps5-domain" -> ":core:domain"
   ":feature:gt7-ps5-narrator" -> ":core:domain"
+  ":feature:gt7-ps5-narrator" -> ":core:gt7-ps5-domain"
   ":feature:gt7-ps5-narrator" -> ":core:designsystem"
   ":feature:gt7-ps5-narrator" -> ":core:narrator"
 }
