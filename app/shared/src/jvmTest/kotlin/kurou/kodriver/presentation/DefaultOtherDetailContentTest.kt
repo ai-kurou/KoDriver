@@ -58,6 +58,6 @@ class DefaultOtherDetailContentTest {
 
         rule.onNodeWithText("メディア").assertIsDisplayed()
         rule.onNodeWithText("音声の用途").assertIsDisplayed()
-        rule.onNodeWithText("読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。").assertIsDisplayed()
+        rule.onNodeWithText("読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。右の再生ボタンで試聴できますが、用途は試聴にはまだ反映されません。").assertIsDisplayed()
     }
 }

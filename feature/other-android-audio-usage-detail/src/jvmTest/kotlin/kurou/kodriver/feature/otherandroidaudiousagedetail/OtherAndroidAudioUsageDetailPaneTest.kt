@@ -10,6 +10,7 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -38,7 +39,7 @@ class OtherAndroidAudioUsageDetailPaneTest {
         }
 
         rule.onNodeWithText("音声の用途").assertIsDisplayed()
-        rule.onNodeWithText("読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。").assertIsDisplayed()
+        rule.onNodeWithText("読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。右の再生ボタンで試聴できますが、用途は試聴にはまだ反映されません。").assertIsDisplayed()
         rule.onNode(hasContentDescription("戻る")).performClick()
 
         assertEquals(1, backCount)
@@ -95,5 +96,27 @@ class OtherAndroidAudioUsageDetailPaneTest {
         }
         rule.onNode(hasContentDescription("戻る")).assertDoesNotExist()
         rule.onNodeWithTag("audio-usage-content").assertIsDisplayed()
+    }
+
+    @Test
+    fun `試聴ボタンは選択と独立し再生中の説明を切り替える`() {
+        var state by mutableStateOf(OtherAndroidAudioUsageDetailUiState())
+        val previews = mutableListOf<Pair<AndroidAudioUsage, String>>()
+        rule.setContent {
+            KoDriverTheme {
+                OtherAndroidAudioUsageDetailPaneContent(
+                    uiState = state,
+                    onPreviewClicked = { usage, text ->
+                        previews.add(usage to text)
+                        state = state.copy(previewingUsage = usage)
+                    },
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("アラームを試聴").performScrollTo().performClick()
+        rule.onNodeWithContentDescription("アラームの試聴を停止").assertIsDisplayed()
+        rule.onNodeWithText("アラーム").assertIsNotSelected()
+        assertEquals(AndroidAudioUsage.ALARM, previews.single().first)
+        assertEquals("これは音声の用途の試聴です。", previews.single().second)
     }
 }

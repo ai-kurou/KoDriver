@@ -15,6 +15,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.core.designsystem)
+            implementation(libs.compose.material.icons.extended)
         }
     }
 }
