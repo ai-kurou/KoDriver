@@ -11,7 +11,6 @@ import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
-import kurou.kodriver.domain.usecase.fakeRaceFlagsData
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

@@ -37,6 +37,7 @@ kotlin.sourceSets.main {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.core.lmuWindowsDomain)
     implementation(libs.logback)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
