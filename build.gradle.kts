@@ -172,6 +172,11 @@ moduleGraphAssert {
         ":feature:.* -> :core:ace-windows-domain",
         ":core:.*data -> :core:ace-windows-domain",
         ":server -> :core:ace-windows-domain",
+        // GT7固有ドメイン → core:domain（共有型 ReadoutItemKey / SpeechEvent 等を参照するため）
+        ":core:gt7-ps5-domain -> :core:domain",
+        // GT7固有ドメインを参照できるモジュール
+        ":feature:.* -> :core:gt7-ps5-domain",
+        ":core:.*data -> :core:gt7-ps5-domain",
     )
     restricted = arrayOf(
         // app エントリーポイント（feature 層・domain 層・他 app への直接参照禁止）
@@ -191,6 +196,7 @@ moduleGraphAssert {
         ":core:domain -X> :.*",
         ":core:lmu-windows-domain -X> :(?!core:domain$).*",
         ":core:ace-windows-domain -X> :(?!core:domain$).*",
+        ":core:gt7-ps5-domain -X> :(?!core:domain$).*",
         ":core:narrator -X> :.*",
         ":core:designsystem -X> :.*",
         ":core:windows-shared-memory -X> :.*",
@@ -516,6 +522,7 @@ dependencies {
     kover(project(":core:domain"))
     kover(project(":core:lmu-windows-domain"))
     kover(project(":core:ace-windows-domain"))
+    kover(project(":core:gt7-ps5-domain"))
     kover(project(":core:data"))
     kover(project(":core:lmu-windows-data"))
     kover(project(":core:lmu-windows-rest-api-data"))
@@ -588,6 +595,7 @@ dependencies {
     dokka(project(":core:domain"))
     dokka(project(":core:lmu-windows-domain"))
     dokka(project(":core:ace-windows-domain"))
+    dokka(project(":core:gt7-ps5-domain"))
     dokka(project(":core:data"))
     dokka(project(":core:lmu-windows-data"))
     dokka(project(":core:lmu-windows-rest-api-data"))

@@ -9,6 +9,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.gt7Ps5Domain)
             implementation(projects.core.designsystem)
         }
         jvmTest.dependencies {

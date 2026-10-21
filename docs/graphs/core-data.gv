@@ -6,12 +6,15 @@ digraph G {
   ":core:ace-windows-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
   ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:gt7-ps5-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:lmu-windows-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":app:androidApp" -> ":core:data"
   ":app:desktopApp" -> ":core:data"
   ":core:ace-windows-domain" -> ":core:domain"
+  ":core:data" -> ":core:gt7-ps5-domain"
   ":core:data" -> ":core:domain"
   ":core:data" -> ":core:ace-windows-domain"
   ":core:data" -> ":core:lmu-windows-domain"
+  ":core:gt7-ps5-domain" -> ":core:domain"
   ":core:lmu-windows-domain" -> ":core:domain"
 }

@@ -12,6 +12,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.gt7Ps5Domain)
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
             implementation(projects.core.aceWindowsDomain)
