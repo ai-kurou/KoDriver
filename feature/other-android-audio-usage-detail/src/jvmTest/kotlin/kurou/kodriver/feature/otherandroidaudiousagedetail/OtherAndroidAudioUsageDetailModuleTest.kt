@@ -20,6 +20,11 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
+import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kurou.kodriver.domain.repository.TextToSpeechRepository
+import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
+import kurou.kodriver.domain.repository.VoicePreferencesRepository
+import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.AfterTest
@@ -72,6 +77,13 @@ class OtherAndroidAudioUsageDetailModuleTest {
                 modules(
                     otherAndroidAudioUsageDetailModule,
                     module { single<AndroidAudioUsagePreferencesRepository> { repository } },
+                    module {
+                        single<SoundVolumePreferencesRepository> { mockk() }
+                        single<TextToSpeechRepository> { mockk() }
+                        single<VoicePreferencesRepository> { mockk() }
+                        single<VoiceSpeedPreferencesRepository> { mockk() }
+                        single<VoicePitchPreferencesRepository> { mockk() }
+                    },
                 )
             }
         return try {

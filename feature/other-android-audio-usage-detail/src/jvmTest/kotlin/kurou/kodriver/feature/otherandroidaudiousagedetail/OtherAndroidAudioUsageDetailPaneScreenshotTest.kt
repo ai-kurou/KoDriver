@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import org.junit.Test
 
 class OtherAndroidAudioUsageDetailPaneScreenshotTest {
@@ -23,6 +24,26 @@ class OtherAndroidAudioUsageDetailPaneScreenshotTest {
                                 uiState = OtherAndroidAudioUsageDetailUiState(),
                                 canNavigateBack = true,
                                 onBack = {},
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `試聴中`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            OtherAndroidAudioUsageDetailPaneContent(
+                                uiState =
+                                    OtherAndroidAudioUsageDetailUiState(
+                                        previewingUsage = AndroidAudioUsage.ALARM,
+                                    ),
                             )
                         }
                     }

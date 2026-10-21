@@ -1,5 +1,8 @@
 package kurou.kodriver.feature.otherandroidaudiousagedetail
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsSelected
@@ -58,6 +61,8 @@ class OtherAndroidAudioUsageDetailPaneWiringTest {
         every { viewModel.uiState } returns
             MutableStateFlow(OtherAndroidAudioUsageDetailUiState(usage = AndroidAudioUsage.ALARM))
         every { viewModel.onUsageSelected(AndroidAudioUsage.MEDIA) } returns Unit
+        every { viewModel.onPreviewStopped() } returns Unit
+        every { viewModel.onPreviewClicked(AndroidAudioUsage.ALARM, "これは音声の用途の試聴です。") } returns Unit
         every { onBack() } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
@@ -69,11 +74,36 @@ class OtherAndroidAudioUsageDetailPaneWiringTest {
             rule.onNodeWithTag("audio-usage-pane").assertExists()
             rule.onNodeWithText("アラーム").performScrollTo().assertIsSelected()
             rule.onNodeWithText("メディア").performScrollTo().performClick()
+            rule.onNodeWithContentDescription("アラームを試聴").performScrollTo().performClick()
             rule.onNodeWithContentDescription("戻る").performClick()
             verify(exactly = 1) { viewModel.uiState }
             verify(exactly = 1) { viewModel.onUsageSelected(AndroidAudioUsage.MEDIA) }
+            verify(exactly = 1) { viewModel.onPreviewClicked(AndroidAudioUsage.ALARM, "これは音声の用途の試聴です。") }
             verify(exactly = 1) { onBack() }
             confirmVerified(viewModel, onBack)
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
+    fun `Paneの破棄で試聴を停止する`() {
+        every { viewModel.uiState } returns MutableStateFlow(OtherAndroidAudioUsageDetailUiState())
+        every { viewModel.onPreviewStopped() } returns Unit
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            var visible by mutableStateOf(true)
+            rule.setContent {
+                KoDriverTheme {
+                    if (visible) OtherAndroidAudioUsageDetailPane(true, {}, Modifier)
+                }
+            }
+            rule.waitForIdle()
+            visible = false
+            rule.waitForIdle()
+            verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.onPreviewStopped() }
+            confirmVerified(viewModel)
         } finally {
             stopKoin()
         }
