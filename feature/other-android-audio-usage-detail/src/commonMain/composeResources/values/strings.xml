@@ -1,4 +1,16 @@
 <resources>
     <string name="audio_usage_title">音声の用途</string>
     <string name="audio_usage_description">読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。</string>
+    <string name="audio_usage_media">メディア</string>
+    <string name="audio_usage_media_description">音楽や動画などのメディア音声として扱います。</string>
+    <string name="audio_usage_communication">通話</string>
+    <string name="audio_usage_communication_description">通話中の音声として扱います。</string>
+    <string name="audio_usage_ringtone">着信音</string>
+    <string name="audio_usage_ringtone_description">電話の着信を知らせる音声として扱います。</string>
+    <string name="audio_usage_notification">通知</string>
+    <string name="audio_usage_notification_description">通知を知らせる音声として扱います。</string>
+    <string name="audio_usage_alarm">アラーム</string>
+    <string name="audio_usage_alarm_description">アラームの音声として扱います。</string>
+    <string name="audio_usage_assistant">アシスタント</string>
+    <string name="audio_usage_assistant_description">音声アシスタントの応答として扱います。</string>
 </resources>

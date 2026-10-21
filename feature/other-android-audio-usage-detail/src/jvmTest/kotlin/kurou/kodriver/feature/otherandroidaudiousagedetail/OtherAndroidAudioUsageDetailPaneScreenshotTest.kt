@@ -19,7 +19,11 @@ class OtherAndroidAudioUsageDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            OtherAndroidAudioUsageDetailPane(canNavigateBack = true, onBack = {})
+                            OtherAndroidAudioUsageDetailPaneContent(
+                                uiState = OtherAndroidAudioUsageDetailUiState(),
+                                canNavigateBack = true,
+                                onBack = {},
+                            )
                         }
                     }
                 }

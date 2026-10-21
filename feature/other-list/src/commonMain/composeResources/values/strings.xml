@@ -54,4 +54,10 @@
     <string name="item_voice_pitch">声の高さ</string>
     <string name="item_voice_pitch_summary">%1$s倍</string>
     <string name="item_overlay_text_color">文字色</string>
+    <string name="audio_usage_media">メディア</string>
+    <string name="audio_usage_communication">通話</string>
+    <string name="audio_usage_ringtone">着信音</string>
+    <string name="audio_usage_notification">通知</string>
+    <string name="audio_usage_alarm">アラーム</string>
+    <string name="audio_usage_assistant">アシスタント</string>
 </resources>

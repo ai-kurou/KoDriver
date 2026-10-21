@@ -35,6 +35,7 @@ import kurou.kodriver.feature.main.mainPlatformModule
 import kurou.kodriver.feature.manualreadoutdetail.manualReadoutSetDetailModule
 import kurou.kodriver.feature.manualreadoutlist.manualReadoutListModule
 import kurou.kodriver.feature.narratoroverlay.narratorOverlayModule
+import kurou.kodriver.feature.otherandroidaudiousagedetail.otherAndroidAudioUsageDetailModule
 import kurou.kodriver.feature.otherconsoleipdetail.otherConsoleIpDetailModule
 import kurou.kodriver.feature.otherfeedbackdetail.otherFeedbackDetailModule
 import kurou.kodriver.feature.otherlist.otherListModule
@@ -90,6 +91,7 @@ val featureModules: List<Module> =
         otherConsoleIpDetailModule,
         otherVolumeDetailModule,
         otherVoicePitchDetailModule,
+        otherAndroidAudioUsageDetailModule,
         otherVoiceSpeedDetailModule,
         otherVoiceDetailModule,
         autoReadoutListModule,
