@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.acewindows.usecase
 
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
@@ -219,13 +220,16 @@ class DetermineAceWindowsNarratorReadoutUseCase {
     /** 未受信または未計測の自己ベストラップは手動読み上げのデータなしとして扱う。 */
     fun currentBestLapTimeMs(data: AceWindowsBestLapTimeData?): Int? = data?.bestLapTimeMs?.takeIf { it > 0 }
 
-    /**
-     * 未受信・鮮度切れ・非有限・0以下の燃料残り周回数は手動読み上げのデータなしとして扱う。
-     * 0以下は消費実績がない間の値のため、燃料切れと区別できない。
-     */
+    /** 未受信・鮮度切れ・非有限・0以下・1,000周超の値はデータなしとし、1周未満の正数は整数部へ切り捨てる。 */
     fun currentRemainingFuelLaps(data: AceWindowsRemainingFuelLapsData?): Int? {
         val remaining = data?.remainingLaps ?: return null
-        if (!remaining.isFinite() || remaining <= 0f || remaining >= Int.MAX_VALUE.toFloat()) return null
+        if (
+            !remaining.isFinite() ||
+            remaining <= 0f ||
+            remaining > ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX
+        ) {
+            return null
+        }
         return floor(remaining).toInt()
     }
 
