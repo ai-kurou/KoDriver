@@ -107,7 +107,8 @@ class OtherAndroidAudioUsageDetailViewModelTest {
         runTest {
             every { repository.observeAndroidAudioUsage() } returns usageFlow
             every { observeSoundVolume() } returns MutableStateFlow(65)
-            coEvery { speakText("試聴文", volume = 65) } coAnswers { awaitCancellation() }
+            coEvery { speakText("試聴文", volume = 65, audioUsage = AndroidAudioUsage.ALARM) } coAnswers
+                { awaitCancellation() }
             val viewModel = createViewModel()
             viewModel.uiState.launchIn(backgroundScope)
             try {
@@ -118,7 +119,7 @@ class OtherAndroidAudioUsageDetailViewModelTest {
                 runCurrent()
                 assertEquals(null, viewModel.uiState.value.previewingUsage)
                 verify(exactly = 1) { observeSoundVolume() }
-                coVerify(exactly = 1) { speakText("試聴文", volume = 65) }
+                coVerify(exactly = 1) { speakText("試聴文", volume = 65, audioUsage = AndroidAudioUsage.ALARM) }
                 verify(exactly = 1) { repository.observeAndroidAudioUsage() }
                 confirmVerified(repository, speakText, observeSoundVolume)
             } finally {
@@ -131,7 +132,8 @@ class OtherAndroidAudioUsageDetailViewModelTest {
         runTest {
             every { repository.observeAndroidAudioUsage() } returns usageFlow
             every { observeSoundVolume() } returnsMany listOf(MutableStateFlow(0), MutableStateFlow(35))
-            coEvery { speakText("試聴文", volume = 35) } throws IllegalStateException("再生失敗")
+            coEvery { speakText("試聴文", volume = 35, audioUsage = AndroidAudioUsage.MEDIA) } throws
+                IllegalStateException("再生失敗")
             val viewModel = createViewModel()
             viewModel.uiState.launchIn(backgroundScope)
             try {
@@ -142,8 +144,8 @@ class OtherAndroidAudioUsageDetailViewModelTest {
                 runCurrent()
                 assertEquals(null, viewModel.uiState.value.previewingUsage)
                 verify(exactly = 2) { observeSoundVolume() }
-                coVerify(exactly = 0) { speakText("試聴文", volume = 0) }
-                coVerify(exactly = 1) { speakText("試聴文", volume = 35) }
+                coVerify(exactly = 0) { speakText("試聴文", volume = 0, audioUsage = AndroidAudioUsage.ALARM) }
+                coVerify(exactly = 1) { speakText("試聴文", volume = 35, audioUsage = AndroidAudioUsage.MEDIA) }
                 verify(exactly = 1) { repository.observeAndroidAudioUsage() }
                 confirmVerified(repository, speakText, observeSoundVolume)
             } finally {
@@ -156,7 +158,10 @@ class OtherAndroidAudioUsageDetailViewModelTest {
         runTest {
             every { repository.observeAndroidAudioUsage() } returns usageFlow
             every { observeSoundVolume() } returns MutableStateFlow(80)
-            coEvery { speakText("試聴文", volume = 80) } coAnswers { awaitCancellation() }
+            coEvery { speakText("試聴文", volume = 80, audioUsage = AndroidAudioUsage.ALARM) } coAnswers
+                { awaitCancellation() }
+            coEvery { speakText("試聴文", volume = 80, audioUsage = AndroidAudioUsage.MEDIA) } coAnswers
+                { awaitCancellation() }
             val viewModel = createViewModel()
             viewModel.uiState.launchIn(backgroundScope)
             try {
@@ -168,7 +173,8 @@ class OtherAndroidAudioUsageDetailViewModelTest {
                 viewModel.onPreviewStopped()
                 assertEquals(null, viewModel.uiState.value.previewingUsage)
                 verify(exactly = 2) { observeSoundVolume() }
-                coVerify(exactly = 2) { speakText("試聴文", volume = 80) }
+                coVerify(exactly = 1) { speakText("試聴文", volume = 80, audioUsage = AndroidAudioUsage.ALARM) }
+                coVerify(exactly = 1) { speakText("試聴文", volume = 80, audioUsage = AndroidAudioUsage.MEDIA) }
                 verify(exactly = 1) { repository.observeAndroidAudioUsage() }
                 confirmVerified(repository, speakText, observeSoundVolume)
             } finally {
@@ -183,10 +189,11 @@ class OtherAndroidAudioUsageDetailViewModelTest {
             val oldFinish = CompletableDeferred<Unit>()
             val newFinish = CompletableDeferred<Unit>()
             every { observeSoundVolume() } returns MutableStateFlow(80)
-            coEvery { speakText("古い", volume = 80) } coAnswers {
+            coEvery { speakText("古い", volume = 80, audioUsage = AndroidAudioUsage.ALARM) } coAnswers {
                 withContext(NonCancellable) { oldFinish.await() }
             }
-            coEvery { speakText("新しい", volume = 80) } coAnswers { newFinish.await() }
+            coEvery { speakText("新しい", volume = 80, audioUsage = AndroidAudioUsage.MEDIA) } coAnswers
+                { newFinish.await() }
             val viewModel = createViewModel()
             viewModel.uiState.launchIn(backgroundScope)
             try {
@@ -201,8 +208,8 @@ class OtherAndroidAudioUsageDetailViewModelTest {
                 runCurrent()
                 assertEquals(null, viewModel.uiState.value.previewingUsage)
                 verify(exactly = 2) { observeSoundVolume() }
-                coVerify(exactly = 1) { speakText("古い", volume = 80) }
-                coVerify(exactly = 1) { speakText("新しい", volume = 80) }
+                coVerify(exactly = 1) { speakText("古い", volume = 80, audioUsage = AndroidAudioUsage.ALARM) }
+                coVerify(exactly = 1) { speakText("新しい", volume = 80, audioUsage = AndroidAudioUsage.MEDIA) }
                 verify(exactly = 1) { repository.observeAndroidAudioUsage() }
                 confirmVerified(repository, speakText, observeSoundVolume)
             } finally {

@@ -1,6 +1,6 @@
 <resources>
     <string name="audio_usage_title">音声の用途</string>
-    <string name="audio_usage_description">読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。右の再生ボタンで試聴できますが、用途は試聴にはまだ反映されません。</string>
+    <string name="audio_usage_description">読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。右の再生ボタンで、その用途で試聴できます。</string>
     <string name="audio_usage_preview_sample">これは音声の用途の試聴です。</string>
     <string name="audio_usage_preview_description">%1$sを試聴</string>
     <string name="audio_usage_preview_stop_description">%1$sの試聴を停止</string>
