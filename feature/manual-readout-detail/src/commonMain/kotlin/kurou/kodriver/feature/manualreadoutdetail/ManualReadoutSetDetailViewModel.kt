@@ -84,6 +84,7 @@ internal class ManualReadoutSetDetailViewModel(
                         hotkey != null && hotkey == debugVirtualKeyCode
                 }
             ManualReadoutSetDetailUiState(
+                simulatorId = simulatorId,
                 setNumber = if (index >= 0) index + 1 else null,
                 name = set?.name.orEmpty(),
                 availableItemKeys = availableItemKeys,
@@ -103,7 +104,7 @@ internal class ManualReadoutSetDetailViewModel(
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            ManualReadoutSetDetailUiState(availableItemKeys = availableItemKeys),
+            ManualReadoutSetDetailUiState(simulatorId = simulatorId, availableItemKeys = availableItemKeys),
         )
 
     fun onPreviewStopped() = preview.stop()

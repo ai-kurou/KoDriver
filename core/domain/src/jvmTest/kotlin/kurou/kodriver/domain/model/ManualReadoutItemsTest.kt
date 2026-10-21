@@ -182,4 +182,19 @@ class ManualReadoutItemsTest {
         assertEquals("", manualReadoutItemTextDefault("unknown"))
         assertEquals(emptyMap(), ManualReadoutSet("set-1").itemTexts)
     }
+
+    @Test
+    fun `定義マップは全シミュレーターの順序と既定文言と表示名を保持する`() {
+        Simulator.entries.forEach { simulator ->
+            val definitions = manualReadoutItemDefinitions.getValue(simulator.id)
+            assertEquals(definitions.keys.toList(), manualReadoutItemKeys(simulator.id))
+            definitions.values.forEach { definition ->
+                assertEquals(definition.name, manualReadoutItemName(definition.key))
+                assertEquals(definition.textDefault, manualReadoutItemTextDefault(definition.key))
+                assertEquals(definition, manualReadoutItemDefinition(simulator.id, definition.key))
+            }
+        }
+        assertEquals(null, manualReadoutItemDefinition("unknown", "unknown"))
+        assertEquals(null, manualReadoutItemDefinition(Simulator.LmuWindows.id, "unknown"))
+    }
 }

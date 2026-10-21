@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -8,7 +9,38 @@ import kurou.kodriver.domain.model.manualReadoutItemKeys
 import org.junit.Test
 import kotlin.test.assertEquals
 
+@Suppress("TooManyFunctions")
 class ManualReadoutPreviewTest {
+    @Test
+    fun `各シミュレーターの全項目にプレースホルダー挿入と未知検出定義があり未知キーは空になる`() {
+        Simulator.entries.forEach { simulator ->
+            manualReadoutItemKeys(simulator.id).forEach { key ->
+                val definition = manualReadoutPlaceholderDefinitions.getValue(simulator.id to key)
+                assertEquals(definition.insertText, insertPlaceholder(simulator.id, key))
+                assertEquals(emptyList(), unknownPlaceholders(simulator.id, key, definition.insertText))
+            }
+        }
+        assertEquals("", insertPlaceholder("unknown", "unknown"))
+        assertEquals(emptyList(), unknownPlaceholders("unknown", "unknown", "{unknown}"))
+    }
+
+    @Test
+    fun `同名項目キーの変換はシミュレーター別に分離される`() {
+        val aceKey = AceWindowsReadoutItemKey.MyBestLap.Root.value
+        assertEquals(ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER, insertPlaceholder(Simulator.AceWindows.id, aceKey))
+        assertEquals(emptyList(), unknownPlaceholders(Simulator.Gt7Ps5.id, aceKey, "{laptime}"))
+        assertEquals(
+            "記録{laptime}",
+            manualReadoutPreview(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.Gt7Ps5.id,
+                    selectedItemKeys = listOf(aceKey),
+                    itemTexts = mapOf(aceKey to "記録{laptime}"),
+                ),
+            ),
+        )
+    }
+
     @Test
     fun `ACEタイヤ温度をサンプル温度に置換する`() {
         val key = AceWindowsReadoutItemKey.TyreTemperature.Root.value
