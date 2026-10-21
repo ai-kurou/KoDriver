@@ -7,6 +7,7 @@ digraph G {
   ":app:desktopApp" [label=":app:desktopApp", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:shared" [label=":app:shared", fillcolor="#FFE0B2", color="#FB8C00"]
   ":core:ace-windows-data" [label=":core:ace-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:ace-windows-domain" [label=":core:ace-windows-domain", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:data" [label=":core:data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:designsystem" [label=":core:designsystem", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:device-volume-data" [label=":core:device-volume-data", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -42,8 +43,11 @@ digraph G {
   ":app:desktopApp" -> ":core:windows-startup-data"
   ":app:desktopApp" -> ":server"
   ":app:shared" -> "feature"
+  ":core:ace-windows-data" -> ":core:ace-windows-domain"
   ":core:ace-windows-data" -> ":core:domain"
   ":core:ace-windows-data" -> ":core:windows-shared-memory"
+  ":core:ace-windows-domain" -> ":core:domain"
+  ":core:data" -> ":core:ace-windows-domain"
   ":core:data" -> ":core:domain"
   ":core:data" -> ":core:lmu-windows-domain"
   ":core:device-volume-data" -> ":core:domain"
@@ -57,8 +61,10 @@ digraph G {
   ":core:text-to-speech-data" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:domain"
   ":core:windows-startup-data" -> ":core:domain"
+  ":server" -> ":core:ace-windows-domain"
   ":server" -> ":core:domain"
   ":server" -> ":core:lmu-windows-domain"
+  "feature" -> ":core:ace-windows-domain"
   "feature" -> ":core:designsystem"
   "feature" -> ":core:domain"
   "feature" -> ":core:lmu-windows-domain"
