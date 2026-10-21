@@ -7,15 +7,10 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsInputsData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTimingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleData
-import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
-import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
-import kurou.kodriver.domain.lmuwindows.model.SessionPhase
-import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.CelsiusReading
 
 internal fun fakeGt7Ps5TelemetryData(
@@ -36,18 +31,6 @@ internal fun fakeGt7Ps5TelemetryData(
     gasCapacity = Gt7Ps5FuelUnit(100f),
     carCategory = carCategory,
     tyreTemperature = tyreTemperature,
-)
-
-internal fun fakeRaceFlagsData(
-    gamePhase: SessionPhase = SessionPhase.GARAGE,
-    yellowFlagState: SessionYellowFlagState = SessionYellowFlagState.NONE,
-    playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
-) = LmuWindowsRaceFlagsData(
-    gamePhase = gamePhase,
-    yellowFlagState = yellowFlagState,
-    sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-    playerFlag = playerFlag,
-    playerUnderYellow = false,
 )
 
 internal fun fakeLmuWindowsTelemetryData(speedX: Double = 0.0) =

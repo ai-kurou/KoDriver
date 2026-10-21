@@ -602,11 +602,11 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     private fun isManualReadoutItemWithoutData(item: LmuWindowsManualReadoutItem): Boolean =
         when {
             isManualRemainingLapsItem(item.key) -> {
-                item.remainingLaps == null || item.remainingLaps < 0
+                (item.remainingLaps ?: -1) < 0
             }
 
             item.key == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
-                item.lapTimeMs == null || item.lapTimeMs <= 0
+                (item.lapTimeMs ?: 0L) <= 0
             }
 
             isLmuWindowsManualReadoutTemperatureItem(item.key) -> {
