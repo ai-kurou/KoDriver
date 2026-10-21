@@ -127,14 +127,8 @@ internal class AndroidTextToSpeechRepository(
     ) {
         if (text.isBlank()) return
         val engine = ensureInitialized() ?: return
-        val utteranceId = "kodriver_tts_${utteranceIdSequence.incrementAndGet()}"
-        val completed = CompletableDeferred<Unit>()
-        pendingUtterances[utteranceId] = completed
-        if (!queue) {
-            // QUEUE_FLUSHは現在再生中・キュー中の発話をすべて打ち切るため、それらに対応する
-            // speak()呼び出しがonStop通知を待ち続けないよう、ここで明示的に完了させる。
-            completePendingUtterancesExcept(utteranceId)
-        }
+        // 用途の解決はDataStoreを読むsuspendポイントのため、発話の登録（pendingUtterances）や
+        // 既存発話の完了処理より前に行い、ここでキャンセルされても中途半端な状態を残さない。
         val resolvedAudioUsage =
             audioUsage ?: try {
                 audioUsageProvider()
@@ -144,6 +138,14 @@ internal class AndroidTextToSpeechRepository(
                 ANDROID_AUDIO_USAGE_DEFAULT
             }
         val audioAttributes = audioAttributesFactory(resolvedAudioUsage)
+        val utteranceId = "kodriver_tts_${utteranceIdSequence.incrementAndGet()}"
+        val completed = CompletableDeferred<Unit>()
+        pendingUtterances[utteranceId] = completed
+        if (!queue) {
+            // QUEUE_FLUSHは現在再生中・キュー中の発話をすべて打ち切るため、それらに対応する
+            // speak()呼び出しがonStop通知を待ち続けないよう、ここで明示的に完了させる。
+            completePendingUtterancesExcept(utteranceId)
+        }
         val result =
             synchronized(voiceLock) {
                 applyVoice(engine, voiceId)

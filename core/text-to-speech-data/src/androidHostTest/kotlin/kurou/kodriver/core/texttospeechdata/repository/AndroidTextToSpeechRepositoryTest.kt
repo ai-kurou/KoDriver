@@ -13,6 +13,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
@@ -1384,6 +1385,53 @@ class AndroidTextToSpeechRepositoryTest {
             verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
             verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
             verify(exactly = 2) { textToSpeech.setAudioAttributes(audioAttributes) }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `用途の解決中にキャンセルされても再生中の発話を完了扱いにしない`() =
+        runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.voice } returns null
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.speak("再生中", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1") } returns
+                TextToSpeech.SUCCESS
+            val usageGate = CompletableDeferred<AndroidAudioUsage>()
+            var resolveCount = 0
+            val repository =
+                AndroidTextToSpeechRepository(
+                    factory(TextToSpeech.SUCCESS),
+                    volumeParamsFactory = volumeParamsFactory,
+                    audioUsageProvider = {
+                        resolveCount++
+                        if (resolveCount == 1) AndroidAudioUsage.MEDIA else usageGate.await()
+                    },
+                    audioAttributesFactory = audioAttributesFactory,
+                )
+
+            val playing = launch { repository.speak("再生中", queue = true) }
+            runCurrent()
+            val interrupting = launch { repository.speak("割り込み", queue = false) }
+            runCurrent()
+            interrupting.cancel()
+            interrupting.join()
+            runCurrent()
+
+            assertTrue(interrupting.isCancelled)
+            assertTrue(playing.isActive)
+            listenerSlot.captured.onDone("kodriver_tts_1")
+            playing.join()
+            assertTrue(playing.isCompleted)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.voice }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.speak("再生中", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1") }
+            verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
+            verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
             confirmVerified(textToSpeech)
         }
 }
