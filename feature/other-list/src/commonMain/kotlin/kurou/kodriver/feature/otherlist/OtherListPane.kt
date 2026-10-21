@@ -56,11 +56,18 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.otherlist.generated.resources.Res
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_alarm
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_assistant
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_communication
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_media
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_notification
+import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_ringtone
 import kurou.kodriver.feature.otherlist.generated.resources.console_ip_not_configured
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
 import kurou.kodriver.feature.otherlist.generated.resources.item_android_audio_usage
@@ -109,6 +116,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.theme_dark
 import kurou.kodriver.feature.otherlist.generated.resources.theme_light
 import kurou.kodriver.feature.otherlist.generated.resources.theme_system
 import kurou.kodriver.feature.otherlist.generated.resources.voice_system_default
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.round
 import kotlin.time.Duration.Companion.seconds
@@ -458,6 +466,10 @@ private fun otherVoiceSettingsItemSupportingContent(
             }
         }
 
+        OtherListItemType.AndroidAudioUsage -> {
+            { Text(stringResource(uiState.androidAudioUsage.labelRes)) }
+        }
+
         OtherListItemType.VoicePitch -> {
             {
                 val pitch = (round(uiState.voicePitch * 10) / 10).toString()
@@ -561,6 +573,7 @@ private fun otherListItemSupportingContent(
         OtherListItemType.Volume,
         OtherListItemType.VoiceSpeed,
         OtherListItemType.VoicePitch,
+        OtherListItemType.AndroidAudioUsage,
         OtherListItemType.Voice,
         OtherListItemType.OverlayTextSize,
         OtherListItemType.OverlayTextColor,
@@ -945,3 +958,14 @@ private fun CenteredListItem(
         }
     }
 }
+
+private val AndroidAudioUsage.labelRes: StringResource
+    get() =
+        when (this) {
+            AndroidAudioUsage.MEDIA -> Res.string.audio_usage_media
+            AndroidAudioUsage.COMMUNICATION -> Res.string.audio_usage_communication
+            AndroidAudioUsage.RINGTONE -> Res.string.audio_usage_ringtone
+            AndroidAudioUsage.NOTIFICATION -> Res.string.audio_usage_notification
+            AndroidAudioUsage.ALARM -> Res.string.audio_usage_alarm
+            AndroidAudioUsage.ASSISTANT -> Res.string.audio_usage_assistant
+        }

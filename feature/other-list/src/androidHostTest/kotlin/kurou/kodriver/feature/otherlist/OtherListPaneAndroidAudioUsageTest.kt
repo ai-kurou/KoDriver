@@ -13,6 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [36])
@@ -37,7 +38,8 @@ class OtherListPaneAndroidAudioUsageTest {
             }
         }
 
+        rule.onNodeWithText("メディア").assertIsDisplayed()
         rule.onNodeWithText("音声の用途").assertIsDisplayed().performClick()
-        rule.runOnIdle { org.junit.Assert.assertEquals(OtherListItemType.AndroidAudioUsage, selectedItem) }
+        rule.runOnIdle { assertEquals(OtherListItemType.AndroidAudioUsage, selectedItem) }
     }
 }

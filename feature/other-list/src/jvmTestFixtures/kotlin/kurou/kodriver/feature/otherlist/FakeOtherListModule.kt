@@ -2,12 +2,15 @@ package kurou.kodriver.feature.otherlist
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.model.ANDROID_AUDIO_USAGE_DEFAULT
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
 import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
+import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
@@ -31,6 +34,7 @@ val fakeSpeechSettingsSenderRepository = FakeSpeechSettingsSenderRepository()
 val fakeOtherListModule =
     module {
         single<VoiceSpeedPreferencesRepository> { FakeVoiceSpeedPreferencesRepository() }
+        single<AndroidAudioUsagePreferencesRepository> { FakeAndroidAudioUsagePreferencesRepository() }
         single<VoicePitchPreferencesRepository> { FakeVoicePitchPreferencesRepository() }
         single<ReadoutStartSoundPreferencesRepository> { FakeReadoutStartSoundPreferencesRepository() }
         single<StartupEnabledRepository> { FakeStartupEnabledRepository() }
@@ -114,5 +118,15 @@ class FakeVoicePitchPreferencesRepository : VoicePitchPreferencesRepository {
 
     override suspend fun saveVoicePitch(voicePitch: Float) {
         speed.update { voicePitch }
+    }
+}
+
+class FakeAndroidAudioUsagePreferencesRepository : AndroidAudioUsagePreferencesRepository {
+    private val usage = MutableStateFlow(ANDROID_AUDIO_USAGE_DEFAULT)
+
+    override fun observeAndroidAudioUsage() = usage
+
+    override suspend fun saveAndroidAudioUsage(androidAudioUsage: AndroidAudioUsage) {
+        usage.update { androidAudioUsage }
     }
 }

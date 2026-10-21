@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.otherlist
 
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
+import kurou.kodriver.domain.model.ANDROID_AUDIO_USAGE_DEFAULT
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
@@ -43,6 +45,7 @@ data class OtherListUiState(
     val readoutStartSoundType: ReadoutStartSoundType = READOUT_START_SOUND_TYPE_DEFAULT,
     val voiceId: String = VOICE_ID_UNSPECIFIED,
     val voiceSpeed: Float = VOICE_SPEED_DEFAULT,
+    val androidAudioUsage: AndroidAudioUsage = ANDROID_AUDIO_USAGE_DEFAULT,
     val voicePitch: Float = VOICE_PITCH_DEFAULT,
     val serverIp: String? = null,
     val consoleAddress: String? = null,
