@@ -32,6 +32,7 @@ Androidは`voiceId`を`Voice.name`として検索して`setVoice`で反映しま
 `setVoice`が失敗した場合は`setLanguage`で既定の日本語音声へ戻します。同じIDは再適用せず、初回未指定時は
 初期化済みの言語設定を使います。設定はエンジン全体に残るため、キュー待ちの発話にも新しい声が適用される可能性があります。
 読み上げ速度は`SpeakTextUseCase`が毎回保存済み設定を取得し、`TextToSpeechRepository.speak`の`speed`へ渡します。
+Androidでは音声用途も保存設定または明示指定から解決し、`AudioAttributes`のusageに反映します。
 `speed`は1.0が標準で、両OSのRepositoryで0.5〜2.0へ制限します。音声IDを明示した試聴でも保存済み速度・声の高さを使います。
 Androidは発話前に`setSpeechRate`を音声と同じロック内で適用し、成功した同じ値は再適用しません。
 エンジン再初期化時は適用済み速度を破棄し、失敗した値は次の発話で再試行します。速度もエンジン全体の設定です。

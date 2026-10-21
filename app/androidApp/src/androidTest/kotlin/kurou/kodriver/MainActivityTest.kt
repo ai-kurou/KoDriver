@@ -219,7 +219,7 @@ class MainActivityTest {
         waitUntilDisplayed("読み上げ音声の高さを設定します。")
         navigateBack()
         clickScrollableItem("音声の用途")
-        waitUntilDisplayed("読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。右の再生ボタンで試聴できますが、用途は試聴にはまだ反映されません。")
+        waitUntilDisplayed("読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。右の再生ボタンで、その用途で試聴できます。")
         navigateBack()
         clickScrollableItem("読み上げ開始音")
         clickItem("キャンセル")

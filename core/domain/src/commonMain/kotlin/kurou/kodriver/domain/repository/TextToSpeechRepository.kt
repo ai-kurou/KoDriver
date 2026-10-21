@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.repository
 
+import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
@@ -40,6 +41,7 @@ interface TextToSpeechRepository {
      * @param volume 読み上げ音量（0〜100）。アプリの読み上げ音量設定に合わせる。0なら発話しない。
      * @param speed 読み上げ速度。1.0が標準、0.5〜2.0。範囲外は実装側でcoerceInする。
      * @param pitch 声の高さ。1.0が標準、0.5〜2.0。範囲外は実装側でcoerceInする。
+     * @param audioUsage Androidの音声用途。nullなら保存済み設定を使う。Android以外では無視する。
      */
     suspend fun speak(
         text: String,
@@ -48,5 +50,6 @@ interface TextToSpeechRepository {
         voiceId: String = VOICE_ID_UNSPECIFIED,
         speed: Float = VOICE_SPEED_DEFAULT,
         pitch: Float = VOICE_PITCH_DEFAULT,
+        audioUsage: AndroidAudioUsage? = null,
     )
 }

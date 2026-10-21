@@ -56,7 +56,7 @@ internal class OtherAndroidAudioUsageDetailViewModel(
                     val volume = observeSoundVolume().first()
                     if (volume <= 0) return@launch
                     previewingUsage.update { usage }
-                    speakText(text, volume = volume)
+                    speakText(text, volume = volume, audioUsage = usage)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (_: Exception) {

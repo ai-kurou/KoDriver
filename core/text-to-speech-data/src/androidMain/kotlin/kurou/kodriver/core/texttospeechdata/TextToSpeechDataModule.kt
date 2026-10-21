@@ -2,9 +2,11 @@ package kurou.kodriver.core.texttospeechdata
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import kotlinx.coroutines.flow.first
 import kurou.kodriver.core.texttospeechdata.repository.AndroidSpeechSettingsSenderRepository
 import kurou.kodriver.core.texttospeechdata.repository.AndroidTextToSpeechRepository
 import kurou.kodriver.core.texttospeechdata.repository.AndroidVoiceListRepository
+import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.repository.VoiceListRepository
@@ -24,6 +26,9 @@ val textToSpeechDataModule =
             val context = get<Context>()
             AndroidTextToSpeechRepository(
                 textToSpeechFactory = { listener -> TextToSpeech(context, listener) },
+                audioUsageProvider = {
+                    get<AndroidAudioUsagePreferencesRepository>().observeAndroidAudioUsage().first()
+                },
             )
         } bind TextToSpeechRepository::class
         single<VoiceListRepository> {

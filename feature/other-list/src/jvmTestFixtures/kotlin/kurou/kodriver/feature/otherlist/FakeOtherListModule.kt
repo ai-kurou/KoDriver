@@ -73,6 +73,7 @@ class FakeTextToSpeechRepository : TextToSpeechRepository {
         voiceId: String,
         speed: Float,
         pitch: Float,
+        audioUsage: AndroidAudioUsage?,
     ) = Unit
 }
 
