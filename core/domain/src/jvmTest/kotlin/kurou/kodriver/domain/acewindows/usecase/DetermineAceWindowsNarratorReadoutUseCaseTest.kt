@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.acewindows.usecase
 
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
@@ -200,6 +201,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 0.5f to 0,
                 2.9f to 2,
                 3f to 3,
+                ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX.toFloat() to
+                    ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX,
+                (ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX + 1).toFloat() to
+                    null,
                 0f to null,
                 -0.5f to null,
                 Float.NaN to null,
