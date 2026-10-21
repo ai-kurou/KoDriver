@@ -337,7 +337,11 @@ internal class Gt7Ps5NarratorViewModel(
         val items =
             set.itemKeys.map { key ->
                 val value = telemetry?.let { manualReadoutValue(key, it, state) }
-                Gt7Ps5ManualReadoutItem(key, set.itemTexts[key] ?: manualReadoutItemTextDefault(key), value)
+                Gt7Ps5ManualReadoutItem(
+                    key,
+                    set.itemTexts[key] ?: manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key),
+                    value,
+                )
             }
         val decision = determineGt7Ps5NarratorReadout.determineManualReadout(state, items)
         eventProcessor.processManualReadout(

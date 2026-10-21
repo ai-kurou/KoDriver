@@ -671,7 +671,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         }
 
     private fun manualReadoutItemText(item: LmuWindowsManualReadoutItem): String {
-        val noDataText = "${manualReadoutItemName(item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
+        val noDataText =
+            "${manualReadoutItemName(Simulator.LmuWindows.id, item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
         if (isManualLapBasedItem(item.key)) return manualLapBasedText(item) ?: noDataText
         if (isLmuWindowsManualReadoutTemperatureItem(item.key)) {
             return item.celsius?.let {

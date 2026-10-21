@@ -841,7 +841,7 @@ internal class LmuWindowsNarratorViewModel(
                     manualReadoutCelsius(key, brakeTemperature?.wheels?.values, tyreTemperature?.wheels?.values)
                 LmuWindowsManualReadoutItem(
                     key,
-                    set.itemTexts[key] ?: manualReadoutItemTextDefault(key),
+                    set.itemTexts[key] ?: manualReadoutItemTextDefault(Simulator.LmuWindows.id, key),
                     ratio,
                     celsius,
                     lapTimeMs = bestLapTimeMs.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value },

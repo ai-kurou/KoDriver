@@ -56,6 +56,7 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_add_item
@@ -183,90 +184,56 @@ private const val PREVIEW_ENERGY_PERCENT = 50
 private const val PREVIEW_REMAINING_FUEL_LAPS = 3
 private const val PREVIEW_ACE_REMAINING_FUEL_LAPS = 5
 
+internal val previewFormatters: Map<Pair<String, String>, (String) -> String> =
+    mapOf(
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) to
+            { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) to
+            { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.MyBestLap.Root.value) to
+            { formatLmuWindowsMyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value) to
+            { formatLmuWindowsRemainingVirtualEnergyReadoutText(it, PREVIEW_ENERGY_PERCENT) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) to
+            { formatLmuWindowsBrakeTemperatureReadoutText(it, PREVIEW_BRAKE_TEMPERATURE_CELSIUS) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.TyreTemperature.Root.value) to
+            { formatLmuWindowsTyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.BrakeWear.Root.value) to
+            { formatLmuWindowsBrakeWearReadoutText(it, PREVIEW_BRAKE_WEAR_PERCENT) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.TyreWear.Root.value) to
+            { formatLmuWindowsTyreWearReadoutText(it, PREVIEW_TYRE_WEAR_PERCENT) },
+        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.RemainingFuel.Root.value) to
+            { formatAceWindowsRemainingFuelReadoutText(it, PREVIEW_ENERGY_PERCENT) },
+        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value) to
+            { formatAceWindowsRemainingFuelLapsReadoutText(it, PREVIEW_ACE_REMAINING_FUEL_LAPS) },
+        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.MyBestLap.Root.value) to
+            { formatAceWindowsMyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS.toInt()) },
+        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.TyreTemperature.Root.value) to
+            { formatAceWindowsTyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS) },
+        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value) to
+            { formatGt7Ps5RemainingFuelReadoutText(it, PREVIEW_ENERGY_PERCENT) },
+        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value) to
+            { formatGt7Ps5RemainingFuelLapsReadoutText(it, PREVIEW_REMAINING_FUEL_LAPS) },
+        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.MyBestLap.Root.value) to
+            { formatGt7Ps5MyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS.toInt()) },
+        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value) to
+            { formatGt7Ps5TyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS) },
+    )
+
 internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): String =
     uiState.selectedItemKeys
         .mapNotNull { itemKey ->
-            val text = uiState.itemTexts[itemKey] ?: manualReadoutItemTextDefault(itemKey)
+            val text = uiState.itemTexts[itemKey] ?: manualReadoutItemText(uiState, itemKey)
             text.takeIf { it.isNotBlank() }?.let {
-                when (itemKey) {
-                    LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value,
-                    LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
-                    -> {
-                        formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS)
-                    }
-
-                    LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
-                        formatLmuWindowsMyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS)
-                    }
-
-                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value -> {
-                        formatLmuWindowsRemainingVirtualEnergyReadoutText(it, PREVIEW_ENERGY_PERCENT)
-                    }
-
-                    LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> {
-                        formatLmuWindowsBrakeTemperatureReadoutText(it, PREVIEW_BRAKE_TEMPERATURE_CELSIUS)
-                    }
-
-                    LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> {
-                        formatLmuWindowsTyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS)
-                    }
-
-                    LmuWindowsReadoutItemKey.BrakeWear.Root.value -> {
-                        formatLmuWindowsBrakeWearReadoutText(it, PREVIEW_BRAKE_WEAR_PERCENT)
-                    }
-
-                    LmuWindowsReadoutItemKey.TyreWear.Root.value -> {
-                        formatLmuWindowsTyreWearReadoutText(it, PREVIEW_TYRE_WEAR_PERCENT)
-                    }
-
-                    else -> {
-                        otherManualReadoutPreview(itemKey, it)
-                    }
-                }
+                val formatter = previewFormatters[uiState.simulatorId to itemKey]
+                formatter?.invoke(it) ?: it
             }
         }.joinToString("、")
 
-private fun otherManualReadoutPreview(
+private fun manualReadoutItemText(
+    uiState: ManualReadoutSetDetailUiState,
     itemKey: String,
-    text: String,
-): String =
-    when (itemKey) {
-        AceWindowsReadoutItemKey.RemainingFuel.Root.value -> {
-            formatAceWindowsRemainingFuelReadoutText(text, PREVIEW_ENERGY_PERCENT)
-        }
-
-        AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> {
-            formatAceWindowsRemainingFuelLapsReadoutText(text, PREVIEW_ACE_REMAINING_FUEL_LAPS)
-        }
-
-        Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
-            formatGt7Ps5RemainingFuelReadoutText(text, PREVIEW_ENERGY_PERCENT)
-        }
-
-        Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
-            formatGt7Ps5RemainingFuelLapsReadoutText(text, PREVIEW_REMAINING_FUEL_LAPS)
-        }
-
-        AceWindowsReadoutItemKey.MyBestLap.Root.value -> {
-            formatAceWindowsMyBestLapReadoutText(text, PREVIEW_BEST_LAP_TIME_MS.toInt())
-        }
-
-        Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
-            formatGt7Ps5MyBestLapReadoutText(text, PREVIEW_BEST_LAP_TIME_MS.toInt())
-        }
-
-        AceWindowsReadoutItemKey.TyreTemperature.Root.value -> {
-            formatAceWindowsTyreTemperatureReadoutText(text, PREVIEW_TYRE_TEMPERATURE_CELSIUS)
-        }
-
-        Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
-            formatGt7Ps5TyreTemperatureReadoutText(text, PREVIEW_TYRE_TEMPERATURE_CELSIUS)
-        }
-
-        else -> {
-            text
-        }
-    }
+): String = manualReadoutItemTextDefault(uiState.simulatorId, itemKey)
 
 @Composable
 internal fun ManualReadoutItemsCard(
@@ -326,10 +293,11 @@ internal fun ManualReadoutItemsCard(
                                     }
                                 }
                                 ManualReadoutItemTextField(
-                                    text = uiState.itemTexts[itemKey] ?: manualReadoutItemTextDefault(itemKey),
-                                    defaultText = manualReadoutItemTextDefault(itemKey),
+                                    text = uiState.itemTexts[itemKey] ?: manualReadoutItemText(uiState, itemKey),
+                                    defaultText = manualReadoutItemText(uiState, itemKey),
                                     onTextChanged = { onItemTextChanged(itemKey, it) },
                                     itemKey = itemKey,
+                                    simulatorId = uiState.simulatorId,
                                 )
                             }
                         }
