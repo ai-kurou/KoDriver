@@ -60,6 +60,7 @@ import kotlin.time.Clock
  *
  * LMUVehicleTelemetry 主要フィールドオフセット (車両先頭からの相対値):
  *   mLapNumber           : +20
+ *   mElapsedTime         : +12
  *   mPos (Vec3)          : +160 (x), +168 (y), +176 (z)
  *   mLocalVel (Vec3)     : +184 (x), +192 (y), +200 (z)
  *   mGear                : +352
@@ -113,6 +114,7 @@ internal object LmuWindowsMapper {
     private const val VEHICLE_STRIDE = 1888
 
     private const val OFF_LAP_NUMBER = 20
+    private const val OFF_ELAPSED_TIME = 12
     private const val OFF_POS_X = 160
     private const val OFF_POS_Y = 168
     private const val OFF_POS_Z = 176
@@ -206,6 +208,12 @@ internal object LmuWindowsMapper {
     /** telemetry セグメントの playerVehicleIdx (uint8) を返す。 */
     internal fun readPlayerVehicleIdx(buffer: ByteBuffer): Int =
         buffer.readUint8(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX)
+
+    /** プレイヤー車両の mElapsedTime を返す。不正なインデックスや未接続時は null を返す。 */
+    internal fun readTelemetryElapsedTime(buffer: ByteBuffer): Double? {
+        val vehicleBase = findPlayerVehicleBase(buffer) ?: return null
+        return buffer.getDouble(vehicleBase + OFF_ELAPSED_TIME)
+    }
 
     /** 指定した車両インデックスの telemInfo 先頭オフセットを返す（範囲チェックなし）。 */
     internal fun vehicleTelemetryBase(index: Int): Int = TELEMETRY_BASE + OFF_TELEM_INFO + index * VEHICLE_STRIDE

@@ -14,7 +14,7 @@ internal class LmuWindowsPitStatusRepositoryImpl(
 ) : LmuWindowsPitStatusRepository {
     // プレイヤー車両が Scoring から見つからない間も既定値を emit し続ける（LmuWindowsVehicleClassRepositoryImpl と同様、
     // mapNotNull でフィルタすると他の必須ソースと合わせた combine が一度も発火しなくなるため）。
-    override fun pitStatusStream(): Flow<LmuWindowsPitStatusData> = source.bufferFlow.map { readPitStatus(it) }
+    override fun pitStatusStream(): Flow<LmuWindowsPitStatusData> = source.scoringBufferFlow.map { readPitStatus(it) }
 
     private fun readPitStatus(buffer: ByteBuffer): LmuWindowsPitStatusData {
         val vehicleScoringBase =

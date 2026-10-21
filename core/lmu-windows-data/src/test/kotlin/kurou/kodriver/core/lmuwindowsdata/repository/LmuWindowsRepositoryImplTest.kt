@@ -1,5 +1,6 @@
 package kurou.kodriver.core.lmuwindowsdata.repository
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
@@ -11,6 +12,7 @@ import kotlinx.coroutines.withTimeout
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.windowssharedmemory.datasource.FakeWindowsSharedMemoryReader
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -109,6 +111,37 @@ class LmuWindowsRepositoryImplTest {
             val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
 
             repo.telemetryStream().first()
+        }
+
+    @Test
+    fun `複合 telemetry はScoring不変でもTelemetry領域の更新で再配信する`() =
+        runBlocking {
+            val elapsedTime = AtomicReference(1.0)
+            val fake =
+                FakeWindowsSharedMemoryReader(
+                    initialOpen = true,
+                    bufferSize = 135_000,
+                    configureBuffer = { buffer ->
+                        withPlayerVehicle(buffer)
+                        buffer.putDouble(128_480, elapsedTime.get())
+                    },
+                )
+            val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
+            val emissionCount = AtomicInteger(0)
+            val secondEmission = CompletableDeferred<Unit>()
+            val job =
+                launch {
+                    repo.telemetryStream().collect {
+                        if (emissionCount.incrementAndGet() == 2) secondEmission.complete(Unit)
+                    }
+                }
+
+            withTimeout(1_000) { while (emissionCount.get() == 0) delay(1) }
+            elapsedTime.set(2.0)
+            withTimeout(1_000) { secondEmission.await() }
+            job.cancelAndJoin()
+
+            assertEquals(2, emissionCount.get())
         }
 
     @Test

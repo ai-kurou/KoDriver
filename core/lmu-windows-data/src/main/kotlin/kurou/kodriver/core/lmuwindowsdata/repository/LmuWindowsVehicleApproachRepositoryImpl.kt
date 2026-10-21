@@ -38,7 +38,7 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         longitudinalThresholdMeters: Double,
         lateralMaximumMeters: Double,
     ): Flow<LmuWindowsVehicleApproachData> =
-        source.bufferFlow.mapNotNull { buffer ->
+        source.telemetryBufferFlow.mapNotNull { buffer ->
             val maxCount = maxVehicleCount(buffer)
             val activeVehicles = LmuWindowsMapper.readActiveVehicleCount(buffer).coerceAtMost(maxCount)
             val playerIdx = LmuWindowsMapper.readPlayerVehicleIdx(buffer)

@@ -14,7 +14,7 @@ internal class LmuWindowsBrakeTemperatureRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsBrakeTemperatureRepository {
     override fun brakeTemperatureStream(): Flow<LmuWindowsBrakeTemperatureData> =
-        source.bufferFlow.mapNotNull { readBrakeTemperature(it) }
+        source.telemetryBufferFlow.mapNotNull { readBrakeTemperature(it) }
 
     private fun readBrakeTemperature(buffer: ByteBuffer): LmuWindowsBrakeTemperatureData? {
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null

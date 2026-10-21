@@ -12,7 +12,7 @@ internal class LmuWindowsVehicleDamageRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsVehicleDamageRepository {
     override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> =
-        source.bufferFlow.mapNotNull { readDamage(it) }
+        source.telemetryBufferFlow.mapNotNull { readDamage(it) }
 
     private fun readDamage(buffer: ByteBuffer): LmuWindowsVehicleDamageData? {
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null
