@@ -74,6 +74,81 @@ class LmuWindowsSharedMemorySourceTest {
         }
 
     @Test
+    fun `Telemetry更新フローはmElapsedTime更新で配信しScoring更新では再配信しない`() =
+        runBlocking {
+            val reader = FakeSharedMemoryReader(initialOpen = true, currentEt = 1.0)
+            val source = makeSource(reader)
+            var emitCount = 0
+            val secondEmission = CompletableDeferred<Unit>()
+            val job =
+                launch {
+                    source.telemetryBufferFlow.collect {
+                        emitCount++
+                        if (emitCount == 2) secondEmission.complete(Unit)
+                    }
+                }
+            withTimeout(5_000) { while (emitCount == 0) delay(1) }
+            reader.currentEt = 2.0
+            delay(10)
+            assertEquals(1, emitCount)
+            reader.telemetryElapsedTime = 1.0
+            withTimeout(5_000) { secondEmission.await() }
+            job.cancelAndJoin()
+            assertEquals(2, emitCount)
+        }
+
+    @Test
+    fun `Scoring更新フローはmCurrentET更新で配信しTelemetry更新では再配信しない`() =
+        runBlocking {
+            val reader = FakeSharedMemoryReader(initialOpen = true, currentEt = 1.0)
+            val source = makeSource(reader)
+            var emitCount = 0
+            val secondEmission = CompletableDeferred<Unit>()
+            val job =
+                launch {
+                    source.scoringBufferFlow.collect {
+                        emitCount++
+                        if (emitCount == 2) secondEmission.complete(Unit)
+                    }
+                }
+            withTimeout(5_000) { while (emitCount == 0) delay(1) }
+            reader.telemetryElapsedTime = 1.0
+            delay(10)
+            assertEquals(1, emitCount)
+            reader.currentEt = 2.0
+            withTimeout(5_000) { secondEmission.await() }
+            job.cancelAndJoin()
+            assertEquals(2, emitCount)
+        }
+
+    @Test
+    fun `複合フローは初回と片領域の更新で配信し両領域不変では再配信しない`() =
+        runBlocking {
+            val reader = FakeSharedMemoryReader(initialOpen = true, currentEt = 1.0)
+            val source = makeSource(reader)
+            var emitCount = 0
+            val secondEmission = CompletableDeferred<Unit>()
+            val thirdEmission = CompletableDeferred<Unit>()
+            val job =
+                launch {
+                    source.bufferFlow.collect {
+                        emitCount++
+                        if (emitCount == 2) secondEmission.complete(Unit)
+                        if (emitCount == 3) thirdEmission.complete(Unit)
+                    }
+                }
+            withTimeout(5_000) { while (emitCount == 0) delay(1) }
+            delay(10)
+            assertEquals(1, emitCount)
+            reader.telemetryElapsedTime = 1.0
+            withTimeout(5_000) { secondEmission.await() }
+            reader.currentEt = 2.0
+            withTimeout(5_000) { thirdEmission.await() }
+            job.cancelAndJoin()
+            assertEquals(3, emitCount)
+        }
+
+    @Test
     fun `open 失敗中は bufferFlow が emit しない`() =
         runBlocking {
             val reader = FakeSharedMemoryReader(initialOpen = false, openResult = false)
@@ -199,6 +274,8 @@ private class FakeSharedMemoryReader(
     @Volatile
     var currentEt: Double = 0.0,
 ) : SharedMemoryReader {
+    @Volatile
+    var telemetryElapsedTime: Double = 0.0
     private var opened = initialOpen
     var closeCalled = false
 
@@ -211,6 +288,9 @@ private class FakeSharedMemoryReader(
         if (opened && !returnNullBuffer) {
             ByteBuffer.allocate(200_000).order(ByteOrder.LITTLE_ENDIAN).also { buf ->
                 buf.putDouble(1700, currentEt)
+                buf.put(128_464, 1)
+                buf.put(128_465, 0)
+                buf.putDouble(128_480, telemetryElapsedTime)
             }
         } else {
             null

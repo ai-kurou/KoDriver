@@ -14,7 +14,8 @@ internal class LmuWindowsVehicleClassRepositoryImpl(
     // プレイヤー車両が Scoring から見つからない間も空文字列を emit し続ける（mapNotNull で
     // フィルタすると、Narrator や LmuWindowsDebugStateDetailViewModel の combine が他の必須ソースと
     // 合わせて一度も発火しなくなるため）。
-    override fun vehicleClassStream(): Flow<LmuWindowsVehicleClassData> = source.bufferFlow.map { readVehicleClass(it) }
+    override fun vehicleClassStream(): Flow<LmuWindowsVehicleClassData> =
+        source.scoringBufferFlow.map { readVehicleClass(it) }
 
     private fun readVehicleClass(buffer: ByteBuffer): LmuWindowsVehicleClassData {
         val vehicleScoringBase =

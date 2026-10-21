@@ -14,7 +14,7 @@ import java.nio.ByteBuffer
 internal class LmuWindowsFlagRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsFlagRepository {
-    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = source.bufferFlow.mapNotNull { readFlags(it) }
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = source.scoringBufferFlow.mapNotNull { readFlags(it) }
 
     private fun readFlags(buffer: ByteBuffer): LmuWindowsRaceFlagsData? {
         val vehicleCount = buffer.getInt(SCORING_BASE + OFF_NUM_VEHICLES).coerceIn(0, MAX_VEHICLES)

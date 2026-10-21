@@ -13,7 +13,7 @@ internal class LmuWindowsTyreDetachedRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsTyreDetachedRepository {
     override fun tyreDetachedStream(): Flow<LmuWindowsTyreDetachedData> =
-        source.bufferFlow.mapNotNull { readTyreDetached(it) }
+        source.telemetryBufferFlow.mapNotNull { readTyreDetached(it) }
 
     private fun readTyreDetached(buffer: ByteBuffer): LmuWindowsTyreDetachedData? {
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null

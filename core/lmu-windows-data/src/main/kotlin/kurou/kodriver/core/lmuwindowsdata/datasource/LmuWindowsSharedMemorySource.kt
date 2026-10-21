@@ -3,6 +3,8 @@ package kurou.kodriver.core.lmuwindowsdata.datasource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.flow
+import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryPollingSource
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import kurou.kodriver.core.windowssharedmemory.datasource.WindowsSharedMemoryReader
@@ -31,8 +33,39 @@ internal class LmuWindowsSharedMemorySource(
     private var lastEtChangeTimeMs: Long = 0L
 
     // mCurrentET advances with simulator time; repeated polls of a stopped frame must not refresh telemetry.
+    private val rawBufferFlow = pollingSource.bufferFlow
+
+    /** Telemetry領域の更新で配信する。 */
+    val telemetryBufferFlow: Flow<ByteBuffer> =
+        rawBufferFlow.distinctUntilChangedBy { LmuWindowsMapper.readTelemetryElapsedTime(it) }
+
+    /** Scoring領域の更新で配信する。 */
+    val scoringBufferFlow: Flow<ByteBuffer> =
+        rawBufferFlow.distinctUntilChangedBy { it.getDouble(CURRENT_ET_OFFSET) }
+
+    /** いずれかの領域が更新された時に配信する。 */
     val bufferFlow: Flow<ByteBuffer> =
-        pollingSource.bufferFlow.distinctUntilChangedBy { it.getDouble(CURRENT_ET_OFFSET) }
+        flow {
+            var previousScoringEtBits = 0L
+            var previousTelemetryEtBits: Long? = null
+            var isFirstBuffer = true
+            rawBufferFlow.collect { buffer ->
+                val scoringEt = buffer.getDouble(CURRENT_ET_OFFSET)
+                val telemetryEt = LmuWindowsMapper.readTelemetryElapsedTime(buffer)
+                val scoringEtBits = scoringEt.toBits()
+                val telemetryEtBits = telemetryEt?.toBits()
+                if (
+                    isFirstBuffer ||
+                    scoringEtBits != previousScoringEtBits ||
+                    telemetryEtBits != previousTelemetryEtBits
+                ) {
+                    emit(buffer)
+                    isFirstBuffer = false
+                    previousScoringEtBits = scoringEtBits
+                    previousTelemetryEtBits = telemetryEtBits
+                }
+            }
+        }
 
     suspend fun isConnected(): Boolean =
         pollingSource.withReaderLock { reader ->

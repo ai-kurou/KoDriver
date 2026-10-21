@@ -304,6 +304,23 @@ class LmuWindowsMapperTest {
     }
 
     @Test
+    fun `readTelemetryElapsedTimeは有効なplayerVehicleIdxのmElapsedTimeを返す`() {
+        val buf = emptyBuffer(playerIdx = 1)
+        buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 2)
+        buf.putDouble(vehicleBase(playerIdx = 1) + 12, 12.5)
+
+        assertEquals(12.5, LmuWindowsMapper.readTelemetryElapsedTime(buf))
+    }
+
+    @Test
+    fun `readTelemetryElapsedTimeは無効なplayerVehicleIdxでnullを返す`() {
+        val buf = emptyBuffer(playerIdx = 1)
+        buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 1)
+
+        assertEquals(null, LmuWindowsMapper.readTelemetryElapsedTime(buf))
+    }
+
+    @Test
     fun `findPlayerVehicleBaseはactiveVehiclesが0のときnullを返す`() {
         val buf = emptyBuffer(playerIdx = 0)
         buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 0)

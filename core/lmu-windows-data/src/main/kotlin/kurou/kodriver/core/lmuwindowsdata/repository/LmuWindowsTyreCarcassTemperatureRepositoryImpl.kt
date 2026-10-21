@@ -14,7 +14,7 @@ internal class LmuWindowsTyreCarcassTemperatureRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsTyreCarcassTemperatureRepository {
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> =
-        source.bufferFlow.mapNotNull { readTyreCarcassTemperature(it) }
+        source.telemetryBufferFlow.mapNotNull { readTyreCarcassTemperature(it) }
 
     private fun readTyreCarcassTemperature(buffer: ByteBuffer): LmuWindowsTyreCarcassTemperatureData? {
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null
