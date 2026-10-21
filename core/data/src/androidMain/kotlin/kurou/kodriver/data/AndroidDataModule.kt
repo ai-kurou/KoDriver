@@ -15,6 +15,7 @@ import kurou.kodriver.data.preferences.AndroidHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.AndroidKeepScreenOnEnabledRepository
 import kurou.kodriver.data.preferences.AndroidServerIpPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
+import kurou.kodriver.data.preferences.createAndroidAudioUsagePreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
@@ -38,6 +39,7 @@ import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.data.websocket.createWebSocketHttpClient
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
+import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
@@ -103,6 +105,9 @@ fun androidDataModule(context: Context) =
         }
         single<QueuePreferencesRepository> {
             createQueuePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<AndroidAudioUsagePreferencesRepository> {
+            createAndroidAudioUsagePreferencesRepository(context.filesDir.absolutePath)
         }
         // WebSocket 用 HttpClient は LMU・ACE の全リポジトリで単一インスタンスを共有する。
         single<HttpClient> { createWebSocketHttpClient() }
