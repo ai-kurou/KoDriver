@@ -166,6 +166,12 @@ moduleGraphAssert {
         ":feature:.* -> :core:lmu-windows-domain",
         ":core:.*data -> :core:lmu-windows-domain",
         ":server -> :core:lmu-windows-domain",
+        // ACE固有ドメイン → core:domain（共有型 ReadoutItemKey / SpeechEvent 等を参照するため）
+        ":core:ace-windows-domain -> :core:domain",
+        // ACE固有ドメインを参照できるモジュール
+        ":feature:.* -> :core:ace-windows-domain",
+        ":core:.*data -> :core:ace-windows-domain",
+        ":server -> :core:ace-windows-domain",
     )
     restricted = arrayOf(
         // app エントリーポイント（feature 層・domain 層・他 app への直接参照禁止）
@@ -184,6 +190,7 @@ moduleGraphAssert {
         // core（上位層への参照禁止・逆方向依存禁止・葉モジュールの他モジュール参照禁止・兄弟 data モジュール参照禁止）
         ":core:domain -X> :.*",
         ":core:lmu-windows-domain -X> :(?!core:domain$).*",
+        ":core:ace-windows-domain -X> :(?!core:domain$).*",
         ":core:narrator -X> :.*",
         ":core:designsystem -X> :.*",
         ":core:windows-shared-memory -X> :.*",
@@ -508,6 +515,7 @@ kover {
 dependencies {
     kover(project(":core:domain"))
     kover(project(":core:lmu-windows-domain"))
+    kover(project(":core:ace-windows-domain"))
     kover(project(":core:data"))
     kover(project(":core:lmu-windows-data"))
     kover(project(":core:lmu-windows-rest-api-data"))
@@ -579,6 +587,7 @@ dependencies {
     kover(project(":server"))
     dokka(project(":core:domain"))
     dokka(project(":core:lmu-windows-domain"))
+    dokka(project(":core:ace-windows-domain"))
     dokka(project(":core:data"))
     dokka(project(":core:lmu-windows-data"))
     dokka(project(":core:lmu-windows-rest-api-data"))

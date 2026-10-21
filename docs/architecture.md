@@ -11,6 +11,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:app:androidBenchmark` | Macrobenchmark による Baseline Profile 生成（`app:androidApp` 計装テスト） | [図](graphs/app-androidBenchmark.svg) |
 | `:app:shared` | Compose Multiplatform 共通 UI・ナビゲーション。各 feature モジュールを組み合わせた画面遷移を担当する | [図](graphs/app-shared.svg) |
 | `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](graphs/core-domain.svg) |
+| `:core:ace-windows-domain` | ACE固有のドメインモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存。共通側から参照されるACE定数・デフォルト値等は `:core:domain` に残す） | [図](graphs/core-ace-windows-domain.svg) |
 | `:core:lmu-windows-domain` | LMU固有のドメインモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存。共通側から参照されるLMU定数等は `:core:domain` に残す） | [図](graphs/core-lmu-windows-domain.svg) |
 | `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-lmu-windows-data.svg) |

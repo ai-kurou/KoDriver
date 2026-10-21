@@ -14,6 +14,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
+            implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.lmuWindowsDomain)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material.icons.extended)
