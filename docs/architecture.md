@@ -14,10 +14,10 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:ace-windows-domain` | ACE固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-ace-windows-domain.svg) |
 | `:core:gt7-ps5-domain` | GT7固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-gt7-ps5-domain.svg) |
 | `:core:lmu-windows-domain` | LMU固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-lmu-windows-domain.svg) |
-| `:core:data` | 共通・GT7 の DataStore、HTTP/WebSocketクライアント、リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
+| `:core:data` | 共通 DataStore、HTTP/WebSocketクライアント、共通リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り（JVM）、設定永続化（JVM / Android）、Android WebSocketクライアント | [図](graphs/core-lmu-windows-data.svg) |
 | `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM）向けのモジュール。現時点ではブレーキ摩耗用に `RepairAndRefuel` の DataSource・`wearables.brakes` のポーリング Repository と Mapper のみ実装（過去に実装した天気予報機能は削除済み、詳細は `docs/lmu-windows-rest-api.md` の調査メモを参照） | [図](graphs/core-lmu-windows-rest-api-data.svg) |
-| `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装（JVM / Android） | [図](graphs/core-gt7-ps5-data.svg) |
+| `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・設定永続化・リポジトリ実装（JVM / Android） | [図](graphs/core-gt7-ps5-data.svg) |
 | `:core:ace-windows-data` | Assetto Corsa EVO Windows共有メモリ読み取り・設定永続化・Android WebSocketクライアント（JVM / Android） | [図](graphs/core-ace-windows-data.svg) |
 | `:core:device-volume-data` | 端末（OS）のマスター音量取得・設定のリポジトリ実装 | [図](graphs/core-device-volume-data.svg) |
 | `:core:text-to-speech-data` | OS標準の音声合成（Windows SAPI / Android TextToSpeech）と音声設定の起動のリポジトリ実装 | [図](graphs/core-text-to-speech-data.svg) |

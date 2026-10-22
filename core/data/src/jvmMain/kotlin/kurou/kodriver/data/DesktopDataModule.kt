@@ -83,7 +83,7 @@ val desktopDataModule =
         single<ReadoutHotkeyPreferencesRepository> {
             createReadoutHotkeyPreferencesRepository(kodriverDirectory)
         }
-        includes(desktopDataModuleGt7Ps5())
+        includes(desktopDataModuleCommonSimulatorPreferences())
         // 設定永続化（DataStore。ファイルは ~/.kodriver 配下）
         single<SimulatorPreferencesRepository> {
             createSimulatorPreferencesRepository(directory = kodriverDirectory)
@@ -180,4 +180,15 @@ val desktopDataModule =
             createTelemetryLogRepository(directory = kodriverDirectory)
         }
         single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
+    }
+
+/** GT7 向けの共通 DataStore Repository バインド。 */
+private fun desktopDataModuleCommonSimulatorPreferences() =
+    module {
+        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
+            createDebugStateCardOrderPreferencesRepository(kodriverDirectory, Simulator.Gt7Ps5)
+        }
+        single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
+            createManualReadoutSetPreferencesRepository(kodriverDirectory, Simulator.Gt7Ps5)
+        }
     }

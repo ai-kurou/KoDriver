@@ -5,8 +5,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5PacketSource
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5UdpSource
+import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5MyBestLapPreferencesRepository
+import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5RemainingFuelLapsPreferencesRepository
+import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5RemainingFuelPreferencesRepository
+import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.core.gt7ps5data.repository.Gt7Ps5RepositoryImpl
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5MyBestLapPreferencesRepository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import org.koin.core.qualifier.named
@@ -29,6 +37,20 @@ val gt7Ps5DataModule =
         // 設定永続化（DataStore）
         single<Gt7Ps5UdpPortPreferencesRepository> {
             createGt7Ps5UdpPortPreferencesRepository(get<Context>().filesDir.absolutePath)
+        }
+
+        // GT7 設定永続化（DataStore）
+        single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
+            createGt7Ps5RemainingFuelLapsPreferencesRepository(get<Context>().filesDir.absolutePath)
+        }
+        single<Gt7Ps5RemainingFuelPreferencesRepository> {
+            createGt7Ps5RemainingFuelPreferencesRepository(get<Context>().filesDir.absolutePath)
+        }
+        single<Gt7Ps5TyreTemperaturePreferencesRepository> {
+            createGt7Ps5TyreTemperaturePreferencesRepository(get<Context>().filesDir.absolutePath)
+        }
+        single<Gt7Ps5MyBestLapPreferencesRepository> {
+            createGt7Ps5MyBestLapPreferencesRepository(get<Context>().filesDir.absolutePath)
         }
 
         // データソース・Repository（UDP パケット受信。get() で接続先アドレス・待受ポート設定を解決）
