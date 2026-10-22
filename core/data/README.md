@@ -6,15 +6,15 @@
 
 ## Koin モジュール
 
-Android は `androidDataModule(context)`、Desktop は `desktopDataModule` が共通の Repository を登録し、
-各プラットフォームの `LmuWindowsDataModule`・`AceWindowsDataModule`・`Gt7Ps5DataModule` を
-`includes(...)` で束ねる。シミュレーター固有の設定は各ファイルへ、Android の LMU・ACE WebSocket
-登録も対応するファイルへ置く。WebSocket 用 `HttpClient` は Android の共通モジュールで共有する。
+Android は `androidDataModule(context)`、Desktop は `desktopDataModule` が共通の Repository を登録する。
+GT7 PS5・ACE Windows の設定は対応する DataModule で登録する。LMU Windows の設定と Android WebSocket
+実装は `:core:lmu-windows-data` の `desktopLmuWindowsPreferencesDataModule(directory)`・
+`androidLmuWindowsDataModule(context)` で登録する。WebSocket 用 `HttpClient` は Android の共通モジュールで共有する。
 
 ## サブパッケージの責務
 
-- `preferences`: Jetpack DataStore（Proto DataStore）によるユーザー設定の永続化。シミュレーター（GT7 PS5 / LMU Windows / ACE Windows）ごと・設定項目ごとに `XxxPreferences`（proto定義）・`XxxPreferencesSerializer`・`XxxPreferencesDataStoreFactory`・`XxxPreferencesRepositoryImpl`・`XxxPreferencesRepositoryFactory` の5点セットを増やしていくパターンを取る。新しい設定項目を追加する際は、既存の類似設定（同じシミュレーター向けのもの）をコピーして書くのが最も安全。
-- `websocket`: `:server` が配信する WebSocket エンドポイント（`/ws/<Simulator.id>/<feature>`）に接続し、`Flow` として購読するクライアント側実装。`WebSocketFlowFactory` / `WebSocketHttpClientFactory` が共通の接続処理を担い、`WebSocketXxxRepository` がエンドポイントごとのデシリアライズを担当する。Android の `LmuWindowsBrakeWearRepository` は `WebSocketLmuWindowsBrakeWearRepository` を登録し、`/ws/lmu_windows/brake_wear` から REST API 由来のブレーキ残り厚さを受信する。JSON `null` もそのまま流す。
+- `preferences`: Jetpack DataStore（Proto DataStore）によるユーザー設定の永続化。シミュレーター（GT7 PS5 / ACE Windows）ごと・設定項目ごとに `XxxPreferences`（proto定義）・`XxxPreferencesSerializer`・`XxxPreferencesDataStoreFactory`・`XxxPreferencesRepositoryImpl`・`XxxPreferencesRepositoryFactory` の5点セットを増やしていくパターンを取る。新しい設定項目を追加する際は、既存の類似設定（同じシミュレーター向けのもの）をコピーして書くのが最も安全。
+- `websocket`: `:server` が配信する WebSocket エンドポイント（`/ws/<Simulator.id>/<feature>`）に接続し、`Flow` として購読するクライアント側実装。`WebSocketFlowFactory` / `WebSocketHttpClientFactory` が共通の接続処理を担い、`WebSocketXxxRepository` がエンドポイントごとのデシリアライズを担当する。Android の ACE Windows WebSocket Repository を配置する。LMU Windows の WebSocket 実装は `:core:lmu-windows-data` に配置し、`/ws/lmu_windows/brake_wear` から REST API 由来のブレーキ残り厚さを受信する。JSON `null` もそのまま流す。
 - `telemetrylog`: Room（`TelemetryLogDatabase` / `TelemetryLogDao` / `TelemetryLogEntity`）によるテレメトリログの永続化。DB バージョンは 5。4→5 の移行で `readoutItemKey` の `lmu_windows_` / `ace_windows_` / `gt7_ps5_` 直後に `auto_` を追加し、既存ログを保持する。変更済みのキーは維持する。
 - `device`: 端末固有機能（ローカルネットワークアクセス許可の確認、触覚フィードバック対応可否）へのアクセス。
 - `release`: サーバー・アプリのバージョン情報の取得。`ServerVersionRepository`（`:server` のバージョン確認、Android 版アプリのみ登録。`:server` は Windows デスクトップアプリと同一プロセスで動作するため）は Android では `HttpServerVersionRepository` で `:server` へ HTTP アクセスして取得し、`AppUpdateRepository`（アプリ自体の最新リリース確認）は両プラットフォームで `GitHubAppReleaseRepository` により GitHub Releases API から取得する。
@@ -40,25 +40,15 @@ Android／DesktopのDataModuleはRepositoryを `single` 登録し、設定ペイ
 ![Module Graph](../../docs/graphs/core-data.svg)
 <!-- MODULE-GRAPH-END -->
 
-LMU自己ベストラップの自由文言は、共有 `MyBestLapPreferences` のLMU専用 `@ProtoNumber(3) lmuWindowsReadoutText` に保存する。既定値は「自己ベストラップ更新 {laptime}」。GT7の自由文言は番号2 `readoutText` に保存し、ACE自己ベストラップの自由文言は番号4 `aceWindowsReadoutText`（既定値は同じく「自己ベストラップ更新 {laptime}」）に保存する。既存の番号1 `voiceType` はどのシミュレーターも参照しないが、旧データの互換性のため維持する。LMU・GT7・ACEの自由文言は口調を読み取らず、旧口調設定の移行は行わない。シミュレーターごとにDataStoreファイルが分かれているため文言は混在しない。
+GT7の自由文言は `MyBestLapPreferences` の番号2 `readoutText` に保存し、ACE自己ベストラップの自由文言は番号4 `aceWindowsReadoutText` に保存する。LMU用のproto定義は `:core:lmu-windows-data` に複製してあり、元のフィールド番号と保存形式を維持する。
 
 ACEフラッグ文言は `AceWindowsFlagReadoutTextKey` ごとに既存のフィールドを取得・更新する。
 `AceWindowsFlagReadoutTextPreferences` のフィールド・ProtoNumberは維持し、
 他フラッグの保存値を残して対象文言のみ更新する。
 
-## LMUピットタイミング設定
+LMUピットタイミング設定は `:core:lmu-windows-data` に配置する。
 
-`LmuWindowsPitTimingPreferencesRepository` は予想残り周回数・読み上げ有効状態、
-`LmuWindowsPitTimingReadoutTextPreferencesRepository` は予告・直前の読み上げ文言を扱う。
-Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStoreを共有する。
-フィールド・ProtoNumberは維持する。保存ファイル名の `auto_` 導入時は設定を意図的に初期化し、旧ファイルの移行は行わない。
-
-## LMUタイヤ温度設定
-
-`LmuWindowsTyreTemperaturePreferencesRepository` は有効状態・低温警告対象フェーズ、
-`LmuWindowsTyreTemperatureReadoutTextPreferencesRepository` は過熱・低温警告の文言を扱う。
-Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共有する。
-現行フィールドのProtoNumberは維持する。保存ファイル名の `auto_` 導入時は設定を意図的に初期化し、旧ファイルの移行は行わない。廃止したProtoNumber 1は再利用しない。
+LMUタイヤ温度設定は `:core:lmu-windows-data` に配置する。
 
 オーバーレイ文字色は `OverlayTextColorPreferences` の ARGB Long として `overlay_text_color_preferences.pb` に永続化する。
 詳細ダイアログのOKで保存し、一覧とオーバーレイが保存値のFlowを購読する。

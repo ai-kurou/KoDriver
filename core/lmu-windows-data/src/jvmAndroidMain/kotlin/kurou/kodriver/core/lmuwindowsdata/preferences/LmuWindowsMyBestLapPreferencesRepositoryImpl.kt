@@ -1,0 +1,15 @@
+package kurou.kodriver.core.lmuwindowsdata.preferences
+
+import androidx.datastore.core.DataStore
+import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsMyBestLapPreferencesRepository
+
+internal class LmuWindowsMyBestLapPreferencesRepositoryImpl(
+    private val dataStore: DataStore<MyBestLapPreferences>,
+) : LmuWindowsMyBestLapPreferencesRepository {
+    override fun observeReadoutText(): Flow<String> = dataStore.observeProperty { it.lmuWindowsReadoutText }
+
+    override suspend fun saveReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(lmuWindowsReadoutText = value) }
+    }
+}

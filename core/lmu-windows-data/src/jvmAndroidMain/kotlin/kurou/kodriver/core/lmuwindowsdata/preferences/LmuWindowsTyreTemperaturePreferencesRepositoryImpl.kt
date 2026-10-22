@@ -1,0 +1,46 @@
+package kurou.kodriver.core.lmuwindowsdata.preferences
+
+import androidx.datastore.core.DataStore
+import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.lmuwindows.model.SessionPhase
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.model.ReadoutItemKey
+
+internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
+    private val dataStore: DataStore<LmuWindowsTyreTemperaturePreferences>,
+) : LmuWindowsTyreTemperaturePreferencesRepository {
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
+        dataStore.observeProperty { prefs ->
+            prefs.enabledStates
+                .mapNotNull { (key, enabled) -> ReadoutItemKey.fromValue(key)?.let { it to enabled } }
+                .toMap()
+        }
+
+    override suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
+        dataStore.saveProperty(enabled) { prefs, value ->
+            prefs.copy(
+                enabledStates =
+                    prefs.enabledStates + (key.value to value),
+            )
+        }
+    }
+
+    override fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>> =
+        dataStore.observeProperty { prefs ->
+            prefs.lowWarningPhases
+                .mapNotNull { (raw, enabled) ->
+                    SessionPhase.fromRaw(raw).takeIf { it != SessionPhase.UNKNOWN }?.let { it to enabled }
+                }.toMap()
+        }
+
+    override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
+        val explicitPhases =
+            lmuWindowsTyreTemperatureLowWarningSelectablePhases
+                .associate { phase -> phase.rawValue to (phase in phases) }
+        dataStore.saveProperty(explicitPhases) { prefs, value -> prefs.copy(lowWarningPhases = value) }
+    }
+}
