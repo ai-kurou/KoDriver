@@ -90,7 +90,7 @@ F9 の読み上げホットキーは `:core:windows-hotkey-data` → `:core:doma
 デスクトップの composition root が `windowsHotkeyDataModule` を登録し、Android の `:core:data` は
 空 Flow の Repository を提供する。モジュール依存図は Gradle から CI で再生成する。
 
-手動読み上げの詳細は `app:shared` → `:feature:manual-readout-detail` → `:core:domain` / `:core:designsystem` に依存する。一覧は詳細スロットを公開し、feature 間依存は持たない。両プラットフォームの共通 composition root が詳細の Koin モジュールを登録する。
+手動読み上げの詳細は `app:shared` → `:feature:manual-readout-detail` → `:core:domain` / `:core:lmu-windows-domain` / `:core:ace-windows-domain` / `:core:gt7-ps5-domain` / `:core:designsystem` に依存する。一覧は詳細スロットを公開し、feature 間依存は持たない。両プラットフォームの共通 composition root が詳細の Koin モジュールを登録する。
 
 ## モジュール一覧の更新漏れ防止
 

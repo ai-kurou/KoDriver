@@ -13,7 +13,7 @@ GT7 PS5 の燃料残量アナウンス詳細設定を提供する feature モジ
 
 ## Related Modules
 
-- `:core:domain`: 閾値のデフォルト値、Repository interface、UseCase
+- `:core:gt7-ps5-domain`: 閾値のデフォルト値、Repository interface、UseCase
 - `:core:data`: DataStore を使った Repository implementation
 - `:feature:gt7-ps5-narrator`: 閾値を使った読み上げ判定
 - `:app:shared`: 読み上げ一覧から detail pane へ遷移
