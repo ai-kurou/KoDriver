@@ -4,7 +4,7 @@ digraph G {
   ":app:androidApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":app:desktopApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:device-volume-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
-  ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":app:androidApp" -> ":core:device-volume-data"
   ":app:desktopApp" -> ":core:device-volume-data"
   ":core:device-volume-data" -> ":core:domain"
