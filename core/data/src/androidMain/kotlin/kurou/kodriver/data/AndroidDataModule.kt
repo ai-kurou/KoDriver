@@ -119,7 +119,7 @@ fun androidDataModule(context: Context) =
         }
         // WebSocket 用 HttpClient は LMU・ACE の全リポジトリで単一インスタンスを共有する。
         single<HttpClient> { createWebSocketHttpClient() }
-        includes(androidDataModuleGt7Ps5(context))
+        includes(androidDataModuleCommonSimulatorPreferences(context))
         includes(androidDataModuleCommonPreferences(context))
         includes(androidDataModuleAppSettings(context))
         includes(androidDataModuleMisc(context))
@@ -234,5 +234,16 @@ private fun androidDataModuleCommonPreferences(context: Context) =
         // テレメトリログ（Room データベース）
         single<TelemetryLogRepository> {
             createTelemetryLogRepository(context = context)
+        }
+    }
+
+/** GT7 向けの共通 DataStore Repository バインド。 */
+private fun androidDataModuleCommonSimulatorPreferences(context: Context) =
+    module {
+        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
+            createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath, Simulator.Gt7Ps5)
+        }
+        single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
+            createManualReadoutSetPreferencesRepository(context.filesDir.absolutePath, Simulator.Gt7Ps5)
         }
     }
