@@ -9,12 +9,12 @@
 Android は `androidDataModule(context)`、Desktop は `desktopDataModule` が共通の Repository を登録する。
 GT7 PS5 の DataStore 設定は `:core:gt7-ps5-data` の `gt7Ps5DataModule` で登録する。共通のカード順序・手動読み上げセットは本モジュールの DataModule が登録する。ACE Windows の設定と Android WebSocket 実装は `:core:ace-windows-data` の `desktopAceWindowsPreferencesDataModule(directory)`・`androidAceWindowsDataModule(context)` で登録する。LMU Windows の設定と Android WebSocket
 実装は `:core:lmu-windows-data` の `desktopLmuWindowsPreferencesDataModule(directory)`・
-`androidLmuWindowsDataModule(context)` で登録する。WebSocket 用 `HttpClient` は Android の共通モジュールで共有する。
+`androidLmuWindowsDataModule(context)` で登録する。WebSocket 用 `HttpClient` は Android の共通モジュールで生成し、LMU・ACE の各モジュールの Android WebSocket リポジトリが Koin の `get()` で解決して共有する。
 
 ## サブパッケージの責務
 
 - `preferences`: Jetpack DataStore（Proto DataStore）によるユーザー設定の永続化。共通設定項目ごとに `XxxPreferences`（proto定義）・`XxxPreferencesSerializer`・`XxxPreferencesDataStoreFactory`・`XxxPreferencesRepositoryImpl`・`XxxPreferencesRepositoryFactory` の5点セットを増やしていくパターンを取る。新しい設定項目を追加する際は、既存の類似設定（同じシミュレーター向けのもの）をコピーして書くのが最も安全。
-- `websocket`: `:server` が配信する WebSocket エンドポイント（`/ws/<Simulator.id>/<feature>`）に接続し、`Flow` として購読するクライアント側実装。`WebSocketFlowFactory` / `WebSocketHttpClientFactory` が共通の接続処理を担い、`WebSocketXxxRepository` がエンドポイントごとのデシリアライズを担当する。LMU Windows の WebSocket 実装は `:core:lmu-windows-data` に配置し、`/ws/lmu_windows/brake_wear` から REST API 由来のブレーキ残り厚さを受信する。JSON `null` もそのまま流す。
+- `websocket`: `:server` が配信する WebSocket エンドポイント（`/ws/<Simulator.id>/<feature>`）に接続し、`Flow` として購読するクライアント側実装。`WebSocketHttpClientFactory` が LMU・ACE の Android WebSocket が共有する `HttpClient` を生成し、各シミュレーターの `WebSocketXxxRepository` がエンドポイントごとのデシリアライズを担当する。LMU Windows の WebSocket 実装は `:core:lmu-windows-data` に配置し、`/ws/lmu_windows/brake_wear` から REST API 由来のブレーキ残り厚さを受信する。JSON `null` もそのまま流す。
 - `telemetrylog`: Room（`TelemetryLogDatabase` / `TelemetryLogDao` / `TelemetryLogEntity`）によるテレメトリログの永続化。DB バージョンは 5。4→5 の移行で `readoutItemKey` の `lmu_windows_` / `ace_windows_` / `gt7_ps5_` 直後に `auto_` を追加し、既存ログを保持する。変更済みのキーは維持する。
 - `device`: 端末固有機能（ローカルネットワークアクセス許可の確認、触覚フィードバック対応可否）へのアクセス。
 - `release`: サーバー・アプリのバージョン情報の取得。`ServerVersionRepository`（`:server` のバージョン確認、Android 版アプリのみ登録。`:server` は Windows デスクトップアプリと同一プロセスで動作するため）は Android では `HttpServerVersionRepository` で `:server` へ HTTP アクセスして取得し、`AppUpdateRepository`（アプリ自体の最新リリース確認）は両プラットフォームで `GitHubAppReleaseRepository` により GitHub Releases API から取得する。
