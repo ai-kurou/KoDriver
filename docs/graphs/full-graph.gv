@@ -29,6 +29,7 @@ digraph G {
   "feature:lmu-windows*" [label="feature:lmu-windows*\n13 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":app:androidApp" -> ":app:androidBenchmark"
   ":app:androidApp" -> ":app:shared"
+  ":app:androidApp" -> ":core:ace-windows-data"
   ":app:androidApp" -> ":core:data"
   ":app:androidApp" -> ":core:device-volume-data"
   ":app:androidApp" -> ":core:gt7-ps5-data"

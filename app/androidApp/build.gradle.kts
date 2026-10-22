@@ -17,6 +17,7 @@ kotlin {
 dependencies {
     implementation(projects.app.shared)
     implementation(projects.core.data)
+    implementation(projects.core.aceWindowsData)
     implementation(projects.core.gt7Ps5Data)
     implementation(projects.core.lmuWindowsData)
     implementation(projects.core.deviceVolumeData)

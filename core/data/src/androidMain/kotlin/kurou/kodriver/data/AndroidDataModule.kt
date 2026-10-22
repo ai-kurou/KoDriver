@@ -119,7 +119,6 @@ fun androidDataModule(context: Context) =
         }
         // WebSocket 用 HttpClient は LMU・ACE の全リポジトリで単一インスタンスを共有する。
         single<HttpClient> { createWebSocketHttpClient() }
-        includes(androidDataModuleAceWindows(context))
         includes(androidDataModuleGt7Ps5(context))
         includes(androidDataModuleCommonPreferences(context))
         includes(androidDataModuleAppSettings(context))

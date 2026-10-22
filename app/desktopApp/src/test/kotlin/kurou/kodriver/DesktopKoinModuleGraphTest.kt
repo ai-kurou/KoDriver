@@ -2,6 +2,7 @@ package kurou.kodriver
 
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kurou.kodriver.core.acewindowsdata.desktopAceWindowsPreferencesDataModule
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.desktopLmuWindowsPreferencesDataModule
@@ -89,7 +90,14 @@ class DesktopKoinModuleGraphTest {
 
     @Test
     fun `ホットキーと永続化RepositoryをDesktop構成から解決できる`() {
-        val application = koinApplication { modules(desktopDataModule, windowsHotkeyDataModule) }
+        val application =
+            koinApplication {
+                modules(
+                    desktopDataModule,
+                    desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
+                    windowsHotkeyDataModule,
+                )
+            }
         try {
             assertNotNull(application.koin.get<ReadoutHotkeyPreferencesRepository>())
             assertNotNull(application.koin.get<HotkeyRepository>())
@@ -131,6 +139,7 @@ class DesktopKoinModuleGraphTest {
                 modules(
                     listOf(
                         desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
                         desktopLmuWindowsPreferencesDataModule(
                             "${System.getProperty("user.home")}/.kodriver",
                         ),
@@ -160,6 +169,7 @@ class DesktopKoinModuleGraphTest {
                 modules(
                     listOf(
                         desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
                         desktopLmuWindowsPreferencesDataModule(
                             "${System.getProperty("user.home")}/.kodriver",
                         ),
@@ -186,6 +196,7 @@ class DesktopKoinModuleGraphTest {
                 modules(
                     listOf(
                         desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
                         desktopLmuWindowsPreferencesDataModule(
                             "${System.getProperty("user.home")}/.kodriver",
                         ),
@@ -212,6 +223,7 @@ class DesktopKoinModuleGraphTest {
                 modules(
                     listOf(
                         desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
                         desktopLmuWindowsPreferencesDataModule(
                             "${System.getProperty("user.home")}/.kodriver",
                         ),
@@ -238,6 +250,7 @@ class DesktopKoinModuleGraphTest {
                 modules(
                     listOf(
                         desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
                         desktopLmuWindowsPreferencesDataModule(
                             "${System.getProperty("user.home")}/.kodriver",
                         ),
@@ -257,6 +270,7 @@ class DesktopKoinModuleGraphTest {
         checkKoinModules(
             listOf(
                 desktopDataModule,
+                desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
                 desktopLmuWindowsPreferencesDataModule(
                     "${System.getProperty("user.home")}/.kodriver",
                 ),
