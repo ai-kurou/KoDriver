@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.core.lmuWindowsDomain)
     implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.clientCore)
     implementation(libs.ktor.clientOkhttp)

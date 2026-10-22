@@ -6,6 +6,10 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class AutoReadoutListItemVisualStyleTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @Test
     fun `ONは順位と帯とタイルを有効色で表示する`() {
         for (colors in listOf(lightColorScheme(), darkColorScheme())) {

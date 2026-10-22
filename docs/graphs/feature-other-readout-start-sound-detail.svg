@@ -36,7 +36,7 @@
 <!-- :core:domain -->
 <g id="node3" class="node">
 <title>:core:domain</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M271,-36C271,-36 186,-36 186,-36 180,-36 174,-30 174,-24 174,-24 174,-12 174,-12 174,-6 180,0 186,0 186,0 271,0 271,0 277,0 283,-6 283,-12 283,-12 283,-24 283,-24 283,-30 277,-36 271,-36"/>
+<path fill="#e1bee7" stroke="#8e24aa" d="M271,-36C271,-36 186,-36 186,-36 180,-36 174,-30 174,-24 174,-24 174,-12 174,-12 174,-6 180,0 186,0 186,0 271,0 271,0 277,0 283,-6 283,-12 283,-12 283,-24 283,-24 283,-30 277,-36 271,-36"/>
 <text text-anchor="middle" x="228.5" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
 </g>
 <!-- :feature:other&#45;readout&#45;start&#45;sound&#45;detail&#45;&gt;:core:designsystem -->

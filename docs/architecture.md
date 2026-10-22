@@ -11,6 +11,9 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:app:androidBenchmark` | Macrobenchmark による Baseline Profile 生成（`app:androidApp` 計装テスト） | [図](graphs/app-androidBenchmark.svg) |
 | `:app:shared` | Compose Multiplatform 共通 UI・ナビゲーション。各 feature モジュールを組み合わせた画面遷移を担当する | [図](graphs/app-shared.svg) |
 | `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](graphs/core-domain.svg) |
+| `:core:ace-windows-domain` | ACE固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-ace-windows-domain.svg) |
+| `:core:gt7-ps5-domain` | GT7固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-gt7-ps5-domain.svg) |
+| `:core:lmu-windows-domain` | LMU固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-lmu-windows-domain.svg) |
 | `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-lmu-windows-data.svg) |
 | `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM）向けのモジュール。現時点ではブレーキ摩耗用に `RepairAndRefuel` の DataSource・`wearables.brakes` のポーリング Repository と Mapper のみ実装（過去に実装した天気予報機能は削除済み、詳細は `docs/lmu-windows-rest-api.md` の調査メモを参照） | [図](graphs/core-lmu-windows-rest-api-data.svg) |
@@ -87,7 +90,7 @@ F9 の読み上げホットキーは `:core:windows-hotkey-data` → `:core:doma
 デスクトップの composition root が `windowsHotkeyDataModule` を登録し、Android の `:core:data` は
 空 Flow の Repository を提供する。モジュール依存図は Gradle から CI で再生成する。
 
-手動読み上げの詳細は `app:shared` → `:feature:manual-readout-detail` → `:core:domain` / `:core:designsystem` に依存する。一覧は詳細スロットを公開し、feature 間依存は持たない。両プラットフォームの共通 composition root が詳細の Koin モジュールを登録する。
+手動読み上げの詳細は `app:shared` → `:feature:manual-readout-detail` → `:core:domain` / `:core:lmu-windows-domain` / `:core:ace-windows-domain` / `:core:gt7-ps5-domain` / `:core:designsystem` に依存する。一覧は詳細スロットを公開し、feature 間依存は持たない。両プラットフォームの共通 composition root が詳細の Koin モジュールを登録する。
 
 ## モジュール一覧の更新漏れ防止
 

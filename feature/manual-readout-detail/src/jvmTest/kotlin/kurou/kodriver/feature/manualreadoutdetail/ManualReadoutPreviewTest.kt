@@ -1,11 +1,11 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.manualReadoutItemKeys
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -238,7 +238,7 @@ class ManualReadoutPreviewTest {
 
     @Test
     fun `タイヤ摩耗の既定文言と編集文言はサンプル値に置換する`() {
-        val key = manualReadoutItemKeys(Simulator.LmuWindows.id)[1]
+        val key = lmuWindowsManualReadoutItemKeys()[1]
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
         assertEquals("タイヤ摩耗残り50%", manualReadoutPreview(state))
         assertEquals("残り50%", manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}%"))))
@@ -247,7 +247,7 @@ class ManualReadoutPreviewTest {
     @Test
     fun `未選択と空欄はプレビューに含めない`() {
         assertEquals("", manualReadoutPreview(ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id)))
-        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+        val key = lmuWindowsManualReadoutItemKeys().first()
         assertEquals(
             "",
             manualReadoutPreview(
@@ -263,7 +263,7 @@ class ManualReadoutPreviewTest {
 
     @Test
     fun `既定文言と編集文言の残量はサンプル値に置換し未知トークンは保持する`() {
-        val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+        val key = lmuWindowsManualReadoutItemKeys().first()
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
         assertEquals("バーチャルエネルギー残量は50パーセント", manualReadoutPreview(state))
         assertEquals(

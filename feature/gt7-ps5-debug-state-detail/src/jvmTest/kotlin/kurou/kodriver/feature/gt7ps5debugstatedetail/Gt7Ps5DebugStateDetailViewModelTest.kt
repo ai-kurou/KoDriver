@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
@@ -36,6 +37,11 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5DebugStateDetailViewModelTest {
+    @Before
+    fun `ReadoutItemKeyを登録する`() {
+        registerGt7Ps5ReadoutItemKeys()
+    }
+
     private val requestDebugReadout: RequestDebugReadoutUseCase = mockk(relaxUnitFun = true)
 
     private val observeTelemetry: ObserveGt7Ps5UseCase = mockk()
@@ -78,8 +84,7 @@ class Gt7Ps5DebugStateDetailViewModelTest {
             viewModel.requestReadout()
             viewModel.selectReadoutItem("unknown")
             viewModel.selectReadoutItem(Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled.value)
-            val otherSimulator = Simulator.entries.first { it != Simulator.Gt7Ps5 }
-            viewModel.selectReadoutItem(ReadoutItemKey.topLevelEntriesOf(otherSimulator).first().value)
+            viewModel.selectReadoutItem("foreign_simulator_key")
             assertEquals(keys.first(), viewModel.uiState.first().selectedReadoutItemKey)
             viewModel.selectReadoutItem(keys.last().value)
             viewModel.updateDebugReadoutText("入力 {laps}")

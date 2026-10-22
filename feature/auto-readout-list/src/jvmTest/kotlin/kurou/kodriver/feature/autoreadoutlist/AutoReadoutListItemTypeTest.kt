@@ -6,6 +6,10 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AutoReadoutListItemTypeTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @Test
     fun `LmuWindowsのアイテムはlmu_windowsシミュレーターにbelongsToがtrueを返す`() {
         assertTrue(LmuWindowsAutoReadoutListItemType.Flag.belongsTo(Simulator.LmuWindows))

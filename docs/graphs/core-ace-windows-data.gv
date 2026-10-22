@@ -3,9 +3,12 @@ digraph G {
   node [shape=box, style="rounded,filled"]
   ":app:desktopApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:ace-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
-  ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:ace-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:windows-shared-memory" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":app:desktopApp" -> ":core:ace-windows-data"
   ":core:ace-windows-data" -> ":core:domain"
+  ":core:ace-windows-data" -> ":core:ace-windows-domain"
   ":core:ace-windows-data" -> ":core:windows-shared-memory"
+  ":core:ace-windows-domain" -> ":core:domain"
 }

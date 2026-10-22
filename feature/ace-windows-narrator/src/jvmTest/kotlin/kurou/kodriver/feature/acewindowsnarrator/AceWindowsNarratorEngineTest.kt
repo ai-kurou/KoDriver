@@ -31,16 +31,23 @@ import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
-import kurou.kodriver.domain.engine.LmuWindowsCarLeft
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsNarratorEngineTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val soundPlayer: SoundPlayer = mockk()
     private val wavNarratorEngine: NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 
@@ -57,12 +64,15 @@ class AceWindowsNarratorEngineTest {
 
     @Test
     fun `speakはNarratorEngineのspeakへ委譲する`() {
-        every { wavNarratorEngine.speak(LmuWindowsCarLeft(), queue = true) } just Runs
+        every { wavNarratorEngine.speak(DebugReadoutText(ReadoutItemKey.entries.first(), "テスト"), queue = true) } just
+            Runs
         val engine = AceWindowsNarratorEngine(wavNarratorEngine)
 
-        engine.speak(LmuWindowsCarLeft(), queue = true)
+        engine.speak(DebugReadoutText(ReadoutItemKey.entries.first(), "テスト"), queue = true)
 
-        verify(exactly = 1) { wavNarratorEngine.speak(LmuWindowsCarLeft(), queue = true) }
+        verify(
+            exactly = 1,
+        ) { wavNarratorEngine.speak(DebugReadoutText(ReadoutItemKey.entries.first(), "テスト"), queue = true) }
         confirmVerified(wavNarratorEngine)
     }
 

@@ -105,7 +105,7 @@ subprojects {
 }
 
 moduleGraphAssert {
-    maxHeight = 3
+    maxHeight = 4
     configurations = setOf(
         // JVM・Android プロジェクトの標準依存関係
         "api",
@@ -160,6 +160,13 @@ moduleGraphAssert {
         // core:narrator自体はcore:domainに依存させず、SpeechEvent等はfeature側が型パラメータとして渡す）
         ":feature:.*narrator -> :core:narrator",
         ":server -> :core:domain",
+        // シミュレーター固有ドメイン → core:domain（共有型 ReadoutItemKey / SpeechEvent 等を参照するため）
+        ":core:.+-domain -> :core:domain",
+        // シミュレーター固有ドメインを参照できるモジュール（他シミュレーターのドメインへの依存は restricted で禁止）
+        ":feature:.* -> :core:.+-domain",
+        ":core:.*data -> :core:.+-domain",
+        // server は WebSocket 配信対象の LMU / ACE のみ（GT7 は参照しない）
+        ":server -> :core:(lmu|ace)-windows-domain",
     )
     restricted = arrayOf(
         // app エントリーポイント（feature 層・domain 層・他 app への直接参照禁止）
@@ -177,6 +184,15 @@ moduleGraphAssert {
         ":feature:.* -X> :core:.*data",
         // core（上位層への参照禁止・逆方向依存禁止・葉モジュールの他モジュール参照禁止・兄弟 data モジュール参照禁止）
         ":core:domain -X> :.*",
+        ":core:.+-domain -X> :(?!core:domain$).*",
+        // シミュレーター固有の data / feature は、他シミュレーターのドメインに依存しない
+        // （feature:main や feature:other-* のように複数シミュレーターを扱うモジュールは対象外）
+        ":core:lmu-windows-.*data -X> :core:(ace-windows|gt7-ps5)-domain",
+        ":core:ace-windows-.*data -X> :core:(lmu-windows|gt7-ps5)-domain",
+        ":core:gt7-ps5-.*data -X> :core:(lmu-windows|ace-windows)-domain",
+        ":feature:lmu-windows-.* -X> :core:(ace-windows|gt7-ps5)-domain",
+        ":feature:ace-windows-.* -X> :core:(lmu-windows|gt7-ps5)-domain",
+        ":feature:gt7-ps5-.* -X> :core:(lmu-windows|ace-windows)-domain",
         ":core:narrator -X> :.*",
         ":core:designsystem -X> :.*",
         ":core:windows-shared-memory -X> :.*",
@@ -283,6 +299,7 @@ tasks.register("generateModuleGraphImages") {
             "app" to "#FFE0B2",
             "feature" to "#C8E6C9",
             "core" to "#BBDEFB",
+            "domain" to "#E1BEE7",
             "server" to "#F8BBD0",
             "other" to "#EEEEEE",
         )
@@ -290,6 +307,7 @@ tasks.register("generateModuleGraphImages") {
             "app" to "#FB8C00",
             "feature" to "#43A047",
             "core" to "#1E88E5",
+            "domain" to "#8E24AA",
             "server" to "#D81B60",
             "other" to "#9E9E9E",
         )
@@ -297,6 +315,7 @@ tasks.register("generateModuleGraphImages") {
         fun moduleCategory(module: String): String = when {
             module.startsWith(":app:") -> "app"
             module.startsWith(":feature:") -> "feature"
+            module.startsWith(":core:") && module.endsWith("domain") -> "domain"
             module.startsWith(":core:") -> "core"
             module.startsWith(":server") -> "server"
             else -> "other"
@@ -306,11 +325,21 @@ tasks.register("generateModuleGraphImages") {
 
         fun moduleStrokeColor(module: String): String = moduleStrokeColors.getValue(moduleCategory(module))
 
+        // 全体図ではシミュレーター別の feature を1ノードにまとめ、それ以外の feature も1ノードにまとめる
         val featureGroup = "feature"
-        val featureModuleCount = allModules.count { it.startsWith(":feature:") }
+        val simulatorFeatureGroups = listOf(
+            ":feature:lmu-windows" to "feature:lmu-windows*",
+            ":feature:ace-windows" to "feature:ace-windows*",
+            ":feature:gt7-ps5" to "feature:gt7-ps5*",
+        )
 
-        fun overviewNode(module: String): String =
-            if (module.startsWith(":feature:")) featureGroup else module
+        fun overviewNode(module: String): String = when {
+            !module.startsWith(":feature:") -> module
+            else -> simulatorFeatureGroups.firstOrNull { (prefix, _) -> module.startsWith(prefix) }?.second
+                ?: featureGroup
+        }
+
+        val featureGroupNodes = allModules.filter { it.startsWith(":feature:") }.groupingBy(::overviewNode).eachCount()
 
         val overviewEdges = parsedEdges
             .map { (from, to, _) -> overviewNode(from) to overviewNode(to) }
@@ -318,7 +347,7 @@ tasks.register("generateModuleGraphImages") {
             .toSet()
             .sortedWith(compareBy<Pair<String, String>> { it.first }.thenBy { it.second })
 
-        val overviewNodes = (overviewEdges.flatMap { (from, to) -> listOf(from, to) } + featureGroup)
+        val overviewNodes = (overviewEdges.flatMap { (from, to) -> listOf(from, to) } + featureGroupNodes.keys)
             .toSet()
             .sorted()
 
@@ -330,14 +359,11 @@ tasks.register("generateModuleGraphImages") {
                 appendLine("  graph [ranksep=1.0, nodesep=0.3]")
                 appendLine("  node [shape=box, style=\"rounded,filled\"]")
                 overviewNodes.forEach { node ->
-                    val category = if (node == featureGroup) ":feature:x" else node
+                    val featureCount = featureGroupNodes[node]
+                    val category = if (featureCount != null) ":feature:x" else node
                     val fillColor = moduleFillColor(category)
                     val strokeColor = moduleStrokeColor(category)
-                    val label = if (node == featureGroup) {
-                        "feature\\n${moduleCountLabel(featureModuleCount)}"
-                    } else {
-                        node
-                    }
+                    val label = if (featureCount != null) "$node\\n${moduleCountLabel(featureCount)}" else node
                     appendLine(
                         "  \"$node\" [label=\"$label\", fillcolor=\"$fillColor\", color=\"$strokeColor\"]",
                     )
@@ -500,6 +526,9 @@ kover {
 
 dependencies {
     kover(project(":core:domain"))
+    kover(project(":core:lmu-windows-domain"))
+    kover(project(":core:ace-windows-domain"))
+    kover(project(":core:gt7-ps5-domain"))
     kover(project(":core:data"))
     kover(project(":core:lmu-windows-data"))
     kover(project(":core:lmu-windows-rest-api-data"))
@@ -570,6 +599,9 @@ dependencies {
     kover(project(":app:desktopApp"))
     kover(project(":server"))
     dokka(project(":core:domain"))
+    dokka(project(":core:lmu-windows-domain"))
+    dokka(project(":core:ace-windows-domain"))
+    dokka(project(":core:gt7-ps5-domain"))
     dokka(project(":core:data"))
     dokka(project(":core:lmu-windows-data"))
     dokka(project(":core:lmu-windows-rest-api-data"))

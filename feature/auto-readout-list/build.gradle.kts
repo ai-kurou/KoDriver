@@ -13,6 +13,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.lmuWindowsDomain)
+            implementation(projects.core.aceWindowsDomain)
+            implementation(projects.core.gt7Ps5Domain)
             implementation(projects.core.designsystem)
             implementation(libs.compose.material3.adaptive.layout)
             implementation(libs.compose.material3.adaptive.navigation)

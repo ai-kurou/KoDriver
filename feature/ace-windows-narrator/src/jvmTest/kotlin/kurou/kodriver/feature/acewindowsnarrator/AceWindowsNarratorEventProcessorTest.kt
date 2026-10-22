@@ -49,8 +49,8 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.FuelPercent
-import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -277,7 +277,7 @@ class AceWindowsNarratorEventProcessorTest {
         runTest {
             val json = slot<String>()
             val currentKey = AceWindowsReadoutItemKey.RemainingFuel.Root
-            val otherKey = LmuWindowsReadoutItemKey.Flag.Root
+            val otherKey = OtherSimulatorReadoutItemKey
             every { ttsEngine.currentReadoutItemKey } returns currentKey
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -318,7 +318,7 @@ class AceWindowsNarratorEventProcessorTest {
     @Test
     fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() =
         runTest {
-            val currentKey = LmuWindowsReadoutItemKey.Flag.Root
+            val currentKey = OtherSimulatorReadoutItemKey
             val key = AceWindowsReadoutItemKey.RemainingFuel.Root
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "残り20%"), queue = true) } just Runs
@@ -363,7 +363,7 @@ class AceWindowsNarratorEventProcessorTest {
     @Test
     fun `優先度の低い項目を再生中なら停止して読み上げる`() =
         runTest {
-            val currentKey = LmuWindowsReadoutItemKey.Flag.Root
+            val currentKey = OtherSimulatorReadoutItemKey
             val key = AceWindowsReadoutItemKey.RemainingFuel.Root
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
@@ -2188,4 +2188,10 @@ class AceWindowsNarratorEventProcessorTest {
         )
 
     private fun remainingFuelLaps(remainingLaps: Float) = AceWindowsRemainingFuelLapsData(remainingLaps = remainingLaps)
+}
+
+/** 他シミュレーターの読み上げキーを表す、このテスト専用のキー。 */
+private data object OtherSimulatorReadoutItemKey : ReadoutItemKey.TopLevel {
+    override val value = "other_simulator_flag"
+    override val supportsQueue = false
 }

@@ -49,13 +49,14 @@ import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import kurou.kodriver.domain.engine.DebugReadoutText
-import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
-import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -63,6 +64,11 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AceWindowsReadoutTextSpeakerTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val observeText: ObserveAceWindowsCheckeredFlagReadoutTextUseCase = mockk()
     private val observeWhite: ObserveAceWindowsWhiteFlagReadoutTextUseCase = mockk()
     private val observeGreen: ObserveAceWindowsGreenFlagReadoutTextUseCase = mockk()
@@ -263,8 +269,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             val events =
                 listOf(
-                    LmuWindowsBlueFlag(),
-                    Gt7Ps5MyBestLap(83_456),
+                    ForeignReadoutTextEvent(),
+                    ForeignReadoutTextEvent(),
                 )
             events.forEach { event ->
                 assertFalse(isAceWindowsCustomSpeakEvent(event))
@@ -282,8 +288,8 @@ class AceWindowsReadoutTextSpeakerTest {
             val text = "他シミュレーターの本文"
             val events =
                 listOf(
-                    LmuWindowsBlueFlag(resolvedText = text),
-                    Gt7Ps5MyBestLap(83_456, resolvedText = text),
+                    ForeignReadoutTextEvent(resolvedText = text),
+                    ForeignReadoutTextEvent(resolvedText = text),
                 )
             events.forEach { event ->
                 assertFalse(isAceWindowsCustomSpeakEvent(event))
@@ -1108,4 +1114,14 @@ class AceWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 1) { speakText(event.resolvedText, volume = 42) }
             confirmVerified(checkAvailable, speakText)
         }
+}
+
+/** 他シミュレーターのイベントを表すテスト用ダブル。他モジュールのイベント型には依存できないため、共通の [ReadoutTextEvent] で代用する。 */
+private data class ForeignReadoutTextEvent(
+    override val resolvedText: String? = null,
+) : ReadoutTextEvent {
+    override val readoutItemKey: ReadoutItemKey = ReadoutItemKey.entries.first()
+    override val narratedText: String = "他シミュレーターのイベント"
+
+    override fun withResolvedText(text: String): ForeignReadoutTextEvent = copy(resolvedText = text)
 }

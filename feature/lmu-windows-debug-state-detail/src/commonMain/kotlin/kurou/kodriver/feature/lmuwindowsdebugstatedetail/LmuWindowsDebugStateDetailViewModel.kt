@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.model.DebugReadoutRequest
+import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
@@ -31,7 +32,7 @@ internal class LmuWindowsDebugStateDetailViewModel(
 ) : ViewModel() {
     private val _selectedReadoutItemKey =
         MutableStateFlow<ReadoutItemKey>(
-            ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).first(),
+            LMU_WINDOWS_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().first(),
         )
     private val _debugReadoutText = MutableStateFlow("")
     private val _hotkeyCheckState = MutableStateFlow(HotkeyCheckState.Idle)
@@ -117,7 +118,9 @@ internal class LmuWindowsDebugStateDetailViewModel(
     }
 
     fun selectReadoutItem(value: String) {
-        val key = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).find { it.value == value } ?: return
+        val key =
+            LMU_WINDOWS_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().find { it.value == value }
+                ?: return
         _selectedReadoutItemKey.update { key }
     }
 

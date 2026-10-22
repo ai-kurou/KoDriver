@@ -16,20 +16,27 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.core.narrator.WavResources
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
-import kurou.kodriver.domain.engine.LmuWindowsCarLeft
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5NarratorEngineTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerGt7Ps5ReadoutItemKeys()
+    }
+
     private val soundPlayer: SoundPlayer = mockk()
     private val wavNarratorEngine: NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 
@@ -46,12 +53,15 @@ class Gt7Ps5NarratorEngineTest {
 
     @Test
     fun `speakはNarratorEngineのspeakへ委譲する`() {
-        every { wavNarratorEngine.speak(LmuWindowsCarLeft(), queue = true) } just Runs
+        every { wavNarratorEngine.speak(DebugReadoutText(ReadoutItemKey.entries.first(), "テスト"), queue = true) } just
+            Runs
         val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
-        engine.speak(LmuWindowsCarLeft(), queue = true)
+        engine.speak(DebugReadoutText(ReadoutItemKey.entries.first(), "テスト"), queue = true)
 
-        verify(exactly = 1) { wavNarratorEngine.speak(LmuWindowsCarLeft(), queue = true) }
+        verify(
+            exactly = 1,
+        ) { wavNarratorEngine.speak(DebugReadoutText(ReadoutItemKey.entries.first(), "テスト"), queue = true) }
         confirmVerified(wavNarratorEngine)
     }
 

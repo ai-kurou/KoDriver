@@ -38,6 +38,10 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AutoReadoutListPaneTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @get:Rule
     val rule = createComposeRule()
 

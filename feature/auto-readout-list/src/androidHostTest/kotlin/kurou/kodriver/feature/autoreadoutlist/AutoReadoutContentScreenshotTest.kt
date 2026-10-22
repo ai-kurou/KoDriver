@@ -19,6 +19,9 @@ import kurou.kodriver.buildlogic.screenshottest.rememberNonFlatVerticalHingePost
 import kurou.kodriver.buildlogic.screenshottest.rememberTabletopPosture
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -30,6 +33,12 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [36], qualifiers = "w840dp-h640dp")
 class AutoReadoutContentScreenshotTest {
+    init {
+        registerLmuWindowsReadoutItemKeys()
+        registerGt7Ps5ReadoutItemKeys()
+        registerAceWindowsReadoutItemKeys()
+    }
+
     @Test
     fun `折りたたみ端末の縦ヒンジを避けて2ペイン表示`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {

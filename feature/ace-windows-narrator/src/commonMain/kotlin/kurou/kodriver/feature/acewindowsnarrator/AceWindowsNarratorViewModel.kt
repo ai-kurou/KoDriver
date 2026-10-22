@@ -21,6 +21,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemTextDefault
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
@@ -43,7 +44,6 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
@@ -320,7 +320,7 @@ internal class AceWindowsNarratorViewModel(
                     }
                 AceWindowsManualReadoutItem(
                     key,
-                    set.itemTexts[key] ?: manualReadoutItemTextDefault(Simulator.AceWindows.id, key),
+                    set.itemTexts[key] ?: aceWindowsManualReadoutItemTextDefault(key),
                     value,
                 )
             }

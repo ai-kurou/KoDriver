@@ -21,8 +21,8 @@ import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_temperature_title
@@ -123,7 +123,10 @@ fun LmuWindowsDebugStateDetailPaneContent(
             ) {
                 item(key = DEBUG_READOUT_REQUEST_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
                     DebugReadoutRequestCard(
-                        readoutItemKeyValues = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).map { it.value },
+                        readoutItemKeyValues =
+                            LMU_WINDOWS_READOUT_ITEM_KEYS
+                                .filterIsInstance<ReadoutItemKey.TopLevel>()
+                                .map { it.value },
                         selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
                         text = uiState.debugReadoutText,
                         onReadoutItemSelected = onReadoutItemSelected,

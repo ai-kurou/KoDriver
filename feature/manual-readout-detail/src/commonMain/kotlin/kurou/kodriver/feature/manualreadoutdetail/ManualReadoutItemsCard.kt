@@ -57,7 +57,6 @@ import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_add_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_brake_temperature

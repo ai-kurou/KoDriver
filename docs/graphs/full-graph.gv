@@ -7,12 +7,15 @@ digraph G {
   ":app:desktopApp" [label=":app:desktopApp", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:shared" [label=":app:shared", fillcolor="#FFE0B2", color="#FB8C00"]
   ":core:ace-windows-data" [label=":core:ace-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:ace-windows-domain" [label=":core:ace-windows-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:data" [label=":core:data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:designsystem" [label=":core:designsystem", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:device-volume-data" [label=":core:device-volume-data", fillcolor="#BBDEFB", color="#1E88E5"]
-  ":core:domain" [label=":core:domain", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:domain" [label=":core:domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:gt7-ps5-data" [label=":core:gt7-ps5-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:gt7-ps5-domain" [label=":core:gt7-ps5-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:lmu-windows-data" [label=":core:lmu-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:lmu-windows-domain" [label=":core:lmu-windows-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:lmu-windows-rest-api-data" [label=":core:lmu-windows-rest-api-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:narrator" [label=":core:narrator", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:text-to-speech-data" [label=":core:text-to-speech-data", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -20,7 +23,10 @@ digraph G {
   ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-startup-data" [label=":core:windows-startup-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":server" [label=":server", fillcolor="#F8BBD0", color="#D81B60"]
-  "feature" [label="feature\n53 modules", fillcolor="#C8E6C9", color="#43A047"]
+  "feature" [label="feature\n24 modules", fillcolor="#C8E6C9", color="#43A047"]
+  "feature:ace-windows*" [label="feature:ace-windows*\n9 modules", fillcolor="#C8E6C9", color="#43A047"]
+  "feature:gt7-ps5*" [label="feature:gt7-ps5*\n7 modules", fillcolor="#C8E6C9", color="#43A047"]
+  "feature:lmu-windows*" [label="feature:lmu-windows*\n13 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":app:androidApp" -> ":app:androidBenchmark"
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:data"
@@ -41,19 +47,48 @@ digraph G {
   ":app:desktopApp" -> ":core:windows-startup-data"
   ":app:desktopApp" -> ":server"
   ":app:shared" -> "feature"
+  ":app:shared" -> "feature:ace-windows*"
+  ":app:shared" -> "feature:gt7-ps5*"
+  ":app:shared" -> "feature:lmu-windows*"
+  ":core:ace-windows-data" -> ":core:ace-windows-domain"
   ":core:ace-windows-data" -> ":core:domain"
   ":core:ace-windows-data" -> ":core:windows-shared-memory"
+  ":core:ace-windows-domain" -> ":core:domain"
+  ":core:data" -> ":core:ace-windows-domain"
   ":core:data" -> ":core:domain"
+  ":core:data" -> ":core:gt7-ps5-domain"
+  ":core:data" -> ":core:lmu-windows-domain"
   ":core:device-volume-data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
+  ":core:gt7-ps5-data" -> ":core:gt7-ps5-domain"
+  ":core:gt7-ps5-domain" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
+  ":core:lmu-windows-data" -> ":core:lmu-windows-domain"
   ":core:lmu-windows-data" -> ":core:windows-shared-memory"
+  ":core:lmu-windows-domain" -> ":core:domain"
   ":core:lmu-windows-rest-api-data" -> ":core:domain"
+  ":core:lmu-windows-rest-api-data" -> ":core:lmu-windows-domain"
   ":core:text-to-speech-data" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:domain"
   ":core:windows-startup-data" -> ":core:domain"
+  ":server" -> ":core:ace-windows-domain"
   ":server" -> ":core:domain"
+  ":server" -> ":core:lmu-windows-domain"
+  "feature" -> ":core:ace-windows-domain"
   "feature" -> ":core:designsystem"
   "feature" -> ":core:domain"
-  "feature" -> ":core:narrator"
+  "feature" -> ":core:gt7-ps5-domain"
+  "feature" -> ":core:lmu-windows-domain"
+  "feature:ace-windows*" -> ":core:ace-windows-domain"
+  "feature:ace-windows*" -> ":core:designsystem"
+  "feature:ace-windows*" -> ":core:domain"
+  "feature:ace-windows*" -> ":core:narrator"
+  "feature:gt7-ps5*" -> ":core:designsystem"
+  "feature:gt7-ps5*" -> ":core:domain"
+  "feature:gt7-ps5*" -> ":core:gt7-ps5-domain"
+  "feature:gt7-ps5*" -> ":core:narrator"
+  "feature:lmu-windows*" -> ":core:designsystem"
+  "feature:lmu-windows*" -> ":core:domain"
+  "feature:lmu-windows*" -> ":core:lmu-windows-domain"
+  "feature:lmu-windows*" -> ":core:narrator"
 }

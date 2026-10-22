@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.DebugReadoutRequest
+import kurou.kodriver.domain.model.GT7_PS5_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
@@ -21,7 +22,7 @@ internal class Gt7Ps5DebugStateDetailViewModel(
 ) : ViewModel() {
     private val _selectedReadoutItemKey =
         MutableStateFlow<ReadoutItemKey>(
-            ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5).first(),
+            GT7_PS5_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().first(),
         )
     private val _debugReadoutText = MutableStateFlow("")
 
@@ -63,7 +64,8 @@ internal class Gt7Ps5DebugStateDetailViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Gt7Ps5DebugStateDetailUiState())
 
     fun selectReadoutItem(value: String) {
-        val key = ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5).find { it.value == value } ?: return
+        val key =
+            GT7_PS5_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().find { it.value == value } ?: return
         _selectedReadoutItemKey.update { key }
     }
 

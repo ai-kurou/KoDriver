@@ -29,6 +29,10 @@ import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import org.junit.Test
 
 class AutoReadoutListPaneScreenshotTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     private val repository: AutoReadoutPreferencesRepository = mockk()
 
     @Test

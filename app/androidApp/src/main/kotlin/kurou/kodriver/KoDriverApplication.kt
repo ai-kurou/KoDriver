@@ -10,6 +10,7 @@ import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.androidDataModule
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.presentation.featureModules
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
@@ -24,6 +25,7 @@ private const val SENTRY_DSN =
 class KoDriverApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        registerReadoutItemKeys()
         SentryAndroid.init(this) { options ->
             options.dsn = SENTRY_DSN
             options.isEnabled = !BuildConfig.DEBUG
