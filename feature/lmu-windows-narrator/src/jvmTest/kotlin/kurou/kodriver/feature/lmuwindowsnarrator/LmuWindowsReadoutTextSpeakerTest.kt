@@ -10,9 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.DebugReadoutText
-import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearCurrentValue
@@ -31,6 +29,7 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
@@ -280,8 +279,8 @@ class LmuWindowsReadoutTextSpeakerTest {
         val key = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).first()
         assertTrue(isLmuWindowsCustomSpeakEvent(DebugReadoutText(key, "入力文言")))
         assertTrue(isLmuWindowsCustomSpeakEvent(LmuWindowsBlueFlag()))
-        assertFalse(isLmuWindowsCustomSpeakEvent(AceWindowsBlueFlag()))
-        assertFalse(isLmuWindowsCustomSpeakEvent(Gt7Ps5MyBestLap(83_456)))
+        assertFalse(isLmuWindowsCustomSpeakEvent(ForeignReadoutTextEvent()))
+        assertFalse(isLmuWindowsCustomSpeakEvent(ForeignReadoutTextEvent()))
     }
 
     @Test
@@ -290,10 +289,10 @@ class LmuWindowsReadoutTextSpeakerTest {
             val text = "他シミュレーターの本文"
             val events =
                 listOf(
-                    AceWindowsBlueFlag(),
-                    Gt7Ps5MyBestLap(83_456),
-                    AceWindowsBlueFlag(resolvedText = text),
-                    Gt7Ps5MyBestLap(83_456, resolvedText = text),
+                    ForeignReadoutTextEvent(),
+                    ForeignReadoutTextEvent(),
+                    ForeignReadoutTextEvent(resolvedText = text),
+                    ForeignReadoutTextEvent(resolvedText = text),
                 )
             events.forEach { event ->
                 assertNull(speaker.readoutText(event))
@@ -669,7 +668,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `対象外のイベントは何も読み上げずカスタム文言を参照しない`() =
         runTest {
-            speaker(Gt7Ps5MyBestLap(lapTimeMs = 83_456), VOLUME)
+            speaker(ForeignReadoutTextEvent(), VOLUME)
 
             confirmAllMocksVerified()
         }
@@ -1043,7 +1042,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `対象外イベントの文言はnullで読み上げない`() =
         runTest {
-            val events = listOf(Gt7Ps5MyBestLap(lapTimeMs = 83_456))
+            val events = listOf(ForeignReadoutTextEvent())
             events.forEach { event ->
                 assertNull(speaker.readoutText(event))
                 speaker(event, VOLUME)
@@ -1414,4 +1413,14 @@ class LmuWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 1) { speakText(event.resolvedText, volume = 42) }
             confirmVerified(checkTextToSpeechAvailable, speakText)
         }
+}
+
+/** 他シミュレーターのイベントを表すテスト用ダブル。他モジュールのイベント型には依存できないため、共通の [ReadoutTextEvent] で代用する。 */
+private data class ForeignReadoutTextEvent(
+    override val resolvedText: String? = null,
+) : ReadoutTextEvent {
+    override val readoutItemKey: ReadoutItemKey = ReadoutItemKey.entries.first()
+    override val narratedText: String = "他シミュレーターのイベント"
+
+    override fun withResolvedText(text: String): ForeignReadoutTextEvent = copy(resolvedText = text)
 }

@@ -13,12 +13,14 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemKeys
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemKeys
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.manualReadoutItemKeys
 import org.junit.Test
 
 class ManualReadoutSetDetailPaneScreenshotTest {
@@ -47,7 +49,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
         }
 
     @Test
-    fun `GT7の残り燃料と周回数の文言`() = screenshot(manualReadoutItemKeys(Simulator.Gt7Ps5.id), selected = true)
+    fun `GT7の残り燃料と周回数の文言`() = screenshot(gt7Ps5ManualReadoutItemKeys(), selected = true)
 
     @Test
     fun `項目追加ダイアログ`() =
@@ -55,7 +57,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                        ManualReadoutItemPickerDialog(manualReadoutItemKeys(Simulator.LmuWindows.id), {}, {})
+                        ManualReadoutItemPickerDialog(lmuWindowsManualReadoutItemKeys(), {}, {})
                     }
                 }
             }
@@ -63,16 +65,16 @@ class ManualReadoutSetDetailPaneScreenshotTest {
         }
 
     @Test
-    fun `項目あり`() = screenshot(manualReadoutItemKeys(Simulator.LmuWindows.id))
+    fun `項目あり`() = screenshot(lmuWindowsManualReadoutItemKeys())
 
     @Test
     fun `項目なし`() = screenshot(emptyList())
 
     @Test
-    fun `戻るボタンなし`() = screenshot(manualReadoutItemKeys(Simulator.LmuWindows.id), canNavigateBack = false)
+    fun `戻るボタンなし`() = screenshot(lmuWindowsManualReadoutItemKeys(), canNavigateBack = false)
 
     @Test
-    fun `1ペインで戻るボタンを表示`() = screenshot(manualReadoutItemKeys(Simulator.LmuWindows.id), size = DpSize(360.dp, 640.dp))
+    fun `1ペインで戻るボタンを表示`() = screenshot(lmuWindowsManualReadoutItemKeys(), size = DpSize(360.dp, 640.dp))
 
     @Test
     fun `削除ダイアログ`() =
@@ -110,17 +112,17 @@ class ManualReadoutSetDetailPaneScreenshotTest {
         )
 
     @Test
-    fun `選択項目の既定文言欄`() = screenshot(manualReadoutItemKeys(Simulator.LmuWindows.id), selected = true)
+    fun `選択項目の既定文言欄`() = screenshot(lmuWindowsManualReadoutItemKeys(), selected = true)
 
     @Test
     fun `編集文言と未知プレースホルダー警告`() {
-        val keys = manualReadoutItemKeys(Simulator.LmuWindows.id)
+        val keys = lmuWindowsManualReadoutItemKeys()
         screenshot(keys, selected = true, itemTexts = mapOf(keys.first() to "残量{unknown}%"))
     }
 
     @Test
     fun `空欄の文言`() {
-        val keys = manualReadoutItemKeys(Simulator.LmuWindows.id)
+        val keys = lmuWindowsManualReadoutItemKeys()
         screenshot(keys, selected = true, itemTexts = keys.associateWith { "" })
     }
 
@@ -148,7 +150,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
 
 class ManualReadoutSetDetailPaneAceScreenshotTest {
     @Test
-    fun `ACEの残り燃料の文言`() = screenshot(manualReadoutItemKeys(Simulator.AceWindows.id), selected = true)
+    fun `ACEの残り燃料の文言`() = screenshot(aceWindowsManualReadoutItemKeys(), selected = true)
 
     @Test
     fun `ACEのタイヤ温度の文言欄と連結プレビュー`() =
@@ -167,7 +169,7 @@ class ManualReadoutSetDetailPaneAceScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                        ManualReadoutItemPickerDialog(manualReadoutItemKeys(Simulator.AceWindows.id), {}, {})
+                        ManualReadoutItemPickerDialog(aceWindowsManualReadoutItemKeys(), {}, {})
                     }
                 }
             }
@@ -215,7 +217,7 @@ private fun screenshot(
 
 private fun simulatorIdForKeys(keys: List<String>): String =
     when {
-        keys.any { it in manualReadoutItemKeys(Simulator.Gt7Ps5.id) } -> Simulator.Gt7Ps5.id
-        keys.any { it in manualReadoutItemKeys(Simulator.AceWindows.id) } -> Simulator.AceWindows.id
+        keys.any { it in gt7Ps5ManualReadoutItemKeys() } -> Simulator.Gt7Ps5.id
+        keys.any { it in aceWindowsManualReadoutItemKeys() } -> Simulator.AceWindows.id
         else -> Simulator.LmuWindows.id
     }

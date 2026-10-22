@@ -1,13 +1,12 @@
 package kurou.kodriver.domain.acewindows.model
 
 import kotlinx.serialization.Serializable
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 
 /**
  * Assetto Corsa EVO の周辺車両との位置関係。
  *
  * ACE の Graphics 共有メモリには他車のワールド座標のみが含まれ、自車の向きに相当する
- * フィールドが存在しないため、LMU（[LmuWindowsVehicleApproachData]）のような左右の
+ * フィールドが存在しないため、LMU（`LmuWindowsVehicleApproachData`）のような左右の
  * 並走判定はできない。ここでは自車とのワールド座標上の直線距離のみを提供する。
  */
 @Serializable

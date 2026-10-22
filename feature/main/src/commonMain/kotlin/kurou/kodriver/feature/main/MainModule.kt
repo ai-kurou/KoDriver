@@ -50,7 +50,14 @@ val mainModule =
         factory { ObserveLmuWindowsUseCase(get()) }
         factory { ObserveGt7Ps5UseCase(get()) }
         factory { ObserveAceWindowsStatusUseCase(get()) }
-        factory { ObserveTelemetryReceivingUseCase(get(), get(), get(), get()) }
+        factory {
+            val observeLmuWindows: ObserveLmuWindowsUseCase = get()
+            val observeGt7Ps5: ObserveGt7Ps5UseCase = get()
+            val observeAceWindowsStatus: ObserveAceWindowsStatusUseCase = get()
+            ObserveTelemetryReceivingUseCase(get()) { simulator ->
+                selectTelemetryStream(simulator, observeLmuWindows, observeGt7Ps5, observeAceWindowsStatus)
+            }
+        }
         factory { ObserveEffectiveKeepScreenOnUseCase(get(), get()) }
         factory { AppScreenSettingsUseCases(get(), get(), get(), get(), get()) }
     }

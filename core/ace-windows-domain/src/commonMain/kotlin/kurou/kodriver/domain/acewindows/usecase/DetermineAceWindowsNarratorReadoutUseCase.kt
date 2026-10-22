@@ -12,6 +12,8 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemKeys
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemName
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
@@ -36,8 +38,6 @@ import kurou.kodriver.domain.engine.AceWindowsTyreTemperatureCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
-import kurou.kodriver.domain.engine.LmuWindowsCarLeft
-import kurou.kodriver.domain.engine.LmuWindowsCarRight
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
@@ -45,9 +45,6 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.manualReadoutItemKeys
-import kurou.kodriver.domain.model.manualReadoutItemName
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -90,8 +87,8 @@ data class AceWindowsNarratorReadoutDecision(
  * ACE の燃料残量・フラッグ状態・タイヤカーカス温度・周辺車両接近から、今回読み上げるべき音声イベントを決定する UseCase。
  *
  * 注意: ACE の共有メモリには自車の向きに相当するフィールドが存在せず、周辺車両との直線距離
- * （[AceWindowsVehicleApproachData.nearbyVehicles]）のみが取得できるため、LMU（[LmuWindowsCarLeft]/
- * [LmuWindowsCarRight] 等）のような左右を区別した接近アナウンスはできない。単一の閾値
+ * （[AceWindowsVehicleApproachData.nearbyVehicles]）のみが取得できるため、LMU（`LmuWindowsCarLeft`/
+ * `LmuWindowsCarRight` 等）のような左右を区別した接近アナウンスはできない。単一の閾値
  * （[AceWindowsNarratorReadoutSettings.vehicleApproachThresholdMeters]）を下回る車両が1台でもいれば、
  * 左右を区別しない [AceWindowsVehicleApproach] を読み上げる。
  *
@@ -112,7 +109,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         state: AceWindowsNarratorState,
         items: List<AceWindowsManualReadoutItem> = emptyList(),
     ): AceWindowsNarratorReadoutDecision {
-        val supportedKeys = manualReadoutItemKeys(Simulator.AceWindows.id)
+        val supportedKeys = aceWindowsManualReadoutItemKeys()
         val supportedItems = items.filter { it.key in supportedKeys }.take(MANUAL_READOUT_SET_ITEM_MAX)
         val text =
             if (supportedItems.isEmpty()) {
@@ -198,10 +195,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
 
             item.value == null -> {
                 event.withResolvedText(
-                    "${manualReadoutItemName(
-                        Simulator.AceWindows.id,
-                        item.key,
-                    )}は$ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT",
+                    "${aceWindowsManualReadoutItemName(item.key)}は$ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT",
                 )
             }
 

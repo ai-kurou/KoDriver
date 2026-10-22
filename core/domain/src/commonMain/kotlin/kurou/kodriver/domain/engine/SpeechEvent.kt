@@ -8,8 +8,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
  * 各イベントは、OS標準TTSによる読み上げの種類と、読み上げ可否を判定する
  * [ReadoutItemKey] を結び付ける。キューイング可否はイベント単位ではなく
  * [readoutItemKey] のトップレベル項目で判定する。
+ * シミュレーター別ドメインモジュールが実装を提供するため sealed にしない。
+ * シミュレーターごとのマーカー（例: `LmuWindowsSpeechEvent`）は各シミュレーター側で sealed に保つ。
  */
-sealed interface SpeechEvent {
+interface SpeechEvent {
     /** このイベントを有効化・キュー可否判定に関連付ける読み上げ項目。 */
     val readoutItemKey: ReadoutItemKey
 
@@ -24,7 +26,7 @@ sealed interface SpeechEvent {
 }
 
 /** 判定時の本文を保持し、キュー待機中の設定変更後も発話とログを一致させる読み上げ文言イベント。 */
-sealed interface ReadoutTextEvent : SpeechEvent {
+interface ReadoutTextEvent : SpeechEvent {
     val resolvedText: String?
 
     fun withResolvedText(text: String): ReadoutTextEvent

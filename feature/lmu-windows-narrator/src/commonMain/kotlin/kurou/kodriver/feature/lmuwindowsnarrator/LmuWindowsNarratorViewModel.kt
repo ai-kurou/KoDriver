@@ -30,6 +30,8 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureDa
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemTextDefault
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
@@ -76,8 +78,6 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
-import kurou.kodriver.domain.model.manualReadoutItemKeys
-import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
@@ -814,7 +814,7 @@ internal class LmuWindowsNarratorViewModel(
                 observedAtMs - latestBestLapReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS && it > 0
             }
         val items =
-            set.itemKeys.filter { it in manualReadoutItemKeys(Simulator.LmuWindows.id) }.map { key ->
+            set.itemKeys.filter { it in lmuWindowsManualReadoutItemKeys() }.map { key ->
                 val ratio =
                     if (key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
                         key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value ||
@@ -841,7 +841,7 @@ internal class LmuWindowsNarratorViewModel(
                     manualReadoutCelsius(key, brakeTemperature?.wheels?.values, tyreTemperature?.wheels?.values)
                 LmuWindowsManualReadoutItem(
                     key,
-                    set.itemTexts[key] ?: manualReadoutItemTextDefault(Simulator.LmuWindows.id, key),
+                    set.itemTexts[key] ?: lmuWindowsManualReadoutItemTextDefault(key),
                     ratio,
                     celsius,
                     lapTimeMs = bestLapTimeMs.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value },

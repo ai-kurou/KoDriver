@@ -12,7 +12,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5ManualReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
@@ -22,7 +21,7 @@ import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.Gt7Ps5TyreTemperatureCurrentValue
-import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase
@@ -346,10 +345,10 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             val events =
                 listOf(
-                    LmuWindowsMyBestLap(lapTimeMs = 83_456L),
-                    AceWindowsRemainingFuelLapsWarning(3),
-                    LmuWindowsMyBestLap(lapTimeMs = 83_456L, resolvedText = "解決済み文言"),
-                    AceWindowsRemainingFuelLapsWarning(3, resolvedText = "解決済み文言"),
+                    ForeignReadoutTextEvent(),
+                    ForeignReadoutTextEvent(),
+                    ForeignReadoutTextEvent(),
+                    ForeignReadoutTextEvent(),
                 )
             events.forEach { event ->
                 assertNull(speaker.readoutText(event))
@@ -720,4 +719,14 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coVerify(exactly = 1) { speakText(event.resolvedText, volume = 42) }
             confirmVerified(checkAvailable, speakText)
         }
+}
+
+/** 他シミュレーターのイベントを表すテスト用ダブル。他モジュールのイベント型には依存できないため、共通の [ReadoutTextEvent] で代用する。 */
+private data class ForeignReadoutTextEvent(
+    override val resolvedText: String? = null,
+) : ReadoutTextEvent {
+    override val readoutItemKey: ReadoutItemKey = ReadoutItemKey.entries.first()
+    override val narratedText: String = "他シミュレーターのイベント"
+
+    override fun withResolvedText(text: String): ForeignReadoutTextEvent = copy(resolvedText = text)
 }

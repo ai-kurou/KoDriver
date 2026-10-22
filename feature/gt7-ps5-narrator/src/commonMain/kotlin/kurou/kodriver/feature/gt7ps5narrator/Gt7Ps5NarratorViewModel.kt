@@ -17,6 +17,7 @@ import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemTextDefault
 import kurou.kodriver.domain.gt7ps5.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorState
@@ -31,7 +32,6 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.manualReadoutItemTextDefault
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
@@ -339,7 +339,7 @@ internal class Gt7Ps5NarratorViewModel(
                 val value = telemetry?.let { manualReadoutValue(key, it, state) }
                 Gt7Ps5ManualReadoutItem(
                     key,
-                    set.itemTexts[key] ?: manualReadoutItemTextDefault(Simulator.Gt7Ps5.id, key),
+                    set.itemTexts[key] ?: gt7Ps5ManualReadoutItemTextDefault(key),
                     value,
                 )
             }

@@ -49,6 +49,8 @@ import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutTe
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemName
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -56,10 +58,7 @@ import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
-import kurou.kodriver.domain.model.manualReadoutItemKeys
-import kurou.kodriver.domain.model.manualReadoutItemName
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.roundToInt
 
@@ -557,7 +556,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         state: LmuWindowsNarratorState,
         items: List<LmuWindowsManualReadoutItem>,
     ): LmuWindowsNarratorReadoutDecision {
-        val supportedItems = items.filter { it.key in manualReadoutItemKeys(Simulator.LmuWindows.id) }
+        val supportedItems = items.filter { it.key in lmuWindowsManualReadoutItemKeys() }
         val key =
             when (supportedItems.firstOrNull()?.key) {
                 LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value,
@@ -672,7 +671,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     private fun manualReadoutItemText(item: LmuWindowsManualReadoutItem): String {
         val noDataText =
-            "${manualReadoutItemName(Simulator.LmuWindows.id, item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
+            "${lmuWindowsManualReadoutItemName(item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
         if (isManualLapBasedItem(item.key)) return manualLapBasedText(item) ?: noDataText
         if (isLmuWindowsManualReadoutTemperatureItem(item.key)) {
             return item.celsius?.let {
