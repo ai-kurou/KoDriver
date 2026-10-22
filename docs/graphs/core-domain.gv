@@ -178,6 +178,7 @@ digraph G {
   ":feature:other-voice-pitch-detail" -> ":core:domain"
   ":feature:other-voice-speed-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:domain"
+  ":feature:other-volume-detail" -> ":core:lmu-windows-domain"
   ":feature:server-connection" -> ":core:domain"
   ":feature:telemetry-log-detail" -> ":core:domain"
   ":feature:telemetry-log-list" -> ":core:domain"
