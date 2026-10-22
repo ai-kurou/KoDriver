@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 
 class ReadoutItemKeyRegistryIntegrationTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerReadoutItemKeys()
     }
 

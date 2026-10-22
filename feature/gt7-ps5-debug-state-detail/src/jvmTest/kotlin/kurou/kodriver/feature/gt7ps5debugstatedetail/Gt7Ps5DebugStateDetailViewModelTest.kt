@@ -38,7 +38,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5DebugStateDetailViewModelTest {
     @Before
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerGt7Ps5ReadoutItemKeys()
     }
 

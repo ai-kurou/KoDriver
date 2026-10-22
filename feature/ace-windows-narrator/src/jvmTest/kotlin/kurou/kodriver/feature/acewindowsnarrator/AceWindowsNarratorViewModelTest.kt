@@ -118,7 +118,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsNarratorViewModelTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerAceWindowsReadoutItemKeys()
     }
 

@@ -40,7 +40,7 @@ private fun createLmuWindowsVehicleDamagePreferencesRepository(
 
 class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

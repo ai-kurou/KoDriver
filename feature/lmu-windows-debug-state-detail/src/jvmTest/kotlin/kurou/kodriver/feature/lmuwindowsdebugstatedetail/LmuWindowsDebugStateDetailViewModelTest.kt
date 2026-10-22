@@ -91,7 +91,7 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions", "LongMethod")
 class LmuWindowsDebugStateDetailViewModelTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

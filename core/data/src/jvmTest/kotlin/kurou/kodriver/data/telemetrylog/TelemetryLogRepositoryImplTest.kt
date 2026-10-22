@@ -22,7 +22,7 @@ import kotlin.test.assertNull
 
 class TelemetryLogRepositoryImplTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerReadoutItemKeys()
     }
 

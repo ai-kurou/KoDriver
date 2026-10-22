@@ -41,7 +41,7 @@ import kotlin.test.assertNull
 @Suppress("TooManyFunctions")
 class Gt7Ps5ReadoutTextSpeakerTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerGt7Ps5ReadoutItemKeys()
     }
 

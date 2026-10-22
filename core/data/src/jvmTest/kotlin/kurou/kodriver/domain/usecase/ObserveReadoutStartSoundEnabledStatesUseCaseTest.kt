@@ -22,7 +22,7 @@ import kotlin.test.assertEquals
 
 class ObserveReadoutStartSoundEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerReadoutItemKeys()
     }
 

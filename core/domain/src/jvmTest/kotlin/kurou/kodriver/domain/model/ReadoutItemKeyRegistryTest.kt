@@ -17,7 +17,7 @@ class ReadoutItemKeyRegistryTest {
     ) : ReadoutItemKey
 
     @BeforeTest
-    fun registerBaselineSpecs() {
+    fun `基準のspecを登録する`() {
         Simulator.entries.forEachIndexed { index, simulator ->
             ReadoutItemKeyRegistry.register(spec(simulator, "baseline_$index"))
         }

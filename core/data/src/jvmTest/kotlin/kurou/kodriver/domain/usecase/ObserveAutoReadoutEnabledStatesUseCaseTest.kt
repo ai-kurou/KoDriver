@@ -68,7 +68,7 @@ private fun createAutoReadoutPreferencesRepository(
 
 class ObserveAutoReadoutEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerReadoutItemKeys()
     }
 

@@ -87,7 +87,7 @@ import kotlin.test.assertEquals
 @Suppress("TooManyFunctions")
 class Gt7Ps5NarratorViewModelTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerGt7Ps5ReadoutItemKeys()
     }
 

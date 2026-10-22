@@ -43,7 +43,7 @@ private fun createAceWindowsTyreTemperaturePreferencesRepository(
 
 class ObserveAceWindowsTyreTemperatureEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerAceWindowsReadoutItemKeys()
     }
 

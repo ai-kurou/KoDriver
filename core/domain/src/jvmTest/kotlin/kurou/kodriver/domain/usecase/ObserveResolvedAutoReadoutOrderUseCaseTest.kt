@@ -23,7 +23,7 @@ class ObserveResolvedAutoReadoutOrderUseCaseTest {
     ) : ReadoutItemKey
 
     @BeforeTest
-    fun registerSpecs() {
+    fun `specを登録する`() {
         val lmu = listOf("lmu_flag", "lmu_approach", "lmu_damage").map(::TestReadoutItemKey)
         val gt7 = listOf("gt7_best", "gt7_fuel", "gt7_laps", "gt7_tyre").map(::TestReadoutItemKey)
         val ace = listOf("ace_flag").map(::TestReadoutItemKey)

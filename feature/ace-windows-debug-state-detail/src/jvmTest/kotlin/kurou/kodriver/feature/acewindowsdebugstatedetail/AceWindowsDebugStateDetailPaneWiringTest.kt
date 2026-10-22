@@ -46,7 +46,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsDebugStateDetailPaneWiringTest {
     @Before
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerAceWindowsReadoutItemKeys()
     }
 

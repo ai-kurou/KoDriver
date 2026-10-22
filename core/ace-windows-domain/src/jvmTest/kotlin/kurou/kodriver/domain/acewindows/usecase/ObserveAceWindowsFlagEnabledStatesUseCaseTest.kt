@@ -17,7 +17,7 @@ import kotlin.test.assertEquals
 
 class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerAceWindowsReadoutItemKeys()
     }
 

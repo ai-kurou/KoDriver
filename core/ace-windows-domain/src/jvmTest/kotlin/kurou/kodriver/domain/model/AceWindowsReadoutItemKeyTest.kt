@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 
 class AceWindowsReadoutItemKeyTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerAceWindowsReadoutItemKeys()
     }
 

@@ -14,7 +14,7 @@ import kotlin.test.assertEquals
 
 class InMemoryDebugReadoutRequestRepositoryTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerReadoutItemKeys()
     }
 

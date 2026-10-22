@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 
 class Gt7Ps5ReadoutItemKeyTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerGt7Ps5ReadoutItemKeys()
     }
 

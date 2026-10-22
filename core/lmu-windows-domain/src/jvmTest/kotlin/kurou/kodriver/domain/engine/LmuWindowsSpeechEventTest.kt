@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 
 class LmuWindowsSpeechEventTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

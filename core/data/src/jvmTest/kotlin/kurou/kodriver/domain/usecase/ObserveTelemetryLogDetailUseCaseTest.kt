@@ -92,7 +92,7 @@ private fun createTelemetryLogRepository(
 
 class ObserveTelemetryLogDetailUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerReadoutItemKeys()
     }
 

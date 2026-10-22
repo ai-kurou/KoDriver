@@ -61,7 +61,7 @@ import kotlin.test.assertEquals
 @Suppress("TooManyFunctions", "LongMethod")
 class AceWindowsDebugStateDetailViewModelTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerAceWindowsReadoutItemKeys()
     }
 

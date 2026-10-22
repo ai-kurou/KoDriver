@@ -67,7 +67,7 @@ import kotlin.test.assertNotNull
 @Suppress("TooManyFunctions")
 class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

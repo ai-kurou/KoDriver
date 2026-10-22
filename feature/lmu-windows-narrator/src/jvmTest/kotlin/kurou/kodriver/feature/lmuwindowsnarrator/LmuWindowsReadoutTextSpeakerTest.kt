@@ -69,7 +69,7 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class LmuWindowsReadoutTextSpeakerTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

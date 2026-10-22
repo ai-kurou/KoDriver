@@ -42,7 +42,7 @@ private fun createLmuWindowsTyreTemperaturePreferencesRepository(
 
 class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

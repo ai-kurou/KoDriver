@@ -43,7 +43,7 @@ private fun createGt7Ps5TyreTemperaturePreferencesRepository(
 
 class ObserveGt7Ps5TyreTemperatureEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerGt7Ps5ReadoutItemKeys()
     }
 

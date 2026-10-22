@@ -59,7 +59,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutSetDetailWiringTest {
     @Before
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
         registerGt7Ps5ReadoutItemKeys()
         registerAceWindowsReadoutItemKeys()

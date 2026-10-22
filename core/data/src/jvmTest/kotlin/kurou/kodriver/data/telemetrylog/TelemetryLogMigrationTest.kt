@@ -14,7 +14,7 @@ import kotlin.test.assertTrue
 
 class TelemetryLogMigrationTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerReadoutItemKeys()
     }
 

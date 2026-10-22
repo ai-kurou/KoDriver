@@ -11,7 +11,7 @@ import kotlin.test.assertTrue
 
 class LmuWindowsManualReadoutItemsTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

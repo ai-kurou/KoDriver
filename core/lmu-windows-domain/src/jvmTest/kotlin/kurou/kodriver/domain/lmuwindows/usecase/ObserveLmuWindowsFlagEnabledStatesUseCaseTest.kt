@@ -39,7 +39,7 @@ private fun createLmuWindowsFlagPreferencesRepository(
 
 class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

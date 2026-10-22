@@ -39,7 +39,7 @@ private fun createLmuWindowsPitTimingPreferencesRepository(
 
 class ObserveLmuWindowsPitTimingEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

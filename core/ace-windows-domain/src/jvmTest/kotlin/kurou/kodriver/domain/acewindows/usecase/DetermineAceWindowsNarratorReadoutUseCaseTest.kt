@@ -42,7 +42,7 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class DetermineAceWindowsNarratorReadoutUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerAceWindowsReadoutItemKeys()
     }
 

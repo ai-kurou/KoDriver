@@ -42,7 +42,7 @@ private fun createLmuWindowsVehicleApproachPreferencesRepository(
 
 class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

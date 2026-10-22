@@ -38,7 +38,7 @@ private fun createAceWindowsVehicleApproachPreferencesRepository(
 
 class ObserveAceWindowsVehicleApproachEnabledStatesUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerAceWindowsReadoutItemKeys()
     }
 

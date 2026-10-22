@@ -12,7 +12,7 @@ import kotlin.test.Test
 
 class SaveLmuWindowsVehicleApproachEnabledStateUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

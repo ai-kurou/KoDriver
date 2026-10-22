@@ -12,7 +12,7 @@ import kotlin.test.assertNull
 
 class ReadoutItemKeyMapSerializerTest {
     @BeforeTest
-    fun registerKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

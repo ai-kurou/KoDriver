@@ -60,7 +60,7 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class ManualReadoutSetDetailViewModelTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
         registerGt7Ps5ReadoutItemKeys()
         registerAceWindowsReadoutItemKeys()

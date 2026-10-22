@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 
 class LmuWindowsReadoutItemKeyTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
     }
 

@@ -12,7 +12,7 @@ import kotlin.test.Test
 
 class SaveGt7Ps5TyreTemperatureEnabledStateUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerGt7Ps5ReadoutItemKeys()
     }
 

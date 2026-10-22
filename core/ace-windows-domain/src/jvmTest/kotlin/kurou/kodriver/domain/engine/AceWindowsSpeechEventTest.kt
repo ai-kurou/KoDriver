@@ -23,7 +23,7 @@ import kotlin.test.assertTrue
 
 class AceWindowsSpeechEventTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerAceWindowsReadoutItemKeys()
     }
 

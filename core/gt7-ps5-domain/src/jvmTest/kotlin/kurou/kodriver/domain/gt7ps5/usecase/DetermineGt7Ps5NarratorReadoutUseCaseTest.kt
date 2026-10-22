@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
 @Suppress("TooManyFunctions")
 class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerGt7Ps5ReadoutItemKeys()
     }
 

@@ -12,7 +12,7 @@ import kotlin.test.assertTrue
 
 class Gt7Ps5SpeechEventTest {
     @BeforeTest
-    fun registerReadoutKeys() {
+    fun `ReadoutItemKeyを登録する`() {
         registerGt7Ps5ReadoutItemKeys()
     }
 
