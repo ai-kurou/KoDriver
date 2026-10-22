@@ -6,9 +6,16 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsFlagEnabledStateUseCaseTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val repository: LmuWindowsFlagPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test

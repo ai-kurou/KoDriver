@@ -25,6 +25,7 @@ import kurou.kodriver.core.windowshotkeydata.windowsHotkeyDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.AnonymousUserId
 import kurou.kodriver.data.desktopDataModule
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.DesktopSplashHost
 import kurou.kodriver.presentation.featureModules
@@ -42,6 +43,7 @@ private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
  * アプリケーションを起動するエントリーポイント。
  */
 fun main() {
+    registerReadoutItemKeys()
     Sentry.init { options ->
         options.dsn = SENTRY_DSN
         options.environment = "desktop"

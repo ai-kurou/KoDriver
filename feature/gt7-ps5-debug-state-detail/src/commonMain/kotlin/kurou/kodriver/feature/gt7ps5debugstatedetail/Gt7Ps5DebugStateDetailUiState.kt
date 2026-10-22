@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.gt7ps5debugstatedetail
 
+import kurou.kodriver.domain.model.GT7_PS5_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
 
 internal val defaultDebugStateCardOrder =
     listOf(
@@ -14,7 +14,10 @@ internal val defaultDebugStateCardOrder =
     )
 
 internal data class Gt7Ps5DebugStateDetailUiState(
-    val selectedReadoutItemKey: ReadoutItemKey = ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5).first(),
+    val selectedReadoutItemKey: ReadoutItemKey =
+        GT7_PS5_READOUT_ITEM_KEYS
+            .filterIsInstance<ReadoutItemKey.TopLevel>()
+            .first(),
     val debugReadoutText: String = "",
     val gt7Ps5: Gt7Ps5DebugState = Gt7Ps5DebugState(),
     val enabledCardKeys: Set<Gt7Ps5DebugStateCardKey> = setOf(Gt7Ps5DebugStateCardKey.SIMULATOR),

@@ -36,11 +36,18 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsNarratorEngineTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val soundPlayer: SoundPlayer = mockk()
     private val wavNarratorEngine: NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 

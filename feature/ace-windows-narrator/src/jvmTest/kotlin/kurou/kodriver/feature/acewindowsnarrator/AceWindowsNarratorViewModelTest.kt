@@ -90,6 +90,7 @@ import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
@@ -116,6 +117,11 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsNarratorViewModelTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val manualRequests = MutableSharedFlow<ManualReadoutRequest>()
     private val manualHotkeyPresses = MutableSharedFlow<ManualReadoutRequest>()
     private val manualSets = MutableStateFlow(listOf(ManualReadoutSet("set-1")))

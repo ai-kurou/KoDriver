@@ -3,11 +3,18 @@ package kurou.kodriver.domain.lmuwindows.model
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class LmuWindowsManualReadoutItemsTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     @Test
     fun `定義はキー順に名前と既定文言を持ち未知キーは空文字`() {
         val definitions = lmuWindowsManualReadoutItemDefinitions

@@ -29,6 +29,10 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AutoReadoutListViewModelStartSoundTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()

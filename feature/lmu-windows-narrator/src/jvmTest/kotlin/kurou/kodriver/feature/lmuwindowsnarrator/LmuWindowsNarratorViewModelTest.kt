@@ -142,6 +142,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
@@ -173,6 +174,11 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsNarratorViewModelTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val debugRequests = MutableSharedFlow<DebugReadoutRequest>()
     private val debugRequestRepository: DebugReadoutRequestRepository = mockk()
 

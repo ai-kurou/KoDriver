@@ -20,8 +20,8 @@ import kurou.kodriver.core.designsystem.DebugStateCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.GT7_PS5_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.debug_state_current_lap_title
@@ -97,7 +97,10 @@ internal fun Gt7Ps5DebugStateDetailPaneContent(
                 }
             Column {
                 DebugReadoutRequestCard(
-                    readoutItemKeyValues = ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5).map { it.value },
+                    readoutItemKeyValues =
+                        GT7_PS5_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().map {
+                            it.value
+                        },
                     selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
                     text = uiState.debugReadoutText,
                     onReadoutItemSelected = onReadoutItemSelected,

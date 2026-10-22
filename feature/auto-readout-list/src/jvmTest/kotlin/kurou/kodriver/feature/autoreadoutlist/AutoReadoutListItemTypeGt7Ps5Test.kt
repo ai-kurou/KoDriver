@@ -5,6 +5,10 @@ import kotlin.test.Test
 import kotlin.test.assertNull
 
 class AutoReadoutListItemTypeGt7Ps5Test {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @Test
     fun `gt7_ps5 の非 Root キーは null を返す`() {
         assertNull(Gt7Ps5AutoReadoutListItemType.fromId(Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled))

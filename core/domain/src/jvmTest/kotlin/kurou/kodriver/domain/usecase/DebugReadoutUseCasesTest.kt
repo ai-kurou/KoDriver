@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.DebugReadoutRequest
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kotlin.test.Test
@@ -21,7 +20,10 @@ class DebugReadoutUseCasesTest {
     private val request =
         DebugReadoutRequest(
             Simulator.LmuWindows,
-            ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).first(),
+            object : kurou.kodriver.domain.model.ReadoutItemKey.TopLevel {
+                override val value = "test"
+                override val supportsQueue = true
+            },
             " {laps} ",
         )
 

@@ -15,14 +15,20 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
-import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class DetermineGt7Ps5NarratorReadoutUseCaseTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerGt7Ps5ReadoutItemKeys()
+    }
+
     private val useCase = DetermineGt7Ps5NarratorReadoutUseCase()
 
     @Test
@@ -215,7 +221,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 state,
                 listOf(
                     Gt7Ps5ManualReadoutItem("unknown", "読まない", 50),
-                    Gt7Ps5ManualReadoutItem(LmuWindowsReadoutItemKey.TyreWear.Root.value, "読まない", 50),
+                    Gt7Ps5ManualReadoutItem("lmu_windows_auto_tyre_wear", "読まない", 50),
                     Gt7Ps5ManualReadoutItem(key, "あと{percent}% {unknown}", 42),
                     Gt7Ps5ManualReadoutItem(key, "", 20),
                     Gt7Ps5ManualReadoutItem(key, gt7Ps5ManualReadoutItemTextDefault(key), null),

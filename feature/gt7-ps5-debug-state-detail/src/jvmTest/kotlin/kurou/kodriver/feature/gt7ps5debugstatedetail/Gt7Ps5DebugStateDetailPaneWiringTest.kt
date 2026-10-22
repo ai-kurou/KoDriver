@@ -29,6 +29,8 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5VehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -41,6 +43,11 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5DebugStateDetailPaneWiringTest {
+    @Before
+    fun registerReadoutKeys() {
+        registerGt7Ps5ReadoutItemKeys()
+    }
+
     private val rule = createComposeRule()
 
     @get:Rule

@@ -2,15 +2,22 @@ package kurou.kodriver.data.telemetrylog
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class TelemetryLogMigrationTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerReadoutItemKeys()
+    }
+
     @Test
     fun `バージョン1から2への移行で既存行にnarratedTextが空文字で追加される`() {
         val path = Files.createTempFile("telemetry_log_migration_test", ".db").toString()

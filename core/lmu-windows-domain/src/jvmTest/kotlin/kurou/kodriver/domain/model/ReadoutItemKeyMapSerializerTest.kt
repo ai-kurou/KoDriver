@@ -5,11 +5,17 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class ReadoutItemKeyMapSerializerTest {
+    @BeforeTest
+    fun registerKeys() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     @Test
     fun `シリアライズ時にReadoutItemKeyをvalueへ変換する`() {
         val map = mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to true)

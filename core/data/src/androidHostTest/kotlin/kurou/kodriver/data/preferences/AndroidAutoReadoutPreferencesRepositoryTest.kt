@@ -9,6 +9,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import java.io.File
 import kotlin.test.AfterTest
@@ -24,6 +25,7 @@ class AndroidAutoReadoutPreferencesRepositoryTest {
 
     @BeforeTest
     fun setUp() {
+        registerReadoutItemKeys()
         tempFile = File.createTempFile("readout_test", ".preferences_pb")
         val dataStore =
             PreferenceDataStoreFactory.create(

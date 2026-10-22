@@ -73,6 +73,10 @@ internal fun createViewModel(
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AutoReadoutListViewModelTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()

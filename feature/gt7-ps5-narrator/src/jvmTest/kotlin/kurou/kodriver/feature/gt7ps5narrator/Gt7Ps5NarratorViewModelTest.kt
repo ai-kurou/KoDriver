@@ -53,12 +53,12 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
-import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
@@ -86,6 +86,11 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions")
 class Gt7Ps5NarratorViewModelTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerGt7Ps5ReadoutItemKeys()
+    }
+
     private val manualRequests = MutableSharedFlow<ManualReadoutRequest>()
     private val manualHotkeyPresses = MutableSharedFlow<ManualReadoutRequest>()
     private val manualSets = MutableStateFlow(listOf(ManualReadoutSet("set-1")))
@@ -1219,7 +1224,7 @@ class Gt7Ps5NarratorViewModelTest {
                     initialKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(
-                orderOverride = listOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root, LmuWindowsReadoutItemKey.Flag.Root),
+                orderOverride = listOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root, OtherSimulatorReadoutItemKey),
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
@@ -1781,3 +1786,9 @@ private fun gt7Telemetry(tyreTemperature: Gt7Ps5TyreTemperatureData) =
         gasCapacity = Gt7Ps5FuelUnit(100f),
         tyreTemperature = tyreTemperature,
     )
+
+/** 他シミュレーターの読み上げキーを表す、このテスト専用のキー。 */
+private data object OtherSimulatorReadoutItemKey : ReadoutItemKey.TopLevel {
+    override val value = "other_simulator_flag"
+    override val supportsQueue = false
+}

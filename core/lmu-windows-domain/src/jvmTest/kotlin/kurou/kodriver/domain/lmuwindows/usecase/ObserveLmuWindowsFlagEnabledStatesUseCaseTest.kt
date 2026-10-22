@@ -13,6 +13,8 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -36,6 +38,11 @@ private fun createLmuWindowsFlagPreferencesRepository(
 }
 
 class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val repository: LmuWindowsFlagPreferencesRepository = mockk()
 
     @Test

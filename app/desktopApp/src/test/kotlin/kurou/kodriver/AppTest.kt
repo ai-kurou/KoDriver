@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.data.desktopDataModule
-import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -61,6 +61,7 @@ class AppTest {
         @BeforeClass
         @JvmStatic
         fun setUpKoin() {
+            registerReadoutItemKeys()
             startKoin {
                 // Koinは同一型のsingleが複数登録された場合、後から登録した方で上書きする。
                 // featureModules（lmuWindowsNarratorModule/gt7Ps5NarratorModuleのincludes(platformSoundModule)
@@ -372,13 +373,13 @@ class AppTest {
                 telemetryLog(
                     id = 1,
                     createdAt = 100,
-                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
+                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_sector_yellow_flag")),
                     telemetryJson = """{"flag":"yellow"}""",
                 ),
                 telemetryLog(
                     id = 2,
                     createdAt = 200,
-                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
+                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_flag")),
                     telemetryJson = """{"flag":"green"}""",
                 ),
             ),
@@ -404,13 +405,13 @@ class AppTest {
                 telemetryLog(
                     id = 1,
                     createdAt = 100,
-                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
+                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_sector_yellow_flag")),
                     telemetryJson = """{"flag":"yellow"}""",
                 ),
                 telemetryLog(
                     id = 2,
                     createdAt = 200,
-                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
+                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_flag")),
                     telemetryJson = """{"flag":"green"}""",
                 ),
             ),
@@ -435,13 +436,13 @@ class AppTest {
                 telemetryLog(
                     id = 1,
                     createdAt = 100,
-                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
+                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_sector_yellow_flag")),
                     telemetryJson = """{"flag":"yellow"}""",
                 ),
                 telemetryLog(
                     id = 2,
                     createdAt = 200,
-                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
+                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_flag")),
                     telemetryJson = """{"flag":"green"}""",
                 ),
             ),
@@ -466,7 +467,7 @@ class AppTest {
                 telemetryLog(
                     id = 1,
                     createdAt = 100,
-                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
+                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_sector_yellow_flag")),
                     telemetryJson = """{"flag":"yellow"}""",
                 ),
             ),

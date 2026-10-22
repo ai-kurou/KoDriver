@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.ACE_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -39,7 +40,7 @@ internal class AceWindowsDebugStateDetailViewModel(
 ) : ViewModel() {
     private val _selectedReadoutItemKey =
         MutableStateFlow<ReadoutItemKey>(
-            ReadoutItemKey.topLevelEntriesOf(Simulator.AceWindows).first(),
+            ACE_WINDOWS_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().first(),
         )
     private val _debugReadoutText = MutableStateFlow("")
 
@@ -81,7 +82,9 @@ internal class AceWindowsDebugStateDetailViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsDebugStateDetailUiState())
 
     fun selectReadoutItem(value: String) {
-        val key = ReadoutItemKey.topLevelEntriesOf(Simulator.AceWindows).find { it.value == value } ?: return
+        val key =
+            ACE_WINDOWS_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().find { it.value == value }
+                ?: return
         _selectedReadoutItemKey.update { key }
     }
 

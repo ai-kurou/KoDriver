@@ -8,6 +8,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AutoReadoutNavigationStateTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @get:Rule
     val rule = createComposeRule()
 

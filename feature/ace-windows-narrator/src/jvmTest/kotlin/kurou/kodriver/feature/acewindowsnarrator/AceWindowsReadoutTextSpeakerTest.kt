@@ -53,8 +53,10 @@ import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -62,6 +64,11 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AceWindowsReadoutTextSpeakerTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val observeText: ObserveAceWindowsCheckeredFlagReadoutTextUseCase = mockk()
     private val observeWhite: ObserveAceWindowsWhiteFlagReadoutTextUseCase = mockk()
     private val observeGreen: ObserveAceWindowsGreenFlagReadoutTextUseCase = mockk()

@@ -10,11 +10,17 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     val repository: AceWindowsFlagPreferencesRepository = mockk()
 
     private lateinit var useCase: ObserveAceWindowsFlagEnabledStatesUseCase

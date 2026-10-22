@@ -13,6 +13,8 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -39,6 +41,11 @@ private fun createLmuWindowsVehicleApproachPreferencesRepository(
 }
 
 class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val repository: LmuWindowsVehicleApproachPreferencesRepository = mockk()
 
     @Test

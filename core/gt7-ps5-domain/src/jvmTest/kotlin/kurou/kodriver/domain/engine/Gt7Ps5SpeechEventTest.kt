@@ -3,12 +3,19 @@
 package kurou.kodriver.domain.engine
 
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class Gt7Ps5SpeechEventTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerGt7Ps5ReadoutItemKeys()
+    }
+
     @Test
     fun `GT7の手動タイヤ温度は既定文言と解決済み文言と空文言を扱う`() {
         val event = Gt7Ps5TyreTemperatureCurrentValue(90)

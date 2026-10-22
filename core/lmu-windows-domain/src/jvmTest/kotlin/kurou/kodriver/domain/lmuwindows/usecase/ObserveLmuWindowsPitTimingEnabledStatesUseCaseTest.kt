@@ -13,6 +13,8 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -36,6 +38,11 @@ private fun createLmuWindowsPitTimingPreferencesRepository(
 }
 
 class ObserveLmuWindowsPitTimingEnabledStatesUseCaseTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val repository: LmuWindowsPitTimingPreferencesRepository = mockk()
 
     @Test

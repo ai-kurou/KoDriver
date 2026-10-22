@@ -25,11 +25,18 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5NarratorEngineTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerGt7Ps5ReadoutItemKeys()
+    }
+
     private val soundPlayer: SoundPlayer = mockk()
     private val wavNarratorEngine: NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 

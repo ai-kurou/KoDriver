@@ -10,15 +10,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveReadoutStartSoundEnabledStatesUseCaseTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerReadoutItemKeys()
+    }
+
     private val repository: ReadoutStartSoundEnabledPreferencesRepository = mockk()
 
     @Test

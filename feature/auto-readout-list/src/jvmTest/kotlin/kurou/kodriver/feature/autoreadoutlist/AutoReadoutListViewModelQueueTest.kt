@@ -29,6 +29,10 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AutoReadoutListViewModelQueueTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()

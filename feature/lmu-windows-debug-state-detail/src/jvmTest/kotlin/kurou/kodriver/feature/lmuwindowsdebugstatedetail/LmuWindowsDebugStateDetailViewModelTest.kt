@@ -73,6 +73,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
@@ -80,6 +81,7 @@ import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
 import org.junit.Before
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -88,6 +90,11 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions", "LongMethod")
 class LmuWindowsDebugStateDetailViewModelTest {
+    @BeforeTest
+    fun registerReadoutKeys() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val hotkeyRepository = FakeReadoutHotkeyRepository()
 
     private val requestDebugReadout: RequestDebugReadoutUseCase = mockk(relaxUnitFun = true)
@@ -287,8 +294,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             viewModel.requestReadout()
             viewModel.selectReadoutItem("unknown")
             viewModel.selectReadoutItem(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled.value)
-            val otherSimulator = Simulator.entries.first { it != Simulator.LmuWindows }
-            viewModel.selectReadoutItem(ReadoutItemKey.topLevelEntriesOf(otherSimulator).first().value)
+            viewModel.selectReadoutItem("foreign_simulator_key")
             assertEquals(keys.first(), viewModel.uiState.first().selectedReadoutItemKey)
             viewModel.selectReadoutItem(keys.last().value)
             viewModel.updateDebugReadoutText("入力 {laps}")

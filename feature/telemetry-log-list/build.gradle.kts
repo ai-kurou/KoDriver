@@ -15,6 +15,9 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
+            implementation(projects.core.aceWindowsDomain)
+            implementation(projects.core.lmuWindowsDomain)
+            implementation(projects.core.gt7Ps5Domain)
             implementation(libs.compose.material3)
             implementation(libs.compose.material.icons.extended)
             implementation(libs.compose.material3.adaptive.layout)
