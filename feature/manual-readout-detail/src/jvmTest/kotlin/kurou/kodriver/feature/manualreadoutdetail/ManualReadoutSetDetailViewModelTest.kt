@@ -21,6 +21,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemKeys
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemKeys
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.HotkeyRegistrationState
@@ -30,7 +33,6 @@ import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.manualReadoutItemKeys
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
@@ -116,7 +118,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    manualReadoutItemKeys(Simulator.LmuWindows.id),
+                    lmuWindowsManualReadoutItemKeys(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -148,7 +150,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    manualReadoutItemKeys(Simulator.LmuWindows.id),
+                    lmuWindowsManualReadoutItemKeys(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -180,7 +182,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    manualReadoutItemKeys(Simulator.LmuWindows.id),
+                    lmuWindowsManualReadoutItemKeys(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -212,7 +214,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    manualReadoutItemKeys(Simulator.Gt7Ps5.id),
+                    gt7Ps5ManualReadoutItemKeys(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -244,7 +246,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    manualReadoutItemKeys(Simulator.AceWindows.id),
+                    aceWindowsManualReadoutItemKeys(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -276,7 +278,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    manualReadoutItemKeys(Simulator.Gt7Ps5.id),
+                    gt7Ps5ManualReadoutItemKeys(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -355,7 +357,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    manualReadoutItemKeys(Simulator.Gt7Ps5.id),
+                    gt7Ps5ManualReadoutItemKeys(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -387,7 +389,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    manualReadoutItemKeys(Simulator.AceWindows.id),
+                    aceWindowsManualReadoutItemKeys(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -419,7 +421,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    manualReadoutItemKeys(Simulator.Gt7Ps5.id),
+                    gt7Ps5ManualReadoutItemKeys(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -439,7 +441,7 @@ class ManualReadoutSetDetailViewModelTest {
     @Test
     fun `上限直前では末尾へ追加し削除で文言と残りの順序を保持する`() =
         runTest(dispatcher) {
-            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+            val key = lmuWindowsManualReadoutItemKeys().first()
             val original =
                 ManualReadoutSet(
                     "target",
@@ -472,7 +474,7 @@ class ManualReadoutSetDetailViewModelTest {
     @Test
     fun `追加の重複と上限と未知キーを無視し並べ替えは順序だけ保存する`() =
         runTest(dispatcher) {
-            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+            val key = lmuWindowsManualReadoutItemKeys().first()
             val unknownKeys = List(MANUAL_READOUT_SET_ITEM_MAX) { "UNKNOWN$it" }
             val full = ManualReadoutSet("target", unknownKeys, mapOf(key to "保持"))
             val moved = full.copy(itemKeys = listOf(unknownKeys[1], unknownKeys[2], unknownKeys[0]))
@@ -526,7 +528,7 @@ class ManualReadoutSetDetailViewModelTest {
     @Test
     fun `連続選択は最新の保存状態を使い未知キーを保持し削除完了を通知する`() =
         runTest(dispatcher) {
-            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+            val key = lmuWindowsManualReadoutItemKeys().first()
             val original = ManualReadoutSet("target", listOf("UNKNOWN"))
             val selected = original.copy(itemKeys = original.itemKeys + key)
             val other = ManualReadoutSet("other")
@@ -576,7 +578,7 @@ class ManualReadoutSetDetailViewModelTest {
                     assertEquals(null, state.setNumber)
                     assertEquals(manualReadoutItemKeys(simulator.id), state.availableItemKeys)
                     assertFalse(state.deleted)
-                    vm.addItem(manualReadoutItemKeys(Simulator.LmuWindows.id).first())
+                    vm.addItem(lmuWindowsManualReadoutItemKeys().first())
                 } finally {
                     vm.viewModelScope.cancel()
                 }
@@ -588,7 +590,7 @@ class ManualReadoutSetDetailViewModelTest {
     @Test
     fun `文言は入力ごとに正規化して保存し選択解除と再選択でも未知文言を保持する`() =
         runTest(dispatcher) {
-            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+            val key = lmuWindowsManualReadoutItemKeys().first()
             val original = ManualReadoutSet("target", listOf(key), mapOf("UNKNOWN" to "保持"))
             val edited = original.copy(itemTexts = original.itemTexts + (key to "残量{percent}%"))
             val blank = edited.copy(itemTexts = edited.itemTexts + (key to ""))
@@ -637,7 +639,7 @@ class ManualReadoutSetDetailViewModelTest {
             val vm = viewModel()
             try {
                 vm.updateItemText("UNKNOWN", "文言")
-                vm.updateItemText(manualReadoutItemKeys(Simulator.LmuWindows.id).first(), "文言")
+                vm.updateItemText(lmuWindowsManualReadoutItemKeys().first(), "文言")
                 verify(exactly = 2) { repository.observeSets() }
                 confirmVerified(repository)
             } finally {
@@ -653,7 +655,7 @@ class ManualReadoutSetDetailViewModelTest {
             val vm = viewModel()
             try {
                 vm.deleteSet()
-                vm.updateItemText(manualReadoutItemKeys(Simulator.LmuWindows.id).first(), "文言")
+                vm.updateItemText(lmuWindowsManualReadoutItemKeys().first(), "文言")
                 verify(exactly = 1) { repository.observeSets() }
                 coVerify(exactly = 1) { repository.deleteSet("target") }
                 confirmVerified(repository)
@@ -665,7 +667,7 @@ class ManualReadoutSetDetailViewModelTest {
     @Test
     fun `保存待ち中の選択変更と連続編集はMutexで順序を保ち直前の結果を使う`() =
         runTest(dispatcher) {
-            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+            val key = lmuWindowsManualReadoutItemKeys().first()
             val original = ManualReadoutSet("target", listOf(key))
             val edited = original.copy(itemTexts = mapOf(key to "残量{percent}%"))
             val unselected = edited.copy(itemKeys = emptyList())
@@ -1003,7 +1005,7 @@ class ManualReadoutSetDetailViewModelTest {
     @Test
     fun `プレビューは先頭キーの開始音と置換済み本文を現在の音量で再生する`() =
         runTest(dispatcher) {
-            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+            val key = lmuWindowsManualReadoutItemKeys().first()
             every { repository.observeSets() } returns
                 MutableStateFlow(
                     listOf(ManualReadoutSet("target", listOf(key), mapOf(key to "残り{percent}%"))),
@@ -1029,7 +1031,7 @@ class ManualReadoutSetDetailViewModelTest {
     @Test
     fun `再押しとペイン離脱で開始音待機中のプレビューを停止する`() =
         runTest(dispatcher) {
-            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+            val key = lmuWindowsManualReadoutItemKeys().first()
             every { repository.observeSets() } returns
                 MutableStateFlow(
                     listOf(ManualReadoutSet("target", listOf(key), mapOf(key to "残り{percent}%"))),
@@ -1068,7 +1070,7 @@ class ManualReadoutSetDetailViewModelTest {
     @Test
     fun `TTS不可と空文言と未知の先頭キーでは試聴しない`() =
         runTest(dispatcher) {
-            val key = manualReadoutItemKeys(Simulator.LmuWindows.id).first()
+            val key = lmuWindowsManualReadoutItemKeys().first()
             val cases =
                 listOf(
                     Triple(false, listOf(key), "注意"),

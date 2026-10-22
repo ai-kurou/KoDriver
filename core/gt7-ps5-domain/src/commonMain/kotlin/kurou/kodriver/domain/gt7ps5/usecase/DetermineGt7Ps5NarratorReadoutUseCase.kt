@@ -17,15 +17,14 @@ import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemKeys
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemName
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.manualReadoutItemKeys
-import kurou.kodriver.domain.model.manualReadoutItemName
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.roundToInt
 
@@ -90,7 +89,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         state: Gt7Ps5NarratorState,
         items: List<Gt7Ps5ManualReadoutItem> = emptyList(),
     ): Gt7Ps5NarratorReadoutDecision {
-        val supportedKeys = manualReadoutItemKeys(Simulator.Gt7Ps5.id)
+        val supportedKeys = gt7Ps5ManualReadoutItemKeys()
         val supportedItems = items.filter { it.key in supportedKeys }.take(MANUAL_READOUT_SET_ITEM_MAX)
         val text =
             if (supportedItems.isEmpty()) {
@@ -147,7 +146,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
 
             item.value == null -> {
                 event.withResolvedText(
-                    "${manualReadoutItemName(Simulator.Gt7Ps5.id, item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT",
+                    "${gt7Ps5ManualReadoutItemName(item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT",
                 )
             }
 

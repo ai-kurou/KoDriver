@@ -128,10 +128,14 @@ class AppScreenViewModelTest {
                             observeTelemetryReceiving =
                                 ObserveTelemetryReceivingUseCase(
                                     observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-                                    observeLmuWindows = ObserveLmuWindowsUseCase(lmuWindowsRepository),
-                                    observeGt7Ps5 = ObserveGt7Ps5UseCase(gt7Ps5Repository),
-                                    observeAceWindowsStatus =
-                                        ObserveAceWindowsStatusUseCase(aceWindowsStatusRepository),
+                                    telemetryStream = { simulator ->
+                                        selectTelemetryStream(
+                                            simulator,
+                                            ObserveLmuWindowsUseCase(lmuWindowsRepository),
+                                            ObserveGt7Ps5UseCase(gt7Ps5Repository),
+                                            ObserveAceWindowsStatusUseCase(aceWindowsStatusRepository),
+                                        )
+                                    },
                                 ),
                         ),
                     saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),

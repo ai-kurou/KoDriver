@@ -3,7 +3,7 @@ package kurou.kodriver.domain.engine
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ReadoutTextEventTest {
+class Gt7Ps5ReadoutTextEventTest {
     @Test
     fun `全GT7自由文言イベントは本文だけを解決して既定文言とキーを維持する`() {
         val events: List<ReadoutTextEvent> =

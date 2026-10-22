@@ -13,18 +13,8 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withTimeout
-import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
-import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
-import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
-import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
-import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kotlin.test.Test
@@ -36,103 +26,70 @@ import kotlin.test.assertTrue
 class ObserveTelemetryReceivingUseCaseTest {
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
-    private val lmuWindowsRepository: LmuWindowsRepository = mockk()
-
-    private val gt7Ps5Repository: Gt7Ps5Repository = mockk()
-
-    private val aceWindowsStatusRepository: AceWindowsStatusRepository = mockk()
-
-    private fun createUseCase() =
-        ObserveTelemetryReceivingUseCase(
-            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-            observeLmuWindows = ObserveLmuWindowsUseCase(lmuWindowsRepository),
-            observeGt7Ps5 = ObserveGt7Ps5UseCase(gt7Ps5Repository),
-            observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(aceWindowsStatusRepository),
-        )
-
     @Test
-    fun `選択中シミュレーターのテレメトリを受信するとtrueになる`() =
+    fun `受信がない場合はfalseを返す`() =
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
-            val telemetry = MutableSharedFlow<LmuWindowsTelemetryData>(replay = 1)
-            telemetry.tryEmit(fakeLmuWindowsTelemetryData())
-            every { lmuWindowsRepository.telemetryStream() } returns telemetry
-            every { gt7Ps5Repository.telemetryStream() } returns emptyFlow()
-            every { aceWindowsStatusRepository.statusStream() } returns emptyFlow()
-            val useCase = createUseCase()
-
-            assertTrue(withTimeout(5_000L) { useCase().first { it } })
-            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 0) { gt7Ps5Repository.telemetryStream() }
-            verify(exactly = 0) { aceWindowsStatusRepository.statusStream() }
-            confirmVerified(simulatorRepository, lmuWindowsRepository, gt7Ps5Repository, aceWindowsStatusRepository)
-        }
-
-    @Test
-    fun `テレメトリを一度も受信していない場合はfalseのまま`() =
-        runTest {
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
-            every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
-            every { gt7Ps5Repository.telemetryStream() } returns emptyFlow()
-            every { aceWindowsStatusRepository.statusStream() } returns emptyFlow()
-            val useCase = createUseCase()
-
+            val useCase =
+                ObserveTelemetryReceivingUseCase(
+                    ObserveSelectedSimulatorUseCase(simulatorRepository),
+                ) { emptyFlow<Int>() }
             assertFalse(useCase().first())
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 0) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-            verify(exactly = 0) { aceWindowsStatusRepository.statusStream() }
-            confirmVerified(simulatorRepository, lmuWindowsRepository, gt7Ps5Repository, aceWindowsStatusRepository)
+            confirmVerified(simulatorRepository)
         }
 
     @Test
-    fun `受信済みでもタイムアウトまで次のデータが来ないとfalseに戻る`() =
+    fun `受信開始とタイムアウトを通知する`() =
         runTest {
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
-            val status = MutableSharedFlow<AceWindowsStatusData>(replay = 1)
-            status.tryEmit(AceWindowsStatusData(status = AceWindowsStatusType.LIVE))
-            every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
-            every { gt7Ps5Repository.telemetryStream() } returns emptyFlow()
-            every { aceWindowsStatusRepository.statusStream() } returns status
-            val useCase = createUseCase()
-
-            val results = withTimeout(10_000L) { useCase().take(3).toList() }
-
-            assertEquals(listOf(false, true, false), results)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+            val telemetry = MutableSharedFlow<Int>(replay = 1)
+            telemetry.tryEmit(1)
+            val useCase =
+                ObserveTelemetryReceivingUseCase(ObserveSelectedSimulatorUseCase(simulatorRepository)) { telemetry }
+            assertEquals(listOf(false, true, false), useCase().take(3).toList())
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 0) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 0) { gt7Ps5Repository.telemetryStream() }
-            verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
-            confirmVerified(simulatorRepository, lmuWindowsRepository, gt7Ps5Repository, aceWindowsStatusRepository)
+            confirmVerified(simulatorRepository)
         }
 
     @Test
-    fun `タイムアウト前に再受信するとtrueが継続する`() =
+    fun `シミュレーター切替時に対応するFlowへ切り替える`() =
+        runTest {
+            val selectedSimulator = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
+            val subscribedSimulators = mutableListOf<Simulator>()
+            val useCase =
+                ObserveTelemetryReceivingUseCase(ObserveSelectedSimulatorUseCase(simulatorRepository)) { simulator ->
+                    subscribedSimulators.add(simulator)
+                    emptyFlow<Int>()
+                }
+            val job = launch { useCase().collect {} }
+            runCurrent()
+            selectedSimulator.value = Simulator.Gt7Ps5
+            runCurrent()
+            job.cancel()
+
+            assertEquals(listOf(Simulator.LmuWindows, Simulator.Gt7Ps5), subscribedSimulators)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            confirmVerified(simulatorRepository)
+        }
+
+    @Test
+    fun `新しい受信からタイムアウトをやり直す`() =
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
-            val telemetry = MutableSharedFlow<Gt7Ps5TelemetryData>(replay = 1)
-            telemetry.tryEmit(fakeGt7Ps5TelemetryData())
-            every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
-            every { gt7Ps5Repository.telemetryStream() } returns telemetry
-            every { aceWindowsStatusRepository.statusStream() } returns emptyFlow()
-            val useCase = createUseCase()
-
+            val telemetry = MutableSharedFlow<Int>(replay = 1)
+            telemetry.tryEmit(1)
+            val useCase =
+                ObserveTelemetryReceivingUseCase(ObserveSelectedSimulatorUseCase(simulatorRepository)) { telemetry }
             val values = mutableListOf<Boolean>()
-            val job =
-                launch {
-                    useCase().collect { values.add(it) }
-                }
-            advanceTimeBy(2_000L)
-            telemetry.emit(fakeGt7Ps5TelemetryData(lapCount = 1))
-            advanceTimeBy(2_000L)
-
+            val job = launch { useCase().collect(values::add) }
+            advanceTimeBy(2_000)
+            telemetry.emit(2)
+            advanceTimeBy(2_000)
             assertTrue(values.last())
             job.cancel()
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 0) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-            verify(exactly = 0) { aceWindowsStatusRepository.statusStream() }
-            confirmVerified(simulatorRepository, lmuWindowsRepository, gt7Ps5Repository, aceWindowsStatusRepository)
+            confirmVerified(simulatorRepository)
         }
 }

@@ -50,9 +50,11 @@ Le Mans Ultimate（LMU）・Assetto Corsa EVO（ACE）から Windows 共有メ�
 
 ### ユーザー設定のデフォルト値
 
-ユーザー設定として永続化され、DataStore の初期値・詳細設定画面のリセット値・UiState の初期値・Narrator / UseCase の初期値で共有されるデフォルト値は、仕様値として `:core:domain` の `domain/model/*Defaults.kt` に定義すること。`:core:data` の `*Preferences` や feature の ViewModel / Pane / UiState は、その定数を参照する。
+共通のデフォルト値は従来どおり `:core:domain` の `domain/model/*Defaults.kt` に定義する。シミュレーター固有のデフォルト値は、そのシミュレーターのドメインモジュール（`:core:lmu-windows-domain` / `:core:ace-windows-domain` / `:core:gt7-ps5-domain`）の `domain/<sim>/model/*Defaults.kt` に定義する（`:core:*-data` と feature はそのシミュレーターのドメインモジュールに依存して参照するため重複定義にならない）。
 
-feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:data` から参照できず同じ値を重複定義することになるため避ける。Preview やテストデータだけで完結する表示用の値は feature 内に置いてよい。
+例外として、`ReadoutItemKey` と組で参照される読み上げ一覧の有効状態・開始音・キュー・順序の既定値（`*ReadoutDefaults.kt`）は、`:core:domain` が `ReadoutItemKey`（sealed）と共通の集約（`AutoReadoutOrderDefaults.kt` 等）を持つため `:core:domain` に残す。
+
+feature の `companion object` や `Pane.kt` に仕様値を置かず、共通または該当するシミュレーターのドメインモジュールで定義した定数を参照する。Preview やテストデータだけで完結する表示用の値は feature 内に置いてよい。
 
 定数名は `XXX_DEFAULT` のように末尾に `DEFAULT` を付けて統一すること（例: `LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT`）。
 

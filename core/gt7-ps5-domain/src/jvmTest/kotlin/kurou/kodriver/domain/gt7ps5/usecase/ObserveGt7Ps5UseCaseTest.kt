@@ -1,4 +1,4 @@
-package kurou.kodriver.domain.lmuwindows.usecase
+package kurou.kodriver.domain.gt7ps5.usecase
 
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -7,21 +7,20 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
-import kurou.kodriver.domain.usecase.fakeLmuWindowsTelemetryData
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ObserveLmuWindowsUseCaseTest {
-    private val repo: LmuWindowsRepository = mockk()
+class ObserveGt7Ps5UseCaseTest {
+    private val repo: Gt7Ps5Repository = mockk()
 
     @Test
     fun `invokeはリポジトリのtelemetryStreamを返す`() =
         runTest {
-            val expected = fakeLmuWindowsTelemetryData(speedX = 10.0)
+            val expected = fakeGt7Ps5TelemetryData(lapCount = 3)
             every { repo.telemetryStream() } returns flowOf(expected)
-            val useCase = ObserveLmuWindowsUseCase(repo)
+            val useCase = ObserveGt7Ps5UseCase(repo)
 
             val result = useCase().first()
 
@@ -34,7 +33,7 @@ class ObserveLmuWindowsUseCaseTest {
     fun `invokeは空のフローをそのまま返す`() =
         runTest {
             every { repo.telemetryStream() } returns flowOf()
-            val useCase = ObserveLmuWindowsUseCase(repo)
+            val useCase = ObserveGt7Ps5UseCase(repo)
 
             val results = buildList { useCase().collect { add(it) } }
 
@@ -46,11 +45,11 @@ class ObserveLmuWindowsUseCaseTest {
     @Test
     fun `複数のデータを順番通りに流す`() =
         runTest {
-            val data1 = fakeLmuWindowsTelemetryData(speedX = 1.0)
-            val data2 = fakeLmuWindowsTelemetryData(speedX = 2.0)
-            val data3 = fakeLmuWindowsTelemetryData(speedX = 3.0)
+            val data1 = fakeGt7Ps5TelemetryData(lapCount = 1)
+            val data2 = fakeGt7Ps5TelemetryData(lapCount = 2)
+            val data3 = fakeGt7Ps5TelemetryData(lapCount = 3)
             every { repo.telemetryStream() } returns flowOf(data1, data2, data3)
-            val useCase = ObserveLmuWindowsUseCase(repo)
+            val useCase = ObserveGt7Ps5UseCase(repo)
 
             val results = buildList { useCase().collect { add(it) } }
 

@@ -4,17 +4,12 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
-import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
-import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
-import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -27,22 +22,11 @@ class ObserveEffectiveKeepScreenOnUseCaseTest {
 
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
-    private val lmuWindowsRepository: LmuWindowsRepository = mockk()
-
-    private val gt7Ps5Repository: Gt7Ps5Repository = mockk()
-
-    private val aceWindowsStatusRepository: AceWindowsStatusRepository = mockk()
-
-    private fun createUseCase() =
+    private fun createUseCase(telemetry: Flow<*>) =
         ObserveEffectiveKeepScreenOnUseCase(
             observeKeepScreenOnEnabled = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
             observeTelemetryReceiving =
-                ObserveTelemetryReceivingUseCase(
-                    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-                    observeLmuWindows = ObserveLmuWindowsUseCase(lmuWindowsRepository),
-                    observeGt7Ps5 = ObserveGt7Ps5UseCase(gt7Ps5Repository),
-                    observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(aceWindowsStatusRepository),
-                ),
+                ObserveTelemetryReceivingUseCase(ObserveSelectedSimulatorUseCase(simulatorRepository)) { telemetry },
         )
 
     @Test
@@ -50,15 +34,13 @@ class ObserveEffectiveKeepScreenOnUseCaseTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns flowOf(true)
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
-            every { gt7Ps5Repository.telemetryStream() } returns flowOf(fakeGt7Ps5TelemetryData())
-            val useCase = createUseCase()
+            val useCase = createUseCase(flowOf(Unit))
 
             assertTrue(useCase().first { it })
 
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-            confirmVerified(keepScreenOnRepository, simulatorRepository, gt7Ps5Repository)
+            confirmVerified(keepScreenOnRepository, simulatorRepository)
         }
 
     @Test
@@ -66,15 +48,13 @@ class ObserveEffectiveKeepScreenOnUseCaseTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns flowOf(true)
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
-            every { gt7Ps5Repository.telemetryStream() } returns emptyFlow()
-            val useCase = createUseCase()
+            val useCase = createUseCase(emptyFlow<Unit>())
 
             assertFalse(useCase().first())
 
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-            confirmVerified(keepScreenOnRepository, simulatorRepository, gt7Ps5Repository)
+            confirmVerified(keepScreenOnRepository, simulatorRepository)
         }
 
     @Test
@@ -82,14 +62,12 @@ class ObserveEffectiveKeepScreenOnUseCaseTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns flowOf(false)
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
-            every { gt7Ps5Repository.telemetryStream() } returns flowOf(fakeGt7Ps5TelemetryData())
-            val useCase = createUseCase()
+            val useCase = createUseCase(flowOf(Unit))
 
             assertFalse(useCase().first())
 
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-            confirmVerified(keepScreenOnRepository, simulatorRepository, gt7Ps5Repository)
+            confirmVerified(keepScreenOnRepository, simulatorRepository)
         }
 }

@@ -171,7 +171,7 @@ data class AceWindowsTyreOverheat(
 /**
  * ACE の周辺車両接近を読み上げるイベント。
  *
- * ACE の共有メモリには自車の向きに相当するフィールドが存在せず、LMU（[LmuWindowsCarLeft]/[LmuWindowsCarRight] 等）のような
+ * ACE の共有メモリには自車の向きに相当するフィールドが存在せず、LMU（`LmuWindowsCarLeft`/`LmuWindowsCarRight` 等）のような
  * 左右を区別した接近アナウンスができないため、左右を区別しない汎用の接近アナウンスとして1種類のみ用意する。
  */
 data class AceWindowsVehicleApproach(
