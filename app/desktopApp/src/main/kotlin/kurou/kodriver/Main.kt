@@ -78,12 +78,8 @@ fun main() {
                                     modules(
                                         listOf(
                                             desktopDataModule,
-                                            desktopAceWindowsPreferencesDataModule(
-                                                "${System.getProperty("user.home")}/.kodriver",
-                                            ),
-                                            desktopLmuWindowsPreferencesDataModule(
-                                                "${System.getProperty("user.home")}/.kodriver",
-                                            ),
+                                            desktopAceWindowsPreferencesDataModule(kodriverDirectory),
+                                            desktopLmuWindowsPreferencesDataModule(kodriverDirectory),
                                             lmuWindowsDataModule,
                                             lmuWindowsRestApiDataModule,
                                             gt7Ps5DataModule,
