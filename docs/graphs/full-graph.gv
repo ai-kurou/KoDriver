@@ -32,6 +32,7 @@ digraph G {
   ":app:androidApp" -> ":core:data"
   ":app:androidApp" -> ":core:device-volume-data"
   ":app:androidApp" -> ":core:gt7-ps5-data"
+  ":app:androidApp" -> ":core:lmu-windows-data"
   ":app:androidApp" -> ":core:text-to-speech-data"
   ":app:androidApp" -> ":core:windows-startup-data"
   ":app:androidBenchmark" -> ":app:androidApp"

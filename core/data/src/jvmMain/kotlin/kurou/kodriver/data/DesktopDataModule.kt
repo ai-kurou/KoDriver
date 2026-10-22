@@ -20,6 +20,7 @@ import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepositor
 import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
+import kurou.kodriver.data.preferences.createReadoutHotkeyPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createSimulatorPreferencesRepository
@@ -52,6 +53,7 @@ import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -78,7 +80,9 @@ val desktopDataModule =
     module {
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
-        includes(desktopDataModuleLmuWindows())
+        single<ReadoutHotkeyPreferencesRepository> {
+            createReadoutHotkeyPreferencesRepository(kodriverDirectory)
+        }
         includes(desktopDataModuleAceWindows())
         includes(desktopDataModuleGt7Ps5())
         // 設定永続化（DataStore。ファイルは ~/.kodriver 配下）

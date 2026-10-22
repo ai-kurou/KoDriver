@@ -1,0 +1,12 @@
+package kurou.kodriver.core.lmuwindowsdata.preferences
+
+import androidx.datastore.core.DataStore
+
+internal fun createLmuWindowsTyreTemperaturePreferencesDataStore(
+    directory: String,
+): DataStore<LmuWindowsTyreTemperaturePreferences> =
+    preferencesDataStore(
+        directory = directory,
+        fileName = "lmu_windows_auto_tyre_temperature_preferences.pb",
+        serializer = LmuWindowsTyreTemperaturePreferencesSerializer,
+    )
