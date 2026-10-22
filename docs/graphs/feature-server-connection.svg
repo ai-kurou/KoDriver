@@ -30,7 +30,7 @@
 <!-- :core:domain -->
 <g id="node2" class="node">
 <title>:core:domain</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M145,-36C145,-36 60,-36 60,-36 54,-36 48,-30 48,-24 48,-24 48,-12 48,-12 48,-6 54,0 60,0 60,0 145,0 145,0 151,0 157,-6 157,-12 157,-12 157,-24 157,-24 157,-30 151,-36 145,-36"/>
+<path fill="#e1bee7" stroke="#8e24aa" d="M145,-36C145,-36 60,-36 60,-36 54,-36 48,-30 48,-24 48,-24 48,-12 48,-12 48,-6 54,0 60,0 60,0 145,0 145,0 151,0 157,-6 157,-12 157,-12 157,-24 157,-24 157,-30 151,-36 145,-36"/>
 <text text-anchor="middle" x="102.5" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
 </g>
 <!-- :feature:server&#45;connection&#45;&gt;:core:domain -->

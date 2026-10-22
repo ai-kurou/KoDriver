@@ -36,7 +36,7 @@
 <!-- :core:domain -->
 <g id="node3" class="node">
 <title>:core:domain</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M270,-36C270,-36 185,-36 185,-36 179,-36 173,-30 173,-24 173,-24 173,-12 173,-12 173,-6 179,0 185,0 185,0 270,0 270,0 276,0 282,-6 282,-12 282,-12 282,-24 282,-24 282,-30 276,-36 270,-36"/>
+<path fill="#e1bee7" stroke="#8e24aa" d="M270,-36C270,-36 185,-36 185,-36 179,-36 173,-30 173,-24 173,-24 173,-12 173,-12 173,-6 179,0 185,0 185,0 270,0 270,0 276,0 282,-6 282,-12 282,-12 282,-24 282,-24 282,-30 276,-36 270,-36"/>
 <text text-anchor="middle" x="227.5" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
 </g>
 <!-- :feature:other&#45;overlay&#45;text&#45;size&#45;detail&#45;&gt;:core:designsystem -->

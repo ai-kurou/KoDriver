@@ -30,7 +30,7 @@
 <!-- :core:domain -->
 <g id="node2" class="node">
 <title>:core:domain</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M146,-36C146,-36 61,-36 61,-36 55,-36 49,-30 49,-24 49,-24 49,-12 49,-12 49,-6 55,0 61,0 61,0 146,0 146,0 152,0 158,-6 158,-12 158,-12 158,-24 158,-24 158,-30 152,-36 146,-36"/>
+<path fill="#e1bee7" stroke="#8e24aa" d="M146,-36C146,-36 61,-36 61,-36 55,-36 49,-30 49,-24 49,-24 49,-12 49,-12 49,-6 55,0 61,0 61,0 146,0 146,0 152,0 158,-6 158,-12 158,-12 158,-24 158,-24 158,-30 152,-36 146,-36"/>
 <text text-anchor="middle" x="103.5" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
 </g>
 <!-- :core:windows&#45;hotkey&#45;data&#45;&gt;:core:domain -->

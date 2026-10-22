@@ -2,9 +2,9 @@ digraph G {
   rankdir=TB
   node [shape=box, style="rounded,filled"]
   ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
-  ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:gt7-ps5-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
-  ":core:gt7-ps5-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
+  ":core:gt7-ps5-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=2.5]
   ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]

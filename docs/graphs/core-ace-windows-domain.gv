@@ -2,9 +2,9 @@ digraph G {
   rankdir=TB
   node [shape=box, style="rounded,filled"]
   ":core:ace-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
-  ":core:ace-windows-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
+  ":core:ace-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=2.5]
   ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
-  ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":feature:ace-windows-auto-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
