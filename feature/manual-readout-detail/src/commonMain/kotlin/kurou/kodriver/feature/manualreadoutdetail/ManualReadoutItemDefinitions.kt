@@ -14,7 +14,7 @@ internal val manualReadoutItemDefinitions: Map<String, Map<String, ManualReadout
     )
 
 internal fun manualReadoutItemKeys(simulatorId: String): List<String> =
-    manualReadoutItemDefinitions[simulatorId]?.keys?.toList().orEmpty()
+    manualReadoutItemDefinitions[simulatorId]?.keys.orEmpty().toList()
 
 internal fun manualReadoutItemDefinition(
     simulatorId: String,
