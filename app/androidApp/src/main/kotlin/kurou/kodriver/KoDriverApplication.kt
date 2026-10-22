@@ -5,6 +5,7 @@ import android.provider.Settings
 import io.sentry.Sentry
 import io.sentry.android.core.SentryAndroid
 import io.sentry.protocol.User
+import kurou.kodriver.core.acewindowsdata.androidAceWindowsDataModule
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.androidLmuWindowsDataModule
@@ -44,6 +45,7 @@ class KoDriverApplication : Application() {
                 listOf(
                     androidDataModule(this@KoDriverApplication),
                     androidLmuWindowsDataModule(this@KoDriverApplication),
+                    androidAceWindowsDataModule(this@KoDriverApplication),
                     gt7Ps5DataModule,
                     deviceVolumeDataModule,
                     textToSpeechDataModule,

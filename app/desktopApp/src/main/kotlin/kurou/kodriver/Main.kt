@@ -16,6 +16,7 @@ import io.sentry.protocol.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
+import kurou.kodriver.core.acewindowsdata.desktopAceWindowsPreferencesDataModule
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.desktopLmuWindowsPreferencesDataModule
@@ -77,6 +78,9 @@ fun main() {
                                     modules(
                                         listOf(
                                             desktopDataModule,
+                                            desktopAceWindowsPreferencesDataModule(
+                                                "${System.getProperty("user.home")}/.kodriver",
+                                            ),
                                             desktopLmuWindowsPreferencesDataModule(
                                                 "${System.getProperty("user.home")}/.kodriver",
                                             ),

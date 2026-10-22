@@ -83,7 +83,6 @@ val desktopDataModule =
         single<ReadoutHotkeyPreferencesRepository> {
             createReadoutHotkeyPreferencesRepository(kodriverDirectory)
         }
-        includes(desktopDataModuleAceWindows())
         includes(desktopDataModuleGt7Ps5())
         // 設定永続化（DataStore。ファイルは ~/.kodriver 配下）
         single<SimulatorPreferencesRepository> {

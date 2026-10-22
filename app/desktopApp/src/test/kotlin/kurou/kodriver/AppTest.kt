@@ -22,6 +22,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
+import kurou.kodriver.core.acewindowsdata.desktopAceWindowsPreferencesDataModule
 import kurou.kodriver.core.lmuwindowsdata.desktopLmuWindowsPreferencesDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.data.desktopDataModule
@@ -73,6 +74,7 @@ class AppTest {
                 modules(
                     listOf(
                         desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
                         desktopLmuWindowsPreferencesDataModule(
                             "${System.getProperty("user.home")}/.kodriver",
                         ),

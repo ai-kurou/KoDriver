@@ -2,6 +2,7 @@ package kurou.kodriver
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
+import kurou.kodriver.core.acewindowsdata.androidAceWindowsDataModule
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.androidLmuWindowsDataModule
@@ -40,6 +41,7 @@ class AndroidKoinModuleGraphTest {
             listOf(
                 androidDataModule(context),
                 androidLmuWindowsDataModule(context),
+                androidAceWindowsDataModule(context),
                 gt7Ps5DataModule,
                 deviceVolumeDataModule,
                 textToSpeechDataModule,

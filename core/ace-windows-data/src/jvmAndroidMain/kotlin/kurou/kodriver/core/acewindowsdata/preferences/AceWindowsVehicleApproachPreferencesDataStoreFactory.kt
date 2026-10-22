@@ -1,0 +1,12 @@
+package kurou.kodriver.core.acewindowsdata.preferences
+
+import androidx.datastore.core.DataStore
+
+internal fun createAceWindowsVehicleApproachPreferencesDataStore(
+    directory: String,
+): DataStore<AceWindowsVehicleApproachPreferences> =
+    preferencesDataStore(
+        directory = directory,
+        fileName = "ace_windows_auto_vehicle_approach_preferences.pb",
+        serializer = AceWindowsVehicleApproachPreferencesSerializer,
+    )
