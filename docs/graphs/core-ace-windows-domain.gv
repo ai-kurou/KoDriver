@@ -14,8 +14,12 @@ digraph G {
   ":feature:ace-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:manual-readout-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:telemetry-log-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:telemetry-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":server" [fillcolor="#F8BBD0", color="#D81B60", penwidth=1]
   ":server" -> ":core:domain"
   ":server" -> ":core:ace-windows-domain"
@@ -42,8 +46,16 @@ digraph G {
   ":feature:ace-windows-debug-state-detail" -> ":core:ace-windows-domain"
   ":feature:ace-windows-narrator" -> ":core:domain"
   ":feature:ace-windows-narrator" -> ":core:ace-windows-domain"
+  ":feature:auto-readout-list" -> ":core:domain"
+  ":feature:auto-readout-list" -> ":core:ace-windows-domain"
   ":feature:main" -> ":core:domain"
   ":feature:main" -> ":core:ace-windows-domain"
   ":feature:manual-readout-detail" -> ":core:domain"
   ":feature:manual-readout-detail" -> ":core:ace-windows-domain"
+  ":feature:narrator-overlay" -> ":core:domain"
+  ":feature:narrator-overlay" -> ":core:ace-windows-domain"
+  ":feature:telemetry-log-detail" -> ":core:domain"
+  ":feature:telemetry-log-detail" -> ":core:ace-windows-domain"
+  ":feature:telemetry-log-list" -> ":core:domain"
+  ":feature:telemetry-log-list" -> ":core:ace-windows-domain"
 }
