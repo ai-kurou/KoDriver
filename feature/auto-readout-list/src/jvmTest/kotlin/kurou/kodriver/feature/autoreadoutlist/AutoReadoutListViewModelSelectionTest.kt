@@ -28,6 +28,10 @@ import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AutoReadoutListViewModelSelectionTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()

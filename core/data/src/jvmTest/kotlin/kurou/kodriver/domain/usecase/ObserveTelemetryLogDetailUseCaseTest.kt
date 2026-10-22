@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
@@ -17,6 +18,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -89,6 +91,11 @@ private fun createTelemetryLogRepository(
 }
 
 class ObserveTelemetryLogDetailUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerReadoutItemKeys()
+    }
+
     private val repository: TelemetryLogRepository = mockk()
 
     @Test

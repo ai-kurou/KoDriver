@@ -20,8 +20,8 @@ import kurou.kodriver.core.designsystem.DebugStateCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ACE_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_flag_info_title
@@ -98,7 +98,10 @@ internal fun AceWindowsDebugStateDetailPaneContent(
                 }
             Column {
                 DebugReadoutRequestCard(
-                    readoutItemKeyValues = ReadoutItemKey.topLevelEntriesOf(Simulator.AceWindows).map { it.value },
+                    readoutItemKeyValues =
+                        ACE_WINDOWS_READOUT_ITEM_KEYS
+                            .filterIsInstance<ReadoutItemKey.TopLevel>()
+                            .map { it.value },
                     selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
                     text = uiState.debugReadoutText,
                     onReadoutItemSelected = onReadoutItemSelected,

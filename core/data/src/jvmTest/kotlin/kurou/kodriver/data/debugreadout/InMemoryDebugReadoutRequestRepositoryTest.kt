@@ -4,13 +4,20 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class InMemoryDebugReadoutRequestRepositoryTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerReadoutItemKeys()
+    }
+
     @Test
     fun `全購読者に要求を配信し過去の要求は再配信しない`() =
         runTest {

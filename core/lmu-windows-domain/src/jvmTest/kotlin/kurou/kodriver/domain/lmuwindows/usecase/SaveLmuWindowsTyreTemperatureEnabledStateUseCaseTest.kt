@@ -6,9 +6,16 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsTyreTemperatureEnabledStateUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val repository: LmuWindowsTyreTemperaturePreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test

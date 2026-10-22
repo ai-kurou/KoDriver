@@ -34,6 +34,9 @@ import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
@@ -41,6 +44,7 @@ import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -54,6 +58,13 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutSetDetailWiringTest {
+    @Before
+    fun `ReadoutItemKeyを登録する`() {
+        registerLmuWindowsReadoutItemKeys()
+        registerGt7Ps5ReadoutItemKeys()
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val rule = createComposeRule()
 
     @get:Rule

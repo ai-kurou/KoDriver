@@ -4,17 +4,24 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import java.nio.file.Files
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TelemetryLogRepositoryFactoryTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerReadoutItemKeys()
+    }
+
     @Test
     fun `observeLatestNarratedTelemetryLogは読み上げされなかったログを除外して最新を返す`() =
         runTest {

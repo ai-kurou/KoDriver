@@ -33,12 +33,19 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class DetermineAceWindowsNarratorReadoutUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val useCase = DetermineAceWindowsNarratorReadoutUseCase()
 
     @Test

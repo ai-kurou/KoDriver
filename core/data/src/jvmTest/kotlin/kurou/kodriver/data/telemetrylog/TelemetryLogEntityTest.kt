@@ -1,14 +1,21 @@
 package kurou.kodriver.data.telemetrylog
 
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class TelemetryLogEntityTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerReadoutItemKeys()
+    }
+
     @Test
     fun `toDomainはEntityをDomainに変換する`() {
         val entity =

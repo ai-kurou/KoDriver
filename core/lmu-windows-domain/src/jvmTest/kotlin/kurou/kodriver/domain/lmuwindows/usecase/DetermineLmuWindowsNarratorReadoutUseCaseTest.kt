@@ -52,19 +52,25 @@ import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @Suppress("TooManyFunctions")
 class DetermineLmuWindowsNarratorReadoutUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
 
     @Test
@@ -246,7 +252,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineManualReadout(
                 state,
-                listOf(LmuWindowsManualReadoutItem(Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value, "読まない", 0.5)),
+                listOf(LmuWindowsManualReadoutItem("gt7_ps5_auto_remaining_fuel", "読まない", 0.5)),
             )
         assertEquals(state, decision.state)
         assertEquals(

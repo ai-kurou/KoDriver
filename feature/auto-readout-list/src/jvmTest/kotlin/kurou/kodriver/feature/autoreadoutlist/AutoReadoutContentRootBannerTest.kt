@@ -19,6 +19,10 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class AutoReadoutContentRootBannerTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @get:Rule
     val rule = createComposeRule()
 

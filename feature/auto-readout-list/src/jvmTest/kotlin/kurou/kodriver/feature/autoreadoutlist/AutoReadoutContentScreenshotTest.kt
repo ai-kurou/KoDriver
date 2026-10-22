@@ -16,6 +16,10 @@ import kurou.kodriver.domain.model.Simulator
 import org.junit.Test
 
 class AutoReadoutContentScreenshotTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @Test
     fun `デフォルト`() =
         composeScreenshotTest {

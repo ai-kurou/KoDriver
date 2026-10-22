@@ -30,14 +30,21 @@ import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5TyreTemperatureOverheat
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @Suppress("TooManyFunctions")
 class Gt7Ps5ReadoutTextSpeakerTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerGt7Ps5ReadoutItemKeys()
+    }
+
     private val observeText: ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase = mockk()
     private val observeEmptyText: ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase = mockk()
     private val observeFuelText: ObserveGt7Ps5RemainingFuelReadoutTextUseCase = mockk()

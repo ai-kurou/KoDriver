@@ -6,9 +6,16 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveAceWindowsVehicleApproachEnabledStateUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val repository: AceWindowsVehicleApproachPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test

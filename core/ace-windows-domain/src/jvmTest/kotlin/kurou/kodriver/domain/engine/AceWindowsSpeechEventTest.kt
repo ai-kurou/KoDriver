@@ -14,12 +14,19 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_READO
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AceWindowsSpeechEventTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     @Test
     fun `ACEの手動タイヤ温度はRootキーと既定文言と解決済み本文を持つ`() {
         val event = AceWindowsTyreTemperatureCurrentValue(90)

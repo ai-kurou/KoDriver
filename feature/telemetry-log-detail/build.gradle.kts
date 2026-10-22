@@ -18,6 +18,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         jvmTest.dependencies {
+            implementation(projects.core.aceWindowsDomain)
+            implementation(projects.core.lmuWindowsDomain)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.compose.uiTest)

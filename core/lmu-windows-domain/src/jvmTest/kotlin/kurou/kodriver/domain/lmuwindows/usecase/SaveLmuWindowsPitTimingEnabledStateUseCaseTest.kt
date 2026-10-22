@@ -6,9 +6,16 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsPitTimingEnabledStateUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val repository: LmuWindowsPitTimingPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test

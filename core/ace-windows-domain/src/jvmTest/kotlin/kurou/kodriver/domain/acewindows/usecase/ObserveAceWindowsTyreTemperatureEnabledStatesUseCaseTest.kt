@@ -14,6 +14,8 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreTemperaturePref
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -40,6 +42,11 @@ private fun createAceWindowsTyreTemperaturePreferencesRepository(
 }
 
 class ObserveAceWindowsTyreTemperatureEnabledStatesUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val repository: AceWindowsTyreTemperaturePreferencesRepository = mockk()
 
     @Test

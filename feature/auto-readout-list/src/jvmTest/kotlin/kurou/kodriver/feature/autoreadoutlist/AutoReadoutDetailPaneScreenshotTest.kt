@@ -13,6 +13,10 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Test
 
 class AutoReadoutDetailPaneScreenshotTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @Test
     fun `戻るボタンあり`() =
         composeScreenshotTest {

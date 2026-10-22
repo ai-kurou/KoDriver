@@ -8,6 +8,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class AutoReadoutListItemTypeFromIdTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @Test
     fun `lmu_windows の vehicle_approach は LmuWindows_VehicleApproach を返す`() {
         assertEquals(

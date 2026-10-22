@@ -31,6 +31,8 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -43,6 +45,11 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsDebugStateDetailPaneWiringTest {
+    @Before
+    fun `ReadoutItemKeyを登録する`() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val rule = createComposeRule()
 
     @get:Rule

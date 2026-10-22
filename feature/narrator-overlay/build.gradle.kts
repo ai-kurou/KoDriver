@@ -14,6 +14,7 @@ kotlin {
             implementation(libs.koin.compose)
         }
         jvmTest.dependencies {
+            implementation(projects.core.aceWindowsDomain)
             implementation(libs.mockk)
             implementation(libs.kotlinx.coroutinesTest)
         }

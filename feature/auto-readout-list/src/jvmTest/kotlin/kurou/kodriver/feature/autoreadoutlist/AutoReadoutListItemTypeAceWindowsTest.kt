@@ -9,6 +9,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class AutoReadoutListItemTypeAceWindowsTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @Test
     fun `ace_windows の remaining_fuel は AceWindows_RemainingFuel を返す`() {
         assertEquals(

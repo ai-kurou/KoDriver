@@ -29,6 +29,10 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AutoReadoutListViewModelAceWindowsTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()

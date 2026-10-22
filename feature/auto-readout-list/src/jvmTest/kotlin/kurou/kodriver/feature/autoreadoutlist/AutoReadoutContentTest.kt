@@ -42,6 +42,10 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class AutoReadoutContentTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @get:Rule
     val rule = createComposeRule()
 

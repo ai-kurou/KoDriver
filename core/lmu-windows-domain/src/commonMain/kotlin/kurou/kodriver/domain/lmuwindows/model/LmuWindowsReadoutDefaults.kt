@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.lmuwindows.model
 
+import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 
@@ -58,7 +59,7 @@ val LMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
 
 /** 一覧画面の TopLevel 項目と Narrator が共有する読み上げ順序の初期値。 */
 internal fun lmuWindowsDefaultAutoReadoutOrder(): List<ReadoutItemKey> =
-    ReadoutItemKey.entries
+    LMU_WINDOWS_READOUT_ITEM_KEYS
         .filterIsInstance<LmuWindowsReadoutItemKey.TopLevel>()
         .sortedBy { key -> lmuWindowsOrderIndex(key) }
 

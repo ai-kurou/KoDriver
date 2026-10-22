@@ -13,6 +13,8 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -39,6 +41,11 @@ private fun createLmuWindowsTyreTemperaturePreferencesRepository(
 }
 
 class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val repository: LmuWindowsTyreTemperaturePreferencesRepository = mockk()
 
     @Test

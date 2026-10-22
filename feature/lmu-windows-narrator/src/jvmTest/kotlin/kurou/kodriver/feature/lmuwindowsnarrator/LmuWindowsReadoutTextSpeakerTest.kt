@@ -56,8 +56,10 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -66,6 +68,11 @@ import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class LmuWindowsReadoutTextSpeakerTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
     private val observeSectorYellow: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase = mockk()
     private val observeBlue: ObserveLmuWindowsBlueFlagReadoutTextUseCase = mockk()
     private val observeFullCourseYellow: ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase = mockk()

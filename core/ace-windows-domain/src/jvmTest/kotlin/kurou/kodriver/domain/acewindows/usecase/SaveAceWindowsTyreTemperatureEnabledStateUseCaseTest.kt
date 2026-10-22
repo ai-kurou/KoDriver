@@ -6,9 +6,16 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveAceWindowsTyreTemperatureEnabledStateUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val repository: AceWindowsTyreTemperaturePreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test

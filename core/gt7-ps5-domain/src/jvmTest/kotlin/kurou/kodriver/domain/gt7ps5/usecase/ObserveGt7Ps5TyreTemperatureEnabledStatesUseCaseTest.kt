@@ -14,6 +14,8 @@ import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5TyreTemperaturePreferencesR
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -40,6 +42,11 @@ private fun createGt7Ps5TyreTemperaturePreferencesRepository(
 }
 
 class ObserveGt7Ps5TyreTemperatureEnabledStatesUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerGt7Ps5ReadoutItemKeys()
+    }
+
     private val repository: Gt7Ps5TyreTemperaturePreferencesRepository = mockk()
 
     @Test

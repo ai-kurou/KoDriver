@@ -31,6 +31,7 @@ import kurou.kodriver.buildlogic.screenshottest.singlePaneDirective
 import kurou.kodriver.feature.autoreadoutlist.AutoReadoutContent
 import kurou.kodriver.feature.autoreadoutlist.autoReadoutListModule
 import kurou.kodriver.feature.autoreadoutlist.fakeAutoReadoutListModule
+import kurou.kodriver.feature.autoreadoutlist.registerAllReadoutItemKeys
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
@@ -52,6 +53,7 @@ class AppScreenScreenshotTest {
         @JvmStatic
         fun setUpKoin() {
             Dispatchers.setMain(testDispatcher)
+            registerAllReadoutItemKeys()
             startKoin {
                 modules(
                     listOf(

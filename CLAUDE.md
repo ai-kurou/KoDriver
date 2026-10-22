@@ -52,7 +52,7 @@ Le Mans Ultimate（LMU）・Assetto Corsa EVO（ACE）から Windows 共有メ�
 
 共通のデフォルト値は従来どおり `:core:domain` の `domain/model/*Defaults.kt` に定義する。シミュレーター固有のデフォルト値は、そのシミュレーターのドメインモジュール（`:core:lmu-windows-domain` / `:core:ace-windows-domain` / `:core:gt7-ps5-domain`）の `domain/<sim>/model/*Defaults.kt` に定義する（`:core:*-data` と feature はそのシミュレーターのドメインモジュールに依存して参照するため重複定義にならない）。
 
-例外として、`ReadoutItemKey` と組で参照される読み上げ一覧の有効状態・開始音・キュー・順序の既定値（`*ReadoutDefaults.kt`）は、`:core:domain` が `ReadoutItemKey`（sealed）と共通の集約（`AutoReadoutOrderDefaults.kt` 等）を持つため `:core:domain` に残す。
+すべてのシミュレーター固有の読み上げキーと既定値（`*ReadoutItemKey.kt` / `*ReadoutDefaults.kt`）は各シミュレーターのドメインモジュールに置き、共通の `ReadoutItemKeyRegistry` が登録済み spec を通じて集約する。新しいキーを追加する際は、その simulator モジュールの `*ReadoutItemKeys.kt` のキー一覧にも追加すること。
 
 feature の `companion object` や `Pane.kt` に仕様値を置かず、共通または該当するシミュレーターのドメインモジュールで定義した定数を参照する。Preview やテストデータだけで完結する表示用の値は feature 内に置いてよい。
 

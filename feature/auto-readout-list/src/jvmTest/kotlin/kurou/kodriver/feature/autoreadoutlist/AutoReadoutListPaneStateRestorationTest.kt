@@ -18,6 +18,10 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kotlin.test.Test
 
 class AutoReadoutListPaneStateRestorationTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun `状態復元後も読み上げ優先度ヒントのシートの表示状態が維持される`() =

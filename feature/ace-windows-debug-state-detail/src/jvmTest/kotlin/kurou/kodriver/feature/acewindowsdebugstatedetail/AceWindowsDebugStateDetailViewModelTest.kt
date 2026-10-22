@@ -45,6 +45,7 @@ import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
@@ -52,12 +53,18 @@ import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
 import org.junit.Before
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions", "LongMethod")
 class AceWindowsDebugStateDetailViewModelTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val requestDebugReadout: RequestDebugReadoutUseCase = mockk(relaxUnitFun = true)
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -132,8 +139,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             viewModel.requestReadout()
             viewModel.selectReadoutItem("unknown")
             viewModel.selectReadoutItem(AceWindowsReadoutItemKey.MyBestLap.DetailEnabled.value)
-            val otherSimulator = Simulator.entries.first { it != Simulator.AceWindows }
-            viewModel.selectReadoutItem(ReadoutItemKey.topLevelEntriesOf(otherSimulator).first().value)
+            viewModel.selectReadoutItem("foreign_simulator_key")
             assertEquals(keys.first(), viewModel.uiState.first().selectedReadoutItemKey)
             viewModel.selectReadoutItem(keys.last().value)
             viewModel.updateDebugReadoutText("入力 {laps}")

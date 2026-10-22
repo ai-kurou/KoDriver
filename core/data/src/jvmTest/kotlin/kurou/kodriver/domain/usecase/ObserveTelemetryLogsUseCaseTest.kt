@@ -10,12 +10,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -67,47 +69,55 @@ private fun createTelemetryLogRepository(
     return repository
 }
 
-class ResetTelemetryLogDatabaseUseCaseTest {
+class ObserveTelemetryLogsUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerReadoutItemKeys()
+    }
+
     private val repository: TelemetryLogRepository = mockk()
 
     @Test
-    fun `指定シミュレーターのログのみ削除して他シミュレーターのログを残す`() =
+    fun `初期値が空のとき空リストを返し・保存済みのログをそのまま返す`() =
         runTest {
-            val otherLog =
-                TelemetryLog(
-                    id = 2L,
+            val repository = createTelemetryLogRepository(repository)
+            val useCase = ObserveTelemetryLogsUseCase(repository)
+
+            assertEquals(emptyList(), useCase().first())
+
+            repository.saveTelemetryLog(
+                createdAt = 2000L,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
+                narratedText = "イエローフラッグ",
+                narrationOutcome = NarrationOutcome.QUEUED,
+                telemetryJson = """{"currentLap":2}""",
+            )
+            assertEquals(
+                listOf(
+                    TelemetryLog(
+                        id = 1L,
+                        createdAt = 2000L,
+                        simulator = Simulator.LmuWindows,
+                        readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
+                        narratedText = "イエローフラッグ",
+                        narrationOutcome = NarrationOutcome.QUEUED,
+                        telemetryJson = """{"currentLap":2}""",
+                    ),
+                ),
+                useCase().first(),
+            )
+            verify(exactly = 2) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) {
+                repository.saveTelemetryLog(
                     createdAt = 2000L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "イエローフラッグ",
                     narrationOutcome = NarrationOutcome.QUEUED,
-                    telemetryJson = "{}",
+                    telemetryJson = """{"currentLap":2}""",
                 )
-            val repository =
-                createTelemetryLogRepository(
-                    repository,
-                    initialLogs =
-                        listOf(
-                            TelemetryLog(
-                                id = 1L,
-                                createdAt = 1000L,
-                                simulator = Simulator.Gt7Ps5,
-                                readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
-                                narratedText = "燃料は残り約1周",
-                                narrationOutcome = NarrationOutcome.QUEUED,
-                                telemetryJson = """{"lapCount":1}""",
-                            ),
-                            otherLog,
-                        ),
-                )
-            val resetUseCase = ResetTelemetryLogDatabaseUseCase(repository)
-            val observeUseCase = ObserveTelemetryLogsUseCase(repository)
-
-            resetUseCase(Simulator.Gt7Ps5)
-
-            assertEquals(listOf(otherLog), observeUseCase().first())
-            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.Gt7Ps5) }
-            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            }
             confirmVerified(repository)
         }
 }

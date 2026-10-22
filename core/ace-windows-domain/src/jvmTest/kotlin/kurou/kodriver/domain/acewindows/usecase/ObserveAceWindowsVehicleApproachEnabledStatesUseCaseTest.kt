@@ -13,6 +13,8 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,6 +37,11 @@ private fun createAceWindowsVehicleApproachPreferencesRepository(
 }
 
 class ObserveAceWindowsVehicleApproachEnabledStatesUseCaseTest {
+    @BeforeTest
+    fun `ReadoutItemKeyを登録する`() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
     private val repository: AceWindowsVehicleApproachPreferencesRepository = mockk()
 
     @Test
