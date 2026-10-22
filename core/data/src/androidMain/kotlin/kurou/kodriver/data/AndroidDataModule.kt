@@ -117,7 +117,7 @@ fun androidDataModule(context: Context) =
         single<AndroidAudioUsagePreferencesRepository> {
             createAndroidAudioUsagePreferencesRepository(context.filesDir.absolutePath)
         }
-        // WebSocket 用 HttpClient は LMU・ACE の全リポジトリで単一インスタンスを共有する。
+        // :core:lmu-windows-data / :core:ace-windows-data の Android WebSocket リポジトリは、このバインドを get() で解決して共有する（WebSockets プラグインと ping 間隔の設定を含むため、削除すると WebSocket が動かなくなる）。
         single<HttpClient> { createWebSocketHttpClient() }
         includes(androidDataModuleCommonSimulatorPreferences(context))
         includes(androidDataModuleCommonPreferences(context))
