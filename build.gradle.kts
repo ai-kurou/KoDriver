@@ -160,23 +160,13 @@ moduleGraphAssert {
         // core:narrator自体はcore:domainに依存させず、SpeechEvent等はfeature側が型パラメータとして渡す）
         ":feature:.*narrator -> :core:narrator",
         ":server -> :core:domain",
-        // LMU固有ドメイン → core:domain（共有型 ReadoutItemKey / SpeechEvent 等を参照するため）
-        ":core:lmu-windows-domain -> :core:domain",
-        // LMU固有ドメインを参照できるモジュール
-        ":feature:.* -> :core:lmu-windows-domain",
-        ":core:.*data -> :core:lmu-windows-domain",
-        ":server -> :core:lmu-windows-domain",
-        // ACE固有ドメイン → core:domain（共有型 ReadoutItemKey / SpeechEvent 等を参照するため）
-        ":core:ace-windows-domain -> :core:domain",
-        // ACE固有ドメインを参照できるモジュール
-        ":feature:.* -> :core:ace-windows-domain",
-        ":core:.*data -> :core:ace-windows-domain",
-        ":server -> :core:ace-windows-domain",
-        // GT7固有ドメイン → core:domain（共有型 ReadoutItemKey / SpeechEvent 等を参照するため）
-        ":core:gt7-ps5-domain -> :core:domain",
-        // GT7固有ドメインを参照できるモジュール
-        ":feature:.* -> :core:gt7-ps5-domain",
-        ":core:.*data -> :core:gt7-ps5-domain",
+        // シミュレーター固有ドメイン → core:domain（共有型 ReadoutItemKey / SpeechEvent 等を参照するため）
+        ":core:.+-domain -> :core:domain",
+        // シミュレーター固有ドメインを参照できるモジュール（他シミュレーターのドメインへの依存は restricted で禁止）
+        ":feature:.* -> :core:.+-domain",
+        ":core:.*data -> :core:.+-domain",
+        // server は WebSocket 配信対象の LMU / ACE のみ（GT7 は参照しない）
+        ":server -> :core:(lmu|ace)-windows-domain",
     )
     restricted = arrayOf(
         // app エントリーポイント（feature 層・domain 層・他 app への直接参照禁止）
@@ -194,9 +184,7 @@ moduleGraphAssert {
         ":feature:.* -X> :core:.*data",
         // core（上位層への参照禁止・逆方向依存禁止・葉モジュールの他モジュール参照禁止・兄弟 data モジュール参照禁止）
         ":core:domain -X> :.*",
-        ":core:lmu-windows-domain -X> :(?!core:domain$).*",
-        ":core:ace-windows-domain -X> :(?!core:domain$).*",
-        ":core:gt7-ps5-domain -X> :(?!core:domain$).*",
+        ":core:.+-domain -X> :(?!core:domain$).*",
         // シミュレーター固有の data / feature は、他シミュレーターのドメインに依存しない
         // （feature:main や feature:other-* のように複数シミュレーターを扱うモジュールは対象外）
         ":core:lmu-windows-.*data -X> :core:(ace-windows|gt7-ps5)-domain",
