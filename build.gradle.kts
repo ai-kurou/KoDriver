@@ -356,6 +356,8 @@ tasks.register("generateModuleGraphImages") {
             buildString {
                 appendLine("digraph G {")
                 appendLine("  rankdir=LR")
+                // 縦が 1200pt（16.666667in）になるよう拡縮する。`!` は図が指定サイズより小さい場合も拡大する指定。
+                appendLine("  size=\"1000,16.666667!\"")
                 appendLine("  graph [ranksep=1.0, nodesep=0.3]")
                 appendLine("  node [shape=box, style=\"rounded,filled\"]")
                 overviewNodes.forEach { node ->
