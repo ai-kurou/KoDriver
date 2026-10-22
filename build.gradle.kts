@@ -197,6 +197,14 @@ moduleGraphAssert {
         ":core:lmu-windows-domain -X> :(?!core:domain$).*",
         ":core:ace-windows-domain -X> :(?!core:domain$).*",
         ":core:gt7-ps5-domain -X> :(?!core:domain$).*",
+        // シミュレーター固有の data / feature は、他シミュレーターのドメインに依存しない
+        // （feature:main や feature:other-* のように複数シミュレーターを扱うモジュールは対象外）
+        ":core:lmu-windows-.*data -X> :core:(ace-windows|gt7-ps5)-domain",
+        ":core:ace-windows-.*data -X> :core:(lmu-windows|gt7-ps5)-domain",
+        ":core:gt7-ps5-.*data -X> :core:(lmu-windows|ace-windows)-domain",
+        ":feature:lmu-windows-.* -X> :core:(ace-windows|gt7-ps5)-domain",
+        ":feature:ace-windows-.* -X> :core:(lmu-windows|gt7-ps5)-domain",
+        ":feature:gt7-ps5-.* -X> :core:(lmu-windows|ace-windows)-domain",
         ":core:narrator -X> :.*",
         ":core:designsystem -X> :.*",
         ":core:windows-shared-memory -X> :.*",
