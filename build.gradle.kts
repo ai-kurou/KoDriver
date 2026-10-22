@@ -299,6 +299,7 @@ tasks.register("generateModuleGraphImages") {
             "app" to "#FFE0B2",
             "feature" to "#C8E6C9",
             "core" to "#BBDEFB",
+            "domain" to "#E1BEE7",
             "server" to "#F8BBD0",
             "other" to "#EEEEEE",
         )
@@ -306,6 +307,7 @@ tasks.register("generateModuleGraphImages") {
             "app" to "#FB8C00",
             "feature" to "#43A047",
             "core" to "#1E88E5",
+            "domain" to "#8E24AA",
             "server" to "#D81B60",
             "other" to "#9E9E9E",
         )
@@ -313,6 +315,7 @@ tasks.register("generateModuleGraphImages") {
         fun moduleCategory(module: String): String = when {
             module.startsWith(":app:") -> "app"
             module.startsWith(":feature:") -> "feature"
+            module.startsWith(":core:") && module.endsWith("domain") -> "domain"
             module.startsWith(":core:") -> "core"
             module.startsWith(":server") -> "server"
             else -> "other"
@@ -322,11 +325,21 @@ tasks.register("generateModuleGraphImages") {
 
         fun moduleStrokeColor(module: String): String = moduleStrokeColors.getValue(moduleCategory(module))
 
+        // 全体図ではシミュレーター別の feature を1ノードにまとめ、それ以外の feature も1ノードにまとめる
         val featureGroup = "feature"
-        val featureModuleCount = allModules.count { it.startsWith(":feature:") }
+        val simulatorFeatureGroups = listOf(
+            ":feature:lmu-windows" to "feature:lmu-windows*",
+            ":feature:ace-windows" to "feature:ace-windows*",
+            ":feature:gt7-ps5" to "feature:gt7-ps5*",
+        )
 
-        fun overviewNode(module: String): String =
-            if (module.startsWith(":feature:")) featureGroup else module
+        fun overviewNode(module: String): String = when {
+            !module.startsWith(":feature:") -> module
+            else -> simulatorFeatureGroups.firstOrNull { (prefix, _) -> module.startsWith(prefix) }?.second
+                ?: featureGroup
+        }
+
+        val featureGroupNodes = allModules.filter { it.startsWith(":feature:") }.groupingBy(::overviewNode).eachCount()
 
         val overviewEdges = parsedEdges
             .map { (from, to, _) -> overviewNode(from) to overviewNode(to) }
@@ -334,7 +347,7 @@ tasks.register("generateModuleGraphImages") {
             .toSet()
             .sortedWith(compareBy<Pair<String, String>> { it.first }.thenBy { it.second })
 
-        val overviewNodes = (overviewEdges.flatMap { (from, to) -> listOf(from, to) } + featureGroup)
+        val overviewNodes = (overviewEdges.flatMap { (from, to) -> listOf(from, to) } + featureGroupNodes.keys)
             .toSet()
             .sorted()
 
@@ -346,14 +359,11 @@ tasks.register("generateModuleGraphImages") {
                 appendLine("  graph [ranksep=1.0, nodesep=0.3]")
                 appendLine("  node [shape=box, style=\"rounded,filled\"]")
                 overviewNodes.forEach { node ->
-                    val category = if (node == featureGroup) ":feature:x" else node
+                    val featureCount = featureGroupNodes[node]
+                    val category = if (featureCount != null) ":feature:x" else node
                     val fillColor = moduleFillColor(category)
                     val strokeColor = moduleStrokeColor(category)
-                    val label = if (node == featureGroup) {
-                        "feature\\n${moduleCountLabel(featureModuleCount)}"
-                    } else {
-                        node
-                    }
+                    val label = if (featureCount != null) "$node\\n${moduleCountLabel(featureCount)}" else node
                     appendLine(
                         "  \"$node\" [label=\"$label\", fillcolor=\"$fillColor\", color=\"$strokeColor\"]",
                     )
