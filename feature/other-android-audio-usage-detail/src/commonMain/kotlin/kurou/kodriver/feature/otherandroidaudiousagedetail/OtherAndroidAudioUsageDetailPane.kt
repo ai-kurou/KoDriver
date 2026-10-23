@@ -1,21 +1,26 @@
 package kurou.kodriver.feature.otherandroidaudiousagedetail
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -26,6 +31,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
@@ -53,6 +59,11 @@ import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.a
 import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+
+private val AVATAR_SIZE = 48.dp
+private val CARD_BORDER_WIDTH = 1.dp
+private val CHECK_BADGE_SIZE = 18.dp
+private val CHECK_BADGE_PADDING = 2.dp
 
 /** 音声の用途設定を表示する詳細ペイン。 */
 @Composable
@@ -84,7 +95,6 @@ fun OtherAndroidAudioUsageDetailPaneContent(
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val haptic = LocalHapticFeedback.current
     val previewSample = stringResource(Res.string.audio_usage_preview_sample)
     DetailPaneScaffold(
         title = stringResource(Res.string.audio_usage_title),
@@ -94,54 +104,111 @@ fun OtherAndroidAudioUsageDetailPaneContent(
     ) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
             DetailPaneDescription(text = stringResource(Res.string.audio_usage_description))
-            Column(Modifier.selectableGroup()) {
+            Column(Modifier.selectableGroup().padding(horizontal = KoDriverSpacing.large)) {
                 AndroidAudioUsage.entries.forEach { usage ->
                     val label = stringResource(audioUsageLabel(usage))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
-                        modifier = Modifier.fillMaxWidth().padding(KoDriverSpacing.medium),
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier =
-                                Modifier.weight(1f).selectable(
-                                    selected = uiState.usage == usage,
-                                    role = Role.RadioButton,
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                        onUsageSelected(usage)
-                                    },
-                                ),
-                        ) {
-                            RadioButton(selected = uiState.usage == usage, onClick = null)
-                            Column(Modifier.padding(start = KoDriverSpacing.medium)) {
-                                Text(label, style = MaterialTheme.typography.bodyLarge)
-                                Text(
-                                    stringResource(audioUsageDescription(usage)),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                        }
-                        FilledTonalIconButton(onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            onPreviewClicked(usage, previewSample)
-                        }) {
-                            if (uiState.previewingUsage == usage) {
-                                PlayingEqualizer(stringResource(Res.string.audio_usage_preview_stop_description, label))
-                            } else {
-                                Icon(
-                                    Icons.Default.PlayArrow,
-                                    contentDescription =
-                                        stringResource(
-                                            Res.string.audio_usage_preview_description,
-                                            label,
-                                        ),
-                                )
-                            }
-                        }
+                    AndroidAudioUsageCard(
+                        usage = usage,
+                        label = label,
+                        description = stringResource(audioUsageDescription(usage)),
+                        selected = uiState.usage == usage,
+                        previewing = uiState.previewingUsage == usage,
+                        previewSample = previewSample,
+                        onUsageSelected = onUsageSelected,
+                        onPreviewClicked = onPreviewClicked,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AndroidAudioUsageCard(
+    usage: AndroidAudioUsage,
+    label: String,
+    description: String,
+    selected: Boolean,
+    previewing: Boolean,
+    previewSample: String,
+    onUsageSelected: (AndroidAudioUsage) -> Unit,
+    onPreviewClicked: (AndroidAudioUsage, String) -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    val colors = MaterialTheme.colorScheme
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = if (selected) colors.primaryContainer else colors.surfaceContainerLow,
+        contentColor = if (selected) colors.onPrimaryContainer else colors.onSurface,
+        border = BorderStroke(CARD_BORDER_WIDTH, if (selected) colors.primary else colors.outlineVariant),
+        modifier =
+            Modifier.fillMaxWidth().padding(vertical = KoDriverSpacing.small).selectable(
+                selected = selected,
+                role = Role.RadioButton,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onUsageSelected(usage)
+                },
+            ),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+            modifier = Modifier.padding(KoDriverSpacing.medium),
+        ) {
+            Box(modifier = Modifier.size(AVATAR_SIZE)) {
+                Surface(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = if (selected) colors.primary else colors.surfaceContainerHighest,
+                    contentColor = if (selected) colors.onPrimary else colors.onSurfaceVariant,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(label.take(1), style = MaterialTheme.typography.titleMedium)
                     }
+                }
+                if (selected) {
+                    Surface(
+                        shape = MaterialTheme.shapes.extraLarge,
+                        color = colors.onPrimaryContainer,
+                        contentColor = colors.primaryContainer,
+                        modifier = Modifier.size(CHECK_BADGE_SIZE).align(Alignment.BottomEnd),
+                    ) {
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = null,
+                            modifier = Modifier.padding(CHECK_BADGE_PADDING),
+                        )
+                    }
+                }
+            }
+            Column(Modifier.weight(1f)) {
+                Text(label, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (selected) colors.onPrimaryContainer else colors.onSurfaceVariant,
+                )
+            }
+            FilledTonalIconButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onPreviewClicked(usage, previewSample)
+                },
+                shape = MaterialTheme.shapes.extraLarge,
+                colors =
+                    IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = if (selected) colors.primary else colors.surfaceContainerHighest,
+                        contentColor = if (selected) colors.onPrimary else colors.primary,
+                    ),
+            ) {
+                if (previewing) {
+                    PlayingEqualizer(stringResource(Res.string.audio_usage_preview_stop_description, label))
+                } else {
+                    Icon(
+                        Icons.Default.PlayArrow,
+                        contentDescription = stringResource(Res.string.audio_usage_preview_description, label),
+                    )
                 }
             }
         }
