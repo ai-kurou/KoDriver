@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -198,7 +199,7 @@ private fun ManualReadoutSetRow(
 ) {
     val haptic = LocalHapticFeedback.current
     var menuExpanded by remember { mutableStateOf(false) }
-    var longPressPosition by remember { mutableStateOf(Offset.Zero) }
+    var longPressPosition by remember { mutableStateOf(Offset.Unspecified) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     if (showDeleteDialog) {
         ManualReadoutListDeleteConfirmDialog(
@@ -222,6 +223,7 @@ private fun ManualReadoutSetRow(
                     }
                 }.combinedClickable(
                     onClick = {
+                        longPressPosition = Offset.Unspecified
                         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         onSetClick()
                     },
@@ -231,7 +233,10 @@ private fun ManualReadoutSetRow(
     ) {
         DropdownMenuPopup(
             expanded = menuExpanded,
-            onDismissRequest = { menuExpanded = false },
+            onDismissRequest = {
+                menuExpanded = false
+                longPressPosition = Offset.Unspecified
+            },
             popupPositionProvider =
                 remember(longPressPosition) {
                     ManualReadoutMenuPositionProvider(longPressPosition)
@@ -243,7 +248,7 @@ private fun ManualReadoutSetRow(
                 tonalElevation = MenuDefaults.TonalElevation,
                 shadowElevation = MenuDefaults.ShadowElevation,
             ) {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Column(modifier = Modifier.widthIn(max = 280.dp).verticalScroll(rememberScrollState())) {
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -260,6 +265,7 @@ private fun ManualReadoutSetRow(
                         },
                         onClick = {
                             menuExpanded = false
+                            longPressPosition = Offset.Unspecified
                             showDeleteDialog = true
                         },
                     )
@@ -329,8 +335,18 @@ internal class ManualReadoutMenuPositionProvider(
         layoutDirection: LayoutDirection,
         popupContentSize: IntSize,
     ): IntOffset {
-        val x = anchorBounds.left + anchor.x.toInt()
-        val y = anchorBounds.top + anchor.y.toInt()
+        val x =
+            if (anchor != Offset.Unspecified) {
+                anchorBounds.left + anchor.x.toInt()
+            } else {
+                anchorBounds.left + anchorBounds.width / 2
+            }
+        val y =
+            if (anchor != Offset.Unspecified) {
+                anchorBounds.top + anchor.y.toInt()
+            } else {
+                anchorBounds.top + anchorBounds.height / 2
+            }
         val preferredY = if (y + popupContentSize.height > windowSize.height) y - popupContentSize.height else y
         val preferredX = if (layoutDirection == LayoutDirection.Ltr) x else x - popupContentSize.width
         return IntOffset(

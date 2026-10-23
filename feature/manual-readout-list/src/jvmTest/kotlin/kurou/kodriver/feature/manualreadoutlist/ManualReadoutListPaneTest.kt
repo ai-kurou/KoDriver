@@ -362,11 +362,19 @@ class ManualReadoutListPaneTest {
 
         val row = rule.onNodeWithText("セット 1")
         val rowBounds = row.fetchSemanticsNode().boundsInRoot
+        val pressOffset = Offset(rowBounds.width / 2, rowBounds.height / 2)
+        val pressPosition = rowBounds.topLeft + pressOffset
+        val tolerance = 16f
         val menuItem = rule.onNodeWithText("削除")
-        row.performTouchInput { longClick(Offset(rowBounds.width / 2, rowBounds.height / 2)) }
+        row.performTouchInput { longClick(pressOffset) }
         menuItem.assertIsDisplayed()
         val standardMenuBounds = menuItem.fetchSemanticsNode().boundsInRoot
         rule.runOnIdle {
+            assertEquals(true, standardMenuBounds.left >= pressPosition.x - tolerance)
+            assertEquals(true, standardMenuBounds.left <= pressPosition.x + tolerance)
+            assertEquals(true, standardMenuBounds.top >= pressPosition.y - tolerance)
+            assertEquals(true, standardMenuBounds.top <= pressPosition.y + tolerance)
+            assertEquals(true, standardMenuBounds.width <= 280f)
             assertEquals(true, standardMenuBounds.center.y >= rowBounds.center.y)
             assertEquals(true, standardMenuBounds.left >= 0f)
             assertEquals(true, standardMenuBounds.right <= 360f)
@@ -397,5 +405,14 @@ class ManualReadoutListPaneTest {
                 popupContentSize = menuSize,
             )
         assertEquals(IntOffset(0, 10), upperLeftRtlPosition)
+
+        val semanticLongPressFallback =
+            ManualReadoutMenuPositionProvider(Offset.Unspecified).calculatePosition(
+                anchorBounds = IntRect(20, 30, 220, 130),
+                windowSize = window,
+                layoutDirection = LayoutDirection.Ltr,
+                popupContentSize = menuSize,
+            )
+        assertEquals(IntOffset(120, 80), semanticLongPressFallback)
     }
 }
