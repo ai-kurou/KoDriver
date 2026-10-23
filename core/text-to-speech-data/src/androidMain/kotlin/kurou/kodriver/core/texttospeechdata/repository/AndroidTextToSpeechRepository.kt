@@ -142,29 +142,36 @@ internal class AndroidTextToSpeechRepository(
         val audioAttributes = audioAttributesFactory(resolvedAudioUsage)
         val utteranceId = "kodriver_tts_${utteranceIdSequence.incrementAndGet()}"
         val completed = CompletableDeferred<Unit>()
-        synchronized(utteranceLock) { pendingUtterances[utteranceId] = completed }
-        if (!queue) {
-            // QUEUE_FLUSHは現在再生中・キュー中の発話をすべて打ち切るため、それらに対応する
-            // speak()呼び出しがonStop通知を待ち続けないよう、ここで明示的に完了させる。
-            completePendingUtterancesExcept(utteranceId)
-        }
         val result =
             synchronized(voiceLock) {
+                // 停止判定がエンジンへ未投入の要求を pending と誤認しないよう、登録から
+                // engine.speak() の結果確定までをキャンセル時の停止判定と同じロックで保護する。
+                synchronized(utteranceLock) { pendingUtterances[utteranceId] = completed }
+                if (!queue) {
+                    // QUEUE_FLUSHは現在再生中・キュー中の発話をすべて打ち切るため、それらに対応する
+                    // speak()呼び出しがonStop通知を待ち続けないよう、ここで明示的に完了させる。
+                    completePendingUtterancesExcept(utteranceId)
+                }
                 applyVoice(engine, voiceId)
                 applySpeed(engine, speed.coerceIn(VOICE_SPEED_MIN, VOICE_SPEED_MAX))
                 applyPitch(engine, pitch.coerceIn(VOICE_PITCH_MIN, VOICE_PITCH_MAX))
                 applyAudioUsage(engine, resolvedAudioUsage, audioAttributes)
-                engine.speak(
-                    text,
-                    if (queue) TextToSpeech.QUEUE_ADD else TextToSpeech.QUEUE_FLUSH,
-                    volumeParamsFactory(volume.coerceIn(0, 100) / VOLUME_SCALE),
-                    utteranceId,
-                )
+                val speakResult =
+                    engine.speak(
+                        text,
+                        if (queue) TextToSpeech.QUEUE_ADD else TextToSpeech.QUEUE_FLUSH,
+                        volumeParamsFactory(volume.coerceIn(0, 100) / VOLUME_SCALE),
+                        utteranceId,
+                    )
+                if (speakResult != TextToSpeech.SUCCESS) {
+                    // 失敗した要求をpendingに残すと、別の発話の停止判定を誤らせる。
+                    synchronized(utteranceLock) { pendingUtterances.remove(utteranceId) }
+                }
+                speakResult
             }
         if (result != TextToSpeech.SUCCESS) {
             // 発話要求自体が失敗した場合、onDone/onError/onStopのいずれも呼ばれないため
             // completed.await()がハングしてしまう。要求前に諦めて即座に返す。
-            synchronized(utteranceLock) { pendingUtterances.remove(utteranceId) }
             return
         }
         try {

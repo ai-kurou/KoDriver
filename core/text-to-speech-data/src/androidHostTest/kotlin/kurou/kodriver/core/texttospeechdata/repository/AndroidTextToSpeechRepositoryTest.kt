@@ -464,6 +464,52 @@ class AndroidTextToSpeechRepositoryTest {
         }
 
     @Test
+    fun `キュー投入に失敗した発話は他の発話の停止判定に残らない`() =
+        runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.voice } returns null
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            val activeUtteranceIdSlot = slot<String>()
+            every {
+                textToSpeech.speak("再生中", TextToSpeech.QUEUE_FLUSH, params, capture(activeUtteranceIdSlot))
+            } returns TextToSpeech.SUCCESS
+            val failedUtteranceIdSlot = slot<String>()
+            every {
+                textToSpeech.speak("投入失敗", TextToSpeech.QUEUE_ADD, params, capture(failedUtteranceIdSlot))
+            } returns TextToSpeech.ERROR
+            every { textToSpeech.stop() } returns TextToSpeech.SUCCESS
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            val activeJob = launch { repository.speak("再生中", queue = false) }
+            runCurrent()
+            val failedJob = launch { repository.speak("投入失敗", queue = true) }
+            runCurrent()
+            failedJob.join()
+
+            activeJob.cancel()
+            activeJob.join()
+
+            assertTrue(activeJob.isCancelled)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.voice }
+            verify(exactly = 1) {
+                textToSpeech.speak("再生中", TextToSpeech.QUEUE_FLUSH, params, activeUtteranceIdSlot.captured)
+            }
+            verify(exactly = 1) {
+                textToSpeech.speak("投入失敗", TextToSpeech.QUEUE_ADD, params, failedUtteranceIdSlot.captured)
+            }
+            verify(exactly = 1) { textToSpeech.stop() }
+            verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
+            verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
     fun `stopによる打ち切りでonStopが呼ばれた場合もspeakは完了する`() =
         runTest {
             every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
