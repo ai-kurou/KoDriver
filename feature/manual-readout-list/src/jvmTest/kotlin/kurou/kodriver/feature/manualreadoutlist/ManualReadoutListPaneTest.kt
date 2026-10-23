@@ -1,19 +1,30 @@
 package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.center
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
@@ -291,18 +302,24 @@ class ManualReadoutListPaneTest {
     fun `長押しは詳細を開かず削除メニューから確認したセットだけを削除する`() {
         val deleted = mutableListOf<String>()
         val selected = mutableListOf<String>()
+        val uiState =
+            mutableStateOf(
+                ManualReadoutListUiState(
+                    sets = listOf(ManualReadoutSet("first"), ManualReadoutSet("second")),
+                ),
+            )
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
-                    uiState =
-                        ManualReadoutListUiState(
-                            sets = listOf(ManualReadoutSet("first"), ManualReadoutSet("second")),
-                        ),
+                    uiState = uiState.value,
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = {},
                     onSetClick = { selected.add(it) },
-                    onDeleteSet = { deleted.add(it) },
+                    onDeleteSet = { setId ->
+                        deleted.add(setId)
+                        uiState.value = uiState.value.copy(sets = uiState.value.sets.filterNot { it.id == setId })
+                    },
                 )
             }
         }
@@ -317,11 +334,120 @@ class ManualReadoutListPaneTest {
         rule.onNodeWithText("キャンセル").performClick()
         rule.onNodeWithText("セットを削除しますか？").assertDoesNotExist()
         rule.runOnIdle { assertEquals(emptyList(), deleted) }
+        rule.mainClock.advanceTimeBy(500)
         rule.onNodeWithText("セット 2").performTouchInput { longClick() }
         rule.onNodeWithText("削除").performClick()
-        rule.onNodeWithText("削除").performClick()
+        val deleteActions = rule.onAllNodesWithText("削除")
+        deleteActions.assertCountEquals(1)
+        deleteActions[0].performClick()
         rule.onNodeWithText("セットを削除しますか？").assertDoesNotExist()
+        rule.mainClock.advanceTimeBy(500)
         rule.onNodeWithText("削除").assertDoesNotExist()
         rule.runOnIdle { assertEquals(listOf("second"), deleted) }
+    }
+
+    @Test
+    fun `長押し位置の近くに削除メニューを表示し画面端では範囲内に収める`() {
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    ManualReadoutListPaneContent(
+                        uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet("set-1"))),
+                        simulatorName = "LMU",
+                        onAddSet = {},
+                        onReadSet = {},
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            }
+        }
+
+        val row = rule.onNodeWithText("セット 1")
+        val rowBounds = row.fetchSemanticsNode().boundsInRoot
+        val pressOffset = Offset(rowBounds.width / 2, rowBounds.height / 2)
+        val pressPosition = rowBounds.topLeft + pressOffset
+        val tolerance = 16f
+        val menuItem = rule.onNodeWithText("削除")
+        row.performTouchInput { longClick(pressOffset) }
+        menuItem.assertIsDisplayed()
+        val standardMenuBounds = menuItem.fetchSemanticsNode().boundsInRoot
+        rule.runOnIdle {
+            assertEquals(true, standardMenuBounds.left >= pressPosition.x - tolerance)
+            assertEquals(true, standardMenuBounds.left <= pressPosition.x + tolerance)
+            assertEquals(true, standardMenuBounds.top >= pressPosition.y - tolerance)
+            assertEquals(true, standardMenuBounds.top <= pressPosition.y + tolerance)
+            assertEquals(true, standardMenuBounds.width <= 280f)
+            assertEquals(true, standardMenuBounds.center.y >= rowBounds.center.y)
+            assertEquals(true, standardMenuBounds.left >= 0f)
+            assertEquals(true, standardMenuBounds.right <= 360f)
+            assertEquals(true, standardMenuBounds.top >= 0f)
+            assertEquals(true, standardMenuBounds.bottom <= 640f)
+        }
+    }
+
+    @Test
+    fun `読み上げボタンのタップ後にセマンティクスで長押しすると行中央にメニューを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    ManualReadoutListPaneContent(
+                        uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet("set-1"))),
+                        simulatorName = "LMU",
+                        onAddSet = {},
+                        onReadSet = {},
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            }
+        }
+
+        val row = rule.onNodeWithText("セット 1")
+        val rowBounds = row.fetchSemanticsNode().boundsInRoot
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
+        row.performSemanticsAction(SemanticsActions.OnLongClick) { it() }
+
+        val menuItem = rule.onNodeWithText("削除")
+        menuItem.assertIsDisplayed()
+        val menuBounds = menuItem.fetchSemanticsNode().boundsInRoot
+        val rowCenter = rowBounds.center
+        rule.runOnIdle {
+            assertEquals(true, menuBounds.left >= rowCenter.x - 16f)
+            assertEquals(true, menuBounds.left <= rowCenter.x + 16f)
+            assertEquals(true, menuBounds.top >= rowCenter.y - 16f)
+            assertEquals(true, menuBounds.top <= rowCenter.y + 16f)
+        }
+    }
+
+    @Test
+    fun `メニュー位置を左右上下端とレイアウト方向に合わせて補正する`() {
+        val window = IntSize(360, 640)
+        val anchorBounds = IntRect(0, 0, 360, 640)
+        val menuSize = IntSize(100, 48)
+        val lowerRightPosition =
+            ManualReadoutMenuPositionProvider(Offset(350f, 630f)).calculatePosition(
+                anchorBounds = anchorBounds,
+                windowSize = window,
+                layoutDirection = LayoutDirection.Ltr,
+                popupContentSize = menuSize,
+            )
+        assertEquals(IntOffset(260, 582), lowerRightPosition)
+
+        val upperLeftRtlPosition =
+            ManualReadoutMenuPositionProvider(Offset(10f, 10f)).calculatePosition(
+                anchorBounds = anchorBounds,
+                windowSize = window,
+                layoutDirection = LayoutDirection.Rtl,
+                popupContentSize = menuSize,
+            )
+        assertEquals(IntOffset(0, 10), upperLeftRtlPosition)
+
+        val semanticLongPressFallback =
+            ManualReadoutMenuPositionProvider(Offset.Unspecified).calculatePosition(
+                anchorBounds = IntRect(20, 30, 220, 130),
+                windowSize = window,
+                layoutDirection = LayoutDirection.Ltr,
+                popupContentSize = menuSize,
+            )
+        assertEquals(IntOffset(120, 80), semanticLongPressFallback)
     }
 }
