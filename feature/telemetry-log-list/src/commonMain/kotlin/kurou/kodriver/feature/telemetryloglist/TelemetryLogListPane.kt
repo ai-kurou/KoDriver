@@ -194,7 +194,9 @@ internal fun TelemetryLogListPane(
                         HorizontalDivider()
                     }
                     item(key = NARRATION_OUTCOME_HINT_ITEM_KEY) {
-                        TelemetryLogNarrationOutcomeHintRow()
+                        TelemetryLogNarrationOutcomeHintRow(
+                            modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
+                        )
                     }
                     items(
                         items = uiState.logs,
@@ -521,10 +523,11 @@ internal fun formatTelemetryLogTime(
     )
 
 @Composable
-private fun TelemetryLogNarrationOutcomeHintRow() {
+private fun TelemetryLogNarrationOutcomeHintRow(modifier: Modifier = Modifier) {
     KoDriverHintRow(
         label = stringResource(Res.string.telemetry_log_narration_hint_label),
         helpContentDescription = stringResource(Res.string.telemetry_log_narration_hint_help_description),
+        modifier = modifier,
     ) {
         TelemetryLogNarrationOutcomeHintSheetContent()
     }
