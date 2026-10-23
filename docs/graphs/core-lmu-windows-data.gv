@@ -6,7 +6,7 @@ digraph G {
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:lmu-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
   ":core:lmu-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
-  ":core:windows-shared-memory" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:windows-shared-memory" [fillcolor="#FFF9C4", color="#F9A825", penwidth=1]
   ":app:androidApp" -> ":core:lmu-windows-data"
   ":app:desktopApp" -> ":core:lmu-windows-data"
   ":core:lmu-windows-data" -> ":core:domain"

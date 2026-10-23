@@ -299,6 +299,7 @@ tasks.register("generateModuleGraphImages") {
             "app" to "#FFE0B2",
             "feature" to "#C8E6C9",
             "core" to "#BBDEFB",
+            "support" to "#FFF9C4",
             "domain" to "#E1BEE7",
             "server" to "#F8BBD0",
             "other" to "#EEEEEE",
@@ -307,6 +308,7 @@ tasks.register("generateModuleGraphImages") {
             "app" to "#FB8C00",
             "feature" to "#43A047",
             "core" to "#1E88E5",
+            "support" to "#F9A825",
             "domain" to "#8E24AA",
             "server" to "#D81B60",
             "other" to "#9E9E9E",
@@ -316,7 +318,9 @@ tasks.register("generateModuleGraphImages") {
             module.startsWith(":app:") -> "app"
             module.startsWith(":feature:") -> "feature"
             module.startsWith(":core:") && module.endsWith("domain") -> "domain"
-            module.startsWith(":core:") -> "core"
+            module.startsWith(":core:") && module.endsWith("data") -> "core"
+            // data でも domain でもない :core（narrator・designsystem・windows-shared-memory）
+            module.startsWith(":core:") -> "support"
             module.startsWith(":server") -> "server"
             else -> "other"
         }
@@ -358,7 +362,7 @@ tasks.register("generateModuleGraphImages") {
                 appendLine("  rankdir=LR")
                 // 縦が 1200pt（16.666667in）になるよう拡縮する。`!` は図が指定サイズより小さい場合も拡大する指定。
                 appendLine("  size=\"1000,16.666667!\"")
-                appendLine("  graph [ranksep=1.0, nodesep=0.3]")
+                appendLine("  graph [ranksep=0.8, nodesep=0.2]")
                 appendLine("  node [shape=box, style=\"rounded,filled\"]")
                 overviewNodes.forEach { node ->
                     val featureCount = featureGroupNodes[node]
@@ -372,6 +376,44 @@ tasks.register("generateModuleGraphImages") {
                 }
                 overviewEdges.forEach { (from, to) ->
                     appendLine("  \"$from\" -> \"$to\"")
+                }
+
+                // 依存の向き（左→右）に合わせて列を構成する。新規モジュールは必要に応じて追加し、未列挙のモジュールは dot に配置させる。
+                val overviewColumns = listOf(
+                    listOf(":app:androidApp", ":app:desktopApp"),
+                    listOf(":app:shared", ":server"),
+                    listOf(
+                        featureGroup,
+                        *listOf(":feature:ace-windows", ":feature:lmu-windows", ":feature:gt7-ps5")
+                            .map { prefix -> simulatorFeatureGroups.first { it.first == prefix }.second }
+                            .toTypedArray(),
+                        ":core:data",
+                        ":core:ace-windows-data",
+                        ":core:lmu-windows-data",
+                        ":core:gt7-ps5-data",
+                        ":core:lmu-windows-rest-api-data",
+                        ":core:text-to-speech-data",
+                        ":core:device-volume-data",
+                        ":core:windows-hotkey-data",
+                        ":core:windows-startup-data",
+                    ),
+                    listOf(":core:narrator", ":core:designsystem", ":core:windows-shared-memory"),
+                    listOf(":core:lmu-windows-domain", ":core:ace-windows-domain", ":core:gt7-ps5-domain"),
+                    listOf(":core:domain"),
+                )
+                val existingOverviewColumns = overviewColumns.map { column -> column.filter { it in overviewNodes } }
+                existingOverviewColumns.filter { it.isNotEmpty() }.forEach { column ->
+                    appendLine("  { rank=same; ${column.joinToString("; ") { "\"$it\"" }}; }")
+                }
+                val columnHeads = existingOverviewColumns.mapNotNull { it.firstOrNull() }
+                columnHeads.zipWithNext().forEach { (from, to) ->
+                    appendLine("  \"$from\" -> \"$to\" [style=invis]")
+                }
+                existingOverviewColumns[2].zipWithNext().takeIf { it.isNotEmpty() }?.let { edges ->
+                    appendLine(
+                        "  ${edges.joinToString(" -> ") { (from, _) -> "\"$from\"" }} -> " +
+                            "\"${edges.last().second}\" [style=invis]",
+                    )
                 }
                 append("}")
             },
