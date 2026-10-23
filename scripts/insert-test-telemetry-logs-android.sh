@@ -64,10 +64,10 @@ now_ms=$(($(date +%s) * 1000))
 sqlite3 "${local_db}" <<SQL >/dev/null
 INSERT INTO telemetry_logs (createdAt, simulatorId, readoutItemKey, narratedText, narrationOutcome, telemetryJson)
 VALUES
-    (${now_ms}, 'lmu_windows', 'lmu_windows_vehicle_approach', '後方から車両接近', 'queued', '{"testData":true,"simulator":"lmu_windows","distanceMeters":12.5}'),
-    (${now_ms} + 1, 'gt7_ps5', 'gt7_ps5_remaining_fuel', '燃料残り15パーセント', 'spoken', '{"testData":true,"simulator":"gt7_ps5","remainingFuelPercent":15.0}'),
-    (${now_ms} + 2, 'ace_windows', 'ace_windows_remaining_fuel', '燃料残り8.2リットル', 'interrupted', '{"testData":true,"simulator":"ace_windows","remainingFuelLiters":8.2}'),
-    (${now_ms} + 3, 'lmu_windows', 'lmu_windows_vehicle_approach_sustained', '後方から車両接近', 'skipped', '{"testData":true,"simulator":"lmu_windows","distanceMeters":8.0}');
+    (${now_ms}, 'lmu_windows', 'lmu_windows_auto_vehicle_approach', '後方から車両接近', 'queued', '{"testData":true,"simulator":"lmu_windows","distanceMeters":12.5}'),
+    (${now_ms} + 1, 'gt7_ps5', 'gt7_ps5_auto_remaining_fuel', '燃料残り15パーセント', 'spoken', '{"testData":true,"simulator":"gt7_ps5","remainingFuelPercent":15.0}'),
+    (${now_ms} + 2, 'ace_windows', 'ace_windows_auto_remaining_fuel', '燃料残り8.2リットル', 'interrupted', '{"testData":true,"simulator":"ace_windows","remainingFuelLiters":8.2}'),
+    (${now_ms} + 3, 'lmu_windows', 'lmu_windows_auto_vehicle_approach_sustained', '後方から車両接近', 'skipped', '{"testData":true,"simulator":"lmu_windows","distanceMeters":8.0}');
 PRAGMA wal_checkpoint(TRUNCATE);
 SQL
 
