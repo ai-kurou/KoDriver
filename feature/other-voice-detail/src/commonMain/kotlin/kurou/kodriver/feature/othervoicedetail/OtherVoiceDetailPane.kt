@@ -1,13 +1,6 @@
 package kurou.kodriver.feature.othervoicedetail
 
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.StartOffset
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -16,7 +9,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,7 +24,6 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -45,8 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,6 +45,7 @@ import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.PlayingEqualizer
 import kurou.kodriver.core.designsystem.koDriverMonospaceTextStyle
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
@@ -83,12 +73,6 @@ private val AVATAR_SIZE = 48.dp
 private val CHECK_BADGE_SIZE = 18.dp
 private val CARD_BORDER_WIDTH = 1.dp
 private val CHECK_BADGE_PADDING = 2.dp
-private val EQUALIZER_HEIGHT = 16.dp
-private val EQUALIZER_BAR_WIDTH = 3.dp
-private val EQUALIZER_BAR_SPACING = 3.dp
-private val EQUALIZER_MIN_HEIGHT = 4.dp
-private const val EQUALIZER_HALF_CYCLE_MS = 400
-private const val EQUALIZER_BAR_DELAY_MS = 150
 
 /**
  * OtherVoiceDetail の画面を表示する Composable。
@@ -324,37 +308,6 @@ private fun VoiceCard(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun PlayingEqualizer(contentDescription: String) {
-    val transition = rememberInfiniteTransition(label = "voicePreview")
-    val contentColor = LocalContentColor.current
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(EQUALIZER_BAR_SPACING),
-        verticalAlignment = Alignment.Bottom,
-        modifier = Modifier.height(EQUALIZER_HEIGHT).semantics { this.contentDescription = contentDescription },
-    ) {
-        repeat(3) { index ->
-            val fraction by transition.animateFloat(
-                initialValue = 0f,
-                targetValue = 1f,
-                animationSpec =
-                    infiniteRepeatable(
-                        animation = tween(EQUALIZER_HALF_CYCLE_MS),
-                        repeatMode = RepeatMode.Reverse,
-                        initialStartOffset = StartOffset(index * EQUALIZER_BAR_DELAY_MS),
-                    ),
-                label = "bar$index",
-            )
-            Box(
-                Modifier
-                    .width(EQUALIZER_BAR_WIDTH)
-                    .height(EQUALIZER_MIN_HEIGHT + (EQUALIZER_HEIGHT - EQUALIZER_MIN_HEIGHT) * fraction)
-                    .background(contentColor, MaterialTheme.shapes.extraSmall),
-            )
         }
     }
 }
