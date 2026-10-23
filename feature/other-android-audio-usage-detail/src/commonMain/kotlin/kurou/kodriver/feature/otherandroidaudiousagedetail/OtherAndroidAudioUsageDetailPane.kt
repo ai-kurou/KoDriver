@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -14,12 +16,18 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,7 +65,13 @@ import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.a
 import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_preview_stop_description
 import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_ringtone
 import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_ringtone_description
+import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_sound_settings
+import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_sound_settings_description
 import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_title
+import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_volume_hint
+import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_volume_panel
+import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_volume_panel_description
+import kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources.audio_usage_volume_section_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -75,11 +89,15 @@ fun OtherAndroidAudioUsageDetailPane(
 ) {
     val viewModel: OtherAndroidAudioUsageDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val onOpenVolumePanel = rememberOpenVolumePanel()
+    val onOpenSoundSettings = rememberOpenSoundSettings()
     DisposableEffect(viewModel) { onDispose { viewModel.onPreviewStopped() } }
     OtherAndroidAudioUsageDetailPaneContent(
         uiState = uiState,
         onUsageSelected = viewModel::onUsageSelected,
         onPreviewClicked = viewModel::onPreviewClicked,
+        onOpenVolumePanel = onOpenVolumePanel,
+        onOpenSoundSettings = onOpenSoundSettings,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -92,6 +110,8 @@ fun OtherAndroidAudioUsageDetailPaneContent(
     uiState: OtherAndroidAudioUsageDetailUiState,
     onUsageSelected: (AndroidAudioUsage) -> Unit = {},
     onPreviewClicked: (AndroidAudioUsage, String) -> Unit = { _, _ -> },
+    onOpenVolumePanel: (() -> Unit)? = null,
+    onOpenSoundSettings: (() -> Unit)? = null,
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -120,7 +140,69 @@ fun OtherAndroidAudioUsageDetailPaneContent(
                     )
                 }
             }
+            if (onOpenVolumePanel != null || onOpenSoundSettings != null) {
+                AudioVolumeSection(
+                    usage = uiState.usage,
+                    onOpenVolumePanel = onOpenVolumePanel,
+                    onOpenSoundSettings = onOpenSoundSettings,
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun AudioVolumeSection(
+    usage: AndroidAudioUsage,
+    onOpenVolumePanel: (() -> Unit)?,
+    onOpenSoundSettings: (() -> Unit)?,
+) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large)) {
+        Spacer(Modifier.height(KoDriverSpacing.medium))
+        HorizontalDivider()
+        Spacer(Modifier.height(KoDriverSpacing.large))
+        Text(stringResource(Res.string.audio_usage_volume_section_title), style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(KoDriverSpacing.small))
+        Text(
+            stringResource(
+                Res.string.audio_usage_volume_hint,
+                stringResource(audioUsageLabel(usage)),
+                stringResource(audioUsageStreamLabel(usage)),
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(KoDriverSpacing.medium))
+        onOpenVolumePanel?.let {
+            Button(onClick = it, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.AutoMirrored.Filled.VolumeUp, contentDescription = null)
+                Text(
+                    stringResource(Res.string.audio_usage_volume_panel),
+                    Modifier.padding(start = KoDriverSpacing.small),
+                )
+            }
+            Text(
+                stringResource(Res.string.audio_usage_volume_panel_description),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = KoDriverSpacing.extraSmall),
+            )
+        }
+        onOpenSoundSettings?.let {
+            OutlinedButton(onClick = it, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.Settings, contentDescription = null)
+                Text(
+                    stringResource(Res.string.audio_usage_sound_settings),
+                    Modifier.weight(1f).padding(start = KoDriverSpacing.small),
+                )
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+            }
+            Text(
+                stringResource(Res.string.audio_usage_sound_settings_description),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = KoDriverSpacing.extraSmall),
+            )
+        }
+        Spacer(Modifier.height(KoDriverSpacing.large))
     }
 }
 
@@ -234,6 +316,12 @@ private fun audioUsageDescription(usage: AndroidAudioUsage) =
         AndroidAudioUsage.NOTIFICATION -> Res.string.audio_usage_notification_description
         AndroidAudioUsage.ALARM -> Res.string.audio_usage_alarm_description
         AndroidAudioUsage.ASSISTANT -> Res.string.audio_usage_assistant_description
+    }
+
+private fun audioUsageStreamLabel(usage: AndroidAudioUsage) =
+    when (usage) {
+        AndroidAudioUsage.ASSISTANT -> Res.string.audio_usage_media
+        else -> audioUsageLabel(usage)
     }
 
 @Preview(showBackground = true)
