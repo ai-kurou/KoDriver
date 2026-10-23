@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.telemetryloglist
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,21 @@ class TelemetryLogListPaneScreenshotTest {
                 }
             }
 
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `読み上げ結果ヘルプボトムシート`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 520.dp)) {
+                            TelemetryLogNarrationOutcomeHintSheetContent()
+                        }
+                    }
+                }
+            }
             onRoot().captureRoboImage()
         }
 
