@@ -57,11 +57,9 @@ kotlin {
                 implementation(libs.ktor.clientCore)
                 implementation(libs.ktor.clientOkhttp)
                 implementation(libs.ktor.clientWebsocketsMultiplatform)
-                implementation(libs.androidx.core.ktx)
             }
         }
         jvmTest.dependencies {
-            implementation(libs.mockk)
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
@@ -78,8 +76,6 @@ kotlin {
                 implementation(project.dependencies.platform(libs.okhttp.bom))
                 implementation(libs.okhttp)
                 implementation(libs.okhttp.mockwebserver)
-                implementation(libs.robolectric)
-                implementation(libs.androidx.testExt.junit)
             }
         }
     }
