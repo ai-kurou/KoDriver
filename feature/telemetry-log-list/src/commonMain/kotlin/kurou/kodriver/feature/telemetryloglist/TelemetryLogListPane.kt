@@ -195,7 +195,10 @@ internal fun TelemetryLogListPane(
                     }
                     item(key = NARRATION_OUTCOME_HINT_ITEM_KEY) {
                         TelemetryLogNarrationOutcomeHintRow(
-                            modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
+                            modifier =
+                                Modifier
+                                    .padding(horizontal = KoDriverSpacing.small)
+                                    .padding(top = KoDriverSpacing.large),
                         )
                     }
                     items(
