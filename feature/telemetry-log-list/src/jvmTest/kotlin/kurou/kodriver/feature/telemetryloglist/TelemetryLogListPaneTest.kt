@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -13,12 +14,14 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class TelemetryLogListPaneTest {
     @get:Rule
@@ -55,6 +58,20 @@ class TelemetryLogListPaneTest {
         rule.onNodeWithText("読み上げ中の内容を止めて、優先して読み上げを要求しました。").assertIsDisplayed()
         rule.onNodeWithText("読み上げなし").assertIsDisplayed()
         rule.onNodeWithText("優先度が低い、本文が空、またはTTSが使えないため読み上げませんでした。").assertIsDisplayed()
+    }
+
+    @Test
+    fun `読み上げ結果ヒントとリセット項目の間隔はlargeになる`() {
+        rule.setContent {
+            KoDriverTheme {
+                TelemetryLogListPane(uiState = TelemetryLogListUiState(logs = listOf(createTelemetryLog(id = 1))))
+            }
+        }
+
+        val resetBounds = rule.onNodeWithText("データベースをリセット").fetchSemanticsNode().boundsInRoot
+        val hintBounds = rule.onNode(hasText("読み上げ結果")).fetchSemanticsNode().boundsInRoot
+        val expected = with(rule.density) { KoDriverSpacing.large.toPx() }
+        assertTrue(hintBounds.top - resetBounds.bottom >= expected)
     }
 
     @Test
