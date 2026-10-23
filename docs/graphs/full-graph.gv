@@ -1,5 +1,6 @@
 digraph G {
   rankdir=LR
+  size="1000,16.666667!"
   graph [ranksep=1.0, nodesep=0.3]
   node [shape=box, style="rounded,filled"]
   ":app:androidApp" [label=":app:androidApp", fillcolor="#FFE0B2", color="#FB8C00"]
