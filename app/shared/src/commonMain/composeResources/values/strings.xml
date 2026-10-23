@@ -3,8 +3,8 @@
     <string name="nav_manual_readout">手動</string>
     <string name="nav_log">ログ</string>
     <string name="nav_more">その他</string>
-    <string name="lmu_connected">LMUに接続しました</string>
-    <string name="lmu_disconnected">LMUとの接続を待機しています</string>
+    <string name="lmu_connected">LMU Windows版に接続しました</string>
+    <string name="lmu_disconnected">LMU Windows版との接続を待機しています</string>
     <string name="gt7_connected">GT7に接続しました</string>
     <string name="gt7_disconnected">GT7との接続を待機しています</string>
     <string name="ace_connected">ACEに接続しました</string>

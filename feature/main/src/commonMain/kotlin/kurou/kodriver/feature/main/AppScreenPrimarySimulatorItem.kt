@@ -63,7 +63,7 @@ fun AppScreenPrimarySimulatorIcon(
 }
 
 /**
- * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレーターの短縮名（"LMU"・"GT7"・"ACE"）。
+ * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレーターの短縮名（"LMU Win"・"GT7"・"ACE"）。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable

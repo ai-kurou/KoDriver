@@ -49,8 +49,8 @@ class OtherListPaneServerIpTest {
             )
         }
 
-        rule.onAllNodesWithText("LMU").assertCountEquals(1)
-        rule.onNode(hasText("Windows版KoDriverへ接続するIPアドレス") and hasText("LMU")).assertIsDisplayed()
+        rule.onAllNodesWithText("LMU Win").assertCountEquals(1)
+        rule.onNode(hasText("Windows版KoDriverへ接続するIPアドレス") and hasText("LMU Win")).assertIsDisplayed()
         rule.onAllNodesWithText("ACE").assertCountEquals(1)
         rule.onNode(hasText("Windows版KoDriverへ接続するIPアドレス") and hasText("ACE")).assertIsDisplayed()
         rule.onAllNodesWithText("GT7").assertCountEquals(0)

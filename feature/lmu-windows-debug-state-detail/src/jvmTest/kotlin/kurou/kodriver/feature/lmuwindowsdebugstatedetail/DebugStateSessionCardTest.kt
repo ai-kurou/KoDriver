@@ -32,7 +32,7 @@ class DebugStateSessionCardTest {
             }
         }
 
-        rule.onNodeWithText("セッション (LMUのみ)").assertIsDisplayed()
+        rule.onNodeWithText("セッション (LMU Windows版のみ)").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 

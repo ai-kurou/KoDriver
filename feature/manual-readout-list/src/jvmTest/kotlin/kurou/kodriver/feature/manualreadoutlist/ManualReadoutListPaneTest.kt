@@ -46,7 +46,7 @@ class ManualReadoutListPaneTest {
                         ManualReadoutListUiState(
                             sets = listOf(ManualReadoutSet("named", name = "燃料用"), ManualReadoutSet("unnamed")),
                         ),
-                    simulatorName = "LMU",
+                    simulatorName = "LMU Win",
                     onAddSet = {},
                     onReadSet = {},
                 )
@@ -93,7 +93,7 @@ class ManualReadoutListPaneTest {
                                     ManualReadoutSet(id = "unassigned"),
                                 ),
                         ),
-                    simulatorName = "LMU",
+                    simulatorName = "LMU Win",
                     onAddSet = {},
                     onReadSet = {},
                     showHotkeyChip = showHotkeyChip,
@@ -117,7 +117,7 @@ class ManualReadoutListPaneTest {
                                     ManualReadoutSet(id = "filled-set", itemKeys = listOf("SESSION")),
                                 ),
                         ),
-                    simulatorName = "LMU",
+                    simulatorName = "LMU Win",
                     onAddSet = {},
                     onReadSet = { requestedSets.add(it) },
                 )
@@ -142,7 +142,7 @@ class ManualReadoutListPaneTest {
                                     ManualReadoutSet(id = "set-2", itemKeys = listOf("SESSION", "FLAG")),
                                 ),
                         ),
-                    simulatorName = "LMU",
+                    simulatorName = "LMU Win",
                     onAddSet = {},
                     onReadSet = {},
                 )
@@ -150,7 +150,7 @@ class ManualReadoutListPaneTest {
         }
 
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
-        rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertDoesNotExist()
+        rule.onNodeWithText("LMU Winの手動読み上げセットはまだありません").assertDoesNotExist()
         rule.onNodeWithText("セット 1").assertIsDisplayed()
         rule.onNodeWithText("項目なし").assertIsDisplayed()
         rule.onNodeWithText("セット 2").assertIsDisplayed()
@@ -167,7 +167,7 @@ class ManualReadoutListPaneTest {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
                     uiState = ManualReadoutListUiState(),
-                    simulatorName = "LMU",
+                    simulatorName = "LMU Win",
                     onAddSet = { addSetCount++ },
                     onReadSet = {},
                 )
@@ -175,14 +175,14 @@ class ManualReadoutListPaneTest {
         }
 
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
-        rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertIsDisplayed()
+        rule.onNodeWithText("LMU Winの手動読み上げセットはまだありません").assertIsDisplayed()
         rule.onNodeWithContentDescription("セットを追加").assertIsDisplayed().performClick()
         rule.runOnIdle { assertEquals(1, addSetCount) }
     }
 
     @Test
     fun `LMUとGT7とACEに合わせて空状態の文言を更新する`() {
-        val simulatorName = mutableStateOf("LMU")
+        val simulatorName = mutableStateOf("LMU Win")
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
@@ -194,7 +194,7 @@ class ManualReadoutListPaneTest {
             }
         }
 
-        listOf("LMU", "GT7", "ACE").forEach { name ->
+        listOf("LMU Win", "GT7", "ACE").forEach { name ->
             rule.runOnIdle { simulatorName.value = name }
             rule.onNodeWithText("${name}の手動読み上げセットはまだありません").assertIsDisplayed()
         }
@@ -207,7 +207,7 @@ class ManualReadoutListPaneTest {
                 Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                     ManualReadoutListPaneContent(
                         uiState = ManualReadoutListUiState(),
-                        simulatorName = "LMU",
+                        simulatorName = "LMU Win",
                         onAddSet = {},
                         onReadSet = {},
                     )
@@ -282,7 +282,7 @@ class ManualReadoutListPaneTest {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
                     uiState = ManualReadoutListUiState(canReadSets = true, sets = listOf(ManualReadoutSet("set-1"))),
-                    simulatorName = "LMU",
+                    simulatorName = "LMU Win",
                     onAddSet = {},
                     onReadSet = { requested.add(it) },
                     onSetClick = { selected.add(it) },
@@ -312,7 +312,7 @@ class ManualReadoutListPaneTest {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
                     uiState = uiState.value,
-                    simulatorName = "LMU",
+                    simulatorName = "LMU Win",
                     onAddSet = {},
                     onReadSet = {},
                     onSetClick = { selected.add(it) },
@@ -353,7 +353,7 @@ class ManualReadoutListPaneTest {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                     ManualReadoutListPaneContent(
                         uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet("set-1"))),
-                        simulatorName = "LMU",
+                        simulatorName = "LMU Win",
                         onAddSet = {},
                         onReadSet = {},
                         modifier = Modifier.fillMaxSize(),
@@ -392,7 +392,7 @@ class ManualReadoutListPaneTest {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                     ManualReadoutListPaneContent(
                         uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet("set-1"))),
-                        simulatorName = "LMU",
+                        simulatorName = "LMU Win",
                         onAddSet = {},
                         onReadSet = {},
                         modifier = Modifier.fillMaxSize(),

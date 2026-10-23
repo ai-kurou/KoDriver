@@ -38,7 +38,7 @@ class ManualReadoutContentTest {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                     ManualReadoutContentScaffold(
                         uiState = state.value,
-                        simulatorName = "LMU",
+                        simulatorName = "LMU Win",
                         windowSizeClass = WindowSizeClass.compute(360f, 640f),
                         scaffoldDirective =
                             PaneScaffoldDirective(
@@ -81,7 +81,7 @@ class ManualReadoutContentTest {
                 Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                     ManualReadoutContentScaffold(
                         uiState = state.value,
-                        simulatorName = "LMU",
+                        simulatorName = "LMU Win",
                         windowSizeClass = WindowSizeClass.compute(840f, 640f),
                         onAddSet = {},
                         onReadSet = {},
@@ -101,7 +101,7 @@ class ManualReadoutContentTest {
         rule.onNodeWithText("削除").performClick()
         rule.onNodeWithText("削除").performClick()
         rule.onNodeWithText("詳細 target").assertDoesNotExist()
-        rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertExists()
+        rule.onNodeWithText("LMU Winの手動読み上げセットはまだありません").assertExists()
         rule.runOnIdle { assertEquals(listOf("target"), deleted) }
     }
 
@@ -126,7 +126,7 @@ class ManualReadoutContentTest {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                     ManualReadoutContentScaffold(
                         uiState = ManualReadoutListUiState(sets = List(40) { ManualReadoutSet("set-$it") }),
-                        simulatorName = "LMU",
+                        simulatorName = "LMU Win",
                         onAddSet = {},
                         onReadSet = {},
                         onSetClick = {},

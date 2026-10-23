@@ -74,7 +74,7 @@ class LmuWindowsDebugStateDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("イエローフラッグ状態 (LMUのみ)").assertIsDisplayed()
+        rule.onNodeWithText("イエローフラッグ状態 (LMU Windows版のみ)").assertIsDisplayed()
     }
 
     @Test
@@ -128,7 +128,7 @@ class LmuWindowsDebugStateDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("セッション (LMUのみ)").assertIsDisplayed()
+        rule.onNodeWithText("セッション (LMU Windows版のみ)").assertIsDisplayed()
     }
 
     @Test
@@ -185,7 +185,7 @@ class LmuWindowsDebugStateDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("ゲームフェーズ (LMUのみ)").assertIsDisplayed()
+        rule.onNodeWithText("ゲームフェーズ (LMU Windows版のみ)").assertIsDisplayed()
     }
 
     @Test

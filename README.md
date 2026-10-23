@@ -11,7 +11,7 @@
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4.21-7F52FF?logo=kotlin)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ai-kurou/KoDriver)
 
-Le Mans Ultimate（LMU）、Gran Turismo 7（GT7 PS5）、Assetto Corsa EVO（ACE）の走行情報に応じて、開始音の WAV 再生や OS 標準の音声合成（TTS）による自由文言の読み上げをリアルタイムに行う Compose Multiplatform アプリ。
+Le Mans Ultimate（LMU Windows版）、Gran Turismo 7（GT7 PS5）、Assetto Corsa EVO（ACE）の走行情報に応じて、開始音の WAV 再生や OS 標準の音声合成（TTS）による自由文言の読み上げをリアルタイムに行う Compose Multiplatform アプリ。
 
 https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
@@ -23,7 +23,7 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 - アナウンス優先度のドラッグ＆ドロップによる並び替え
 - 開始音の WAV 再生と、全項目の OS 標準 TTS（自由文言）によるリアルタイムアナウンス
 - 読み上げ音声（Windows / Android）の選択と試聴
-- LMU / ACE 由来の走行情報を WebSocket で配信（Android アプリで受信・表示可能）
+- LMU Windows版 / ACE 由来の走行情報を WebSocket で配信（Android アプリで受信・表示可能）
 - GT7 PS5 のテレメトリを UDP で直接受信（Android / Windows 対応、SimHub 経由も可）
 - テレメトリログの記録・一覧表示・詳細確認
 
@@ -32,12 +32,12 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 **デスクトップアプリ（Windows）**
 
 - Windows 10 以降
-- Le Mans Ultimate（LMU 使用時）、Gran Turismo 7 PS5（GT7 使用時）、または Assetto Corsa EVO（ACE 使用時）
+- Le Mans Ultimate（LMU Windows版使用時）、Gran Turismo 7 PS5（GT7 使用時）、または Assetto Corsa EVO（ACE 使用時）
 
 **Android アプリ**
 
 - Android 9.0 以降
-- LMU / ACE 情報を受信する場合: デスクトップアプリと同一 LAN への接続
+- LMU Windows版 / ACE 情報を受信する場合: デスクトップアプリと同一 LAN への接続
 - GT7 PS5 テレメトリを受信する場合: PS5 または SimHub を実行している PC と同一 LAN への接続
 
 ## インストール
@@ -46,7 +46,7 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
 [Releases](https://github.com/ai-kurou/KoDriver/releases) から最新の MSI インストーラーをダウンロードして実行してください。
 
-Windows 版 KoDriver をあらかじめ起動しておいてください。LMU または ACE が起動すると KoDriver が自動的に接続します。
+Windows 版 KoDriver をあらかじめ起動しておいてください。LMU Windows版または ACE が起動すると KoDriver が自動的に接続します。
 
 インストール時に Windows SmartScreen の警告が表示される場合があります。詳しい手順、ファイアウォール設定、既知の制限は [Windows 版のインストール手順](docs/windows-install.md) を参照してください。
 
@@ -58,7 +58,7 @@ Windows 版 KoDriver をあらかじめ起動しておいてください。LMU �
 
 Android 17（API 37）以降では、起動時に求められるローカルネットワークへのアクセスを許可してください。許可しないとWindows版KoDriverやPS5・SimHubとの通信ができません。拒否した場合は「その他 → ローカルネットワークへのアクセス許可」からアプリの設定を開き、許可を変更できます。
 
-LMU / ACEとの接続先の設定は、[Windows版のインストール手順](docs/windows-install.md#android-アプリと連携する場合)を参照してください。
+LMU Windows版 / ACEとの接続先の設定は、[Windows版のインストール手順](docs/windows-install.md#android-アプリと連携する場合)を参照してください。
 
 ## GT7 (PS5) 接続設定
 

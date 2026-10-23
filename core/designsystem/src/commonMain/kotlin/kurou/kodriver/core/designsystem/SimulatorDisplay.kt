@@ -56,13 +56,13 @@ fun simulatorLargeImage(simulatorId: String): Painter =
     }
 
 /**
- * ナビゲーション項目など表示幅が限られる場所向けの短縮名（"LMU"・"GT7"・"ACE"）を返す。
+ * ナビゲーション項目など表示幅が限られる場所向けの短縮名（"LMU Win"・"GT7"・"ACE"）を返す。
  * これらは略称であり翻訳対象ではないため文字列リソース化しない。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 fun simulatorShortName(simulatorId: String): String =
     when (simulatorId) {
-        LMU_WINDOWS_ID -> "LMU"
+        LMU_WINDOWS_ID -> "LMU Win"
         GT7_PS5_ID -> "GT7"
         ACE_WINDOWS_ID -> "ACE"
         else -> error("未対応のsimulatorId: $simulatorId")

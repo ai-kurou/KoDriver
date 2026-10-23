@@ -376,7 +376,7 @@ class AppScreenContentTest {
             )
         }
 
-        rule.onNode(hasText("LMU")).assertExists()
+        rule.onNode(hasText("LMU Win")).assertExists()
     }
 
     @Test
@@ -388,7 +388,7 @@ class AppScreenContentTest {
             )
         }
 
-        rule.onNode(hasText("LMU")).performClick()
+        rule.onNode(hasText("LMU Win")).performClick()
         rule.waitForIdle()
 
         rule.onNode(hasText("Gran Turismo 7（PS5）")).assertExists()
@@ -406,7 +406,7 @@ class AppScreenContentTest {
             )
         }
 
-        rule.onNode(hasText("LMU")).performClick()
+        rule.onNode(hasText("LMU Win")).performClick()
         rule.waitForIdle()
         rule.onNode(hasText("Gran Turismo 7（PS5）")).performClick()
         rule.waitForIdle()

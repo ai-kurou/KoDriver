@@ -35,7 +35,7 @@ class DebugStateGamePhaseCardTest {
             }
         }
 
-        rule.onNodeWithText("ゲームフェーズ (LMUのみ)").assertIsDisplayed()
+        rule.onNodeWithText("ゲームフェーズ (LMU Windows版のみ)").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 

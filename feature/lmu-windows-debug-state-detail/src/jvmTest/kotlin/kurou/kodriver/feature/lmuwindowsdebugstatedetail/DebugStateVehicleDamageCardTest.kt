@@ -55,7 +55,7 @@ class DebugStateVehicleDamageCardTest {
             }
         }
 
-        rule.onNodeWithText("車両故障 (LMUのみ)").assertIsDisplayed()
+        rule.onNodeWithText("車両故障 (LMU Windows版のみ)").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 

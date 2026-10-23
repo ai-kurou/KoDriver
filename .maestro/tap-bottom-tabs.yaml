@@ -4,7 +4,7 @@ appId: kurou.kodriver
 - extendedWaitUntil:
     visible: "自動"
     timeout: 30000
-- tapOn: "LMU"
+- tapOn: "LMU Win"
 - tapOn: "Gran Turismo 7（PS5）"
 - tapOn: "GT7"
 - scroll

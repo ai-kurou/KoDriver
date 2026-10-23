@@ -134,7 +134,7 @@ class SimulatorDisplayTest {
 
     @Test
     fun `lmu_windowsの短縮名を返す`() {
-        assertEquals("LMU", simulatorShortName("lmu_windows"))
+        assertEquals("LMU Win", simulatorShortName("lmu_windows"))
     }
 
     @Test

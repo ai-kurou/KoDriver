@@ -6,7 +6,7 @@
 2. ダウンロードした MSI インストーラーを実行します。
 3. インストール後、スタートメニューまたはデスクトップショートカットから KoDriver を起動します。
 
-Windows 版 KoDriver をあらかじめ起動しておいてください。LMU または ACE が起動すると KoDriver が自動的に接続します。
+Windows 版 KoDriver をあらかじめ起動しておいてください。LMU Windows版または ACE が起動すると KoDriver が自動的に接続します。
 
 ## 読み上げ音声の準備
 
@@ -94,5 +94,5 @@ Windows の「設定」から「アプリ」または「インストールされ
 
 ## 既知の制限
 
-- Windows 共有メモリを利用するため、LMU / ACE との接続は Windows 版デスクトップアプリでのみ動作します。
-- Android アプリ単体では LMU / ACE の共有メモリを直接読み取れません。デスクトップアプリとの LAN 接続が必要です。
+- Windows 共有メモリを利用するため、LMU Windows版 / ACE との接続は Windows 版デスクトップアプリでのみ動作します。
+- Android アプリ単体では LMU Windows版 / ACE の共有メモリを直接読み取れません。デスクトップアプリとの LAN 接続が必要です。
