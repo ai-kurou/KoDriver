@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -156,7 +157,7 @@ private fun AndroidAudioUsageCard(
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
             modifier = Modifier.padding(KoDriverSpacing.medium),
         ) {
-            Box(modifier = Modifier.size(AVATAR_SIZE)) {
+            Box(modifier = Modifier.size(AVATAR_SIZE).clearAndSetSemantics {}) {
                 Surface(
                     shape = MaterialTheme.shapes.extraLarge,
                     color = if (selected) colors.primary else colors.surfaceContainerHighest,

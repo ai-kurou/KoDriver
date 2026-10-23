@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -81,6 +82,19 @@ class OtherAndroidAudioUsageDetailPaneTest {
                 .assertIsSelected()
         }
         assertEquals(AndroidAudioUsage.entries.toList(), selected.toList())
+    }
+
+    @Test
+    fun `選択カードの読み上げ対象に装飾用の頭文字を含めない`() {
+        rule.setContent {
+            KoDriverTheme {
+                OtherAndroidAudioUsageDetailPaneContent(uiState = OtherAndroidAudioUsageDetailUiState())
+            }
+        }
+
+        rule
+            .onNodeWithText("メディア")
+            .assertTextEquals("メディア", "音楽や動画などのメディア音声として扱います。")
     }
 
     @Test
