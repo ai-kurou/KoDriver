@@ -299,6 +299,7 @@ tasks.register("generateModuleGraphImages") {
             "app" to "#FFE0B2",
             "feature" to "#C8E6C9",
             "core" to "#BBDEFB",
+            "support" to "#FFF9C4",
             "domain" to "#E1BEE7",
             "server" to "#F8BBD0",
             "other" to "#EEEEEE",
@@ -307,6 +308,7 @@ tasks.register("generateModuleGraphImages") {
             "app" to "#FB8C00",
             "feature" to "#43A047",
             "core" to "#1E88E5",
+            "support" to "#F9A825",
             "domain" to "#8E24AA",
             "server" to "#D81B60",
             "other" to "#9E9E9E",
@@ -316,7 +318,9 @@ tasks.register("generateModuleGraphImages") {
             module.startsWith(":app:") -> "app"
             module.startsWith(":feature:") -> "feature"
             module.startsWith(":core:") && module.endsWith("domain") -> "domain"
-            module.startsWith(":core:") -> "core"
+            module.startsWith(":core:") && module.endsWith("data") -> "core"
+            // data でも domain でもない :core（narrator・designsystem・windows-shared-memory）
+            module.startsWith(":core:") -> "support"
             module.startsWith(":server") -> "server"
             else -> "other"
         }
