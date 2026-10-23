@@ -73,8 +73,6 @@ kotlin {
                 implementation(libs.ktor.clientCore)
                 implementation(libs.ktor.clientOkhttp)
                 implementation(libs.ktor.clientWebsocketsMultiplatform)
-                implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
-                implementation(libs.kotlinx.serialization.json)
             }
         }
         jvmTest.dependencies {

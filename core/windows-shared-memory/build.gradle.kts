@@ -15,7 +15,6 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(platform(libs.kotlinx.coroutines.bom))
-    testImplementation(libs.kotlinx.coroutinesTest)
 }
 
 val testArtifacts: Configuration by configurations.creating
