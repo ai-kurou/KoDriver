@@ -5,8 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDialog
+import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -63,6 +67,32 @@ class ManualReadoutListPaneScreenshotTest {
                 }
             }
 
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `セットの長押し削除メニュー`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            ManualReadoutListPaneContent(
+                                uiState =
+                                    ManualReadoutListUiState(
+                                        sets = listOf(ManualReadoutSet(id = "set-1", name = "Fuel & Tyres")),
+                                    ),
+                                simulatorName = "LMU",
+                                onAddSet = {},
+                                onReadSet = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onNodeWithText("Fuel & Tyres").performTouchInput { longClick() }
+            onNodeWithText("削除").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
