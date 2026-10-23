@@ -282,7 +282,7 @@ class AndroidTextToSpeechRepositoryTest {
         }
 
     @Test
-    fun `読み上げが完了するまでspeakはsuspendする`() =
+    fun `完了通知までsuspendし重複とnullの通知を無視する`() =
         runTest {
             every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
             every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
@@ -308,6 +308,8 @@ class AndroidTextToSpeechRepositoryTest {
 
             listenerSlot.captured.onDone(utteranceIdSlot.captured)
             job.join()
+            listenerSlot.captured.onDone(utteranceIdSlot.captured)
+            listenerSlot.captured.onDone(null)
 
             assertTrue(completed)
             verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
