@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.center
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -18,6 +19,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
@@ -380,6 +382,39 @@ class ManualReadoutListPaneTest {
             assertEquals(true, standardMenuBounds.right <= 360f)
             assertEquals(true, standardMenuBounds.top >= 0f)
             assertEquals(true, standardMenuBounds.bottom <= 640f)
+        }
+    }
+
+    @Test
+    fun `読み上げボタンのタップ後にセマンティクスで長押しすると行中央にメニューを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    ManualReadoutListPaneContent(
+                        uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet("set-1"))),
+                        simulatorName = "LMU",
+                        onAddSet = {},
+                        onReadSet = {},
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            }
+        }
+
+        val row = rule.onNodeWithText("セット 1")
+        val rowBounds = row.fetchSemanticsNode().boundsInRoot
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
+        row.performSemanticsAction(SemanticsActions.OnLongClick) { it() }
+
+        val menuItem = rule.onNodeWithText("削除")
+        menuItem.assertIsDisplayed()
+        val menuBounds = menuItem.fetchSemanticsNode().boundsInRoot
+        val rowCenter = rowBounds.center
+        rule.runOnIdle {
+            assertEquals(true, menuBounds.left >= rowCenter.x - 16f)
+            assertEquals(true, menuBounds.left <= rowCenter.x + 16f)
+            assertEquals(true, menuBounds.top >= rowCenter.y - 16f)
+            assertEquals(true, menuBounds.top <= rowCenter.y + 16f)
         }
     }
 

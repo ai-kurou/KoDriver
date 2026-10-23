@@ -200,6 +200,7 @@ private fun ManualReadoutSetRow(
     val haptic = LocalHapticFeedback.current
     var menuExpanded by remember { mutableStateOf(false) }
     var longPressPosition by remember { mutableStateOf(Offset.Unspecified) }
+    var pointerDownPosition by remember { mutableStateOf(Offset.Unspecified) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     if (showDeleteDialog) {
         ManualReadoutListDeleteConfirmDialog(
@@ -218,16 +219,20 @@ private fun ManualReadoutSetRow(
                 .pointerInput(Unit) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
-                        longPressPosition = down.position
+                        pointerDownPosition = down.position
                         waitForUpOrCancellation()
+                        pointerDownPosition = Offset.Unspecified
                     }
                 }.combinedClickable(
                     onClick = {
-                        longPressPosition = Offset.Unspecified
                         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         onSetClick()
                     },
-                    onLongClick = { menuExpanded = true },
+                    onLongClick = {
+                        longPressPosition = pointerDownPosition
+                        pointerDownPosition = Offset.Unspecified
+                        menuExpanded = true
+                    },
                 ),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
@@ -235,7 +240,6 @@ private fun ManualReadoutSetRow(
             expanded = menuExpanded,
             onDismissRequest = {
                 menuExpanded = false
-                longPressPosition = Offset.Unspecified
             },
             popupPositionProvider =
                 remember(longPressPosition) {
@@ -265,7 +269,6 @@ private fun ManualReadoutSetRow(
                         },
                         onClick = {
                             menuExpanded = false
-                            longPressPosition = Offset.Unspecified
                             showDeleteDialog = true
                         },
                     )
