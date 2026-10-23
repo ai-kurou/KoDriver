@@ -15,6 +15,7 @@ class PlayingEqualizerScreenshotTest {
     @Test
     fun `再生中を表示する`() =
         composeScreenshotTest {
+            mainClock.autoAdvance = false
             setContent {
                 KoDriverTheme {
                     Surface {
@@ -25,6 +26,7 @@ class PlayingEqualizerScreenshotTest {
                 }
             }
             onNodeWithContentDescription("試聴を停止").assertExists()
+            mainClock.advanceTimeBy(600)
             onRoot().captureRoboImage()
         }
 }
