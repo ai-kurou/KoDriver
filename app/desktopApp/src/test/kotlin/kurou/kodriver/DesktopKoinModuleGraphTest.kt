@@ -2,8 +2,10 @@ package kurou.kodriver
 
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kurou.kodriver.core.acewindowsdata.desktopAceWindowsPreferencesDataModule
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
+import kurou.kodriver.core.lmuwindowsdata.desktopLmuWindowsPreferencesDataModule
 import kurou.kodriver.core.lmuwindowsrestapidata.lmuWindowsRestApiDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.core.windowshotkeydata.windowsHotkeyDataModule
@@ -88,7 +90,14 @@ class DesktopKoinModuleGraphTest {
 
     @Test
     fun `ホットキーと永続化RepositoryをDesktop構成から解決できる`() {
-        val application = koinApplication { modules(desktopDataModule, windowsHotkeyDataModule) }
+        val application =
+            koinApplication {
+                modules(
+                    desktopDataModule,
+                    desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
+                    windowsHotkeyDataModule,
+                )
+            }
         try {
             assertNotNull(application.koin.get<ReadoutHotkeyPreferencesRepository>())
             assertNotNull(application.koin.get<HotkeyRepository>())
@@ -127,7 +136,15 @@ class DesktopKoinModuleGraphTest {
     fun `ACE燃料残り周回数の文言Observeを名前付きで解決できる`() {
         val application =
             koinApplication {
-                modules(listOf(desktopDataModule) + featureModules)
+                modules(
+                    listOf(
+                        desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
+                        desktopLmuWindowsPreferencesDataModule(
+                            "${System.getProperty("user.home")}/.kodriver",
+                        ),
+                    ) + featureModules,
+                )
             }
         try {
             assertNotNull(
@@ -149,7 +166,15 @@ class DesktopKoinModuleGraphTest {
     fun `ACE車両接近文言UseCaseをNarratorと詳細の両構成で解決できる`() {
         val application =
             koinApplication {
-                modules(listOf(desktopDataModule) + featureModules)
+                modules(
+                    listOf(
+                        desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
+                        desktopLmuWindowsPreferencesDataModule(
+                            "${System.getProperty("user.home")}/.kodriver",
+                        ),
+                    ) + featureModules,
+                )
             }
         try {
             assertNotNull(application.koin.get<ObserveAceWindowsVehicleApproachReadoutTextUseCase>())
@@ -168,7 +193,15 @@ class DesktopKoinModuleGraphTest {
     fun `ACEタイヤ過熱文言UseCaseをNarratorと詳細の両構成で解決できる`() {
         val application =
             koinApplication {
-                modules(listOf(desktopDataModule) + featureModules)
+                modules(
+                    listOf(
+                        desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
+                        desktopLmuWindowsPreferencesDataModule(
+                            "${System.getProperty("user.home")}/.kodriver",
+                        ),
+                    ) + featureModules,
+                )
             }
         try {
             assertNotNull(application.koin.get<ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase>())
@@ -187,7 +220,15 @@ class DesktopKoinModuleGraphTest {
     fun `ACE燃料残量文言UseCaseをNarratorと詳細の両構成で解決できる`() {
         val application =
             koinApplication {
-                modules(listOf(desktopDataModule) + featureModules)
+                modules(
+                    listOf(
+                        desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
+                        desktopLmuWindowsPreferencesDataModule(
+                            "${System.getProperty("user.home")}/.kodriver",
+                        ),
+                    ) + featureModules,
+                )
             }
         try {
             assertNotNull(application.koin.get<ObserveAceWindowsRemainingFuelReadoutTextUseCase>())
@@ -206,7 +247,15 @@ class DesktopKoinModuleGraphTest {
     fun `ACE燃料残り周回数の通常と燃料なし文言の保存UseCaseを解決できる`() {
         val application =
             koinApplication {
-                modules(listOf(desktopDataModule) + featureModules)
+                modules(
+                    listOf(
+                        desktopDataModule,
+                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
+                        desktopLmuWindowsPreferencesDataModule(
+                            "${System.getProperty("user.home")}/.kodriver",
+                        ),
+                    ) + featureModules,
+                )
             }
         try {
             assertNotNull(application.koin.get<SaveAceWindowsRemainingFuelLapsReadoutTextUseCase>())
@@ -221,6 +270,10 @@ class DesktopKoinModuleGraphTest {
         checkKoinModules(
             listOf(
                 desktopDataModule,
+                desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
+                desktopLmuWindowsPreferencesDataModule(
+                    "${System.getProperty("user.home")}/.kodriver",
+                ),
                 gt7Ps5DataModule,
                 deviceVolumeDataModule,
                 textToSpeechDataModule,

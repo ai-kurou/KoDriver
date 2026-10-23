@@ -1,0 +1,12 @@
+package kurou.kodriver.core.lmuwindowsdata.preferences
+
+import androidx.datastore.core.DataStore
+
+internal fun createLmuWindowsVehicleClassBrakeWearPreferencesDataStore(
+    directory: String,
+): DataStore<LmuWindowsVehicleClassBrakeWearPreferences> =
+    preferencesDataStore(
+        directory = directory,
+        fileName = "lmu_windows_auto_vehicle_class_brake_wear_preferences.pb",
+        serializer = LmuWindowsVehicleClassBrakeWearPreferencesSerializer,
+    )

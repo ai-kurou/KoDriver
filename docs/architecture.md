@@ -14,11 +14,11 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:ace-windows-domain` | ACE固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-ace-windows-domain.svg) |
 | `:core:gt7-ps5-domain` | GT7固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-gt7-ps5-domain.svg) |
 | `:core:lmu-windows-domain` | LMU固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-lmu-windows-domain.svg) |
-| `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
-| `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-lmu-windows-data.svg) |
+| `:core:data` | 共通 DataStore、HTTP/WebSocketクライアント、共通リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
+| `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り（JVM）、設定永続化（JVM / Android）、Android WebSocketクライアント | [図](graphs/core-lmu-windows-data.svg) |
 | `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM）向けのモジュール。現時点ではブレーキ摩耗用に `RepairAndRefuel` の DataSource・`wearables.brakes` のポーリング Repository と Mapper のみ実装（過去に実装した天気予報機能は削除済み、詳細は `docs/lmu-windows-rest-api.md` の調査メモを参照） | [図](graphs/core-lmu-windows-rest-api-data.svg) |
-| `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装（JVM / Android） | [図](graphs/core-gt7-ps5-data.svg) |
-| `:core:ace-windows-data` | Assetto Corsa EVO Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-ace-windows-data.svg) |
+| `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・設定永続化・リポジトリ実装（JVM / Android） | [図](graphs/core-gt7-ps5-data.svg) |
+| `:core:ace-windows-data` | Assetto Corsa EVO Windows共有メモリ読み取り・設定永続化・Android WebSocketクライアント（JVM / Android） | [図](graphs/core-ace-windows-data.svg) |
 | `:core:device-volume-data` | 端末（OS）のマスター音量取得・設定のリポジトリ実装 | [図](graphs/core-device-volume-data.svg) |
 | `:core:text-to-speech-data` | OS標準の音声合成（Windows SAPI / Android TextToSpeech）と音声設定の起動のリポジトリ実装 | [図](graphs/core-text-to-speech-data.svg) |
 | `:core:windows-startup-data` | OS起動時のKoDriver自動起動設定（Windowsレジストリ）のリポジトリ実装 | [図](graphs/core-windows-startup-data.svg) |
@@ -83,7 +83,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 
 デバッグ状態詳細ペインの固定カードからの読み上げ要求は、各 ViewModel → `RequestDebugReadoutUseCase` → `DebugReadoutRequestRepository`（Desktop / Android 共通のインメモリ SharedFlow、replay なし）→ 各 NarratorViewModel の独立した購読 Job → EventProcessor → 通常の優先度・キュー・開始音・TTS・ログ保存の順で処理する。要求は各ペイン固有のシミュレーターと TopLevel 項目を指定し、項目スイッチ・テレメトリ受信・テンプレート置換には依存しない。ログには現在の状態・設定と `observedAtMs`、`debugReadout: true` を記録する。オーバーレイは既存の最新読み上げログ購読で表示する。feature 同士の依存は追加せず domain の要求型・Repository・UseCase を介する。
 
-LMU のブレーキ摩耗は `:core:lmu-windows-rest-api-data` がデスクトップ版で取得し、`:server` の `/ws/lmu_windows/brake_wear` から配信する。Android 版は `:core:data` の WebSocket Repository で受信し、共通の残量計算・Narrator に渡す。取得失敗時の `null` も配信する。
+LMU のブレーキ摩耗は `:core:lmu-windows-rest-api-data` がデスクトップ版で取得し、`:server` の `/ws/lmu_windows/brake_wear` から配信する。Android 版は `:core:lmu-windows-data` の WebSocket Repository で受信し、共通の残量計算・Narrator に渡す。取得失敗時の `null` も配信する。
 
 F9 の読み上げホットキーは `:core:windows-hotkey-data` → `:core:domain` の
 `HotkeyRepository` / `ObserveReadoutHotkeyUseCase` → `:feature:lmu-windows-narrator` に配線する。

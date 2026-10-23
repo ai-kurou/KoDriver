@@ -1,0 +1,62 @@
+package kurou.kodriver.core.acewindowsdata.preferences
+
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.Celsius
+import java.nio.file.Files
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class AceWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
+    private val tempDir = Files.createTempDirectory("kodriver_ace_tyre_temperature_repository_factory_test").toFile()
+
+    @AfterTest
+    fun tearDown() {
+        tempDir.deleteRecursively()
+    }
+
+    @Test
+    fun `デフォルト値は90度`() =
+        runTest {
+            val repository =
+                createAceWindowsTyreTemperaturePreferencesRepository(
+                    directory = tempDir.absolutePath,
+                )
+
+            assertEquals(
+                ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+                repository.observeHighThresholdCelsius().first(),
+            )
+        }
+
+    @Test
+    fun `保存した高温閾値を読み出せる`() =
+        runTest {
+            val repository =
+                createAceWindowsTyreTemperaturePreferencesRepository(
+                    directory = tempDir.absolutePath,
+                )
+
+            repository.saveHighThresholdCelsius(Celsius(100))
+
+            assertEquals(Celsius(100), repository.observeHighThresholdCelsius().first())
+        }
+
+    @Test
+    fun `Factoryで作成したRepositoryから文言を監視保存できる`() =
+        runTest {
+            val repository =
+                createAceWindowsTyreTemperaturePreferencesRepository(
+                    directory = tempDir.absolutePath,
+                )
+            assertEquals(
+                ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                repository.observeOverheatReadoutText().first(),
+            )
+            repository.saveOverheatReadoutText("注意{celsius}度")
+            assertEquals("注意{celsius}度", repository.observeOverheatReadoutText().first())
+        }
+}

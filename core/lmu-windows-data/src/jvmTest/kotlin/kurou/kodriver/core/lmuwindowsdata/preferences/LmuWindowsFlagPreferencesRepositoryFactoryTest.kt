@@ -1,0 +1,38 @@
+package kurou.kodriver.core.lmuwindowsdata.preferences
+
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import java.nio.file.Files
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class LmuWindowsFlagPreferencesRepositoryFactoryTest {
+    @BeforeTest
+    fun setUp() {
+        registerLmuWindowsReadoutItemKeys()
+    }
+
+    @Test
+    fun `createLmuWindowsFlagPreferencesRepository は保存と取得が正常に動作する`() =
+        runTest {
+            val tempDir = Files.createTempDirectory("kodriver_flag_pref_factory_test").toFile()
+            try {
+                val repo = createLmuWindowsFlagPreferencesRepository(tempDir.absolutePath)
+
+                assertTrue(repo.observeFlagEnabledStates().first().isEmpty())
+
+                repo.saveFlagEnabledState(LmuWindowsReadoutItemKey.Flag.BlueFlag, true)
+                assertEquals(
+                    mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.BlueFlag to true),
+                    repo.observeFlagEnabledStates().first(),
+                )
+            } finally {
+                tempDir.deleteRecursively()
+            }
+        }
+}

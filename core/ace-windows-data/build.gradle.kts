@@ -1,20 +1,86 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.kover)
 }
 
-dependencies {
-    implementation(projects.core.domain)
-    implementation(projects.core.aceWindowsDomain)
-    implementation(projects.core.windowsSharedMemory)
-    implementation(platform(libs.kotlinx.coroutines.bom))
-    implementation(libs.kotlinx.coroutinesCore)
-    implementation(platform(libs.koin.bom))
-    implementation(libs.koin.core)
+kotlin {
+    jvm()
 
-    testImplementation(libs.kotlin.testJunit)
-    testImplementation(libs.junit)
-    testImplementation(platform(libs.kotlinx.coroutines.bom))
-    testImplementation(libs.kotlinx.coroutinesTest)
-    testImplementation(project(path = projects.core.windowsSharedMemory.path, configuration = "testArtifacts"))
+    android {
+        namespace = "kurou.kodriver.core.acewindowsdata"
+        compileSdk =
+            libs.versions.android.compileSdk
+                .get()
+                .toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+        compilerOptions { jvmTarget = JvmTarget.JVM_11 }
+        withHostTest { isIncludeAndroidResources = true }
+        lint {
+            abortOnError = true
+            warningsAsErrors = false
+        }
+    }
+
+    sourceSets {
+        val jvmAndroidMain by creating {
+            dependsOn(commonMain.get())
+            dependencies {
+                implementation(projects.core.domain)
+                implementation(projects.core.aceWindowsDomain)
+                implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
+                implementation(libs.kotlinx.coroutinesCore)
+                implementation(project.dependencies.platform(libs.koin.bom))
+                implementation(libs.koin.core)
+                implementation(libs.androidx.datastore.core)
+                implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
+                implementation(libs.kotlinx.serialization.protobuf)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(project.dependencies.platform(libs.sentry.bom))
+                implementation(libs.sentry)
+            }
+        }
+        jvmMain {
+            dependsOn(jvmAndroidMain)
+            dependencies { implementation(projects.core.windowsSharedMemory) }
+        }
+        androidMain {
+            dependsOn(jvmAndroidMain)
+            dependencies {
+                implementation(project.dependencies.platform(libs.ktor.bom))
+                implementation(libs.ktor.clientCore)
+                implementation(libs.ktor.clientOkhttp)
+                implementation(libs.ktor.clientWebsocketsMultiplatform)
+                implementation(libs.androidx.core.ktx)
+            }
+        }
+        jvmTest.dependencies {
+            implementation(libs.mockk)
+            implementation(libs.kotlin.testJunit)
+            implementation(libs.junit)
+            implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutinesTest)
+            implementation(libs.androidx.datastore.core)
+            implementation(project(path = projects.core.windowsSharedMemory.path, configuration = "testArtifacts"))
+        }
+        named("androidHostTest") {
+            dependencies {
+                implementation(libs.kotlin.testJunit)
+                implementation(libs.junit)
+                implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
+                implementation(libs.kotlinx.coroutinesTest)
+                implementation(project.dependencies.platform(libs.okhttp.bom))
+                implementation(libs.okhttp)
+                implementation(libs.okhttp.mockwebserver)
+                implementation(libs.robolectric)
+                implementation(libs.androidx.testExt.junit)
+            }
+        }
+    }
 }

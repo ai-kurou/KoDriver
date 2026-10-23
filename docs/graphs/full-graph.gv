@@ -1,7 +1,7 @@
 digraph G {
   rankdir=LR
   size="1000,16.666667!"
-  graph [ranksep=1.0, nodesep=0.3]
+  graph [ranksep=0.8, nodesep=0.2]
   node [shape=box, style="rounded,filled"]
   ":app:androidApp" [label=":app:androidApp", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:androidBenchmark" [label=":app:androidBenchmark", fillcolor="#FFE0B2", color="#FB8C00"]
@@ -10,7 +10,7 @@ digraph G {
   ":core:ace-windows-data" [label=":core:ace-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:ace-windows-domain" [label=":core:ace-windows-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:data" [label=":core:data", fillcolor="#BBDEFB", color="#1E88E5"]
-  ":core:designsystem" [label=":core:designsystem", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:designsystem" [label=":core:designsystem", fillcolor="#FFF9C4", color="#F9A825"]
   ":core:device-volume-data" [label=":core:device-volume-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:domain" [label=":core:domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:gt7-ps5-data" [label=":core:gt7-ps5-data", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -18,10 +18,10 @@ digraph G {
   ":core:lmu-windows-data" [label=":core:lmu-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:lmu-windows-domain" [label=":core:lmu-windows-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:lmu-windows-rest-api-data" [label=":core:lmu-windows-rest-api-data", fillcolor="#BBDEFB", color="#1E88E5"]
-  ":core:narrator" [label=":core:narrator", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:narrator" [label=":core:narrator", fillcolor="#FFF9C4", color="#F9A825"]
   ":core:text-to-speech-data" [label=":core:text-to-speech-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-hotkey-data" [label=":core:windows-hotkey-data", fillcolor="#BBDEFB", color="#1E88E5"]
-  ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#FFF9C4", color="#F9A825"]
   ":core:windows-startup-data" [label=":core:windows-startup-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":server" [label=":server", fillcolor="#F8BBD0", color="#D81B60"]
   "feature" [label="feature\n24 modules", fillcolor="#C8E6C9", color="#43A047"]
@@ -30,9 +30,11 @@ digraph G {
   "feature:lmu-windows*" [label="feature:lmu-windows*\n13 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":app:androidApp" -> ":app:androidBenchmark"
   ":app:androidApp" -> ":app:shared"
+  ":app:androidApp" -> ":core:ace-windows-data"
   ":app:androidApp" -> ":core:data"
   ":app:androidApp" -> ":core:device-volume-data"
   ":app:androidApp" -> ":core:gt7-ps5-data"
+  ":app:androidApp" -> ":core:lmu-windows-data"
   ":app:androidApp" -> ":core:text-to-speech-data"
   ":app:androidApp" -> ":core:windows-startup-data"
   ":app:androidBenchmark" -> ":app:androidApp"
@@ -92,4 +94,16 @@ digraph G {
   "feature:lmu-windows*" -> ":core:domain"
   "feature:lmu-windows*" -> ":core:lmu-windows-domain"
   "feature:lmu-windows*" -> ":core:narrator"
+  { rank=same; ":app:androidApp"; ":app:desktopApp"; }
+  { rank=same; ":app:shared"; ":server"; }
+  { rank=same; "feature"; "feature:ace-windows*"; "feature:lmu-windows*"; "feature:gt7-ps5*"; ":core:data"; ":core:ace-windows-data"; ":core:lmu-windows-data"; ":core:gt7-ps5-data"; ":core:lmu-windows-rest-api-data"; ":core:text-to-speech-data"; ":core:device-volume-data"; ":core:windows-hotkey-data"; ":core:windows-startup-data"; }
+  { rank=same; ":core:narrator"; ":core:designsystem"; ":core:windows-shared-memory"; }
+  { rank=same; ":core:lmu-windows-domain"; ":core:ace-windows-domain"; ":core:gt7-ps5-domain"; }
+  { rank=same; ":core:domain"; }
+  ":app:androidApp" -> ":app:shared" [style=invis]
+  ":app:shared" -> "feature" [style=invis]
+  "feature" -> ":core:narrator" [style=invis]
+  ":core:narrator" -> ":core:lmu-windows-domain" [style=invis]
+  ":core:lmu-windows-domain" -> ":core:domain" [style=invis]
+  "feature" -> "feature:ace-windows*" -> "feature:lmu-windows*" -> "feature:gt7-ps5*" -> ":core:data" -> ":core:ace-windows-data" -> ":core:lmu-windows-data" -> ":core:gt7-ps5-data" -> ":core:lmu-windows-rest-api-data" -> ":core:text-to-speech-data" -> ":core:device-volume-data" -> ":core:windows-hotkey-data" -> ":core:windows-startup-data" [style=invis]
 }

@@ -4,14 +4,23 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5PacketSource
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5UdpSource
+import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5MyBestLapPreferencesRepository
+import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5RemainingFuelLapsPreferencesRepository
+import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5RemainingFuelPreferencesRepository
+import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.core.gt7ps5data.repository.Gt7Ps5RepositoryImpl
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5MyBestLapPreferencesRepository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
+import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 private const val GT7_PS5_SCOPE_QUALIFIER = "gt7_ps5_scope"
+private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
 
 /**
  * GT7 PS5 テレメトリの Repository バインドを行う Koin モジュール（:core:gt7-ps5-data / jvmMain）。
@@ -27,7 +36,21 @@ val gt7Ps5DataModule =
 
         // 設定永続化（DataStore）
         single<Gt7Ps5UdpPortPreferencesRepository> {
-            createGt7Ps5UdpPortPreferencesRepository("${System.getProperty("user.home")}/.kodriver")
+            createGt7Ps5UdpPortPreferencesRepository(kodriverDirectory)
+        }
+
+        // GT7 設定永続化（DataStore）
+        single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
+            createGt7Ps5RemainingFuelLapsPreferencesRepository(kodriverDirectory)
+        }
+        single<Gt7Ps5RemainingFuelPreferencesRepository> {
+            createGt7Ps5RemainingFuelPreferencesRepository(kodriverDirectory)
+        }
+        single<Gt7Ps5TyreTemperaturePreferencesRepository> {
+            createGt7Ps5TyreTemperaturePreferencesRepository(kodriverDirectory)
+        }
+        single<Gt7Ps5MyBestLapPreferencesRepository> {
+            createGt7Ps5MyBestLapPreferencesRepository(kodriverDirectory)
         }
 
         // データソース・Repository（UDP パケット受信。get() で接続先アドレス・待受ポート設定を解決）

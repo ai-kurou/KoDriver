@@ -7,6 +7,7 @@ import kurou.kodriver.data.debugreadout.InMemoryDebugReadoutRequestRepository
 import kurou.kodriver.data.device.AndroidAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
+import kurou.kodriver.data.hotkey.UnsupportedHotkeyRepository
 import kurou.kodriver.data.hotkey.UnsupportedManualReadoutHotkeyRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.preferences.AndroidAutoReadoutPreferencesRepository
@@ -26,6 +27,7 @@ import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepositor
 import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
+import kurou.kodriver.data.preferences.createReadoutHotkeyPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createSoundVolumePreferencesRepository
@@ -50,6 +52,7 @@ import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
+import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
@@ -60,6 +63,7 @@ import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
@@ -86,13 +90,17 @@ private val Context.hapticFeedbackEnabledDataStore by preferencesDataStore("hapt
  *
  * app エントリーポイント（androidApp）で composition root として束ねられ、各 feature モジュールの
  * UseCase が get() で解決する Repository 実装を提供する。デスクトップ版（DesktopDataModule）との違いは、
- * LMU の走行データを Windows 共有メモリではなく **KoDriver サーバーへの WebSocket** から取得する点。
+ * LMU の走行データは別登録の `androidLmuWindowsDataModule` が **KoDriver サーバーへの WebSocket** から取得する。
  * 大半は DataStore バインドで、ServerVersion/AppUpdate はネットワーク、TelemetryLog は Room DB。
  */
 fun androidDataModule(context: Context) =
     module {
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutHotkeyRepository> { UnsupportedManualReadoutHotkeyRepository() }
+        single<HotkeyRepository> { UnsupportedHotkeyRepository() }
+        single<ReadoutHotkeyPreferencesRepository> {
+            createReadoutHotkeyPreferencesRepository(context.filesDir.absolutePath)
+        }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<Context> { context }
 
@@ -109,11 +117,9 @@ fun androidDataModule(context: Context) =
         single<AndroidAudioUsagePreferencesRepository> {
             createAndroidAudioUsagePreferencesRepository(context.filesDir.absolutePath)
         }
-        // WebSocket 用 HttpClient は LMU・ACE の全リポジトリで単一インスタンスを共有する。
+        // :core:lmu-windows-data / :core:ace-windows-data の Android WebSocket リポジトリは、このバインドを get() で解決して共有する（WebSockets プラグインと ping 間隔の設定を含むため、削除すると WebSocket が動かなくなる）。
         single<HttpClient> { createWebSocketHttpClient() }
-        includes(androidDataModuleLmuWindows(context))
-        includes(androidDataModuleAceWindows(context))
-        includes(androidDataModuleGt7Ps5(context))
+        includes(androidDataModuleCommonSimulatorPreferences(context))
         includes(androidDataModuleCommonPreferences(context))
         includes(androidDataModuleAppSettings(context))
         includes(androidDataModuleMisc(context))
@@ -228,5 +234,16 @@ private fun androidDataModuleCommonPreferences(context: Context) =
         // テレメトリログ（Room データベース）
         single<TelemetryLogRepository> {
             createTelemetryLogRepository(context = context)
+        }
+    }
+
+/** GT7 向けの共通 DataStore Repository バインド。 */
+private fun androidDataModuleCommonSimulatorPreferences(context: Context) =
+    module {
+        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
+            createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath, Simulator.Gt7Ps5)
+        }
+        single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
+            createManualReadoutSetPreferencesRepository(context.filesDir.absolutePath, Simulator.Gt7Ps5)
         }
     }
