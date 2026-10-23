@@ -16,6 +16,8 @@
 
 一覧の各行は、`:core:domain` の `NarrationOutcome` に応じて末尾のアイコン・アクセシビリティ用の説明・前景色を切り替える。
 
+ログが1件以上ある場合、リセット項目の直後に「読み上げ結果」のヒント行を表示する。ヘルプボタンを押すとボトムシートが開き、4種類の結果と説明を確認できる。ログがない場合は既存の空状態を表示し、ヒント行は表示しない。
+
 | `NarrationOutcome` | アイコン | contentDescription | 前景色 |
 | --- | --- | --- | --- |
 | `QUEUED` | `Icons.AutoMirrored.Filled.PlaylistAdd` | キューに追加 | 通常 |
