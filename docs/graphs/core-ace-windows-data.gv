@@ -6,7 +6,7 @@ digraph G {
   ":core:ace-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
   ":core:ace-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
-  ":core:windows-shared-memory" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:windows-shared-memory" [fillcolor="#FFF9C4", color="#F9A825", penwidth=1]
   ":app:androidApp" -> ":core:ace-windows-data"
   ":app:desktopApp" -> ":core:ace-windows-data"
   ":core:ace-windows-data" -> ":core:domain"

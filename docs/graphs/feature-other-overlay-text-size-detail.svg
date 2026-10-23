@@ -30,7 +30,7 @@
 <!-- :core:designsystem -->
 <g id="node2" class="node">
 <title>:core:designsystem</title>
-<path fill="#bbdefb" stroke="#1e88e5" d="M143,-36C143,-36 12,-36 12,-36 6,-36 0,-30 0,-24 0,-24 0,-12 0,-12 0,-6 6,0 12,0 12,0 143,0 143,0 149,0 155,-6 155,-12 155,-12 155,-24 155,-24 155,-30 149,-36 143,-36"/>
+<path fill="#fff9c4" stroke="#f9a825" d="M143,-36C143,-36 12,-36 12,-36 6,-36 0,-30 0,-24 0,-24 0,-12 0,-12 0,-6 6,0 12,0 12,0 143,0 143,0 149,0 155,-6 155,-12 155,-12 155,-24 155,-24 155,-30 149,-36 143,-36"/>
 <text text-anchor="middle" x="77.5" y="-14.3" font-family="Times,serif" font-size="14.00">:core:designsystem</text>
 </g>
 <!-- :core:domain -->

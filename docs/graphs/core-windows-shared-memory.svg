@@ -18,7 +18,7 @@
 <!-- :core:windows&#45;shared&#45;memory -->
 <g id="node3" class="node">
 <title>:core:windows&#45;shared&#45;memory</title>
-<path fill="#bbdefb" stroke="#1e88e5" stroke-width="2.5" d="M298,-36C298,-36 87,-36 87,-36 81,-36 75,-30 75,-24 75,-24 75,-12 75,-12 75,-6 81,0 87,0 87,0 298,0 298,0 304,0 310,-6 310,-12 310,-12 310,-24 310,-24 310,-30 304,-36 298,-36"/>
+<path fill="#fff9c4" stroke="#f9a825" stroke-width="2.5" d="M298,-36C298,-36 87,-36 87,-36 81,-36 75,-30 75,-24 75,-24 75,-12 75,-12 75,-6 81,0 87,0 87,0 298,0 298,0 304,0 310,-6 310,-12 310,-12 310,-24 310,-24 310,-30 304,-36 298,-36"/>
 <text text-anchor="middle" x="192.5" y="-14.3" font-family="Times,serif" font-size="14.00">:core:windows&#45;shared&#45;memory</text>
 </g>
 <!-- :core:ace&#45;windows&#45;data&#45;&gt;:core:windows&#45;shared&#45;memory -->

@@ -3,7 +3,7 @@ digraph G {
   node [shape=box, style="rounded,filled"]
   ":core:ace-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:lmu-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
-  ":core:windows-shared-memory" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
+  ":core:windows-shared-memory" [fillcolor="#FFF9C4", color="#F9A825", penwidth=2.5]
   ":core:ace-windows-data" -> ":core:windows-shared-memory"
   ":core:lmu-windows-data" -> ":core:windows-shared-memory"
 }
