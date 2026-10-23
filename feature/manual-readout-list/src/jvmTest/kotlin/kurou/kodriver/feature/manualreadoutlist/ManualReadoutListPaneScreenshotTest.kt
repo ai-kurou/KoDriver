@@ -7,6 +7,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDialog
+import androidx.compose.ui.test.isPopup
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -93,7 +94,7 @@ class ManualReadoutListPaneScreenshotTest {
 
             onNodeWithText("Fuel & Tyres").performTouchInput { longClick() }
             onNodeWithText("削除").assertIsDisplayed()
-            onRoot().captureRoboImage()
+            onNode(isPopup()).captureRoboImage()
         }
 
     @Test
