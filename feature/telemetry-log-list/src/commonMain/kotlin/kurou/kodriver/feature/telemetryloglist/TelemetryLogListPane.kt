@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
@@ -59,6 +61,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
@@ -67,6 +70,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.KoDriverHintRow
+import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
@@ -87,10 +92,20 @@ import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title_for_simulator
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_feedback_menu_item
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_more_button
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_hint_help_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_hint_label
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_interrupted_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_interrupted_hint_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_interrupted_title
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_queued_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_queued_hint_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_queued_title
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_skipped_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_skipped_hint_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_skipped_title
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_hint_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_title
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_time
 import org.jetbrains.compose.resources.stringResource
@@ -131,7 +146,7 @@ internal fun TelemetryLogListPane(
 
         LaunchedEffect(firstLogId) {
             if (previousFirstLogId != firstLogId) {
-                if (listState.firstVisibleItemIndex <= FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL) {
+                if (listState.firstVisibleItemIndex <= FIRST_VISIBLE_ITEM_INDEX_WITH_HINT_ROW_FOR_AUTO_SCROLL) {
                     listState.animateScrollToItem(0)
                 } else {
                     showNewLogsButton = true
@@ -177,6 +192,11 @@ internal fun TelemetryLogListPane(
                             onClick = onResetClick,
                         )
                         HorizontalDivider()
+                    }
+                    item(key = NARRATION_OUTCOME_HINT_ITEM_KEY) {
+                        TelemetryLogNarrationOutcomeHintRow(
+                            modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
+                        )
                     }
                     items(
                         items = uiState.logs,
@@ -412,13 +432,7 @@ private fun TelemetryLogListItem(
                 horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
             ) {
                 Icon(
-                    imageVector =
-                        when (log.narrationOutcome) {
-                            NarrationOutcome.QUEUED -> Icons.AutoMirrored.Filled.PlaylistAdd
-                            NarrationOutcome.SPOKEN -> Icons.AutoMirrored.Filled.VolumeUp
-                            NarrationOutcome.INTERRUPTED -> Icons.Filled.PlaylistRemove
-                            NarrationOutcome.SKIPPED -> Icons.Filled.VolumeOff
-                        },
+                    imageVector = narrationOutcomeIcon(log.narrationOutcome),
                     contentDescription =
                         stringResource(
                             when (log.narrationOutcome) {
@@ -508,6 +522,58 @@ internal fun formatTelemetryLogTime(
         formatDuration(raceElapsedMs),
     )
 
+@Composable
+private fun TelemetryLogNarrationOutcomeHintRow(modifier: Modifier = Modifier) {
+    KoDriverHintRow(
+        label = stringResource(Res.string.telemetry_log_narration_hint_label),
+        helpContentDescription = stringResource(Res.string.telemetry_log_narration_hint_help_description),
+        modifier = modifier,
+    ) {
+        TelemetryLogNarrationOutcomeHintSheetContent()
+    }
+}
+
+@Composable
+internal fun TelemetryLogNarrationOutcomeHintSheetContent(modifier: Modifier = Modifier) {
+    Column(
+        modifier =
+            modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = KoDriverSpacing.large)
+                .padding(bottom = KoDriverSpacing.extraLarge),
+        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+    ) {
+        KoDriverHintSheetRow(
+            icon = narrationOutcomeIcon(NarrationOutcome.QUEUED),
+            title = stringResource(Res.string.telemetry_log_narration_queued_title),
+            description = stringResource(Res.string.telemetry_log_narration_queued_hint_description),
+        )
+        KoDriverHintSheetRow(
+            icon = narrationOutcomeIcon(NarrationOutcome.SPOKEN),
+            title = stringResource(Res.string.telemetry_log_narration_spoken_title),
+            description = stringResource(Res.string.telemetry_log_narration_spoken_hint_description),
+        )
+        KoDriverHintSheetRow(
+            icon = narrationOutcomeIcon(NarrationOutcome.INTERRUPTED),
+            title = stringResource(Res.string.telemetry_log_narration_interrupted_title),
+            description = stringResource(Res.string.telemetry_log_narration_interrupted_hint_description),
+        )
+        KoDriverHintSheetRow(
+            icon = narrationOutcomeIcon(NarrationOutcome.SKIPPED),
+            title = stringResource(Res.string.telemetry_log_narration_skipped_title),
+            description = stringResource(Res.string.telemetry_log_narration_skipped_hint_description),
+        )
+    }
+}
+
+internal fun narrationOutcomeIcon(outcome: NarrationOutcome): ImageVector =
+    when (outcome) {
+        NarrationOutcome.QUEUED -> Icons.AutoMirrored.Filled.PlaylistAdd
+        NarrationOutcome.SPOKEN -> Icons.AutoMirrored.Filled.VolumeUp
+        NarrationOutcome.INTERRUPTED -> Icons.Filled.PlaylistRemove
+        NarrationOutcome.SKIPPED -> Icons.Filled.VolumeOff
+    }
+
 private fun formatTimeOfDay(milliseconds: Long): String {
     val millisInDay = (milliseconds + JST_OFFSET_MILLIS).floorMod(MILLISECONDS_PER_DAY)
     return formatDuration(millisInDay)
@@ -531,8 +597,10 @@ internal fun Color.applySkippedAlpha(narrationOutcome: NarrationOutcome): Color 
 
 internal const val SKIPPED_CONTENT_ALPHA = 0.38f
 
-private const val FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL = 1
+/** リセット項目とヒント行が先頭の index 0・1 を占めるため、先頭ログ(index 2)まで自動スクロール対象とする。 */
+private const val FIRST_VISIBLE_ITEM_INDEX_WITH_HINT_ROW_FOR_AUTO_SCROLL = 2
 private const val RESET_ITEM_KEY = "telemetry_log_reset_item"
+private const val NARRATION_OUTCOME_HINT_ITEM_KEY = "telemetry_log_narration_outcome_hint"
 internal const val TELEMETRY_LOG_LIST_TEST_TAG = "telemetryLogList"
 private const val JST_OFFSET_MILLIS = 9 * MILLISECONDS_PER_HOUR
 private val TELEMETRY_LOG_EMPTY_STATE_ICON_SIZE = 48.dp

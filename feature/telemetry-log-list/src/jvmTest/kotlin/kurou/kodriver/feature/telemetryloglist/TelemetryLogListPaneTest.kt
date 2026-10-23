@@ -7,8 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -32,6 +34,42 @@ class TelemetryLogListPaneTest {
 
         rule.onNodeWithText("ログはまだありません").assertIsDisplayed()
         rule.onNodeWithText("テレメトリを受信すると、ここに新しい順で表示されます。").assertIsDisplayed()
+        rule.onNodeWithText("読み上げ結果").assertDoesNotExist()
+    }
+
+    @Test
+    fun `ログがある場合は読み上げ結果ヒントを表示してヘルプから4種の説明を確認できる`() {
+        rule.setContent {
+            KoDriverTheme {
+                TelemetryLogListPane(uiState = TelemetryLogListUiState(logs = listOf(createTelemetryLog(id = 1))))
+            }
+        }
+
+        rule.onNodeWithText("読み上げ結果").assertIsDisplayed()
+        rule.onNodeWithContentDescription("読み上げ結果の見方を表示").performClick()
+        rule.onNodeWithText("キューに追加").assertIsDisplayed()
+        rule.onNodeWithText("キューに追加しました。順番が来ると読み上げが要求されます。").assertIsDisplayed()
+        rule.onNodeWithText("通常再生").assertIsDisplayed()
+        rule.onNodeWithText("すぐに読み上げを要求しました。").assertIsDisplayed()
+        rule.onNodeWithText("割り込み再生").assertIsDisplayed()
+        rule.onNodeWithText("読み上げ中の内容を止めて、優先して読み上げを要求しました。").assertIsDisplayed()
+        rule.onNodeWithText("読み上げなし").assertIsDisplayed()
+        rule.onNodeWithText("優先度が低い、本文が空、またはTTSが使えないため読み上げませんでした。").assertIsDisplayed()
+    }
+
+    @Test
+    fun `先頭ログに近いヒント行表示中の新着ログは自動で先頭へ戻す`() {
+        val logs = (30 downTo 1).map { createTelemetryLog(id = it.toLong()) }
+        val uiState = mutableStateOf(TelemetryLogListUiState(logs = logs))
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.height(240.dp)) { TelemetryLogListPane(uiState = uiState.value) }
+            }
+        }
+
+        rule.onNodeWithTag(TELEMETRY_LOG_LIST_TEST_TAG).performScrollToIndex(1)
+        rule.runOnIdle { uiState.value = uiState.value.copy(logs = listOf(createTelemetryLog(id = 100)) + logs) }
+        rule.onNodeWithText("新しいログ").assertDoesNotExist()
     }
 
     @Test
@@ -44,6 +82,7 @@ class TelemetryLogListPaneTest {
 
         rule.onNodeWithText("Le Mans Ultimate（Windows版）のログはまだありません").assertIsDisplayed()
         rule.onNodeWithText("テレメトリを受信すると、ここに新しい順で表示されます。").assertIsDisplayed()
+        rule.onNodeWithText("読み上げ結果").assertDoesNotExist()
     }
 
     @Test
