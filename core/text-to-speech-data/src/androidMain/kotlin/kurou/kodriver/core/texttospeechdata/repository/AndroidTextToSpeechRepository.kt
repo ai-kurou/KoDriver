@@ -17,9 +17,7 @@ import kurou.kodriver.domain.model.VOICE_SPEED_MAX
 import kurou.kodriver.domain.model.VOICE_SPEED_MIN
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
-import java.util.concurrent.atomic.AtomicReference
 
 internal fun androidAudioUsageToPlatformUsage(usage: AndroidAudioUsage): Int =
     when (usage) {
@@ -91,9 +89,10 @@ internal class AndroidTextToSpeechRepository(
     private var initialized = false
     private var textToSpeech: TextToSpeech? = null
     private var unavailableReason: TextToSpeechUnavailableReason? = null
-    private val pendingUtterances = ConcurrentHashMap<String, CompletableDeferred<Unit>>()
+    private val utteranceLock = Any()
+    private val pendingUtterances = mutableMapOf<String, CompletableDeferred<Unit>>()
     private val utteranceIdSequence = AtomicLong()
-    private val activeUtteranceId = AtomicReference<String?>()
+    private var activeUtteranceId: String? = null
 
     override suspend fun isAvailable(): Boolean = ensureInitialized() != null
 
@@ -143,7 +142,7 @@ internal class AndroidTextToSpeechRepository(
         val audioAttributes = audioAttributesFactory(resolvedAudioUsage)
         val utteranceId = "kodriver_tts_${utteranceIdSequence.incrementAndGet()}"
         val completed = CompletableDeferred<Unit>()
-        pendingUtterances[utteranceId] = completed
+        synchronized(utteranceLock) { pendingUtterances[utteranceId] = completed }
         if (!queue) {
             // QUEUE_FLUSHは現在再生中・キュー中の発話をすべて打ち切るため、それらに対応する
             // speak()呼び出しがonStop通知を待ち続けないよう、ここで明示的に完了させる。
@@ -165,21 +164,26 @@ internal class AndroidTextToSpeechRepository(
         if (result != TextToSpeech.SUCCESS) {
             // 発話要求自体が失敗した場合、onDone/onError/onStopのいずれも呼ばれないため
             // completed.await()がハングしてしまう。要求前に諦めて即座に返す。
-            pendingUtterances.remove(utteranceId)
+            synchronized(utteranceLock) { pendingUtterances.remove(utteranceId) }
             return
         }
         try {
             completed.await()
         } catch (e: CancellationException) {
-            // まだ再生開始前（他の発話の後ろにキューイングされているだけ）の呼び出しがキャンセルされても、
-            // engine.stop()を呼ぶと現在再生中の無関係な発話まで止めてしまうため、このutteranceIdが
-            // 実際に再生中（onStart済み）の場合のみ停止する。
-            if (activeUtteranceId.get() == utteranceId) {
-                engine.stop()
+            // engine.stop()は全発話を止めるため、他の発話がpendingなら巻き添えにしない。
+            // voiceLockでspeak()と直列化し、停止判定後に別の発話がエンジンへ追加される競合も防ぐ。
+            synchronized(voiceLock) {
+                val shouldStop =
+                    synchronized(utteranceLock) {
+                        activeUtteranceId == utteranceId || pendingUtterances.keys.all { it == utteranceId }
+                    }
+                if (shouldStop) {
+                    engine.stop()
+                }
             }
             throw e
         } finally {
-            pendingUtterances.remove(utteranceId)
+            synchronized(utteranceLock) { pendingUtterances.remove(utteranceId) }
         }
     }
 
@@ -304,7 +308,7 @@ internal class AndroidTextToSpeechRepository(
                 engine.setOnUtteranceProgressListener(
                     object : UtteranceProgressListener() {
                         override fun onStart(utteranceId: String?) {
-                            activeUtteranceId.set(utteranceId)
+                            synchronized(utteranceLock) { activeUtteranceId = utteranceId }
                         }
 
                         override fun onDone(utteranceId: String?) = completeUtterance(utteranceId)
@@ -336,7 +340,9 @@ internal class AndroidTextToSpeechRepository(
      * 打ち切られた側の `speak()` が再開しないまま残ってしまう。
      */
     private fun completeUtterance(utteranceId: String?) {
-        utteranceId?.let { pendingUtterances.remove(it)?.complete(Unit) }
+        utteranceId?.let { id ->
+            synchronized(utteranceLock) { pendingUtterances.remove(id) }?.complete(Unit)
+        }
     }
 
     /**
@@ -345,9 +351,13 @@ internal class AndroidTextToSpeechRepository(
      * 通知するかどうかに関わらず対象の発話をすべて打ち切るため、コールバックを待たずここで解決する。
      */
     private fun completePendingUtterancesExcept(exceptUtteranceId: String?) {
-        pendingUtterances.keys
-            .filter { it != exceptUtteranceId }
-            .forEach { id -> pendingUtterances.remove(id)?.complete(Unit) }
+        val completed =
+            synchronized(utteranceLock) {
+                pendingUtterances.keys
+                    .filter { it != exceptUtteranceId }
+                    .mapNotNull { id -> pendingUtterances.remove(id) }
+            }
+        completed.forEach { it.complete(Unit) }
     }
 
     private companion object {

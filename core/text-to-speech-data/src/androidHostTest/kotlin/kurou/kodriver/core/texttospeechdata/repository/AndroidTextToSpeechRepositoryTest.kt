@@ -400,6 +400,41 @@ class AndroidTextToSpeechRepositoryTest {
         }
 
     @Test
+    fun `speak成功後の開始前に単独発話がキャンセルされた場合は読み上げを停止する`() =
+        runTest {
+            every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setSpeechRate(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setPitch(1.0f) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.voice } returns null
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            val utteranceIdSlot = slot<String>()
+            every {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, params, capture(utteranceIdSlot))
+            } returns TextToSpeech.SUCCESS
+            every { textToSpeech.stop() } returns TextToSpeech.SUCCESS
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            val job = launch { repository.speak("ベストラップ", queue = false) }
+            runCurrent()
+            job.cancel()
+            job.join()
+
+            assertTrue(job.isCancelled)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.voice }
+            verify(exactly = 1) {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, params, utteranceIdSlot.captured)
+            }
+            verify(exactly = 1) { textToSpeech.stop() }
+            verify(exactly = 1) { textToSpeech.setSpeechRate(1.0f) }
+            verify(exactly = 1) { textToSpeech.setPitch(1.0f) }
+            verify(exactly = 1) { textToSpeech.setAudioAttributes(audioAttributes) }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
     fun `発話要求自体が失敗した場合はハングせず即座に完了する`() =
         runTest {
             every { textToSpeech.setAudioAttributes(audioAttributes) } returns TextToSpeech.SUCCESS
