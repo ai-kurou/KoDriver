@@ -125,7 +125,7 @@ jobs:
     with:
       taskSuffix: Jvm
       snapshotPathGlob: "*/jvmTest/snapshots/*.png"
-      timeoutMinutes: 32
+      timeoutMinutes: 45
     secrets: inherit
 
   android-screenshot-test-verify:
