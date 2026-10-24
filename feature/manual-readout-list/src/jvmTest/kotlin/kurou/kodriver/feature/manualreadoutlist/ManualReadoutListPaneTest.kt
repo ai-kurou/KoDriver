@@ -38,7 +38,7 @@ class ManualReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `名前ありは名前を名前なしは番号を表示し読み上げボタンにも使う`() {
+    fun `名前ありは明示名を名前なしはシミュレーター名と番号を表示し読み上げボタンにも使う`() {
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
@@ -46,6 +46,7 @@ class ManualReadoutListPaneTest {
                         ManualReadoutListUiState(
                             sets = listOf(ManualReadoutSet("named", name = "燃料用"), ManualReadoutSet("unnamed")),
                         ),
+                    simulatorId = "lmu_windows",
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = {},
@@ -53,9 +54,32 @@ class ManualReadoutListPaneTest {
             }
         }
         rule.onNodeWithText("燃料用").assertIsDisplayed()
-        rule.onNodeWithText("セット 2").assertIsDisplayed()
+        rule.onNodeWithText("LMU(Windows)セット2").assertIsDisplayed()
         rule.onNodeWithContentDescription("燃料用 を読み上げ").assertIsDisplayed()
         rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsDisplayed()
+    }
+
+    @Test
+    fun `名前なしセットは各シミュレーターのタイトルと既存番号を表示する`() {
+        listOf(
+            "lmu_windows" to "LMU(Windows)セット1",
+            "gt7_ps5" to "GT7セット1",
+            "ace_windows" to "ACEセット1",
+        ).forEach { (simulatorId, expectedTitle) ->
+            rule.setContent {
+                KoDriverTheme {
+                    ManualReadoutListPaneContent(
+                        uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet("unnamed"))),
+                        simulatorId = simulatorId,
+                        simulatorName = "simulator",
+                        onAddSet = {},
+                        onReadSet = {},
+                    )
+                }
+            }
+
+            rule.onNodeWithText(expectedTitle).assertIsDisplayed()
+        }
     }
 
     @Test
@@ -73,8 +97,8 @@ class ManualReadoutListPaneTest {
 
         rule.onNodeWithText("Ctrl+Shift+A", useUnmergedTree = true).assertDoesNotExist()
         rule.onNodeWithText("未設定", useUnmergedTree = true).assertDoesNotExist()
-        rule.onNodeWithText("セット 1").assertIsDisplayed()
-        rule.onNodeWithText("セット 2").assertIsDisplayed()
+        rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
+        rule.onNodeWithText("LMU(Windows)セット2").assertIsDisplayed()
     }
 
     private fun showHotkeySets(showHotkeyChip: Boolean) {
@@ -93,6 +117,7 @@ class ManualReadoutListPaneTest {
                                     ManualReadoutSet(id = "unassigned"),
                                 ),
                         ),
+                    simulatorId = "lmu_windows",
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = {},
@@ -117,6 +142,7 @@ class ManualReadoutListPaneTest {
                                     ManualReadoutSet(id = "filled-set", itemKeys = listOf("SESSION")),
                                 ),
                         ),
+                    simulatorId = "lmu_windows",
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = { requestedSets.add(it) },
@@ -142,6 +168,7 @@ class ManualReadoutListPaneTest {
                                     ManualReadoutSet(id = "set-2", itemKeys = listOf("SESSION", "FLAG")),
                                 ),
                         ),
+                    simulatorId = "lmu_windows",
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = {},
@@ -151,9 +178,9 @@ class ManualReadoutListPaneTest {
 
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
         rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertDoesNotExist()
-        rule.onNodeWithText("セット 1").assertIsDisplayed()
+        rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
         rule.onNodeWithText("項目なし").assertIsDisplayed()
-        rule.onNodeWithText("セット 2").assertIsDisplayed()
+        rule.onNodeWithText("LMU(Windows)セット2").assertIsDisplayed()
         rule.onNodeWithText("2項目").assertIsDisplayed()
         rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsDisplayed().assertIsNotEnabled()
         rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsDisplayed().assertIsNotEnabled()
@@ -167,6 +194,7 @@ class ManualReadoutListPaneTest {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
                     uiState = ManualReadoutListUiState(),
+                    simulatorId = "lmu_windows",
                     simulatorName = "LMU",
                     onAddSet = { addSetCount++ },
                     onReadSet = {},
@@ -187,6 +215,7 @@ class ManualReadoutListPaneTest {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
                     uiState = ManualReadoutListUiState(),
+                    simulatorId = "lmu_windows",
                     simulatorName = simulatorName.value,
                     onAddSet = {},
                     onReadSet = {},
@@ -207,6 +236,7 @@ class ManualReadoutListPaneTest {
                 Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                     ManualReadoutListPaneContent(
                         uiState = ManualReadoutListUiState(),
+                        simulatorId = "lmu_windows",
                         simulatorName = "LMU",
                         onAddSet = {},
                         onReadSet = {},
@@ -282,6 +312,7 @@ class ManualReadoutListPaneTest {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
                     uiState = ManualReadoutListUiState(canReadSets = true, sets = listOf(ManualReadoutSet("set-1"))),
+                    simulatorId = "lmu_windows",
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = { requested.add(it) },
@@ -291,7 +322,7 @@ class ManualReadoutListPaneTest {
         }
         rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
         rule.runOnIdle { assertEquals(emptyList(), selected) }
-        rule.onNodeWithText("セット 1").performClick()
+        rule.onNodeWithText("LMU(Windows)セット1").performClick()
         rule.runOnIdle {
             assertEquals(listOf("set-1"), selected)
             assertEquals(listOf("set-1"), requested)
@@ -312,6 +343,7 @@ class ManualReadoutListPaneTest {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
                     uiState = uiState.value,
+                    simulatorId = "lmu_windows",
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = {},
@@ -323,7 +355,7 @@ class ManualReadoutListPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("セット 2").performTouchInput { longClick() }
+        rule.onNodeWithText("LMU(Windows)セット2").performTouchInput { longClick() }
         rule.onNodeWithText("削除").assertIsDisplayed().performClick()
         rule.onNodeWithText("セットを削除しますか？").assertIsDisplayed()
         rule.onNodeWithText("この操作は取り消せません。").assertIsDisplayed()
@@ -335,7 +367,7 @@ class ManualReadoutListPaneTest {
         rule.onNodeWithText("セットを削除しますか？").assertDoesNotExist()
         rule.runOnIdle { assertEquals(emptyList(), deleted) }
         rule.mainClock.advanceTimeBy(500)
-        rule.onNodeWithText("セット 2").performTouchInput { longClick() }
+        rule.onNodeWithText("LMU(Windows)セット2").performTouchInput { longClick() }
         rule.onNodeWithText("削除").performClick()
         val deleteActions = rule.onAllNodesWithText("削除")
         deleteActions.assertCountEquals(1)
@@ -353,6 +385,7 @@ class ManualReadoutListPaneTest {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                     ManualReadoutListPaneContent(
                         uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet("set-1"))),
+                        simulatorId = "lmu_windows",
                         simulatorName = "LMU",
                         onAddSet = {},
                         onReadSet = {},
@@ -362,7 +395,7 @@ class ManualReadoutListPaneTest {
             }
         }
 
-        val row = rule.onNodeWithText("セット 1")
+        val row = rule.onNodeWithText("LMU(Windows)セット1")
         val rowBounds = row.fetchSemanticsNode().boundsInRoot
         val pressOffset = Offset(rowBounds.width / 2, rowBounds.height / 2)
         val pressPosition = rowBounds.topLeft + pressOffset
@@ -392,6 +425,7 @@ class ManualReadoutListPaneTest {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                     ManualReadoutListPaneContent(
                         uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet("set-1"))),
+                        simulatorId = "lmu_windows",
                         simulatorName = "LMU",
                         onAddSet = {},
                         onReadSet = {},
@@ -401,7 +435,7 @@ class ManualReadoutListPaneTest {
             }
         }
 
-        val row = rule.onNodeWithText("セット 1")
+        val row = rule.onNodeWithText("LMU(Windows)セット1")
         val rowBounds = row.fetchSemanticsNode().boundsInRoot
         rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
         row.performSemanticsAction(SemanticsActions.OnLongClick) { it() }

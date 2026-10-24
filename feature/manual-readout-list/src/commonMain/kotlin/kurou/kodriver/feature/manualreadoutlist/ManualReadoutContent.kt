@@ -66,6 +66,7 @@ fun ManualReadoutContent(
     }
     ManualReadoutContentScaffold(
         uiState = uiState,
+        simulatorId = simulatorId,
         scrollToTopRequest = scrollToTopRequest,
         simulatorName = simulatorName,
         onAddSet = viewModel::addSet,
@@ -83,6 +84,7 @@ fun ManualReadoutContent(
 @Composable
 internal fun ManualReadoutContentScaffold(
     uiState: ManualReadoutListUiState,
+    simulatorId: String,
     simulatorName: String,
     onAddSet: () -> Unit,
     onReadSet: (String) -> Unit,
@@ -190,6 +192,7 @@ internal fun ManualReadoutContentScaffold(
             listPane = {
                 ManualReadoutListPaneContent(
                     uiState = uiState,
+                    simulatorId = simulatorId,
                     listState = listState,
                     simulatorName = simulatorName,
                     onAddSet = onAddSet,

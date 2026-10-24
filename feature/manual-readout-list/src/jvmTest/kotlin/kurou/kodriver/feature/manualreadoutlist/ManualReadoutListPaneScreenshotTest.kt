@@ -29,6 +29,7 @@ class ManualReadoutListPaneScreenshotTest {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
                             ManualReadoutListPaneContent(
                                 uiState = ManualReadoutListUiState(canReadSets = true),
+                                simulatorId = "lmu_windows",
                                 simulatorName = "LMU",
                                 onAddSet = {},
                                 onReadSet = {},
@@ -58,6 +59,7 @@ class ManualReadoutListPaneScreenshotTest {
                                                 ManualReadoutSet(id = "set-2", itemKeys = listOf("SESSION", "FLAG")),
                                             ),
                                     ),
+                                simulatorId = "lmu_windows",
                                 simulatorName = "LMU",
                                 onAddSet = {},
                                 onReadSet = {},
@@ -83,6 +85,7 @@ class ManualReadoutListPaneScreenshotTest {
                                     ManualReadoutListUiState(
                                         sets = listOf(ManualReadoutSet(id = "set-1", name = "Fuel & Tyres")),
                                     ),
+                                simulatorId = "lmu_windows",
                                 simulatorName = "LMU",
                                 onAddSet = {},
                                 onReadSet = {},
