@@ -354,6 +354,43 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動燃料周回数は文言と欠損と保存順を反映しRemainingFuelのRootを使う`() {
+        val key = LmuWindowsReadoutItemKey.RemainingFuel.Laps.value
+        val root = LmuWindowsReadoutItemKey.RemainingFuel.Root
+        val tyre = LmuWindowsReadoutItemKey.TyreWear.Root
+        val state = LmuWindowsNarratorState(remainingFuelWarned = true)
+        val laps = LmuWindowsManualReadoutItem(key, "あと{laps}周 {unknown}", null, remainingLaps = 3)
+        val wear = LmuWindowsManualReadoutItem(tyre.value, "タイヤ{percent}%", 0.8)
+        listOf(
+            Triple(listOf(laps), root, "あと3周 {unknown}"),
+            Triple(listOf(laps.copy(remainingLaps = 0)), root, "燃料残り1周未満"),
+            Triple(listOf(laps, wear), root, "あと3周 {unknown}、タイヤ80%"),
+            Triple(listOf(wear, laps), tyre, "タイヤ80%、あと3周 {unknown}"),
+            Triple(
+                listOf(laps.copy(remainingLaps = null, ratio = 1.0), wear),
+                root,
+                "燃料の残り周回数はデータがありません、タイヤ80%",
+            ),
+            Triple(
+                listOf(laps.copy(remainingLaps = -1), wear),
+                root,
+                "燃料の残り周回数はデータがありません、タイヤ80%",
+            ),
+            Triple(listOf(laps.copy(remainingLaps = null)), root, "データがありません"),
+            Triple(listOf(laps.copy(remainingLaps = -1), wear.copy(ratio = null)), root, "データがありません"),
+            Triple(listOf(laps.copy(textTemplate = "")), root, ""),
+            Triple(listOf(laps.copy(textTemplate = "", remainingLaps = 0)), root, ""),
+            Triple(listOf(laps, wear.copy(ratio = null)), root, "あと3周 {unknown}、タイヤ摩耗はデータがありません"),
+            Triple(listOf(laps.copy(textTemplate = "燃料は残り約{laps}周")), root, "燃料は残り約3周"),
+        ).forEach { (items, firstKey, text) ->
+            val decision = manualUseCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            assertEquals(firstKey, decision.events.single().readoutItemKey)
+            assertEquals(text, decision.events.single().narratedText)
+        }
+    }
+
+    @Test
     fun `手動自己ベストは正のラップタイムを読み欠損と保存順を反映し自動状態を維持する`() {
         val key = LmuWindowsReadoutItemKey.MyBestLap.Root
         val tyre = LmuWindowsReadoutItemKey.TyreWear.Root

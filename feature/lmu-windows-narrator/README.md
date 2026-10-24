@@ -9,7 +9,19 @@ LMU車両故障のオーバーヒート・部品脱落・タイヤ脱落は、�
 Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を提供し、`:core:data`の`VoiceSpeedPreferencesRepository`・`VoicePitchPreferencesRepository`を消費する。
 `SpeakTextUseCase`は試聴・本文の読み上げに保存済み速度・声の高さ（ともに0.5〜2.0、既定1.0）を使用する。
 
-燃料の消費量を追跡し `fuelLapsTrackingState` に蓄積する。蓄積値から残り周回数を算出できるが、手動・自動の読み上げには未接続。
+燃料の消費量を追跡し `fuelLapsTrackingState` に蓄積する。手動の燃料の残り周回数に接続済み（自動は未接続）。
+
+手動の「燃料の残り周回数」は `LmuWindowsReadoutItemKey.RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`）に対応する。
+`RemainingFuel` 配下の手動専用項目で、TopLevel・自動タブ・スイッチには追加しない。手動項目定義の末尾（タイヤ摩耗の残り周回数の後）に並ぶ。
+`fuelLapsTrackingState` の蓄積値を `manualFuelRemainingLaps` で読み、1周以上は `formatLmuWindowsPitTimingReadoutText` で `{laps}` を置換する。
+既定文言は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、0周は
+`LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料残り1周未満」）。空欄テンプレートなら0周でも空文字にする。
+蓄積前・消費量が null／0以下／非有限・算出不能・最新燃料が未受信または受信から5秒超の場合はデータ無しとする。
+鮮度は `latestFuelReceivedAtMs` で判定し、ピットタイミングの鮮度には依存しない。
+複数項目では「燃料の残り周回数はデータがありません」を連結し、全項目がデータ無しなら「データがありません」のみを読む。
+先頭項目なら開始音・優先度・ログ・キューに `RemainingFuel.Root` を使う。編集画面はACE・GT7の燃料項目と同じ「エネルギー」カテゴリに配置し、既存の
+`LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
+自動燃料警告の設定・状態は変更せず、自動読み上げには接続しない。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
@@ -66,7 +78,7 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 依頼の `simulatorId` が `Simulator.LmuWindows.id` で、選択中のシミュレーターも LMU の場合だけ処理する。
 同じ UseCase 群の `ObserveManualReadoutSetsUseCase` は `named(Simulator.LmuWindows.id)` の Repository を参照する。
 依頼ごとに保存済みセットを取得し、`setId` に対応するセットの `itemKeys` に
-`RemainingVirtualEnergy.Root.value`・`RemainingFuel.Root.value`・`TyreWear.Root.value`・`BrakeWear.Root.value`・`BrakeTemperature.Root.value`・`TyreTemperature.Root.value`・`MyBestLap.Root.value`・`PitTiming.VirtualEnergy.value`・`PitTiming.TyreWear.value` を保存順に走査し、各項目の現在値の文を「、」で連結し、1依頼につき1イベントで読み上げる。
+`RemainingVirtualEnergy.Root.value`・`RemainingFuel.Root.value`・`TyreWear.Root.value`・`BrakeWear.Root.value`・`BrakeTemperature.Root.value`・`TyreTemperature.Root.value`・`MyBestLap.Root.value`・`PitTiming.VirtualEnergy.value`・`PitTiming.TyreWear.value`・`RemainingFuel.Laps.value` を保存順に走査し、各項目の現在値の文を「、」で連結し、1依頼につき1イベントで読み上げる。
 セットが見つからない場合は何もしない。いずれの対応項目も含まれない場合は `determineManualReadout` で項目なし文言を読み上げる。
 対象セットの `itemTexts` から文言テンプレートを取得し、未保存なら
 `manualReadoutItemTextDefault` の項目ごとの既定値を使う。

@@ -116,6 +116,8 @@ internal class ManualReadoutSetDetailViewModel(
                     it == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
                 ) {
                     LmuWindowsReadoutItemKey.PitTiming.Root
+                } else if (it == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value) {
+                    LmuWindowsReadoutItemKey.RemainingFuel.Root
                 } else {
                     ReadoutItemKey.fromValue(it)
                 }

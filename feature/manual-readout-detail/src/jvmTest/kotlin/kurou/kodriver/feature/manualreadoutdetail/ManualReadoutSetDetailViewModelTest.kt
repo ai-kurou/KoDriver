@@ -178,6 +178,38 @@ class ManualReadoutSetDetailViewModelTest {
         }
 
     @Test
+    fun `LMUの燃料周回数は項目追加と編集文言をセットへ保存する`() =
+        runTest(dispatcher) {
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Laps.value
+            val original = ManualReadoutSet("target")
+            val added = original.copy(itemKeys = listOf(key))
+            val edited = added.copy(itemTexts = mapOf(key to "あと{laps}"))
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(added) } answers { sets.update { listOf(added) } }
+            coEvery { repository.updateSet(edited) } answers { sets.update { listOf(edited) } }
+            val vm = viewModel(Simulator.LmuWindows.id)
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                assertEquals(
+                    lmuWindowsManualReadoutItemKeys(),
+                    vm.uiState.first { !it.isLoading }.availableItemKeys,
+                )
+                vm.addItem(key)
+                assertEquals(listOf(key), vm.uiState.first().selectedItemKeys)
+                vm.updateItemText(key, "あと{laps}")
+                assertEquals(edited.itemTexts, vm.uiState.first().itemTexts)
+                verify(exactly = 3) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(added) }
+                coVerify(exactly = 1) { repository.updateSet(edited) }
+                confirmVerified(repository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
     fun `LMUの自己ベストは項目追加と編集文言をセットへ保存する`() =
         runTest(dispatcher) {
             val key = LmuWindowsReadoutItemKey.MyBestLap.Root.value
@@ -1009,6 +1041,32 @@ class ManualReadoutSetDetailViewModelTest {
                 assertTrue(vm.uiState.first { !it.isLoading }.isTextToSpeechAvailable)
                 vm.onPreviewClicked()
                 coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
+                coVerify(exactly = 1) { speakText("あと3", volume = 60) }
+                verify(exactly = 1) { observeVolume() }
+                confirmVerified(playStartSound, speakText, observeVolume)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `燃料周回数のプレビューは先頭キーの開始音と置換済み本文を現在の音量で再生する`() =
+        runTest(dispatcher) {
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Laps.value
+            every { repository.observeSets() } returns
+                MutableStateFlow(
+                    listOf(ManualReadoutSet("target", listOf(key), mapOf(key to "あと{laps}"))),
+                )
+            every { observeVolume() } returns MutableStateFlow(60)
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.RemainingFuel.Root) } returns Unit
+            coEvery { speakText("あと3", volume = 60) } returns Unit
+            val vm = viewModel(available = true)
+            val collection = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
+            try {
+                assertTrue(vm.uiState.first { !it.isLoading }.isTextToSpeechAvailable)
+                vm.onPreviewClicked()
+                coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.RemainingFuel.Root) }
                 coVerify(exactly = 1) { speakText("あと3", volume = 60) }
                 verify(exactly = 1) { observeVolume() }
                 confirmVerified(playStartSound, speakText, observeVolume)

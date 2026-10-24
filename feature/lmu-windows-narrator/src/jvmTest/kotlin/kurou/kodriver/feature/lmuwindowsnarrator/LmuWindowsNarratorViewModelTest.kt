@@ -848,6 +848,58 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `手動燃料周回数は追跡前と燃料の鮮度切れをデータ無しにし自動設定に依存しない`() =
+        runTest(testDispatcher) {
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Laps.value
+            val root = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            // ピットタイミングの未受信・鮮度切れに依存しないことも確認する。
+            var currentTime = 10_000L
+            createViewModel(
+                telemetryChannel = telemetry,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("fuel-laps", listOf(key))),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(root to false, LmuWindowsReadoutItemKey.PitTiming.Root to false),
+                currentTimeMs = { currentTime },
+            )
+            stubTelemetryLogSave(logs, createdAt = currentTime, root)
+            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "fuel-laps")
+            requests.send(request)
+            telemetry.send(fakeTelemetryData(currentLap = 2, fuelCurrentLiters = 80.0, fuelCapacityLiters = 100.0))
+            requests.send(request)
+            listOf(3 to 70.0, 3 to 60.0, 4 to 50.0).forEach { (lap, liters) ->
+                telemetry.send(
+                    fakeTelemetryData(currentLap = lap, fuelCurrentLiters = liters, fuelCapacityLiters = 100.0),
+                )
+            }
+            requests.send(request)
+            requests.send(request)
+            assertEquals(logs[2].telemetryJson, logs[3].telemetryJson)
+            currentTime = 15_000L
+            stubTelemetryLogSave(logs, createdAt = currentTime, root)
+            requests.send(request)
+            currentTime = 15_001L
+            stubTelemetryLogSave(logs, createdAt = currentTime, root)
+            requests.send(request)
+            assertEquals(
+                listOf(
+                    "データがありません",
+                    "データがありません",
+                    "燃料は残り約5周",
+                    "燃料は残り約5周",
+                    "燃料は残り約5周",
+                    "データがありません",
+                ),
+                spoken.map { it.narratedText },
+            )
+            assertEquals(List(6) { root }, spoken.map { it.readoutItemKey })
+        }
+
+    @Test
     fun `手動タイヤ摩耗周回数は蓄積前と鮮度切れをデータ無しにし自動スイッチに依存しない`() =
         runTest(testDispatcher) {
             val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)

@@ -3,6 +3,7 @@ package kurou.kodriver.domain.lmuwindows.usecase
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE
@@ -41,7 +42,9 @@ class DetermineLmuWindowsManualReadoutUseCase {
                 LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
                 -> LmuWindowsReadoutItemKey.PitTiming.Root
 
-                LmuWindowsReadoutItemKey.RemainingFuel.Root.value -> LmuWindowsReadoutItemKey.RemainingFuel.Root
+                LmuWindowsReadoutItemKey.RemainingFuel.Laps.value,
+                LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
+                -> LmuWindowsReadoutItemKey.RemainingFuel.Root
 
                 LmuWindowsReadoutItemKey.TyreWear.Root.value -> LmuWindowsReadoutItemKey.TyreWear.Root
 
@@ -127,13 +130,16 @@ class DetermineLmuWindowsManualReadoutUseCase {
 
     private fun isManualRemainingLapsItem(key: String): Boolean =
         key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
-            key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
+            key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value ||
+            key == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value
 
     private fun manualRemainingLapsText(item: LmuWindowsManualReadoutItem): String? =
         item.remainingLaps?.takeIf { it >= 0 }?.let {
             if (it == 0 && item.textTemplate.isNotBlank()) {
                 if (item.key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) {
                     LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT
+                } else if (item.key == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value) {
+                    LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT
                 } else {
                     LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
                 }
@@ -145,7 +151,7 @@ class DetermineLmuWindowsManualReadoutUseCase {
     private fun isManualLapBasedItem(key: String): Boolean =
         isManualRemainingLapsItem(key) || key == LmuWindowsReadoutItemKey.MyBestLap.Root.value
 
-    /** エネルギー・タイヤ摩耗の残り周回数と自己ベストラップの文。データ無しは null。 */
+    /** エネルギー・タイヤ摩耗・燃料の残り周回数と自己ベストラップの文。データ無しは null。 */
     private fun manualLapBasedText(item: LmuWindowsManualReadoutItem): String? =
         if (isManualRemainingLapsItem(item.key)) {
             manualRemainingLapsText(item)

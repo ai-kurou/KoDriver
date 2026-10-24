@@ -70,6 +70,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_drag_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_empty_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_energy
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_fuel_laps
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_item_count
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_item_limit
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_item_limit_available
@@ -101,6 +102,11 @@ private val itemPresentations =
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_virtual_energy_laps,
+                Res.string.manual_readout_category_energy,
+            ),
+        LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_fuel_laps,
                 Res.string.manual_readout_category_energy,
             ),
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to
@@ -192,6 +198,8 @@ private const val PREVIEW_ACE_REMAINING_FUEL_LAPS = 5
 internal val previewFormatters: Map<Pair<String, String>, (String) -> String> =
     mapOf(
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) to
+            { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingFuel.Laps.value) to
             { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) to
             { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
