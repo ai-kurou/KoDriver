@@ -44,11 +44,13 @@ class LmuWindowsAutoReadoutVehicleApproachDetailPaneWiringTest {
             ).around(rule)
 
     private val viewModel: LmuWindowsAutoReadoutVehicleApproachDetailViewModel = mockk()
+    private val readoutTextSettings: ReadoutTextSettingsStateHolder = mockk()
 
     @Test
     fun `ペインを破棄すると試聴を停止する`() {
         every { viewModel.uiState } returns MutableStateFlow(LmuWindowsAutoReadoutVehicleApproachDetailUiState())
-        every { viewModel.onPreviewStopped() } returns Unit
+        every { viewModel.readoutTextSettings } returns readoutTextSettings
+        every { readoutTextSettings.onPreviewStopped() } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
             var showPane by mutableStateOf(true)
@@ -61,8 +63,9 @@ class LmuWindowsAutoReadoutVehicleApproachDetailPaneWiringTest {
             showPane = false
             rule.waitForIdle()
             verify(exactly = 1) { viewModel.uiState }
-            verify(exactly = 1) { viewModel.onPreviewStopped() }
-            confirmVerified(viewModel)
+            verify(exactly = 1) { viewModel.readoutTextSettings }
+            verify(exactly = 1) { readoutTextSettings.onPreviewStopped() }
+            confirmVerified(viewModel, readoutTextSettings)
         } finally {
             stopKoin()
         }

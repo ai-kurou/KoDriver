@@ -38,19 +38,20 @@ val lmuWindowsAutoReadoutVehicleApproachDetailModule =
                 get(),
                 get(),
                 get(),
-                get(),
-                get(),
             )
         }
 
         factory {
-            StartReadoutUseCases(
+            ReadoutTextSettingsUseCases(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
                 get(named(Simulator.LmuWindows.id)),
                 get(named(Simulator.LmuWindows.id)),
-                get(),
-                get(),
-                get(),
-                get(),
             )
         }
 
