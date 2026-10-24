@@ -192,6 +192,25 @@ internal class AceWindowsNarratorViewModel(
     private var latestTyreTemperatureReceivedAtMs = 0L
     private var latestBestLap: AceWindowsBestLapTimeData? = null
 
+    @Suppress("UnusedPrivateProperty")
+    private val resetLatestTelemetryJob =
+        selectedSimulator
+            .onEach { simulator ->
+                if (simulator !is Simulator.AceWindows) {
+                    resetLatestTelemetry()
+                }
+            }.launchIn(viewModelScope)
+
+    private fun resetLatestTelemetry() {
+        latestBestLap = null
+        latestFuel = null
+        latestFuelReceivedAtMs = 0L
+        latestFuelLaps = null
+        latestFuelLapsReceivedAtMs = 0L
+        latestTyreTemperature = null
+        latestTyreTemperatureReceivedAtMs = 0L
+    }
+
     private val currentSettings: AceWindowsNarratorReadoutSettings
         get() =
             AceWindowsNarratorReadoutSettings(
@@ -206,7 +225,6 @@ internal class AceWindowsNarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.AceWindows) {
-                    latestBestLap = null
                     emptyFlow()
                 } else {
                     myBestLapUseCases.observeBestLapTime()
@@ -217,8 +235,6 @@ internal class AceWindowsNarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.AceWindows) {
-                    latestFuel = null
-                    latestFuelReceivedAtMs = 0L
                     emptyFlow()
                 } else {
                     remainingFuelUseCases.observeAceWindowsFuel()
@@ -229,8 +245,6 @@ internal class AceWindowsNarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.AceWindows) {
-                    latestFuelLaps = null
-                    latestFuelLapsReceivedAtMs = 0L
                     emptyFlow()
                 } else {
                     remainingFuelLapsUseCases.observeAceWindowsRemainingFuelLaps()
@@ -247,8 +261,6 @@ internal class AceWindowsNarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.AceWindows) {
-                    latestTyreTemperature = null
-                    latestTyreTemperatureReceivedAtMs = 0L
                     emptyFlow()
                 } else {
                     tyreTemperatureUseCases.observeAceWindowsTyreCarcassTemperature()
