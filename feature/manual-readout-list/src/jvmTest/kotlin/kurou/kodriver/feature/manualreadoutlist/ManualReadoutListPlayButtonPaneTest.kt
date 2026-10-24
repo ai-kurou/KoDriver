@@ -1,9 +1,11 @@
 package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -82,10 +84,13 @@ class ManualReadoutListPlayButtonPaneTest {
                 )
             }
         }
-        rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsNotEnabled().performClick()
+        rule
+            .onNodeWithContentDescription("セット 1 を読み上げ")
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsActions.OnLongClick))
+            .performClick()
         rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
         rule.runOnIdle { canReadSets.value = true }
-        rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsNotEnabled().performClick()
+        rule.onNodeWithContentDescription("セット 2 を読み上げ").performClick()
         verify(exactly = 0) { onReadSet("set-1") }
         verify(exactly = 0) { onReadSet("empty") }
         verify(exactly = 1) { onSetClick("set-1") }

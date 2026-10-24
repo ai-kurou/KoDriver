@@ -3,6 +3,8 @@ package kurou.kodriver.feature.manualreadoutlist
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -97,13 +99,16 @@ internal fun ManualReadoutContentScaffold(
     onTogglePlayButtonLayout: () -> Unit = {},
     scrollToTopRequest: Int = 0,
     listState: LazyListState = rememberLazyListState(),
+    gridState: LazyGridState = rememberLazyGridState(),
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     detailContent: @Composable (setId: String, canNavigateBack: Boolean, onBack: () -> Unit) -> Unit,
 ) {
-    ScrollToTopEffect(scrollToTopRequest) { listState.animateScrollToItem(0) }
+    ScrollToTopEffect(scrollToTopRequest) {
+        if (uiState.playButtonLayoutEnabled) gridState.animateScrollToItem(0) else listState.animateScrollToItem(0)
+    }
     val navigationState =
         rememberManualReadoutNavigationState(
             initial =
@@ -195,6 +200,7 @@ internal fun ManualReadoutContentScaffold(
                     uiState = uiState,
                     simulatorId = simulatorId,
                     listState = listState,
+                    gridState = gridState,
                     simulatorName = simulatorName,
                     onAddSet = onAddSet,
                     onReadSet = onReadSet,

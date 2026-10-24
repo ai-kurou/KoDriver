@@ -281,7 +281,11 @@ class ManualReadoutListPaneTest {
             .performScrollTo()
             .assertIsDisplayed()
         rule.onNodeWithText("長押しで削除").performScrollTo().assertIsDisplayed()
-        rule.onNodeWithText("セットを長押しすると、確認してから削除できます。").performScrollTo().assertIsDisplayed()
+        rule
+            .onNodeWithText(
+                "標準表示では、セットを長押しすると、確認してから削除できます。再生ボタン表示では、編集画面から削除します。",
+            ).performScrollTo()
+            .assertIsDisplayed()
         // ホットキーの説明は Windows デスクトップでのみ表示するため、実行OSに合わせて検証する。
         if (isManualReadoutHotkeySupported()) {
             rule.onNodeWithText("ホットキー").performScrollTo().assertIsDisplayed()

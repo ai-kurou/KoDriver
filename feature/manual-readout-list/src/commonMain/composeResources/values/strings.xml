@@ -28,7 +28,7 @@
     <string name="manual_readout_list_delete_confirm">削除</string>
     <string name="manual_readout_list_cancel">キャンセル</string>
     <string name="manual_readout_hint_delete_title">長押しで削除</string>
-    <string name="manual_readout_hint_delete_description">セットを長押しすると、確認してから削除できます。</string>
+    <string name="manual_readout_hint_delete_description">標準表示では、セットを長押しすると、確認してから削除できます。再生ボタン表示では、編集画面から削除します。</string>
     <string name="manual_readout_list_hotkey_unassigned">未設定</string>
     <string name="manual_readout_list_readout_set_named">%1$s を読み上げ</string>
     <string name="manual_readout_edit_mode_enable">編集モードにする</string>

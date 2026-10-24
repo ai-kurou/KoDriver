@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -63,8 +65,6 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.semantics.disabled
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
@@ -159,6 +159,7 @@ internal fun ManualReadoutListPaneContent(
     onTogglePlayButtonLayout: () -> Unit = {},
     showHotkeyChip: Boolean = isManualReadoutHotkeySupported(),
     listState: LazyListState = rememberLazyListState(),
+    gridState: LazyGridState = rememberLazyGridState(),
 ) {
     var editMode by remember { mutableStateOf(false) }
     Box(modifier = modifier.fillMaxSize()) {
@@ -175,6 +176,7 @@ internal fun ManualReadoutListPaneContent(
             )
             if (uiState.playButtonLayoutEnabled) {
                 LazyVerticalGrid(
+                    state = gridState,
                     columns = GridCells.Fixed(2),
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                     contentPadding =
@@ -309,7 +311,7 @@ private fun ManualReadoutSetPlayButton(
                         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         onSetClick()
                     },
-                ).semantics { if (!enabled) disabled() },
+                ),
         shape = MaterialTheme.shapes.large,
         color = if (editMode) MaterialTheme.colorScheme.surfaceContainerHighest else MaterialTheme.colorScheme.primary,
         contentColor = if (editMode) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimary,

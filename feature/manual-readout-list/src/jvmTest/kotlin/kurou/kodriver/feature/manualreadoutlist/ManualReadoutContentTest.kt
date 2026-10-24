@@ -3,6 +3,7 @@ package kurou.kodriver.feature.manualreadoutlist
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -156,5 +157,43 @@ class ManualReadoutContentTest {
         rule.runOnIdle { request.intValue++ }
         rule.waitForIdle()
         rule.runOnIdle { assertEquals(0, listState.firstVisibleItemIndex) }
+    }
+
+    @Test
+    fun `再生ボタン表示ではスクロール要求でグリッドを先頭へ戻す`() {
+        val request = mutableIntStateOf(0)
+        val gridState = LazyGridState()
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    ManualReadoutContentScaffold(
+                        uiState =
+                            ManualReadoutListUiState(
+                                playButtonLayoutEnabled = true,
+                                sets = List(40) { ManualReadoutSet("set-$it") },
+                            ),
+                        simulatorId = "lmu_windows",
+                        simulatorName = "LMU",
+                        onAddSet = {},
+                        onReadSet = {},
+                        onSetClick = {},
+                        onClearSelectedSet = {},
+                        scrollToTopRequest = request.intValue,
+                        gridState = gridState,
+                        detailContent = { _, _, _ -> },
+                    )
+                }
+            }
+        }
+        rule.onNode(hasScrollToIndexAction()).performScrollToIndex(25)
+        rule.runOnIdle {
+            assertEquals(true, gridState.firstVisibleItemIndex > 0)
+            request.intValue++
+        }
+        rule.waitForIdle()
+        rule.runOnIdle {
+            assertEquals(0, gridState.firstVisibleItemIndex)
+            assertEquals(0, gridState.firstVisibleItemScrollOffset)
+        }
     }
 }
