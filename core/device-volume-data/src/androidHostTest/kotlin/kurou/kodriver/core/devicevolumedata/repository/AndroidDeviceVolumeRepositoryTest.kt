@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -52,6 +53,20 @@ class AndroidDeviceVolumeRepositoryTest {
 
             verify(exactly = 1) { audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) }
             verify(exactly = 1) { audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 5, 0) }
+            confirmVerified(audioManager)
+        }
+
+    @Test
+    fun `observeVolumeはポーリングした現在音量を流す`() =
+        runTest {
+            every { audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) } returns 5
+            every { audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) } returns 10
+            val repository = AndroidDeviceVolumeRepository(audioManager)
+
+            assertEquals(50, repository.observeVolume().first())
+
+            verify(exactly = 1) { audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) }
+            verify(exactly = 1) { audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) }
             confirmVerified(audioManager)
         }
 }

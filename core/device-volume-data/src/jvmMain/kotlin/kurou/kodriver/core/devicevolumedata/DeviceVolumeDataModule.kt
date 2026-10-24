@@ -1,5 +1,7 @@
 package kurou.kodriver.core.devicevolumedata
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.core.devicevolumedata.repository.WindowsDeviceVolumeRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import org.koin.dsl.module
@@ -20,6 +22,8 @@ val deviceVolumeDataModule =
     }
 
 private class NoOpDeviceVolumeRepository : DeviceVolumeRepository {
+    override fun observeVolume(): Flow<Int> = flowOf(0)
+
     override suspend fun getVolume(): Int = 0
 
     override suspend fun setVolume(volume: Int) = Unit

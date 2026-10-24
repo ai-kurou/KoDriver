@@ -2,7 +2,9 @@ package kurou.kodriver.core.devicevolumedata.repository
 
 import android.media.AudioManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import kurou.kodriver.core.devicevolumedata.pollingVolumeFlow
 import kurou.kodriver.domain.model.DEVICE_VOLUME_MAX
 import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
@@ -18,6 +20,8 @@ import kotlin.math.roundToInt
 internal class AndroidDeviceVolumeRepository(
     private val audioManager: AudioManager,
 ) : DeviceVolumeRepository {
+    override fun observeVolume(): Flow<Int> = pollingVolumeFlow { getVolume() }
+
     override suspend fun getVolume(): Int =
         withContext(Dispatchers.IO) {
             val max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)

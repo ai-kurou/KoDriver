@@ -1,5 +1,6 @@
 package kurou.kodriver.core.devicevolumedata.repository
 
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -33,5 +34,13 @@ class WindowsDeviceVolumeRepositoryTest {
 
             assertEquals(0, WindowsDeviceVolumeRepository(minSource).getVolume())
             assertEquals(100, WindowsDeviceVolumeRepository(maxSource).getVolume())
+        }
+
+    @Test
+    fun `observeVolumeは現在の音量を流す`() =
+        runTest {
+            val repository = WindowsDeviceVolumeRepository(FakeWindowsMasterVolumeSource(scalarVolume = 0.5f))
+
+            assertEquals(50, repository.observeVolume().first())
         }
 }
