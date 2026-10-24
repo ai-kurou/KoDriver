@@ -39,6 +39,7 @@ import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
@@ -303,6 +304,35 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
 
         rule.onNodeWithContentDescription("LMGT3、95°C").assertIsSelected()
         rule.onNodeWithContentDescription("Hypercar、90°C").assertIsNotSelected()
+    }
+
+    @Test
+    fun `対象クラスの画像タイルは狭い幅ではFlowRowで折り返す`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
+                            vehicleClassHighThresholdCelsius =
+                                mapOf(
+                                    LmuWindowsVehicleClassData.Hypercar to 100,
+                                    LmuWindowsVehicleClassData.P2 to 90,
+                                    LmuWindowsVehicleClassData.P2Elms to 90,
+                                    LmuWindowsVehicleClassData.P3 to 90,
+                                    LmuWindowsVehicleClassData.Gte to 100,
+                                    LmuWindowsVehicleClassData.Gt3 to 90,
+                                ),
+                        ),
+                    modifier = Modifier.requiredSize(250.dp, 2500.dp),
+                )
+            }
+        }
+
+        val firstTile = rule.onNodeWithContentDescription("Hypercar、100°C").fetchSemanticsNode().boundsInRoot
+        val thirdTile = rule.onNodeWithContentDescription("ELMS LMP2、90°C").fetchSemanticsNode().boundsInRoot
+
+        assertEquals(firstTile.left, thirdTile.left, absoluteTolerance = 1f)
+        assertTrue(thirdTile.top > firstTile.top)
     }
 
     @Test

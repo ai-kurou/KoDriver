@@ -5,13 +5,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -211,7 +211,8 @@ internal fun LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_vehicle_class_target_subtitle),
                     )
-                    Column(
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
                         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
                         modifier =
                             Modifier.fillMaxWidth().padding(
@@ -234,22 +235,18 @@ internal fun LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
                             Triple(LmuWindowsVehicleClassData.P3, DesignSystemRes.drawable.class_p3, "LMP3"),
                             Triple(LmuWindowsVehicleClassData.Gte, DesignSystemRes.drawable.class_lmgte, "LMGTE"),
                             Triple(LmuWindowsVehicleClassData.Gt3, DesignSystemRes.drawable.class_lmgt3, "LMGT3"),
-                        ).chunked(3).forEach { rowOptions ->
-                            Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
-                                rowOptions.forEach { (vehicleClass, image, accessibleName) ->
-                                    val celsius = uiState.vehicleClassHighThresholdCelsius[vehicleClass]
-                                    if (celsius != null) {
-                                        VehicleClassImageOption(
-                                            image = image,
-                                            accessibleName = "$accessibleName、$celsius°C",
-                                            celsius = celsius,
-                                            selected = uiState.selectedVehicleClass == vehicleClass,
-                                            enabled = uiState.overheatWarningEnabled,
-                                            onClick = { onVehicleClassSelected(vehicleClass) },
-                                            modifier = Modifier.weight(1f),
-                                        )
-                                    }
-                                }
+                        ).forEach { (vehicleClass, image, accessibleName) ->
+                            val celsius = uiState.vehicleClassHighThresholdCelsius[vehicleClass]
+                            if (celsius != null) {
+                                VehicleClassImageOption(
+                                    image = image,
+                                    accessibleName = "$accessibleName、$celsius°C",
+                                    celsius = celsius,
+                                    selected = uiState.selectedVehicleClass == vehicleClass,
+                                    enabled = uiState.overheatWarningEnabled,
+                                    onClick = { onVehicleClassSelected(vehicleClass) },
+                                    modifier = Modifier.width(VEHICLE_CLASS_OPTION_WIDTH),
+                                )
                             }
                         }
                     }
@@ -403,12 +400,15 @@ private fun VehicleClassImageOption(
             Image(
                 painter = painterResource(image),
                 contentDescription = null,
-                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                modifier = Modifier.size(VEHICLE_CLASS_IMAGE_SIZE),
             )
             Text("$celsius°C", style = MaterialTheme.typography.labelLarge)
         }
     }
 }
+
+private val VEHICLE_CLASS_OPTION_WIDTH = 104.dp
+private val VEHICLE_CLASS_IMAGE_SIZE = 72.dp
 
 @Composable
 internal fun TyreTemperatureThresholdHelpSheetContent(modifier: Modifier = Modifier) {
