@@ -186,7 +186,7 @@ private fun AudioVolumeSection(
             Text(
                 stringResource(Res.string.audio_usage_volume_panel_description),
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = KoDriverSpacing.extraSmall),
+                modifier = Modifier.padding(top = KoDriverSpacing.extraSmall, bottom = KoDriverSpacing.medium),
             )
         }
         onOpenSoundSettings?.let {
