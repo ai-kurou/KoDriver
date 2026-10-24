@@ -78,3 +78,7 @@ DataModule にシングルトンとして登録する。`MutableSharedFlow` の�
 依頼は永続化せず、購読開始前・終了後の依頼を再配信しない。
 
 Android の `ManualReadoutHotkeyRepository` は `UnsupportedManualReadoutHotkeyRepository` を提供し、押下は通知せず、登録状態は `Unsupported`、再試行は何もしない。
+
+音量低下警告の有効状態は `LowVolumeWarningEnabledPreferencesRepository` が
+`low_volume_warning_enabled_preferences.pb` に保存し、既定値は domain の
+`LOW_VOLUME_WARNING_ENABLED_DEFAULT` を参照する。Android・Desktop の DataModule に登録する。

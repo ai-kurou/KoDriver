@@ -1,10 +1,12 @@
 package kurou.kodriver.feature.othervolumedetail
 
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
+import kurou.kodriver.domain.usecase.SaveLowVolumeWarningEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
@@ -32,6 +34,9 @@ val otherVolumeDetailModule =
         factory { SetDeviceVolumeUseCase(get()) }
         factory { SoundVolumeUseCases(get(), get()) }
         factory { DeviceVolumeUseCases(get(), get()) }
+        factory { ObserveLowVolumeWarningEnabledUseCase(get()) }
+        factory { SaveLowVolumeWarningEnabledUseCase(get()) }
+        factory { LowVolumeWarningEnabledUseCases(get(), get()) }
 
         // 試聴再生（読み上げ速度の試聴と同じ、キャンセル可能なTTS）
         factory { ObserveVoiceUseCase(get()) }

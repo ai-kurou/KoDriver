@@ -20,6 +20,7 @@ import kurou.kodriver.data.preferences.createAndroidAudioUsagePreferencesReposit
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
+import kurou.kodriver.data.preferences.createLowVolumeWarningEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutSetPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextColorPreferencesRepository
@@ -54,6 +55,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
@@ -213,6 +215,9 @@ private fun androidDataModuleAppSettings(context: Context) =
         // オーバーレイの表示ON/OFF設定
         single<OverlayVisiblePreferencesRepository> {
             createOverlayVisiblePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LowVolumeWarningEnabledPreferencesRepository> {
+            createLowVolumeWarningEnabledPreferencesRepository(context.filesDir.absolutePath)
         }
         // オーバーレイウィンドウの位置・サイズ（デスクトップ版のみ使用するが、Koin の定義は両プラットフォームで揃える）
         single<OverlayWindowBoundsPreferencesRepository> {

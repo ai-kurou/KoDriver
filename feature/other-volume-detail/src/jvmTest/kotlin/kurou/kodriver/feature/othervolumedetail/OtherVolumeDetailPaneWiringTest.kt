@@ -67,6 +67,7 @@ class OtherVolumeDetailPaneWiringTest {
         every { viewModel.uiState } returns state
         every { viewModel.onVolumeChanged(50) } returns Unit
         every { viewModel.onDeviceVolumeChanged(30) } returns Unit
+        every { viewModel.onLowVolumeWarningEnabledChanged(false) } returns Unit
         every { viewModel.onPreviewClicked() } returns Unit
         every { viewModel.onPreviewStopped() } returns Unit
         every { onBack() } returns Unit
@@ -88,6 +89,7 @@ class OtherVolumeDetailPaneWiringTest {
             rule.onAllNodes(slider)[0].performSemanticsAction(SemanticsActions.SetProgress) { it(50f) }
             rule.onAllNodes(slider)[1].performSemanticsAction(SemanticsActions.SetProgress) { it(30f) }
             rule.onNodeWithText("試聴").performClick()
+            rule.onNodeWithText("音量低下の警告").performClick()
             state.update { it.copy(isPreviewing = true) }
             rule.onNodeWithText("停止").performClick()
             rule.onNodeWithContentDescription("戻る").performClick()
@@ -97,6 +99,7 @@ class OtherVolumeDetailPaneWiringTest {
             verify(exactly = 1) { viewModel.onPreviewStopped() }
             verify(exactly = 1) { viewModel.onVolumeChanged(50) }
             verify(exactly = 1) { viewModel.onDeviceVolumeChanged(30) }
+            verify(exactly = 1) { viewModel.onLowVolumeWarningEnabledChanged(false) }
             verify(exactly = 2) { viewModel.onPreviewClicked() }
             verify(exactly = 1) { onBack() }
             confirmVerified(viewModel, onBack)

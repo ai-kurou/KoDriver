@@ -9,9 +9,11 @@ import kurou.kodriver.domain.model.SOUND_VOLUME_WARNING_THRESHOLD_DEFAULT
 class ObserveLowVolumeWarningUseCase(
     private val observeDeviceVolume: ObserveDeviceVolumeUseCase,
     private val observeSoundVolume: ObserveSoundVolumeUseCase,
+    private val observeEnabled: ObserveLowVolumeWarningEnabledUseCase,
 ) {
     operator fun invoke(): Flow<LowVolumeWarning?> =
-        combine(observeDeviceVolume(), observeSoundVolume()) { deviceVolume, soundVolume ->
+        combine(observeDeviceVolume(), observeSoundVolume(), observeEnabled()) { deviceVolume, soundVolume, enabled ->
+            if (!enabled) return@combine null
             val warningDeviceVolume = deviceVolume.takeIf { it < DEVICE_VOLUME_WARNING_THRESHOLD_DEFAULT }
             val warningSoundVolume = soundVolume.takeIf { it < SOUND_VOLUME_WARNING_THRESHOLD_DEFAULT }
             if (warningDeviceVolume == null && warningSoundVolume == null) {

@@ -2,3 +2,4 @@ package kurou.kodriver.domain.model
 
 const val DEVICE_VOLUME_WARNING_THRESHOLD_DEFAULT = 30
 const val SOUND_VOLUME_WARNING_THRESHOLD_DEFAULT = 80
+const val LOW_VOLUME_WARNING_ENABLED_DEFAULT = true
