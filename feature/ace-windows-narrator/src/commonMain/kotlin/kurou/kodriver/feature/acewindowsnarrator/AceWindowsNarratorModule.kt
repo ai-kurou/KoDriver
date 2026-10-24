@@ -1,9 +1,11 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
-import kurou.kodriver.core.designsystem.readStartSoundBytes
+import kurou.kodriver.core.narrator.ELECTRONIC_NOISE_START_SOUND_PATH
+import kurou.kodriver.core.narrator.FORMULA_RADIO_START_SOUND_PATH
 import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
+import kurou.kodriver.core.narrator.readStartSoundBytes
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.acewindows.usecase.DetermineAceWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
@@ -58,7 +60,6 @@ import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -81,7 +82,6 @@ import org.koin.dsl.module
  * 音声・速度・高さ設定の VoicePreferencesRepository・VoiceSpeedPreferencesRepository・VoicePitchPreferencesRepository（:core:data）を消費する。
  * 音声系は LMU/GT7 と区別するため named(Simulator.AceWindows.id) で登録している。
  */
-@OptIn(ExperimentalResourceApi::class)
 val aceWindowsNarratorModule: Module =
     module {
         factory { ObserveDebugReadoutRequestUseCase(get()) }
@@ -239,6 +239,6 @@ val aceWindowsNarratorModule: Module =
 
 private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(
-        ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
-        ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
+        ReadoutStartSoundType.FORMULA_RADIO to FORMULA_RADIO_START_SOUND_PATH,
+        ReadoutStartSoundType.ELECTRONIC_NOISE to ELECTRONIC_NOISE_START_SOUND_PATH,
     )
