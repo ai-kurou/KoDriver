@@ -6,11 +6,15 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
+import kurou.kodriver.domain.usecase.DismissLowVolumeWarningUseCase
+import kurou.kodriver.domain.usecase.ObserveDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveEffectiveKeepScreenOnUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryReceivingUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
@@ -24,7 +28,7 @@ import org.koin.dsl.module
 /**
  * アプリのメイン画面（main feature）の Koin モジュール。
  *
- * 提供: AppScreenViewModel・ConnectionBannerViewModel と、それらが使うドメイン UseCase。
+ * 提供: AppScreenViewModel・ConnectionBannerViewModel・LowVolumeWarningViewModel と、それらが使うドメイン UseCase。
  * 消費（get で解決）: AppUpdateRepository・KeepScreenOnEnabledRepository・
  *   SimulatorPreferencesRepository（:core:data で登録）。アプリバージョンはビルド生成値を直接渡す。
  * プラットフォーム別の登録は [mainPlatformModule]（expect/actual）に分離している。
@@ -34,6 +38,7 @@ val mainModule =
         // ViewModel
         viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get()) }
         viewModelOf(::ConnectionBannerViewModel)
+        viewModelOf(::LowVolumeWarningViewModel)
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
         factory { CheckAppUpdateAvailableUseCase(get()) }
@@ -50,6 +55,10 @@ val mainModule =
         factory { ObserveLmuWindowsUseCase(get()) }
         factory { ObserveGt7Ps5UseCase(get()) }
         factory { ObserveAceWindowsStatusUseCase(get()) }
+        factory { ObserveDeviceVolumeUseCase(get()) }
+        factory { ObserveSoundVolumeUseCase(get()) }
+        factory { ObserveLowVolumeWarningUseCase(get(), get(), get()) }
+        factory { DismissLowVolumeWarningUseCase(get()) }
         factory {
             val observeLmuWindows: ObserveLmuWindowsUseCase = get()
             val observeGt7Ps5: ObserveGt7Ps5UseCase = get()
