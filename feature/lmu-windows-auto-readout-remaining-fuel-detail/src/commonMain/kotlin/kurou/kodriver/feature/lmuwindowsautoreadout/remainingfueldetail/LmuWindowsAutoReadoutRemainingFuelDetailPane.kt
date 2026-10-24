@@ -25,6 +25,8 @@ import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MAX
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MIN
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingFuelReadoutPlaceholders
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.feature.lmuwindowsautoreadout.remainingfueldetail.generated.resources.Res
@@ -47,8 +49,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
-private const val THRESHOLD_MIN = 10f
-private const val THRESHOLD_MAX = 90f
+private const val THRESHOLD_MIN = LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MIN.toFloat()
+private const val THRESHOLD_MAX = LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MAX.toFloat()
 
 /**
  * LmuWindowsAutoReadoutRemainingFuelDetail の画面を表示する Composable。
