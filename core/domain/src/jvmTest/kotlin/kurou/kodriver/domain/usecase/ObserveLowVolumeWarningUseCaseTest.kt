@@ -8,6 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.DismissedVolumes
 import kurou.kodriver.domain.model.LowVolumeWarning
@@ -83,7 +84,7 @@ class ObserveLowVolumeWarningUseCaseTest {
             val dismissed = MutableStateFlow(DismissedVolumes(25, 60))
             configure(20, 80, dismissed)
             coEvery { dismissalRepository.saveDismissedVolumes(DismissedVolumes(25, null)) } answers {
-                dismissed.value = DismissedVolumes(25, null)
+                dismissed.update { DismissedVolumes(25, null) }
             }
 
             assertEquals(LowVolumeWarning(20, null), useCase()().first())
@@ -101,14 +102,14 @@ class ObserveLowVolumeWarningUseCaseTest {
             every { soundRepository.volume() } returns MutableStateFlow(60)
             every { dismissalRepository.observeDismissedVolumes() } returns dismissed
             coEvery { dismissalRepository.saveDismissedVolumes(DismissedVolumes(null, 60)) } answers {
-                dismissed.value = DismissedVolumes(null, 60)
+                dismissed.update { DismissedVolumes(null, 60) }
             }
             val warnings = useCase()()
 
             assertEquals(null, warnings.first())
-            device.value = 50
+            device.update { 50 }
             assertEquals(null, warnings.first())
-            device.value = 25
+            device.update { 25 }
             assertEquals(LowVolumeWarning(25, null), warnings.first())
 
             coVerify(exactly = 1) { dismissalRepository.saveDismissedVolumes(DismissedVolumes(null, 60)) }
