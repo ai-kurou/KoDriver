@@ -8,8 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -852,16 +850,8 @@ private fun AppScreenScaffold(
             Column(modifier = contentModifier) {
                 AnimatedVisibility(
                     visible = bannerUiState.isVisible,
-                    enter =
-                        slideInVertically(
-                            initialOffsetY = { -it },
-                            animationSpec = tween(durationMillis = 300),
-                        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                    exit =
-                        slideOutVertically(
-                            targetOffsetY = { -it },
-                            animationSpec = tween(durationMillis = 200),
-                        ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+                    enter = BannerEnterTransition,
+                    exit = BannerExitTransition,
                 ) {
                     ConnectionBannerContent(
                         uiState = bannerUiState,

@@ -74,6 +74,7 @@ class AppScreenContentTest {
         rule.runOnIdle { connectionVisible.value = false }
         rule.onNodeWithTag("connectionTtsBannerGap").assertDoesNotExist()
         rule.runOnIdle { reason.value = null }
+        rule.mainClock.advanceTimeBy(300)
         rule.onNodeWithTag("connectionTtsBannerGap").assertDoesNotExist()
         rule.runOnIdle { connectionVisible.value = true }
         rule.onNodeWithTag("connectionTtsBannerGap").assertDoesNotExist()
