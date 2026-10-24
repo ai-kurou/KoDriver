@@ -28,6 +28,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
@@ -660,6 +661,8 @@ internal class LmuWindowsNarratorViewModel(
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     // replay なしの共有 Flow を再購読せず、共有前に最新値と受信時刻を保持する。切り替え時は破棄する。
+    private var latestFuel: LmuWindowsRemainingFuelData? = null
+    private var latestFuelReceivedAtMs: Long = 0L
     private var latestVirtualEnergy: LmuWindowsVirtualEnergyData? = null
     private var latestVirtualEnergyReceivedAtMs: Long = 0L
 
@@ -683,6 +686,8 @@ internal class LmuWindowsNarratorViewModel(
         latestBrakeTemperatureReceivedAtMs = 0L
         latestBrakeWear = null
         latestBrakeWearReceivedAtMs = 0L
+        latestFuel = null
+        latestFuelReceivedAtMs = 0L
         latestVirtualEnergy = null
         latestVirtualEnergyReceivedAtMs = 0L
     }
@@ -703,7 +708,10 @@ internal class LmuWindowsNarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-                remainingFuelUseCases.observeFuel()
+                remainingFuelUseCases.observeFuel().onEach {
+                    latestFuel = it
+                    latestFuelReceivedAtMs = currentTimeMs()
+                }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     @Suppress("UnusedPrivateProperty")
@@ -874,6 +882,10 @@ internal class LmuWindowsNarratorViewModel(
             latestVirtualEnergy?.takeIf {
                 observedAtMs - latestVirtualEnergyReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
             }
+        val fuel =
+            latestFuel?.takeIf {
+                observedAtMs - latestFuelReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+            }
         val tyreWear =
             latestTyreWear?.takeIf {
                 observedAtMs - latestTyreWearReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
@@ -915,6 +927,8 @@ internal class LmuWindowsNarratorViewModel(
                             ?.values
                             ?.minOrNull()
                             ?.value
+                    } else if (key == LmuWindowsReadoutItemKey.RemainingFuel.Root.value) {
+                        fuel?.remainingPercent?.let { it / PERCENTAGE_SCALE }
                     } else {
                         energy?.remainingRatio?.value
                     }
