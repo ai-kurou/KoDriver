@@ -1,7 +1,9 @@
 package kurou.kodriver.core.devicevolumedata.repository
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import kurou.kodriver.core.devicevolumedata.pollingVolumeFlow
 import kurou.kodriver.core.devicevolumedata.windows.WasapiMasterVolumeSource
 import kurou.kodriver.core.devicevolumedata.windows.WindowsMasterVolumeSource
 import kurou.kodriver.domain.model.DEVICE_VOLUME_MAX
@@ -17,6 +19,8 @@ import kotlin.math.roundToInt
 internal class WindowsDeviceVolumeRepository(
     private val masterVolumeSource: WindowsMasterVolumeSource = WasapiMasterVolumeSource(),
 ) : DeviceVolumeRepository {
+    override fun observeVolume(): Flow<Int> = pollingVolumeFlow { getVolume() }
+
     override suspend fun getVolume(): Int =
         withContext(Dispatchers.IO) {
             (masterVolumeSource.getScalarVolume() * DEVICE_VOLUME_MAX)

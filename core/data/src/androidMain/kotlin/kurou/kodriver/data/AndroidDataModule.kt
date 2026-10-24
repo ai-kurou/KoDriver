@@ -9,6 +9,7 @@ import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.hotkey.UnsupportedHotkeyRepository
 import kurou.kodriver.data.hotkey.UnsupportedManualReadoutHotkeyRepository
+import kurou.kodriver.data.lowvolumewarning.InMemoryLowVolumeWarningDismissalRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.preferences.AndroidAutoReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidDynamicColorEnabledRepository
@@ -54,6 +55,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.LowVolumeWarningDismissalRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
@@ -102,6 +104,7 @@ fun androidDataModule(context: Context) =
             createReadoutHotkeyPreferencesRepository(context.filesDir.absolutePath)
         }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
+        single<LowVolumeWarningDismissalRepository> { InMemoryLowVolumeWarningDismissalRepository() }
         single<Context> { context }
 
         // 設定永続化（DataStore。ファイルは context.filesDir 配下）

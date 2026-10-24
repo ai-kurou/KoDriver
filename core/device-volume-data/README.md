@@ -10,6 +10,7 @@ KoDriver自体のアナウンス音量設定とは異なり、OS側の再生音�
   `STREAM_MUSIC`をマスター音量の代替として扱う。
 
 いずれも`core:domain`の`DeviceVolumeRepository`（値は0-100のパーセンテージ）を実装する。
+`observeVolume()`は1000ms間隔のポーリングで取得し、前回から値が変化した場合にだけFlowへ流す。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

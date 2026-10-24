@@ -4,6 +4,7 @@ import kurou.kodriver.data.debugreadout.InMemoryDebugReadoutRequestRepository
 import kurou.kodriver.data.device.JvmAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.JvmHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
+import kurou.kodriver.data.lowvolumewarning.InMemoryLowVolumeWarningDismissalRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
@@ -45,6 +46,7 @@ import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.LowVolumeWarningDismissalRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
@@ -80,6 +82,7 @@ val desktopDataModule =
     module {
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
+        single<LowVolumeWarningDismissalRepository> { InMemoryLowVolumeWarningDismissalRepository() }
         single<ReadoutHotkeyPreferencesRepository> {
             createReadoutHotkeyPreferencesRepository(kodriverDirectory)
         }

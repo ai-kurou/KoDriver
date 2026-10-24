@@ -77,4 +77,7 @@ DataModule にシングルトンとして登録する。`MutableSharedFlow` の�
 満杯なら `emit` が待機し、購読中の Narrator へ連続依頼を順番通り届ける。
 依頼は永続化せず、購読開始前・終了後の依頼を再配信しない。
 
+`InMemoryLowVolumeWarningDismissalRepository` は `jvmAndroidMain` のメモリ内実装で、Desktop / Android の
+DataModule にシングルトンとして登録する。警告を閉じた端末音量・アプリ音量を個別に保持し、永続化しない。
+
 Android の `ManualReadoutHotkeyRepository` は `UnsupportedManualReadoutHotkeyRepository` を提供し、押下は通知せず、登録状態は `Unsupported`、再試行は何もしない。
