@@ -50,6 +50,18 @@ class ObserveLmuWindowsFuelUseCaseTest {
             verify(exactly = 1) { repository.telemetryStream() }
             confirmVerified(repository)
         }
+
+    @Test
+    fun `整数化は切り捨てで元の割合も保持する`() =
+        runTest {
+            every { repository.telemetryStream() } returns flowOf(telemetry(fuel(1.7, 4.0)))
+            assertEquals(
+                listOf(LmuWindowsRemainingFuelData(remainingPercent = 42, exactPercent = 42.5)),
+                buildList { ObserveLmuWindowsFuelUseCase(repository)().collect(::add) },
+            )
+            verify(exactly = 1) { repository.telemetryStream() }
+            confirmVerified(repository)
+        }
 }
 
 private fun fuel(

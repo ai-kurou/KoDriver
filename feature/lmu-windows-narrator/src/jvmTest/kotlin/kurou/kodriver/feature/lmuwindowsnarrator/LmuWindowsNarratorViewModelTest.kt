@@ -3735,6 +3735,25 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `手動燃料は切り捨て前の割合を四捨五入して読む`() =
+        runTest(testDispatcher) {
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            createViewModel(
+                telemetryChannel = fuel,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("fuel", listOf(key.value))),
+                ttsEngine = mockTts(spoken),
+                currentTimeMs = { 0L },
+            )
+            fuel.send(telemetryWithFuel(currentLiters = 42.6, capacityLiters = 100.0))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "fuel"))
+            assertEquals(listOf("燃料は残り43パーセント"), spoken.map { it.narratedText })
+        }
+
+    @Test
     fun `手動燃料はシミュレーター切り替えで古い値を破棄する`() =
         runTest(testDispatcher) {
             val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)

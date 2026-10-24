@@ -928,7 +928,7 @@ internal class LmuWindowsNarratorViewModel(
                             ?.minOrNull()
                             ?.value
                     } else if (key == LmuWindowsReadoutItemKey.RemainingFuel.Root.value) {
-                        fuel?.remainingPercent?.let { it / PERCENTAGE_SCALE }
+                        fuel?.exactPercent?.let { it / PERCENTAGE_SCALE }
                     } else {
                         energy?.remainingRatio?.value
                     }
