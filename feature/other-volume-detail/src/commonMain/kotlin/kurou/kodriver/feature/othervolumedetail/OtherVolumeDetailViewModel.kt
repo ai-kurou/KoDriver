@@ -25,7 +25,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.SaveLowVolumeWarningEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
@@ -40,9 +42,15 @@ internal data class DeviceVolumeUseCases(
     val setDeviceVolume: SetDeviceVolumeUseCase,
 )
 
+internal data class LowVolumeWarningEnabledUseCases(
+    val observeLowVolumeWarningEnabled: ObserveLowVolumeWarningEnabledUseCase,
+    val saveLowVolumeWarningEnabled: SaveLowVolumeWarningEnabledUseCase,
+)
+
 internal class OtherVolumeDetailViewModel(
     private val soundVolumeUseCases: SoundVolumeUseCases,
     private val deviceVolumeUseCases: DeviceVolumeUseCases,
+    private val lowVolumeWarningEnabledUseCases: LowVolumeWarningEnabledUseCases,
     private val speakText: SpeakTextUseCase,
 ) : ViewModel() {
     private val isPreviewing = MutableStateFlow(false)
@@ -76,8 +84,14 @@ internal class OtherVolumeDetailViewModel(
             merge(deviceVolumeRefreshTrigger.map { }, deviceVolumePollingTicker)
                 .mapLatest { deviceVolumeUseCases.getDeviceVolume() },
             isPreviewing,
-        ) { volume, deviceVolume, previewing ->
-            OtherVolumeDetailUiState(volume = volume, deviceVolume = deviceVolume, isPreviewing = previewing)
+            lowVolumeWarningEnabledUseCases.observeLowVolumeWarningEnabled(),
+        ) { volume, deviceVolume, previewing, warningEnabled ->
+            OtherVolumeDetailUiState(
+                volume = volume,
+                deviceVolume = deviceVolume,
+                isPreviewing = previewing,
+                lowVolumeWarningEnabled = warningEnabled,
+            )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVolumeDetailUiState())
 
     @Suppress("UnusedPrivateProperty")
@@ -91,6 +105,10 @@ internal class OtherVolumeDetailViewModel(
 
     fun onVolumeChanged(volume: Int) {
         saveJob = viewModelScope.launch { soundVolumeUseCases.saveSoundVolume(volume) }
+    }
+
+    fun onLowVolumeWarningEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch { lowVolumeWarningEnabledUseCases.saveLowVolumeWarningEnabled(enabled) }
     }
 
     /** ペインを離れたときに、再生中の試聴を止める。 */

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
+import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
@@ -27,9 +28,13 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.domain.model.DEVICE_VOLUME_WARNING_THRESHOLD_DEFAULT
+import kurou.kodriver.domain.model.SOUND_VOLUME_WARNING_THRESHOLD_DEFAULT
 import kurou.kodriver.feature.othervolumedetail.generated.resources.Res
 import kurou.kodriver.feature.othervolumedetail.generated.resources.device_volume_description
 import kurou.kodriver.feature.othervolumedetail.generated.resources.device_volume_subtitle
+import kurou.kodriver.feature.othervolumedetail.generated.resources.low_volume_warning_description
+import kurou.kodriver.feature.othervolumedetail.generated.resources.low_volume_warning_subtitle
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_description
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_formula
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_label
@@ -60,6 +65,7 @@ fun OtherVolumeDetailPane(
         uiState = uiState,
         onVolumeChanged = viewModel::onVolumeChanged,
         onDeviceVolumeChanged = viewModel::onDeviceVolumeChanged,
+        onLowVolumeWarningEnabledChanged = viewModel::onLowVolumeWarningEnabledChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
@@ -76,6 +82,7 @@ fun OtherVolumeDetailPaneContent(
     onVolumeChanged: (Int) -> Unit = {},
     onDeviceVolumeChanged: (Int) -> Unit = {},
     onPreviewClicked: () -> Unit = {},
+    onLowVolumeWarningEnabledChanged: (Boolean) -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -142,6 +149,22 @@ fun OtherVolumeDetailPaneContent(
                 onValueChangeFinished = { onDeviceVolumeChanged(it.roundToInt()) },
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
                 steps = 99,
+            )
+            DetailPaneCard(
+                title = stringResource(Res.string.low_volume_warning_subtitle),
+                checked = uiState.lowVolumeWarningEnabled,
+                onCheckedChange = onLowVolumeWarningEnabledChanged,
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
+                bottomContent = {
+                    DetailPaneBodyText(
+                        text =
+                            stringResource(
+                                Res.string.low_volume_warning_description,
+                                DEVICE_VOLUME_WARNING_THRESHOLD_DEFAULT,
+                                SOUND_VOLUME_WARNING_THRESHOLD_DEFAULT,
+                            ),
+                    )
+                },
             )
         }
     }

@@ -7,6 +7,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import org.junit.Rule
@@ -99,7 +100,7 @@ class OtherVolumeDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 OtherVolumeDetailPaneContent(
-                    uiState = OtherVolumeDetailUiState(),
+                    uiState = OtherVolumeDetailUiState(lowVolumeWarningEnabled = true),
                     onBack = { backCount++ },
                 )
             }
@@ -108,5 +109,20 @@ class OtherVolumeDetailPaneTest {
         rule.onNode(hasContentDescription("戻る")).performClick()
 
         assertEquals(1, backCount)
+    }
+
+    @Test
+    fun `警告スイッチを表示しクリックを通知する`() {
+        var enabled: Boolean? = null
+        rule.setContent {
+            MaterialTheme {
+                OtherVolumeDetailPaneContent(
+                    uiState = OtherVolumeDetailUiState(),
+                    onLowVolumeWarningEnabledChanged = { enabled = it },
+                )
+            }
+        }
+        rule.onNodeWithText("音量低下の警告").performClick()
+        assertEquals(false, enabled)
     }
 }

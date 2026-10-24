@@ -10,3 +10,5 @@
 
 ![Module Graph](../../docs/graphs/feature-other-volume-detail.svg)
 <!-- MODULE-GRAPH-END -->
+
+音量詳細ペインの「音量低下の警告」スイッチは既定でオンです。オフにしても音量ポーリングは継続し、警告の表示だけを停止します。

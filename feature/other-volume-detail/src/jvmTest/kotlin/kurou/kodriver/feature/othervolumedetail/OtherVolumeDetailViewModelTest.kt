@@ -29,9 +29,12 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
+import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.SaveLowVolumeWarningEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
@@ -48,6 +51,7 @@ class OtherVolumeDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val soundVolumeRepository: SoundVolumePreferencesRepository = mockk()
+    private val warningEnabledRepository: LowVolumeWarningEnabledPreferencesRepository = mockk()
 
     private val deviceVolumeRepository: DeviceVolumeRepository = mockk()
 
@@ -77,6 +81,11 @@ class OtherVolumeDetailViewModelTest {
                     getDeviceVolume = GetDeviceVolumeUseCase(deviceVolumeRepository),
                     setDeviceVolume = SetDeviceVolumeUseCase(deviceVolumeRepository),
                 ),
+            lowVolumeWarningEnabledUseCases =
+                LowVolumeWarningEnabledUseCases(
+                    observeLowVolumeWarningEnabled = ObserveLowVolumeWarningEnabledUseCase(warningEnabledRepository),
+                    saveLowVolumeWarningEnabled = SaveLowVolumeWarningEnabledUseCase(warningEnabledRepository),
+                ),
             speakText = speakText,
         )
 
@@ -84,19 +93,41 @@ class OtherVolumeDetailViewModelTest {
     fun `保存済みの音量と端末のマスター音量をUiStateで返す`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             val viewModel = createViewModel()
 
             assertEquals(OtherVolumeDetailUiState(volume = 80, deviceVolume = 60), viewModel.uiState.first())
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 1) { deviceVolumeRepository.getVolume() }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
+        }
+
+    @Test
+    fun `警告スイッチの初期値と変更をUiStateに反映し保存する`() =
+        runTest {
+            val enabled = MutableStateFlow(true)
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns enabled
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            coEvery { warningEnabledRepository.saveLowVolumeWarningEnabled(false) } answers { enabled.value = false }
+            val viewModel = createViewModel()
+            assertTrue(viewModel.uiState.first().lowVolumeWarningEnabled)
+            viewModel.onLowVolumeWarningEnabledChanged(false)
+            assertFalse(viewModel.uiState.first().lowVolumeWarningEnabled)
+            verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            coVerify(exactly = 1) { warningEnabledRepository.saveLowVolumeWarningEnabled(false) }
+            verify(exactly = 1) { soundVolumeRepository.volume() }
+            coVerify(exactly = 1) { deviceVolumeRepository.getVolume() }
+            confirmVerified(warningEnabledRepository, soundVolumeRepository, deviceVolumeRepository)
         }
 
     @Test
     fun `音量を変更するとUiStateが更新される`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             coEvery { soundVolumeRepository.saveVolume(40) } answers { volumeFlow.update { 40 } }
             val viewModel = createViewModel()
@@ -107,13 +138,15 @@ class OtherVolumeDetailViewModelTest {
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 1) { deviceVolumeRepository.getVolume() }
             coVerify(exactly = 1) { soundVolumeRepository.saveVolume(40) }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
         }
 
     @Test
     fun `端末のマスター音量を変更すると設定後に再取得してUiStateへ反映する`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returnsMany listOf(60, 30)
             coEvery { deviceVolumeRepository.setVolume(30) } returns Unit
             val viewModel = createViewModel()
@@ -125,13 +158,15 @@ class OtherVolumeDetailViewModelTest {
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 2) { deviceVolumeRepository.getVolume() }
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(30) }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
         }
 
     @Test
     fun `OS側で音量が変更された後に同じ値を再要求すると再度書き込まれる`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             var deviceVolume = 60
             coEvery { deviceVolumeRepository.getVolume() } answers { deviceVolume }
             coEvery { deviceVolumeRepository.setVolume(50) } coAnswers { deviceVolume = 50 }
@@ -155,13 +190,15 @@ class OtherVolumeDetailViewModelTest {
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 4) { deviceVolumeRepository.getVolume() }
             coVerify(exactly = 2) { deviceVolumeRepository.setVolume(50) }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
         }
 
     @Test
     fun `端末のマスター音量を連続して変更すると書き込みが直列に実行される`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             val callOrder = mutableListOf<String>()
             coEvery { deviceVolumeRepository.setVolume(20) } coAnswers {
                 callOrder.add("start:20")
@@ -181,13 +218,15 @@ class OtherVolumeDetailViewModelTest {
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(20) }
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(80) }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
         }
 
     @Test
     fun `試聴は既定文言と保存済み音量を使い完了後に停止状態へ戻る`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             val finished = CompletableDeferred<Unit>()
             coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } coAnswers { finished.await() }
@@ -208,6 +247,7 @@ class OtherVolumeDetailViewModelTest {
     fun `試聴中の再タップとペイン離脱で再生をキャンセルする`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             var cancelled = 0
             coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } coAnswers {
@@ -237,6 +277,7 @@ class OtherVolumeDetailViewModelTest {
     fun `音量ゼロでは試聴せず失敗時も停止状態へ戻る`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } throws IOException("失敗")
             val viewModel = createViewModel()
@@ -257,6 +298,7 @@ class OtherVolumeDetailViewModelTest {
     fun `直前の音量保存が終わってから変更後の音量で試聴する`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             val saved = CompletableDeferred<Unit>()
             coEvery { soundVolumeRepository.saveVolume(40) } coAnswers {
                 saved.await()
@@ -280,6 +322,7 @@ class OtherVolumeDetailViewModelTest {
     fun `音量保存待ちも停止表示になり再タップ後は保存が完了しても再生しない`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             val saved = CompletableDeferred<Unit>()
             coEvery { soundVolumeRepository.saveVolume(40) } coAnswers {
@@ -308,6 +351,7 @@ class OtherVolumeDetailViewModelTest {
         runTest {
             val pendingVolume = MutableSharedFlow<Int>()
             every { soundVolumeRepository.volume() } returnsMany listOf(volumeFlow, pendingVolume)
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             val viewModel = createViewModel()
             viewModel.uiState.launchIn(backgroundScope)
@@ -327,6 +371,7 @@ class OtherVolumeDetailViewModelTest {
     fun `停止した古い試聴の遅延失敗が新しい試聴状態を解除しない`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             val oldFinished = CompletableDeferred<Unit>()
             var count = 0
@@ -355,6 +400,7 @@ class OtherVolumeDetailViewModelTest {
     fun `試聴のキャンセル例外を再スローして停止状態へ戻る`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             val cancelled = CancellationException("キャンセル")
             var completion: Throwable? = null
@@ -374,6 +420,7 @@ class OtherVolumeDetailViewModelTest {
     fun `古い試聴の終了が新しい試聴の状態を解除しない`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             val oldFinished = CompletableDeferred<Unit>()
             var count = 0
@@ -402,6 +449,7 @@ class OtherVolumeDetailViewModelTest {
     fun `detailPane表示中は一定間隔で端末のマスター音量を再取得する`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             val viewModel = createViewModel()
             val job = viewModel.uiState.launchIn(this)
@@ -414,7 +462,8 @@ class OtherVolumeDetailViewModelTest {
 
             coVerify(exactly = 3) { deviceVolumeRepository.getVolume() }
             verify(exactly = 1) { soundVolumeRepository.volume() }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
             job.cancel()
         }
 }

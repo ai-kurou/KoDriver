@@ -191,3 +191,7 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
 開始音とログには既存の `RemainingFuel.Root` を使い、常にキュー末尾へ追加する。
+
+音量低下警告の表示設定は `LowVolumeWarningEnabledPreferencesRepository` と
+`ObserveLowVolumeWarningEnabledUseCase` / `SaveLowVolumeWarningEnabledUseCase` で扱い、既定値は
+`LOW_VOLUME_WARNING_ENABLED_DEFAULT`（オン）とする。

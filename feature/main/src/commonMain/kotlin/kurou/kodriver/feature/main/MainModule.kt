@@ -56,7 +56,7 @@ val mainModule =
         factory { ObserveAceWindowsStatusUseCase(get()) }
         factory { ObserveDeviceVolumeUseCase(get()) }
         factory { ObserveSoundVolumeUseCase(get()) }
-        factory { ObserveLowVolumeWarningUseCase(get(), get()) }
+        factory { ObserveLowVolumeWarningUseCase(get(), get(), get()) }
         factory {
             val observeLmuWindows: ObserveLmuWindowsUseCase = get()
             val observeGt7Ps5: ObserveGt7Ps5UseCase = get()
