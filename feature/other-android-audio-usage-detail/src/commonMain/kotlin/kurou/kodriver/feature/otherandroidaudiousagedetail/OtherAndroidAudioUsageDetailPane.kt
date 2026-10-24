@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.PlayingEqualizer
@@ -162,7 +163,10 @@ private fun AudioVolumeSection(
         Spacer(Modifier.height(KoDriverSpacing.medium))
         HorizontalDivider()
         Spacer(Modifier.height(KoDriverSpacing.large))
-        Text(stringResource(Res.string.audio_usage_volume_section_title), style = MaterialTheme.typography.titleMedium)
+        DetailPaneSubtitle(
+            text = stringResource(Res.string.audio_usage_volume_section_title),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
+        )
         Spacer(Modifier.height(KoDriverSpacing.small))
         Text(
             stringResource(
