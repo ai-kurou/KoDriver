@@ -71,7 +71,8 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - run: ./gradlew koverXmlReport
+      # スクリーンショットテストは専用の verify ジョブで実行するため、ここでは除外する
+      - run: ./gradlew koverXmlReport -Dorg.gradle.workers.max=4 -PexcludeScreenshotTests=true
 
       - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
