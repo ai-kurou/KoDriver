@@ -13,11 +13,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -27,6 +31,7 @@ import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.PlayArrow
@@ -51,13 +56,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -70,8 +79,12 @@ import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_edit_mode_disable
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_edit_mode_enable
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_title
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_edit_mode_description
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_edit_mode_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_help_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_title
@@ -101,6 +114,7 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_ace
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_gt7
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_lmu
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_tap_to_edit
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -130,8 +144,7 @@ fun ManualReadoutListPane(
 }
 
 /**
- * 保存済みセットが空なら空状態を表示し、1件以上なら見出しの下にセット一覧を表示する。
- * セット追加 FAB は常時表示する。行タップで詳細を開く。
+ * 標準の行一覧と、再生・編集を切り替えられる2列の再生ボタン一覧を表示する。
  */
 @Composable
 internal fun ManualReadoutListPaneContent(
@@ -147,14 +160,63 @@ internal fun ManualReadoutListPaneContent(
     showHotkeyChip: Boolean = isManualReadoutHotkeySupported(),
     listState: LazyListState = rememberLazyListState(),
 ) {
+    var editMode by remember { mutableStateOf(false) }
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
             ManualReadoutHintRow(
                 playButtonLayoutEnabled = uiState.playButtonLayoutEnabled,
-                onTogglePlayButtonLayout = onTogglePlayButtonLayout,
+                onTogglePlayButtonLayout = {
+                    editMode = false
+                    onTogglePlayButtonLayout()
+                },
+                editMode = editMode,
+                onToggleEditMode = { editMode = !editMode },
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
             )
-            if (uiState.sets.isEmpty()) {
+            if (uiState.playButtonLayoutEnabled) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    contentPadding =
+                        PaddingValues(
+                            start = KoDriverSpacing.small,
+                            end = KoDriverSpacing.small,
+                            bottom = 56.dp + KoDriverSpacing.large,
+                        ),
+                    horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                    verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                ) {
+                    itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
+                        ManualReadoutSetPlayButton(
+                            set = set,
+                            title = set.name.ifBlank { manualReadoutSetTitle(simulatorId, index + 1) },
+                            setNumber = index + 1,
+                            editMode = editMode,
+                            canReadSet = uiState.canReadSets && set.itemKeys.isNotEmpty(),
+                            showHotkeyChip = showHotkeyChip,
+                            onReadSet = { onReadSet(set.id) },
+                            onSetClick = { onSetClick(set.id) },
+                        )
+                    }
+                    item {
+                        Surface(
+                            onClick = onAddSet,
+                            shape = MaterialTheme.shapes.large,
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        ) {
+                            Column(
+                                modifier = Modifier.heightIn(min = 104.dp).padding(KoDriverSpacing.medium),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement =
+                                    Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterVertically),
+                            ) {
+                                Icon(Icons.Filled.Add, contentDescription = null)
+                                Text(stringResource(Res.string.manual_readout_list_add_set))
+                            }
+                        }
+                    }
+                }
+            } else if (uiState.sets.isEmpty()) {
                 Box(
                     modifier = Modifier.weight(1f).fillMaxSize().padding(KoDriverSpacing.extraLarge),
                     contentAlignment = Alignment.Center,
@@ -188,17 +250,19 @@ internal fun ManualReadoutListPaneContent(
                 }
             }
         }
-        ExtendedFloatingActionButton(
-            onClick = onAddSet,
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(Res.string.manual_readout_list_add_set),
-                )
-            },
-            text = { Text(stringResource(Res.string.manual_readout_list_add_set)) },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(KoDriverSpacing.large),
-        )
+        if (!uiState.playButtonLayoutEnabled) {
+            ExtendedFloatingActionButton(
+                onClick = onAddSet,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = stringResource(Res.string.manual_readout_list_add_set),
+                    )
+                },
+                text = { Text(stringResource(Res.string.manual_readout_list_add_set)) },
+                modifier = Modifier.align(Alignment.BottomEnd).padding(KoDriverSpacing.large),
+            )
+        }
     }
 }
 
@@ -212,6 +276,93 @@ private fun manualReadoutSetTitle(
         "gt7_ps5" -> stringResource(Res.string.manual_readout_list_set_title_gt7, setNumber)
         "ace_windows" -> stringResource(Res.string.manual_readout_list_set_title_ace, setNumber)
         else -> error("未対応のsimulatorId: $simulatorId")
+    }
+
+/** 再生を主操作にし、長押しまたは編集モードで詳細を開くタイル。 */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ManualReadoutSetPlayButton(
+    set: ManualReadoutSet,
+    title: String,
+    setNumber: Int,
+    editMode: Boolean,
+    canReadSet: Boolean,
+    showHotkeyChip: Boolean,
+    onReadSet: () -> Unit,
+    onSetClick: () -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    val enabled = editMode || canReadSet
+    Surface(
+        modifier =
+            Modifier
+                .alpha(if (enabled) 1f else 0.38f)
+                .combinedClickable(
+                    onClick = {
+                        if (editMode) {
+                            onSetClick()
+                        } else if (canReadSet) {
+                            onReadSet()
+                        }
+                    },
+                    onLongClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onSetClick()
+                    },
+                ).semantics { if (!enabled) disabled() },
+        shape = MaterialTheme.shapes.large,
+        color = if (editMode) MaterialTheme.colorScheme.surfaceContainerHighest else MaterialTheme.colorScheme.primary,
+        contentColor = if (editMode) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimary,
+        border = if (editMode) BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary) else null,
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 104.dp).padding(KoDriverSpacing.medium),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall, Alignment.CenterVertically),
+        ) {
+            Icon(
+                imageVector = if (editMode) Icons.Filled.Edit else Icons.Filled.PlayArrow,
+                contentDescription = if (editMode) null else manualReadoutPlayButtonDescription(set, setNumber),
+                modifier = Modifier.size(32.dp),
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                text = manualReadoutPlayButtonSubtitle(editMode, set.itemKeys.size),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            if (showHotkeyChip && manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null) {
+                ManualReadoutHotkeyChip(set, playButtonLayout = true)
+            }
+        }
+    }
+}
+
+@Composable
+private fun manualReadoutPlayButtonDescription(
+    set: ManualReadoutSet,
+    setNumber: Int,
+): String =
+    if (set.name.isBlank()) {
+        stringResource(Res.string.manual_readout_list_readout_set, setNumber)
+    } else {
+        stringResource(Res.string.manual_readout_list_readout_set_named, set.name)
+    }
+
+@Composable
+private fun manualReadoutPlayButtonSubtitle(
+    editMode: Boolean,
+    itemCount: Int,
+): String =
+    when {
+        editMode -> stringResource(Res.string.manual_readout_tap_to_edit)
+        itemCount == 0 -> stringResource(Res.string.manual_readout_list_no_items)
+        else -> stringResource(Res.string.manual_readout_list_item_count, itemCount)
     }
 
 /** セット番号と項目数、対応環境ではホットキーを表示する。LMU のセットは読み上げボタンから依頼を送る。 */
@@ -392,13 +543,25 @@ internal class ManualReadoutMenuPositionProvider(
 
 /** 行の操作を妨げない、表示専用のホットキーチップ。 */
 @Composable
-private fun ManualReadoutHotkeyChip(set: ManualReadoutSet) {
+private fun ManualReadoutHotkeyChip(
+    set: ManualReadoutSet,
+    playButtonLayout: Boolean = false,
+) {
     val label = manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode)
     Surface(
         shape = MaterialTheme.shapes.small,
-        color = if (label == null) Color.Transparent else MaterialTheme.colorScheme.secondaryContainer,
+        color =
+            if (playButtonLayout) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else if (label == null) {
+                Color.Transparent
+            } else {
+                MaterialTheme.colorScheme.secondaryContainer
+            },
         contentColor =
-            if (label == null) {
+            if (playButtonLayout) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else if (label == null) {
                 MaterialTheme.colorScheme.onSurfaceVariant
             } else {
                 MaterialTheme.colorScheme.onSecondaryContainer
@@ -431,6 +594,8 @@ internal fun ManualReadoutListDeleteConfirmDialog(
 
 @Composable
 private fun ManualReadoutHintRow(
+    editMode: Boolean,
+    onToggleEditMode: () -> Unit,
     playButtonLayoutEnabled: Boolean,
     onTogglePlayButtonLayout: () -> Unit,
     modifier: Modifier = Modifier,
@@ -440,25 +605,49 @@ private fun ManualReadoutHintRow(
         helpContentDescription = stringResource(Res.string.manual_readout_hint_help_description),
         modifier = modifier,
         trailingContent = {
-            IconButton(onClick = onTogglePlayButtonLayout, modifier = Modifier.size(24.dp)) {
-                Icon(
-                    imageVector =
-                        if (playButtonLayoutEnabled) {
-                            Icons.AutoMirrored.Filled.ViewList
-                        } else {
-                            Icons.Filled.GridView
-                        },
-                    contentDescription =
-                        stringResource(
+            Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
+                if (playButtonLayoutEnabled) {
+                    IconButton(onClick = onToggleEditMode, modifier = Modifier.size(24.dp)) {
+                        Icon(
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription =
+                                stringResource(
+                                    if (editMode) {
+                                        Res.string.manual_readout_edit_mode_disable
+                                    } else {
+                                        Res.string.manual_readout_edit_mode_enable
+                                    },
+                                ),
+                            modifier = Modifier.size(20.dp),
+                            tint =
+                                if (editMode) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                        )
+                    }
+                }
+                IconButton(onClick = onTogglePlayButtonLayout, modifier = Modifier.size(24.dp)) {
+                    Icon(
+                        imageVector =
                             if (playButtonLayoutEnabled) {
-                                Res.string.manual_readout_layout_toggle_to_standard
+                                Icons.AutoMirrored.Filled.ViewList
                             } else {
-                                Res.string.manual_readout_layout_toggle_to_play_buttons
+                                Icons.Filled.GridView
                             },
-                        ),
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                        contentDescription =
+                            stringResource(
+                                if (playButtonLayoutEnabled) {
+                                    Res.string.manual_readout_layout_toggle_to_standard
+                                } else {
+                                    Res.string.manual_readout_layout_toggle_to_play_buttons
+                                },
+                            ),
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         },
     ) {
@@ -488,6 +677,11 @@ internal fun ManualReadoutHintSheetContent(
             icon = Icons.Filled.GridView,
             title = stringResource(Res.string.manual_readout_hint_layout_title),
             description = stringResource(Res.string.manual_readout_hint_layout_description),
+        )
+        KoDriverHintSheetRow(
+            icon = Icons.Filled.Edit,
+            title = stringResource(Res.string.manual_readout_hint_edit_mode_title),
+            description = stringResource(Res.string.manual_readout_hint_edit_mode_description),
         )
         KoDriverHintSheetRow(
             icon = Icons.AutoMirrored.Filled.PlaylistAdd,

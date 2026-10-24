@@ -9,8 +9,10 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.isPopup
 import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
@@ -20,6 +22,81 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Test
 
 class ManualReadoutListPaneScreenshotTest {
+    @Test
+    fun `再生ボタン表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            ManualReadoutListPaneContent(
+                                uiState =
+                                    ManualReadoutListUiState(
+                                        playButtonLayoutEnabled = true,
+                                        canReadSets = true,
+                                        sets =
+                                            listOf(
+                                                ManualReadoutSet(
+                                                    id = "set-1",
+                                                    name = "燃料とタイヤ",
+                                                    itemKeys = listOf("SESSION", "FLAG"),
+                                                    hotkeyVirtualKeyCode = 0x41,
+                                                ),
+                                                ManualReadoutSet(id = "set-2"),
+                                                ManualReadoutSet(id = "set-3", itemKeys = listOf("SESSION")),
+                                            ),
+                                    ),
+                                simulatorId = "lmu_windows",
+                                simulatorName = "LMU",
+                                onAddSet = {},
+                                onReadSet = {},
+                                showHotkeyChip = true,
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `再生ボタン表示_編集モード`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            ManualReadoutListPaneContent(
+                                uiState =
+                                    ManualReadoutListUiState(
+                                        playButtonLayoutEnabled = true,
+                                        canReadSets = true,
+                                        sets =
+                                            listOf(
+                                                ManualReadoutSet(
+                                                    id = "set-1",
+                                                    name = "燃料とタイヤ",
+                                                    itemKeys = listOf("SESSION", "FLAG"),
+                                                    hotkeyVirtualKeyCode = 0x41,
+                                                ),
+                                                ManualReadoutSet(id = "set-2"),
+                                                ManualReadoutSet(id = "set-3", itemKeys = listOf("SESSION")),
+                                            ),
+                                    ),
+                                simulatorId = "lmu_windows",
+                                simulatorName = "LMU",
+                                onAddSet = {},
+                                onReadSet = {},
+                                showHotkeyChip = true,
+                            )
+                        }
+                    }
+                }
+            }
+            onNodeWithContentDescription("編集モードにする").performClick()
+            onRoot().captureRoboImage()
+        }
+
     @Test
     fun `空状態`() =
         composeScreenshotTest {
