@@ -14,6 +14,7 @@ import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
 import kurou.kodriver.data.preferences.createLowVolumeWarningEnabledPreferencesRepository
+import kurou.kodriver.data.preferences.createManualReadoutPlayButtonLayoutPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutSetPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextColorPreferencesRepository
@@ -47,6 +48,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
+import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
@@ -159,6 +161,9 @@ val desktopDataModule =
         }
         single<LowVolumeWarningEnabledPreferencesRepository> {
             createLowVolumeWarningEnabledPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<ManualReadoutPlayButtonLayoutEnabledPreferencesRepository> {
+            createManualReadoutPlayButtonLayoutPreferencesRepository(directory = kodriverDirectory)
         }
         single<OverlayWindowBoundsPreferencesRepository> {
             createOverlayWindowBoundsPreferencesRepository(directory = kodriverDirectory)

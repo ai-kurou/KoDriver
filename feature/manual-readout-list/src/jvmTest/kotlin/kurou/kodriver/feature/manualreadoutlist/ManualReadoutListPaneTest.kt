@@ -38,6 +38,41 @@ class ManualReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `標準表示は再生ボタン表示への切替アイコンを表示してクリックを通知する`() {
+        var toggleCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState = ManualReadoutListUiState(playButtonLayoutEnabled = false),
+                    simulatorId = "lmu_windows",
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                    onTogglePlayButtonLayout = { toggleCount++ },
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("再生ボタン表示に切り替え").assertIsDisplayed().performClick()
+        rule.runOnIdle { assertEquals(1, toggleCount) }
+    }
+
+    @Test
+    fun `再生ボタン表示は標準表示への切替アイコンを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState = ManualReadoutListUiState(playButtonLayoutEnabled = true),
+                    simulatorId = "lmu_windows",
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("標準表示に切り替え").assertIsDisplayed()
+    }
+
+    @Test
     fun `名前ありは明示名を名前なしはシミュレーター名と番号を表示し読み上げボタンにも使う`() {
         rule.setContent {
             KoDriverTheme {
@@ -50,6 +85,7 @@ class ManualReadoutListPaneTest {
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = {},
+                    onTogglePlayButtonLayout = {},
                 )
             }
         }
@@ -74,6 +110,7 @@ class ManualReadoutListPaneTest {
                         simulatorName = "simulator",
                         onAddSet = {},
                         onReadSet = {},
+                        onTogglePlayButtonLayout = {},
                     )
                 }
             }
@@ -121,6 +158,7 @@ class ManualReadoutListPaneTest {
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = {},
+                    onTogglePlayButtonLayout = {},
                     showHotkeyChip = showHotkeyChip,
                 )
             }
@@ -172,6 +210,7 @@ class ManualReadoutListPaneTest {
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = {},
+                    onTogglePlayButtonLayout = {},
                 )
             }
         }
@@ -198,6 +237,7 @@ class ManualReadoutListPaneTest {
                     simulatorName = "LMU",
                     onAddSet = { addSetCount++ },
                     onReadSet = {},
+                    onTogglePlayButtonLayout = {},
                 )
             }
         }
@@ -219,6 +259,7 @@ class ManualReadoutListPaneTest {
                     simulatorName = simulatorName.value,
                     onAddSet = {},
                     onReadSet = {},
+                    onTogglePlayButtonLayout = {},
                 )
             }
         }
@@ -240,6 +281,7 @@ class ManualReadoutListPaneTest {
                         simulatorName = "LMU",
                         onAddSet = {},
                         onReadSet = {},
+                        onTogglePlayButtonLayout = {},
                     )
                 }
             }
@@ -347,6 +389,7 @@ class ManualReadoutListPaneTest {
                     simulatorName = "LMU",
                     onAddSet = {},
                     onReadSet = {},
+                    onTogglePlayButtonLayout = {},
                     onSetClick = { selected.add(it) },
                     onDeleteSet = { setId ->
                         deleted.add(setId)
@@ -389,6 +432,7 @@ class ManualReadoutListPaneTest {
                         simulatorName = "LMU",
                         onAddSet = {},
                         onReadSet = {},
+                        onTogglePlayButtonLayout = {},
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
@@ -429,6 +473,7 @@ class ManualReadoutListPaneTest {
                         simulatorName = "LMU",
                         onAddSet = {},
                         onReadSet = {},
+                        onTogglePlayButtonLayout = {},
                         modifier = Modifier.fillMaxSize(),
                     )
                 }

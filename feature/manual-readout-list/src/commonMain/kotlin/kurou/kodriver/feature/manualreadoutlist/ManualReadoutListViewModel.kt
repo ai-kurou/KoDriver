@@ -12,10 +12,17 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutPlayButtonLayoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
+import kurou.kodriver.domain.usecase.SaveManualReadoutPlayButtonLayoutEnabledUseCase
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
+internal data class PlayButtonLayoutUseCases(
+    val observe: ObserveManualReadoutPlayButtonLayoutEnabledUseCase,
+    val save: SaveManualReadoutPlayButtonLayoutEnabledUseCase,
+)
 
 /** 選択中シミュレーターの保存済みセット一覧を観測し、セットの追加と読み上げ依頼を行う。 */
 @OptIn(ExperimentalUuidApi::class)
@@ -25,6 +32,7 @@ internal class ManualReadoutListViewModel(
     observeManualReadoutSets: ObserveManualReadoutSetsUseCase,
     private val addManualReadoutSet: AddManualReadoutSetUseCase,
     private val deleteManualReadoutSet: DeleteManualReadoutSetUseCase,
+    private val playButtonLayoutUseCases: PlayButtonLayoutUseCases,
     private val generateSetId: () -> String = { Uuid.random().toString() },
 ) : ViewModel() {
     private val canReadSets =
@@ -35,11 +43,16 @@ internal class ManualReadoutListViewModel(
     private val selectedSetId = MutableStateFlow<String?>(null)
 
     val uiState =
-        combine(observeManualReadoutSets(), selectedSetId) { sets, selectedId ->
+        combine(
+            observeManualReadoutSets(),
+            selectedSetId,
+            playButtonLayoutUseCases.observe(),
+        ) { sets, selectedId, enabled ->
             ManualReadoutListUiState(
                 sets = sets,
                 canReadSets = canReadSets,
                 selectedSetId = selectedId?.takeIf { id -> sets.any { it.id == id } },
+                playButtonLayoutEnabled = enabled,
             )
         }.stateIn(
             viewModelScope,
@@ -49,6 +62,10 @@ internal class ManualReadoutListViewModel(
 
     fun selectSet(setId: String) {
         selectedSetId.value = setId
+    }
+
+    fun onPlayButtonLayoutToggle() {
+        viewModelScope.launch { playButtonLayoutUseCases.save(!uiState.value.playButtonLayoutEnabled) }
     }
 
     fun clearSelectedSet() {

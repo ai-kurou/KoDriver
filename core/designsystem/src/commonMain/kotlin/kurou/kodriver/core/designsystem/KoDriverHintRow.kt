@@ -36,6 +36,7 @@ fun KoDriverHintRow(
     helpContentDescription: String,
     modifier: Modifier = Modifier,
     trailingText: String? = null,
+    trailingContent: (@Composable () -> Unit)? = null,
     sheetContent: @Composable () -> Unit,
 ) {
     var showHelpSheet by rememberSaveable { mutableStateOf(false) }
@@ -82,6 +83,7 @@ fun KoDriverHintRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        trailingContent?.invoke()
     }
 }
 

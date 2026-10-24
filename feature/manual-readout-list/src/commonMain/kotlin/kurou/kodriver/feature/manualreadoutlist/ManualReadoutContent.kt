@@ -73,6 +73,7 @@ fun ManualReadoutContent(
         onAddSet = viewModel::addSet,
         onReadSet = viewModel::readSet,
         onDeleteSet = viewModel::deleteSet,
+        onTogglePlayButtonLayout = viewModel::onPlayButtonLayoutToggle,
         onSetClick = viewModel::selectSet,
         onClearSelectedSet = viewModel::clearSelectedSet,
         modifier = modifier,
@@ -93,6 +94,7 @@ internal fun ManualReadoutContentScaffold(
     onClearSelectedSet: () -> Unit,
     modifier: Modifier = Modifier,
     onDeleteSet: (String) -> Unit = {},
+    onTogglePlayButtonLayout: () -> Unit = {},
     scrollToTopRequest: Int = 0,
     listState: LazyListState = rememberLazyListState(),
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
@@ -197,6 +199,7 @@ internal fun ManualReadoutContentScaffold(
                     onAddSet = onAddSet,
                     onReadSet = onReadSet,
                     onDeleteSet = onDeleteSet,
+                    onTogglePlayButtonLayout = onTogglePlayButtonLayout,
                     onSetClick = onSetClick,
                 )
             },
