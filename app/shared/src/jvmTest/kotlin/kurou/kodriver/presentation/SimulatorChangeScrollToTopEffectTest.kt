@@ -65,4 +65,28 @@ class SimulatorChangeScrollToTopEffectTest {
 
         assertEquals(0, requestScrollToTopCount)
     }
+
+    @Test
+    fun `シミュレーター変更時は最新のスクロールcallbackを呼ぶ`() {
+        var selectedSimulatorId by mutableStateOf("lmu_windows")
+        var requestScrollToTop by mutableStateOf<() -> Unit>({})
+        var oldCallbackCount = 0
+        var latestCallbackCount = 0
+        requestScrollToTop = { oldCallbackCount++ }
+
+        composeRule.setContent {
+            SimulatorChangeScrollToTopEffect(
+                selectedSimulatorId = selectedSimulatorId,
+                requestScrollToTop = requestScrollToTop,
+            )
+        }
+        composeRule.waitForIdle()
+        composeRule.runOnIdle { requestScrollToTop = { latestCallbackCount++ } }
+        composeRule.waitForIdle()
+        composeRule.runOnIdle { selectedSimulatorId = "ace_windows" }
+        composeRule.waitForIdle()
+
+        assertEquals(0, oldCallbackCount)
+        assertEquals(1, latestCallbackCount)
+    }
 }

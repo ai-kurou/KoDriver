@@ -45,6 +45,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -629,7 +630,7 @@ internal fun SimulatorChangeScrollToTopEffect(
 ) {
     val previousSimulatorId = remember { mutableStateOf<String?>(null) }
     val currentRequestScrollToTop = rememberUpdatedState(requestScrollToTop)
-    LaunchedEffect(selectedSimulatorId) {
+    SideEffect(selectedSimulatorId) {
         val prev = previousSimulatorId.value
         previousSimulatorId.value = selectedSimulatorId
         if (prev != null && prev != selectedSimulatorId) {

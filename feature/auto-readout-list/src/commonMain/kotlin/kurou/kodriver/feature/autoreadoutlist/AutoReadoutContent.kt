@@ -15,6 +15,7 @@ import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -137,7 +138,7 @@ internal fun AutoReadoutContent(
             initialAnchoredIndex = 0,
         )
 
-    LaunchedEffect(uiState.selectedItem) {
+    SideEffect(uiState.selectedItem) {
         navigationState.navigateTo(
             if (uiState.selectedItem != null) {
                 AutoReadoutPaneDestination.Detail
@@ -145,12 +146,10 @@ internal fun AutoReadoutContent(
                 AutoReadoutPaneDestination.List
             },
         )
+    }
+    LaunchedEffect(uiState.selectedItem) {
         navigator.navigateTo(
-            if (navigationState.current == AutoReadoutPaneDestination.Detail) {
-                ListDetailPaneScaffoldRole.Detail
-            } else {
-                ListDetailPaneScaffoldRole.List
-            },
+            if (uiState.selectedItem != null) ListDetailPaneScaffoldRole.Detail else ListDetailPaneScaffoldRole.List,
         )
     }
 
@@ -158,7 +157,7 @@ internal fun AutoReadoutContent(
     // detailPaneを表示する幅が確保できず潰れて表示されてしまうため、
     // listPaneの選択を解除して一覧のみの表示に戻す。
     val currentOnClearSelectedItem by rememberUpdatedState(onClearSelectedItem)
-    LaunchedEffect(windowPosture.shouldCollapseDetailPane) {
+    SideEffect(windowPosture.shouldCollapseDetailPane) {
         if (windowPosture.shouldCollapseDetailPane) {
             currentOnClearSelectedItem()
         }

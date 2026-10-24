@@ -2,6 +2,7 @@ package kurou.kodriver.core.designsystem
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,7 +76,7 @@ fun rememberPendingText(
     pendingTimeoutMillis: Long = PENDING_TEXT_TIMEOUT_MILLIS_DEFAULT,
 ): PendingTextState {
     val state = remember { PendingTextState(savedText, maxLength) }
-    LaunchedEffect(savedText) {
+    SideEffect(savedText) {
         state.updateSavedText(savedText)
     }
     val pendingTexts = state.pendingTexts

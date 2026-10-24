@@ -1,6 +1,9 @@
 package kurou.kodriver.feature.otherfeedbackdetail
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.semantics.SemanticsActions
@@ -53,15 +56,21 @@ class OtherFeedbackDetailUriWiringTest {
 
     @Test
     fun `SentryリンクをクリックするとSentryのURLが開かれる`() {
+        var telemetryLogAttachRequestId by mutableIntStateOf(1)
         every { viewModel.uiState } returns MutableStateFlow(OtherFeedbackDetailUiState())
-        every { viewModel.setTelemetryLogId(null) } returns Unit
+        every { viewModel.setTelemetryLogId(10L) } returns Unit
         every { uriHandler.openUri("https://sentry.io/") } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
             rule.setContent {
                 CompositionLocalProvider(LocalUriHandler provides uriHandler) {
                     KoDriverTheme {
-                        OtherFeedbackDetailPane(canNavigateBack = false, onBack = {})
+                        OtherFeedbackDetailPane(
+                            canNavigateBack = false,
+                            onBack = {},
+                            telemetryLogId = 10L,
+                            telemetryLogAttachRequestId = telemetryLogAttachRequestId.toLong(),
+                        )
                     }
                 }
             }
@@ -80,8 +89,10 @@ class OtherFeedbackDetailUriWiringTest {
             node.performTouchInput { click(boundingBox.center) }
 
             verify(exactly = 1) { uriHandler.openUri("https://sentry.io/") }
-            verify(exactly = 1) { viewModel.uiState }
-            verify(exactly = 1) { viewModel.setTelemetryLogId(null) }
+            rule.runOnIdle { telemetryLogAttachRequestId = 2 }
+            rule.waitForIdle()
+            verify(exactly = 2) { viewModel.uiState }
+            verify(exactly = 2) { viewModel.setTelemetryLogId(10L) }
             confirmVerified(viewModel, uriHandler)
         } finally {
             stopKoin()

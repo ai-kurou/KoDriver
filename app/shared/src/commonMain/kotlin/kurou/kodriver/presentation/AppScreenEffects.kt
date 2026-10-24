@@ -2,6 +2,7 @@ package kurou.kodriver.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -70,7 +71,7 @@ internal fun AppStartupEffects(
         currentCheckUpdate()
     }
 
-    LaunchedEffect(darkTheme) {
+    SideEffect(darkTheme) {
         currentOnDarkThemeChange(darkTheme)
     }
 }

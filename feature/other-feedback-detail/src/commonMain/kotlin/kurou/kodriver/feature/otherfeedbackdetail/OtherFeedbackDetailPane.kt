@@ -27,7 +27,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,7 +99,7 @@ fun OtherFeedbackDetailPane(
     telemetryLogAttachRequestId: Long = 0,
 ) {
     val viewModel: OtherFeedbackDetailViewModel = koinViewModel()
-    LaunchedEffect(telemetryLogId, telemetryLogAttachRequestId) {
+    SideEffect(telemetryLogId, telemetryLogAttachRequestId) {
         viewModel.setTelemetryLogId(telemetryLogId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

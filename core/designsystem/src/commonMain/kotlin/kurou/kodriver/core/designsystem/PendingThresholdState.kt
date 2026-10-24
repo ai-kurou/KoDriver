@@ -2,6 +2,7 @@ package kurou.kodriver.core.designsystem
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -69,7 +70,7 @@ fun rememberPendingThreshold(
     pendingTimeoutMillis: Long = PENDING_THRESHOLD_TIMEOUT_MILLIS_DEFAULT,
 ): PendingThresholdState {
     val state = remember { PendingThresholdState(savedValue) }
-    LaunchedEffect(savedValue) {
+    SideEffect(savedValue) {
         state.updateSavedValue(savedValue)
     }
     val pendingValues = state.pendingValues
