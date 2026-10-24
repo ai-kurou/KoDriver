@@ -30,11 +30,11 @@ class DebugStateFuelCardTest {
     }
 
     @Test
-    fun `容量が0の場合は割合を表示しない`() {
-        showFuelCard(telemetry(currentLiters = 10.0, capacityLiters = 0.0))
+    fun `容量が0の場合はダミー値とみなし未取得を表示する`() {
+        showFuelCard(telemetry(currentLiters = 0.0, capacityLiters = 0.0))
 
-        rule.onNodeWithText("残量 10.0 L").assertIsDisplayed()
-        rule.onNodeWithText("残量 10.0%").assertDoesNotExist()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+        rule.onNodeWithText("残量 0.0 L").assertDoesNotExist()
     }
 
     @Test

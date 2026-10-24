@@ -14,7 +14,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun FuelContent(telemetry: LmuWindowsTelemetryData?) {
     val fuel = telemetry?.fuel
-    if (fuel == null) {
+    // Android 経由のテレメトリは燃料をダミー値（残量・容量とも0）で埋めるため、容量0は未取得として扱う。
+    if (fuel == null || fuel.capacityLiters.value <= 0.0) {
         DebugStateUnavailableContent()
         return
     }
@@ -27,15 +28,13 @@ internal fun FuelContent(telemetry: LmuWindowsTelemetryData?) {
                 ),
             style = koDriverNumericTextStyle(MaterialTheme.typography.headlineMedium),
         )
-        if (fuel.capacityLiters.value > 0.0) {
-            Text(
-                text =
-                    stringResource(
-                        Res.string.debug_state_fuel_remaining_percent,
-                        formatOneDecimal(fuel.currentLiters.value / fuel.capacityLiters.value * 100.0),
-                    ),
-                style = koDriverNumericTextStyle(),
-            )
-        }
+        Text(
+            text =
+                stringResource(
+                    Res.string.debug_state_fuel_remaining_percent,
+                    formatOneDecimal(fuel.currentLiters.value / fuel.capacityLiters.value * 100.0),
+                ),
+            style = koDriverNumericTextStyle(),
+        )
     }
 }
