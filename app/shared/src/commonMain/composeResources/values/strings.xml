@@ -33,4 +33,8 @@
     <string name="tts_windows_restart">追加した後は、KoDriverを再起動してください。</string>
     <string name="tts_windows_action">Windowsの設定を開く</string>
     <string name="tts_continue">このまま使う</string>
+    <string name="low_volume_device">端末の音量が低くなっています</string>
+    <string name="low_volume_sound">KoDriverの音量が低くなっています</string>
+    <string name="low_volume_both">端末とKoDriverの音量が低くなっています</string>
+    <string name="low_volume_dismiss">音量警告を閉じる</string>
 </resources>

@@ -43,6 +43,7 @@ kotlin {
             kotlin.srcDir(generatedAppVersionDir)
         }
         commonMain.dependencies {
+            implementation(projects.core.domain)
             implementation(projects.core.gt7Ps5Domain)
             implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.lmuWindowsDomain)

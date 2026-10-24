@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -85,6 +84,8 @@ import kurou.kodriver.feature.gt7ps5debugstatedetail.Gt7Ps5DebugStateDetailPane
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.LmuWindowsDebugStateDetailPane
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
 import kurou.kodriver.feature.main.AppScreenViewModel
+import kurou.kodriver.feature.main.LowVolumeWarningUiState
+import kurou.kodriver.feature.main.LowVolumeWarningViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
 import kurou.kodriver.feature.manualreadoutdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
@@ -164,9 +165,6 @@ private val PrimarySimulatorRailHeaderIconSize = 40.dp
  * NavigationRail ヘッダーとナビ項目を区切る [HorizontalDivider] の幅。
  */
 private val PrimarySimulatorRailHeaderDividerWidth = 32.dp
-
-// 接続バナーとTTS警告バナーの間に背景色の隙間として見せる1dp。
-private val ConnectionTtsBannerGap = 1.dp
 
 private fun withTabSwitch(
     action: (() -> Unit)?,
@@ -463,6 +461,7 @@ fun AppScreen(
     autoReadoutListViewModel: AutoReadoutListViewModel = koinViewModel(),
     telemetryLogListViewModel: TelemetryLogListViewModel = koinViewModel(),
     otherListViewModel: OtherListViewModel = koinViewModel(),
+    lowVolumeWarningViewModel: LowVolumeWarningViewModel = koinViewModel(),
     backHandler: AppBackHandler = { _, _, _ -> },
     onDarkThemeChanged: (Boolean) -> Unit = {},
     autoReadoutContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
@@ -523,6 +522,7 @@ fun AppScreen(
     val autoReadoutListUiState by autoReadoutListViewModel.uiState.collectAsState()
     val telemetryLogListUiState by telemetryLogListViewModel.uiState.collectAsState()
     val otherListUiState by otherListViewModel.uiState.collectAsStateWithLifecycle()
+    val lowVolumeWarning by lowVolumeWarningViewModel.uiState.collectAsStateWithLifecycle()
     var manualReadoutTabReselectRequest by rememberSaveable { mutableIntStateOf(0) }
     var autoReadoutListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
     var telemetryLogListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
@@ -563,6 +563,9 @@ fun AppScreen(
         dynamicColorEnabled = uiState.dynamicColorEnabled,
         bannerUiState = bannerUiState,
         ttsUnavailableGuidance = otherListUiState.ttsUnavailableGuidance,
+        lowVolumeWarning = lowVolumeWarning,
+        onLowVolumeBannerDismiss = lowVolumeWarningViewModel::dismiss,
+        onLowVolumeBannerClick = { otherListViewModel.selectItem(OtherListItemType.Volume) },
         onTtsAction = {
             handleTtsUnavailableAction(
                 guidance = otherListUiState.ttsUnavailableGuidance,
@@ -669,6 +672,9 @@ internal fun AppScreenContent(
     layoutType: NavigationSuiteType? = null,
     bannerUiState: ConnectionBannerUiState = ConnectionBannerUiState(),
     ttsUnavailableGuidance: TtsUnavailableGuidance? = null,
+    lowVolumeWarning: LowVolumeWarningUiState = LowVolumeWarningUiState(),
+    onLowVolumeBannerClick: () -> Unit = {},
+    onLowVolumeBannerDismiss: () -> Unit = {},
     onTtsAction: () -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     hasAppUpdate: Boolean = false,
@@ -701,6 +707,11 @@ internal fun AppScreenContent(
         withTabSwitchWithArg(onFeedbackClick) {
             navigationState.navigateTo(AppDestination.More)
         }
+    val onLowVolumeBannerClickWithTabSwitch =
+        {
+            navigationState.navigateTo(AppDestination.More)
+            onLowVolumeBannerClick()
+        }
     val ambientHapticFeedback = LocalHapticFeedback.current
     val effectiveHapticFeedback =
         if (hapticFeedbackEnabled) ambientHapticFeedback else NoOpHapticFeedback
@@ -718,6 +729,9 @@ internal fun AppScreenContent(
                 onSimulatorSelected = onSimulatorSelected,
                 bannerUiState = bannerUiState,
                 ttsUnavailableGuidance = ttsUnavailableGuidance,
+                lowVolumeWarning = lowVolumeWarning,
+                onLowVolumeBannerClickWithTabSwitch = onLowVolumeBannerClickWithTabSwitch,
+                onLowVolumeBannerDismiss = onLowVolumeBannerDismiss,
                 onTtsAction = onTtsAction,
                 snackbarHostState = snackbarHostState,
                 navigationState = navigationState,
@@ -749,6 +763,9 @@ private fun AppScreenScaffold(
     onSimulatorSelected: (String) -> Unit,
     bannerUiState: ConnectionBannerUiState,
     ttsUnavailableGuidance: TtsUnavailableGuidance?,
+    lowVolumeWarning: LowVolumeWarningUiState,
+    onLowVolumeBannerClickWithTabSwitch: () -> Unit,
+    onLowVolumeBannerDismiss: () -> Unit,
     onTtsAction: () -> Unit,
     snackbarHostState: SnackbarHostState,
     navigationState: AppNavigationState,
@@ -852,17 +869,14 @@ private fun AppScreenScaffold(
                         onClick = onBannerTapWithTabSwitch,
                     )
                 }
-                if (bannerUiState.isVisible && ttsUnavailableGuidance != null) {
-                    Spacer(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(ConnectionTtsBannerGap)
-                                .background(MaterialTheme.colorScheme.background)
-                                .testTag("connectionTtsBannerGap"),
-                    )
-                }
-                TtsUnavailableBannerHost(reason = ttsUnavailableGuidance, onAction = onTtsAction)
+                WarningBanners(
+                    isConnectionBannerVisible = bannerUiState.isVisible,
+                    ttsUnavailableGuidance = ttsUnavailableGuidance,
+                    onTtsAction = onTtsAction,
+                    lowVolumeWarning = lowVolumeWarning,
+                    onLowVolumeBannerClick = onLowVolumeBannerClickWithTabSwitch,
+                    onLowVolumeBannerDismiss = onLowVolumeBannerDismiss,
+                )
                 AnimatedContent(
                     targetState = navigationState.current,
                     transitionSpec = { fadeIn() togetherWith fadeOut() },
