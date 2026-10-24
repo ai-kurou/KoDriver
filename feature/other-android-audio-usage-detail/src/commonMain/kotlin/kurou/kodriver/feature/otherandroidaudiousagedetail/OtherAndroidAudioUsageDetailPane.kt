@@ -16,11 +16,12 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
@@ -175,11 +176,12 @@ private fun AudioVolumeSection(
         Spacer(Modifier.height(KoDriverSpacing.medium))
         onOpenVolumePanel?.let {
             Button(onClick = it, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.AutoMirrored.Filled.VolumeUp, contentDescription = null)
+                Icon(Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
                 Text(
                     stringResource(Res.string.audio_usage_volume_panel),
-                    Modifier.padding(start = KoDriverSpacing.small),
+                    Modifier.weight(1f).padding(start = KoDriverSpacing.small),
                 )
+                Icon(Icons.Outlined.UnfoldMore, contentDescription = null)
             }
             Text(
                 stringResource(Res.string.audio_usage_volume_panel_description),
@@ -189,12 +191,12 @@ private fun AudioVolumeSection(
         }
         onOpenSoundSettings?.let {
             OutlinedButton(onClick = it, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Settings, contentDescription = null)
+                Icon(Icons.Outlined.Settings, contentDescription = null)
                 Text(
                     stringResource(Res.string.audio_usage_sound_settings),
                     Modifier.weight(1f).padding(start = KoDriverSpacing.small),
                 )
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+                Icon(Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
             }
             Text(
                 stringResource(Res.string.audio_usage_sound_settings_description),

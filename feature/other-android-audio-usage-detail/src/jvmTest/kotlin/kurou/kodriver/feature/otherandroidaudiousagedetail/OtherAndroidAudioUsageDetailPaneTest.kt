@@ -170,6 +170,20 @@ class OtherAndroidAudioUsageDetailPaneTest {
     }
 
     @Test
+    fun `サウンド設定アクションがnullならサウンド設定ボタンのみ非表示`() {
+        rule.setContent {
+            KoDriverTheme {
+                OtherAndroidAudioUsageDetailPaneContent(
+                    uiState = OtherAndroidAudioUsageDetailUiState(),
+                    onOpenVolumePanel = {},
+                )
+            }
+        }
+        rule.onNodeWithText("音量パネルを開く").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("サウンド設定を開く").assertDoesNotExist()
+    }
+
+    @Test
     fun `両方の音量アクションがnullならセクションを表示しない`() {
         rule.setContent {
             KoDriverTheme { OtherAndroidAudioUsageDetailPaneContent(uiState = OtherAndroidAudioUsageDetailUiState()) }
