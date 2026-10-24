@@ -78,8 +78,9 @@ import kotlin.math.roundToInt
 fun LmuWindowsAutoReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutVehicleApproachDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val readoutTextSettings = viewModel.readoutTextSettings
     DisposableEffect(viewModel) {
-        onDispose { viewModel.onPreviewStopped() }
+        onDispose { readoutTextSettings.onPreviewStopped() }
     }
     LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
         uiState = uiState,
@@ -92,18 +93,30 @@ fun LmuWindowsAutoReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier
         onSkipFirstLapChanged = viewModel::onSkipFirstLapChanged,
         onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
         onSustainedReadoutEnabledChanged = viewModel::onSustainedReadoutEnabledChanged,
-        onStartLeftTextChanged = viewModel::onStartLeftTextChanged,
-        onStartLeftTextReset = viewModel::onStartLeftTextReset,
-        onStartRightTextChanged = viewModel::onStartRightTextChanged,
-        onStartRightTextReset = viewModel::onStartRightTextReset,
-        onStartLeftTextPreviewClicked = viewModel::onStartLeftTextPreviewClicked,
-        onStartRightTextPreviewClicked = viewModel::onStartRightTextPreviewClicked,
-        onSustainedLeftTextChanged = viewModel::onSustainedLeftTextChanged,
-        onSustainedLeftTextReset = viewModel::onSustainedLeftTextReset,
-        onSustainedRightTextChanged = viewModel::onSustainedRightTextChanged,
-        onSustainedRightTextReset = viewModel::onSustainedRightTextReset,
-        onSustainedLeftTextPreviewClicked = viewModel::onSustainedLeftTextPreviewClicked,
-        onSustainedRightTextPreviewClicked = viewModel::onSustainedRightTextPreviewClicked,
+        onStartLeftTextChanged = { readoutTextSettings.onTextChanged(VehicleApproachReadoutTextSlot.StartLeft, it) },
+        onStartLeftTextReset = { readoutTextSettings.onTextReset(VehicleApproachReadoutTextSlot.StartLeft) },
+        onStartRightTextChanged = { readoutTextSettings.onTextChanged(VehicleApproachReadoutTextSlot.StartRight, it) },
+        onStartRightTextReset = { readoutTextSettings.onTextReset(VehicleApproachReadoutTextSlot.StartRight) },
+        onStartLeftTextPreviewClicked = {
+            readoutTextSettings.onPreviewClicked(it)
+        },
+        onStartRightTextPreviewClicked = {
+            readoutTextSettings.onPreviewClicked(it)
+        },
+        onSustainedLeftTextChanged = {
+            readoutTextSettings.onTextChanged(VehicleApproachReadoutTextSlot.SustainedLeft, it)
+        },
+        onSustainedLeftTextReset = { readoutTextSettings.onTextReset(VehicleApproachReadoutTextSlot.SustainedLeft) },
+        onSustainedRightTextChanged = {
+            readoutTextSettings.onTextChanged(VehicleApproachReadoutTextSlot.SustainedRight, it)
+        },
+        onSustainedRightTextReset = { readoutTextSettings.onTextReset(VehicleApproachReadoutTextSlot.SustainedRight) },
+        onSustainedLeftTextPreviewClicked = {
+            readoutTextSettings.onPreviewClicked(it)
+        },
+        onSustainedRightTextPreviewClicked = {
+            readoutTextSettings.onPreviewClicked(it)
+        },
         modifier = modifier,
     )
 }

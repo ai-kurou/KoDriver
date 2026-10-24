@@ -88,29 +88,34 @@ class LmuWindowsAutoReadoutVehicleApproachDetailViewModelTest {
                     vehicleApproachPreferencesRepository,
                 ),
             saveEnabledState = SaveLmuWindowsVehicleApproachEnabledStateUseCase(vehicleApproachPreferencesRepository),
-            observeSustainedLeftText =
-                ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(
-                    vehicleApproachReadoutTextPreferencesRepository,
-                ),
-            observeSustainedRightText =
-                ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(
-                    vehicleApproachReadoutTextPreferencesRepository,
-                ),
-            startReadout =
-                StartReadoutUseCases(
-                    speakText =
-                        SpeakTextUseCase(textToSpeechRepository, observeVoice, observeVoiceSpeed, observeVoicePitch),
-                    playStartSoundForKey = PlayStartSoundForKeyUseCase(ttsEngine),
-                    checkTextToSpeechAvailable = CheckTextToSpeechAvailableUseCase(textToSpeechRepository),
-                    observeSoundVolume = ObserveSoundVolumeUseCase(volumes),
-                    saveLeftText =
+            readoutTextUseCases =
+                ReadoutTextSettingsUseCases(
+                    vehicleApproachPreferences =
+                        LmuWindowsVehicleApproachPreferencesUseCases(
+                            vehicleApproachPreferencesRepository,
+                            vehicleApproachReadoutTextPreferencesRepository,
+                        ),
+                    observeSustainedLeftText =
+                        ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(
+                            vehicleApproachReadoutTextPreferencesRepository,
+                        ),
+                    observeSustainedRightText =
+                        ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(
+                            vehicleApproachReadoutTextPreferencesRepository,
+                        ),
+                    saveStartLeftText =
                         SaveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase(
                             vehicleApproachReadoutTextPreferencesRepository,
                         ),
-                    saveRightText =
+                    saveStartRightText =
                         SaveLmuWindowsVehicleApproachStartRightReadoutTextUseCase(
                             vehicleApproachReadoutTextPreferencesRepository,
                         ),
+                    checkTextToSpeechAvailable = CheckTextToSpeechAvailableUseCase(textToSpeechRepository),
+                    observeSoundVolume = ObserveSoundVolumeUseCase(volumes),
+                    playStartSoundForKey = PlayStartSoundForKeyUseCase(ttsEngine),
+                    speakText =
+                        SpeakTextUseCase(textToSpeechRepository, observeVoice, observeVoiceSpeed, observeVoicePitch),
                 ),
         )
 
@@ -379,8 +384,8 @@ class LmuWindowsAutoReadoutVehicleApproachDetailViewModelTest {
             coEvery { textToSpeechRepository.isAvailable() } returns false
             val viewModel = createViewModel()
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
-            viewModel.onStartLeftTextPreviewClicked("注意")
-            viewModel.onStartRightTextPreviewClicked("注意")
+            viewModel.readoutTextSettings.onPreviewClicked("注意")
+            viewModel.readoutTextSettings.onPreviewClicked("注意")
             coVerify(exactly = 0) { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) }
             coVerify(exactly = 0) { textToSpeechRepository.speak("注意", false, 60, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
             verify(exactly = 0) { volumes.volume() }
@@ -432,8 +437,8 @@ class LmuWindowsAutoReadoutVehicleApproachDetailViewModelTest {
             coEvery { vehicleApproachReadoutTextPreferencesRepository.saveStartRightReadoutText("") } answers
                 { right.update { "" } }
             val viewModel = createViewModel()
-            viewModel.onStartLeftTextChanged("左注意")
-            viewModel.onStartRightTextChanged("")
+            viewModel.readoutTextSettings.onTextChanged(VehicleApproachReadoutTextSlot.StartLeft, "左注意")
+            viewModel.readoutTextSettings.onTextChanged(VehicleApproachReadoutTextSlot.StartRight, "")
             assertEquals("左注意", viewModel.uiState.first().startLeftText)
             assertEquals("", viewModel.uiState.first().startRightText)
             assertEquals(true, viewModel.uiState.first().isTextToSpeechAvailable)
@@ -485,8 +490,8 @@ class LmuWindowsAutoReadoutVehicleApproachDetailViewModelTest {
             coEvery { vehicleApproachReadoutTextPreferencesRepository.saveSustainedRightReadoutText("") } answers
                 { right.update { "" } }
             val viewModel = createViewModel()
-            viewModel.onSustainedLeftTextChanged("左注意")
-            viewModel.onSustainedRightTextChanged("")
+            viewModel.readoutTextSettings.onTextChanged(VehicleApproachReadoutTextSlot.SustainedLeft, "左注意")
+            viewModel.readoutTextSettings.onTextChanged(VehicleApproachReadoutTextSlot.SustainedRight, "")
             assertEquals("左注意", viewModel.uiState.first().sustainedLeftText)
             assertEquals("", viewModel.uiState.first().sustainedRightText)
             assertEquals(true, viewModel.uiState.first().isTextToSpeechAvailable)
@@ -546,8 +551,8 @@ class LmuWindowsAutoReadoutVehicleApproachDetailViewModelTest {
                 )
             } answers { right.update { LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT } }
             val viewModel = createViewModel()
-            viewModel.onStartLeftTextReset()
-            viewModel.onStartRightTextReset()
+            viewModel.readoutTextSettings.onTextReset(VehicleApproachReadoutTextSlot.StartLeft)
+            viewModel.readoutTextSettings.onTextReset(VehicleApproachReadoutTextSlot.StartRight)
             assertEquals(
                 LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT,
                 viewModel.uiState.first().startLeftText,
@@ -619,8 +624,8 @@ class LmuWindowsAutoReadoutVehicleApproachDetailViewModelTest {
                 )
             } answers { right.update { LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT } }
             val viewModel = createViewModel()
-            viewModel.onSustainedLeftTextReset()
-            viewModel.onSustainedRightTextReset()
+            viewModel.readoutTextSettings.onTextReset(VehicleApproachReadoutTextSlot.SustainedLeft)
+            viewModel.readoutTextSettings.onTextReset(VehicleApproachReadoutTextSlot.SustainedRight)
             assertEquals(
                 LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT,
                 viewModel.uiState.first().sustainedLeftText,
