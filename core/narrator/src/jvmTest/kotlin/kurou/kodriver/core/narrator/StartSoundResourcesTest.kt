@@ -7,14 +7,14 @@ import kotlin.test.assertTrue
 
 class StartSoundResourcesTest {
     @Test
-    fun `formula radio resource is a readable WAV`() {
+    fun `フォーミュララジオの開始音リソースは読み取り可能なWAVである`() {
         runTest {
             assertValidWav(readStartSoundBytes(FORMULA_RADIO_START_SOUND_PATH))
         }
     }
 
     @Test
-    fun `electronic noise resource is a readable WAV`() {
+    fun `電子ノイズの開始音リソースは読み取り可能なWAVである`() {
         runTest {
             assertValidWav(readStartSoundBytes(ELECTRONIC_NOISE_START_SOUND_PATH))
         }
