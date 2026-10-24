@@ -6,6 +6,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.usecase.determineHysteresisState
 
 private const val BRAKE_TEMPERATURE_OVERHEAT_HYSTERESIS_CELSIUS = 100f
 
@@ -16,15 +17,13 @@ class DetermineLmuWindowsBrakeReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
         val hotThreshold = settings.brakeTemperatureHighThresholdCelsius.value.toFloat()
-        val coolThreshold = hotThreshold - BRAKE_TEMPERATURE_OVERHEAT_HYSTERESIS_CELSIUS
-        val anyHot = data.wheels.values.any { it.value >= hotThreshold }
-        val allCool = data.wheels.values.all { it.value <= coolThreshold }
         val nextOverheating =
-            when {
-                anyHot -> true
-                allCool -> false
-                else -> state.brakeOverheating
-            }
+            determineHysteresisState(
+                valuesCelsius = data.wheels.values.map { it.value },
+                highThresholdCelsius = hotThreshold,
+                hysteresisCelsius = BRAKE_TEMPERATURE_OVERHEAT_HYSTERESIS_CELSIUS,
+                currentState = state.brakeOverheating,
+            )
         val shouldAnnounce =
             !state.brakeOverheating && nextOverheating &&
                 settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.BrakeTemperature.Root) &&

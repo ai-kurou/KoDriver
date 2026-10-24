@@ -46,6 +46,7 @@ import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.usecase.determineHysteresisState
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
@@ -350,15 +351,13 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
-        val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
-        val anyHot = data.wheels.values.any { it.value >= hotThreshold }
-        val allCool = data.wheels.values.all { it.value <= coolThreshold }
         val nextOverheating =
-            when {
-                anyHot -> true
-                allCool -> false
-                else -> state.tyreOverheating
-            }
+            determineHysteresisState(
+                valuesCelsius = data.wheels.values.map { it.value },
+                highThresholdCelsius = hotThreshold,
+                hysteresisCelsius = TYRE_OVERHEAT_HYSTERESIS_CELSIUS,
+                currentState = state.tyreOverheating,
+            )
         val shouldAnnounce =
             !state.tyreOverheating && nextOverheating &&
                 settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.TyreTemperature.Root) &&

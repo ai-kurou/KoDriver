@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.usecase.determineHysteresisState
 import kotlin.math.roundToInt
 
 /**
@@ -320,15 +321,13 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 telemetry.tyreTemperature.rearRightCelsius,
             )
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
-        val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
-        val anyHot = wheels.any { it.value >= hotThreshold }
-        val allCool = wheels.all { it.value <= coolThreshold }
         val nextOverheating =
-            when {
-                anyHot -> true
-                allCool -> false
-                else -> state.tyreOverheating
-            }
+            determineHysteresisState(
+                valuesCelsius = wheels.map { it.value },
+                highThresholdCelsius = hotThreshold,
+                hysteresisCelsius = TYRE_OVERHEAT_HYSTERESIS_CELSIUS,
+                currentState = state.tyreOverheating,
+            )
         val shouldAnnounce =
             !state.tyreOverheating && nextOverheating &&
                 settings.enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) &&
