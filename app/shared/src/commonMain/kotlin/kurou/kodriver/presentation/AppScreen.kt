@@ -794,7 +794,6 @@ private fun AppScreenScaffold(
                 .safeDrawingPadding(),
     ) {
         NavigationSuiteScaffold(
-            modifier = Modifier.padding(top = AppSpacing.extraSmall),
             navigationSuiteType = resolvedLayoutType,
             navigationItemVerticalArrangement = Arrangement.Center,
             navigationItems = {
