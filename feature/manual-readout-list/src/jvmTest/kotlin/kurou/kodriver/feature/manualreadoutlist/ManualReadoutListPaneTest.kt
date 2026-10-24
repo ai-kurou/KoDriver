@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import io.mockk.mockk
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
@@ -34,6 +35,10 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ManualReadoutListPaneTest {
+    private val onAddSet: () -> Unit = mockk()
+    private val onReadSet: (String) -> Unit = mockk()
+    private val onSetClick: (String) -> Unit = mockk()
+
     @get:Rule
     val rule = createComposeRule()
 
@@ -54,22 +59,6 @@ class ManualReadoutListPaneTest {
         }
         rule.onNodeWithContentDescription("再生ボタン表示に切り替え").assertIsDisplayed().performClick()
         rule.runOnIdle { assertEquals(1, toggleCount) }
-    }
-
-    @Test
-    fun `再生ボタン表示は標準表示への切替アイコンを表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                ManualReadoutListPaneContent(
-                    uiState = ManualReadoutListUiState(playButtonLayoutEnabled = true),
-                    simulatorId = "lmu_windows",
-                    simulatorName = "LMU",
-                    onAddSet = {},
-                    onReadSet = {},
-                )
-            }
-        }
-        rule.onNodeWithContentDescription("標準表示に切り替え").assertIsDisplayed()
     }
 
     @Test
@@ -144,6 +133,7 @@ class ManualReadoutListPaneTest {
                 ManualReadoutListPaneContent(
                     uiState =
                         ManualReadoutListUiState(
+                            playButtonLayoutEnabled = false,
                             sets =
                                 listOf(
                                     ManualReadoutSet(
@@ -271,6 +261,40 @@ class ManualReadoutListPaneTest {
     }
 
     @Test
+    fun `ヘルプシートは編集モードと削除とホットキーの説明を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                    ManualReadoutHintSheetContent(showHotkeyHint = isManualReadoutHotkeySupported())
+                }
+            }
+        }
+
+        rule.onNodeWithText("編集モード").performScrollTo().assertIsDisplayed()
+        rule
+            .onNodeWithText(
+                "再生ボタン表示では、見出しの鉛筆でボタンのタップが編集に切り替わります。ボタンの長押しでも編集できます。",
+            ).performScrollTo()
+            .assertIsDisplayed()
+        rule
+            .onNodeWithText("読み上げる値がない項目は「データがありません」と読み上げます。")
+            .performScrollTo()
+            .assertIsDisplayed()
+        rule.onNodeWithText("長押しで削除").performScrollTo().assertIsDisplayed()
+        rule
+            .onNodeWithText(
+                "標準表示では、セットを長押しすると、確認してから削除できます。再生ボタン表示では、編集画面から削除します。",
+            ).performScrollTo()
+            .assertIsDisplayed()
+        // ホットキーの説明は Windows デスクトップでのみ表示するため、実行OSに合わせて検証する。
+        if (isManualReadoutHotkeySupported()) {
+            rule.onNodeWithText("ホットキー").performScrollTo().assertIsDisplayed()
+        } else {
+            rule.onNodeWithText("ホットキー").assertDoesNotExist()
+        }
+    }
+
+    @Test
     fun `ヘルプを開くと手動読み上げの説明を表示する`() {
         rule.setContent {
             KoDriverTheme {
@@ -289,9 +313,9 @@ class ManualReadoutListPaneTest {
 
         rule.onNodeWithContentDescription("手動読み上げの説明を表示").performClick()
 
-        rule.onNodeWithText("読み上げ").assertIsDisplayed()
-        rule.onNodeWithText("順番待ち").assertIsDisplayed()
-        rule.onNodeWithText("データがないとき").assertIsDisplayed()
+        rule.onNodeWithText("読み上げ").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("順番待ち").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("データがないとき").performScrollTo().assertIsDisplayed()
         rule
             .onNodeWithText("自動読み上げのON/OFFに関係なく読み上げます。自動読み上げの「読み上げ済み」の状態は変わりません。")
             .performScrollTo()
@@ -300,18 +324,6 @@ class ManualReadoutListPaneTest {
             .onNodeWithText("読み上げ中のときや自動読み上げと重なったときは、キューの最後に並んで順番に読み上げます。")
             .performScrollTo()
             .assertIsDisplayed()
-        rule
-            .onNodeWithText("読み上げる値がない項目は「データがありません」と読み上げます。")
-            .performScrollTo()
-            .assertIsDisplayed()
-        rule.onNodeWithText("長押しで削除").performScrollTo().assertIsDisplayed()
-        rule.onNodeWithText("セットを長押しすると、確認してから削除できます。").performScrollTo().assertIsDisplayed()
-        // ホットキーの説明は Windows デスクトップでのみ表示するため、実行OSに合わせて検証する。
-        if (isManualReadoutHotkeySupported()) {
-            rule.onNodeWithText("ホットキー").performScrollTo().assertIsDisplayed()
-        } else {
-            rule.onNodeWithText("ホットキー").assertDoesNotExist()
-        }
     }
 
     @Test
@@ -338,8 +350,8 @@ class ManualReadoutListPaneTest {
         }
 
         rule.onNodeWithText("読み上げ").assertIsDisplayed()
-        rule.onNodeWithText("順番待ち").assertIsDisplayed()
-        rule.onNodeWithText("データがないとき").assertIsDisplayed()
+        rule.onNodeWithText("順番待ち").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("データがないとき").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("ホットキー").assertDoesNotExist()
         rule
             .onNodeWithText("選んだ修飾キーと数字または英字キーの組み合わせで、セットを読み上げられます。")
