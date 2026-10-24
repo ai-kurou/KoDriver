@@ -420,11 +420,36 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動燃料は保存順と欠損を反映し先頭のキーと警告済み状態を維持する`() {
+        val fuel = LmuWindowsReadoutItemKey.RemainingFuel.Root
+        val energy = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+        val fuelItem = LmuWindowsManualReadoutItem(fuel.value, "燃料は残り{percent}パーセント", 0.425)
+        val energyItem = LmuWindowsManualReadoutItem(energy.value, "VE{percent}%", 0.8)
+        val state = LmuWindowsNarratorState(remainingFuelWarned = true, remainingVirtualEnergyWarned = true)
+        val cases =
+            listOf(
+                Triple(listOf(fuelItem), fuel, "燃料は残り43パーセント"),
+                Triple(listOf(fuelItem, energyItem), fuel, "燃料は残り43パーセント、VE80%"),
+                Triple(listOf(energyItem, fuelItem), energy, "VE80%、燃料は残り43パーセント"),
+                Triple(listOf(fuelItem.copy(ratio = null), energyItem), fuel, "燃料残量はデータがありません、VE80%"),
+                Triple(listOf(fuelItem.copy(ratio = null)), fuel, "データがありません"),
+                Triple(listOf(fuelItem.copy(ratio = null), energyItem.copy(ratio = null)), fuel, "データがありません"),
+                Triple(listOf(fuelItem.copy(textTemplate = "")), fuel, ""),
+            )
+        cases.forEach { (items, key, text) ->
+            val decision = manualUseCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            assertEquals(listOf(LmuWindowsManualReadoutText(key, text)), decision.events)
+        }
+    }
+
+    @Test
     fun `手動セットは比率を整数パーセントへ四捨五入して警告状態を維持する`() {
         val state = LmuWindowsNarratorState(tyreWearWarned = true, remainingVirtualEnergyWarned = true)
         val keys =
             listOf(
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                LmuWindowsReadoutItemKey.RemainingFuel.Root,
                 LmuWindowsReadoutItemKey.TyreWear.Root,
                 LmuWindowsReadoutItemKey.BrakeWear.Root,
             )

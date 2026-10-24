@@ -49,6 +49,7 @@ import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureRe
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
@@ -116,6 +117,11 @@ private val itemPresentations =
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_my_best_lap,
                 Res.string.manual_readout_category_lap,
+            ),
+        LmuWindowsReadoutItemKey.RemainingFuel.Root.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_remaining_fuel,
+                Res.string.manual_readout_category_energy,
             ),
         AceWindowsReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
@@ -191,6 +197,8 @@ internal val previewFormatters: Map<Pair<String, String>, (String) -> String> =
             { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.MyBestLap.Root.value) to
             { formatLmuWindowsMyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingFuel.Root.value) to
+            { formatLmuWindowsRemainingFuelReadoutText(it, PREVIEW_ENERGY_PERCENT) },
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value) to
             { formatLmuWindowsRemainingVirtualEnergyReadoutText(it, PREVIEW_ENERGY_PERCENT) },
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) to

@@ -20,6 +20,7 @@ class ObserveLmuWindowsFuelUseCase(
             .filter { it.capacityLiters.value > 0.0 }
             .map { fuel ->
                 val percent = fuel.currentLiters.value / fuel.capacityLiters.value * LMU_WINDOWS_FUEL_PERCENTAGE_SCALE
-                LmuWindowsRemainingFuelData(percent.toInt().coerceIn(0, LMU_WINDOWS_FUEL_PERCENTAGE_MAX))
+                val exactPercent = percent.coerceIn(0.0, LMU_WINDOWS_FUEL_PERCENTAGE_MAX.toDouble())
+                LmuWindowsRemainingFuelData(percent.toInt().coerceIn(0, LMU_WINDOWS_FUEL_PERCENTAGE_MAX), exactPercent)
             }
 }

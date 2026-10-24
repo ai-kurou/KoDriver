@@ -144,6 +144,18 @@ class ManualReadoutPreviewTest {
     }
 
     @Test
+    fun `LMUの燃料残量の既定文言と編集文言はサンプル値に置換する`() {
+        val key = LmuWindowsReadoutItemKey.RemainingFuel.Root.value
+        val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
+        assertEquals("燃料は残り50パーセント", manualReadoutPreview(state))
+        assertEquals(
+            "残り50% {unknown}",
+            manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}% {unknown}"))),
+        )
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+    }
+
+    @Test
     fun `ACEの残り燃料の既定文言と編集文言はサンプル値に置換する`() {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.AceWindows.id, selectedItemKeys = listOf(key))
@@ -238,7 +250,7 @@ class ManualReadoutPreviewTest {
 
     @Test
     fun `タイヤ摩耗の既定文言と編集文言はサンプル値に置換する`() {
-        val key = lmuWindowsManualReadoutItemKeys()[1]
+        val key = LmuWindowsReadoutItemKey.TyreWear.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
         assertEquals("タイヤ摩耗残り50%", manualReadoutPreview(state))
         assertEquals("残り50%", manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}%"))))

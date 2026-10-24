@@ -52,10 +52,12 @@ import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5TyreTemperatureReadou
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsMyBestLapReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsPitTimingReadoutPlaceholders
+import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingFuelReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
@@ -298,6 +300,11 @@ internal val manualReadoutPlaceholderDefinitions =
             ManualReadoutPlaceholderDefinition(
                 LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER,
                 ::findUnknownLmuWindowsMyBestLapReadoutPlaceholders,
+            ),
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingFuel.Root.value) to
+            ManualReadoutPlaceholderDefinition(
+                LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER,
+                ::findUnknownLmuWindowsRemainingFuelReadoutPlaceholders,
             ),
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value) to
             ManualReadoutPlaceholderDefinition(

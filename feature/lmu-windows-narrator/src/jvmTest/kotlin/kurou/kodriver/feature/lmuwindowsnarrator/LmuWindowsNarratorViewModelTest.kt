@@ -3700,6 +3700,121 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `手動燃料は未受信と5秒超をデータ無しにし鮮度内は自動スイッチに関係なく読む`() =
+        runTest(testDispatcher) {
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            var time = 0L
+            createViewModel(
+                telemetryChannel = fuel,
+                remainingVirtualEnergyChannel = energy,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("fuel", listOf(key.value))),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(key to false),
+                queueEnabledOverrides = mapOf(key to false),
+                currentTimeMs = { time },
+            )
+            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "fuel")
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            requests.send(request)
+            fuel.send(telemetryWithFuel(currentLiters = 43.0, capacityLiters = 100.0))
+            requests.send(request)
+            time = 5_000L
+            requests.send(request)
+            time = 5_001L
+            requests.send(request)
+            assertEquals(
+                listOf("データがありません", "燃料は残り43パーセント", "燃料は残り43パーセント", "データがありません"),
+                spoken.map { it.narratedText },
+            )
+            assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
+        }
+
+    @Test
+    fun `手動燃料は切り捨て前の割合を四捨五入して読む`() =
+        runTest(testDispatcher) {
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            createViewModel(
+                telemetryChannel = fuel,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("fuel", listOf(key.value))),
+                ttsEngine = mockTts(spoken),
+                currentTimeMs = { 0L },
+            )
+            fuel.send(telemetryWithFuel(currentLiters = 42.6, capacityLiters = 100.0))
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "fuel"))
+            assertEquals(listOf("燃料は残り43パーセント"), spoken.map { it.narratedText })
+        }
+
+    @Test
+    fun `手動燃料はシミュレーター切り替えで古い値を破棄する`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            createViewModel(
+                telemetryChannel = fuel,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("fuel", listOf(key.value))),
+                selectedSimulatorFlow = selected,
+                enabledOverrides = mapOf(key to false),
+                ttsEngine = mockTts(spoken),
+            )
+            fuel.send(telemetryWithFuel(currentLiters = 43.0, capacityLiters = 100.0))
+            selected.update { Simulator.Gt7Ps5 }
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "fuel"))
+            selected.update { Simulator.LmuWindows }
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "fuel"))
+            assertEquals(listOf("データがありません"), spoken.map { it.narratedText })
+        }
+
+    @Test
+    fun `手動燃料を読んでも自動警告済み状態を変えず補給後は再び警告する`() =
+        runTest(testDispatcher) {
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            createViewModel(
+                telemetryChannel = fuel,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("fuel", listOf(key.value))),
+                vehicleClass = LmuWindowsVehicleClassData.P3,
+                enabledOverrides = mapOf(key to true, LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to true),
+                ttsEngine = mockTts(spoken),
+            )
+            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "fuel")
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            requests.send(request)
+            fuel.send(telemetryWithFuel(currentLiters = 9.0, capacityLiters = 100.0))
+            assertEquals(
+                listOf(resolvedFuelWarning.narratedText, "燃料は残り10パーセント"),
+                spoken.map { it.narratedText },
+            )
+            fuel.send(telemetryWithFuel(currentLiters = 80.0, capacityLiters = 100.0))
+            requests.send(request)
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            assertEquals(
+                listOf(
+                    resolvedFuelWarning.narratedText,
+                    "燃料は残り10パーセント",
+                    "燃料は残り80パーセント",
+                    resolvedFuelWarning.narratedText,
+                ),
+                spoken.map { it.narratedText },
+            )
+        }
+
+    @Test
     fun `手動温度を読んでも過熱警告済み状態と自動警告の前回温度を維持する`() =
         runTest(testDispatcher) {
             val temperature = Channel<LmuWindowsBrakeTemperatureData>(Channel.UNLIMITED)

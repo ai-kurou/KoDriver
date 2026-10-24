@@ -14,6 +14,7 @@ import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureRe
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
@@ -39,6 +40,8 @@ class DetermineLmuWindowsManualReadoutUseCase {
                 LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value,
                 LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
                 -> LmuWindowsReadoutItemKey.PitTiming.Root
+
+                LmuWindowsReadoutItemKey.RemainingFuel.Root.value -> LmuWindowsReadoutItemKey.RemainingFuel.Root
 
                 LmuWindowsReadoutItemKey.TyreWear.Root.value -> LmuWindowsReadoutItemKey.TyreWear.Root
 
@@ -161,6 +164,10 @@ class DetermineLmuWindowsManualReadoutUseCase {
         }
         val percentage = item.ratio?.let { (it * LMU_WINDOWS_PERCENTAGE_SCALE).roundToInt() } ?: return noDataText
         return when (item.key) {
+            LmuWindowsReadoutItemKey.RemainingFuel.Root.value -> {
+                formatLmuWindowsRemainingFuelReadoutText(item.textTemplate, percentage)
+            }
+
             LmuWindowsReadoutItemKey.BrakeWear.Root.value -> {
                 formatLmuWindowsBrakeWearReadoutText(item.textTemplate, percentage)
             }
