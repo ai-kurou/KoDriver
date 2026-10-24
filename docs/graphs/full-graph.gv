@@ -27,7 +27,7 @@ digraph G {
   "feature" [label="feature\n24 modules", fillcolor="#C8E6C9", color="#43A047"]
   "feature:ace-windows*" [label="feature:ace-windows*\n9 modules", fillcolor="#C8E6C9", color="#43A047"]
   "feature:gt7-ps5*" [label="feature:gt7-ps5*\n7 modules", fillcolor="#C8E6C9", color="#43A047"]
-  "feature:lmu-windows*" [label="feature:lmu-windows*\n13 modules", fillcolor="#C8E6C9", color="#43A047"]
+  "feature:lmu-windows*" [label="feature:lmu-windows*\n14 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":app:androidApp" -> ":app:androidBenchmark"
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:ace-windows-data"

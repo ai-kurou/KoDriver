@@ -10,6 +10,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWe
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
@@ -69,5 +70,6 @@ internal data class LmuWindowsReadoutTextUseCases(
     val vehicleDamage: LmuWindowsVehicleDamageReadoutTextUseCases,
     val brake: LmuWindowsBrakeReadoutTextUseCases,
     val remainingVirtualEnergy: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase,
+    val remainingFuel: ObserveLmuWindowsRemainingFuelReadoutTextUseCase,
     val myBestLap: ObserveLmuWindowsMyBestLapReadoutTextUseCase,
 )

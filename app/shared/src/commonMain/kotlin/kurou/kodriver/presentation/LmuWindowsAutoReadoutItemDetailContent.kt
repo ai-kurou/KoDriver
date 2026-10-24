@@ -7,6 +7,7 @@ import kurou.kodriver.feature.lmuwindowsautoreadout.brakeweardetail.LmuWindowsAu
 import kurou.kodriver.feature.lmuwindowsautoreadout.flagdetail.LmuWindowsAutoReadoutFlagDetailPane
 import kurou.kodriver.feature.lmuwindowsautoreadout.mybestlapdetail.LmuWindowsAutoReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.LmuWindowsAutoReadoutPitTimingDetailPane
+import kurou.kodriver.feature.lmuwindowsautoreadout.remainingfueldetail.LmuWindowsAutoReadoutRemainingFuelDetailPane
 import kurou.kodriver.feature.lmuwindowsautoreadout.remainingvirtualenergydetail.LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPane
 import kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail.LmuWindowsAutoReadoutTyreTemperatureDetailPane
 import kurou.kodriver.feature.lmuwindowsautoreadout.tyreweardetail.LmuWindowsAutoReadoutTyreWearDetailPane
@@ -38,6 +39,10 @@ internal fun LmuWindowsAutoReadoutItemDetailContent(itemType: LmuWindowsAutoRead
 
         LmuWindowsAutoReadoutListItemType.RemainingVirtualEnergy -> {
             LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPane()
+        }
+
+        LmuWindowsAutoReadoutListItemType.RemainingFuel -> {
+            LmuWindowsAutoReadoutRemainingFuelDetailPane()
         }
 
         LmuWindowsAutoReadoutListItemType.TyreWear -> {

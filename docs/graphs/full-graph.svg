@@ -265,7 +265,7 @@
 <title>feature:lmu&#45;windows*</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M637,-826.97C637,-826.97 488,-826.97 488,-826.97 482,-826.97 476,-820.97 476,-814.97 476,-814.97 476,-800.97 476,-800.97 476,-794.97 482,-788.97 488,-788.97 488,-788.97 637,-788.97 637,-788.97 643,-788.97 649,-794.97 649,-800.97 649,-800.97 649,-814.97 649,-814.97 649,-820.97 643,-826.97 637,-826.97"/>
 <text text-anchor="middle" x="562.5" y="-811.77" font-family="Times,serif" font-size="14.00">feature:lmu&#45;windows*</text>
-<text text-anchor="middle" x="562.5" y="-796.77" font-family="Times,serif" font-size="14.00">13 modules</text>
+<text text-anchor="middle" x="562.5" y="-796.77" font-family="Times,serif" font-size="14.00">14 modules</text>
 </g>
 <!-- :app:shared&#45;&gt;feature:lmu&#45;windows* -->
 <g id="edge25" class="edge">

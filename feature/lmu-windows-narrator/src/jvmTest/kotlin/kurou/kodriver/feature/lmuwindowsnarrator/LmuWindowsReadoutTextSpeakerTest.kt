@@ -22,6 +22,7 @@ import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingFuelWarning
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
@@ -40,6 +41,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWe
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
@@ -89,6 +91,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
+    private val observeRemainingFuelText: ObserveLmuWindowsRemainingFuelReadoutTextUseCase = mockk()
     private val observeBrakeText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase = mockk()
     private val observeBrakeWearText: ObserveLmuWindowsBrakeWearReadoutTextUseCase = mockk()
     private val observeTyreWearText: ObserveLmuWindowsTyreWearReadoutTextUseCase = mockk()
@@ -143,6 +146,7 @@ class LmuWindowsReadoutTextSpeakerTest {
                             wear = observeBrakeWearText,
                         ),
                     remainingVirtualEnergy = observeRemainingText,
+                    remainingFuel = observeRemainingFuelText,
                     myBestLap = observeMyBestLapReadoutText,
                 ),
             checkTextToSpeechAvailable = checkTextToSpeechAvailable,
@@ -390,6 +394,31 @@ class LmuWindowsReadoutTextSpeakerTest {
             assertNull(speaker.readoutText(LmuWindowsRemainingVirtualEnergyWarning(30)))
             speaker(LmuWindowsRemainingVirtualEnergyWarning(30), VOLUME)
             verify(exactly = 2) { observeRemainingText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `燃料残量警告は閾値を文言に置換して読み上げる`() =
+        runTest {
+            every { observeRemainingFuelText() } returns flowOf("燃料{percent}%以下")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("燃料20%以下", volume = VOLUME) } just Runs
+            speaker(LmuWindowsRemainingFuelWarning(20), VOLUME)
+            verify(exactly = 1) { observeRemainingFuelText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("燃料20%以下", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `燃料残量警告の空白文言ではTTSを確認せず読み上げない`() =
+        runTest {
+            every { observeRemainingFuelText() } returns flowOf(" ")
+            assertNull(speaker.readoutText(LmuWindowsRemainingFuelWarning(20)))
+            speaker(LmuWindowsRemainingFuelWarning(20), VOLUME)
+            verify(exactly = 2) { observeRemainingFuelText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
             confirmAllMocksVerified()
@@ -658,6 +687,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             observePitTimingTyreWearReadoutText,
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
+            observeRemainingFuelText,
             observeBrakeText,
             observeBrakeWearText,
             observeTyreWearText,

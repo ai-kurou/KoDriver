@@ -19,6 +19,7 @@ import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingFuelWarning
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsSpeechEvent
@@ -35,6 +36,7 @@ import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureRe
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
@@ -163,6 +165,10 @@ internal class LmuWindowsReadoutTextSpeaker(
 
             is LmuWindowsRemainingVirtualEnergyWarning -> {
                 remainingVirtualEnergyText(event)
+            }
+
+            is LmuWindowsRemainingFuelWarning -> {
+                formatLmuWindowsRemainingFuelReadoutText(readoutTexts.remainingFuel().first(), event.percentage)
             }
 
             is LmuWindowsBrakeOverheat -> {

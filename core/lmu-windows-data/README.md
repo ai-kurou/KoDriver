@@ -38,3 +38,7 @@ Virtual Energy を使うのは Hypercar（`Hyper`）と GT3（`GT3`）のみで�
 
 ![Module Graph](../../docs/graphs/core-lmu-windows-data.svg)
 <!-- MODULE-GRAPH-END -->
+
+## 燃料残量警告設定
+
+`LmuWindowsRemainingFuelPreferences` は閾値%と自由文言を `lmu_windows_auto_remaining_fuel_preferences.pb` に保存する。既定値・文言置換は ACE 燃料警告と同じ。燃料テレメトリ自体は新規Repositoryを作らず `LmuWindowsRepository.telemetryStream()` から取得する。

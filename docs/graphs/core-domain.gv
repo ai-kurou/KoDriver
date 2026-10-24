@@ -37,6 +37,7 @@ digraph G {
   ":feature:lmu-windows-auto-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-auto-readout-pit-timing-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-auto-readout-remaining-virtual-energy-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-auto-readout-tyre-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -137,6 +138,8 @@ digraph G {
   ":feature:lmu-windows-auto-readout-my-best-lap-detail" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-auto-readout-pit-timing-detail" -> ":core:domain"
   ":feature:lmu-windows-auto-readout-pit-timing-detail" -> ":core:lmu-windows-domain"
+  ":feature:lmu-windows-auto-readout-remaining-fuel-detail" -> ":core:domain"
+  ":feature:lmu-windows-auto-readout-remaining-fuel-detail" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-auto-readout-remaining-virtual-energy-detail" -> ":core:domain"
   ":feature:lmu-windows-auto-readout-remaining-virtual-energy-detail" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-auto-readout-tyre-temperature-detail" -> ":core:domain"

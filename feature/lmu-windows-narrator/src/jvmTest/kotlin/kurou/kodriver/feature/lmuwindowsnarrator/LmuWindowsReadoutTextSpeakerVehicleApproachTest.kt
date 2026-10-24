@@ -111,6 +111,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
                             wear = observeBrakeWearText,
                         ),
                     remainingVirtualEnergy = observeRemainingText,
+                    remainingFuel = mockk(),
                     myBestLap = observeMyBestLapReadoutText,
                 ),
             checkTextToSpeechAvailable = checkTextToSpeechAvailable,

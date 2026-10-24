@@ -15,7 +15,7 @@ class LmuWindowsReadoutItemKeyTest {
 
     @Test
     fun `LMU keys retain legacy order and every key round trips`() {
-        assertEquals(28, LMU_WINDOWS_READOUT_ITEM_KEYS.size)
+        assertEquals(30, LMU_WINDOWS_READOUT_ITEM_KEYS.size)
         assertEquals(LmuWindowsReadoutItemKey.VehicleApproach.Root, LMU_WINDOWS_READOUT_ITEM_KEYS.first())
         assertEquals(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled, LMU_WINDOWS_READOUT_ITEM_KEYS.last())
         assertEquals(
@@ -38,6 +38,7 @@ class LmuWindowsReadoutItemKeyTest {
                 LmuWindowsReadoutItemKey.VehicleApproach.Root,
                 LmuWindowsReadoutItemKey.PitTiming.Root,
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                LmuWindowsReadoutItemKey.RemainingFuel.Root,
                 LmuWindowsReadoutItemKey.TyreTemperature.Root,
                 LmuWindowsReadoutItemKey.TyreWear.Root,
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root,

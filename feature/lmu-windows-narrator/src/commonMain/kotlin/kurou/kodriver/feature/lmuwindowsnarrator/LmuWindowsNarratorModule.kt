@@ -1,11 +1,14 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
-import kurou.kodriver.core.designsystem.readStartSoundBytes
+import kurou.kodriver.core.narrator.ELECTRONIC_NOISE_START_SOUND_PATH
+import kurou.kodriver.core.narrator.FORMULA_RADIO_START_SOUND_PATH
 import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
+import kurou.kodriver.core.narrator.readStartSoundBytes
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsFuelReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsManualReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsMyBestLapReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsPitTimingReadoutUseCase
@@ -19,6 +22,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatur
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFuelUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
@@ -30,6 +34,8 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtua
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
@@ -83,7 +89,6 @@ import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -110,13 +115,13 @@ import org.koin.dsl.module
  *   試聴用途と共有しても問題ないため named では区別しない）。
  * 音声系は GT7 と区別するため named(Simulator.LmuWindows.id) で登録している。
  */
-@OptIn(ExperimentalResourceApi::class)
 val lmuWindowsNarratorModule: Module =
     module {
         factory { ObserveDebugReadoutRequestUseCase(get()) }
         // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
         viewModel {
             LmuWindowsNarratorViewModel(
+                get(),
                 get(),
                 get(),
                 get(),
@@ -139,7 +144,7 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveVoiceUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveVoiceSpeedUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveVoicePitchUseCase(get()) }
-        factory { NarratorUseCases(get(), get(), get(), get(), get(), get(), get(), get()) }
+        factory { NarratorUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get(), get(), get()) }
         factory { VehicleDamageUseCases(get(), get()) }
@@ -160,6 +165,7 @@ val lmuWindowsNarratorModule: Module =
                 get(),
             )
         }
+        factory { RemainingFuelUseCases(ObserveLmuWindowsFuelUseCase(get()), get()) }
         factory { PitTimingUseCases(get(), get(), get()) }
         factory {
             LmuWindowsNarratorEventProcessor(
@@ -209,7 +215,10 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsBrakeWearRemainingUseCase(get(), get()) }
         factory { ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase(get()) }
         factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
+        factory { DetermineLmuWindowsFuelReadoutUseCase() }
         factory { ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(get()) }
+        factory { ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRemainingFuelReadoutTextUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingTyreWearLapsUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingEnabledStatesUseCase(get()) }
@@ -250,6 +259,7 @@ val lmuWindowsNarratorModule: Module =
             ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase(get())
         }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRemainingFuelReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreWearReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsBrakeWearReadoutTextUseCase(get()) }
@@ -301,6 +311,7 @@ val lmuWindowsNarratorModule: Module =
                                 wear = get(named(Simulator.LmuWindows.id)),
                             ),
                         remainingVirtualEnergy = get(named(Simulator.LmuWindows.id)),
+                        remainingFuel = get(named(Simulator.LmuWindows.id)),
                         myBestLap = get(named(Simulator.LmuWindows.id)),
                     ),
                 checkTextToSpeechAvailable = get(),
@@ -331,6 +342,6 @@ val lmuWindowsNarratorModule: Module =
 
 private val lmuWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(
-        ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
-        ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
+        ReadoutStartSoundType.FORMULA_RADIO to FORMULA_RADIO_START_SOUND_PATH,
+        ReadoutStartSoundType.ELECTRONIC_NOISE to ELECTRONIC_NOISE_START_SOUND_PATH,
     )

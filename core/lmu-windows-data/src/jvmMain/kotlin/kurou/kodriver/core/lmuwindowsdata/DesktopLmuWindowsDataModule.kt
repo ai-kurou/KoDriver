@@ -7,6 +7,7 @@ import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsFlagPrefer
 import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsPitTimingPreferencesRepository
+import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsTyreWearPreferencesRepository
@@ -21,6 +22,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagReadoutTextPref
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
@@ -87,6 +89,11 @@ fun desktopLmuWindowsPreferencesDataModule(directory: String): Module =
         }
         single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
             createLmuWindowsRemainingVirtualEnergyPreferencesRepository(directory = directory)
+        }
+        single<LmuWindowsRemainingFuelPreferencesRepository> {
+            createLmuWindowsRemainingFuelPreferencesRepository(
+                directory,
+            )
         }
         single {
             createLmuWindowsPitTimingPreferencesRepository(directory = directory)

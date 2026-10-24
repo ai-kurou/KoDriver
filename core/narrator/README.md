@@ -7,6 +7,10 @@
 実装を提供します。JVM/Android 実装は Bluetooth A2DP 接続時の音切れ対策（末尾への無音追記・アンロードタイミングの調整）を
 含みます。`NarratorErrorCapture` は再生失敗を Sentry へ送出する expect/actual です。
 
+開始音の `formula_radio.wav` と `electronic_noise.wav`、Compose Multiplatform Resources による読込関数
+`readStartSoundBytes`、各 feature が共有するリソースパス定数を提供します。リソースは `commonMain/composeResources/files/`
+に置き、実 WAV として読み取れることを `jvmTest` で検証します。
+
 `wavDurationMs`（`WavDuration.kt`）は WAV（RIFF）ヘッダから再生時間を求める純粋関数です。再生完了を通知しない
 `SoundPool` を使う Android 実装が、再生時間だけ待ってから `stop()` するために利用します（JVM 実装は
 `SourceDataLine.drain()` で完了を検知できるため不要）。`fmt ` が先頭に無い WAV や `fmt ` と `data` の間に `LIST` などを

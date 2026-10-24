@@ -19,6 +19,8 @@ sealed class LmuWindowsAutoReadoutListItemType(
     data object RemainingVirtualEnergy :
         LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
 
+    data object RemainingFuel : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.RemainingFuel.Root)
+
     data object TyreWear : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.TyreWear.Root)
 
     data object BrakeTemperature : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.BrakeTemperature.Root)
@@ -39,6 +41,7 @@ sealed class LmuWindowsAutoReadoutListItemType(
                 LmuWindowsReadoutItemKey.TyreTemperature.Root -> TyreTemperature
                 LmuWindowsReadoutItemKey.PitTiming.Root -> PitTiming
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root -> RemainingVirtualEnergy
+                LmuWindowsReadoutItemKey.RemainingFuel.Root -> RemainingFuel
                 LmuWindowsReadoutItemKey.TyreWear.Root -> TyreWear
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root -> BrakeTemperature
                 LmuWindowsReadoutItemKey.BrakeWear.Root -> BrakeWear

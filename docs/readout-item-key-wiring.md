@@ -36,6 +36,8 @@ LMU車両接近では、詳細ペインの `StartReadout` / `Sustained` と一�
 
 LMUバーチャルエネルギー残量警告では、一覧の `RemainingVirtualEnergy.Root` と詳細の `WarningReadout` の有効状態を判定する。警告イベントは設定した残量閾値を持ち、自由文言の `{percent}` をその閾値（%）に置換する。実際の残量は置換値に使用しない。文言が空白またはTTS利用不可の場合は本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。開始音・優先度・キュー設定は `RemainingVirtualEnergy.Root` を参照する。詳細画面の試聴も現在の閾値に置換し、同じキーの開始音とOS標準TTSを使用する。残量警告の収録WAVは使用せず、WAVへはフォールバックしない。
 
+LMU燃料残量警告は、一覧の `RemainingFuel.Root` と詳細の `WarningReadout` がともに有効な燃料クラスでのみ判定する。燃料クラスでは `{percent}` を閾値（%）に置換してOS標準TTSで読み上げ、`RemainingFuel.Root` の開始音・優先度・キューを使う。バーチャルエネルギークラスではVE警告のみを判定し、燃料警告は発生しない。逆に燃料クラスではVE警告を判定しない。警告は閾値を下回った瞬間に一度だけ発生し、閾値を上回ると再武装する。
+
 LMUバーチャルエネルギー残量の現在値読み上げも既存の `RemainingVirtualEnergy.Root` と `WarningReadout` の有効状態を判定する。新しいキーや保存設定は追加しない。現在値イベントは実残量を四捨五入した整数%を持ち、固定文言「バーチャルエネルギー残量は{N}パーセント」を使う。閾値警告用の自由文言は参照せず、閾値・警告済み状態も変更しない。開始音・優先度・キュー設定は警告と同じ `RemainingVirtualEnergy.Root` を参照する。
 
 LMUタイヤ摩耗警告では、一覧の `TyreWear.Root` と詳細の `WarningReadout` の有効状態を判定する。警告イベントは設定した残存率閾値を持ち、自由文言の `{percent}` をその閾値（%）に置換する。実際の残存率は置換値に使用しない。文言が空白またはTTS利用不可の場合は本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。開始音・優先度・キュー設定は `TyreWear.Root` を参照する。詳細画面の試聴も現在の閾値と編集中の文言を解決したイベントを再生し、同じキーの開始音とOS標準TTSを使用する。摩耗警告の収録WAVは使用せず、WAVへはフォールバックしない。
@@ -94,7 +96,9 @@ Android と非 Windows ではホットキー押下を通知しない。
 セット詳細は同じ Repository の登録状態を観測し、競合・失敗時の再試行もセット識別子付きで委譲する。
 Android は非対応実装を使い、キー未割り当て・非対応時は登録状態を表示しない。
 
-手動 LMU セットは `RemainingVirtualEnergy.Root.value`・`TyreWear.Root.value`・`BrakeWear.Root.value`・`BrakeTemperature.Root.value`・`TyreTemperature.Root.value`・`MyBestLap.Root.value`・`PitTiming.VirtualEnergy.value`・`PitTiming.TyreWear.value` に対応する。保存した項目順に文を「、」で連結した1イベントとして読み、自動スイッチを無視し、先頭の対応項目の Root を `readoutItemKey` にしてそのキュー設定を true に上書きする。文言はセットの `itemTexts`（未保存なら手動専用の既定文言）を使う。比率から整数%への四捨五入は `determineManualReadout` に集約し、既存の `PERCENTAGE_SCALE` を使う。タイヤ摩耗の `{percent}` は4輪の最小残存率から求めた整数で、既定文言は「タイヤ摩耗残り{percent}%」。未受信・受信から5秒超・空の wheels は「<項目名>はデータがありません」を連結する。全項目がデータ無しなら、1項目の場合も含め「データがありません」のみを読む。項目名は domain の `manualReadoutItemName` で解決する。いずれの対応項目もない場合のみ項目なし文言を読む。自動警告の設定・状態と従来ホットキーの挙動は変えない。
+手動 LMU セットは `RemainingVirtualEnergy.Root.value`・`RemainingFuel.Root.value`・`TyreWear.Root.value`・`BrakeWear.Root.value`・`BrakeTemperature.Root.value`・`TyreTemperature.Root.value`・`MyBestLap.Root.value`・`PitTiming.VirtualEnergy.value`・`PitTiming.TyreWear.value` に対応する。保存した項目順に文を「、」で連結した1イベントとして読み、自動スイッチを無視し、先頭の対応項目の Root を `readoutItemKey` にしてそのキュー設定を true に上書きする。文言はセットの `itemTexts`（未保存なら手動専用の既定文言）を使う。比率から整数%への四捨五入は `determineManualReadout` に集約し、既存の `PERCENTAGE_SCALE` を使う。タイヤ摩耗の `{percent}` は4輪の最小残存率から求めた整数で、既定文言は「タイヤ摩耗残り{percent}%」。未受信・受信から5秒超・空の wheels は「<項目名>はデータがありません」を連結する。全項目がデータ無しなら、1項目の場合も含め「データがありません」のみを読む。項目名は domain の `manualReadoutItemName` で解決する。いずれの対応項目もない場合のみ項目なし文言を読む。自動警告の設定・状態と従来ホットキーの挙動は変えない。
+
+LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingFuel.Root` を使う。受信から5秒以内の `remainingPercent` を比率（0〜1）に変換し、手動判定で四捨五入した整数％を、既定文言 `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）へ埋める。未受信・鮮度切れは「燃料残量はデータがありません」を連結し、全項目がデータ無しなら「データがありません」のみを読む。先頭が燃料残量なら開始音・優先度・ログのキーは `RemainingFuel.Root`。自動燃料警告の `remainingFuelWarned` は変更しない。
 
 手動ブレーキ残量は `BrakeWear.Root` に対応し、4輪の `remainingPercent`（0〜100）の最小値を四捨五入して、既定文言「ブレーキ残量{percent}%」へ置換する。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。未受信・受信から5秒超・空の wheels はデータ無しとして扱い、自動警告の前回値・警告済み状態は変更しない。
 

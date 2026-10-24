@@ -145,6 +145,7 @@ private fun lmuStandaloneDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
         "lmu_windows_auto_pit_timing" -> stringResource(Res.string.readout_item_pit_timing)
         "lmu_windows_auto_remaining_virtual_energy" -> stringResource(Res.string.readout_item_remaining_virtual_energy)
+        "lmu_windows_auto_remaining_fuel" -> stringResource(Res.string.readout_item_remaining_fuel)
         "lmu_windows_auto_tyre_wear" -> stringResource(Res.string.readout_item_tyre_wear)
         "lmu_windows_auto_brake_temperature" -> stringResource(Res.string.readout_item_brake_temperature)
         "lmu_windows_auto_brake_wear" -> stringResource(Res.string.readout_item_brake_wear)

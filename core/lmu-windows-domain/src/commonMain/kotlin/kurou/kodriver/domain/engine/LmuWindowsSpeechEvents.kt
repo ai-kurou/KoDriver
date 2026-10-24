@@ -5,6 +5,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEX
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
@@ -16,6 +17,7 @@ import kurou.kodriver.domain.lmuwindows.model.defaultLmuWindowsPitTimingReadoutT
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
@@ -250,6 +252,17 @@ data class LmuWindowsRemainingVirtualEnergyWarning(
         )
 
     override fun withResolvedText(text: String): LmuWindowsRemainingVirtualEnergyWarning = copy(resolvedText = text)
+}
+
+data class LmuWindowsRemainingFuelWarning(
+    val percentage: Int,
+    override val resolvedText: String? = null,
+) : LmuWindowsThresholdWarningSpeechEvent {
+    override val readoutItemKey = LmuWindowsReadoutItemKey.RemainingFuel.Root
+    override val narratedText =
+        formatLmuWindowsRemainingFuelReadoutText(LMU_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT, percentage)
+
+    override fun withResolvedText(text: String): LmuWindowsRemainingFuelWarning = copy(resolvedText = text)
 }
 
 /** バーチャルエネルギーの現在の残量（%）を読み上げるイベント。 */

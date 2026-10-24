@@ -1,9 +1,11 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
-import kurou.kodriver.core.designsystem.readStartSoundBytes
+import kurou.kodriver.core.narrator.ELECTRONIC_NOISE_START_SOUND_PATH
+import kurou.kodriver.core.narrator.FORMULA_RADIO_START_SOUND_PATH
 import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
+import kurou.kodriver.core.narrator.readStartSoundBytes
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.gt7ps5.usecase.DetermineGt7Ps5NarratorReadoutUseCase
@@ -40,7 +42,6 @@ import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -60,7 +61,6 @@ import org.koin.dsl.module
  *   TextToSpeechRepository・VoicePreferencesRepository・VoiceSpeedPreferencesRepository・VoicePitchPreferencesRepository、および SoundPlayer（[platformSoundModule]）。
  * 音声系は LMU と区別するため named(Simulator.Gt7Ps5.id) で登録している。
  */
-@OptIn(ExperimentalResourceApi::class)
 val gt7Ps5NarratorModule: Module =
     module {
         factory { ObserveDebugReadoutRequestUseCase(get()) }
@@ -179,6 +179,6 @@ val gt7Ps5NarratorModule: Module =
 
 private val gt7Ps5StartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(
-        ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
-        ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
+        ReadoutStartSoundType.FORMULA_RADIO to FORMULA_RADIO_START_SOUND_PATH,
+        ReadoutStartSoundType.ELECTRONIC_NOISE to ELECTRONIC_NOISE_START_SOUND_PATH,
     )

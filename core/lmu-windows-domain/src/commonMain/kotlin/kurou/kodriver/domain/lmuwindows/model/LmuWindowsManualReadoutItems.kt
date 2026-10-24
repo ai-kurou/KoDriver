@@ -13,6 +13,11 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
             LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT,
         ),
         manualReadoutItemDefinitionOf(
+            LmuWindowsReadoutItemKey.RemainingFuel.Root,
+            "燃料残量",
+            LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT,
+        ),
+        manualReadoutItemDefinitionOf(
             LmuWindowsReadoutItemKey.TyreWear.Root,
             "タイヤ摩耗",
             LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT,

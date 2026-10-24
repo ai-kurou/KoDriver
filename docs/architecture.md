@@ -58,6 +58,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-windows-auto-readout-vehicle-damage-detail` | 車両故障アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-vehicle-damage-detail.svg) |
 | `:feature:lmu-windows-auto-readout-tyre-temperature-detail` | タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-tyre-temperature-detail.svg) |
 | `:feature:lmu-windows-auto-readout-remaining-virtual-energy-detail` | バーチャルエネルギー残量アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-remaining-virtual-energy-detail.svg) |
+| `:feature:lmu-windows-auto-readout-remaining-fuel-detail` | 燃料残量アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-remaining-fuel-detail.svg) |
 | `:feature:lmu-windows-auto-readout-tyre-wear-detail` | タイヤ摩耗アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-tyre-wear-detail.svg) |
 | `:feature:lmu-windows-auto-readout-brake-temperature-detail` | ブレーキ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-brake-temperature-detail.svg) |
 | `:feature:lmu-windows-auto-readout-brake-wear-detail` | ブレーキ摩耗アナウンスの詳細設定 UI（有効スイッチ・読み上げ文言・車両クラス別の残量閾値） | [図](graphs/feature-lmu-windows-auto-readout-brake-wear-detail.svg) |

@@ -28,6 +28,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PE
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearWheelRemaining
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
@@ -419,11 +420,36 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動燃料は保存順と欠損を反映し先頭のキーと警告済み状態を維持する`() {
+        val fuel = LmuWindowsReadoutItemKey.RemainingFuel.Root
+        val energy = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+        val fuelItem = LmuWindowsManualReadoutItem(fuel.value, "燃料は残り{percent}パーセント", 0.425)
+        val energyItem = LmuWindowsManualReadoutItem(energy.value, "VE{percent}%", 0.8)
+        val state = LmuWindowsNarratorState(remainingFuelWarned = true, remainingVirtualEnergyWarned = true)
+        val cases =
+            listOf(
+                Triple(listOf(fuelItem), fuel, "燃料は残り43パーセント"),
+                Triple(listOf(fuelItem, energyItem), fuel, "燃料は残り43パーセント、VE80%"),
+                Triple(listOf(energyItem, fuelItem), energy, "VE80%、燃料は残り43パーセント"),
+                Triple(listOf(fuelItem.copy(ratio = null), energyItem), fuel, "燃料残量はデータがありません、VE80%"),
+                Triple(listOf(fuelItem.copy(ratio = null)), fuel, "データがありません"),
+                Triple(listOf(fuelItem.copy(ratio = null), energyItem.copy(ratio = null)), fuel, "データがありません"),
+                Triple(listOf(fuelItem.copy(textTemplate = "")), fuel, ""),
+            )
+        cases.forEach { (items, key, text) ->
+            val decision = manualUseCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            assertEquals(listOf(LmuWindowsManualReadoutText(key, text)), decision.events)
+        }
+    }
+
+    @Test
     fun `手動セットは比率を整数パーセントへ四捨五入して警告状態を維持する`() {
         val state = LmuWindowsNarratorState(tyreWearWarned = true, remainingVirtualEnergyWarned = true)
         val keys =
             listOf(
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                LmuWindowsReadoutItemKey.RemainingFuel.Root,
                 LmuWindowsReadoutItemKey.TyreWear.Root,
                 LmuWindowsReadoutItemKey.BrakeWear.Root,
             )
@@ -2211,6 +2237,23 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `energySourceがFuelならVE警告せず警告済み状態を維持する`() {
+        val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = false)
+        val decision =
+            virtualEnergyUseCase.determineRemainingVirtualEnergy(
+                state = state,
+                data = remainingVirtualEnergy(remainingRatio = 0.1),
+                settings =
+                    settings(
+                        remainingVirtualEnergyThresholdPercentage = 50,
+                        energySource = LmuWindowsEnergySource.Fuel,
+                    ),
+            )
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(false, decision.state.remainingVirtualEnergyWarned)
+    }
+
+    @Test
     fun `残量警告状態が継続しても再度読み上げない`() {
         val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
         val decision =
@@ -3235,6 +3278,8 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> =
         LmuWindowsReadoutItemKey.BrakeWear.WarningReadout to true,
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true,
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout to true,
+        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
+        LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to true,
         LmuWindowsReadoutItemKey.PitTiming.Root to true,
         LmuWindowsReadoutItemKey.Flag.Root to true,
         LmuWindowsReadoutItemKey.Flag.BlueFlag to true,
@@ -3259,6 +3304,7 @@ private fun settings(
     remainingVirtualEnergyThresholdPercentage: Int = 30,
     pitTimingVirtualEnergyLapsThreshold: Int = 3,
     pitTimingTyreWearLapsThreshold: Int = 3,
+    energySource: LmuWindowsEnergySource = LmuWindowsEnergySource.VirtualEnergy,
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
     currentLap = currentLap,
@@ -3276,8 +3322,10 @@ private fun settings(
     brakeTemperatureHighThresholdCelsius = Celsius(brakeTemperatureHighThresholdCelsius),
     brakeWearLowThresholdPercent = brakeWearLowThresholdPercent,
     remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage,
+    remainingFuelThresholdPercentage = 30,
     pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold,
     pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold,
+    energySource = energySource,
 )
 
 private fun telemetry(bestLapTimeMs: Long) =
