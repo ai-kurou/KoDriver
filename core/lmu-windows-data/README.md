@@ -23,6 +23,8 @@ Scoring セグメントの `mVehicleClass` (char[32]、オフセット +200) は
 
 参照: `LmuWindowsMapper.readVehicleClassName`, `LmuWindowsVehicleClassData`
 
+Virtual Energy を使うのは Hypercar（`Hyper`）と GT3（`GT3`）のみで、それ以外のクラスと未知クラスは燃料を使う。判定には `lmuWindowsVehicleClassEnergySource` を使う。
+
 ## TimingData のラップタイム
 
 `LmuWindowsMapper` は Scoring セグメントのプレイヤー車両からラップタイム系フィールド（`currentLapTimeMs`, `lastLapTimeMs`, `bestLapTimeMs`, `sector1Ms`, `sector1And2Ms`）を取得する。Scoring のプレイヤー車両が見つからない場合は `0L` にフォールバックする。
