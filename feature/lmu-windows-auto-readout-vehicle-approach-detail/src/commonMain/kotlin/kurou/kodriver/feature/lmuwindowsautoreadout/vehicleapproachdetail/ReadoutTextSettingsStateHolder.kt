@@ -82,7 +82,7 @@ internal class ReadoutTextSettingsStateHolder(
             preview.textToSpeechAvailable,
         ) { startLeft, startRight, sustainedLeft, sustainedRight, available ->
             ReadoutTextSettingsUiState(startLeft, startRight, sustainedLeft, sustainedRight, available)
-        }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), ReadoutTextSettingsUiState())
+        }.stateIn(scope, SharingStarted.WhileSubscribed(), ReadoutTextSettingsUiState())
 
     fun onTextChanged(
         slot: VehicleApproachReadoutTextSlot,

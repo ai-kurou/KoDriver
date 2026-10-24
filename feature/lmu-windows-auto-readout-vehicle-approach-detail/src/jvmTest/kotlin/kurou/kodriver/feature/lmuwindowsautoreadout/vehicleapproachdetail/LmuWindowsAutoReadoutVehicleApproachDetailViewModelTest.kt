@@ -9,11 +9,15 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.TextToSpeechEngine
@@ -118,6 +122,69 @@ class LmuWindowsAutoReadoutVehicleApproachDetailViewModelTest {
                         SpeakTextUseCase(textToSpeechRepository, observeVoice, observeVoiceSpeed, observeVoicePitch),
                 ),
         )
+
+    @Test
+    fun `設定Flowは親UiStateの購読終了から5秒後に停止する`() =
+        runTest {
+            val startLeftTextFlow = MutableStateFlow("左注意")
+            every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
+            every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(5.0)
+            every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
+            every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
+            every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
+                MutableStateFlow(
+                    mapOf(
+                        LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true,
+                        LmuWindowsReadoutItemKey.VehicleApproach.Sustained to true,
+                    ),
+                )
+            every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
+                startLeftTextFlow
+            every { vehicleApproachReadoutTextPreferencesRepository.observeStartRightReadoutText() } returns
+                MutableStateFlow("右注意")
+            every { vehicleApproachReadoutTextPreferencesRepository.observeSustainedLeftReadoutText() } returns
+                MutableStateFlow("左継続")
+            every { vehicleApproachReadoutTextPreferencesRepository.observeSustainedRightReadoutText() } returns
+                MutableStateFlow("右継続")
+            coEvery { textToSpeechRepository.isAvailable() } returns true
+            val viewModel = createViewModel()
+
+            val subscription =
+                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                    viewModel.uiState.collect()
+                }
+            runCurrent()
+
+            assertEquals(1, startLeftTextFlow.subscriptionCount.value)
+            subscription.cancel()
+            runCurrent()
+            advanceTimeBy(4_999)
+            runCurrent()
+            assertEquals(1, startLeftTextFlow.subscriptionCount.value)
+            advanceTimeBy(1)
+            runCurrent()
+            assertEquals(0, startLeftTextFlow.subscriptionCount.value)
+
+            verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+            verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+            verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+            verify(exactly = 1) { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() }
+            verify(exactly = 1) { vehicleApproachReadoutTextPreferencesRepository.observeStartRightReadoutText() }
+            verify(exactly = 1) { vehicleApproachReadoutTextPreferencesRepository.observeSustainedLeftReadoutText() }
+            verify(exactly = 1) { vehicleApproachReadoutTextPreferencesRepository.observeSustainedRightReadoutText() }
+            coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
+            confirmVerified(
+                observeVoice,
+                observeVoiceSpeed,
+                observeVoicePitch,
+                textToSpeechRepository,
+                thresholdsRepository,
+                vehicleApproachPreferencesRepository,
+                vehicleApproachReadoutTextPreferencesRepository,
+            )
+        }
 
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映した UiState を返す`() =
