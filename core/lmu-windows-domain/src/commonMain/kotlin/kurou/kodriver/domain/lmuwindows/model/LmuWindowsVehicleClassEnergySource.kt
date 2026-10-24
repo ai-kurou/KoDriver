@@ -6,11 +6,14 @@ package kurou.kodriver.domain.lmuwindows.model
  */
 fun lmuWindowsVehicleClassEnergySource(vehicleClass: LmuWindowsVehicleClassData): LmuWindowsEnergySource =
     when (vehicleClass) {
-        LmuWindowsVehicleClassData.Hypercar -> LmuWindowsEnergySource.VirtualEnergy
-        LmuWindowsVehicleClassData.P2 -> LmuWindowsEnergySource.Fuel
-        LmuWindowsVehicleClassData.P2Elms -> LmuWindowsEnergySource.Fuel
-        LmuWindowsVehicleClassData.P3 -> LmuWindowsEnergySource.Fuel
-        LmuWindowsVehicleClassData.Gte -> LmuWindowsEnergySource.Fuel
-        LmuWindowsVehicleClassData.Gt3 -> LmuWindowsEnergySource.VirtualEnergy
-        is LmuWindowsVehicleClassData.Unknown -> LmuWindowsEnergySource.Fuel
+        LmuWindowsVehicleClassData.Hypercar,
+        LmuWindowsVehicleClassData.Gt3,
+        -> LmuWindowsEnergySource.VirtualEnergy
+
+        LmuWindowsVehicleClassData.P2,
+        LmuWindowsVehicleClassData.P2Elms,
+        LmuWindowsVehicleClassData.P3,
+        LmuWindowsVehicleClassData.Gte,
+        is LmuWindowsVehicleClassData.Unknown,
+        -> LmuWindowsEnergySource.Fuel
     }
