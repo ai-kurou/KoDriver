@@ -3,6 +3,7 @@ package kurou.kodriver.feature.othervolumedetail
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import org.koin.dsl.module
 
@@ -24,6 +25,6 @@ class FakeDeviceVolumeRepository : DeviceVolumeRepository {
     override suspend fun getVolume(): Int = volume.value
 
     override suspend fun setVolume(volume: Int) {
-        this.volume.value = volume
+        this.volume.update { volume }
     }
 }
