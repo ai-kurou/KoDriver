@@ -276,6 +276,10 @@ class ManualReadoutListPaneTest {
                 "再生ボタン表示では、見出しの鉛筆でボタンのタップが編集に切り替わります。ボタンの長押しでも編集できます。",
             ).performScrollTo()
             .assertIsDisplayed()
+        rule
+            .onNodeWithText("読み上げる値がない項目は「データがありません」と読み上げます。")
+            .performScrollTo()
+            .assertIsDisplayed()
         rule.onNodeWithText("長押しで削除").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("セットを長押しすると、確認してから削除できます。").performScrollTo().assertIsDisplayed()
         // ホットキーの説明は Windows デスクトップでのみ表示するため、実行OSに合わせて検証する。
@@ -314,10 +318,6 @@ class ManualReadoutListPaneTest {
             .assertIsDisplayed()
         rule
             .onNodeWithText("読み上げ中のときや自動読み上げと重なったときは、キューの最後に並んで順番に読み上げます。")
-            .performScrollTo()
-            .assertIsDisplayed()
-        rule
-            .onNodeWithText("読み上げる値がない項目は「データがありません」と読み上げます。")
             .performScrollTo()
             .assertIsDisplayed()
     }
