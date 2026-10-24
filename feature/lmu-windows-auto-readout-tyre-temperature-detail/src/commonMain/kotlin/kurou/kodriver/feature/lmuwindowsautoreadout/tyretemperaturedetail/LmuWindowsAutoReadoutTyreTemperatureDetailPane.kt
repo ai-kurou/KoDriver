@@ -1,14 +1,20 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -17,15 +23,20 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
@@ -34,6 +45,12 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.PlaceholderReadoutTextField
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.core.designsystem.generated.resources.class_elms_lmp2
+import kurou.kodriver.core.designsystem.generated.resources.class_hypercar
+import kurou.kodriver.core.designsystem.generated.resources.class_lmgt3
+import kurou.kodriver.core.designsystem.generated.resources.class_lmgte
+import kurou.kodriver.core.designsystem.generated.resources.class_p2
+import kurou.kodriver.core.designsystem.generated.resources.class_p3
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
@@ -79,9 +96,11 @@ import kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail.genera
 import kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_icon_content_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail.generated.resources.tyre_temperature_vehicle_class_target_subtitle
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
+import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemRes
 
 /**
  * LmuWindowsAutoReadoutTyreTemperatureDetail の画面を表示する Composable。
@@ -192,35 +211,47 @@ internal fun LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_vehicle_class_target_subtitle),
                     )
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
                         modifier =
                             Modifier.fillMaxWidth().padding(
                                 horizontal = KoDriverSpacing.extraSmall,
                                 vertical = KoDriverSpacing.extraSmall,
                             ),
                     ) {
-                        val vehicleClassByChipLabel =
-                            uiState.vehicleClassHighThresholdCelsius
-                                .filterKeys { it !is LmuWindowsVehicleClassData.Unknown }
-                                .entries
-                                .associate { (vehicleClass, celsius) ->
-                                    "${vehicleClass.name}（$celsius°C）" to
-                                        vehicleClass
+                        listOf(
+                            Triple(
+                                LmuWindowsVehicleClassData.Hypercar,
+                                DesignSystemRes.drawable.class_hypercar,
+                                "Hypercar",
+                            ),
+                            Triple(LmuWindowsVehicleClassData.P2, DesignSystemRes.drawable.class_p2, "LMP2"),
+                            Triple(
+                                LmuWindowsVehicleClassData.P2Elms,
+                                DesignSystemRes.drawable.class_elms_lmp2,
+                                "ELMS LMP2",
+                            ),
+                            Triple(LmuWindowsVehicleClassData.P3, DesignSystemRes.drawable.class_p3, "LMP3"),
+                            Triple(LmuWindowsVehicleClassData.Gte, DesignSystemRes.drawable.class_lmgte, "LMGTE"),
+                            Triple(LmuWindowsVehicleClassData.Gt3, DesignSystemRes.drawable.class_lmgt3, "LMGT3"),
+                        ).chunked(3).forEach { rowOptions ->
+                            Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
+                                rowOptions.forEach { (vehicleClass, image, accessibleName) ->
+                                    val celsius = uiState.vehicleClassHighThresholdCelsius[vehicleClass]
+                                    if (celsius != null) {
+                                        VehicleClassImageOption(
+                                            image = image,
+                                            accessibleName = "$accessibleName、$celsius°C",
+                                            celsius = celsius,
+                                            selected = uiState.selectedVehicleClass == vehicleClass,
+                                            enabled = uiState.overheatWarningEnabled,
+                                            onClick = { onVehicleClassSelected(vehicleClass) },
+                                            modifier = Modifier.weight(1f),
+                                        )
+                                    }
                                 }
-                        val selectedVehicleClassChipLabel =
-                            uiState.vehicleClassHighThresholdCelsius[uiState.selectedVehicleClass]?.let { celsius ->
-                                "${uiState.selectedVehicleClass.name}（$celsius°C）"
                             }
-                        DetailPaneCardChips(
-                            chipLabels = vehicleClassByChipLabel.keys.toList(),
-                            selectedChipLabels = setOfNotNull(selectedVehicleClassChipLabel),
-                            chipEnabled = uiState.overheatWarningEnabled,
-                            onChipClick = { label ->
-                                vehicleClassByChipLabel[label]?.let { onVehicleClassSelected(it) }
-                            },
-                        )
+                        }
                     }
                     HorizontalDivider(
                         modifier =
@@ -337,6 +368,45 @@ internal fun LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
                 }
             },
         )
+    }
+}
+
+@Composable
+private fun VehicleClassImageOption(
+    image: org.jetbrains.compose.resources.DrawableResource,
+    accessibleName: String,
+    celsius: Int,
+    selected: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colors = MaterialTheme.colorScheme
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = if (selected) colors.primaryContainer else colors.surfaceContainerLow,
+        contentColor = if (selected) colors.onPrimaryContainer else colors.onSurface,
+        border = BorderStroke(1.dp, if (selected) colors.primary else colors.outlineVariant),
+        modifier =
+            modifier.semantics { contentDescription = accessibleName }.selectable(
+                selected = selected,
+                enabled = enabled,
+                role = Role.RadioButton,
+                onClick = onClick,
+            ),
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+            modifier = Modifier.padding(KoDriverSpacing.extraSmall),
+        ) {
+            Image(
+                painter = painterResource(image),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+            )
+            Text("$celsius°C", style = MaterialTheme.typography.labelLarge)
+        }
     }
 }
 

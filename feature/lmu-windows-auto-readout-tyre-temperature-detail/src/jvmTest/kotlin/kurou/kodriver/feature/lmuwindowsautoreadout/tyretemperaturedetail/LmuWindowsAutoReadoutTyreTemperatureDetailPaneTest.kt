@@ -135,7 +135,7 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithContentDescription("デフォルトに戻す").performClick()
+        rule.onNodeWithContentDescription("デフォルトに戻す").performScrollTo().performClick()
         assertEquals(LmuWindowsVehicleClassData.Hypercar, resetVehicleClass)
     }
 
@@ -203,7 +203,8 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
         rule
             .onNode(
                 hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 97f, range = 90f..110f, steps = 19)),
-            ).assertIsDisplayed()
+            ).performScrollTo()
+            .assertIsDisplayed()
     }
 
     @Test
@@ -254,11 +255,12 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
         }
 
         rule.onNodeWithText("対象クラス").assertIsDisplayed()
-        rule.onNodeWithText("GT3（90°C）").assertIsDisplayed()
+        rule.onNodeWithText("90°C").assertIsDisplayed()
+        rule.onNodeWithContentDescription("LMGT3、90°C").assertIsDisplayed()
     }
 
     @Test
-    fun `対象クラスのチップはHyperがデフォルトで選択されている`() {
+    fun `対象クラスの画像タイルはHypercarがデフォルトで選択され温度を読み上げる`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
@@ -274,12 +276,15 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("Hyper（90°C）").assertIsSelected()
-        rule.onNodeWithText("GT3（95°C）").assertIsNotSelected()
+        rule.onNodeWithContentDescription("Hypercar、90°C").assertIsSelected()
+        rule.onNodeWithContentDescription("LMGT3、95°C").assertIsNotSelected()
+        rule.onNodeWithText("90°C").assertIsDisplayed()
+        rule.onNodeWithText("95°C").performScrollTo().assertIsDisplayed()
+        rule.onAllNodesWithText("Hypercar").assertCountEquals(0)
     }
 
     @Test
-    fun `対象クラスのチップは選択済みのselectedVehicleClassが選択状態になる`() {
+    fun `対象クラスの画像タイルは選択済みのselectedVehicleClassが選択状態になる`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
@@ -296,8 +301,8 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("GT3（95°C）").assertIsSelected()
-        rule.onNodeWithText("Hyper（90°C）").assertIsNotSelected()
+        rule.onNodeWithContentDescription("LMGT3、95°C").assertIsSelected()
+        rule.onNodeWithContentDescription("Hypercar、90°C").assertIsNotSelected()
     }
 
     @Test
@@ -319,7 +324,7 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("GT3（95°C）").performClick()
+        rule.onNodeWithContentDescription("LMGT3、95°C").performScrollTo().performClick()
 
         assertEquals(LmuWindowsVehicleClassData.Gt3, selectedVehicleClass)
     }
