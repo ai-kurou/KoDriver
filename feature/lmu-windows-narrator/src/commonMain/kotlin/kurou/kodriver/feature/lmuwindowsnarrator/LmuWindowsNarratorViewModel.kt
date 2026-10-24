@@ -54,6 +54,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVehicleReadou
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVirtualEnergyReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorState
+import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsPitTimingTrackingState
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
@@ -690,6 +691,8 @@ internal class LmuWindowsNarratorViewModel(
         latestFuelReceivedAtMs = 0L
         latestVirtualEnergy = null
         latestVirtualEnergyReceivedAtMs = 0L
+        // 燃料はセッション情報を持たないため、LMU の選択解除で消費量を破棄して別セッションへ持ち越さない。
+        narratorState = narratorState.copy(fuelLapsTrackingState = LmuWindowsPitTimingTrackingState())
     }
 
     private val virtualEnergyFlow =
