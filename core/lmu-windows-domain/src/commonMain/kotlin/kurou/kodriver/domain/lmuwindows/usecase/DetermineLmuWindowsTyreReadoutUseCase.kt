@@ -6,6 +6,7 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.usecase.determineHysteresisState
 import kotlin.math.roundToInt
 
 private const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60f
@@ -20,15 +21,13 @@ class DetermineLmuWindowsTyreReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val data = input.tyreCarcassTemperature
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
-        val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
-        val anyHot = data.wheels.values.any { it.value >= hotThreshold }
-        val allCool = data.wheels.values.all { it.value <= coolThreshold }
         val nextOverheating =
-            when {
-                anyHot -> true
-                allCool -> false
-                else -> state.tyreOverheating
-            }
+            determineHysteresisState(
+                valuesCelsius = data.wheels.values.map { it.value },
+                highThresholdCelsius = hotThreshold,
+                hysteresisCelsius = TYRE_OVERHEAT_HYSTERESIS_CELSIUS,
+                currentState = state.tyreOverheating,
+            )
         val shouldAnnounce =
             !state.tyreOverheating && nextOverheating &&
                 settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreTemperature.Root) &&
