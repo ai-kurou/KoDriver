@@ -101,7 +101,14 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassTyreTem
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsManualReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsMyBestLapReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsPitTimingReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsRaceFlagReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsTyreReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVehicleReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVirtualEnergyReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
@@ -632,7 +639,14 @@ class LmuWindowsNarratorViewModelTest {
                 ),
             narratorUseCases =
                 NarratorUseCases(
-                    determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
+                    myBestLapReadout = DetermineLmuWindowsMyBestLapReadoutUseCase(),
+                    vehicleReadout = DetermineLmuWindowsVehicleReadoutUseCase(),
+                    tyreReadout = DetermineLmuWindowsTyreReadoutUseCase(),
+                    brakeReadout = DetermineLmuWindowsBrakeReadoutUseCase(),
+                    virtualEnergyReadout = DetermineLmuWindowsVirtualEnergyReadoutUseCase(),
+                    manualReadout = DetermineLmuWindowsManualReadoutUseCase(),
+                    pitTimingReadout = DetermineLmuWindowsPitTimingReadoutUseCase(),
+                    raceFlagReadout = DetermineLmuWindowsRaceFlagReadoutUseCase(),
                 ),
             currentTimeMs = currentTimeMs,
         )

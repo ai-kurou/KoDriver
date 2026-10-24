@@ -39,7 +39,14 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassTyreTemperat
 import kurou.kodriver.domain.lmuwindows.model.resolveLmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsius
 import kurou.kodriver.domain.lmuwindows.model.resolveLmuWindowsVehicleClassBrakeWearLowThresholdPercent
 import kurou.kodriver.domain.lmuwindows.model.resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsManualReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsMyBestLapReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsPitTimingReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsRaceFlagReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsTyreReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVehicleReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVirtualEnergyReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
@@ -161,7 +168,14 @@ internal data class PitTimingUseCases(
 )
 
 internal data class NarratorUseCases(
-    val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
+    val myBestLapReadout: DetermineLmuWindowsMyBestLapReadoutUseCase,
+    val vehicleReadout: DetermineLmuWindowsVehicleReadoutUseCase,
+    val tyreReadout: DetermineLmuWindowsTyreReadoutUseCase,
+    val brakeReadout: DetermineLmuWindowsBrakeReadoutUseCase,
+    val virtualEnergyReadout: DetermineLmuWindowsVirtualEnergyReadoutUseCase,
+    val manualReadout: DetermineLmuWindowsManualReadoutUseCase,
+    val pitTimingReadout: DetermineLmuWindowsPitTimingReadoutUseCase,
+    val raceFlagReadout: DetermineLmuWindowsRaceFlagReadoutUseCase,
 )
 
 // 共有メモリは短周期で届くため、これを超えて更新がなければ切断・セッション終了とみなす。
@@ -383,7 +397,7 @@ internal class LmuWindowsNarratorViewModel(
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
-                    narratorUseCases.determineReadout.determineMyBestLap(
+                    narratorUseCases.myBestLapReadout.determineMyBestLap(
                         state = state,
                         telemetry = telemetry,
                         settings = settings,
@@ -415,7 +429,7 @@ internal class LmuWindowsNarratorViewModel(
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
-                    narratorUseCases.determineReadout.determineVehicleApproach(
+                    narratorUseCases.vehicleReadout.determineVehicleApproach(
                         state = state,
                         vehicleApproach = vehicleApproach,
                         settings = settings,
@@ -448,7 +462,7 @@ internal class LmuWindowsNarratorViewModel(
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
-                    narratorUseCases.determineReadout.determineVehicleDamage(
+                    narratorUseCases.vehicleReadout.determineVehicleDamage(
                         state = state,
                         vehicleDamage = vehicleDamage,
                         settings = settings,
@@ -480,7 +494,7 @@ internal class LmuWindowsNarratorViewModel(
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
-                    narratorUseCases.determineReadout.determineTyreDetached(
+                    narratorUseCases.vehicleReadout.determineTyreDetached(
                         state = state,
                         tyreDetached = tyreDetached,
                         settings = settings,
@@ -509,7 +523,7 @@ internal class LmuWindowsNarratorViewModel(
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
-                    narratorUseCases.determineReadout.determineRaceFlags(
+                    narratorUseCases.raceFlagReadout.determineRaceFlags(
                         state = state,
                         raceFlags = raceFlags,
                         settings = settings,
@@ -554,14 +568,14 @@ internal class LmuWindowsNarratorViewModel(
                 val settings = currentSettings
                 val input = TyreTemperatureReadoutInput(tyreCarcassTemperature, raceFlags)
                 val overheatDecision =
-                    narratorUseCases.determineReadout.determineTyreTemperatureOverheat(
+                    narratorUseCases.tyreReadout.determineTyreTemperatureOverheat(
                         state = state,
                         input = input,
                         settings = settings,
                     )
                 narratorState = overheatDecision.state
                 val lowDecision =
-                    narratorUseCases.determineReadout.determineTyreTemperatureLow(
+                    narratorUseCases.tyreReadout.determineTyreTemperatureLow(
                         state = overheatDecision.state,
                         input = input,
                         settings = settings,
@@ -652,7 +666,7 @@ internal class LmuWindowsNarratorViewModel(
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
-                    narratorUseCases.determineReadout.determineBrakeTemperatureOverheat(
+                    narratorUseCases.brakeReadout.determineBrakeTemperatureOverheat(
                         state = state,
                         data = brakeTemperature,
                         settings = settings,
@@ -681,7 +695,7 @@ internal class LmuWindowsNarratorViewModel(
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
-                    narratorUseCases.determineReadout.determineBrakeWearLow(
+                    narratorUseCases.brakeReadout.determineBrakeWearLow(
                         state = state,
                         data = brakeWear,
                         settings = settings,
@@ -710,7 +724,7 @@ internal class LmuWindowsNarratorViewModel(
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
-                    narratorUseCases.determineReadout.determineTyreWear(
+                    narratorUseCases.tyreReadout.determineTyreWear(
                         state = state,
                         data = tyreWear,
                         settings = settings,
@@ -739,7 +753,7 @@ internal class LmuWindowsNarratorViewModel(
                 val state = narratorState
                 val settings = currentSettings
                 val decision =
-                    narratorUseCases.determineReadout.determineRemainingVirtualEnergy(
+                    narratorUseCases.virtualEnergyReadout.determineRemainingVirtualEnergy(
                         state = state,
                         data = remainingVirtualEnergy,
                         settings = settings,
@@ -856,7 +870,7 @@ internal class LmuWindowsNarratorViewModel(
             }
         val state = narratorState
         val settings = currentSettings
-        val decision = narratorUseCases.determineReadout.determineManualReadout(state, items)
+        val decision = narratorUseCases.manualReadout.determineManualReadout(state, items)
         narratorState = decision.state
         eventProcessor.processManualReadout(
             events = decision.events,
@@ -879,11 +893,11 @@ internal class LmuWindowsNarratorViewModel(
             }
 
             key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value && hasEnergy -> {
-                narratorUseCases.determineReadout.manualPitTimingVirtualEnergyRemainingLaps(narratorState)
+                narratorUseCases.manualReadout.manualPitTimingVirtualEnergyRemainingLaps(narratorState)
             }
 
             key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value && hasTyreWear -> {
-                narratorUseCases.determineReadout.manualPitTimingTyreWearRemainingLaps(narratorState)
+                narratorUseCases.manualReadout.manualPitTimingTyreWearRemainingLaps(narratorState)
             }
 
             else -> {
@@ -901,7 +915,7 @@ internal class LmuWindowsNarratorViewModel(
         val state = narratorState
         val settings = currentSettings
         val decision =
-            narratorUseCases.determineReadout.determineRemainingVirtualEnergyCurrentValue(
+            narratorUseCases.virtualEnergyReadout.determineRemainingVirtualEnergyCurrentValue(
                 state = state,
                 data = remainingVirtualEnergy,
                 settings = settings,
@@ -930,7 +944,7 @@ internal class LmuWindowsNarratorViewModel(
                 val state = narratorState
                 val settings = currentSettings
                 val virtualEnergyDecision =
-                    narratorUseCases.determineReadout.determinePitTimingVirtualEnergy(
+                    narratorUseCases.pitTimingReadout.determinePitTimingVirtualEnergy(
                         state = state,
                         telemetry = telemetry,
                         virtualEnergy = virtualEnergy,
@@ -939,7 +953,7 @@ internal class LmuWindowsNarratorViewModel(
                     )
                 narratorState = virtualEnergyDecision.state
                 val tyreWearDecision =
-                    narratorUseCases.determineReadout.determinePitTimingTyreWear(
+                    narratorUseCases.pitTimingReadout.determinePitTimingTyreWear(
                         state = virtualEnergyDecision.state,
                         telemetry = telemetry,
                         tyreWear = tyreWear,
@@ -956,7 +970,7 @@ internal class LmuWindowsNarratorViewModel(
                     pitTimingEvents
                         .filterIsInstance<LmuWindowsPitTimingWarning>()
                         .fold(tyreWearDecision.state) { finalState, event ->
-                            narratorUseCases.determineReadout.recordPitTimingAnnounced(finalState, event)
+                            narratorUseCases.pitTimingReadout.recordPitTimingAnnounced(finalState, event)
                         }
                 eventProcessor.processPitTiming(
                     snapshot =
