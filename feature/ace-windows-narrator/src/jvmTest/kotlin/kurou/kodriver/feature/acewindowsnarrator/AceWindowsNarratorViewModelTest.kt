@@ -430,7 +430,7 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `手動タイヤ温度はACE以外への切替で現在値をクリアする`() =
+    fun `シミュレーターを切り替えると手動タイヤ温度の現在値をクリアする`() =
         runTest(testDispatcher) {
             assertManualReadout(
                 hotkey = true,
