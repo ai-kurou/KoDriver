@@ -558,7 +558,7 @@ private fun buildTelemetryLogJson(
 
 /**
  * タイヤ摩耗判定入力（[LmuWindowsTyreWearData]）は判定ロジック（
- * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineTyreWear]）と
+ * [kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsTyreReadoutUseCase.determineTyreWear]）と
  * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
@@ -588,7 +588,7 @@ private fun buildTelemetryLogJson(
 
 /**
  * ブレーキ温度判定入力（[LmuWindowsBrakeTemperatureData]）は判定ロジック（
- * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineBrakeTemperatureOverheat]）と
+ * [kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase.determineBrakeTemperatureOverheat]）と
  * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
@@ -622,7 +622,7 @@ private fun buildTelemetryLogJson(
 
 /**
  * ブレーキ残量判定入力（[LmuWindowsBrakeWearRemainingData]）は判定ロジック（
- * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineBrakeWearLow]）と
+ * [kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase.determineBrakeWearLow]）と
  * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  */
 private fun buildTelemetryLogJson(
@@ -655,7 +655,7 @@ private fun buildTelemetryLogJson(
 
 /**
  * バーチャルエネルギー残量判定入力（[LmuWindowsVirtualEnergyData]）は判定ロジック（
- * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineRemainingVirtualEnergy]）と
+ * [kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVirtualEnergyReadoutUseCase.determineRemainingVirtualEnergy]）と
  * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
@@ -708,7 +708,7 @@ private fun buildPitTimingTelemetryLogJson(
 
 /**
  * フラッグ判定入力（[LmuWindowsRaceFlagsData]）は判定ロジック（
- * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineRaceFlags]）と
+ * [kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsRaceFlagReadoutUseCase.determineRaceFlags]）と
  * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
@@ -738,8 +738,8 @@ private fun buildTelemetryLogJson(
 
 /**
  * タイヤ温度読み上げの入力は [TyreTemperatureReadoutInput] で判定ロジック（
- * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineTyreTemperatureOverheat] /
- * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineTyreTemperatureLow]）と
+ * [kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsTyreReadoutUseCase.determineTyreTemperatureOverheat] /
+ * [kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsTyreReadoutUseCase.determineTyreTemperatureLow]）と
  * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */

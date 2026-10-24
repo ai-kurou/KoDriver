@@ -5,7 +5,14 @@ import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsManualReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsMyBestLapReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsPitTimingReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsRaceFlagReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsTyreReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVehicleReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVirtualEnergyReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
@@ -132,7 +139,7 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveVoiceUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveVoiceSpeedUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveVoicePitchUseCase(get()) }
-        factory { NarratorUseCases(get()) }
+        factory { NarratorUseCases(get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get(), get(), get()) }
         factory { VehicleDamageUseCases(get(), get()) }
@@ -163,7 +170,14 @@ val lmuWindowsNarratorModule: Module =
         }
 
         // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
-        factory { DetermineLmuWindowsNarratorReadoutUseCase() }
+        factory { DetermineLmuWindowsMyBestLapReadoutUseCase() }
+        factory { DetermineLmuWindowsVehicleReadoutUseCase() }
+        factory { DetermineLmuWindowsTyreReadoutUseCase() }
+        factory { DetermineLmuWindowsBrakeReadoutUseCase() }
+        factory { DetermineLmuWindowsVirtualEnergyReadoutUseCase(get()) }
+        factory { DetermineLmuWindowsManualReadoutUseCase() }
+        factory { DetermineLmuWindowsPitTimingReadoutUseCase() }
+        factory { DetermineLmuWindowsRaceFlagReadoutUseCase() }
         factory { ObserveReadoutHotkeyUseCase(get()) }
         factory { ObserveManualReadoutRequestsUseCase(get()) }
         factory { ObserveManualReadoutHotkeyPressesUseCase(get()) }
