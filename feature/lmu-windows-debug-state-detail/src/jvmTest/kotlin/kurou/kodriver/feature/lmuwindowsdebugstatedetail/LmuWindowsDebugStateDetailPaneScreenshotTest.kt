@@ -80,7 +80,7 @@ private val sampleLmuWindowsTelemetry =
                         WheelIndex.REAR_RIGHT to sampleWheel(88.0),
                     ),
             ),
-        fuel = LmuWindowsFuelData(currentLiters = LmuWindowsFuelUnit(0.0), capacityLiters = LmuWindowsFuelUnit(0.0)),
+        fuel = LmuWindowsFuelData(currentLiters = LmuWindowsFuelUnit(42.5), capacityLiters = LmuWindowsFuelUnit(100.0)),
         timing =
             LmuWindowsTimingData(
                 currentLapTimeMs = 0L,

@@ -45,6 +45,7 @@ internal val lmuWindowsSupportedCardKeys =
         LmuWindowsDebugStateCardKey.BRAKE_WEAR,
         LmuWindowsDebugStateCardKey.TYRE_WEAR,
         LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
+        LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY,
         LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
         LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE,
     )

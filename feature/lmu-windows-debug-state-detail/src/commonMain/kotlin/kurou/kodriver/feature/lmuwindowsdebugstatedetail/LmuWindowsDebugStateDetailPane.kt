@@ -42,6 +42,7 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.deb
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_class_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_damage_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_title
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_virtual_energy_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_yellow_flag_state_title
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -191,6 +192,7 @@ private val debugStateCardTitles: Map<LmuWindowsDebugStateCardKey, StringResourc
         LmuWindowsDebugStateCardKey.BRAKE_WEAR to Res.string.debug_state_brake_wear_title,
         LmuWindowsDebugStateCardKey.TYRE_WEAR to Res.string.debug_state_tyre_wear_title,
         LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
+        LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY to Res.string.debug_state_virtual_energy_title,
         LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS to Res.string.debug_state_pit_timing_title,
         LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE to Res.string.debug_state_vehicle_damage_title,
     )
@@ -244,7 +246,10 @@ private val debugStateCardContents:
         LmuWindowsDebugStateCardKey.TYRE_WEAR to
             { uiState -> TyreWearContent(uiState.lmuWindows.telemetry) },
         LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION to { uiState ->
-            FuelConsumptionContent(
+            FuelContent(uiState.lmuWindows.telemetry)
+        },
+        LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY to { uiState ->
+            VirtualEnergyContent(
                 uiState.lmuWindows.virtualEnergy,
                 uiState.lmuWindows.telemetry,
             )

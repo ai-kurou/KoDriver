@@ -17,7 +17,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyRatio
 import org.junit.Rule
 import org.junit.Test
 
-class DebugStateFuelConsumptionCardTest {
+class DebugStateVirtualEnergyCardTest {
     @get:Rule
     val rule = createComposeRule()
 
@@ -28,7 +28,7 @@ class DebugStateFuelConsumptionCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     virtualEnergy =
@@ -44,7 +44,7 @@ class DebugStateFuelConsumptionCardTest {
             }
         }
 
-        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー").assertIsDisplayed()
         rule.onNodeWithText("残量 50.0%").assertIsDisplayed()
         rule.onNodeWithText("消費 10.0%/周").assertIsDisplayed()
         rule.onNodeWithText("残り 5.0周").assertIsDisplayed()
@@ -57,7 +57,7 @@ class DebugStateFuelConsumptionCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     virtualEnergy =
@@ -73,7 +73,7 @@ class DebugStateFuelConsumptionCardTest {
             }
         }
 
-        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー").assertIsDisplayed()
         rule.onNodeWithText("残量 50.0%").assertIsDisplayed()
     }
 
@@ -84,7 +84,7 @@ class DebugStateFuelConsumptionCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     virtualEnergy = null,
@@ -97,7 +97,7 @@ class DebugStateFuelConsumptionCardTest {
             }
         }
 
-        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
