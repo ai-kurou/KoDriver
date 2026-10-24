@@ -16,4 +16,10 @@
     <string name="audio_usage_alarm_description">アラームの音声として扱います。</string>
     <string name="audio_usage_assistant">アシスタント</string>
     <string name="audio_usage_assistant_description">音声アシスタントの応答として扱います。</string>
+    <string name="audio_usage_volume_section_title">音量を調整する</string>
+    <string name="audio_usage_volume_hint">いま選んでいる「%1$s」の音声は、「%2$s」の音量で鳴ります。</string>
+    <string name="audio_usage_volume_panel">音量パネルを開く</string>
+    <string name="audio_usage_volume_panel_description">アプリを離れずにスライダーで調整</string>
+    <string name="audio_usage_sound_settings">サウンド設定を開く</string>
+    <string name="audio_usage_sound_settings_description">端末の設定アプリで詳しく調整</string>
 </resources>

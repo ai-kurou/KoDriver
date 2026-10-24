@@ -133,4 +133,74 @@ class OtherAndroidAudioUsageDetailPaneTest {
         assertEquals(AndroidAudioUsage.ALARM, previews.single().first)
         assertEquals("これは音声の用途の試聴です。", previews.single().second)
     }
+
+    @Test
+    fun `音量ボタンを表示してそれぞれの操作を通知する`() {
+        var volumeCount = 0
+        var soundCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                OtherAndroidAudioUsageDetailPaneContent(
+                    uiState = OtherAndroidAudioUsageDetailUiState(),
+                    onOpenVolumePanel = { volumeCount++ },
+                    onOpenSoundSettings = { soundCount++ },
+                )
+            }
+        }
+        rule.onNodeWithText("音量を調整する").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("音量パネルを開く").performScrollTo().performClick()
+        rule.onNodeWithText("サウンド設定を開く").performScrollTo().performClick()
+        assertEquals(1, volumeCount)
+        assertEquals(1, soundCount)
+    }
+
+    @Test
+    fun `音量アクションがnullなら該当ボタンのみ非表示`() {
+        rule.setContent {
+            KoDriverTheme {
+                OtherAndroidAudioUsageDetailPaneContent(
+                    uiState = OtherAndroidAudioUsageDetailUiState(),
+                    onOpenSoundSettings = {},
+                )
+            }
+        }
+        rule.onNodeWithText("音量を調整する").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("音量パネルを開く").assertDoesNotExist()
+        rule.onNodeWithText("サウンド設定を開く").performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
+    fun `サウンド設定アクションがnullならサウンド設定ボタンのみ非表示`() {
+        rule.setContent {
+            KoDriverTheme {
+                OtherAndroidAudioUsageDetailPaneContent(
+                    uiState = OtherAndroidAudioUsageDetailUiState(),
+                    onOpenVolumePanel = {},
+                )
+            }
+        }
+        rule.onNodeWithText("音量パネルを開く").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("サウンド設定を開く").assertDoesNotExist()
+    }
+
+    @Test
+    fun `両方の音量アクションがnullならセクションを表示しない`() {
+        rule.setContent {
+            KoDriverTheme { OtherAndroidAudioUsageDetailPaneContent(uiState = OtherAndroidAudioUsageDetailUiState()) }
+        }
+        rule.onNodeWithText("音量を調整する").assertDoesNotExist()
+    }
+
+    @Test
+    fun `音量ヒントは選択用途に対応するストリーム名を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                OtherAndroidAudioUsageDetailPaneContent(
+                    uiState = OtherAndroidAudioUsageDetailUiState(usage = AndroidAudioUsage.ASSISTANT),
+                    onOpenVolumePanel = {},
+                )
+            }
+        }
+        rule.onNodeWithText("いま選んでいる「アシスタント」の音声は、「メディア」の音量で鳴ります。").performScrollTo().assertIsDisplayed()
+    }
 }

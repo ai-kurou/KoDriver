@@ -51,4 +51,23 @@ class OtherAndroidAudioUsageDetailPaneScreenshotTest {
             }
             onRoot().captureRoboImage()
         }
+
+    @Test
+    fun `音量ボタンあり`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            OtherAndroidAudioUsageDetailPaneContent(
+                                uiState = OtherAndroidAudioUsageDetailUiState(),
+                                onOpenVolumePanel = {},
+                                onOpenSoundSettings = {},
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
 }
