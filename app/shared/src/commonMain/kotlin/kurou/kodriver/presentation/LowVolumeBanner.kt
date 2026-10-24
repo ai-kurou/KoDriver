@@ -13,7 +13,6 @@ import androidx.compose.material.icons.automirrored.filled.VolumeDown
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,15 +53,10 @@ internal fun LowVolumeBanner(
                 .clickable(role = Role.Button) {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     onClick()
-                }.padding(
-                    start = AppSpacing.large,
-                    end = AppSpacing.small,
-                    top = AppSpacing.small,
-                    bottom = AppSpacing.small,
-                ),
+                }.padding(horizontal = AppSpacing.large, vertical = AppSpacing.small),
     ) {
         Row(
-            modifier = Modifier.align(Alignment.CenterStart).padding(end = 48.dp),
+            modifier = Modifier.align(Alignment.Center).padding(end = AppSpacing.large),
             horizontalArrangement = Arrangement.spacedBy(AppSpacing.small),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -79,15 +73,15 @@ internal fun LowVolumeBanner(
             )
             Text(stringResource(message), style = MaterialTheme.typography.labelMedium, color = contentColor)
         }
-        IconButton(
-            onClick = onDismiss,
-            modifier = Modifier.align(Alignment.CenterEnd).size(48.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(Res.string.low_volume_dismiss),
-                tint = contentColor,
-            )
-        }
+        Icon(
+            imageVector = Icons.Default.Close,
+            contentDescription = stringResource(Res.string.low_volume_dismiss),
+            tint = contentColor,
+            modifier =
+                Modifier
+                    .align(Alignment.CenterEnd)
+                    .clickable(role = Role.Button, onClick = onDismiss)
+                    .size(18.dp),
+        )
     }
 }
