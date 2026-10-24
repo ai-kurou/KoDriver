@@ -18,6 +18,7 @@ import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -159,7 +160,7 @@ internal fun TelemetryLogContentScaffold(
         onClearSelectedLog()
     }
 
-    LaunchedEffect(uiState.selectedLogId) {
+    SideEffect(uiState.selectedLogId) {
         navigationState.navigateTo(
             if (uiState.selectedLogId != null) {
                 TelemetryLogPaneDestination.Detail
@@ -167,12 +168,10 @@ internal fun TelemetryLogContentScaffold(
                 TelemetryLogPaneDestination.List
             },
         )
+    }
+    LaunchedEffect(uiState.selectedLogId) {
         navigator.navigateTo(
-            if (navigationState.current == TelemetryLogPaneDestination.Detail) {
-                ListDetailPaneScaffoldRole.Detail
-            } else {
-                ListDetailPaneScaffoldRole.List
-            },
+            if (uiState.selectedLogId != null) ListDetailPaneScaffoldRole.Detail else ListDetailPaneScaffoldRole.List,
         )
     }
 
@@ -180,7 +179,7 @@ internal fun TelemetryLogContentScaffold(
     // detailPaneを表示する幅が確保できず潰れて表示されてしまうため、
     // listPaneの選択を解除して一覧のみの表示に戻す。
     val currentOnClearSelectedLog by rememberUpdatedState(onClearSelectedLog)
-    LaunchedEffect(windowPosture.shouldCollapseDetailPane) {
+    SideEffect(windowPosture.shouldCollapseDetailPane) {
         if (windowPosture.shouldCollapseDetailPane) {
             currentOnClearSelectedLog()
         }

@@ -18,7 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -87,7 +87,7 @@ fun DetailPaneCardTextField(
     val fieldValue = TextFieldValue(text, selection ?: TextRange.Zero, composition)
     val request = insertState?.request
     val currentOnValueChangeFinished by rememberUpdatedState(onValueChangeFinished)
-    LaunchedEffect(insertState, request) {
+    SideEffect(insertState, request) {
         if (request != null) {
             // 無効な入力欄や文言が変わらない挿入は、確定通知せず要求だけを消費する。
             val inserted =

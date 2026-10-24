@@ -8,7 +8,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,7 +31,7 @@ fun TelemetryLogDetailContent(
     modifier: Modifier = Modifier,
 ) {
     val viewModel: TelemetryLogDetailViewModel = koinViewModel()
-    LaunchedEffect(id) {
+    SideEffect(id) {
         viewModel.setLogId(id)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

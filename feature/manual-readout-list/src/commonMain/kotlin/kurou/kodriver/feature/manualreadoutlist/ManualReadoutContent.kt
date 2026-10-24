@@ -18,6 +18,7 @@ import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
@@ -55,7 +56,7 @@ fun ManualReadoutContent(
     var scrollToTopRequest by remember { mutableIntStateOf(0) }
     // 再タップ回数は AppScreen 側で保持され続けるため、タブ再表示時の初期値は再タップとして扱わない。
     val initialTabReselectRequest = remember { tabReselectRequest }
-    LaunchedEffect(tabReselectRequest) {
+    SideEffect(tabReselectRequest) {
         if (tabReselectRequest > initialTabReselectRequest) {
             handleManualReadoutTabReselected(
                 selectedSetId = uiState.selectedSetId,
@@ -151,7 +152,7 @@ internal fun ManualReadoutContentScaffold(
         onClearSelectedSet()
     }
 
-    LaunchedEffect(uiState.selectedSetId) {
+    SideEffect(uiState.selectedSetId) {
         navigationState.navigateTo(
             if (uiState.selectedSetId != null) {
                 ManualReadoutPaneDestination.Detail
@@ -159,12 +160,10 @@ internal fun ManualReadoutContentScaffold(
                 ManualReadoutPaneDestination.List
             },
         )
+    }
+    LaunchedEffect(uiState.selectedSetId) {
         navigator.navigateTo(
-            if (navigationState.current == ManualReadoutPaneDestination.Detail) {
-                ListDetailPaneScaffoldRole.Detail
-            } else {
-                ListDetailPaneScaffoldRole.List
-            },
+            if (uiState.selectedSetId != null) ListDetailPaneScaffoldRole.Detail else ListDetailPaneScaffoldRole.List,
         )
     }
 
@@ -172,7 +171,7 @@ internal fun ManualReadoutContentScaffold(
     // detailPaneを表示する幅が確保できず潰れて表示されてしまうため、
     // listPaneの選択を解除して一覧のみの表示に戻す。
     val currentOnClearSelectedSet by rememberUpdatedState(onClearSelectedSet)
-    LaunchedEffect(windowPosture.shouldCollapseDetailPane) {
+    SideEffect(windowPosture.shouldCollapseDetailPane) {
         if (windowPosture.shouldCollapseDetailPane) {
             currentOnClearSelectedSet()
         }

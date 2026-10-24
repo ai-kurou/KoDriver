@@ -2,7 +2,9 @@ package kurou.kodriver.presentation
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -18,6 +20,31 @@ import kotlin.test.assertNull
 class AppScreenEffectsTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `テーマ変更callbackはキーが変わった時だけ最新callbackで実行する`() {
+        var darkTheme by mutableStateOf(false)
+        var callback by mutableStateOf<(Boolean) -> Unit>({})
+        val receivedValues = mutableListOf<Boolean>()
+        callback = { receivedValues.add(it) }
+
+        rule.setContent {
+            AppStartupEffects(
+                darkTheme = darkTheme,
+                checkUpdate = {},
+                onDarkThemeChanged = callback,
+            )
+        }
+        rule.waitForIdle()
+        rule.runOnIdle {
+            callback = { receivedValues.add(!it) }
+        }
+        rule.waitForIdle()
+        rule.runOnIdle { darkTheme = true }
+        rule.waitForIdle()
+
+        assertEquals(listOf(false, false), receivedValues)
+    }
 
     @Test
     fun `起動と復帰でTTS利用可否を再判定し再描画では再判定しない`() {
