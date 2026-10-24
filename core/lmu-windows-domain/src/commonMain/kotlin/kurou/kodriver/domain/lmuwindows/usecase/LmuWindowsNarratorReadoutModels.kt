@@ -41,11 +41,12 @@ data class LmuWindowsNarratorState(
     val lastAnnouncedPitTimingTyreWearLaps: Int = -1,
     val lastPitTimingTyreWearEvaluationLap: Int = -1,
     val pitTimingTyreWearTrackingState: LmuWindowsPitTimingTrackingState = LmuWindowsPitTimingTrackingState(),
+    val fuelLapsTrackingState: LmuWindowsPitTimingTrackingState = LmuWindowsPitTimingTrackingState(),
 )
 
 /**
- * ピットタイミング（バーチャルエネルギー・タイヤ摩耗の予想残り周回数）の推定に使う追跡状態。
- * 直近に完走した（バーチャルエネルギー補充・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う
+ * バーチャルエネルギー・タイヤ摩耗・燃料の予想残り周回数の推定に使う追跡状態。
+ * 直近に完走した（バーチャルエネルギー・燃料補充・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う
  * 直近完走ラップ基準の方式。
  */
 @Serializable
@@ -58,9 +59,9 @@ data class LmuWindowsPitTimingTrackingState(
     /** 周回境界から計測を開始した周だけを消費量の推定に使う。 */
     val currentLapStartedAtBoundary: Boolean = false,
     val currentValue: Double = 0.0,
-    /** 閾値未満の増加を累積してバーチャルエネルギー補充・タイヤ交換を検出するための基準値。 */
+    /** 閾値未満の増加を累積してバーチャルエネルギー・燃料補充・タイヤ交換を検出するための基準値。 */
     val refillBaselineValue: Double = 0.0,
-    /** 直近に完走した（バーチャルエネルギー補充・タイヤ交換なしの）ラップの消費量。まだ存在しなければ null。 */
+    /** 直近に完走した（バーチャルエネルギー・燃料補充・タイヤ交換なしの）ラップの消費量。まだ存在しなければ null。 */
     val lastValidLapConsumption: Double? = null,
     val bestLapTimeMs: Long = -1L,
     val hasRefilled: Boolean = false,

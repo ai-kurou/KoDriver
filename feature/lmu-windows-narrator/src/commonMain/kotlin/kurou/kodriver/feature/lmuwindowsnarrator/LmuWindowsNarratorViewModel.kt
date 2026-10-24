@@ -734,6 +734,14 @@ internal class LmuWindowsNarratorViewModel(
             }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
+    private val fuelLapsTrackingJob =
+        combine(lmuTelemetryFlow, fuelFlow) { telemetry, fuel -> telemetry to fuel }
+            .onEach { (telemetry, fuel) ->
+                narratorState =
+                    narratorUseCases.pitTimingReadout.trackFuelLaps(narratorState, telemetry, fuel, currentTimeMs())
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
     private val brakeTemperatureJob =
         brakeTemperatureFlow
             .onEach { brakeTemperature ->

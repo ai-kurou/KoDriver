@@ -34,6 +34,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsInputsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTimingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
@@ -80,6 +81,134 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val manualUseCase = DetermineLmuWindowsManualReadoutUseCase()
     private val pitTimingUseCase = DetermineLmuWindowsPitTimingReadoutUseCase()
     private val raceFlagUseCase = DetermineLmuWindowsRaceFlagReadoutUseCase()
+
+    @Test
+    fun `燃料追跡は初回の精密な割合と周回情報を保持し他の状態を変更しない`() {
+        val state = LmuWindowsNarratorState(remainingFuelWarned = true, lastAnnouncedPitTimingTyreWearLaps = 3)
+        val updated =
+            pitTimingUseCase.trackFuelLaps(
+                state,
+                lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+                LmuWindowsRemainingFuelData(75, exactPercent = 75.25),
+                observedAtMs = 123L,
+            )
+        val tracking =
+            LmuWindowsPitTimingTrackingState(
+                currentLap = 2,
+                currentLapStartedAtMs = 123L,
+                currentLapStartValue = 0.7525,
+                currentValue = 0.7525,
+                refillBaselineValue = 0.7525,
+                bestLapTimeMs = 90_000L,
+                observedAtMs = 123L,
+            )
+        assertEquals(state.copy(fuelLapsTrackingState = tracking), updated)
+    }
+
+    @Test
+    fun `燃料追跡は境界から完走した周の消費量を採用し補充周を除外して新セッションで破棄する`() {
+        var state = LmuWindowsNarratorState()
+        val samples = listOf(Triple(0, 100, 0L), Triple(1, 90, 100L), Triple(1, 80, 200L), Triple(2, 75, 300L))
+        samples.forEach { (lap, percent, time) ->
+            state =
+                pitTimingUseCase.trackFuelLaps(
+                    state,
+                    lapTelemetry(lap, 90_000L),
+                    LmuWindowsRemainingFuelData(percent),
+                    time,
+                )
+            if (lap < 2) assertEquals(null, state.fuelLapsTrackingState.lastValidLapConsumption)
+        }
+        assertEquals(0.1, assertNotNull(state.fuelLapsTrackingState.lastValidLapConsumption), 1e-10)
+        val validConsumption = state.fuelLapsTrackingState.lastValidLapConsumption
+        state = pitTimingUseCase.trackFuelLaps(state, lapTelemetry(2, 90_000L), LmuWindowsRemainingFuelData(90), 400L)
+        assertEquals(true, state.fuelLapsTrackingState.currentLapHasRefilled)
+        state = pitTimingUseCase.trackFuelLaps(state, lapTelemetry(2, 90_000L), LmuWindowsRemainingFuelData(50), 500L)
+        state = pitTimingUseCase.trackFuelLaps(state, lapTelemetry(3, 90_000L), LmuWindowsRemainingFuelData(45), 600L)
+        assertEquals(validConsumption, state.fuelLapsTrackingState.lastValidLapConsumption)
+        state = pitTimingUseCase.trackFuelLaps(state, lapTelemetry(0, 80_000L), LmuWindowsRemainingFuelData(100), 700L)
+        assertEquals(true, state.fuelLapsTrackingState.isNewSession)
+        assertEquals(null, state.fuelLapsTrackingState.lastValidLapConsumption)
+        assertEquals(0, state.fuelLapsTrackingState.currentLap)
+        assertEquals(1.0, state.fuelLapsTrackingState.currentValue)
+        assertEquals(null, state.fuelLapsTrackingState.session)
+    }
+
+    @Test
+    fun `燃料追跡は非有限と範囲外の精密割合を無視し両端は受け入れる`() {
+        val state =
+            LmuWindowsNarratorState(
+                fuelLapsTrackingState =
+                    LmuWindowsPitTimingTrackingState(
+                        currentLap = 2,
+                        currentValue = 0.75,
+                        lastValidLapConsumption = 0.1,
+                    ),
+            )
+        listOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, -0.01, 100.01).forEach { percent ->
+            assertEquals(
+                state,
+                pitTimingUseCase.trackFuelLaps(
+                    state,
+                    lapTelemetry(3, 90_000L),
+                    LmuWindowsRemainingFuelData(50, percent),
+                    123L,
+                ),
+            )
+        }
+        listOf(0.0, 100.0).forEach { percent ->
+            val updated =
+                pitTimingUseCase.trackFuelLaps(
+                    state,
+                    lapTelemetry(3, 90_000L),
+                    LmuWindowsRemainingFuelData(50, percent),
+                    123L,
+                )
+            assertEquals(percent / 100.0, updated.fuelLapsTrackingState.currentValue)
+        }
+    }
+
+    @Test
+    fun `手動燃料周回数は蓄積値だけを読み自動条件と状態を変更しない`() {
+        val tracking =
+            LmuWindowsPitTimingTrackingState(currentLap = 2, currentValue = 0.75, lastValidLapConsumption = 0.1)
+        val state = LmuWindowsNarratorState(fuelLapsTrackingState = tracking)
+        assertEquals(7, manualUseCase.manualFuelRemainingLaps(state))
+        listOf(
+            tracking.copy(currentLap = -1),
+            tracking.copy(lastValidLapConsumption = null),
+            tracking.copy(lastValidLapConsumption = 0.0),
+            tracking.copy(lastValidLapConsumption = -0.1),
+            tracking.copy(currentValue = -0.2),
+            tracking.copy(currentValue = Double.NaN),
+            tracking.copy(currentValue = Double.POSITIVE_INFINITY),
+            tracking.copy(currentValue = Double.MAX_VALUE, lastValidLapConsumption = Double.MIN_VALUE),
+            tracking.copy(lastValidLapConsumption = Double.NaN),
+            tracking.copy(lastValidLapConsumption = Double.POSITIVE_INFINITY),
+            tracking.copy(lastValidLapConsumption = 1e-10),
+        ).forEach {
+            val invalidState = state.copy(fuelLapsTrackingState = it)
+            assertEquals(null, manualUseCase.manualFuelRemainingLaps(invalidState))
+        }
+        val lessThanOneLap = state.copy(fuelLapsTrackingState = tracking.copy(currentValue = 0.05))
+        assertEquals(0, manualUseCase.manualFuelRemainingLaps(lessThanOneLap))
+        val maximumLapsTracking =
+            tracking.copy(currentValue = 0.001, lastValidLapConsumption = 0.000001)
+        val maximumLaps = state.copy(fuelLapsTrackingState = maximumLapsTracking)
+        assertEquals(
+            LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX,
+            manualUseCase.manualFuelRemainingLaps(maximumLaps),
+        )
+        val excessiveLapsTracking =
+            tracking.copy(
+                currentValue =
+                    (LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX + 1) * 0.1 +
+                        LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE,
+            )
+        val excessiveLaps = state.copy(fuelLapsTrackingState = excessiveLapsTracking)
+        assertEquals(null, manualUseCase.manualFuelRemainingLaps(excessiveLaps))
+        assertEquals(tracking, state.fuelLapsTrackingState)
+    }
 
     @Test
     fun `手動エネルギー周回数は蓄積値だけを読み自動条件と状態を変更しない`() {

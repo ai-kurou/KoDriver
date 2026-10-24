@@ -9,6 +9,8 @@ LMU車両故障のオーバーヒート・部品脱落・タイヤ脱落は、�
 Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を提供し、`:core:data`の`VoiceSpeedPreferencesRepository`・`VoicePitchPreferencesRepository`を消費する。
 `SpeakTextUseCase`は試聴・本文の読み上げに保存済み速度・声の高さ（ともに0.5〜2.0、既定1.0）を使用する。
 
+燃料の消費量を追跡し `fuelLapsTrackingState` に蓄積する。蓄積値から残り周回数を算出できるが、手動・自動の読み上げには未接続。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
