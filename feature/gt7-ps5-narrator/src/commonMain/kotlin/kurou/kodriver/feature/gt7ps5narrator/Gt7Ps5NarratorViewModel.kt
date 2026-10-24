@@ -141,12 +141,24 @@ internal class Gt7Ps5NarratorViewModel(
     private var latestTelemetry: Gt7Ps5TelemetryData? = null
     private var latestTelemetryReceivedAtMs = 0L
 
+    @Suppress("UnusedPrivateProperty")
+    private val resetLatestTelemetryJob =
+        selectedSimulator
+            .onEach { simulator ->
+                if (simulator !is Simulator.Gt7Ps5) {
+                    resetLatestTelemetry()
+                }
+            }.launchIn(viewModelScope)
+
+    private fun resetLatestTelemetry() {
+        latestTelemetry = null
+        latestTelemetryReceivedAtMs = 0L
+    }
+
     private val telemetryFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.Gt7Ps5) {
-                    latestTelemetry = null
-                    latestTelemetryReceivedAtMs = 0L
                     emptyFlow()
                 } else {
                     myBestLapUseCases.observeGt7Ps5()

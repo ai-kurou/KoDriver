@@ -251,7 +251,6 @@ internal class LmuWindowsNarratorViewModel(
     private val lmuTelemetryFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
-                latestBestLapTimeMs = null
                 if (simulator !is Simulator.LmuWindows) {
                     emptyFlow()
                 } else {
@@ -551,7 +550,6 @@ internal class LmuWindowsNarratorViewModel(
     private val tyreTemperatureJob =
         selectedSimulator
             .flatMapLatest { simulator ->
-                latestTyreTemperature = null
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
                 combine(
                     tyreTemperatureUseCases
@@ -603,7 +601,6 @@ internal class LmuWindowsNarratorViewModel(
     private val tyreWearFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
-                latestTyreWear = null
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
                 tyreWearUseCases.observeTyreWear().onEach {
                     latestTyreWear = it
@@ -617,7 +614,6 @@ internal class LmuWindowsNarratorViewModel(
     private val brakeTemperatureFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
-                latestBrakeTemperature = null
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
                 brakeTemperatureUseCases.observeBrakeTemperature().onEach {
                     latestBrakeTemperature = it
@@ -631,7 +627,6 @@ internal class LmuWindowsNarratorViewModel(
     private val brakeWearFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
-                latestBrakeWear = null
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
                 brakeWearUseCases
                     .observeBrakeWear()
@@ -645,10 +640,33 @@ internal class LmuWindowsNarratorViewModel(
     private var latestVirtualEnergy: LmuWindowsVirtualEnergyData? = null
     private var latestVirtualEnergyReceivedAtMs: Long = 0L
 
+    @Suppress("UnusedPrivateProperty")
+    private val resetLatestTelemetryJob =
+        selectedSimulator
+            .onEach { simulator ->
+                if (simulator !is Simulator.LmuWindows) {
+                    resetLatestTelemetry()
+                }
+            }.launchIn(viewModelScope)
+
+    private fun resetLatestTelemetry() {
+        latestBestLapTimeMs = null
+        latestBestLapReceivedAtMs = 0L
+        latestTyreTemperature = null
+        latestTyreTemperatureReceivedAtMs = 0L
+        latestTyreWear = null
+        latestTyreWearReceivedAtMs = 0L
+        latestBrakeTemperature = null
+        latestBrakeTemperatureReceivedAtMs = 0L
+        latestBrakeWear = null
+        latestBrakeWearReceivedAtMs = 0L
+        latestVirtualEnergy = null
+        latestVirtualEnergyReceivedAtMs = 0L
+    }
+
     private val virtualEnergyFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
-                latestVirtualEnergy = null
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
                 remainingVirtualEnergyUseCases
                     .observeRemainingVirtualEnergy()
