@@ -12,15 +12,19 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -40,6 +44,7 @@ import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingFuelWarning
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
@@ -84,6 +89,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreCarcassTemperatureRepository
@@ -102,6 +108,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamagePrefer
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsFuelReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsManualReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsMyBestLapReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsPitTimingReadoutUseCase
@@ -112,10 +119,12 @@ import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVirtualEnergy
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFuelUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreDetachedUseCase
@@ -179,6 +188,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+private const val TELEMETRY_BUFFER_CAPACITY = 64
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsNarratorViewModelTest {
     @BeforeTest
@@ -191,7 +202,16 @@ class LmuWindowsNarratorViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
+    // 本番の telemetryStream は共有メモリ由来で複数購読できるため、テストでもチャンネルの値を全購読者へ配る。
+    private val telemetryForwarderScope = CoroutineScope(SupervisorJob() + testDispatcher)
+
     /** 判定時に解決済みの文言を持つ状態で TTS エンジンへ渡される残量警告。 */
+    private val resolvedFuelWarning =
+        LmuWindowsRemainingFuelWarning(
+            percentage = 20,
+            resolvedText = LmuWindowsRemainingFuelWarning(20).narratedText,
+        )
+
     private val resolvedWarning =
         LmuWindowsRemainingVirtualEnergyWarning(
             percentage = 50,
@@ -259,6 +279,9 @@ class LmuWindowsNarratorViewModelTest {
     private val remainingVirtualEnergyPreferencesRepository: LmuWindowsRemainingVirtualEnergyPreferencesRepository =
         mockk(relaxUnitFun = true)
 
+    private val remainingFuelPreferencesRepository: LmuWindowsRemainingFuelPreferencesRepository =
+        mockk(relaxUnitFun = true)
+
     private val pitTimingPreferencesRepository: LmuWindowsPitTimingPreferencesRepository = mockk(relaxUnitFun = true)
 
     private val telemetryLogRepository: TelemetryLogRepository = mockk(relaxUnitFun = true)
@@ -276,6 +299,7 @@ class LmuWindowsNarratorViewModelTest {
 
     @AfterTest
     fun tearDown() {
+        telemetryForwarderScope.cancel()
         Dispatchers.resetMain()
     }
 
@@ -307,6 +331,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean>,
         tyreWearThresholdPercentage: Int,
         remainingVirtualEnergyThresholdPercentage: Int,
+        remainingFuelThresholdPercentage: Int,
         pitTimingVirtualEnergyLapsThreshold: Int,
         pitTimingTyreWearLapsThreshold: Int,
         simulator: Simulator,
@@ -314,7 +339,10 @@ class LmuWindowsNarratorViewModelTest {
         pitTimingEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
         every { vehicleApproachRepository.vehicleApproachStream() } returns vehicleApproachChannel.receiveAsFlow()
-        every { lmuWindowsRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
+        val telemetryShared =
+            MutableSharedFlow<LmuWindowsTelemetryData>(extraBufferCapacity = TELEMETRY_BUFFER_CAPACITY)
+        telemetryForwarderScope.launch { telemetryChannel.consumeEach { telemetryShared.emit(it) } }
+        every { lmuWindowsRepository.telemetryStream() } returns telemetryShared
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(skipFirstLap)
         every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(
@@ -379,6 +407,8 @@ class LmuWindowsNarratorViewModelTest {
             remainingVirtualEnergyChannel.receiveAsFlow()
         every { remainingVirtualEnergyPreferencesRepository.observeThresholdPercentage() } returns
             MutableStateFlow(remainingVirtualEnergyThresholdPercentage)
+        every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns
+            MutableStateFlow(remainingFuelThresholdPercentage)
         every { pitTimingPreferencesRepository.observeVirtualEnergyLaps() } returns
             MutableStateFlow(pitTimingVirtualEnergyLapsThreshold)
         every { pitTimingPreferencesRepository.observeTyreWearLaps() } returns
@@ -433,6 +463,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean> = emptyMap(),
         tyreWearThresholdPercentage: Int = LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT,
         remainingVirtualEnergyThresholdPercentage: Int = 30,
+        remainingFuelThresholdPercentage: Int = 20,
         pitTimingVirtualEnergyLapsThreshold: Int = 3,
         pitTimingTyreWearLapsThreshold: Int = 3,
         simulator: Simulator = Simulator.LmuWindows,
@@ -469,6 +500,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureLowWarningPhasesOverride = tyreTemperatureLowWarningPhasesOverride,
             tyreWearThresholdPercentage = tyreWearThresholdPercentage,
             remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage,
+            remainingFuelThresholdPercentage = remainingFuelThresholdPercentage,
             pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold,
             pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold,
             simulator = simulator,
@@ -592,6 +624,11 @@ class LmuWindowsNarratorViewModelTest {
                             remainingVirtualEnergyPreferencesRepository,
                         ),
                 ),
+            remainingFuelUseCases =
+                RemainingFuelUseCases(
+                    ObserveLmuWindowsFuelUseCase(lmuWindowsRepository),
+                    ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase(remainingFuelPreferencesRepository),
+                ),
             pitTimingUseCases =
                 PitTimingUseCases(
                     observeVirtualEnergyLapsThreshold =
@@ -644,6 +681,7 @@ class LmuWindowsNarratorViewModelTest {
                     tyreReadout = DetermineLmuWindowsTyreReadoutUseCase(),
                     brakeReadout = DetermineLmuWindowsBrakeReadoutUseCase(),
                     virtualEnergyReadout = DetermineLmuWindowsVirtualEnergyReadoutUseCase(),
+                    fuelReadout = DetermineLmuWindowsFuelReadoutUseCase(),
                     manualReadout = DetermineLmuWindowsManualReadoutUseCase(),
                     pitTimingReadout = DetermineLmuWindowsPitTimingReadoutUseCase(),
                     raceFlagReadout = DetermineLmuWindowsRaceFlagReadoutUseCase(),
@@ -2795,6 +2833,100 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
 
             assertEquals(listOf<SpeechEvent>(resolvedWarning), spokenTexts)
+        }
+
+    @Test
+    fun `燃料クラスでは閾値以下で燃料警告を読み上げVE警告は出さない`() =
+        runTest(testDispatcher) {
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                telemetryChannel = fuel,
+                remainingVirtualEnergyChannel = energy,
+                ttsEngine = mockTts(spoken),
+                vehicleClass = LmuWindowsVehicleClassData.P3,
+                enabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(
+                        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
+                        LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to true,
+                        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true,
+                    ),
+            )
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.1))
+            assertEquals(listOf<SpeechEvent>(resolvedFuelWarning), spoken)
+        }
+
+    @Test
+    fun `VEクラスではVE警告を出し燃料警告は出さない`() =
+        runTest(testDispatcher) {
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                telemetryChannel = fuel,
+                remainingVirtualEnergyChannel = energy,
+                ttsEngine = mockTts(spoken),
+                vehicleClass = LmuWindowsVehicleClassData.Gt3,
+                remainingVirtualEnergyThresholdPercentage = 50,
+                enabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(
+                        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
+                        LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to true,
+                        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true,
+                    ),
+            )
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.1))
+            assertEquals(listOf<SpeechEvent>(resolvedWarning), spoken)
+        }
+
+    @Test
+    fun `燃料警告のRootまたはWarningReadoutが無効なら通知しない`() =
+        runTest(testDispatcher) {
+            listOf<Map<ReadoutItemKey, Boolean>>(
+                mapOf(LmuWindowsReadoutItemKey.RemainingFuel.Root to false),
+                mapOf(
+                    LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
+                    LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to false,
+                ),
+            ).forEach { overrides ->
+                val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+                val spoken = mutableListOf<SpeechEvent>()
+                createViewModel(
+                    telemetryChannel = fuel,
+                    ttsEngine = mockTts(spoken),
+                    vehicleClass = LmuWindowsVehicleClassData.Unknown("UNKNOWN"),
+                    enabledOverrides = overrides,
+                )
+                fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+                assertEquals(emptyList<SpeechEvent>(), spoken)
+            }
+        }
+
+    @Test
+    fun `他シミュレーター選択中は燃料を購読せず切替後に最新燃料から警告する`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.Gt7Ps5)
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                telemetryChannel = fuel,
+                selectedSimulatorFlow = selected,
+                ttsEngine = mockTts(spoken),
+                vehicleClass = LmuWindowsVehicleClassData.P3,
+                enabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(
+                        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
+                        LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to true,
+                    ),
+            )
+            fuel.send(telemetryWithFuel(currentLiters = 1.0, capacityLiters = 100.0))
+            assertEquals(emptyList<SpeechEvent>(), spoken)
+            selected.value = Simulator.LmuWindows
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            assertEquals(listOf<SpeechEvent>(resolvedFuelWarning), spoken)
         }
 
     @Test
@@ -5078,12 +5210,18 @@ private fun noTyreDetached(vararg detachedWheels: WheelIndex) =
 private fun fakeTelemetryData(
     currentLap: Int = 0,
     bestLapTimeMs: Long = 0L,
+    fuelCurrentLiters: Double = 0.0,
+    fuelCapacityLiters: Double = 0.0,
 ) = LmuWindowsTelemetryData(
     timestampMs = 0L,
     engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
     inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
     tyres = LmuWindowsTyreData(wheels = emptyMap()),
-    fuel = LmuWindowsFuelData(currentLiters = LmuWindowsFuelUnit(0.0), capacityLiters = LmuWindowsFuelUnit(0.0)),
+    fuel =
+        LmuWindowsFuelData(
+            currentLiters = LmuWindowsFuelUnit(fuelCurrentLiters),
+            capacityLiters = LmuWindowsFuelUnit(fuelCapacityLiters),
+        ),
     timing =
         LmuWindowsTimingData(
             currentLapTimeMs = 0L,
@@ -5104,6 +5242,11 @@ private fun fakeTelemetryData(
             positionZ = 0.0,
         ),
 )
+
+private fun telemetryWithFuel(
+    currentLiters: Double,
+    capacityLiters: Double,
+) = fakeTelemetryData(fuelCurrentLiters = currentLiters, fuelCapacityLiters = capacityLiters)
 
 private fun tyreTemperature(
     fl: Double = 20.0,

@@ -19,6 +19,7 @@ import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT
@@ -26,6 +27,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTA
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
@@ -35,11 +37,13 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemTextDef
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassEnergySource
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.lmuwindows.model.resolveLmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsius
 import kurou.kodriver.domain.lmuwindows.model.resolveLmuWindowsVehicleClassBrakeWearLowThresholdPercent
 import kurou.kodriver.domain.lmuwindows.model.resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsFuelReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsManualReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsMyBestLapReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsPitTimingReadoutUseCase
@@ -52,10 +56,12 @@ import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFuelUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreDetachedUseCase
@@ -151,6 +157,11 @@ internal data class RemainingVirtualEnergyUseCases(
     val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
 )
 
+internal data class RemainingFuelUseCases(
+    val observeFuel: ObserveLmuWindowsFuelUseCase,
+    val observeThresholdPercentage: ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase,
+)
+
 internal data class BrakeTemperatureUseCases(
     val observeBrakeTemperature: ObserveLmuWindowsBrakeTemperatureUseCase,
     val observeVehicleClassHighThreshold: ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase,
@@ -173,6 +184,7 @@ internal data class NarratorUseCases(
     val tyreReadout: DetermineLmuWindowsTyreReadoutUseCase,
     val brakeReadout: DetermineLmuWindowsBrakeReadoutUseCase,
     val virtualEnergyReadout: DetermineLmuWindowsVirtualEnergyReadoutUseCase,
+    val fuelReadout: DetermineLmuWindowsFuelReadoutUseCase,
     val manualReadout: DetermineLmuWindowsManualReadoutUseCase,
     val pitTimingReadout: DetermineLmuWindowsPitTimingReadoutUseCase,
     val raceFlagReadout: DetermineLmuWindowsRaceFlagReadoutUseCase,
@@ -196,6 +208,7 @@ internal class LmuWindowsNarratorViewModel(
     brakeTemperatureUseCases: BrakeTemperatureUseCases,
     brakeWearUseCases: BrakeWearUseCases,
     remainingVirtualEnergyUseCases: RemainingVirtualEnergyUseCases,
+    remainingFuelUseCases: RemainingFuelUseCases,
     pitTimingUseCases: PitTimingUseCases,
     private val eventProcessor: LmuWindowsNarratorEventProcessor,
     private val narratorUseCases: NarratorUseCases,
@@ -280,6 +293,11 @@ internal class LmuWindowsNarratorViewModel(
                 tyreTemperatureUseCases.observeVehicleClass()
             }
 
+    private val energySourceFlow =
+        vehicleClassFlow
+            .map(::lmuWindowsVehicleClassEnergySource)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, LmuWindowsEnergySource.Fuel)
+
     private val tyreHighThreshold =
         combine(
             vehicleClassFlow,
@@ -347,6 +365,11 @@ internal class LmuWindowsNarratorViewModel(
                 SharingStarted.Eagerly,
                 LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT,
             )
+
+    private val remainingFuelThresholdPercentage =
+        remainingFuelUseCases
+            .observeThresholdPercentage()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
 
     private val pitTimingVirtualEnergyLapsThreshold =
         pitTimingUseCases
@@ -675,6 +698,32 @@ internal class LmuWindowsNarratorViewModel(
                         latestVirtualEnergyReceivedAtMs = currentTimeMs()
                     }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    private val fuelFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+                remainingFuelUseCases.observeFuel()
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    @Suppress("UnusedPrivateProperty")
+    private val remainingFuelJob =
+        fuelFlow
+            .onEach { fuel ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision = narratorUseCases.fuelReadout.determineRemainingFuel(state, fuel, settings)
+                narratorState = decision.state
+                eventProcessor.processRemainingFuel(
+                    fuel = fuel,
+                    events = decision.events,
+                    autoReadoutOrder = autoReadoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext = LmuWindowsTelemetryLogContext(state, settings, decision.state),
+                )
+            }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
     private val brakeTemperatureJob =
@@ -1023,6 +1072,8 @@ internal class LmuWindowsNarratorViewModel(
                 brakeTemperatureHighThresholdCelsius = brakeTemperatureHighThresholdCelsius.value,
                 brakeWearLowThresholdPercent = brakeWearLowThresholdPercent.value,
                 remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage.value,
+                remainingFuelThresholdPercentage = remainingFuelThresholdPercentage.value,
+                energySource = energySourceFlow.value,
                 pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold.value,
                 pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
             )

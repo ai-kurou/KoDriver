@@ -2,6 +2,7 @@ package kurou.kodriver.domain.lmuwindows.usecase
 
 import kotlinx.serialization.Serializable
 import kurou.kodriver.domain.engine.ReadoutTextEvent
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
@@ -33,6 +34,7 @@ data class LmuWindowsNarratorState(
     val brakeWearWarned: Boolean = false,
     val previousGamePhaseForTyreLowWarning: SessionPhase? = null,
     val remainingVirtualEnergyWarned: Boolean = false,
+    val remainingFuelWarned: Boolean = false,
     val lastAnnouncedPitTimingVirtualEnergyLaps: Int = -1,
     val lastPitTimingVirtualEnergyEvaluationLap: Int = -1,
     val pitTimingVirtualEnergyTrackingState: LmuWindowsPitTimingTrackingState = LmuWindowsPitTimingTrackingState(),
@@ -101,6 +103,8 @@ data class LmuWindowsNarratorReadoutSettings(
     val brakeTemperatureHighThresholdCelsius: Celsius,
     val brakeWearLowThresholdPercent: Int,
     val remainingVirtualEnergyThresholdPercentage: Int,
+    val remainingFuelThresholdPercentage: Int,
+    val energySource: LmuWindowsEnergySource,
     val pitTimingVirtualEnergyLapsThreshold: Int,
     val pitTimingTyreWearLapsThreshold: Int,
 )

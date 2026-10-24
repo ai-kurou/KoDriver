@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.lmuwindows.usecase
 
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
@@ -16,6 +17,9 @@ class DetermineLmuWindowsVirtualEnergyReadoutUseCase(
         data: LmuWindowsVirtualEnergyData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
+        if (settings.energySource != LmuWindowsEnergySource.VirtualEnergy) {
+            return LmuWindowsNarratorReadoutDecision(state, emptyList())
+        }
         val remainingPercentage = data.remainingRatio.value * LMU_WINDOWS_PERCENTAGE_SCALE
         val isLow = remainingPercentage <= settings.remainingVirtualEnergyThresholdPercentage
         val shouldAnnounce =

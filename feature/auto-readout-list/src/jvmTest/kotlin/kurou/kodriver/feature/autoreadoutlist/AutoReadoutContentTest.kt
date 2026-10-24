@@ -296,6 +296,34 @@ class AutoReadoutContentTest {
     }
 
     @Test
+    fun `燃料残量をタップすると選択コールバックを呼ぶ`() {
+        var fuelText by mutableStateOf("")
+        val selected = mutableListOf<ReadoutItemKey>()
+        rule.setContent {
+            fuelText = autoReadoutItemDisplayName(LmuWindowsReadoutItemKey.RemainingFuel.Root)
+            AutoReadoutContent(
+                uiState =
+                    AutoReadoutListUiState(
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(LmuWindowsReadoutItemKey.RemainingFuel.Root),
+                        autoReadoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.RemainingFuel.Root to false),
+                    ),
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
+                onStartSoundEnabledChanged = { _, _ -> },
+                onItemSelected = { selected.add(it) },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+            )
+        }
+        rule.onNodeWithText(fuelText).performClick()
+        rule.waitForIdle()
+        assertEquals(listOf<ReadoutItemKey>(LmuWindowsReadoutItemKey.RemainingFuel.Root), selected)
+    }
+
+    @Test
     fun `ace_windowsの燃料残量項目を選択すると詳細ペインのタイトルに燃料残量を表示する`() {
         var remainingFuelText by mutableStateOf("")
 

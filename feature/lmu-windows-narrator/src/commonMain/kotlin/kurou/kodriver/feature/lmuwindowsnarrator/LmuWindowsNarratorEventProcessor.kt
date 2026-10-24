@@ -16,6 +16,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
@@ -68,6 +69,7 @@ internal class LmuWindowsNarratorEventProcessor(
     private var previousRaceFlags: LmuWindowsRaceFlagsData? = null
     private var previousTyreWear: LmuWindowsTyreWearData? = null
     private var previousRemainingVirtualEnergy: LmuWindowsVirtualEnergyData? = null
+    private var previousRemainingFuel: LmuWindowsRemainingFuelData? = null
     private var previousBrakeTemperature: LmuWindowsBrakeTemperatureData? = null
     private var previousBrakeWear: LmuWindowsBrakeWearRemainingData? = null
 
@@ -293,6 +295,28 @@ internal class LmuWindowsNarratorEventProcessor(
             }
         }
         if (remainingVirtualEnergy != null) previousRemainingVirtualEnergy = remainingVirtualEnergy
+    }
+
+    suspend fun processRemainingFuel(
+        fuel: LmuWindowsRemainingFuelData,
+        events: List<ReadoutTextEvent>,
+        autoReadoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: LmuWindowsTelemetryLogContext,
+    ) {
+        val previous = previousRemainingFuel
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
+            buildTelemetryLogJson(
+                state = logContext.state,
+                previous = previous,
+                current = fuel,
+                settings = logContext.settings,
+                observedAtMs = observedAtMs,
+                finalState = logContext.finalState,
+            )
+        }
+        previousRemainingFuel = fuel
     }
 
     suspend fun processBrakeWearCurrentValue(
@@ -680,6 +704,31 @@ private fun buildTelemetryLogJson(
         current =
             TelemetryLogJsonCurrentField(
                 name = "remainingVirtualEnergy",
+                json = TelemetryLogJson.encodeToString(current),
+            ),
+        settingsJson = TelemetryLogJson.encodeToString(settings),
+        observedAtMs = observedAtMs,
+        finalStateJson = TelemetryLogJson.encodeToString(finalState),
+    )
+
+private fun buildTelemetryLogJson(
+    state: LmuWindowsNarratorState,
+    previous: LmuWindowsRemainingFuelData?,
+    current: LmuWindowsRemainingFuelData,
+    settings: LmuWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: LmuWindowsNarratorState,
+): String =
+    buildTelemetryLogJson(
+        stateJson = TelemetryLogJson.encodeToString(state),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousRemainingFuel",
+                json = previous?.let { TelemetryLogJson.encodeToString(it) },
+            ),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "remainingFuel",
                 json = TelemetryLogJson.encodeToString(current),
             ),
         settingsJson = TelemetryLogJson.encodeToString(settings),
