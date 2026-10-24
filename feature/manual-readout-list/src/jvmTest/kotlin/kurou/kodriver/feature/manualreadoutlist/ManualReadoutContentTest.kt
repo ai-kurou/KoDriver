@@ -38,6 +38,7 @@ class ManualReadoutContentTest {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                     ManualReadoutContentScaffold(
                         uiState = state.value,
+                        simulatorId = "lmu_windows",
                         simulatorName = "LMU",
                         windowSizeClass = WindowSizeClass.compute(360f, 640f),
                         scaffoldDirective =
@@ -63,10 +64,10 @@ class ManualReadoutContentTest {
             }
         }
         rule.onNodeWithText("詳細 target").assertDoesNotExist()
-        rule.onNodeWithText("セット 1").performClick()
+        rule.onNodeWithText("LMU(Windows)セット1").performClick()
         rule.onNodeWithText("詳細 target").performClick()
         rule.onNodeWithText("詳細 target").assertDoesNotExist()
-        rule.onNodeWithText("セット 1").assertExists()
+        rule.onNodeWithText("LMU(Windows)セット1").assertExists()
     }
 
     @Test
@@ -81,6 +82,7 @@ class ManualReadoutContentTest {
                 Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                     ManualReadoutContentScaffold(
                         uiState = state.value,
+                        simulatorId = "lmu_windows",
                         simulatorName = "LMU",
                         windowSizeClass = WindowSizeClass.compute(840f, 640f),
                         onAddSet = {},
@@ -97,7 +99,7 @@ class ManualReadoutContentTest {
             }
         }
         rule.onNodeWithText("詳細 target").assertExists()
-        rule.onNodeWithText("セット 1").performTouchInput { longClick() }
+        rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
         rule.onNodeWithText("削除").performClick()
         rule.onNodeWithText("削除").performClick()
         rule.onNodeWithText("詳細 target").assertDoesNotExist()
@@ -126,6 +128,7 @@ class ManualReadoutContentTest {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                     ManualReadoutContentScaffold(
                         uiState = ManualReadoutListUiState(sets = List(40) { ManualReadoutSet("set-$it") }),
+                        simulatorId = "lmu_windows",
                         simulatorName = "LMU",
                         onAddSet = {},
                         onReadSet = {},

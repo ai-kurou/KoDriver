@@ -91,7 +91,9 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_no_items
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set_named
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_ace
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_gt7
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_lmu
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -109,6 +111,7 @@ fun ManualReadoutListPane(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     ManualReadoutListPaneContent(
         uiState = uiState,
+        simulatorId = simulatorId,
         simulatorName = simulatorName,
         onAddSet = viewModel::addSet,
         onReadSet = viewModel::readSet,
@@ -125,6 +128,7 @@ fun ManualReadoutListPane(
 @Composable
 internal fun ManualReadoutListPaneContent(
     uiState: ManualReadoutListUiState,
+    simulatorId: String,
     simulatorName: String,
     onAddSet: () -> Unit,
     onReadSet: (String) -> Unit,
@@ -158,6 +162,7 @@ internal fun ManualReadoutListPaneContent(
                     itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
                         ManualReadoutSetRow(
                             setNumber = index + 1,
+                            simulatorId = simulatorId,
                             itemCount = set.itemKeys.size,
                             set = set,
                             showHotkeyChip = showHotkeyChip,
@@ -184,11 +189,24 @@ internal fun ManualReadoutListPaneContent(
     }
 }
 
+@Composable
+private fun manualReadoutSetTitle(
+    simulatorId: String,
+    setNumber: Int,
+): String =
+    when (simulatorId) {
+        "lmu_windows" -> stringResource(Res.string.manual_readout_list_set_title_lmu, setNumber)
+        "gt7_ps5" -> stringResource(Res.string.manual_readout_list_set_title_gt7, setNumber)
+        "ace_windows" -> stringResource(Res.string.manual_readout_list_set_title_ace, setNumber)
+        else -> error("未対応のsimulatorId: $simulatorId")
+    }
+
 /** セット番号と項目数、対応環境ではホットキーを表示する。LMU のセットは読み上げボタンから依頼を送る。 */
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ManualReadoutSetRow(
     setNumber: Int,
+    simulatorId: String,
     itemCount: Int,
     set: ManualReadoutSet,
     showHotkeyChip: Boolean,
@@ -293,7 +311,7 @@ private fun ManualReadoutSetRow(
                 verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
             ) {
                 Text(
-                    text = set.name.ifBlank { stringResource(Res.string.manual_readout_list_set_title, setNumber) },
+                    text = set.name.ifBlank { manualReadoutSetTitle(simulatorId, setNumber) },
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
