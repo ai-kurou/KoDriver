@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -23,8 +24,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Info
@@ -73,12 +76,16 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_label
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_layout_description
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_layout_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_no_data_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_no_data_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_queue_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_queue_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_readout_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_readout_title
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_layout_toggle_to_play_buttons
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_layout_toggle_to_standard
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_add_set
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_cancel
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete
@@ -116,6 +123,7 @@ fun ManualReadoutListPane(
         onAddSet = viewModel::addSet,
         onReadSet = viewModel::readSet,
         onDeleteSet = viewModel::deleteSet,
+        onTogglePlayButtonLayout = viewModel::onPlayButtonLayoutToggle,
         onSetClick = onSetClick,
         modifier = modifier,
     )
@@ -135,12 +143,17 @@ internal fun ManualReadoutListPaneContent(
     modifier: Modifier = Modifier,
     onSetClick: (String) -> Unit = {},
     onDeleteSet: (String) -> Unit = {},
+    onTogglePlayButtonLayout: () -> Unit = {},
     showHotkeyChip: Boolean = isManualReadoutHotkeySupported(),
     listState: LazyListState = rememberLazyListState(),
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
-            ManualReadoutHintRow(modifier = Modifier.padding(horizontal = KoDriverSpacing.small))
+            ManualReadoutHintRow(
+                playButtonLayoutEnabled = uiState.playButtonLayoutEnabled,
+                onTogglePlayButtonLayout = onTogglePlayButtonLayout,
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
+            )
             if (uiState.sets.isEmpty()) {
                 Box(
                     modifier = Modifier.weight(1f).fillMaxSize().padding(KoDriverSpacing.extraLarge),
@@ -417,11 +430,37 @@ internal fun ManualReadoutListDeleteConfirmDialog(
 }
 
 @Composable
-private fun ManualReadoutHintRow(modifier: Modifier = Modifier) {
+private fun ManualReadoutHintRow(
+    playButtonLayoutEnabled: Boolean,
+    onTogglePlayButtonLayout: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     KoDriverHintRow(
         label = stringResource(Res.string.manual_readout_hint_label),
         helpContentDescription = stringResource(Res.string.manual_readout_hint_help_description),
         modifier = modifier,
+        trailingContent = {
+            IconButton(onClick = onTogglePlayButtonLayout, modifier = Modifier.size(24.dp)) {
+                Icon(
+                    imageVector =
+                        if (playButtonLayoutEnabled) {
+                            Icons.AutoMirrored.Filled.ViewList
+                        } else {
+                            Icons.Filled.GridView
+                        },
+                    contentDescription =
+                        stringResource(
+                            if (playButtonLayoutEnabled) {
+                                Res.string.manual_readout_layout_toggle_to_standard
+                            } else {
+                                Res.string.manual_readout_layout_toggle_to_play_buttons
+                            },
+                        ),
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        },
     ) {
         ManualReadoutHintSheetContent(showHotkeyHint = isManualReadoutHotkeySupported())
     }
@@ -444,6 +483,11 @@ internal fun ManualReadoutHintSheetContent(
             icon = Icons.Filled.PlayArrow,
             title = stringResource(Res.string.manual_readout_hint_readout_title),
             description = stringResource(Res.string.manual_readout_hint_readout_description),
+        )
+        KoDriverHintSheetRow(
+            icon = Icons.Filled.GridView,
+            title = stringResource(Res.string.manual_readout_hint_layout_title),
+            description = stringResource(Res.string.manual_readout_hint_layout_description),
         )
         KoDriverHintSheetRow(
             icon = Icons.AutoMirrored.Filled.PlaylistAdd,

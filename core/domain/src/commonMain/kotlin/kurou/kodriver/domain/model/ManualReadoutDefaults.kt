@@ -1,5 +1,8 @@
 package kurou.kodriver.domain.model
 
+/** 手動読み上げ一覧で再生ボタン特化表示を使うかどうかの既定値。 */
+const val MANUAL_READOUT_PLAY_BUTTON_LAYOUT_ENABLED_DEFAULT = false
+
 /** 手動読み上げの対象項目がない場合の固定文言。 */
 const val MANUAL_READOUT_NO_ITEMS_TEXT = "読み上げる項目がありません"
 

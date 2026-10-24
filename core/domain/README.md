@@ -195,3 +195,6 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 音量低下警告の表示設定は `LowVolumeWarningEnabledPreferencesRepository` と
 `ObserveLowVolumeWarningEnabledUseCase` / `SaveLowVolumeWarningEnabledUseCase` で扱い、既定値は
 `LOW_VOLUME_WARNING_ENABLED_DEFAULT`（オン）とする。
+
+
+手動読み上げ一覧の再生ボタン表示設定は `MANUAL_READOUT_PLAY_BUTTON_LAYOUT_ENABLED_DEFAULT`（false）を既定値とする。

@@ -21,12 +21,15 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutPlayButtonLayoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
+import kurou.kodriver.domain.usecase.SaveManualReadoutPlayButtonLayoutEnabledUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -37,6 +40,7 @@ class ManualReadoutListViewModelTest {
     private val requestRepository: ManualReadoutRequestRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
+    private val layoutRepository: ManualReadoutPlayButtonLayoutEnabledPreferencesRepository = mockk()
 
     @BeforeTest
     fun setUp() {
@@ -49,9 +53,12 @@ class ManualReadoutListViewModelTest {
     }
 
     @Test
-    fun `初期状態と保存済みセットが0件の状態は空一覧を返す`() =
+    fun `表示設定の既定値と保存済み値をUiStateに反映して反転値を保存する`() =
         runTest(dispatcher) {
+            val enabled = MutableStateFlow(false)
             every { repository.observeSets() } returns MutableStateFlow(emptyList())
+            every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns enabled
+            coEvery { layoutRepository.saveManualReadoutPlayButtonLayoutEnabled(true) } answers { enabled.value = true }
             val viewModel =
                 ManualReadoutListViewModel(
                     simulatorId = Simulator.LmuWindows.id,
@@ -59,6 +66,43 @@ class ManualReadoutListViewModelTest {
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                     deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
+                    playButtonLayoutUseCases =
+                        PlayButtonLayoutUseCases(
+                            observe = ObserveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                            save = SaveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                        ),
+                )
+            try {
+                assertEquals(false, viewModel.uiState.value.playButtonLayoutEnabled)
+                assertEquals(false, viewModel.uiState.first().playButtonLayoutEnabled)
+                viewModel.onPlayButtonLayoutToggle()
+                assertEquals(true, viewModel.uiState.first { it.playButtonLayoutEnabled }.playButtonLayoutEnabled)
+                verify(exactly = 1) { repository.observeSets() }
+                verify(exactly = 1) { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() }
+                coVerify(exactly = 1) { layoutRepository.saveManualReadoutPlayButtonLayoutEnabled(true) }
+                confirmVerified(repository, layoutRepository)
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `初期状態と保存済みセットが0件の状態は空一覧を返す`() =
+        runTest(dispatcher) {
+            every { repository.observeSets() } returns MutableStateFlow(emptyList())
+            every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns MutableStateFlow(false)
+            val viewModel =
+                ManualReadoutListViewModel(
+                    simulatorId = Simulator.LmuWindows.id,
+                    requestManualReadout = RequestManualReadoutUseCase(requestRepository),
+                    observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
+                    addManualReadoutSet = AddManualReadoutSetUseCase(repository),
+                    deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
+                    playButtonLayoutUseCases =
+                        PlayButtonLayoutUseCases(
+                            observe = ObserveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                            save = SaveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                        ),
                 )
             try {
                 assertEquals(ManualReadoutListUiState(canReadSets = true), viewModel.uiState.value)
@@ -74,6 +118,7 @@ class ManualReadoutListViewModelTest {
             val sets = listOf(ManualReadoutSet(id = "set-1", itemKeys = listOf("speed")))
             val setsFlow = MutableStateFlow(sets)
             every { repository.observeSets() } returns setsFlow
+            every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns MutableStateFlow(false)
             val viewModel =
                 ManualReadoutListViewModel(
                     simulatorId = Simulator.LmuWindows.id,
@@ -81,6 +126,11 @@ class ManualReadoutListViewModelTest {
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                     deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
+                    playButtonLayoutUseCases =
+                        PlayButtonLayoutUseCases(
+                            observe = ObserveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                            save = SaveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                        ),
                 )
             val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
             try {
@@ -101,6 +151,7 @@ class ManualReadoutListViewModelTest {
             val second = ManualReadoutSet(id = "second")
             val ids = listOf(first.id, second.id).iterator()
             every { repository.observeSets() } returns MutableStateFlow(sets)
+            every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns MutableStateFlow(false)
             coEvery { repository.addSet(first) } returns Unit
             coEvery { repository.addSet(second) } returns Unit
             val viewModel =
@@ -110,6 +161,11 @@ class ManualReadoutListViewModelTest {
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                     deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
+                    playButtonLayoutUseCases =
+                        PlayButtonLayoutUseCases(
+                            observe = ObserveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                            save = SaveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                        ),
                     generateSetId = { ids.next() },
                 )
             try {
@@ -134,6 +190,7 @@ class ManualReadoutListViewModelTest {
             val second = ManualReadoutSet(id = "second-set")
             val ids = listOf(expected.id, second.id).iterator()
             every { repository.observeSets() } returns MutableStateFlow(sets)
+            every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns MutableStateFlow(false)
             coEvery { repository.addSet(expected) } returns Unit
             coEvery { repository.addSet(second) } returns Unit
             val viewModel =
@@ -143,6 +200,11 @@ class ManualReadoutListViewModelTest {
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                     addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                     deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
+                    playButtonLayoutUseCases =
+                        PlayButtonLayoutUseCases(
+                            observe = ObserveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                            save = SaveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                        ),
                     generateSetId = { ids.next() },
                 )
             val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
@@ -165,6 +227,7 @@ class ManualReadoutListViewModelTest {
     fun `全シミュレーターの初期状態と購読状態は全て読み上げ可能で依頼に各IDを渡す`() =
         runTest(dispatcher) {
             every { repository.observeSets() } returns MutableStateFlow(emptyList())
+            every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns MutableStateFlow(false)
             Simulator.entries.forEach { simulator ->
                 val request = ManualReadoutRequest(simulator.id, "set-1")
                 coEvery { requestRepository.request(request) } returns Unit
@@ -175,6 +238,11 @@ class ManualReadoutListViewModelTest {
                         observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
                         addManualReadoutSet = AddManualReadoutSetUseCase(repository),
                         deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
+                        playButtonLayoutUseCases =
+                            PlayButtonLayoutUseCases(
+                                observe = ObserveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                                save = SaveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                            ),
                     )
                 val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
                 try {
@@ -196,6 +264,7 @@ class ManualReadoutListViewModelTest {
         runTest(dispatcher) {
             val sets = MutableStateFlow(listOf(ManualReadoutSet("target"), ManualReadoutSet("other")))
             every { repository.observeSets() } returns sets
+            every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns MutableStateFlow(false)
             coEvery { repository.deleteSet("other") } answers {
                 sets.update { current -> current.filter { it.id != "other" } }
             }
@@ -207,6 +276,10 @@ class ManualReadoutListViewModelTest {
                     ObserveManualReadoutSetsUseCase(repository),
                     AddManualReadoutSetUseCase(repository),
                     DeleteManualReadoutSetUseCase(repository),
+                    PlayButtonLayoutUseCases(
+                        ObserveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                        SaveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                    ),
                 )
             val collection = backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
             try {

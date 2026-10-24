@@ -33,6 +33,7 @@ class ManualReadoutListPaneScreenshotTest {
                                 simulatorName = "LMU",
                                 onAddSet = {},
                                 onReadSet = {},
+                                onTogglePlayButtonLayout = {},
                             )
                         }
                     }
@@ -63,6 +64,7 @@ class ManualReadoutListPaneScreenshotTest {
                                 simulatorName = "LMU",
                                 onAddSet = {},
                                 onReadSet = {},
+                                onTogglePlayButtonLayout = {},
                                 showHotkeyChip = true,
                             )
                         }
@@ -89,6 +91,7 @@ class ManualReadoutListPaneScreenshotTest {
                                 simulatorName = "LMU",
                                 onAddSet = {},
                                 onReadSet = {},
+                                onTogglePlayButtonLayout = {},
                             )
                         }
                     }

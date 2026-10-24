@@ -2,8 +2,10 @@ package kurou.kodriver.feature.manualreadoutlist
 
 import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutPlayButtonLayoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
+import kurou.kodriver.domain.usecase.SaveManualReadoutPlayButtonLayoutEnabledUseCase
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -18,6 +20,11 @@ val manualReadoutListModule =
                 observeManualReadoutSets = ObserveManualReadoutSetsUseCase(get(named(simulatorId))),
                 addManualReadoutSet = AddManualReadoutSetUseCase(get(named(simulatorId))),
                 deleteManualReadoutSet = DeleteManualReadoutSetUseCase(get(named(simulatorId))),
+                playButtonLayoutUseCases =
+                    PlayButtonLayoutUseCases(
+                        observe = ObserveManualReadoutPlayButtonLayoutEnabledUseCase(get()),
+                        save = SaveManualReadoutPlayButtonLayoutEnabledUseCase(get()),
+                    ),
             )
         }
     }

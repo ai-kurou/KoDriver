@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import org.koin.core.parameter.parametersOf
@@ -36,6 +37,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutListModuleTest {
     private val requestRepository: ManualReadoutRequestRepository = mockk()
+    private val layoutRepository: ManualReadoutPlayButtonLayoutEnabledPreferencesRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()
     private val lmuRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val gt7Repository: ManualReadoutSetPreferencesRepository = mockk()
@@ -62,6 +64,7 @@ class ManualReadoutListModuleTest {
                 )
             repositories.forEach { (id, repository) ->
                 every { repository.observeSets() } returns flowOf(listOf(ManualReadoutSet(id = id)))
+                every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns flowOf(false)
             }
             val application =
                 koinApplication {
@@ -69,6 +72,7 @@ class ManualReadoutListModuleTest {
                         manualReadoutListModule,
                         module {
                             single<ManualReadoutRequestRepository> { requestRepository }
+                            single<ManualReadoutPlayButtonLayoutEnabledPreferencesRepository> { layoutRepository }
                             repositories.forEach { (id, repository) ->
                                 single<ManualReadoutSetPreferencesRepository>(named(id)) { repository }
                             }

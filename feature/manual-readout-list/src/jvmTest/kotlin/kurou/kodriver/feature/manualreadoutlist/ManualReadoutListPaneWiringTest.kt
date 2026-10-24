@@ -42,6 +42,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import org.junit.Rule
@@ -77,11 +78,13 @@ class ManualReadoutListPaneWiringTest {
     private val requestRepository: ManualReadoutRequestRepository = mockk()
     private val lmuRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val gt7Repository: ManualReadoutSetPreferencesRepository = mockk()
+    private val layoutRepository: ManualReadoutPlayButtonLayoutEnabledPreferencesRepository = mockk()
 
     @Test
     fun `Contentはシミュレーターごとの選択を保持して離脱後の再表示でも詳細を表示する`() {
         val sets = MutableStateFlow(listOf(ManualReadoutSet("lmu-set")) + List(39) { ManualReadoutSet("set-$it") })
         every { lmuRepository.observeSets() } returns sets
+        every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns MutableStateFlow(false)
         coEvery { lmuRepository.deleteSet("lmu-set") } answers { sets.update { emptyList() } }
         every { gt7Repository.observeSets() } returns flowOf(listOf(ManualReadoutSet("gt7-set")))
         val owner =
@@ -96,6 +99,7 @@ class ManualReadoutListPaneWiringTest {
                 manualReadoutListModule,
                 module {
                     single<ManualReadoutRequestRepository> { requestRepository }
+                    single<ManualReadoutPlayButtonLayoutEnabledPreferencesRepository> { layoutRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) { lmuRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) { gt7Repository }
                 },
@@ -154,7 +158,8 @@ class ManualReadoutListPaneWiringTest {
             rule.onNodeWithText("lmu_windowsの手動読み上げセットはまだありません").assertIsDisplayed()
             verify(exactly = 1) { lmuRepository.observeSets() }
             coVerify(exactly = 1) { lmuRepository.deleteSet("lmu-set") }
-            confirmVerified(lmuRepository)
+            verify(exactly = 2) { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() }
+            confirmVerified(lmuRepository, layoutRepository)
         } finally {
             rule.runOnIdle { showContent = false }
             rule.waitForIdle()
@@ -173,6 +178,8 @@ class ManualReadoutListPaneWiringTest {
         every { lmuRepository.observeSets() } returns lmuSets
         coEvery { lmuRepository.deleteSet("lmu-set") } answers { lmuSets.update { emptyList() } }
         every { gt7Repository.observeSets() } returns flowOf(listOf(ManualReadoutSet(id = "gt7-set")))
+        every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns MutableStateFlow(false)
+        coEvery { layoutRepository.saveManualReadoutPlayButtonLayoutEnabled(true) } returns Unit
         val owner =
             object : ViewModelStoreOwner {
                 override val viewModelStore = ViewModelStore()
@@ -184,6 +191,7 @@ class ManualReadoutListPaneWiringTest {
                 manualReadoutListModule,
                 module {
                     single<ManualReadoutRequestRepository> { requestRepository }
+                    single<ManualReadoutPlayButtonLayoutEnabledPreferencesRepository> { layoutRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) { lmuRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) { gt7Repository }
                 },
@@ -207,6 +215,8 @@ class ManualReadoutListPaneWiringTest {
             rule.waitForIdle()
             rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsEnabled()
             rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
+            rule.onNodeWithContentDescription("再生ボタン表示に切り替え").performClick()
+            coVerify(exactly = 1) { layoutRepository.saveManualReadoutPlayButtonLayoutEnabled(true) }
             rule.onNodeWithText("gt7_ps5の手動読み上げセットはまだありません").assertDoesNotExist()
             rule.runOnIdle { simulatorId = Simulator.LmuWindows.id }
             rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
@@ -229,7 +239,8 @@ class ManualReadoutListPaneWiringTest {
             verify(exactly = 1) { gt7Repository.observeSets() }
             coVerify(exactly = 1) { requestRepository.request(request) }
             coVerify(exactly = 1) { lmuRepository.deleteSet("lmu-set") }
-            confirmVerified(lmuRepository, gt7Repository, requestRepository)
+            verify(exactly = 2) { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() }
+            confirmVerified(lmuRepository, gt7Repository, requestRepository, layoutRepository)
         } finally {
             rule.runOnIdle { showPane = false }
             rule.waitForIdle()

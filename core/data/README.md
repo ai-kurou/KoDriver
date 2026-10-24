@@ -82,3 +82,6 @@ Android の `ManualReadoutHotkeyRepository` は `UnsupportedManualReadoutHotkeyR
 音量低下警告の有効状態は `LowVolumeWarningEnabledPreferencesRepository` が
 `low_volume_warning_enabled_preferences.pb` に保存し、既定値は domain の
 `LOW_VOLUME_WARNING_ENABLED_DEFAULT` を参照する。Android・Desktop の DataModule に登録する。
+
+
+手動読み上げ一覧の表示設定は `ManualReadoutPlayButtonLayoutEnabledPreferencesRepository` が `manual_readout_play_button_layout_preferences.pb` に全シミュレーター共通で保存し、既定値は domain の `MANUAL_READOUT_PLAY_BUTTON_LAYOUT_ENABLED_DEFAULT`（false）を参照する。Android・Desktop の DataModule に登録する。
