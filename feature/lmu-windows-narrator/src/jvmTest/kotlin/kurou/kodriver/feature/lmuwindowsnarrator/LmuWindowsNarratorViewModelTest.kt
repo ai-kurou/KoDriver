@@ -30,6 +30,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kurou.kodriver.domain.engine.DebugReadoutText
@@ -116,6 +117,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsRaceFlagReado
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsTyreReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVehicleReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVirtualEnergyReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsPitTimingTrackingState
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
@@ -186,6 +188,7 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 private const val TELEMETRY_BUFFER_CAPACITY = 64
@@ -2833,6 +2836,100 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
 
             assertEquals(listOf<SpeechEvent>(resolvedWarning), spokenTexts)
+        }
+
+    @Test
+    fun `燃料周回追跡は自動設定に依存せずLMU選択中だけ状態を更新する`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.Gt7Ps5)
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            createViewModel(
+                telemetryChannel = telemetry,
+                selectedSimulatorFlow = selected,
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(key to false, LmuWindowsReadoutItemKey.PitTiming.Root to false),
+                currentTimeMs = { 123L },
+            )
+            stubTelemetryLogSave(logs, createdAt = 123L, key)
+            telemetry.send(fakeTelemetryData(currentLap = 2, fuelCurrentLiters = 75.25, fuelCapacityLiters = 100.0))
+            assertEquals(emptyList<SpeechEvent>(), spoken)
+            val request = DebugReadoutRequest(Simulator.LmuWindows, key, "状態確認")
+            debugRequests.emit(request)
+            val initialTracking =
+                Json.decodeFromJsonElement<LmuWindowsPitTimingTrackingState>(
+                    Json
+                        .parseToJsonElement(logs.single().telemetryJson)
+                        .jsonObject
+                        .getValue("state")
+                        .jsonObject
+                        .getValue("fuelLapsTrackingState"),
+                )
+            assertEquals(LmuWindowsPitTimingTrackingState(), initialTracking)
+
+            selected.value = Simulator.LmuWindows
+            telemetry.send(fakeTelemetryData(currentLap = 2, fuelCurrentLiters = 75.25, fuelCapacityLiters = 100.0))
+            assertEquals(1, spoken.size)
+            debugRequests.emit(request)
+            val tracking =
+                Json.decodeFromJsonElement<LmuWindowsPitTimingTrackingState>(
+                    Json
+                        .parseToJsonElement(logs.last().telemetryJson)
+                        .jsonObject
+                        .getValue("state")
+                        .jsonObject
+                        .getValue("fuelLapsTrackingState"),
+                )
+            assertEquals(2, tracking.currentLap)
+            assertEquals(0.7525, tracking.currentValue)
+            assertEquals(123L, tracking.observedAtMs)
+            assertEquals(null, tracking.lastValidLapConsumption)
+        }
+
+    @Test
+    fun `燃料周回追跡はLMUの選択解除で蓄積した消費量を破棄する`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val logs = mutableListOf<TelemetryLog>()
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            createViewModel(
+                telemetryChannel = telemetry,
+                selectedSimulatorFlow = selected,
+                ttsEngine = mockTts(mutableListOf()),
+                enabledOverrides = mapOf(key to false, LmuWindowsReadoutItemKey.PitTiming.Root to false),
+                currentTimeMs = { 123L },
+            )
+            stubTelemetryLogSave(logs, createdAt = 123L, key)
+            val request = DebugReadoutRequest(Simulator.LmuWindows, key, "状態確認")
+
+            fun trackingFromLastLog(): LmuWindowsPitTimingTrackingState =
+                Json.decodeFromJsonElement<LmuWindowsPitTimingTrackingState>(
+                    Json
+                        .parseToJsonElement(logs.last().telemetryJson)
+                        .jsonObject
+                        .getValue("state")
+                        .jsonObject
+                        .getValue("fuelLapsTrackingState"),
+                )
+
+            listOf(2 to 80.0, 3 to 70.0, 3 to 60.0, 4 to 50.0).forEach { (lap, liters) ->
+                telemetry.send(
+                    fakeTelemetryData(currentLap = lap, fuelCurrentLiters = liters, fuelCapacityLiters = 100.0),
+                )
+            }
+            debugRequests.emit(request)
+            assertEquals(0.1, assertNotNull(trackingFromLastLog().lastValidLapConsumption), 1e-10)
+
+            selected.value = Simulator.Gt7Ps5
+            selected.value = Simulator.LmuWindows
+            telemetry.send(fakeTelemetryData(currentLap = 4, fuelCurrentLiters = 40.0, fuelCapacityLiters = 100.0))
+            debugRequests.emit(request)
+            val tracking = trackingFromLastLog()
+            assertEquals(null, tracking.lastValidLapConsumption)
+            assertEquals(0.4, tracking.currentLapStartValue)
         }
 
     @Test

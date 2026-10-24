@@ -105,6 +105,10 @@ class DetermineLmuWindowsManualReadoutUseCase {
     fun manualPitTimingTyreWearRemainingLaps(state: LmuWindowsNarratorState): Int? =
         manualPitTimingRemainingLaps(state.pitTimingTyreWearTrackingState)
 
+    /** 自動判定の条件や状態を変更せず、蓄積済みの燃料消費量から残り周回数を読む。 */
+    fun manualFuelRemainingLaps(state: LmuWindowsNarratorState): Int? =
+        manualPitTimingRemainingLaps(state.fuelLapsTrackingState)
+
     private fun manualPitTimingRemainingLaps(tracking: LmuWindowsPitTimingTrackingState): Int? {
         if (tracking.currentLap == -1) return null
         val consumption = tracking.lastValidLapConsumption ?: return null

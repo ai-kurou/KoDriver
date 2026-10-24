@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.lmuwindows.usecase
 
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
@@ -132,6 +133,27 @@ class DetermineLmuWindowsPitTimingReadoutUseCase {
         return LmuWindowsNarratorReadoutDecision(
             state = stateAfterEvaluation,
             events = listOf(LmuWindowsPitTimingWarning(remainingLaps, source = PitTimingSource.TyreWear)),
+        )
+    }
+
+    /** 読み上げイベントを生成せず、燃料の周回ごとの消費量を追跡する。 */
+    fun trackFuelLaps(
+        state: LmuWindowsNarratorState,
+        telemetry: LmuWindowsTelemetryData,
+        fuel: LmuWindowsRemainingFuelData,
+        observedAtMs: Long,
+    ): LmuWindowsNarratorState {
+        if (!fuel.exactPercent.isFinite() || fuel.exactPercent < 0.0 || fuel.exactPercent > 100.0) return state
+        return state.copy(
+            fuelLapsTrackingState =
+                trackPitTimingValue(
+                    state = state.fuelLapsTrackingState,
+                    currentLap = telemetry.timing.currentLap,
+                    bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+                    currentValue = fuel.exactPercent / 100.0,
+                    session = null,
+                    observedAtMs = observedAtMs,
+                ),
         )
     }
 
