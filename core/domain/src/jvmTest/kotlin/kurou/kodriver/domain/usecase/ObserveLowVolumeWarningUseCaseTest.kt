@@ -26,8 +26,9 @@ class ObserveLowVolumeWarningUseCaseTest {
     @Test
     fun `端末音量だけが低い場合に警告する`() =
         runTest {
-            val dismissed = MutableStateFlow(DismissedVolumes())
-            configure(20, 80, dismissed)
+            every { deviceRepository.observeVolume() } returns MutableStateFlow(20)
+            every { soundRepository.volume() } returns MutableStateFlow(80)
+            every { dismissalRepository.observeDismissedVolumes() } returns MutableStateFlow(DismissedVolumes())
             assertEquals(LowVolumeWarning(20, null), useCase()().first())
             verifyInputs()
             confirmVerified(deviceRepository, soundRepository, dismissalRepository)
@@ -36,7 +37,9 @@ class ObserveLowVolumeWarningUseCaseTest {
     @Test
     fun `アプリ音量だけが低い場合に警告する`() =
         runTest {
-            configure(30, 79, MutableStateFlow(DismissedVolumes()))
+            every { deviceRepository.observeVolume() } returns MutableStateFlow(30)
+            every { soundRepository.volume() } returns MutableStateFlow(79)
+            every { dismissalRepository.observeDismissedVolumes() } returns MutableStateFlow(DismissedVolumes())
             assertEquals(LowVolumeWarning(null, 79), useCase()().first())
             verifyInputs()
             confirmVerified(deviceRepository, soundRepository, dismissalRepository)
@@ -45,7 +48,9 @@ class ObserveLowVolumeWarningUseCaseTest {
     @Test
     fun `両方低い場合に両方の値を警告する`() =
         runTest {
-            configure(29, 79, MutableStateFlow(DismissedVolumes()))
+            every { deviceRepository.observeVolume() } returns MutableStateFlow(29)
+            every { soundRepository.volume() } returns MutableStateFlow(79)
+            every { dismissalRepository.observeDismissedVolumes() } returns MutableStateFlow(DismissedVolumes())
             assertEquals(LowVolumeWarning(29, 79), useCase()().first())
             verifyInputs()
             confirmVerified(deviceRepository, soundRepository, dismissalRepository)
@@ -54,7 +59,9 @@ class ObserveLowVolumeWarningUseCaseTest {
     @Test
     fun `どちらも閾値以上なら警告しない`() =
         runTest {
-            configure(30, 80, MutableStateFlow(DismissedVolumes()))
+            every { deviceRepository.observeVolume() } returns MutableStateFlow(30)
+            every { soundRepository.volume() } returns MutableStateFlow(80)
+            every { dismissalRepository.observeDismissedVolumes() } returns MutableStateFlow(DismissedVolumes())
             assertEquals(null, useCase()().first())
             verifyInputs()
             confirmVerified(deviceRepository, soundRepository, dismissalRepository)
@@ -63,7 +70,9 @@ class ObserveLowVolumeWarningUseCaseTest {
     @Test
     fun `閉じた音量以上では警告を抑制する`() =
         runTest {
-            configure(20, 60, MutableStateFlow(DismissedVolumes(20, 60)))
+            every { deviceRepository.observeVolume() } returns MutableStateFlow(20)
+            every { soundRepository.volume() } returns MutableStateFlow(60)
+            every { dismissalRepository.observeDismissedVolumes() } returns MutableStateFlow(DismissedVolumes(20, 60))
             assertEquals(null, useCase()().first())
             verifyInputs()
             confirmVerified(deviceRepository, soundRepository, dismissalRepository)
@@ -72,7 +81,9 @@ class ObserveLowVolumeWarningUseCaseTest {
     @Test
     fun `閉じた音量より下がると再表示する`() =
         runTest {
-            configure(19, 59, MutableStateFlow(DismissedVolumes(20, 60)))
+            every { deviceRepository.observeVolume() } returns MutableStateFlow(19)
+            every { soundRepository.volume() } returns MutableStateFlow(59)
+            every { dismissalRepository.observeDismissedVolumes() } returns MutableStateFlow(DismissedVolumes(20, 60))
             assertEquals(LowVolumeWarning(19, 59), useCase()().first())
             verifyInputs()
             confirmVerified(deviceRepository, soundRepository, dismissalRepository)
@@ -82,7 +93,9 @@ class ObserveLowVolumeWarningUseCaseTest {
     fun `基準以上への回復時にその側の記憶をクリアする`() =
         runTest {
             val dismissed = MutableStateFlow(DismissedVolumes(25, 60))
-            configure(20, 80, dismissed)
+            every { deviceRepository.observeVolume() } returns MutableStateFlow(20)
+            every { soundRepository.volume() } returns MutableStateFlow(80)
+            every { dismissalRepository.observeDismissedVolumes() } returns dismissed
             coEvery { dismissalRepository.saveDismissedVolumes(DismissedVolumes(25, null)) } answers {
                 dismissed.update { DismissedVolumes(25, null) }
             }
@@ -116,16 +129,6 @@ class ObserveLowVolumeWarningUseCaseTest {
             verifyInputs()
             confirmVerified(deviceRepository, soundRepository, dismissalRepository)
         }
-
-    private fun configure(
-        deviceVolume: Int,
-        soundVolume: Int,
-        dismissed: MutableStateFlow<DismissedVolumes>,
-    ) {
-        every { deviceRepository.observeVolume() } returns MutableStateFlow(deviceVolume)
-        every { soundRepository.volume() } returns MutableStateFlow(soundVolume)
-        every { dismissalRepository.observeDismissedVolumes() } returns dismissed
-    }
 
     private fun useCase() =
         ObserveLowVolumeWarningUseCase(
