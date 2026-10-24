@@ -39,6 +39,7 @@ import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingFuelWarning
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
@@ -51,11 +52,13 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearWheelRemaining
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsInputsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTimingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
@@ -83,6 +86,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWe
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
@@ -137,6 +141,7 @@ class LmuWindowsNarratorEventProcessorTest {
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
+    private val observeRemainingFuelText: ObserveLmuWindowsRemainingFuelReadoutTextUseCase = mockk()
     private val observeBrakeText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase = mockk()
     private val observeBrakeWearText: ObserveLmuWindowsBrakeWearReadoutTextUseCase = mockk()
     private val observeTyreWearText: ObserveLmuWindowsTyreWearReadoutTextUseCase = mockk()
@@ -191,6 +196,7 @@ class LmuWindowsNarratorEventProcessorTest {
                             wear = observeBrakeWearText,
                         ),
                     remainingVirtualEnergy = observeRemainingText,
+                    remainingFuel = observeRemainingFuelText,
                     myBestLap = observeMyBestLapReadoutText,
                 ),
             checkTextToSpeechAvailable = checkTextToSpeechAvailable,
@@ -1983,6 +1989,47 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `燃料残量警告はRemainingFuel Rootの優先度と開始音で処理する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                ttsEngine.speak(LmuWindowsRemainingFuelWarning(20, resolvedText = "燃料20%"), queue = true)
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                    narratedText = "燃料20%",
+                    narrationOutcome = NarrationOutcome.QUEUED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { "燃料20%" }.processRemainingFuel(
+                fuel = LmuWindowsRemainingFuelData(remainingPercent = 10),
+                events = listOf(LmuWindowsRemainingFuelWarning(20)),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.RemainingFuel.Root),
+                queueEnabledStates = mapOf(LmuWindowsReadoutItemKey.RemainingFuel.Root to true),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+            coVerify(exactly = 1) {
+                ttsEngine.speak(LmuWindowsRemainingFuelWarning(20, resolvedText = "燃料20%"), queue = true)
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                    narratedText = "燃料20%",
+                    narrationOutcome = NarrationOutcome.QUEUED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `残量警告の文言がnullなら読み上げず空文言でSKIPPEDを保存する`() =
         runTest {
             val json = slot<String>()
@@ -3378,6 +3425,45 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `燃料警告の空白本文は読み上げず空文字とSKIPPEDを保存する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { " " }.processRemainingFuel(
+                fuel = LmuWindowsRemainingFuelData(remainingPercent = 10),
+                events = listOf(LmuWindowsRemainingFuelWarning(20)),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.RemainingFuel.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(
+                exactly = 0,
+            ) { ttsEngine.speak(LmuWindowsRemainingFuelWarning(20, resolvedText = " "), queue = false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `文言解決に失敗しても同じ入力の後続イベントと次回処理を継続する`() =
         runTest {
             val key = LmuWindowsReadoutItemKey.Flag.Root
@@ -3707,6 +3793,8 @@ private fun logContext() =
                 brakeTemperatureHighThresholdCelsius = Celsius(700),
                 brakeWearLowThresholdPercent = 20,
                 remainingVirtualEnergyThresholdPercentage = 50,
+                remainingFuelThresholdPercentage = 20,
+                energySource = LmuWindowsEnergySource.Fuel,
                 pitTimingVirtualEnergyLapsThreshold = 3,
                 pitTimingTyreWearLapsThreshold = 3,
             ),
@@ -3781,6 +3869,8 @@ private fun pitTimingLogContext() =
                 brakeTemperatureHighThresholdCelsius = Celsius(700),
                 brakeWearLowThresholdPercent = 20,
                 remainingVirtualEnergyThresholdPercentage = 50,
+                remainingFuelThresholdPercentage = 20,
+                energySource = LmuWindowsEnergySource.Fuel,
                 pitTimingVirtualEnergyLapsThreshold = 3,
                 pitTimingTyreWearLapsThreshold = 3,
             ),

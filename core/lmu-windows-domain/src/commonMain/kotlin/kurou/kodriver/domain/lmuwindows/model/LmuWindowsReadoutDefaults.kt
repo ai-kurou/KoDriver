@@ -16,6 +16,7 @@ val LMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean>
         LmuWindowsReadoutItemKey.VehicleDamage.Root to false,
         LmuWindowsReadoutItemKey.PitTiming.Root to true,
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false,
+        LmuWindowsReadoutItemKey.RemainingFuel.Root to false,
         LmuWindowsReadoutItemKey.TyreWear.Root to false,
         LmuWindowsReadoutItemKey.BrakeTemperature.Root to false,
         LmuWindowsReadoutItemKey.BrakeWear.Root to false,
@@ -34,6 +35,7 @@ val LMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, B
         LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
         LmuWindowsReadoutItemKey.PitTiming.Root to true,
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true,
+        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
         LmuWindowsReadoutItemKey.TyreWear.Root to true,
         LmuWindowsReadoutItemKey.BrakeTemperature.Root to true,
         LmuWindowsReadoutItemKey.BrakeWear.Root to true,
@@ -51,6 +53,7 @@ val LMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
         LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
         LmuWindowsReadoutItemKey.PitTiming.Root to true,
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true,
+        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
         LmuWindowsReadoutItemKey.TyreWear.Root to true,
         LmuWindowsReadoutItemKey.BrakeTemperature.Root to true,
         LmuWindowsReadoutItemKey.BrakeWear.Root to true,
@@ -70,10 +73,11 @@ private fun lmuWindowsOrderIndex(key: LmuWindowsReadoutItemKey.TopLevel): Int =
         LmuWindowsReadoutItemKey.VehicleApproach.Root -> 1
         LmuWindowsReadoutItemKey.PitTiming.Root -> 2
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root -> 3
-        LmuWindowsReadoutItemKey.TyreTemperature.Root -> 4
-        LmuWindowsReadoutItemKey.TyreWear.Root -> 5
-        LmuWindowsReadoutItemKey.BrakeTemperature.Root -> 6
-        LmuWindowsReadoutItemKey.BrakeWear.Root -> 7
-        LmuWindowsReadoutItemKey.VehicleDamage.Root -> 8
-        LmuWindowsReadoutItemKey.MyBestLap.Root -> 9
+        LmuWindowsReadoutItemKey.RemainingFuel.Root -> 4
+        LmuWindowsReadoutItemKey.TyreTemperature.Root -> 5
+        LmuWindowsReadoutItemKey.TyreWear.Root -> 6
+        LmuWindowsReadoutItemKey.BrakeTemperature.Root -> 7
+        LmuWindowsReadoutItemKey.BrakeWear.Root -> 8
+        LmuWindowsReadoutItemKey.VehicleDamage.Root -> 9
+        LmuWindowsReadoutItemKey.MyBestLap.Root -> 10
     }

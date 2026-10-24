@@ -37,6 +37,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@Suppress("TooManyFunctions")
 class AutoReadoutListPaneTest {
     init {
         registerAllReadoutItemKeys()
@@ -140,6 +141,30 @@ class AutoReadoutListPaneTest {
         rule.onNodeWithContentDescription("バーチャルエネルギー残量").performClick()
 
         assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, clicked.single())
+    }
+
+    @Test
+    fun `燃料残量をタップするとonItemClickが呼ばれる`() {
+        val clicked = mutableListOf<ReadoutItemKey>()
+        rule.setContent {
+            KoDriverTheme {
+                AutoReadoutListPane(
+                    uiState =
+                        AutoReadoutListUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(LmuWindowsReadoutItemKey.RemainingFuel.Root),
+                            autoReadoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.RemainingFuel.Root to true),
+                        ),
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
+                    onItemClick = { clicked += it },
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("燃料残量").performClick()
+        assertEquals(LmuWindowsReadoutItemKey.RemainingFuel.Root, clicked.single())
     }
 
     @Test

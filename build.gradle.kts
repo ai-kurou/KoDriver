@@ -615,6 +615,7 @@ dependencies {
     kover(project(":feature:lmu-windows-auto-readout-vehicle-damage-detail"))
     kover(project(":feature:lmu-windows-auto-readout-tyre-temperature-detail"))
     kover(project(":feature:lmu-windows-auto-readout-remaining-virtual-energy-detail"))
+    kover(project(":feature:lmu-windows-auto-readout-remaining-fuel-detail"))
     kover(project(":feature:lmu-windows-auto-readout-tyre-wear-detail"))
     kover(project(":feature:lmu-windows-auto-readout-brake-temperature-detail"))
     kover(project(":feature:lmu-windows-auto-readout-brake-wear-detail"))

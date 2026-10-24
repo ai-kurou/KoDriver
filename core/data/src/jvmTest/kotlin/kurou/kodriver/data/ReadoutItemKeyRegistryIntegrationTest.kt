@@ -19,7 +19,7 @@ class ReadoutItemKeyRegistryIntegrationTest {
     fun `全simulator登録後の全keyが一意で復元できqueue defaultsと整合する`() {
         val entries = ReadoutItemKey.entries
 
-        assertEquals(57, entries.size)
+        assertEquals(59, entries.size)
         assertEquals(LMU_WINDOWS_READOUT_ITEM_KEYS + GT7_PS5_READOUT_ITEM_KEYS + ACE_WINDOWS_READOUT_ITEM_KEYS, entries)
         assertEquals(entries.size, entries.map { it.value }.distinct().size)
         entries.forEach { key -> assertEquals(key, ReadoutItemKey.fromValue(key.value)) }

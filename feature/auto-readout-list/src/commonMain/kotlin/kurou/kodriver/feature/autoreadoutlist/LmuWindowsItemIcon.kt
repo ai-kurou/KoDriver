@@ -21,6 +21,7 @@ internal fun lmuWindowsItemIcon(itemId: LmuWindowsReadoutItemKey): ImageVector =
         is LmuWindowsReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
         is LmuWindowsReadoutItemKey.PitTiming -> Icons.Filled.AccessTime
         is LmuWindowsReadoutItemKey.RemainingVirtualEnergy -> Icons.Filled.LocalGasStation
+        is LmuWindowsReadoutItemKey.RemainingFuel -> Icons.Filled.LocalGasStation
         is LmuWindowsReadoutItemKey.TyreWear -> Icons.Filled.DonutLarge
         is LmuWindowsReadoutItemKey.BrakeTemperature -> Icons.Filled.DeviceThermostat
         is LmuWindowsReadoutItemKey.BrakeWear -> Icons.Filled.Speed

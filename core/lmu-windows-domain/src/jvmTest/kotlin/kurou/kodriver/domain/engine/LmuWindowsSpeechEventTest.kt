@@ -192,6 +192,8 @@ class LmuWindowsSpeechEventTest {
         assertEquals("タイヤ残存率50%以下", LmuWindowsTyreWearWarning(50).narratedText)
 
         assertEquals("バーチャルエネルギー残量50%以下", LmuWindowsRemainingVirtualEnergyWarning(50).narratedText)
+        assertEquals("燃料は残り50パーセント", LmuWindowsRemainingFuelWarning(50).narratedText)
+        assertEquals(LmuWindowsReadoutItemKey.RemainingFuel.Root, LmuWindowsRemainingFuelWarning(50).readoutItemKey)
     }
 
     @Test

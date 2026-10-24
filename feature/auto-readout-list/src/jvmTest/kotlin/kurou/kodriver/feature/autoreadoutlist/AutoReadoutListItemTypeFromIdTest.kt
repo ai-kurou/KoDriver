@@ -7,6 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
+@Suppress("TooManyFunctions")
 class AutoReadoutListItemTypeFromIdTest {
     init {
         registerAllReadoutItemKeys()
@@ -99,6 +100,7 @@ class AutoReadoutListItemTypeFromIdTest {
                 LmuWindowsReadoutItemKey.VehicleApproach.Root,
                 LmuWindowsReadoutItemKey.PitTiming.Root,
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                LmuWindowsReadoutItemKey.RemainingFuel.Root,
                 LmuWindowsReadoutItemKey.TyreTemperature.Root,
                 LmuWindowsReadoutItemKey.TyreWear.Root,
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root,
@@ -134,6 +136,14 @@ class AutoReadoutListItemTypeFromIdTest {
                 Simulator.LmuWindows,
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
             ),
+        )
+    }
+
+    @Test
+    fun `lmu_windows の remaining_fuel は LmuWindows_RemainingFuel を返す`() {
+        assertEquals(
+            LmuWindowsAutoReadoutListItemType.RemainingFuel,
+            AutoReadoutListItemType.fromId(Simulator.LmuWindows, LmuWindowsReadoutItemKey.RemainingFuel.Root),
         )
     }
 

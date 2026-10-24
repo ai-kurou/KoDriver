@@ -83,6 +83,7 @@ kotlin {
             implementation(projects.feature.lmuWindowsAutoReadoutTyreTemperatureDetail)
             implementation(projects.feature.lmuWindowsAutoReadoutPitTimingDetail)
             implementation(projects.feature.lmuWindowsAutoReadoutRemainingVirtualEnergyDetail)
+            implementation(projects.feature.lmuWindowsAutoReadoutRemainingFuelDetail)
             implementation(projects.feature.lmuWindowsAutoReadoutTyreWearDetail)
             implementation(projects.feature.lmuWindowsAutoReadoutBrakeTemperatureDetail)
             implementation(projects.feature.lmuWindowsAutoReadoutBrakeWearDetail)

@@ -114,6 +114,17 @@ sealed interface LmuWindowsReadoutItemKey : ReadoutItemKey {
         }
     }
 
+    sealed interface RemainingFuel : LmuWindowsReadoutItemKey {
+        data object Root : RemainingFuel, TopLevel {
+            override val value = "lmu_windows_auto_remaining_fuel"
+            override val supportsQueue = true
+        }
+
+        data object WarningReadout : RemainingFuel {
+            override val value = "lmu_windows_auto_remaining_fuel_warning_readout"
+        }
+    }
+
     sealed interface TyreWear : LmuWindowsReadoutItemKey {
         data object Root : TyreWear, TopLevel {
             override val value = "lmu_windows_auto_tyre_wear"
