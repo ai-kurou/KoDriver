@@ -1,0 +1,351 @@
+@file:Suppress("FunctionNaming")
+
+package kurou.kodriver.feature.otherlist
+
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
+import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
+import kurou.kodriver.domain.model.OverlayTextSize
+import kurou.kodriver.domain.model.THEME_MODE_DEFAULT
+import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
+import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+
+@OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [36])
+class OtherListViewModelSettingsTest : OtherListViewModelTestFixture() {
+    @Test
+    fun `音声IDはシステム既定から保存済みIDの変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            assertEquals("", viewModel.uiState.first().voiceId)
+
+            voiceFlow.update { "saved-voice" }
+
+            assertEquals("saved-voice", viewModel.uiState.first { it.voiceId == "saved-voice" }.voiceId)
+        }
+
+    @Test
+    fun `読み上げ速度は既定値から保存済み速度の変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            assertEquals(VOICE_SPEED_DEFAULT, viewModel.uiState.first().voiceSpeed)
+
+            voiceSpeedFlow.update { 1.5f }
+
+            assertEquals(1.5f, viewModel.uiState.first { it.voiceSpeed == 1.5f }.voiceSpeed)
+        }
+
+    @Test
+    fun `声の高さは既定値から保存済みピッチの変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            assertEquals(VOICE_PITCH_DEFAULT, viewModel.uiState.first().voicePitch)
+
+            voicePitchFlow.update { 1.5f }
+
+            assertEquals(1.5f, viewModel.uiState.first { it.voicePitch == 1.5f }.voicePitch)
+        }
+
+    @Test
+    fun `オーバーレイ文字サイズは既定値から保存済み設定の変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            assertEquals(OVERLAY_TEXT_SIZE_DEFAULT, viewModel.uiState.first().overlayTextSize)
+
+            overlayTextSizeFlow.update { OverlayTextSize.LARGE }
+
+            assertEquals(
+                OverlayTextSize.LARGE,
+                viewModel.uiState.first { it.overlayTextSize == OverlayTextSize.LARGE }.overlayTextSize,
+            )
+        }
+
+    @Test
+    fun `オーバーレイ背景透明度は既定値から保存済み設定の変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            assertEquals(OVERLAY_BACKGROUND_OPACITY_DEFAULT, viewModel.uiState.first().overlayBackgroundOpacity)
+
+            overlayBackgroundOpacityFlow.update { 75 }
+
+            assertEquals(75, viewModel.uiState.first { it.overlayBackgroundOpacity == 75 }.overlayBackgroundOpacity)
+        }
+
+    @Test
+    fun `読み上げ速度をタップすると選択し再タップで解除する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            viewModel.onItemSelected(OtherListItemType.VoiceSpeed)
+            assertEquals(OtherListItemType.VoiceSpeed, viewModel.uiState.first().selectedItem)
+
+            viewModel.onItemSelected(OtherListItemType.Volume)
+            assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoiceSpeed)
+            assertEquals(OtherListItemType.VoiceSpeed, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoiceSpeed)
+            assertNull(viewModel.uiState.first().selectedItem)
+        }
+
+    @Test
+    fun `声の高さをタップすると選択し再タップで解除する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            viewModel.onItemSelected(OtherListItemType.VoicePitch)
+            assertEquals(OtherListItemType.VoicePitch, viewModel.uiState.first().selectedItem)
+
+            viewModel.onItemSelected(OtherListItemType.Volume)
+            assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoicePitch)
+            assertEquals(OtherListItemType.VoicePitch, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoicePitch)
+            assertNull(viewModel.uiState.first().selectedItem)
+        }
+
+    @Test
+    fun `音量の変更と端末音量の定期取得を反映し購読終了後は取得を停止する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            var deviceVolume = 60
+            coEvery { deviceVolumeRepository.getVolume() } answers { deviceVolume }
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            coVerify(exactly = 0) { deviceVolumeRepository.getVolume() }
+            val subscription =
+                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                    viewModel.uiState.collect()
+                }
+            runCurrent()
+            val initial = viewModel.uiState.first { it.soundVolume == 80 && it.deviceVolume == 60 }
+            assertEquals(80, initial.soundVolume)
+            assertEquals(60, initial.deviceVolume)
+
+            soundVolumeFlow.update { 100 }
+            assertEquals(100, viewModel.uiState.first { it.soundVolume == 100 }.soundVolume)
+            deviceVolume = 0
+            advanceTimeBy(1_999)
+            assertEquals(60, viewModel.uiState.first().deviceVolume)
+            advanceTimeBy(1)
+            runCurrent()
+            assertEquals(0, viewModel.uiState.first { it.deviceVolume == 0 }.deviceVolume)
+
+            subscription.cancel()
+            runCurrent()
+            advanceTimeBy(5_000)
+            runCurrent()
+            // 購読中の2回と、購読終了後の5秒の猶予中の2回。猶予が終了すると停止する。
+            coVerify(exactly = 4) { deviceVolumeRepository.getVolume() }
+            advanceTimeBy(1_000)
+            runCurrent()
+            coVerify(exactly = 4) { deviceVolumeRepository.getVolume() }
+            confirmVerified(deviceVolumeRepository)
+        }
+
+    @Test
+    fun `端末音量の取得に失敗しても直前の値を維持して取得を続ける`() =
+        runTest(dispatcher) {
+            every { soundVolumeRepository.volume() } returns MutableStateFlow(80)
+            var attempt = 0
+            coEvery { deviceVolumeRepository.getVolume() } answers {
+                when (attempt++) {
+                    0 -> throw IllegalStateException("no audio endpoint")
+                    1 -> 60
+                    else -> throw IllegalStateException("device removed")
+                }
+            }
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            val subscription =
+                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                    viewModel.uiState.collect()
+                }
+            runCurrent()
+
+            assertEquals(0, viewModel.uiState.first { it.soundVolume == 80 }.deviceVolume)
+            advanceTimeBy(2_000)
+            runCurrent()
+            assertEquals(60, viewModel.uiState.first { it.deviceVolume == 60 }.deviceVolume)
+            advanceTimeBy(2_000)
+            runCurrent()
+            assertEquals(60, viewModel.uiState.first().deviceVolume)
+
+            subscription.cancel()
+            coVerify(atLeast = 3) { deviceVolumeRepository.getVolume() }
+            confirmVerified(deviceVolumeRepository)
+        }
+
+    @Test
+    fun `テーマは保存済み設定とその変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            themeModeFlow.update { ThemeMode.DARK }
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            assertEquals(THEME_MODE_DEFAULT, viewModel.uiState.value.themeMode)
+            assertEquals(ThemeMode.DARK, viewModel.uiState.first { it.themeMode == ThemeMode.DARK }.themeMode)
+
+            themeModeFlow.update { ThemeMode.LIGHT }
+            assertEquals(ThemeMode.LIGHT, viewModel.uiState.first { it.themeMode == ThemeMode.LIGHT }.themeMode)
+
+            themeModeFlow.update { ThemeMode.SYSTEM }
+            assertEquals(ThemeMode.SYSTEM, viewModel.uiState.first { it.themeMode == ThemeMode.SYSTEM }.themeMode)
+            verify(exactly = 1) { themeRepository.observeThemeMode() }
+            confirmVerified(themeRepository)
+        }
+
+    @Test
+    fun `Windowsの音声設定を開く処理をUseCase経由でRepositoryへ委譲する`() {
+        every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+        every { soundVolumeRepository.volume() } returns soundVolumeFlow
+        coEvery { deviceVolumeRepository.getVolume() } returns 60
+        every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+        every { voiceRepository.voiceId() } returns voiceFlow
+        every { themeRepository.observeThemeMode() } returns themeModeFlow
+        every { serverIpRepository.serverIp() } returns serverIpFlow
+        every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+        every { consolePortRepository.port() } returns consolePortFlow
+        every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+        every { speechSettingsRepository.openWindowsSpeechSettings() } returns Unit
+        val viewModel = createViewModel(hapticFeedbackAvailable = true)
+
+        viewModel.openWindowsSpeechSettings()
+
+        verify(exactly = 1) { speechSettingsRepository.openWindowsSpeechSettings() }
+        confirmVerified(speechSettingsRepository)
+    }
+}
