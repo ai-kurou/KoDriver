@@ -148,7 +148,7 @@ fun ConnectionBannerContent(
                     } else {
                         Modifier
                     },
-                ).padding(horizontal = AppSpacing.large),
+                ).padding(horizontal = AppSpacing.large, vertical = AppSpacing.small),
         contentAlignment = Alignment.Center,
     ) {
         Row(
