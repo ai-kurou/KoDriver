@@ -6,7 +6,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
-import kurou.kodriver.domain.usecase.DismissLowVolumeWarningUseCase
 import kurou.kodriver.domain.usecase.ObserveDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveEffectiveKeepScreenOnUseCase
@@ -57,8 +56,7 @@ val mainModule =
         factory { ObserveAceWindowsStatusUseCase(get()) }
         factory { ObserveDeviceVolumeUseCase(get()) }
         factory { ObserveSoundVolumeUseCase(get()) }
-        factory { ObserveLowVolumeWarningUseCase(get(), get(), get()) }
-        factory { DismissLowVolumeWarningUseCase(get()) }
+        factory { ObserveLowVolumeWarningUseCase(get(), get()) }
         factory {
             val observeLmuWindows: ObserveLmuWindowsUseCase = get()
             val observeGt7Ps5: ObserveGt7Ps5UseCase = get()

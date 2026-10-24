@@ -1,7 +1,5 @@
 package kurou.kodriver.feature.main
 
-import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -12,6 +10,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -19,7 +18,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.LowVolumeWarning
-import kurou.kodriver.domain.usecase.DismissLowVolumeWarningUseCase
 import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningUseCase
 import org.junit.After
 import org.junit.Before
@@ -32,7 +30,6 @@ import kotlin.test.assertTrue
 class LowVolumeWarningViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val observeWarning: ObserveLowVolumeWarningUseCase = mockk()
-    private val dismissWarning: DismissLowVolumeWarningUseCase = mockk()
 
     @Before
     fun setUp() {
@@ -48,14 +45,14 @@ class LowVolumeWarningViewModelTest {
     fun `警告なしを非表示状態にする`() =
         runTest(dispatcher) {
             every { observeWarning() } returns MutableStateFlow(null)
-            val viewModel = LowVolumeWarningViewModel(observeWarning, dismissWarning)
+            val viewModel = LowVolumeWarningViewModel(observeWarning)
             val job = launch { viewModel.uiState.collect() }
             advanceUntilIdle()
 
             assertFalse(viewModel.uiState.first().isVisible)
             job.cancelAndJoin()
             verify(exactly = 1) { observeWarning() }
-            confirmVerified(observeWarning, dismissWarning)
+            confirmVerified(observeWarning)
         }
 
     @Test
@@ -80,38 +77,64 @@ class LowVolumeWarningViewModelTest {
         )
 
     @Test
-    fun `dismissは現在の警告を一度渡す`() =
+    fun `dismissすると警告が続く間は非表示のままにする`() =
         runTest(dispatcher) {
-            val warning = LowVolumeWarning(deviceVolume = 20, soundVolume = null)
-            every { observeWarning() } returns MutableStateFlow(warning)
-            coEvery { dismissWarning(warning) } returns Unit
-            val viewModel = LowVolumeWarningViewModel(observeWarning, dismissWarning)
+            val warnings = MutableStateFlow<LowVolumeWarning?>(LowVolumeWarning(deviceVolume = 20, soundVolume = null))
+            every { observeWarning() } returns warnings
+            val viewModel = LowVolumeWarningViewModel(observeWarning)
             val job = launch { viewModel.uiState.collect() }
             advanceUntilIdle()
 
             viewModel.dismiss()
             advanceUntilIdle()
+            assertFalse(viewModel.uiState.value.isVisible)
+            warnings.update { LowVolumeWarning(deviceVolume = 10, soundVolume = null) }
+            advanceUntilIdle()
+            assertFalse(viewModel.uiState.value.isVisible)
 
-            coVerify(exactly = 1) { dismissWarning(warning) }
             job.cancelAndJoin()
             verify(exactly = 1) { observeWarning() }
-            confirmVerified(observeWarning, dismissWarning)
+            confirmVerified(observeWarning)
         }
 
     @Test
-    fun `警告なしのdismissはユースケースを呼ばない`() =
+    fun `警告が解消した後の再低下では再表示する`() =
         runTest(dispatcher) {
-            val warnings = MutableStateFlow<LowVolumeWarning?>(null)
+            val warnings = MutableStateFlow<LowVolumeWarning?>(LowVolumeWarning(deviceVolume = 20, soundVolume = null))
             every { observeWarning() } returns warnings
-            val viewModel = LowVolumeWarningViewModel(observeWarning, dismissWarning)
+            val viewModel = LowVolumeWarningViewModel(observeWarning)
             val job = launch { viewModel.uiState.collect() }
             advanceUntilIdle()
 
             viewModel.dismiss()
+            warnings.update { null }
             advanceUntilIdle()
+            warnings.update { LowVolumeWarning(deviceVolume = 25, soundVolume = null) }
+            advanceUntilIdle()
+
+            assertEquals(LowVolumeWarningUiState(deviceVolume = 25), viewModel.uiState.value)
             job.cancelAndJoin()
             verify(exactly = 1) { observeWarning() }
-            confirmVerified(observeWarning, dismissWarning)
+            confirmVerified(observeWarning)
+        }
+
+    @Test
+    fun `警告なしのdismissは以後の警告を抑制しない`() =
+        runTest(dispatcher) {
+            val warnings = MutableStateFlow<LowVolumeWarning?>(null)
+            every { observeWarning() } returns warnings
+            val viewModel = LowVolumeWarningViewModel(observeWarning)
+            val job = launch { viewModel.uiState.collect() }
+            advanceUntilIdle()
+
+            viewModel.dismiss()
+            warnings.update { LowVolumeWarning(deviceVolume = 20, soundVolume = null) }
+            advanceUntilIdle()
+
+            assertTrue(viewModel.uiState.value.isVisible)
+            job.cancelAndJoin()
+            verify(exactly = 1) { observeWarning() }
+            confirmVerified(observeWarning)
         }
 
     private fun assertMapped(
@@ -120,7 +143,7 @@ class LowVolumeWarningViewModelTest {
     ) = runTest(dispatcher) {
         val warnings = MutableStateFlow<LowVolumeWarning?>(warning)
         every { observeWarning() } returns warnings
-        val viewModel = LowVolumeWarningViewModel(observeWarning, dismissWarning)
+        val viewModel = LowVolumeWarningViewModel(observeWarning)
         val job = launch { viewModel.uiState.collect() }
         advanceUntilIdle()
 
@@ -128,6 +151,6 @@ class LowVolumeWarningViewModelTest {
         assertTrue(viewModel.uiState.first().isVisible)
         job.cancelAndJoin()
         verify(exactly = 1) { observeWarning() }
-        confirmVerified(observeWarning, dismissWarning)
+        confirmVerified(observeWarning)
     }
 }
