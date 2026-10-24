@@ -31,6 +31,7 @@ class AppScreenLowVolumeBannerTest {
         }
         rule.onNodeWithText("端末の音量が低くなっています").assertIsDisplayed()
         rule.runOnIdle { guidance.value = TtsUnavailableGuidance.EngineMissing }
+        rule.mainClock.advanceTimeBy(300)
         rule.onNodeWithText("端末の音量が低くなっています").assertDoesNotExist()
         rule.onNodeWithText("音声読み上げを利用できません").assertIsDisplayed()
     }
