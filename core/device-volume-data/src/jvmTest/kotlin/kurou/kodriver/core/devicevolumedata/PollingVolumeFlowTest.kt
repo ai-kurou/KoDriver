@@ -42,4 +42,34 @@ class PollingVolumeFlowTest {
             assertEquals(listOf(10, 20), result)
             assertEquals(4, calls)
         }
+
+    @Test
+    fun `取得に失敗した回は流さず次回の取得を続ける`() =
+        runTest {
+            var calls = 0
+            val result = mutableListOf<Int>()
+            backgroundScope.launch {
+                pollingVolumeFlow(intervalMillis = 1_000) {
+                    when (calls++) {
+                        0 -> error("no device")
+                        1 -> 40
+                        2 -> error("disconnected")
+                        else -> 50
+                    }
+                }.take(2).toList(result)
+            }
+
+            runCurrent()
+            assertEquals(emptyList(), result)
+            advanceTimeBy(1_000)
+            runCurrent()
+            assertEquals(listOf(40), result)
+            advanceTimeBy(1_000)
+            runCurrent()
+            assertEquals(listOf(40), result)
+            advanceTimeBy(1_000)
+            runCurrent()
+            assertEquals(listOf(40, 50), result)
+            assertEquals(4, calls)
+        }
 }
