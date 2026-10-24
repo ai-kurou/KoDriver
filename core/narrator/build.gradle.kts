@@ -3,6 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.kover)
 }
@@ -21,6 +23,10 @@ kotlin {
                 .get()
                 .toInt()
 
+        androidResources {
+            enable = true
+        }
+
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
         }
@@ -33,6 +39,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.compose.components.resources)
+            implementation(libs.compose.runtime)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesCore)
             implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
@@ -69,4 +77,9 @@ kotlin {
             }
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "kurou.kodriver.core.narrator.generated.resources"
+    publicResClass = true
 }
