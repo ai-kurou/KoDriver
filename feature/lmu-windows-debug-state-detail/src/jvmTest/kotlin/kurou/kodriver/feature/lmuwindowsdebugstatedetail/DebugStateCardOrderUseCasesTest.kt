@@ -41,6 +41,7 @@ class DebugStateCardOrderUseCasesTest {
             "BRAKE_TEMPERATURE",
             "BRAKE_WEAR",
             "TYRE_WEAR",
+            "VIRTUAL_ENERGY",
             "FUEL_CONSUMPTION",
             "PIT_TIMING_REMAINING_LAPS",
             "VEHICLE_DAMAGE",

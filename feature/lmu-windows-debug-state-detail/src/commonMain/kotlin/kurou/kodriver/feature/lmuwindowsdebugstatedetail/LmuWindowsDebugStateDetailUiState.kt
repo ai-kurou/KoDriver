@@ -20,6 +20,7 @@ internal val defaultDebugStateCardOrder =
         LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE,
         LmuWindowsDebugStateCardKey.BRAKE_WEAR,
         LmuWindowsDebugStateCardKey.TYRE_WEAR,
+        LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY,
         LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
         LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
         LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE,

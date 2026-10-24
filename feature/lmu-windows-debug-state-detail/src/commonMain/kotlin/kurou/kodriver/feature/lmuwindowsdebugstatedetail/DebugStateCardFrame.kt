@@ -30,7 +30,10 @@ internal fun DebugStateCardFrame(
                 colors.error
             }
 
-            LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION, LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS -> {
+            LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
+            LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY,
+            LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
+            -> {
                 KoDriverExtendedColors.current.onWarningContainer
             }
 
@@ -65,6 +68,7 @@ private val debugStateCardSymbols =
         LmuWindowsDebugStateCardKey.BRAKE_WEAR to "◒",
         LmuWindowsDebugStateCardKey.TYRE_WEAR to "◴",
         LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION to "⛽",
+        LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY to "⚡",
         LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS to "⚒",
         LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE to "💥",
     )

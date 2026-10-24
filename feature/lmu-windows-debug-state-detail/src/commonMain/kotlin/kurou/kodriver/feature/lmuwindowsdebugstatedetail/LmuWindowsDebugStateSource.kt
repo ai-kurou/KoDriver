@@ -90,7 +90,7 @@ internal class LmuWindowsDebugStateSource(
                     markCardsReceived(
                         setOf(
                             LmuWindowsDebugStateCardKey.SESSION,
-                            LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
+                            LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY,
                             LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                         ),
                     )
@@ -198,6 +198,7 @@ internal class LmuWindowsDebugStateSource(
                         LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE,
                         LmuWindowsDebugStateCardKey.TYRE_WEAR,
                         LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
+                        LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY,
                         LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                     ),
                 )

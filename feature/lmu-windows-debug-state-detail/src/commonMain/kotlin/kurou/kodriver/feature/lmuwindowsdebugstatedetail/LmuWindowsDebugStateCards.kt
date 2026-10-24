@@ -11,13 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
-import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitState
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
 import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
@@ -28,9 +25,6 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.deb
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_flag_none
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_flag_red
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_flag_yellow
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_fuel_consumption_per_lap_ratio
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_fuel_consumption_remaining_laps
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_fuel_consumption_remaining_percent
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_side_by_side_duration
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_side_by_side_left
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_side_by_side_none
@@ -148,47 +142,6 @@ internal fun LmuWindowsVehicleLocationContent(lmuWindowsPitStatus: LmuWindowsPit
                     booleanDisplayName(lmuWindowsPitStatus.inGarageStall),
                 ),
         )
-    }
-}
-
-@Composable
-internal fun LmuWindowsFuelContent(
-    virtualEnergy: LmuWindowsVirtualEnergyData?,
-    lmuWindowsTelemetry: LmuWindowsTelemetryData?,
-) {
-    val remainingPercent = calculateLmuVirtualEnergyRemainingPercent(virtualEnergy)
-    if (remainingPercent == null) {
-        DebugStateUnavailableContent()
-        return
-    }
-    val consumption = calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry)
-    Column {
-        Text(
-            text =
-                stringResource(
-                    Res.string.debug_state_fuel_consumption_remaining_percent,
-                    formatOneDecimal(remainingPercent),
-                ),
-            style = koDriverNumericTextStyle(MaterialTheme.typography.headlineMedium),
-        )
-        if (consumption != null) {
-            Text(
-                text =
-                    stringResource(
-                        Res.string.debug_state_fuel_consumption_per_lap_ratio,
-                        formatOneDecimal(consumption.consumptionPerLap),
-                    ),
-                style = koDriverNumericTextStyle(),
-            )
-            Text(
-                text =
-                    stringResource(
-                        Res.string.debug_state_fuel_consumption_remaining_laps,
-                        formatOneDecimal(consumption.preciseRemainingLaps),
-                    ),
-                style = koDriverNumericTextStyle(),
-            )
-        }
     }
 }
 
