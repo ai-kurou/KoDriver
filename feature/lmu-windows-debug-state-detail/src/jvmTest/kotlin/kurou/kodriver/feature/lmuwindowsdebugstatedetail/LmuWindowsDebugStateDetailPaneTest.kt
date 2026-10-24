@@ -50,7 +50,7 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
-                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
+                    modifier = Modifier.requiredSize(1560.dp, 3000.dp),
                     uiState = LmuWindowsDebugStateDetailUiState(),
                     canNavigateBack = true,
                     onBack = {},
@@ -58,7 +58,7 @@ class LmuWindowsDebugStateDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("未取得").assertCountEquals(15)
+        rule.onAllNodesWithText("未取得").assertCountEquals(16)
     }
 
     @Test
