@@ -2,11 +2,13 @@ package kurou.kodriver.core.lmuwindowsdata.websocket
 
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
@@ -23,6 +25,7 @@ import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 
 private const val DEFAULT_PORT = 8080
 private const val DEFAULT_RETRY_DELAY_MS = 3000L
+private const val FUEL_MAX_AGE_MS = 5_000L
 
 // サーバーは timing と fuel を配信し、他のフィールドはダミー値で埋める。
 private val emptyEngine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0)
@@ -70,8 +73,14 @@ internal class WebSocketLmuWindowsRepository(
                                 port = port,
                                 path = KoDriverServerFeature.FUEL.webSocketPath(Simulator.LmuWindows),
                                 retryDelayMs = retryDelayMs,
-                                decode = { json.decodeFromString<LmuWindowsFuelData>(it) },
-                            ).onStart { emit(emptyFuel) },
+                                decode = {
+                                    json.decodeFromString<LmuWindowsFuelData>(it).copy(receivedAtMs = System.currentTimeMillis())
+                                },
+                            ).transformLatest { fuel ->
+                                emit(fuel)
+                                delay(FUEL_MAX_AGE_MS)
+                                emit(emptyFuel)
+                            }.onStart { emit(emptyFuel) },
                     ) { timing, fuel ->
                         LmuWindowsTelemetryData(
                             timestampMs = 0L,

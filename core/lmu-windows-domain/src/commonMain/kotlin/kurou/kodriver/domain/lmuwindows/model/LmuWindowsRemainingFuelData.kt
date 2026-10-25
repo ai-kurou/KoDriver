@@ -11,4 +11,5 @@ import kotlinx.serialization.Transient
 data class LmuWindowsRemainingFuelData(
     val remainingPercent: Int,
     @Transient val exactPercent: Double = remainingPercent.toDouble(),
+    @Transient val receivedAtMs: Long? = null,
 )

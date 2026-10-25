@@ -281,6 +281,67 @@ class WebSocketLmuWindowsRepositoryTest {
             }
         }
 
+    @Test
+    fun `timing継続中もfuel切断後は期限切れになり再接続の新しいfuelで回復する`() =
+        runTest {
+            val timingSockets = Channel<WebSocket>(Channel.UNLIMITED)
+            val fuelSockets = Channel<WebSocket>(Channel.UNLIMITED)
+            server.dispatcher =
+                object : Dispatcher() {
+                    override fun dispatch(request: RecordedRequest): MockResponse =
+                        MockResponse().withWebSocketUpgrade(
+                            object : WebSocketListener() {
+                                override fun onOpen(webSocket: WebSocket, response: Response) {
+                                    openedSockets.add(webSocket)
+                                    if (request.path == "/ws/lmu_windows/fuel") {
+                                        fuelSockets.trySend(webSocket)
+                                    } else {
+                                        webSocket.send(TIMING_JSON)
+                                        timingSockets.trySend(webSocket)
+                                    }
+                                }
+                            },
+                        )
+                }
+            fakeIpRepository.setIp("127.0.0.1")
+            val results = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val job = launch(Dispatchers.IO) {
+                buildRepository(retryDelayMs = 0L).telemetryStream().collect { results.send(it) }
+            }
+            try {
+                withContext(Dispatchers.IO) {
+                    withTimeout(15_000) {
+                        val timing = timingSockets.receive()
+                        val firstFuel = fuelSockets.receive()
+                        firstFuel.send("""{"currentLiters":42.0,"capacityLiters":100.0}""")
+                        var received = results.receive()
+                        while (received.fuel.capacityLiters.value == 0.0) received = results.receive()
+                        val receivedAt = received.fuel.receivedAtMs
+                        assertTrue(receivedAt != null)
+                        firstFuel.close(1000, "drop")
+                        val reconnectedFuel = fuelSockets.receive()
+                        timing.send(TIMING_JSON.replace("60000", "59000"))
+                        var continued = results.receive()
+                        while (continued.timing.bestLapTimeMs != 59_000L) continued = results.receive()
+                        assertEquals(receivedAt, continued.fuel.receivedAtMs)
+                        var expired = results.receive()
+                        while (expired.fuel.capacityLiters.value > 0.0) expired = results.receive()
+                        assertEquals(0.0, expired.fuel.currentLiters.value)
+                        assertEquals(59_000L, expired.timing.bestLapTimeMs)
+                        timing.send(TIMING_JSON)
+                        assertEquals(0.0, results.receive().fuel.capacityLiters.value)
+                        reconnectedFuel.send("""{"currentLiters":0.0,"capacityLiters":100.0}""")
+                        val restored = results.receive()
+                        assertEquals(100.0, restored.fuel.capacityLiters.value)
+                        assertEquals(0.0, restored.fuel.currentLiters.value)
+                        assertTrue(restored.fuel.receivedAtMs!! > receivedAt)
+                    }
+                }
+            } finally {
+                job.cancel()
+            }
+        }
+
     private fun serveTimingAndFuel() {
         server.dispatcher =
             object : Dispatcher() {

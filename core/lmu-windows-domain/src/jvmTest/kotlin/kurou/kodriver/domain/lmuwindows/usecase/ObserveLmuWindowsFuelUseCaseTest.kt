@@ -52,6 +52,19 @@ class ObserveLmuWindowsFuelUseCaseTest {
         }
 
     @Test
+    fun `timingによる再送でも燃料の実受信時刻を保持する`() =
+        runTest {
+            val received = fuel(1.0, 4.0).copy(receivedAtMs = 123L)
+            every { repository.telemetryStream() } returns flowOf(telemetry(received), telemetry(received))
+            assertEquals(
+                listOf(123L, 123L),
+                buildList { ObserveLmuWindowsFuelUseCase(repository)().collect { add(it.receivedAtMs) } },
+            )
+            verify(exactly = 1) { repository.telemetryStream() }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `整数化は切り捨てで元の割合も保持する`() =
         runTest {
             every { repository.telemetryStream() } returns flowOf(telemetry(fuel(1.7, 4.0)))

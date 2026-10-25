@@ -102,7 +102,7 @@ LMU の手動依頼（一覧の ▶・セットホットキー）で、対象セ
 
 タイヤ摩耗は共有前の Flow で最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。受信から5秒以内なら最小残存率を domain に渡し、UseCase で整数%に丸めて他の項目と同じ連結用イベントで処理する。既定文言は「タイヤ摩耗残り{percent}%」。未受信・鮮度切れ・空の wheels はデータ無しとして扱う。自動警告の前回値・警告済み状態は変更しない。
 
-LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingFuel.Root` を使う。受信から5秒以内の `remainingPercent` を比率（0〜1）に変換し、手動判定で四捨五入した整数％を、既定文言 `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）へ埋める。未受信・鮮度切れは「燃料残量はデータがありません」を連結し、全項目がデータ無しなら「データがありません」のみを読む。先頭が燃料残量なら開始音・優先度・ログのキーは `RemainingFuel.Root`。自動燃料警告の `remainingFuelWarned` は変更しない。 `fuelFlow` の共有前に最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。
+LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingFuel.Root` を使う。受信から5秒以内の `remainingPercent` を比率（0〜1）に変換し、手動判定で四捨五入した整数％を、既定文言 `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）へ埋める。未受信・鮮度切れは「燃料残量はデータがありません」を連結し、全項目がデータ無しなら「データがありません」のみを読む。先頭が燃料残量なら開始音・優先度・ログのキーは `RemainingFuel.Root`。自動燃料警告の `remainingFuelWarned` は変更しない。 `fuelFlow` の共有前に最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。Android の燃料は WebSocket の実受信時刻を使い、timing に伴う同じ燃料の再通知では鮮度を更新しない。ピットタイミングも実受信から5秒超の燃料は判定に使わない。
 
 手動ブレーキ残量は `BrakeWear.Root` に対応し、4輪の `remainingPercent`（0〜100）の最小値を四捨五入して、既定文言「ブレーキ残量{percent}%」へ置換する。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。未受信・受信から5秒超・空の wheels はデータ無しとして扱い、自動警告の前回値・警告済み状態は変更しない。
 

@@ -43,7 +43,7 @@ Virtual Energy を使うのは Hypercar（`Hyper`）と GT3（`GT3`）のみで�
 
 `LmuWindowsRemainingFuelPreferences` は閾値%と自由文言を `lmu_windows_auto_remaining_fuel_preferences.pb` に保存する。既定値・文言置換は ACE 燃料警告と同じ。燃料テレメトリ自体は新規Repositoryを作らず `LmuWindowsRepository.telemetryStream()` から取得する。
 
-Android では `WebSocketLmuWindowsRepository` が timing と fuel を WebSocket で受信して補う。fuel 未受信時は容量0の初期値で timing の配信を継続する。
+Android では `WebSocketLmuWindowsRepository` が timing と fuel を WebSocket で受信して補う。fuel 未受信時および実受信から5秒間更新がない場合は容量0の値で timing の配信を継続する。再接続後に新しい fuel を受信すると復帰する。fuel の実受信時刻は通信に含めないローカルなメタデータとして保持し、timing の更新で鮮度を延長しない。
 
 
 LMUピットタイミングの燃料は `LmuWindowsReadoutItemKey.PitTiming.Fuel`（`lmu_windows_auto_pit_timing_fuel`）で保存する。
