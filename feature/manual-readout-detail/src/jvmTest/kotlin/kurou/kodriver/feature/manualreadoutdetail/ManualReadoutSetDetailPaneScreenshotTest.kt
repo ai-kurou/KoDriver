@@ -53,6 +53,21 @@ class ManualReadoutSetDetailPaneScreenshotTest {
     fun `GT7の残り燃料と周回数の文言`() = screenshot(gt7Ps5ManualReadoutItemKeys(), selected = true)
 
     @Test
+    fun `GT7の項目追加シート`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                            ManualReadoutItemPickerSheetContent(gt7Ps5ManualReadoutItemKeys(), {})
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
     fun `項目追加シート`() =
         composeScreenshotTest {
             setContent {
