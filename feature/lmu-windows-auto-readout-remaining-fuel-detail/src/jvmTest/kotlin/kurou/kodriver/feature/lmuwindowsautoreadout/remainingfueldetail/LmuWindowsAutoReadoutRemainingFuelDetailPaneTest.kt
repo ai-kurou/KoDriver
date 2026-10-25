@@ -40,6 +40,27 @@ class LmuWindowsAutoReadoutRemainingFuelDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `対象クラスの見出しと燃料を使用する4クラスが対象として表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutRemainingFuelDetailPaneContent()
+            }
+        }
+
+        rule.onNodeWithText("対象クラス").performScrollTo().assertIsDisplayed()
+        listOf(
+            "Hypercar、対象外",
+            "LMP2、対象",
+            "ELMS LMP2、対象",
+            "LMP3、対象",
+            "LMGTE、対象",
+            "LMGT3、対象外",
+        ).forEach { description ->
+            rule.onNodeWithContentDescription(description).performScrollTo().assertIsDisplayed()
+        }
+    }
+
+    @Test
     fun `文言の中間のカーソル位置にpercentを挿入して保存通知する`() {
         val changed = mutableListOf<String>()
         rule.setContent {
