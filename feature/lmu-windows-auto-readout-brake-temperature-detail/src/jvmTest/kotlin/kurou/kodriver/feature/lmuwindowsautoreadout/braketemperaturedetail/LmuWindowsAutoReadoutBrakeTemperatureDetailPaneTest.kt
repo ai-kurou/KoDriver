@@ -11,6 +11,8 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -429,9 +431,57 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("GTE（650°C）").performScrollTo().performClick()
+        rule.onNodeWithContentDescription("Hypercar、800°C").assertIsSelected()
+        rule
+            .onNodeWithContentDescription("LMGTE、650°C")
+            .assertIsNotSelected()
+            .performScrollTo()
+            .performClick()
+        rule.onNodeWithContentDescription("LMP2、800°C").assertDoesNotExist()
         assertEquals(LmuWindowsVehicleClassData.Gte, selected)
-        rule.onNodeWithText("custom（900°C）").assertDoesNotExist()
+        rule.onNodeWithContentDescription("custom、900°C").assertDoesNotExist()
+    }
+
+    @Test
+    fun `画像タイルの選択結果を反映し警告OFFでは選択を通知しない`() {
+        var uiState by mutableStateOf(
+            LmuWindowsAutoReadoutBrakeTemperatureDetailUiState(
+                vehicleClassHighThresholdCelsius =
+                    mapOf(
+                        LmuWindowsVehicleClassData.Hypercar to 800,
+                        LmuWindowsVehicleClassData.Gt3 to 650,
+                    ),
+            ),
+        )
+        val selections = mutableListOf<LmuWindowsVehicleClassData>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
+                    uiState = uiState,
+                    onVehicleClassSelected = {
+                        selections += it
+                        uiState = uiState.copy(selectedVehicleClass = it)
+                    },
+                )
+            }
+        }
+
+        rule
+            .onNodeWithContentDescription("LMGT3、650°C")
+            .performScrollTo()
+            .performClick()
+        rule.onNodeWithContentDescription("LMGT3、650°C").assertIsSelected()
+        rule.onNodeWithContentDescription("Hypercar、800°C").assertIsNotSelected()
+        rule.runOnIdle { uiState = uiState.copy(enabled = false) }
+        rule
+            .onNodeWithContentDescription("Hypercar、800°C")
+            .assertIsNotEnabled()
+            .performClick()
+        rule
+            .onNodeWithContentDescription("LMGT3、650°C")
+            .assertIsNotEnabled()
+            .assertIsSelected()
+        assertEquals(listOf<LmuWindowsVehicleClassData>(LmuWindowsVehicleClassData.Gt3), selections)
     }
 
     private fun setResetTestContent(
