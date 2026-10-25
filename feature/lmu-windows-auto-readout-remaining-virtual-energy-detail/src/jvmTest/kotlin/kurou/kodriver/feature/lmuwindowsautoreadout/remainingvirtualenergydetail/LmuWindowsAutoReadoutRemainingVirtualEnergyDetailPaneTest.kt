@@ -40,6 +40,27 @@ class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `対象クラスの見出しと全6クラスの対象区分が表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPaneContent()
+            }
+        }
+
+        rule.onNodeWithText("対象クラス").performScrollTo().assertIsDisplayed()
+        listOf(
+            "Hypercar、対象",
+            "LMP2、対象外",
+            "ELMS LMP2、対象外",
+            "LMP3、対象外",
+            "LMGTE、対象外",
+            "LMGT3、対象",
+        ).forEach { contentDescription ->
+            rule.onNodeWithContentDescription(contentDescription).performScrollTo().assertIsDisplayed()
+        }
+    }
+
+    @Test
     fun `文言の中間のカーソル位置にpercentを挿入して保存通知する`() {
         val changed = mutableListOf<String>()
         rule.setContent {
