@@ -148,7 +148,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("バーチャルエネルギーの残り周回数").performScrollTo().performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("エネルギーは残り約3周")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("バーチャルエネルギーは残り約3周")
     }
 
     @Test

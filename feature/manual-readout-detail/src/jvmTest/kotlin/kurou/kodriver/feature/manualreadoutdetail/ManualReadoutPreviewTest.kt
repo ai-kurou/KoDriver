@@ -66,14 +66,18 @@ class ManualReadoutPreviewTest {
     fun `エネルギー周回数はサンプル周回数に置換し空欄を除いて保存順に連結する`() {
         val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
-        assertEquals("エネルギーは残り約3周", manualReadoutPreview(state))
+        assertEquals("バーチャルエネルギーは残り約3周", manualReadoutPreview(state))
+        assertEquals(
+            "エネルギーは残り約3周",
+            manualReadoutPreview(state.copy(itemTexts = mapOf(key to "エネルギーは残り約{laps}周"))),
+        )
         assertEquals(
             "あと3 {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "あと{laps} {unknown}"))),
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "エネルギーは残り約3周、タイヤ温度90℃",
+            "バーチャルエネルギーは残り約3周、タイヤ温度90℃",
             manualReadoutPreview(
                 state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.TyreTemperature.Root.value)),
             ),

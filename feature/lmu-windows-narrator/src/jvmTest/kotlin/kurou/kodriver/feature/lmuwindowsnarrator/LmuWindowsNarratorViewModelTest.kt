@@ -811,9 +811,9 @@ class LmuWindowsNarratorViewModelTest {
                 listOf(
                     "データがありません",
                     "データがありません",
-                    "エネルギーは残り約4周",
-                    "エネルギーは残り約4周",
-                    "エネルギーは残り約4周",
+                    "バーチャルエネルギーは残り約4周",
+                    "バーチャルエネルギーは残り約4周",
+                    "バーチャルエネルギーは残り約4周",
                     "データがありません",
                 ),
                 spoken.map { it.narratedText },
@@ -852,7 +852,7 @@ class LmuWindowsNarratorViewModelTest {
             currentTime = 60_000L
             energy.send(remainingVirtualEnergy(remainingRatio = 0.5))
             assertEquals(
-                listOf("エネルギーは残り約2周", "エネルギー切れのため2周以内にピットイン"),
+                listOf("バーチャルエネルギーは残り約2周", "エネルギー切れのため2周以内にピットイン"),
                 spoken.map { it.narratedText },
             )
         }

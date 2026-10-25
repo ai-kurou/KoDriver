@@ -21,9 +21,9 @@ const val LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT = "燃料は残り約
 const val LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT = "タイヤ摩耗のため必ずピットイン"
 const val LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT = "燃料残り1周未満"
 
-/** 手動読み上げのエネルギー残り周回数の既定文言。 */
-const val LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT = "エネルギーは残り約{laps}周"
-const val LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT = "エネルギー残り1周未満"
+/** 手動読み上げのバーチャルエネルギー残り周回数の既定文言。 */
+const val LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT = "バーチャルエネルギーは残り約{laps}周"
+const val LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT = "バーチャルエネルギー残り1周未満"
 
 /** 手動読み上げのタイヤ摩耗残り周回数の既定文言。 */
 const val LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT = "タイヤは残り約{laps}周"

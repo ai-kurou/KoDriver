@@ -27,6 +27,9 @@ class LmuWindowsManualReadoutItemsTest {
             ),
             definitions.keys.take(2),
         )
+        val energyLaps = definitions.getValue(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value)
+        assertEquals("バーチャルエネルギーの残り周回数", energyLaps.name)
+        assertEquals("バーチャルエネルギーは残り約{laps}周", energyLaps.textDefault)
         val laps = definitions.getValue(LmuWindowsReadoutItemKey.RemainingFuel.Laps.value)
         assertEquals("燃料の残り周回数", laps.name)
         assertEquals(LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT, laps.textDefault)
