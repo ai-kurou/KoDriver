@@ -3529,6 +3529,101 @@ class ApplicationTest {
     }
 
     @Test
+    fun `燃料情報をJSONでWebSocketへ送信し同一値も継続して送信する`() =
+        testApplication {
+            val repository = FakeLmuWindowsRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        lmuWindows =
+                            LmuWindowsServerUseCases(
+                                observeLmuWindowsRaceFlags =
+                                    ObserveLmuWindowsRaceFlagsUseCase(
+                                        FakeLmuWindowsFlagRepository(),
+                                    ),
+                                observeLmuWindowsVehicleApproach =
+                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                        EmptyLmuWindowsVehicleApproachRepository,
+                                    ),
+                                observeLmuWindowsVehicleDamage =
+                                    ObserveLmuWindowsVehicleDamageUseCase(
+                                        EmptyLmuWindowsVehicleDamageRepository,
+                                    ),
+                                observeLmuWindowsTyreCarcassTemperature =
+                                    ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeLmuWindowsBrakeTemperature =
+                                    ObserveLmuWindowsBrakeTemperatureUseCase(
+                                        EmptyLmuWindowsBrakeTemperatureRepository,
+                                    ),
+                                observeLmuWindowsVehicleClass =
+                                    ObserveLmuWindowsVehicleClassUseCase(
+                                        EmptyLmuWindowsVehicleClassRepository,
+                                    ),
+                                observeLmuWindowsTyreWear =
+                                    ObserveLmuWindowsTyreWearUseCase(
+                                        EmptyLmuWindowsTyreWearRepository,
+                                    ),
+                                observeLmuWindows = ObserveLmuWindowsUseCase(repository),
+                                observeLmuWindowsVirtualEnergy =
+                                    ObserveLmuWindowsVirtualEnergyUseCase(
+                                        EmptyLmuWindowsVirtualEnergyRepository,
+                                    ),
+                                observeLmuWindowsPitStatus =
+                                    ObserveLmuWindowsPitStatusUseCase(
+                                        EmptyLmuWindowsPitStatusRepository,
+                                    ),
+                                observeLmuWindowsBrakeWear =
+                                    ObserveLmuWindowsBrakeWearUseCase(EmptyLmuWindowsBrakeWearRepository),
+                                observeLmuWindowsTyreDetached =
+                                    ObserveLmuWindowsTyreDetachedUseCase(
+                                        EmptyLmuWindowsTyreDetachedRepository,
+                                    ),
+                            ),
+                        aceWindows =
+                            AceWindowsServerUseCases(
+                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                                observeAceWindowsStatus =
+                                    ObserveAceWindowsStatusUseCase(
+                                        EmptyAceWindowsStatusRepository,
+                                    ),
+                                observeAceWindowsTyreCarcassTemperature =
+                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeAceWindowsVehicleApproach =
+                                    ObserveAceWindowsVehicleApproachUseCase(
+                                        EmptyAceWindowsVehicleApproachRepository,
+                                    ),
+                                observeAceWindowsBestLapTime =
+                                    ObserveAceWindowsBestLapTimeUseCase(
+                                        EmptyAceWindowsBestLapTimeRepository,
+                                    ),
+                                observeAceWindowsRemainingFuelLaps =
+                                    ObserveAceWindowsRemainingFuelLapsUseCase(
+                                        EmptyAceWindowsRemainingFuelLapsRepository,
+                                    ),
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/lmu_windows/fuel") {
+                    val fuel = LmuWindowsFuelData(LmuWindowsFuelUnit(42.0), LmuWindowsFuelUnit(100.0))
+                    repeat(2) {
+                        repository.emit(timingTelemetryData1.copy(fuel = fuel))
+                        val message = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                        assertEquals("""{"currentLiters":42.0,"capacityLiters":100.0}""", message)
+                    }
+                }
+        }
+
+    @Test
     fun `タイミング情報をJSONでWebSocketへ送信する`() =
         testApplication {
             val repository = FakeLmuWindowsRepository()

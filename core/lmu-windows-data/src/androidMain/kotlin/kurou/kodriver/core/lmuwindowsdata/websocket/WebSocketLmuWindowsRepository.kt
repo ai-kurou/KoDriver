@@ -3,9 +3,10 @@ package kurou.kodriver.core.lmuwindowsdata.websocket
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
@@ -23,8 +24,7 @@ import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 private const val DEFAULT_PORT = 8080
 private const val DEFAULT_RETRY_DELAY_MS = 3000L
 
-// サーバーは timing フィールドのみを配信するため、他のフィールドはダミー値で埋める。
-// LmuWindowsNarratorViewModel など Narrator 側は timing フィールドしか参照しない。
+// サーバーは timing と fuel を配信し、他のフィールドはダミー値で埋める。
 private val emptyEngine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0)
 private val emptyInputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0)
 private val emptyTyres = LmuWindowsTyreData(wheels = emptyMap())
@@ -56,24 +56,34 @@ internal class WebSocketLmuWindowsRepository(
                 if (ip == null) {
                     emptyFlow()
                 } else {
-                    client.webSocketFlow(
-                        host = ip,
-                        port = port,
-                        path = KoDriverServerFeature.MY_BEST_LAP.webSocketPath(Simulator.LmuWindows),
-                        retryDelayMs = retryDelayMs,
-                        decode = { json.decodeFromString<LmuWindowsTimingData>(it) },
-                    )
+                    combine(
+                        client.webSocketFlow(
+                            host = ip,
+                            port = port,
+                            path = KoDriverServerFeature.MY_BEST_LAP.webSocketPath(Simulator.LmuWindows),
+                            retryDelayMs = retryDelayMs,
+                            decode = { json.decodeFromString<LmuWindowsTimingData>(it) },
+                        ),
+                        client
+                            .webSocketFlow(
+                                host = ip,
+                                port = port,
+                                path = KoDriverServerFeature.FUEL.webSocketPath(Simulator.LmuWindows),
+                                retryDelayMs = retryDelayMs,
+                                decode = { json.decodeFromString<LmuWindowsFuelData>(it) },
+                            ).onStart { emit(emptyFuel) },
+                    ) { timing, fuel ->
+                        LmuWindowsTelemetryData(
+                            timestampMs = 0L,
+                            engine = emptyEngine,
+                            inputs = emptyInputs,
+                            tyres = emptyTyres,
+                            fuel = fuel,
+                            timing = timing,
+                            vehicle = emptyVehicle,
+                        )
+                    }
                 }
-            }.map { timing ->
-                LmuWindowsTelemetryData(
-                    timestampMs = 0L,
-                    engine = emptyEngine,
-                    inputs = emptyInputs,
-                    tyres = emptyTyres,
-                    fuel = emptyFuel,
-                    timing = timing,
-                    vehicle = emptyVehicle,
-                )
             }
 
     override suspend fun isConnected(): Boolean = false

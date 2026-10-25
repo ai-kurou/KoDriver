@@ -18,6 +18,7 @@ WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパター�
 | `/ws/lmu_windows/brake_temperature` | `ObserveLmuWindowsBrakeTemperatureUseCase`（`LmuWindowsBrakeTemperatureRepository`） | `LmuWindowsBrakeTemperatureData`（同一値も継続配信） |
 | `/ws/lmu_windows/vehicle_class` | `ObserveLmuWindowsVehicleClassUseCase`（`LmuWindowsVehicleClassRepository`） | `LmuWindowsVehicleClassData` |
 | `/ws/lmu_windows/tyre_wear` | `ObserveLmuWindowsTyreWearUseCase`（`LmuWindowsTyreWearRepository`） | `LmuWindowsTyreWearData`（同一値も継続配信） |
+| `/ws/lmu_windows/fuel` | `ObserveLmuWindowsUseCase`（`LmuWindowsRepository`）の `fuel` | `LmuWindowsFuelData`（同一値も継続配信） |
 | `/ws/lmu_windows/my_best_lap` | `ObserveLmuWindowsUseCase`（`LmuWindowsRepository`）の `timing` | `LmuWindowsTimingData` |
 | `/ws/lmu_windows/virtual_energy` | `ObserveLmuWindowsVirtualEnergyUseCase`（`LmuWindowsVirtualEnergyRepository`） | `LmuWindowsVirtualEnergyData`（同一値も継続配信） |
 | `/ws/lmu_windows/pit_status` | `ObserveLmuWindowsPitStatusUseCase`（`LmuWindowsPitStatusRepository`） | `LmuWindowsPitStatusData` |
