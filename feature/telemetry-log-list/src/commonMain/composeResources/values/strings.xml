@@ -32,5 +32,4 @@
     <string name="telemetry_log_source_manual_description">手動読み上げ</string>
     <string name="telemetry_log_source_manual_title">手動読み上げ</string>
     <string name="telemetry_log_source_manual_hint_description">手動読み上げタブの操作やホットキーで、読み上げが要求されました。</string>
-    <string name="telemetry_log_time">%1$s / レース +%2$s</string>
 </resources>

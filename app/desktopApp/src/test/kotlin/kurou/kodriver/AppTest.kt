@@ -402,7 +402,7 @@ class AppTest {
         clickItem("ログ")
 
         waitUntilDisplayed("フラッグ")
-        waitUntilDisplayed("09:00:00.200 / レース +00:00:00.100")
+        waitUntilDisplayed("09:00:00.200")
         waitUntilDisplayed("イエローフラッグ")
         clickItem("フラッグ")
         waitUntilDisplayed("選択したログ")
