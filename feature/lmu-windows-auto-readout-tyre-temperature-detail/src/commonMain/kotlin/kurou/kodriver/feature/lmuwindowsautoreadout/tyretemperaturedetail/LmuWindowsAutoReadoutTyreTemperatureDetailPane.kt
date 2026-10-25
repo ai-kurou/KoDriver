@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -380,7 +379,7 @@ private fun VehicleClassImageOption(
 ) {
     val colors = MaterialTheme.colorScheme
     Surface(
-        shape = RoundedCornerShape(12.dp),
+        shape = MaterialTheme.shapes.medium,
         color = if (selected) colors.primaryContainer else colors.surfaceContainerLow,
         contentColor = if (selected) colors.onPrimaryContainer else colors.onSurface,
         border = BorderStroke(1.dp, if (selected) colors.primary else colors.outlineVariant),
