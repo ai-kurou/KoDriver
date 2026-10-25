@@ -347,12 +347,12 @@ private fun OtherResetEffects(
     DisposableEffect(Unit) {
         onDispose { currentOnResetResultConsumed() }
     }
-    LaunchedEffect(uiState.resetSucceeded) {
-        val succeeded = uiState.resetSucceeded ?: return@LaunchedEffect
+    LaunchedEffect(uiState.reset.resetSucceeded) {
+        val succeeded = uiState.reset.resetSucceeded ?: return@LaunchedEffect
         snackbarHostState.showSnackbar(if (succeeded) successMessage else failureMessage)
         currentOnResetResultConsumed()
     }
-    if (uiState.showResetConfirmDialog) {
+    if (uiState.reset.showResetConfirmDialog) {
         TelemetryLogResetConfirmDialog(onConfirm = onResetConfirm, onDismiss = onResetDismiss)
     }
 }

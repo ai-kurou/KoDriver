@@ -61,13 +61,13 @@ class OtherContentUriWiringTest {
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
         every { viewModel.consumeResetResult() } returns Unit
         every { viewModel.onResetClick() } answers {
-            state.update { it.copy(showResetConfirmDialog = true) }
+            state.update { it.copy(reset = it.reset.copy(showResetConfirmDialog = true)) }
         }
         every { viewModel.onResetDismiss() } answers {
-            state.update { it.copy(showResetConfirmDialog = false) }
+            state.update { it.copy(reset = it.reset.copy(showResetConfirmDialog = false)) }
         }
         every { viewModel.onResetConfirm() } answers {
-            state.update { it.copy(showResetConfirmDialog = false) }
+            state.update { it.copy(reset = it.reset.copy(showResetConfirmDialog = false)) }
         }
         startKoin { modules(module { single { viewModel } }) }
         try {

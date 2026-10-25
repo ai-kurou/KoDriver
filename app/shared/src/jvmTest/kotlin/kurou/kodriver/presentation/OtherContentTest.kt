@@ -20,6 +20,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.otherlist.OtherListResetUiState
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.othervoicepitchdetail.OtherVoicePitchDetailPaneContent
 import kurou.kodriver.feature.othervoicepitchdetail.OtherVoicePitchDetailUiState
@@ -55,7 +56,7 @@ class OtherContentTest {
         rule.setContent {
             AppTheme {
                 OtherContent(
-                    uiState = OtherListUiState(showResetConfirmDialog = true),
+                    uiState = OtherListUiState(reset = OtherListResetUiState(showResetConfirmDialog = true)),
                     onItemSelected = {},
                     onClearSelectedItem = {},
                     onResetConfirm = { confirmed++ },
@@ -77,7 +78,7 @@ class OtherContentTest {
         rule.setContent {
             AppTheme {
                 OtherContent(
-                    uiState = OtherListUiState(resetSucceeded = succeeded),
+                    uiState = OtherListUiState(reset = OtherListResetUiState(resetSucceeded = succeeded)),
                     onItemSelected = {},
                     onClearSelectedItem = {},
                     onResetResultConsumed = { consumed++ },
@@ -99,7 +100,7 @@ class OtherContentTest {
             AppTheme {
                 if (visible) {
                     OtherContent(
-                        uiState = OtherListUiState(resetSucceeded = true),
+                        uiState = OtherListUiState(reset = OtherListResetUiState(resetSucceeded = true)),
                         onItemSelected = {},
                         onClearSelectedItem = {},
                         onResetResultConsumed = { consumed++ },

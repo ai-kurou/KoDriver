@@ -26,9 +26,7 @@ import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
  */
 data class OtherListUiState(
     val items: List<OtherListItemType> = buildOtherListItems(),
-    val showResetConfirmDialog: Boolean = false,
-    val isResetting: Boolean = false,
-    val resetSucceeded: Boolean? = null,
+    val reset: OtherListResetUiState = OtherListResetUiState(),
     val selectedItem: OtherListItemType? = null,
     val selectedFeedbackTelemetryLogId: Long? = null,
     // selectFeedbackItem のたびに増分する。同じログIDを再選択した場合でも

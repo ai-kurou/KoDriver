@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.otherlist
 
+import androidx.lifecycle.ViewModelStore
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
@@ -35,10 +36,10 @@ class OtherListViewModelResetTest : OtherListViewModelTestFixture() {
             val viewModel = createViewModel()
 
             viewModel.onResetClick()
-            assertTrue(viewModel.uiState.first { it.showResetConfirmDialog }.showResetConfirmDialog)
+            assertTrue(viewModel.uiState.first { it.reset.showResetConfirmDialog }.reset.showResetConfirmDialog)
             assertNull(viewModel.uiState.first().selectedItem)
             viewModel.onResetDismiss()
-            assertFalse(viewModel.uiState.first { !it.showResetConfirmDialog }.showResetConfirmDialog)
+            assertFalse(viewModel.uiState.first { !it.reset.showResetConfirmDialog }.reset.showResetConfirmDialog)
             viewModel.onResetConfirm()
             Simulator.entries.forEach { simulator ->
                 coVerify(exactly = 0) { telemetryLogRepository.deleteTelemetryLogsBySimulator(simulator) }
@@ -66,13 +67,17 @@ class OtherListViewModelResetTest : OtherListViewModelTestFixture() {
             }
             val viewModel = createViewModel()
 
+            viewModel.selectFeedbackItem(42L)
+            val selectedState = viewModel.uiState.first { it.selectedFeedbackTelemetryLogId == 42L }
             viewModel.onResetClick()
             viewModel.onResetConfirm()
-            val state = viewModel.uiState.first { it.resetSucceeded != null && !it.isResetting }
-            assertEquals(true, state.resetSucceeded)
-            assertFalse(state.showResetConfirmDialog)
+            val state = viewModel.uiState.first { it.reset.resetSucceeded != null && !it.reset.isResetting }
+            assertEquals(selectedState.copy(reset = state.reset), state)
+            assertEquals(true, state.reset.resetSucceeded)
+            assertFalse(state.reset.showResetConfirmDialog)
             viewModel.consumeResetResult()
-            assertNull(viewModel.uiState.first { it.resetSucceeded == null }.resetSucceeded)
+            val consumedState = viewModel.uiState.first { it.reset.resetSucceeded == null }
+            assertEquals(selectedState, consumedState)
             Simulator.entries.forEach { simulator ->
                 coVerify(exactly = 1) { telemetryLogRepository.deleteTelemetryLogsBySimulator(simulator) }
             }
@@ -101,11 +106,11 @@ class OtherListViewModelResetTest : OtherListViewModelTestFixture() {
 
             viewModel.onResetClick()
             viewModel.onResetConfirm()
-            val state = viewModel.uiState.first { it.resetSucceeded != null && !it.isResetting }
-            assertEquals(false, state.resetSucceeded)
-            assertFalse(state.showResetConfirmDialog)
+            val state = viewModel.uiState.first { it.reset.resetSucceeded != null && !it.reset.isResetting }
+            assertEquals(false, state.reset.resetSucceeded)
+            assertFalse(state.reset.showResetConfirmDialog)
             viewModel.onResetClick()
-            assertTrue(viewModel.uiState.first { it.showResetConfirmDialog }.showResetConfirmDialog)
+            assertTrue(viewModel.uiState.first { it.reset.showResetConfirmDialog }.reset.showResetConfirmDialog)
             coVerify(exactly = 1) { telemetryLogRepository.deleteTelemetryLogsBySimulator(firstSimulator) }
             confirmVerified(telemetryLogRepository)
         }
@@ -135,14 +140,59 @@ class OtherListViewModelResetTest : OtherListViewModelTestFixture() {
 
             viewModel.onResetClick()
             viewModel.onResetConfirm()
-            assertTrue(viewModel.uiState.first { it.isResetting }.isResetting)
+            assertTrue(viewModel.uiState.first { it.reset.isResetting }.reset.isResetting)
             viewModel.onResetClick()
             viewModel.onResetConfirm()
-            assertFalse(viewModel.uiState.first().showResetConfirmDialog)
+            assertFalse(viewModel.uiState.first().reset.showResetConfirmDialog)
             completion.complete(Unit)
-            assertEquals(true, viewModel.uiState.first { it.resetSucceeded != null && !it.isResetting }.resetSucceeded)
+            val resultState = viewModel.uiState.first { it.reset.resetSucceeded != null && !it.reset.isResetting }
+            assertEquals(true, resultState.reset.resetSucceeded)
             Simulator.entries.forEach { simulator ->
                 coVerify(exactly = 1) { telemetryLogRepository.deleteTelemetryLogsBySimulator(simulator) }
+            }
+            confirmVerified(telemetryLogRepository)
+        }
+
+    @Test
+    fun `ViewModel破棄で削除処理をキャンセルする`() =
+        runTest(dispatcher) {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val firstSimulator = Simulator.entries.first()
+            val completion = CompletableDeferred<Unit>()
+            val cancelled = CompletableDeferred<Unit>()
+            coEvery { telemetryLogRepository.deleteTelemetryLogsBySimulator(firstSimulator) } coAnswers {
+                try {
+                    completion.await()
+                } finally {
+                    cancelled.complete(Unit)
+                }
+            }
+            val viewModel = createViewModel()
+            val store = ViewModelStore()
+            store.put("otherList", viewModel)
+            viewModel.onResetClick()
+            viewModel.onResetConfirm()
+            assertTrue(viewModel.uiState.first { it.reset.isResetting }.reset.isResetting)
+
+            store.clear()
+
+            assertTrue(cancelled.isCompleted)
+            completion.complete(Unit)
+            Simulator.entries.forEach { simulator ->
+                coVerify(exactly = if (simulator == firstSimulator) 1 else 0) {
+                    telemetryLogRepository.deleteTelemetryLogsBySimulator(simulator)
+                }
             }
             confirmVerified(telemetryLogRepository)
         }

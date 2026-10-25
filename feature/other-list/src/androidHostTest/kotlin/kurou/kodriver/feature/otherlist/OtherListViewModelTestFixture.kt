@@ -199,7 +199,7 @@ abstract class OtherListViewModelTestFixture {
             openWindowsSpeechSettings = OpenWindowsSpeechSettingsUseCase(speechSettingsRepository),
             startupRegistration = StartupRegistrationUseCases(startupRegistrationRepository),
             getDeviceVolume = GetDeviceVolumeUseCase(deviceVolumeRepository),
-            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(telemetryLogRepository),
+            resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(telemetryLogRepository)),
             appVersionInfo =
                 OtherListAppVersionInfo(
                     currentVersion = "0.5.0",
