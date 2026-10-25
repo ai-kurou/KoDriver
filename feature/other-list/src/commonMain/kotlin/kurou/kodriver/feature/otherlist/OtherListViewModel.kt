@@ -38,7 +38,6 @@ import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
-import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
@@ -91,7 +90,7 @@ class OtherListViewModel(
     private val startupRegistration: StartupRegistrationUseCases,
     appVersionInfo: OtherListAppVersionInfo,
     private val getDeviceVolume: GetDeviceVolumeUseCase,
-    private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,
+    private val resetFlow: OtherListResetFlow,
 ) : ViewModel() {
     private val currentVersion = appVersionInfo.currentVersion
     private var updateCheckStarted = false
@@ -179,42 +178,24 @@ class OtherListViewModel(
                 items = state.items.withTtsGuidance(ttsUnavailableReason),
                 ttsUnavailableGuidance = ttsUnavailableReason?.toGuidance(),
             )
+        }.combine(resetFlow.uiState) { state, reset ->
+            state.copy(reset = reset)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun onResetClick() {
-        if (_uiState.value.isResetting) return
-        _uiState.update { it.copy(showResetConfirmDialog = true) }
+        resetFlow.onResetClick()
     }
 
     fun onResetDismiss() {
-        _uiState.update { it.copy(showResetConfirmDialog = false) }
+        resetFlow.onResetDismiss()
     }
 
     fun onResetConfirm() {
-        if (!_uiState.value.showResetConfirmDialog || _uiState.value.isResetting) return
-        _uiState.update { it.copy(showResetConfirmDialog = false, isResetting = true, resetSucceeded = null) }
-        viewModelScope.launch {
-            try {
-                val succeeded =
-                    try {
-                        resetTelemetryLogDatabase()
-                        true
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (
-                        @Suppress("TooGenericExceptionCaught") e: Exception,
-                    ) {
-                        false
-                    }
-                _uiState.update { it.copy(resetSucceeded = succeeded) }
-            } finally {
-                _uiState.update { it.copy(isResetting = false) }
-            }
-        }
+        viewModelScope.launch { resetFlow.onResetConfirm() }
     }
 
     fun consumeResetResult() {
-        _uiState.update { it.copy(resetSucceeded = null) }
+        resetFlow.consumeResetResult()
     }
 
     fun checkUpdate() {
