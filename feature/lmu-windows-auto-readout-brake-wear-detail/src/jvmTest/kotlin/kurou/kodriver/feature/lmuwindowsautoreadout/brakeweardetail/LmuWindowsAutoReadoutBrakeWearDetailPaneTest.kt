@@ -1,16 +1,20 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.brakeweardetail
 
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -432,9 +436,147 @@ class LmuWindowsAutoReadoutBrakeWearDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("GTE（12%）").performScrollTo().performClick()
+        rule
+            .onNodeWithContentDescription("LMGTE、12%")
+            .performScrollTo()
+            .performClick()
         assertEquals(LmuWindowsVehicleClassData.Gte, selected)
-        rule.onNodeWithText("custom（40%）").assertDoesNotExist()
+        rule.onNodeWithContentDescription("custom、40%").assertDoesNotExist()
+        rule.onNodeWithContentDescription("LMP2", substring = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun `対象クラスの画像タイルはHypercarがデフォルトで選択され残量閾値を読み上げる`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutBrakeWearDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutBrakeWearDetailUiState(
+                            vehicleClassLowThresholdPercent =
+                                mapOf(
+                                    LmuWindowsVehicleClassData.Hypercar to 12,
+                                    LmuWindowsVehicleClassData.Gt3 to 15,
+                                ),
+                        ),
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("Hypercar、12%").assertIsSelected()
+        rule.onNodeWithContentDescription("LMGT3、15%").assertIsNotSelected()
+        rule
+            .onNodeWithContentDescription("Hypercar、12%")
+            .assert(hasText("12%"))
+        rule
+            .onNodeWithContentDescription("LMGT3、15%")
+            .performScrollTo()
+            .assert(hasText("15%"))
+        rule.onAllNodesWithText("Hypercar").assertCountEquals(0)
+    }
+
+    @Test
+    fun `対象クラスの画像タイルは選択済みのselectedVehicleClassが選択状態になる`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutBrakeWearDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutBrakeWearDetailUiState(
+                            vehicleClassLowThresholdPercent =
+                                mapOf(
+                                    LmuWindowsVehicleClassData.Hypercar to 12,
+                                    LmuWindowsVehicleClassData.Gt3 to 15,
+                                ),
+                            selectedVehicleClass = LmuWindowsVehicleClassData.Gt3,
+                        ),
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("LMGT3、15%").assertIsSelected()
+        rule.onNodeWithContentDescription("Hypercar、12%").assertIsNotSelected()
+    }
+
+    @Test
+    fun `全6クラスの画像タイルの選択を通知して選択状態を更新する`() {
+        val vehicleClasses =
+            listOf(
+                LmuWindowsVehicleClassData.Hypercar to "Hypercar",
+                LmuWindowsVehicleClassData.P2 to "LMP2",
+                LmuWindowsVehicleClassData.P2Elms to "ELMS LMP2",
+                LmuWindowsVehicleClassData.P3 to "LMP3",
+                LmuWindowsVehicleClassData.Gte to "LMGTE",
+                LmuWindowsVehicleClassData.Gt3 to "LMGT3",
+            )
+        val selections = mutableListOf<LmuWindowsVehicleClassData>()
+        var selectedClass by mutableStateOf<LmuWindowsVehicleClassData>(LmuWindowsVehicleClassData.Hypercar)
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutBrakeWearDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutBrakeWearDetailUiState(
+                            selectedVehicleClass = selectedClass,
+                            vehicleClassLowThresholdPercent =
+                                vehicleClasses.associate { (vehicleClass, _) ->
+                                    vehicleClass to 12
+                                },
+                        ),
+                    onVehicleClassSelected = {
+                        selections += it
+                        selectedClass = it
+                    },
+                    modifier = Modifier.requiredWidth(360.dp),
+                )
+            }
+        }
+        vehicleClasses.forEach { (_, accessibleName) ->
+            rule
+                .onNodeWithContentDescription("$accessibleName、12%")
+                .performScrollTo()
+                .assertIsDisplayed()
+                .assertIsEnabled()
+                .performClick()
+                .assertIsSelected()
+        }
+        assertEquals(vehicleClasses.map { it.first }, selections)
+    }
+
+    @Test
+    fun `警告OFFでは全6クラスの画像タイルを無効にして選択を通知しない`() {
+        val selected = mutableListOf<LmuWindowsVehicleClassData>()
+        val vehicleClasses =
+            listOf(
+                LmuWindowsVehicleClassData.Hypercar to "Hypercar",
+                LmuWindowsVehicleClassData.P2 to "LMP2",
+                LmuWindowsVehicleClassData.P2Elms to "ELMS LMP2",
+                LmuWindowsVehicleClassData.P3 to "LMP3",
+                LmuWindowsVehicleClassData.Gte to "LMGTE",
+                LmuWindowsVehicleClassData.Gt3 to "LMGT3",
+            )
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutBrakeWearDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutBrakeWearDetailUiState(
+                            enabled = false,
+                            vehicleClassLowThresholdPercent =
+                                vehicleClasses.associate { (vehicleClass, _) ->
+                                    vehicleClass to 12
+                                },
+                        ),
+                    onVehicleClassSelected = { selected += it },
+                    modifier = Modifier.requiredWidth(360.dp),
+                )
+            }
+        }
+        vehicleClasses.forEach { (_, accessibleName) ->
+            rule
+                .onNodeWithContentDescription("$accessibleName、12%")
+                .performScrollTo()
+                .assertIsDisplayed()
+                .assertIsNotEnabled()
+                .performClick()
+        }
+        assertEquals(emptyList(), selected)
     }
 
     private fun setResetTestContent(
