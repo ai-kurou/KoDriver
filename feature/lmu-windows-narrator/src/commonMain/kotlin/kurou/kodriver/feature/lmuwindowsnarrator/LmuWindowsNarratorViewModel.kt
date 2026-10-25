@@ -734,7 +734,7 @@ internal class LmuWindowsNarratorViewModel(
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
                 remainingFuelUseCases.observeFuel().onEach {
                     latestFuel = it
-                    latestFuelReceivedAtMs = currentTimeMs()
+                    latestFuelReceivedAtMs = it.receivedAtMs ?: currentTimeMs()
                 }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
@@ -1081,7 +1081,13 @@ internal class LmuWindowsNarratorViewModel(
         ) { telemetry, virtualEnergy, tyreWear, fuel ->
             LmuWindowsPitTimingSnapshot(telemetry, virtualEnergy, tyreWear, fuel)
         }.onEach { snapshot ->
-            val (telemetry, virtualEnergy, tyreWear, fuel) = snapshot
+            val (telemetry, virtualEnergy, tyreWear, receivedFuel) = snapshot
+            val fuel =
+                receivedFuel?.takeIf {
+                    it.receivedAtMs?.let { receivedAt ->
+                        currentTimeMs() - receivedAt <= CURRENT_VALUE_MAX_AGE_MS
+                    } ?: true
+                }
             val observedAtMs = currentTimeMs()
             latestPitTimingUpdatedAtMs = observedAtMs
             val state = narratorState

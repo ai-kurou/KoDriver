@@ -18,9 +18,10 @@ class LmuWindowsFuelBaselineTrackerTest {
     private fun telemetry(
         liters: Double,
         lap: Int,
+        capacityLiters: Double = 100.0,
     ): LmuWindowsTelemetryData =
         sampleLmuTelemetry(lap).copy(
-            fuel = LmuWindowsFuelData(LmuWindowsFuelUnit(liters), LmuWindowsFuelUnit(100.0)),
+            fuel = LmuWindowsFuelData(LmuWindowsFuelUnit(liters), LmuWindowsFuelUnit(capacityLiters)),
         )
 
     @Test
@@ -60,6 +61,14 @@ class LmuWindowsFuelBaselineTrackerTest {
     fun `燃料量が有限でない場合は起点を更新しない`() {
         tracker.update(telemetry(10.0, 4))
         assertEquals(LmuWindowsFuelBaseline(10.0, 4), tracker.update(telemetry(Double.NaN, 5)))
+    }
+
+    @Test
+    fun `容量0の欠測燃料は起点と消費履歴を更新しない`() {
+        tracker.update(telemetry(20.0, 2))
+
+        assertEquals(LmuWindowsFuelBaseline(20.0, 2), tracker.update(telemetry(0.0, 2, capacityLiters = 0.0)))
+        assertEquals(LmuWindowsFuelBaseline(20.0, 2), tracker.update(telemetry(19.0, 3)))
     }
 
     private fun sampleLmuTelemetry(currentLap: Int) =

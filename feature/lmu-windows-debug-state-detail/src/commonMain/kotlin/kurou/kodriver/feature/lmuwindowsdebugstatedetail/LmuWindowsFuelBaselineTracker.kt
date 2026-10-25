@@ -18,8 +18,10 @@ internal class LmuWindowsFuelBaselineTracker {
     private var lowestLitersSinceBaseline = 0.0
 
     fun update(telemetry: LmuWindowsTelemetryData?): LmuWindowsFuelBaseline? {
-        val liters = telemetry?.fuel?.currentLiters?.value
-        if (telemetry == null || liters == null || !liters.isFinite()) return baseline
+        val fuel = telemetry?.fuel ?: return baseline
+        val liters = fuel.currentLiters.value
+        val capacityLiters = fuel.capacityLiters.value
+        if (!liters.isFinite() || !capacityLiters.isFinite() || capacityLiters <= 0.0) return baseline
         val lap = telemetry.timing.currentLap
         val current = baseline
         // 給油が複数フレームに分かれて微小に増える場合も検出できるよう、起点以降の最小値からの増加量で判定する。
