@@ -64,9 +64,10 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_brake_wear
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_brake
-import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_energy
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_fuel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_lap
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_tyre
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_virtual_energy
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_drag_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_empty_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_energy
@@ -102,12 +103,12 @@ private val itemPresentations =
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_virtual_energy_laps,
-                Res.string.manual_readout_category_energy,
+                Res.string.manual_readout_category_virtual_energy,
             ),
         LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_fuel_laps,
-                Res.string.manual_readout_category_energy,
+                Res.string.manual_readout_category_fuel,
             ),
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to
             ManualReadoutItemPresentation(
@@ -127,30 +128,33 @@ private val itemPresentations =
         LmuWindowsReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel,
-                Res.string.manual_readout_category_energy,
+                Res.string.manual_readout_category_fuel,
             ),
         AceWindowsReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel,
-                Res.string.manual_readout_category_energy,
+                Res.string.manual_readout_category_fuel,
             ),
         AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel_laps,
-                Res.string.manual_readout_category_energy,
+                Res.string.manual_readout_category_fuel,
             ),
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel,
-                Res.string.manual_readout_category_energy,
+                Res.string.manual_readout_category_fuel,
             ),
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel_laps,
-                Res.string.manual_readout_category_energy,
+                Res.string.manual_readout_category_fuel,
             ),
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
-            ManualReadoutItemPresentation(Res.string.manual_readout_energy, Res.string.manual_readout_category_energy),
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_energy,
+                Res.string.manual_readout_category_virtual_energy,
+            ),
         Gt7Ps5ReadoutItemKey.MyBestLap.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_my_best_lap,

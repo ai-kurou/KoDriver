@@ -167,7 +167,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `エネルギーの残り周回数から始まる手動セットは連結本文を一回だけ読み上げる`() =
+    fun `バーチャルエネルギーの残り周回数から始まる手動セットは連結本文を一回だけ読み上げる`() =
         runTest {
             val text = "エネルギーは残り約3周、タイヤ80%"
             coEvery { checkTextToSpeechAvailable() } returns true

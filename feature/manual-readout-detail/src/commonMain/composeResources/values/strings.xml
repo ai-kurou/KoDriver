@@ -28,7 +28,8 @@
     <string name="manual_readout_hotkey_registration_retry">再試行</string>
     <string name="manual_readout_items_title">読み上げる項目</string>
     <string name="manual_readout_add_item">＋ 項目を追加</string>
-    <string name="manual_readout_category_energy">エネルギー</string>
+    <string name="manual_readout_category_virtual_energy">バーチャルエネルギー</string>
+    <string name="manual_readout_category_fuel">燃料</string>
     <string name="manual_readout_empty_hint">読み上げたい項目を追加してください</string>
     <string name="manual_readout_remove_item">%1$sを削除</string>
     <string name="manual_readout_drag_item">%1$sを並べ替え</string>
@@ -60,7 +61,7 @@
     <string name="manual_readout_laptime_insert">ラップタイム挿入</string>
     <string name="manual_readout_laptime_hint">{laptime} はセッションの自己ベストラップタイムに置き換わります</string>
     <string name="manual_readout_virtual_energy_laps_hint">{laps}は残りエネルギーで走れる周回数に置き換わります。</string>
-    <string name="manual_readout_virtual_energy_laps">エネルギーの残り周回数</string>
+    <string name="manual_readout_virtual_energy_laps">バーチャルエネルギーの残り周回数</string>
     <string name="manual_readout_tyre_wear_laps_hint">{laps}は残りタイヤ摩耗で走れる周回数に置き換わります。</string>
     <string name="manual_readout_tyre_wear_laps">タイヤ摩耗の残り周回数</string>
     <string name="manual_readout_fuel_laps">燃料の残り周回数</string>

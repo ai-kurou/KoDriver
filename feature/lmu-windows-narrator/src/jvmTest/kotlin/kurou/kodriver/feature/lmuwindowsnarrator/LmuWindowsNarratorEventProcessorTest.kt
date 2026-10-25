@@ -251,7 +251,7 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `エネルギーの残り周回数から始まる手動セットはRootキーで一回キューへ追加しログを保存する`() =
+    fun `バーチャルエネルギーの残り周回数から始まる手動セットはRootキーで一回キューへ追加しログを保存する`() =
         runTest {
             val key = LmuWindowsReadoutItemKey.PitTiming.Root
             val text = "エネルギーは残り約3周、VE50%"
