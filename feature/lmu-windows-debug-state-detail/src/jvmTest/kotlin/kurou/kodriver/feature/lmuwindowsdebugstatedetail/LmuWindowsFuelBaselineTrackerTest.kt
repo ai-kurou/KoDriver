@@ -43,6 +43,14 @@ class LmuWindowsFuelBaselineTrackerTest {
     }
 
     @Test
+    fun `微小な増加に分かれた給油も累積して検出し起点を取り直す`() {
+        tracker.update(telemetry(20.0, 2))
+        tracker.update(telemetry(10.0, 4))
+        assertEquals(LmuWindowsFuelBaseline(20.0, 2), tracker.update(telemetry(10.3, 4)))
+        assertEquals(LmuWindowsFuelBaseline(10.6, 4), tracker.update(telemetry(10.6, 4)))
+    }
+
+    @Test
     fun `周回数が巻き戻ったら起点を取り直す`() {
         tracker.update(telemetry(10.0, 4))
         assertEquals(LmuWindowsFuelBaseline(9.0, 0), tracker.update(telemetry(9.0, 0)))

@@ -15,17 +15,21 @@ data class LmuWindowsFuelBaseline(
  */
 internal class LmuWindowsFuelBaselineTracker {
     private var baseline: LmuWindowsFuelBaseline? = null
-    private var lastLiters = 0.0
+    private var lowestLitersSinceBaseline = 0.0
 
     fun update(telemetry: LmuWindowsTelemetryData?): LmuWindowsFuelBaseline? {
         val liters = telemetry?.fuel?.currentLiters?.value
         if (telemetry == null || liters == null || !liters.isFinite()) return baseline
         val lap = telemetry.timing.currentLap
         val current = baseline
-        if (current == null || lap < current.lap || liters > lastLiters + REFILL_DETECTION_TOLERANCE_LITERS) {
+        // 給油が複数フレームに分かれて微小に増える場合も検出できるよう、起点以降の最小値からの増加量で判定する。
+        val refilled = liters - lowestLitersSinceBaseline > REFILL_DETECTION_TOLERANCE_LITERS
+        if (current == null || lap < current.lap || refilled) {
             baseline = LmuWindowsFuelBaseline(liters, lap)
+            lowestLitersSinceBaseline = liters
+        } else {
+            lowestLitersSinceBaseline = minOf(lowestLitersSinceBaseline, liters)
         }
-        lastLiters = liters
         return baseline
     }
 }
