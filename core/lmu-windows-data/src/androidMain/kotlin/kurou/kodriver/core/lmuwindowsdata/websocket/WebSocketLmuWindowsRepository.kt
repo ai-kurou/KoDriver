@@ -74,7 +74,9 @@ internal class WebSocketLmuWindowsRepository(
                                 path = KoDriverServerFeature.FUEL.webSocketPath(Simulator.LmuWindows),
                                 retryDelayMs = retryDelayMs,
                                 decode = {
-                                    json.decodeFromString<LmuWindowsFuelData>(it).copy(receivedAtMs = System.currentTimeMillis())
+                                    json
+                                        .decodeFromString<LmuWindowsFuelData>(it)
+                                        .copy(receivedAtMs = System.currentTimeMillis())
                                 },
                             ).transformLatest { fuel ->
                                 emit(fuel)
