@@ -283,7 +283,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     @Test
     fun `手動読み上げは固定の項目なし文言を返し自動判定の状態を変更しない`() {
         val state = Gt7Ps5NarratorState(personalBestMs = 80_000, previousLapCount = 5)
-        val decision = useCase.determineManualReadout(state)
+        val decision = useCase.determineManualReadout(state, emptyList())
         assertEquals(state, decision.state)
         assertTrue(state === decision.state)
         assertEquals(

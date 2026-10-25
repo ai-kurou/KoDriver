@@ -88,7 +88,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
     /** セットの対応項目を保存順に連結し、自動読み上げの警告済み状態を維持する。 */
     fun determineManualReadout(
         state: Gt7Ps5NarratorState,
-        items: List<Gt7Ps5ManualReadoutItem> = emptyList(),
+        items: List<Gt7Ps5ManualReadoutItem>,
     ): Gt7Ps5NarratorReadoutDecision {
         val supportedKeys = gt7Ps5ManualReadoutItemKeys()
         val supportedItems = items.filter { it.key in supportedKeys }.take(MANUAL_READOUT_SET_ITEM_MAX)
