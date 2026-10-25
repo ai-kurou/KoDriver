@@ -1,29 +1,41 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DonutLarge
 import androidx.compose.material.icons.filled.DragIndicator
+import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -83,6 +95,8 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_move_down
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_move_up
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_my_best_lap
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_picker_remaining
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_picker_title
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_play
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_preview_stop
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remaining_fuel
@@ -101,6 +115,15 @@ private data class ManualReadoutItemPresentation(
     val name: StringResource,
     val category: StringResource,
 )
+
+private val categoryIcons =
+    mapOf(
+        Res.string.manual_readout_category_virtual_energy to Icons.Default.Bolt,
+        Res.string.manual_readout_category_fuel to Icons.Default.LocalGasStation,
+        Res.string.manual_readout_category_tyre to Icons.Default.DonutLarge,
+        Res.string.manual_readout_category_brake to Icons.Default.Speed,
+        Res.string.manual_readout_category_lap to Icons.Default.Timer,
+    )
 
 private val itemPresentations =
     mapOf(
@@ -273,6 +296,7 @@ internal fun ManualReadoutItemsCard(
     if (showPicker) {
         ManualReadoutItemPickerSheet(
             itemKeys = remaining,
+            selectedCount = uiState.selectedItemKeys.size,
             onSelect = {
                 onAddItem(it)
                 showPicker = false
@@ -426,6 +450,7 @@ private fun manualReadoutMoveActions(
 @Composable
 internal fun ManualReadoutItemPickerSheet(
     itemKeys: List<String>,
+    selectedCount: Int,
     onSelect: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -434,7 +459,7 @@ internal fun ManualReadoutItemPickerSheet(
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         sheetMaxWidth = 560.dp,
     ) {
-        ManualReadoutItemPickerSheetContent(itemKeys, onSelect)
+        ManualReadoutItemPickerSheetContent(itemKeys, selectedCount, onSelect)
     }
 }
 
@@ -443,6 +468,7 @@ internal fun ManualReadoutItemPickerSheet(
 @Composable
 internal fun ManualReadoutItemPickerSheetContent(
     itemKeys: List<String>,
+    selectedCount: Int,
     onSelect: (String) -> Unit,
 ) {
     Column(
@@ -451,25 +477,99 @@ internal fun ManualReadoutItemPickerSheetContent(
             .verticalScroll(rememberScrollState())
             .padding(bottom = KoDriverSpacing.large),
     ) {
-        Text(
-            stringResource(Res.string.manual_readout_add_item),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.medium),
-        )
+        ManualReadoutPickerHeader(selectedCount)
         val categories =
             itemKeys
                 .mapNotNull { key -> itemPresentations[key]?.let { key to it } }
                 .groupBy { it.second.category }
         categories.forEach { (category, items) ->
-            Text(
-                stringResource(category),
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.small),
-            )
-            items.forEach { (key, presentation) ->
-                ListItem(
-                    headlineContent = { Text(stringResource(presentation.name)) },
-                    modifier = Modifier.clickable { onSelect(key) },
+            Column(
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = KoDriverSpacing.medium),
+                    horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
+                        Icon(
+                            categoryIcons.getValue(category),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(KoDriverSpacing.small),
+                        )
+                    }
+                    Text(
+                        stringResource(category),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        items.size.toString(),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                    Column {
+                        items.forEachIndexed { index, (key, presentation) ->
+                            if (index > 0) HorizontalDivider()
+                            ListItem(
+                                headlineContent = { Text(stringResource(presentation.name)) },
+                                modifier = Modifier.clickable { onSelect(key) },
+                                colors =
+                                    ListItemDefaults.colors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                                    ),
+                                trailingContent = {
+                                    Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer) {
+                                        Icon(
+                                            Icons.Default.Add,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            modifier = Modifier.padding(KoDriverSpacing.small),
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ManualReadoutPickerHeader(selectedCount: Int) {
+    Column(
+        modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.medium),
+        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+    ) {
+        Text(
+            stringResource(Res.string.manual_readout_picker_title),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(
+            stringResource(Res.string.manual_readout_picker_remaining, MANUAL_READOUT_SET_ITEM_MAX - selectedCount),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
+            repeat(MANUAL_READOUT_SET_ITEM_MAX) { index ->
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .height(KoDriverSpacing.extraSmall)
+                        .background(
+                            if (index < selectedCount) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            },
+                            MaterialTheme.shapes.extraSmall,
+                        ),
                 )
             }
         }

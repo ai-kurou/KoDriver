@@ -59,7 +59,11 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
-                            ManualReadoutItemPickerSheetContent(gt7Ps5ManualReadoutItemKeys(), {})
+                            ManualReadoutItemPickerSheetContent(
+                                itemKeys = gt7Ps5ManualReadoutItemKeys(),
+                                selectedCount = 0,
+                                onSelect = {},
+                            )
                         }
                     }
                 }
@@ -74,7 +78,11 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
-                            ManualReadoutItemPickerSheetContent(lmuWindowsManualReadoutItemKeys(), {})
+                            ManualReadoutItemPickerSheetContent(
+                                itemKeys = lmuWindowsManualReadoutItemKeys(),
+                                selectedCount = 0,
+                                onSelect = {},
+                            )
                         }
                     }
                 }
@@ -188,7 +196,11 @@ class ManualReadoutSetDetailPaneAceScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
-                            ManualReadoutItemPickerSheetContent(aceWindowsManualReadoutItemKeys(), {})
+                            ManualReadoutItemPickerSheetContent(
+                                itemKeys = aceWindowsManualReadoutItemKeys(),
+                                selectedCount = 0,
+                                onSelect = {},
+                            )
                         }
                     }
                 }

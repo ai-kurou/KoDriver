@@ -28,6 +28,8 @@
     <string name="manual_readout_hotkey_registration_retry">再試行</string>
     <string name="manual_readout_items_title">読み上げる項目</string>
     <string name="manual_readout_add_item">＋ 項目を追加</string>
+    <string name="manual_readout_picker_title">読み上げる項目を選択</string>
+    <string name="manual_readout_picker_remaining">あと%1$d項目追加できます</string>
     <string name="manual_readout_category_virtual_energy">バーチャルエネルギー</string>
     <string name="manual_readout_category_fuel">燃料</string>
     <string name="manual_readout_empty_hint">読み上げたい項目を追加してください</string>
