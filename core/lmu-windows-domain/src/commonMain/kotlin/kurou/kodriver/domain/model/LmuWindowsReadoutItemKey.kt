@@ -123,6 +123,10 @@ sealed interface LmuWindowsReadoutItemKey : ReadoutItemKey {
         data object WarningReadout : RemainingFuel {
             override val value = "lmu_windows_auto_remaining_fuel_warning_readout"
         }
+
+        data object Laps : RemainingFuel {
+            override val value = "lmu_windows_auto_remaining_fuel_laps"
+        }
     }
 
     sealed interface TyreWear : LmuWindowsReadoutItemKey {

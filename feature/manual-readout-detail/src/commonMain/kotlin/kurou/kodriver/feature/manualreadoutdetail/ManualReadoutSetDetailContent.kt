@@ -74,6 +74,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_body
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_confirm
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_title
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_fuel_laps_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_laps_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_laps_insert
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_laptime_hint
@@ -291,6 +292,11 @@ internal val manualReadoutPlaceholderDefinitions =
                 LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
                 ::findUnknownLmuWindowsPitTimingReadoutPlaceholders,
             ),
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingFuel.Laps.value) to
+            ManualReadoutPlaceholderDefinition(
+                LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
+                ::findUnknownLmuWindowsPitTimingReadoutPlaceholders,
+            ),
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) to
             ManualReadoutPlaceholderDefinition(
                 LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
@@ -346,7 +352,8 @@ internal fun unknownPlaceholders(
 
 private fun isLmuWindowsManualReadoutLapsItem(itemKey: String): Boolean =
     itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
-        itemKey == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value
+        itemKey == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value ||
+        itemKey == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value
 
 internal fun insertPlaceholder(
     simulatorId: String,
@@ -357,6 +364,8 @@ internal fun insertPlaceholder(
 private fun lapsHintResource(itemKey: String): StringResource =
     if (itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) {
         Res.string.manual_readout_virtual_energy_laps_hint
+    } else if (itemKey == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value) {
+        Res.string.manual_readout_fuel_laps_hint
     } else if (itemKey == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) {
         Res.string.manual_readout_tyre_wear_laps_hint
     } else {

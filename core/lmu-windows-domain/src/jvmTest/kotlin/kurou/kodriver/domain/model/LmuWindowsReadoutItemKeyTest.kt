@@ -15,7 +15,11 @@ class LmuWindowsReadoutItemKeyTest {
 
     @Test
     fun `LMU keys retain legacy order and every key round trips`() {
-        assertEquals(30, LMU_WINDOWS_READOUT_ITEM_KEYS.size)
+        assertEquals(31, LMU_WINDOWS_READOUT_ITEM_KEYS.size)
+        val laps = LmuWindowsReadoutItemKey.RemainingFuel.Laps
+        assertEquals("lmu_windows_auto_remaining_fuel_laps", laps.value)
+        val topLevelValues = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).map { it.value }
+        assertEquals(false, topLevelValues.contains(laps.value))
         assertEquals(LmuWindowsReadoutItemKey.VehicleApproach.Root, LMU_WINDOWS_READOUT_ITEM_KEYS.first())
         assertEquals(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled, LMU_WINDOWS_READOUT_ITEM_KEYS.last())
         assertEquals(

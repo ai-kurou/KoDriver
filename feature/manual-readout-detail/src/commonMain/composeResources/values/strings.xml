@@ -63,4 +63,6 @@
     <string name="manual_readout_virtual_energy_laps">エネルギーの残り周回数</string>
     <string name="manual_readout_tyre_wear_laps_hint">{laps}は残りタイヤ摩耗で走れる周回数に置き換わります。</string>
     <string name="manual_readout_tyre_wear_laps">タイヤ摩耗の残り周回数</string>
+    <string name="manual_readout_fuel_laps">燃料の残り周回数</string>
+    <string name="manual_readout_fuel_laps_hint">{laps}は残り燃料で走れる周回数に置き換わります。</string>
 </resources>

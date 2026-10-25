@@ -95,6 +95,30 @@ class ManualReadoutSetDetailPaneTest {
     }
 
     @Test
+    fun `燃料の残り周回数を追加すると既定文言とプレビューを表示する`() {
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = lmuWindowsManualReadoutItemKeys(),
+                ),
+            )
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
+                    onDelete = {},
+                )
+            }
+        }
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("燃料の残り周回数").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り約3周")
+    }
+
+    @Test
     fun `自己ベストラップを追加すると既定文言とプレビューを表示する`() {
         val state =
             mutableStateOf(
@@ -283,6 +307,72 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("{laps}を挿入").performClick()
         rule.onNodeWithText("30/30").assertExists()
         rule.onNodeWithContentDescription("タイヤ摩耗の残り周回数を削除").performClick()
+        rule.onNode(hasSetTextAction()).assertDoesNotExist()
+        rule.runOnIdle {
+            assertEquals(
+                listOf(
+                    key to "",
+                    key to "{laps}",
+                    key to "あと{percent}",
+                    key to defaultText,
+                    key to "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH),
+                ),
+                saved,
+            )
+        }
+    }
+
+    @Test
+    fun `燃料の残り周回数の文言欄は周回数の挿入と警告とリセットと文字数上限を扱う`() {
+        val key = LmuWindowsReadoutItemKey.RemainingFuel.Laps.value
+        val defaultText = lmuWindowsManualReadoutItemTextDefault(key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
+        val saved = mutableListOf<Pair<String, String>>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = {
+                        state.value =
+                            state.value.copy(
+                                selectedItemKeys = listOf(it),
+                            )
+                    },
+                    onRemoveItem = { state.value = state.value.copy(selectedItemKeys = emptyList()) },
+                    onDelete = {},
+                    showHotkey = false,
+                    onItemTextChanged = { itemKey, text ->
+                        saved.add(itemKey to text)
+                        state.value = state.value.copy(itemTexts = state.value.itemTexts + (itemKey to text.trim()))
+                    },
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).assertDoesNotExist()
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("燃料の残り周回数").performClick()
+        rule.onNodeWithText(defaultText).assertExists()
+        rule.onNodeWithText("{laps}は残り燃料で走れる周回数に置き換わります。").assertExists()
+        rule.onNodeWithText("未対応のプレースホルダー: {laps}（そのまま読み上げます）").assertDoesNotExist()
+        rule.onNode(hasSetTextAction()).performTextReplacement("")
+        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
+        rule.onNodeWithText("{laps}を挿入").performClick()
+        rule.onNodeWithText("{laps}").assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("あと{percent}")
+        rule.onNodeWithText("未対応のプレースホルダー: {percent}（そのまま読み上げます）").assertExists()
+        rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
+        rule.onNodeWithText(defaultText).assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
+        rule.onNodeWithText("{laps}を挿入").performClick()
+        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithContentDescription("燃料の残り周回数を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
             assertEquals(
@@ -838,6 +928,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("自己ベストラップ").assertExists()
         rule.onNodeWithText("エネルギーの残り周回数").assertExists()
         rule.onNodeWithText("タイヤ摩耗の残り周回数").assertExists()
+        rule.onNodeWithText("燃料の残り周回数").assertExists()
         rule.onNodeWithText("ブレーキ残量").assertExists()
         rule.onNodeWithText("ブレーキ温度").assertExists()
         rule.onNodeWithText("タイヤ温度").assertExists()

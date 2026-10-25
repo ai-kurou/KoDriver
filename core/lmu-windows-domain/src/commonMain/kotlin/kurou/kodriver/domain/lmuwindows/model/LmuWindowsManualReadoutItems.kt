@@ -52,6 +52,11 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
             "タイヤ摩耗の残り周回数",
             LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT,
         ),
+        manualReadoutItemDefinitionOf(
+            LmuWindowsReadoutItemKey.RemainingFuel.Laps,
+            "燃料の残り周回数",
+            LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT,
+        ),
     )
 
 fun lmuWindowsManualReadoutItemKeys(): List<String> = lmuWindowsManualReadoutItemDefinitions.keys.toList()

@@ -920,29 +920,13 @@ internal class LmuWindowsNarratorViewModel(
         val items =
             set.itemKeys.filter { it in lmuWindowsManualReadoutItemKeys() }.map { key ->
                 val ratio =
-                    if (key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
-                        key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value ||
-                        key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
-                        isLmuWindowsManualReadoutTemperatureItem(key)
-                    ) {
-                        null
-                    } else if (key == LmuWindowsReadoutItemKey.BrakeWear.Root.value) {
-                        brakeWear?.let { data ->
-                            data.wheels.values
-                                .minOfOrNull { it.remainingPercent }
-                                ?.let { it / PERCENTAGE_SCALE }
-                        }
-                    } else if (key == LmuWindowsReadoutItemKey.TyreWear.Root.value) {
-                        tyreWear
-                            ?.wheels
-                            ?.values
-                            ?.minOrNull()
-                            ?.value
-                    } else if (key == LmuWindowsReadoutItemKey.RemainingFuel.Root.value) {
-                        fuel?.exactPercent?.let { it / PERCENTAGE_SCALE }
-                    } else {
-                        energy?.remainingRatio?.value
-                    }
+                    manualReadoutRatio(
+                        key = key,
+                        brakeWear = brakeWear,
+                        tyreWear = tyreWear,
+                        fuel = fuel,
+                        energy = energy,
+                    )
                 val celsius =
                     manualReadoutCelsius(key, brakeTemperature?.wheels?.values, tyreTemperature?.wheels?.values)
                 LmuWindowsManualReadoutItem(
@@ -956,6 +940,7 @@ internal class LmuWindowsNarratorViewModel(
                             key = key,
                             hasEnergy = energy != null,
                             hasTyreWear = tyreWear != null,
+                            hasFuel = fuel != null,
                             pitTimingFresh = observedAtMs - latestPitTimingUpdatedAtMs <= CURRENT_VALUE_MAX_AGE_MS,
                         ),
                 )
@@ -973,13 +958,59 @@ internal class LmuWindowsNarratorViewModel(
         )
     }
 
+    private fun manualReadoutRatio(
+        key: String,
+        brakeWear: LmuWindowsBrakeWearRemainingData?,
+        tyreWear: LmuWindowsTyreWearData?,
+        fuel: LmuWindowsRemainingFuelData?,
+        energy: LmuWindowsVirtualEnergyData?,
+    ): Double? =
+        when {
+            key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
+                key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value ||
+                key == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value ||
+                key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
+                isLmuWindowsManualReadoutTemperatureItem(key) -> {
+                null
+            }
+
+            key == LmuWindowsReadoutItemKey.BrakeWear.Root.value -> {
+                brakeWear?.let { data ->
+                    data.wheels.values
+                        .minOfOrNull { it.remainingPercent }
+                        ?.let { it / PERCENTAGE_SCALE }
+                }
+            }
+
+            key == LmuWindowsReadoutItemKey.TyreWear.Root.value -> {
+                tyreWear
+                    ?.wheels
+                    ?.values
+                    ?.minOrNull()
+                    ?.value
+            }
+
+            key == LmuWindowsReadoutItemKey.RemainingFuel.Root.value -> {
+                fuel?.exactPercent?.let { it / PERCENTAGE_SCALE }
+            }
+
+            else -> {
+                energy?.remainingRatio?.value
+            }
+        }
+
     private fun manualRemainingLaps(
         key: String,
         hasEnergy: Boolean,
         hasTyreWear: Boolean,
+        hasFuel: Boolean,
         pitTimingFresh: Boolean,
     ): Int? =
         when {
+            key == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value -> {
+                if (hasFuel) narratorUseCases.manualReadout.manualFuelRemainingLaps(narratorState) else null
+            }
+
             !pitTimingFresh -> {
                 null
             }

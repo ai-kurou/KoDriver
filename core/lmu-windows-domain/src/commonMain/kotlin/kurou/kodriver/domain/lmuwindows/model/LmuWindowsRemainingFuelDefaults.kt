@@ -11,3 +11,7 @@ const val LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER = "{percent}"
 
 /** LMU の手動読み上げで使う燃料残量の既定文言。 */
 const val LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT = "燃料は残り{percent}パーセント"
+
+/** LMU の手動読み上げで使う燃料の残り周回数の既定文言。 */
+const val LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT = "燃料は残り約{laps}周"
+const val LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT = "燃料残り1周未満"
