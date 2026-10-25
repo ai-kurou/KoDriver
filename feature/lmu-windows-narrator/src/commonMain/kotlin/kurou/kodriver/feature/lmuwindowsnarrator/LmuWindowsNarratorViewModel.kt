@@ -701,9 +701,15 @@ internal class LmuWindowsNarratorViewModel(
         latestFuelReceivedAtMs = 0L
         latestVirtualEnergy = null
         latestVirtualEnergyReceivedAtMs = 0L
-        // 燃料はセッション情報を持たないため、LMU の選択解除で消費量を破棄して別セッションへ持ち越さない。
+        // LMU の選択解除で消費量と自動警告の評価状態を破棄して別セッションへ持ち越さない。
         narratorState =
             narratorState.copy(
+                pitTimingVirtualEnergyTrackingState = LmuWindowsPitTimingTrackingState(),
+                lastAnnouncedPitTimingVirtualEnergyLaps = -1,
+                lastPitTimingVirtualEnergyEvaluationLap = -1,
+                pitTimingTyreWearTrackingState = LmuWindowsPitTimingTrackingState(),
+                lastAnnouncedPitTimingTyreWearLaps = -1,
+                lastPitTimingTyreWearEvaluationLap = -1,
                 fuelLapsTrackingState = LmuWindowsPitTimingTrackingState(),
                 lastAnnouncedPitTimingFuelLaps = -1,
                 lastPitTimingFuelEvaluationLap = -1,

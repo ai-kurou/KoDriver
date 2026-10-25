@@ -3001,6 +3001,136 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `バーチャルエネルギー周回追跡はLMUの選択解除で蓄積した消費量を破棄する`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyres = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val root = LmuWindowsReadoutItemKey.PitTiming.Root
+            createViewModel(
+                telemetryChannel = telemetry,
+                remainingVirtualEnergyChannel = energy,
+                tyreWearChannel = tyres,
+                selectedSimulatorFlow = selected,
+                manualRequestChannel = requests,
+                manualSets =
+                    listOf(ManualReadoutSet("laps", listOf(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value))),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(root to false),
+                currentTimeMs = { 123L },
+            )
+            stubTelemetryLogSave(logs, createdAt = 123L, root)
+            val request = DebugReadoutRequest(Simulator.LmuWindows, root, "状態確認")
+
+            fun trackingFromLastLog(): LmuWindowsPitTimingTrackingState =
+                Json.decodeFromJsonElement<LmuWindowsPitTimingTrackingState>(
+                    Json
+                        .parseToJsonElement(logs.last().telemetryJson)
+                        .jsonObject
+                        .getValue("state")
+                        .jsonObject
+                        .getValue("pitTimingVirtualEnergyTrackingState"),
+                )
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyres.send(tyreWear(fl = 1.0))
+            telemetry.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
+            telemetry.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            telemetry.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            debugRequests.emit(request)
+            assertEquals(0.2, assertNotNull(trackingFromLastLog().lastValidLapConsumption), 1e-10)
+
+            selected.value = Simulator.Gt7Ps5
+            selected.value = Simulator.LmuWindows
+            debugRequests.emit(request)
+            assertEquals(LmuWindowsPitTimingTrackingState(), trackingFromLastLog())
+            val telemetryJson = logs.last().telemetryJson
+            val jsonElement = Json.parseToJsonElement(telemetryJson)
+            val jsonObject = jsonElement.jsonObject
+            val resetState = jsonObject.getValue("state").jsonObject
+            assertEquals("-1", resetState.getValue("lastAnnouncedPitTimingVirtualEnergyLaps").jsonPrimitive.content)
+            assertEquals("-1", resetState.getValue("lastPitTimingVirtualEnergyEvaluationLap").jsonPrimitive.content)
+
+            selected.value = Simulator.LmuWindows
+            telemetry.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.6))
+            debugRequests.emit(request)
+            assertEquals(null, trackingFromLastLog().lastValidLapConsumption)
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "laps"))
+            assertEquals("データがありません", spoken.last().narratedText)
+        }
+
+    @Test
+    fun `タイヤ摩耗周回追跡はLMUの選択解除で蓄積した消費量を破棄する`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyres = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val root = LmuWindowsReadoutItemKey.PitTiming.Root
+            createViewModel(
+                telemetryChannel = telemetry,
+                remainingVirtualEnergyChannel = energy,
+                tyreWearChannel = tyres,
+                selectedSimulatorFlow = selected,
+                manualRequestChannel = requests,
+                manualSets =
+                    listOf(ManualReadoutSet("laps", listOf(LmuWindowsReadoutItemKey.PitTiming.TyreWear.value))),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(root to false),
+                currentTimeMs = { 123L },
+            )
+            stubTelemetryLogSave(logs, createdAt = 123L, root)
+            val request = DebugReadoutRequest(Simulator.LmuWindows, root, "状態確認")
+
+            fun trackingFromLastLog(): LmuWindowsPitTimingTrackingState =
+                Json.decodeFromJsonElement<LmuWindowsPitTimingTrackingState>(
+                    Json
+                        .parseToJsonElement(logs.last().telemetryJson)
+                        .jsonObject
+                        .getValue("state")
+                        .jsonObject
+                        .getValue("pitTimingTyreWearTrackingState"),
+                )
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyres.send(tyreWear(fl = 1.0))
+            telemetry.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
+            telemetry.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            tyres.send(tyreWear(fl = 0.8))
+            telemetry.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            debugRequests.emit(request)
+            assertEquals(0.2, assertNotNull(trackingFromLastLog().lastValidLapConsumption), 1e-10)
+
+            selected.value = Simulator.Gt7Ps5
+            selected.value = Simulator.LmuWindows
+            debugRequests.emit(request)
+            assertEquals(LmuWindowsPitTimingTrackingState(), trackingFromLastLog())
+            val telemetryJson = logs.last().telemetryJson
+            val jsonElement = Json.parseToJsonElement(telemetryJson)
+            val jsonObject = jsonElement.jsonObject
+            val resetState = jsonObject.getValue("state").jsonObject
+            assertEquals("-1", resetState.getValue("lastAnnouncedPitTimingTyreWearLaps").jsonPrimitive.content)
+            assertEquals("-1", resetState.getValue("lastPitTimingTyreWearEvaluationLap").jsonPrimitive.content)
+
+            selected.value = Simulator.LmuWindows
+            telemetry.send(fakeTelemetryData(currentLap = 3, bestLapTimeMs = 90_000L))
+            tyres.send(tyreWear(fl = 0.6))
+            debugRequests.emit(request)
+            assertEquals(null, trackingFromLastLog().lastValidLapConsumption)
+            requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "laps"))
+            assertEquals("データがありません", spoken.last().narratedText)
+        }
+
+    @Test
     fun `燃料クラスでは閾値以下で燃料警告を読み上げVE警告は出さない`() =
         runTest(testDispatcher) {
             val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
