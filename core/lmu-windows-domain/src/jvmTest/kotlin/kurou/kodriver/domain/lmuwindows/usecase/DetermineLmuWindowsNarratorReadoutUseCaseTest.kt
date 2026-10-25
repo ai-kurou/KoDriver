@@ -2791,6 +2791,65 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `energySourceがFuelならピットタイミングVE警告を出さず消費量の追跡と評価周の更新を続ける`() {
+        val firstLapDecision =
+            pitTimingUseCase.determinePitTimingVirtualEnergy(
+                state = pitTimingBoundaryState(),
+                telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 1.0),
+                settings = settings(energySource = LmuWindowsEnergySource.Fuel),
+                observedAtMs = 0L,
+            )
+        val midLap1Decision =
+            pitTimingUseCase.determinePitTimingVirtualEnergy(
+                state = firstLapDecision.state,
+                telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
+                settings = settings(energySource = LmuWindowsEnergySource.Fuel),
+                observedAtMs = 45_000L,
+            )
+        // ラップ1完走時の消費率(0.1)が、ラップ2開始時に次回以降の推定基準として採用される。
+        val lapStartDecision =
+            pitTimingUseCase.determinePitTimingVirtualEnergy(
+                state = midLap1Decision.state,
+                telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.8),
+                settings =
+                    settings(
+                        pitTimingVirtualEnergyLapsThreshold = 3,
+                        energySource = LmuWindowsEnergySource.Fuel,
+                    ),
+                observedAtMs = 90_000L,
+            )
+        val decision =
+            pitTimingUseCase.determinePitTimingVirtualEnergy(
+                state = lapStartDecision.state,
+                telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.05),
+                settings =
+                    settings(
+                        pitTimingVirtualEnergyLapsThreshold = 3,
+                        energySource = LmuWindowsEnergySource.Fuel,
+                    ),
+                observedAtMs = 150_000L,
+            )
+
+        assertEquals(
+            0.1,
+            lapStartDecision.state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
+            1e-9,
+        )
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(2, decision.state.lastPitTimingVirtualEnergyEvaluationLap)
+        assertEquals(-1, decision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
+        val trackingState = decision.state.pitTimingVirtualEnergyTrackingState
+        assertEquals(2, trackingState.currentLap)
+        assertEquals(0.05, trackingState.currentValue)
+        assertEquals(150_000L, trackingState.observedAtMs)
+        assertEquals(0.1, trackingState.lastValidLapConsumption ?: 0.0, 1e-9)
+    }
+
+    @Test
     fun `ピットタイミング項目が無効でも平均消費量の計算に成功したラップは評価済みとして記録する`() {
         val firstLapDecision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(

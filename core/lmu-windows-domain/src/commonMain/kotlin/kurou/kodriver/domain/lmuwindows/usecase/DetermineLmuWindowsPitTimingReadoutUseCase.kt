@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.lmuwindows.usecase
 
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
@@ -10,6 +11,7 @@ import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.readoutEnabled
 
 class DetermineLmuWindowsPitTimingReadoutUseCase {
+    /** バーチャルエネルギーを使うクラスでのみ警告する。 */
     fun determinePitTimingVirtualEnergy(
         state: LmuWindowsNarratorState,
         telemetry: LmuWindowsTelemetryData,
@@ -55,7 +57,8 @@ class DetermineLmuWindowsPitTimingReadoutUseCase {
                 threshold = settings.pitTimingVirtualEnergyLapsThreshold,
                 enabled =
                     settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.PitTiming.Root) &&
-                        settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy),
+                        settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy) &&
+                        settings.energySource == LmuWindowsEnergySource.VirtualEnergy,
             )
         val stateAfterEvaluation =
             stateAfterTracking.copy(lastPitTimingVirtualEnergyEvaluationLap = evaluation.evaluatedLap)
