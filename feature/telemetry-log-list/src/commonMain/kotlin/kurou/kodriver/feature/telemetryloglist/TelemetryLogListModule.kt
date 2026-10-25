@@ -3,7 +3,6 @@ package kurou.kodriver.feature.telemetryloglist
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
-import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -21,7 +20,6 @@ val telemetryLogListModule =
         // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
         factory { ObserveTelemetryLogsUseCase(get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
-        factory { ResetTelemetryLogDatabaseUseCase(get()) }
         factory { DeleteTelemetryLogUseCase(get()) }
 
         // 一覧表示用 UseCase

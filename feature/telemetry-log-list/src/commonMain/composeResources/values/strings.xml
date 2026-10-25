@@ -3,13 +3,7 @@
     <string name="telemetry_log_empty_title">ログはまだありません</string>
     <string name="telemetry_log_empty_title_for_simulator">%1$sのログはまだありません</string>
     <string name="telemetry_log_empty_description">テレメトリを受信すると、ここに新しい順で表示されます。</string>
-    <string name="telemetry_log_reset_item">データベースをリセット</string>
-    <string name="telemetry_log_reset_confirm_title">データベースをリセットしますか？</string>
-    <string name="telemetry_log_reset_confirm_body">%1$sのテレメトリログがすべて削除されます。他のシミュレーターのログは削除されません。この操作は元に戻せません。</string>
-    <string name="telemetry_log_reset_confirm_button">削除する</string>
     <string name="telemetry_log_reset_cancel_button">キャンセル</string>
-    <string name="telemetry_log_reset_success">データベースをリセットしました</string>
-    <string name="telemetry_log_reset_failure">データベースのリセットに失敗しました</string>
     <string name="telemetry_log_more_button">その他の操作</string>
     <string name="telemetry_log_feedback_menu_item">フィードバック送信</string>
     <string name="telemetry_log_delete_menu_item">削除</string>

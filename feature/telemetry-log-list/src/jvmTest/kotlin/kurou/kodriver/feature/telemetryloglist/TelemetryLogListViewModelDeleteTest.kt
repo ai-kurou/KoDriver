@@ -26,7 +26,6 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
-import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -36,7 +35,7 @@ import kotlin.test.assertNull
 
 /**
  * [TelemetryLogListViewModel] の削除フロー（onDeleteClick/onDeleteConfirm/onDeleteDismiss/consumeDeleteResult）のテスト。
- * detekt の TooManyFunctions（20/20）に抵触するため [TelemetryLogListViewModelTest] から分割している。
+ * 一覧の更新・選択のテストは [TelemetryLogListViewModelTest] で扱う。
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class TelemetryLogListViewModelDeleteTest {
@@ -66,7 +65,6 @@ class TelemetryLogListViewModelDeleteTest {
                     ObserveSelectedSimulatorUseCase(simulatorRepository),
                 ),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
             deleteTelemetryLog = DeleteTelemetryLogUseCase(repository),
         )
 

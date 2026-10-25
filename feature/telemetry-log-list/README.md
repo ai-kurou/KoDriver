@@ -8,7 +8,7 @@
 - `TelemetryLogListViewModel.kt`: ログ一覧・選択中ログ・削除確認ダイアログ表示状態などを `StateFlow` で公開する。
 - `ObserveSortedTelemetryLogsUseCase.kt`: `:core:domain` の `ObserveTelemetryLogsUseCase` を作成日時の降順にソートして提供する、この feature 固有のUseCase。
 - `TelemetryLogListModule.kt`: この feature の Koin モジュール定義。
-- `TelemetryLogDeleteConfirmDialog.kt` / `TelemetryLogResetConfirmDialog.kt`: 個別削除・選択中シミュレーターのログのみ削除するリセット時の確認ダイアログ。
+- `TelemetryLogDeleteConfirmDialog.kt`: 個別ログ削除時の確認ダイアログ。
 - `AutoReadoutItemDisplayName.kt`: ログに紐づく `ReadoutItemKey` の表示名変換。
 - `ErrorCapture.kt`: プラットフォームごとのエラーレポート送信（expect/actual）。
 
@@ -16,7 +16,7 @@
 
 一覧の各行は、`:core:domain` の `NarrationOutcome` に応じて末尾のアイコン・アクセシビリティ用の説明・前景色を切り替える。
 
-ログが1件以上ある場合、リセット項目の直後に「読み上げ結果」のヒント行を表示する。ヘルプボタンを押すとボトムシートが開き、4種類の結果と2種類の読み上げ経路（計6項目）の説明を確認できる。ログがない場合は既存の空状態を表示し、ヒント行は表示しない。
+ログが1件以上ある場合、一覧の先頭に「読み上げ結果」のヒント行を表示する。ヘルプボタンを押すとボトムシートが開き、4種類の結果と2種類の読み上げ経路（計6項目）の説明を確認できる。ログがない場合は既存の空状態を表示し、ヒント行は表示しない。
 
 | `NarrationOutcome` | アイコン | contentDescription | 前景色 |
 | --- | --- | --- | --- |
