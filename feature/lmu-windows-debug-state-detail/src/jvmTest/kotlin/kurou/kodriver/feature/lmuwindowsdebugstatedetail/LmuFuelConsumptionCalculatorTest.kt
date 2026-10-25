@@ -159,25 +159,31 @@ class LmuFuelConsumptionCalculatorTest {
     }
 
     @Test
-    fun `燃料の容量比と周回数から残り周回数を推定する`() {
-        fun telemetry(
-            current: Double,
-            capacity: Double,
-            lap: Int = 5,
-        ) = sampleLmuTelemetry(lap).copy(
-            fuel = LmuWindowsFuelData(LmuWindowsFuelUnit(current), LmuWindowsFuelUnit(capacity)),
-        )
-        assertEquals(5.0, calculateLmuFuelRemainingLaps(telemetry(50.0, 100.0)))
-        assertEquals(0.0, calculateLmuFuelRemainingLaps(telemetry(0.0, 100.0)))
-        assertNull(calculateLmuFuelRemainingLaps(null))
-        listOf(0.0, -1.0, Double.NaN, Double.POSITIVE_INFINITY).forEach { capacity ->
-            assertNull(calculateLmuFuelRemainingLaps(telemetry(50.0, capacity)))
-        }
-        listOf(-1.0, 100.0, 101.0, Double.NaN, Double.POSITIVE_INFINITY).forEach { current ->
-            assertNull(calculateLmuFuelRemainingLaps(telemetry(current, 100.0)))
-        }
-        assertNull(calculateLmuFuelRemainingLaps(telemetry(50.0, 100.0, 0)))
+    fun `燃料は観測開始からの差分と経過周回数から残り周回数を推定する`() {
+        // 20Lから開始し2周で10L消費したので、残り10Lは約2周分
+        assertEquals(2.0, calculateLmuFuelRemainingLaps(fuelTelemetry(10.0, 5), LmuWindowsFuelBaseline(20.0, 3)))
+        assertEquals(0.0, calculateLmuFuelRemainingLaps(fuelTelemetry(0.0, 5), LmuWindowsFuelBaseline(20.0, 3)))
     }
+
+    @Test
+    fun `燃料は消費量が未確定の場合はnullを返す`() {
+        val baseline = LmuWindowsFuelBaseline(20.0, 3)
+        assertNull(calculateLmuFuelRemainingLaps(null, baseline))
+        assertNull(calculateLmuFuelRemainingLaps(fuelTelemetry(10.0, 5), null))
+        assertNull(calculateLmuFuelRemainingLaps(fuelTelemetry(10.0, 3), baseline))
+        assertNull(calculateLmuFuelRemainingLaps(fuelTelemetry(20.0, 5), baseline))
+        assertNull(calculateLmuFuelRemainingLaps(fuelTelemetry(25.0, 5), baseline))
+        listOf(-1.0, Double.NaN, Double.POSITIVE_INFINITY).forEach { current ->
+            assertNull(calculateLmuFuelRemainingLaps(fuelTelemetry(current, 5), baseline))
+        }
+    }
+
+    private fun fuelTelemetry(
+        current: Double,
+        lap: Int,
+    ) = sampleLmuTelemetry(lap).copy(
+        fuel = LmuWindowsFuelData(LmuWindowsFuelUnit(current), LmuWindowsFuelUnit(100.0)),
+    )
 
     private fun sampleLmuTelemetry(
         currentLap: Int,

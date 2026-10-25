@@ -258,6 +258,7 @@ private val debugStateCardContents:
             PitTimingRemainingLapsContent(
                 uiState.lmuWindows.virtualEnergy,
                 uiState.lmuWindows.telemetry,
+                uiState.lmuWindows.fuelBaseline,
             )
         },
         LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE to { uiState ->

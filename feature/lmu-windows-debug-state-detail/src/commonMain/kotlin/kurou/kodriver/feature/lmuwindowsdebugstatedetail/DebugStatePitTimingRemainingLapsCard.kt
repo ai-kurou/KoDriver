@@ -16,12 +16,13 @@ import org.jetbrains.compose.resources.stringResource
 internal fun PitTimingRemainingLapsContent(
     virtualEnergy: LmuWindowsVirtualEnergyData?,
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
+    fuelBaseline: LmuWindowsFuelBaseline?,
 ) {
     val virtualEnergyRemainingLaps =
         calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry)
             ?.preciseRemainingLaps
     val tyreWearRemainingLaps = calculateLmuTyreWearRemainingLaps(lmuWindowsTelemetry)
-    val fuelRemainingLaps = calculateLmuFuelRemainingLaps(lmuWindowsTelemetry)
+    val fuelRemainingLaps = calculateLmuFuelRemainingLaps(lmuWindowsTelemetry, fuelBaseline)
     Column {
         Text(
             text =
