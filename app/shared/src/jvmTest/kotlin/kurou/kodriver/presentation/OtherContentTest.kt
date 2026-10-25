@@ -49,10 +49,54 @@ class OtherContentTest {
         )
 
     @Test
+    fun `ログ削除ダイアログの確認とキャンセルを配線する`() {
+        var confirmed = 0
+        var dismissed = 0
+        rule.setContent {
+            AppTheme {
+                OtherContent(
+                    uiState = OtherListUiState(showResetConfirmDialog = true),
+                    onItemSelected = {},
+                    onClearSelectedItem = {},
+                    onResetConfirm = { confirmed++ },
+                    onResetDismiss = { dismissed++ },
+                )
+            }
+        }
+        rule.onNodeWithText("すべてのシミュレーターのログを削除します。この操作は元に戻せません。").assertExists()
+        rule.onNodeWithText("キャンセル").performClick()
+        assertEquals(1, dismissed)
+        rule.onNodeWithText("削除", substring = false).performClick()
+        assertEquals(1, confirmed)
+    }
+
+    @Test
+    fun `削除結果の成功と失敗をスナックバーで通知して消費する`() {
+        var succeeded by mutableStateOf<Boolean?>(true)
+        var consumed = 0
+        rule.setContent {
+            AppTheme {
+                OtherContent(
+                    uiState = OtherListUiState(resetSucceeded = succeeded),
+                    onItemSelected = {},
+                    onClearSelectedItem = {},
+                    onResetResultConsumed = { consumed++ },
+                )
+            }
+        }
+        rule.onNodeWithText("すべてのログを削除しました").assertExists()
+        rule.waitUntil(timeoutMillis = 5_000L) { consumed == 1 }
+        rule.runOnIdle { succeeded = false }
+        rule.onNodeWithText("ログの削除に失敗しました").assertExists()
+        rule.waitUntil(timeoutMillis = 5_000L) { consumed == 2 }
+    }
+
+    @Test
     fun `ログを全て削除をタップしても選択や詳細遷移を行わない`() {
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false
         var detailDisplayed = false
+        var resetClicked = false
         rule.setContent {
             OtherContent(
                 uiState =
@@ -60,6 +104,7 @@ class OtherContentTest {
                         items = listOf(OtherListItemType.DeleteAllLogs),
                         selectedItem = selectedItem,
                     ),
+                onResetClick = { resetClicked = true },
                 onItemSelected = { selectedItem = it },
                 onClearSelectedItem = {},
                 scaffoldDirective = singlePaneDirective,
@@ -72,6 +117,7 @@ class OtherContentTest {
         rule.onNodeWithText("ログを全て削除").assertExists().performTouchInput { click() }
         rule.waitForIdle()
 
+        assertTrue(resetClicked)
         assertEquals(null, selectedItem)
         assertFalse(backEnabled)
         assertFalse(detailDisplayed)

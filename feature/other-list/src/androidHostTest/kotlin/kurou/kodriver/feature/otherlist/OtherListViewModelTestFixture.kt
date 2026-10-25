@@ -38,6 +38,7 @@ import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
@@ -65,6 +66,7 @@ import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
+import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
@@ -79,6 +81,8 @@ import kotlin.test.BeforeTest
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LargeClass")
 abstract class OtherListViewModelTestFixture {
+    protected val telemetryLogRepository: TelemetryLogRepository = mockk()
+
     protected val dispatcher = UnconfinedTestDispatcher()
 
     protected val appUpdateRepository: AppUpdateRepository = mockk()
@@ -195,6 +199,7 @@ abstract class OtherListViewModelTestFixture {
             openWindowsSpeechSettings = OpenWindowsSpeechSettingsUseCase(speechSettingsRepository),
             startupRegistration = StartupRegistrationUseCases(startupRegistrationRepository),
             getDeviceVolume = GetDeviceVolumeUseCase(deviceVolumeRepository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(telemetryLogRepository),
             appVersionInfo =
                 OtherListAppVersionInfo(
                     currentVersion = "0.5.0",

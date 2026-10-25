@@ -355,9 +355,7 @@ internal fun OtherListItem(
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
                 .clickable {
-                    if (item != OtherListItemType.DeleteAllLogs) {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    }
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     handleOtherListItemClick(
                         item = item,
                         uiState = uiState,
@@ -388,7 +386,9 @@ private fun handleOtherListItemClick(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
-        OtherListItemType.DeleteAllLogs -> {}
+        OtherListItemType.DeleteAllLogs -> {
+            onItemClick(item)
+        }
 
         OtherListItemType.OverlayVisible -> {
             onOverlayVisibleChange(!uiState.overlayVisible)

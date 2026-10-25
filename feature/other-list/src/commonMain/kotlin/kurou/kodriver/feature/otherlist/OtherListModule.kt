@@ -17,6 +17,7 @@ import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
+import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 import org.koin.core.module.dsl.viewModel
@@ -45,6 +46,7 @@ val otherListModule =
                     currentVersion = currentAppVersion(),
                     appVersionLabel = currentAppVersionLabel(),
                 ),
+                get(),
                 get(),
             )
         }
@@ -78,6 +80,7 @@ val otherListModule =
 
         // ドメイン UseCase（:core:domain。get() は :core:windows-startup-data の Repository を解決）
         factory { StartupRegistrationUseCases(get()) }
+        factory { ResetTelemetryLogDatabaseUseCase(get()) }
 
         // オーバーレイ表示ON/OFF（:core:domain。get() は :core:data の Repository を解決）
         factory { ObserveOverlayVisibleUseCase(get()) }

@@ -1,6 +1,8 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.Posture
@@ -22,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +36,11 @@ import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListPane
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.otherlist.OtherListViewModel
+import kurou.kodriver.feature.otherlist.TelemetryLogResetConfirmDialog
+import kurou.kodriver.feature.otherlist.generated.resources.Res
+import kurou.kodriver.feature.otherlist.generated.resources.telemetry_log_reset_failure
+import kurou.kodriver.feature.otherlist.generated.resources.telemetry_log_reset_success
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private const val GITHUB_REPOSITORY_URL = "https://github.com/ai-kurou/KoDriver"
@@ -73,6 +81,10 @@ fun OtherContent(
     OtherContent(
         uiState = uiState,
         onItemSelected = viewModel::onItemSelected,
+        onResetClick = viewModel::onResetClick,
+        onResetConfirm = viewModel::onResetConfirm,
+        onResetDismiss = viewModel::onResetDismiss,
+        onResetResultConsumed = viewModel::consumeResetResult,
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
         onOpenWindowsSpeechSettings = viewModel::openWindowsSpeechSettings,
@@ -101,6 +113,7 @@ fun OtherContent(
 private fun handleOtherItemClick(
     itemType: OtherListItemType,
     onItemSelected: (OtherListItemType) -> Unit,
+    onResetClick: () -> Unit,
     onOpenGitHubRepository: () -> Unit,
     onOpenReleasePage: () -> Unit,
     onOpenReadoutStartSoundDialog: () -> Unit,
@@ -111,7 +124,7 @@ private fun handleOtherItemClick(
     onOpenTtsEngineInPlayStore: () -> Unit,
 ) {
     when (itemType) {
-        OtherListItemType.DeleteAllLogs -> Unit
+        OtherListItemType.DeleteAllLogs -> onResetClick()
 
         OtherListItemType.OverlayTextColor -> onOpenOverlayTextColorDialog()
 
@@ -157,6 +170,10 @@ private fun handleOtherItemClick(
 internal fun OtherContent(
     uiState: OtherListUiState,
     onItemSelected: (OtherListItemType) -> Unit,
+    onResetClick: () -> Unit = {},
+    onResetConfirm: () -> Unit = {},
+    onResetDismiss: () -> Unit = {},
+    onResetResultConsumed: () -> Unit = {},
     onOpenGitHubRepository: () -> Unit = {},
     onOpenReleasePage: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
@@ -253,52 +270,86 @@ internal fun OtherContent(
 
     backHandler(navigator.canNavigateBack(), { predictiveBackProgress = it }) { navigateBack() }
 
-    ListDetailPaneScaffold(
-        directive = navigator.scaffoldDirective,
-        scaffoldState = navigator.scaffoldState,
-        paneExpansionState = paneExpansionState,
-        paneExpansionDragHandle = { VerticalDivider() },
-        modifier = modifier.constrainToTabletopTopPane(windowPosture),
-        listPane = {
-            OtherListPane(
-                uiState = uiState,
-                onOverlayVisibleChange = onOverlayVisibleChange,
-                onKeepScreenOnChange = onKeepScreenOnChange,
-                onDynamicColorEnabledChange = onDynamicColorEnabledChange,
-                onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
-                onStartupEnabledChange = onStartupEnabledChange,
-                onAppVersionTapped = onAppVersionTapped,
-                onItemClick = { itemType ->
-                    handleOtherItemClick(
-                        itemType = itemType,
-                        onItemSelected = onItemSelected,
-                        onOpenGitHubRepository = onOpenGitHubRepository,
-                        onOpenReleasePage = onOpenReleasePage,
-                        onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
-                        onOpenThemeDialog = onOpenThemeDialog,
-                        onOpenOverlayTextColorDialog = onOpenOverlayTextColorDialog,
-                        onOpenOverlayTextSizeDialog = onOpenOverlayTextSizeDialog,
-                        onOpenWindowsSpeechSettings = onOpenWindowsSpeechSettings,
-                        onOpenTtsEngineInPlayStore = onOpenTtsEngineInPlayStore,
-                    )
-                },
-                scrollToTopRequest = scrollToTopRequest,
-            )
-        },
-        detailPane = {
-            uiState.selectedItem?.let { selectedItem ->
-                Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
-                    detailContent(
-                        selectedItem,
-                        navigator.canNavigateBack(),
-                        navigateBack,
-                        uiState.selectedFeedbackTelemetryLogId,
-                        uiState.feedbackAttachRequestId,
-                    )
-                }
-            }
-        },
+    val snackbarHostState = remember { SnackbarHostState() }
+    OtherResetEffects(
+        uiState = uiState,
+        snackbarHostState = snackbarHostState,
+        onResetConfirm = onResetConfirm,
+        onResetDismiss = onResetDismiss,
+        onResetResultConsumed = onResetResultConsumed,
     )
+
+    Box(modifier = modifier) {
+        ListDetailPaneScaffold(
+            directive = navigator.scaffoldDirective,
+            scaffoldState = navigator.scaffoldState,
+            paneExpansionState = paneExpansionState,
+            paneExpansionDragHandle = { VerticalDivider() },
+            modifier = Modifier.constrainToTabletopTopPane(windowPosture),
+            listPane = {
+                OtherListPane(
+                    uiState = uiState,
+                    onOverlayVisibleChange = onOverlayVisibleChange,
+                    onKeepScreenOnChange = onKeepScreenOnChange,
+                    onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                    onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
+                    onStartupEnabledChange = onStartupEnabledChange,
+                    onAppVersionTapped = onAppVersionTapped,
+                    onItemClick = { itemType ->
+                        handleOtherItemClick(
+                            itemType = itemType,
+                            onItemSelected = onItemSelected,
+                            onResetClick = onResetClick,
+                            onOpenGitHubRepository = onOpenGitHubRepository,
+                            onOpenReleasePage = onOpenReleasePage,
+                            onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
+                            onOpenThemeDialog = onOpenThemeDialog,
+                            onOpenOverlayTextColorDialog = onOpenOverlayTextColorDialog,
+                            onOpenOverlayTextSizeDialog = onOpenOverlayTextSizeDialog,
+                            onOpenWindowsSpeechSettings = onOpenWindowsSpeechSettings,
+                            onOpenTtsEngineInPlayStore = onOpenTtsEngineInPlayStore,
+                        )
+                    },
+                    scrollToTopRequest = scrollToTopRequest,
+                )
+            },
+            detailPane = {
+                uiState.selectedItem?.let { selectedItem ->
+                    Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
+                        detailContent(
+                            selectedItem,
+                            navigator.canNavigateBack(),
+                            navigateBack,
+                            uiState.selectedFeedbackTelemetryLogId,
+                            uiState.feedbackAttachRequestId,
+                        )
+                    }
+                }
+            },
+        )
+        SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter))
+    }
+}
+
+@Composable
+private fun OtherResetEffects(
+    uiState: OtherListUiState,
+    snackbarHostState: SnackbarHostState,
+    onResetConfirm: () -> Unit,
+    onResetDismiss: () -> Unit,
+    onResetResultConsumed: () -> Unit,
+) {
+    val successMessage = stringResource(Res.string.telemetry_log_reset_success)
+    val failureMessage = stringResource(Res.string.telemetry_log_reset_failure)
+    val currentOnResetResultConsumed by rememberUpdatedState(onResetResultConsumed)
+    LaunchedEffect(uiState.resetSucceeded) {
+        val succeeded = uiState.resetSucceeded ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(if (succeeded) successMessage else failureMessage)
+        currentOnResetResultConsumed()
+    }
+    if (uiState.showResetConfirmDialog) {
+        TelemetryLogResetConfirmDialog(onConfirm = onResetConfirm, onDismiss = onResetDismiss)
+    }
 }
 
 @Preview(showBackground = true)

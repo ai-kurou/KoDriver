@@ -41,7 +41,7 @@ class OtherListPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `ログを全て削除は表示のみでタップしてもコールバックや触覚反応を起こさない`() {
+    fun `ログを全て削除をタップするとコールバックと触覚反応が発生する`() {
         val haptic = FakeHapticFeedback()
         val callbacks = mutableListOf<String>()
         rule.setContent {
@@ -65,8 +65,8 @@ class OtherListPaneTest {
             .assertIsNotSelected()
             .performClick()
         rule.onNodeWithText("ログを全て削除").assertIsNotSelected()
-        assertEquals(emptyList(), callbacks)
-        assertEquals(emptyList(), haptic.performedTypes)
+        assertEquals(listOf(OtherListItemType.DeleteAllLogs.id), callbacks)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
     }
 
     @Test

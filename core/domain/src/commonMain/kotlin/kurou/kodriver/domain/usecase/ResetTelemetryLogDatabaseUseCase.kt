@@ -6,7 +6,9 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 class ResetTelemetryLogDatabaseUseCase(
     private val repository: TelemetryLogRepository,
 ) {
-    suspend operator fun invoke(simulator: Simulator) {
-        repository.deleteTelemetryLogsBySimulator(simulator)
+    suspend operator fun invoke() {
+        Simulator.entries.forEach { simulator ->
+            repository.deleteTelemetryLogsBySimulator(simulator)
+        }
     }
 }

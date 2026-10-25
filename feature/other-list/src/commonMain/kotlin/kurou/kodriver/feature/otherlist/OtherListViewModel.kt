@@ -38,6 +38,7 @@ import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
+import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
@@ -90,6 +91,7 @@ class OtherListViewModel(
     private val startupRegistration: StartupRegistrationUseCases,
     appVersionInfo: OtherListAppVersionInfo,
     private val getDeviceVolume: GetDeviceVolumeUseCase,
+    private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,
 ) : ViewModel() {
     private val currentVersion = appVersionInfo.currentVersion
     private var updateCheckStarted = false
@@ -178,6 +180,42 @@ class OtherListViewModel(
                 ttsUnavailableGuidance = ttsUnavailableReason?.toGuidance(),
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
+
+    fun onResetClick() {
+        if (_uiState.value.isResetting) return
+        _uiState.update { it.copy(showResetConfirmDialog = true) }
+    }
+
+    fun onResetDismiss() {
+        _uiState.update { it.copy(showResetConfirmDialog = false) }
+    }
+
+    fun onResetConfirm() {
+        if (!_uiState.value.showResetConfirmDialog || _uiState.value.isResetting) return
+        _uiState.update { it.copy(showResetConfirmDialog = false, isResetting = true, resetSucceeded = null) }
+        viewModelScope.launch {
+            try {
+                val succeeded =
+                    try {
+                        resetTelemetryLogDatabase()
+                        true
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (
+                        @Suppress("TooGenericExceptionCaught") e: Exception,
+                    ) {
+                        false
+                    }
+                _uiState.update { it.copy(resetSucceeded = succeeded) }
+            } finally {
+                _uiState.update { it.copy(isResetting = false) }
+            }
+        }
+    }
+
+    fun consumeResetResult() {
+        _uiState.update { it.copy(resetSucceeded = null) }
+    }
 
     fun checkUpdate() {
         if (currentVersion.isBlank() || updateCheckStarted) return
