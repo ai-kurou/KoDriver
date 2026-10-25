@@ -114,7 +114,6 @@ import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_manual_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_manual_hint_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_manual_title
-import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_time
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -138,10 +137,6 @@ internal fun TelemetryLogListPane(
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
         val firstLogId = uiState.logs.first().id
-        val raceStartedAt =
-            remember(uiState.logs) {
-                uiState.logs.minOf { it.createdAt }
-            }
         var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
         var showNewLogsButton by rememberSaveable { mutableStateOf(false) }
         val isAtTop by remember {
@@ -206,7 +201,6 @@ internal fun TelemetryLogListPane(
                         TelemetryLogListItem(
                             log = log,
                             isSelected = log.id == uiState.selectedLogId,
-                            raceStartedAt = raceStartedAt,
                             modifier = Modifier.animateItem(),
                             onClick = { onLogClick(log.id) },
                             onFeedbackClick = { onFeedbackClick(log.id) },
@@ -314,7 +308,6 @@ private fun TelemetryLogEmptyState(
 private fun TelemetryLogListItem(
     log: TelemetryLog,
     isSelected: Boolean,
-    raceStartedAt: Long,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     onFeedbackClick: () -> Unit = {},
@@ -365,10 +358,7 @@ private fun TelemetryLogListItem(
         supportingContent = {
             Text(
                 text =
-                    formatTelemetryLogTime(
-                        createdAt = log.createdAt,
-                        raceElapsedMs = (log.createdAt - raceStartedAt).coerceAtLeast(0),
-                    ),
+                    formatTelemetryLogTime(createdAt = log.createdAt),
                 color = supportingColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -479,16 +469,7 @@ private fun TelemetryLogListItem(
     )
 }
 
-@Composable
-internal fun formatTelemetryLogTime(
-    createdAt: Long,
-    raceElapsedMs: Long,
-): String =
-    stringResource(
-        Res.string.telemetry_log_time,
-        formatTimeOfDay(createdAt),
-        formatDuration(raceElapsedMs),
-    )
+internal fun formatTelemetryLogTime(createdAt: Long): String = formatTimeOfDay(createdAt)
 
 @Composable
 private fun TelemetryLogNarrationOutcomeHintRow(modifier: Modifier = Modifier) {

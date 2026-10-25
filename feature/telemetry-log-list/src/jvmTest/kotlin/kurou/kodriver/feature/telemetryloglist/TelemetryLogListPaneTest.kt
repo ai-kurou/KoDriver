@@ -154,18 +154,18 @@ class TelemetryLogListPaneTest {
 
         rule.onNodeWithText("新しいログ").assertDoesNotExist()
         rule.onNodeWithText("読み上げ結果").assertIsDisplayed()
-        rule.onNodeWithText("09:00:00.060 / レース +00:00:00.029").assertIsDisplayed()
+        rule.onNodeWithText("09:00:00.060").assertIsDisplayed()
     }
 
     @Test
     fun `UTC0時0分0秒はJST9時0分0秒として表示する`() {
         rule.setContent {
             KoDriverTheme {
-                Text(formatTelemetryLogTime(createdAt = 0L, raceElapsedMs = 0L))
+                Text(formatTelemetryLogTime(createdAt = 0L))
             }
         }
 
-        rule.onNodeWithText("09:00:00.000 / レース +00:00:00.000").assertIsDisplayed()
+        rule.onNodeWithText("09:00:00.000").assertIsDisplayed()
     }
 
     @Test
@@ -175,24 +175,11 @@ class TelemetryLogListPaneTest {
 
         rule.setContent {
             KoDriverTheme {
-                Text(formatTelemetryLogTime(createdAt = fifteenHoursInMillis, raceElapsedMs = 0L))
+                Text(formatTelemetryLogTime(createdAt = fifteenHoursInMillis))
             }
         }
 
-        rule.onNodeWithText("00:00:00.000 / レース +00:00:00.000").assertIsDisplayed()
+        rule.onNodeWithText("00:00:00.000").assertIsDisplayed()
         assertEquals(0L, (fifteenHoursInMillis + 9 * 60 * 60 * 1_000L) % millisecondsPerDay)
-    }
-
-    @Test
-    fun `レース経過時間はcreatedAtとraceStartedAtの差分をそのまま表示する`() {
-        val oneHourInMillis = 60 * 60 * 1_000L
-
-        rule.setContent {
-            KoDriverTheme {
-                Text(formatTelemetryLogTime(createdAt = oneHourInMillis, raceElapsedMs = oneHourInMillis))
-            }
-        }
-
-        rule.onNodeWithText("10:00:00.000 / レース +01:00:00.000").assertIsDisplayed()
     }
 }
