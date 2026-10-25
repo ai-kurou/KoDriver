@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
@@ -52,16 +53,18 @@ class ManualReadoutSetDetailPaneScreenshotTest {
     fun `GT7の残り燃料と周回数の文言`() = screenshot(gt7Ps5ManualReadoutItemKeys(), selected = true)
 
     @Test
-    fun `項目追加ダイアログ`() =
+    fun `項目追加シート`() =
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
-                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                        ManualReadoutItemPickerDialog(lmuWindowsManualReadoutItemKeys(), {}, {})
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                            ManualReadoutItemPickerSheetContent(lmuWindowsManualReadoutItemKeys(), {})
+                        }
                     }
                 }
             }
-            onNode(isDialog()).captureRoboImage()
+            onRoot().captureRoboImage()
         }
 
     @Test
@@ -164,16 +167,18 @@ class ManualReadoutSetDetailPaneAceScreenshotTest {
         )
 
     @Test
-    fun `ACEの項目追加ダイアログ`() =
+    fun `ACEの項目追加シート`() =
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
-                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                        ManualReadoutItemPickerDialog(aceWindowsManualReadoutItemKeys(), {}, {})
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                            ManualReadoutItemPickerSheetContent(aceWindowsManualReadoutItemKeys(), {})
+                        }
                     }
                 }
             }
-            onNode(isDialog()).captureRoboImage()
+            onRoot().captureRoboImage()
         }
 }
 

@@ -18,6 +18,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performKeyInput
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.pressKey
@@ -68,7 +70,6 @@ class ManualReadoutSetDetailPaneTest {
                     "ブレーキ温度",
                     "ラップ",
                     "自己ベストラップ",
-                    "キャンセル",
                 ),
         )
     }
@@ -87,7 +88,6 @@ class ManualReadoutSetDetailPaneTest {
                     "自己ベストラップ",
                     "タイヤ",
                     "タイヤ温度",
-                    "キャンセル",
                 ),
         )
     }
@@ -106,7 +106,6 @@ class ManualReadoutSetDetailPaneTest {
                     "タイヤ温度",
                     "ラップ",
                     "自己ベストラップ",
-                    "キャンセル",
                 ),
         )
     }
@@ -117,7 +116,7 @@ class ManualReadoutSetDetailPaneTest {
     ) {
         rule.setContent {
             KoDriverTheme {
-                ManualReadoutItemPickerDialog(itemKeys, {}, {})
+                ManualReadoutItemPickerSheet(itemKeys, {}, {})
             }
         }
         val texts =
@@ -148,7 +147,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("バーチャルエネルギーの残り周回数").performClick()
+        rule.onNodeWithText("バーチャルエネルギーの残り周回数").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("バーチャルエネルギーは残り約3周")
     }
 
@@ -172,7 +171,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("タイヤ摩耗の残り周回数").performClick()
+        rule.onNodeWithText("タイヤ摩耗の残り周回数").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤは残り約3周")
     }
 
@@ -196,7 +195,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("燃料の残り周回数").performClick()
+        rule.onNodeWithText("燃料の残り周回数").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り約3周")
     }
 
@@ -220,7 +219,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("自己ベストラップ").performClick()
+        rule.onNodeWithText("自己ベストラップ").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("自己ベストラップ 1分23秒456")
     }
 
@@ -244,7 +243,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("タイヤ温度").performClick()
+        rule.onNodeWithText("タイヤ温度").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤ温度90℃")
     }
 
@@ -268,7 +267,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("自己ベストラップ").performClick()
+        rule.onNodeWithText("自己ベストラップ").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("自己ベストラップ 1分23秒456")
     }
 
@@ -307,7 +306,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("バーチャルエネルギーの残り周回数").performClick()
+        rule.onNodeWithText("バーチャルエネルギーの残り周回数").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{laps}は残りエネルギーで走れる周回数に置き換わります。").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {laps}（そのまま読み上げます）").assertDoesNotExist()
@@ -373,7 +372,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("タイヤ摩耗の残り周回数").performClick()
+        rule.onNodeWithText("タイヤ摩耗の残り周回数").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{laps}は残りタイヤ摩耗で走れる周回数に置き換わります。").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {laps}（そのまま読み上げます）").assertDoesNotExist()
@@ -439,7 +438,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("燃料の残り周回数").performClick()
+        rule.onNodeWithText("燃料の残り周回数").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{laps}は残り燃料で走れる周回数に置き換わります。").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {laps}（そのまま読み上げます）").assertDoesNotExist()
@@ -505,7 +504,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("自己ベストラップ").performClick()
+        rule.onNodeWithText("自己ベストラップ").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{laptime} はセッションの自己ベストラップタイムに置き換わります").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {laptime}（そのまま読み上げます）").assertDoesNotExist()
@@ -571,7 +570,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("自己ベストラップ").performClick()
+        rule.onNodeWithText("自己ベストラップ").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{laptime} はセッションの自己ベストラップタイムに置き換わります").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {laptime}（そのまま読み上げます）").assertDoesNotExist()
@@ -714,7 +713,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("残り燃料").performClick()
+        rule.onNodeWithText("残り燃料").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
         rule.onNodeWithText("{percent} は現在の残量（%）に置き換わります").assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("残り{percent}%")
@@ -755,7 +754,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("残り燃料").performClick()
+        rule.onNodeWithText("残り燃料").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
         rule.onNodeWithText("{percent} は現在の残量（%）に置き換わります").assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("残り{percent}%")
@@ -796,7 +795,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("残り燃料").performClick()
+        rule.onNodeWithText("残り燃料").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
         rule.onNodeWithText("{percent} は現在の残量（%）に置き換わります").assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("残り{percent}%")
@@ -826,7 +825,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("タイヤ温度").performClick()
+        rule.onNodeWithText("タイヤ温度").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤ温度90℃")
     }
 
@@ -850,7 +849,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("ブレーキ温度").performClick()
+        rule.onNodeWithText("ブレーキ温度").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("ブレーキ温度500℃")
     }
 
@@ -874,7 +873,7 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("ブレーキ残量").performClick()
+        rule.onNodeWithText("ブレーキ残量").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("ブレーキ残量50%")
     }
 
@@ -981,7 +980,7 @@ class ManualReadoutSetDetailPaneTest {
     }
 
     @Test
-    fun `選択と削除確認のキャンセルと確定を通知する`() {
+    fun `シートを閉じて再選択し削除確認のキャンセルと確定を通知する`() {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
@@ -1016,10 +1015,18 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("ブレーキ温度").assertExists()
         rule.onNodeWithText("タイヤ温度").assertExists()
         rule.onNodeWithText("タイヤ摩耗").assertExists()
-        rule.onNodeWithText("キャンセル").performClick()
+        rule.onNodeWithText("キャンセル").assertDoesNotExist()
+        rule
+            .onNode(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
+            .performSemanticsAction(SemanticsActions.Dismiss)
+        rule.mainClock.advanceTimeBy(500)
         rule.onNodeWithText("バーチャルエネルギー残量").assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("タイヤ摩耗").performClick()
+        rule.onNodeWithText("タイヤ摩耗").performScrollTo().performClick()
+        rule.runOnIdle {
+            assertEquals(listOf(LmuWindowsReadoutItemKey.TyreWear.Root.value), state.value.selectedItemKeys)
+        }
+        rule.onNode(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss)).assertDoesNotExist()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤ摩耗残り50%")
         rule.onNodeWithText("＋ 項目を追加").assertIsEnabled()
         rule.onNodeWithText("試聴").assertExists()
@@ -1086,7 +1093,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("残り燃料の周回数").performClick()
+        rule.onNodeWithText("残り燃料の周回数").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{laps}は残り燃料で走れる周回数に置き換わります。").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {laps}（そのまま読み上げます）").assertDoesNotExist()
@@ -1152,7 +1159,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("タイヤ温度").performClick()
+        rule.onNodeWithText("タイヤ温度").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{celsius} は現在の項目の最高温度（℃）に置き換わります").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {celsius}（そのまま読み上げます）").assertDoesNotExist()
@@ -1218,7 +1225,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("タイヤ温度").performClick()
+        rule.onNodeWithText("タイヤ温度").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{celsius} は現在の項目の最高温度（℃）に置き換わります").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {celsius}（そのまま読み上げます）").assertDoesNotExist()
@@ -1284,7 +1291,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("タイヤ温度").performClick()
+        rule.onNodeWithText("タイヤ温度").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{celsius} は現在の項目の最高温度（℃）に置き換わります").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {celsius}（そのまま読み上げます）").assertDoesNotExist()
@@ -1350,7 +1357,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("ブレーキ温度").performClick()
+        rule.onNodeWithText("ブレーキ温度").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {celsius}（そのまま読み上げます）").assertDoesNotExist()
         rule.onNode(hasSetTextAction()).performTextReplacement("")
@@ -1415,7 +1422,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("バーチャルエネルギー残量").performClick()
+        rule.onNodeWithText("バーチャルエネルギー残量").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("")
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
