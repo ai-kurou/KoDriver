@@ -167,27 +167,36 @@ abstract class OtherListViewModelTestFixture {
         every { accessLocalNetworkPermissionRepository.isGranted() } returns true
         return OtherListViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
-            settingsUseCases =
-                OtherListSettingsUseCases(
+            overlayUseCases =
+                OtherListOverlayUseCases(
                     observeOverlayVisible = ObserveOverlayVisibleUseCase(overlayVisibleRepository),
                     saveOverlayVisible = SaveOverlayVisibleUseCase(overlayVisibleRepository),
                     observeOverlayTextSize = ObserveOverlayTextSizeUseCase(overlayTextSizeRepository),
                     observeOverlayTextColor = ObserveOverlayTextColorUseCase(overlayTextColorRepository),
                     observeOverlayBackgroundOpacity =
                         ObserveOverlayBackgroundOpacityUseCase(overlayBackgroundOpacityRepository),
-                    observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
-                    saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
-                    observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorRepository),
-                    saveDynamicColorEnabled = SaveDynamicColorEnabledUseCase(dynamicColorRepository),
-                    observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
-                    saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
+                ),
+            speechUseCases =
+                OtherListSpeechUseCases(
                     observeVoice = ObserveVoiceUseCase(voiceRepository),
                     observeVoiceSpeed = ObserveVoiceSpeedUseCase(voiceSpeedRepository),
                     observeVoicePitch = ObserveVoicePitchUseCase(voicePitchRepository),
                     observeAndroidAudioUsage = ObserveAndroidAudioUsageUseCase(audioUsageRepository),
                     observeReadoutStartSoundType = ObserveReadoutStartSoundTypeUseCase(readoutStartSoundRepository),
                     observeSoundVolume = ObserveSoundVolumeUseCase(soundVolumeRepository),
+                ),
+            deviceSettingsUseCases =
+                OtherListDeviceSettingsUseCases(
+                    observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
+                    saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
+                    observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorRepository),
+                    saveDynamicColorEnabled = SaveDynamicColorEnabledUseCase(dynamicColorRepository),
+                    observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
+                    saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
                     observeThemeMode = ObserveThemeModeUseCase(themeRepository),
+                ),
+            connectionUseCases =
+                OtherListConnectionUseCases(
                     observeServerIp = ObserveServerIpUseCase(serverIpRepository),
                     observeConsoleAddress = ObserveConsoleAddressUseCase(consoleAddressRepository),
                     observeGt7Ps5UdpPort = ObserveGt7Ps5UdpPortUseCase(consolePortRepository),

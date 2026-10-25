@@ -42,6 +42,9 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
+                get(),
+                get(),
+                get(),
                 OtherListAppVersionInfo(
                     currentVersion = currentAppVersion(),
                     appVersionLabel = currentAppVersionLabel(),
@@ -52,7 +55,28 @@ val otherListModule =
         }
 
         factory {
-            OtherListSettingsUseCases(
+            OtherListOverlayUseCases(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+            )
+        }
+
+        factory {
+            OtherListSpeechUseCases(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+            )
+        }
+
+        factory {
+            OtherListDeviceSettingsUseCases(
                 get(),
                 get(),
                 get(),
@@ -60,19 +84,13 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
+            )
+        }
+
+        factory {
+            OtherListConnectionUseCases(
                 // 接続先IPの設定はAndroidのみ。項目がないプラットフォームでは購読しない。
                 if (OtherListItemType.ServerIp in buildOtherListItems()) get() else null,
-                get(),
                 get(),
                 get(),
             )
