@@ -61,21 +61,36 @@ class TelemetryLogListPaneTest {
     }
 
     @Test
-    fun `読み上げ結果ヒントとリセット項目の間隔はlargeになる`() {
+    fun `先頭の読み上げ結果ヒントは一覧上端に配置する`() {
         rule.setContent {
             KoDriverTheme {
                 TelemetryLogListPane(uiState = TelemetryLogListUiState(logs = listOf(createTelemetryLog(id = 1))))
             }
         }
 
-        val resetBounds = rule.onNodeWithText("データベースをリセット").fetchSemanticsNode().boundsInRoot
+        val listBounds = rule.onNodeWithTag(TELEMETRY_LOG_LIST_TEST_TAG).fetchSemanticsNode().boundsInRoot
         val hintBounds = rule.onNode(hasText("読み上げ結果")).fetchSemanticsNode().boundsInRoot
-        val expected = with(rule.density) { KoDriverSpacing.large.toPx() }
-        assertTrue(hintBounds.top - resetBounds.bottom >= expected)
+        val maximumTopInset = with(rule.density) { KoDriverSpacing.medium.toPx() }
+        assertTrue(hintBounds.top - listBounds.top in 0f..maximumTopInset)
     }
 
     @Test
-    fun `先頭ログに近いヒント行表示中の新着ログは自動で先頭へ戻す`() {
+    fun `ヒント行表示中の新着ログは自動で先頭へ戻す`() {
+        val logs = (30 downTo 1).map { createTelemetryLog(id = it.toLong()) }
+        val uiState = mutableStateOf(TelemetryLogListUiState(logs = logs))
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.height(240.dp)) { TelemetryLogListPane(uiState = uiState.value) }
+            }
+        }
+
+        rule.onNodeWithTag(TELEMETRY_LOG_LIST_TEST_TAG).performScrollToIndex(0)
+        rule.runOnIdle { uiState.value = uiState.value.copy(logs = listOf(createTelemetryLog(id = 100)) + logs) }
+        rule.onNodeWithText("新しいログ").assertDoesNotExist()
+    }
+
+    @Test
+    fun `先頭ログ表示中の新着ログは先頭へ戻るボタンを表示する`() {
         val logs = (30 downTo 1).map { createTelemetryLog(id = it.toLong()) }
         val uiState = mutableStateOf(TelemetryLogListUiState(logs = logs))
         rule.setContent {
@@ -86,7 +101,8 @@ class TelemetryLogListPaneTest {
 
         rule.onNodeWithTag(TELEMETRY_LOG_LIST_TEST_TAG).performScrollToIndex(1)
         rule.runOnIdle { uiState.value = uiState.value.copy(logs = listOf(createTelemetryLog(id = 100)) + logs) }
-        rule.onNodeWithText("新しいログ").assertDoesNotExist()
+
+        rule.onNodeWithText("新しいログ").assertIsDisplayed()
     }
 
     @Test
@@ -137,7 +153,7 @@ class TelemetryLogListPaneTest {
         }
 
         rule.onNodeWithText("新しいログ").assertDoesNotExist()
-        rule.onNodeWithText("データベースをリセット").assertIsDisplayed()
+        rule.onNodeWithText("読み上げ結果").assertIsDisplayed()
         rule.onNodeWithText("09:00:00.060 / レース +00:00:00.029").assertIsDisplayed()
     }
 

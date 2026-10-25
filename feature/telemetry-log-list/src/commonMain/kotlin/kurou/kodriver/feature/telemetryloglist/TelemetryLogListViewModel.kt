@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -16,20 +15,16 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 
 /**
  * TelemetryLogList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
 class TelemetryLogListViewModel internal constructor(
     observeSortedTelemetryLogs: ObserveSortedTelemetryLogsUseCase,
-    private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
-    private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,
+    observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     private val deleteTelemetryLog: DeleteTelemetryLogUseCase,
 ) : ViewModel() {
     private val _selectedLogId = MutableStateFlow<Long?>(null)
-    private val _resetState = MutableStateFlow(ResetState())
-    private val _showResetConfirmDialog = MutableStateFlow(false)
     private val _deleteState = MutableStateFlow(DeleteState())
     private val _pendingDeleteLogId = MutableStateFlow<Long?>(null)
 
@@ -42,30 +37,17 @@ class TelemetryLogListViewModel internal constructor(
             previousSimulator = simulator
         }
 
-    private val resetUiState =
+    val uiState: StateFlow<TelemetryLogListUiState> =
         combine(
             observeSortedTelemetryLogs(),
             _selectedLogId,
-            _resetState,
-            _showResetConfirmDialog,
-        ) { logs, selectedLogId, resetState, showResetConfirmDialog ->
-            TelemetryLogListUiState(
-                logs = logs,
-                selectedLogId = selectedLogId?.takeIf { selectedId -> logs.any { it.id == selectedId } },
-                isResetting = resetState.isResetting,
-                resetSucceeded = resetState.resetSucceeded,
-                showResetConfirmDialog = showResetConfirmDialog,
-            )
-        }
-
-    val uiState: StateFlow<TelemetryLogListUiState> =
-        combine(
-            resetUiState,
             _deleteState,
             _pendingDeleteLogId,
             selectedSimulator,
-        ) { baseUiState, deleteState, pendingDeleteLogId, selectedSimulator ->
-            baseUiState.copy(
+        ) { logs, selectedLogId, deleteState, pendingDeleteLogId, selectedSimulator ->
+            TelemetryLogListUiState(
+                logs = logs,
+                selectedLogId = selectedLogId?.takeIf { selectedId -> logs.any { it.id == selectedId } },
                 selectedSimulator = selectedSimulator,
                 pendingDeleteLogId = pendingDeleteLogId,
                 isDeleting = deleteState.isDeleting,
@@ -83,40 +65,6 @@ class TelemetryLogListViewModel internal constructor(
 
     fun clearSelectedLog() {
         _selectedLogId.update { null }
-    }
-
-    fun resetDatabase() {
-        viewModelScope.launch {
-            _resetState.update { it.copy(isResetting = true, resetSucceeded = null) }
-            val succeeded =
-                try {
-                    resetTelemetryLogDatabase(observeSelectedSimulator().first())
-                    true
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    captureTelemetryLogListError(e)
-                    false
-                }
-            _resetState.update { it.copy(isResetting = false, resetSucceeded = succeeded) }
-        }
-    }
-
-    fun onResetClick() {
-        _showResetConfirmDialog.update { true }
-    }
-
-    fun onResetDismiss() {
-        _showResetConfirmDialog.update { false }
-    }
-
-    fun onResetConfirm() {
-        _showResetConfirmDialog.update { false }
-        resetDatabase()
-    }
-
-    fun consumeResetResult() {
-        _resetState.update { it.copy(resetSucceeded = null) }
     }
 
     fun onDeleteClick(id: Long) {
@@ -153,11 +101,6 @@ class TelemetryLogListViewModel internal constructor(
             _deleteState.update { it.copy(isDeleting = false, deleteSucceeded = succeeded) }
         }
     }
-
-    private data class ResetState(
-        val isResetting: Boolean = false,
-        val resetSucceeded: Boolean? = null,
-    )
 
     private data class DeleteState(
         val isDeleting: Boolean = false,

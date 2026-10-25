@@ -1,7 +1,5 @@
 package kurou.kodriver.feature.telemetryloglist
 
-import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -30,12 +28,10 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
-import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -66,7 +62,6 @@ class TelemetryLogListViewModelTest {
                     ObserveSelectedSimulatorUseCase(simulatorRepository),
                 ),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
             deleteTelemetryLog = DeleteTelemetryLogUseCase(repository),
         )
 
@@ -252,131 +247,6 @@ class TelemetryLogListViewModelTest {
             verify(exactly = 1) { repository.observeTelemetryLogs() }
             verify(exactly = 2) { simulatorRepository.selectedSimulator() }
             confirmVerified(repository, simulatorRepository)
-        }
-
-    @Test
-    fun `resetDatabaseは選択中のAceWindowsを渡して削除し成功状態を返す`() =
-        runTest(dispatcher) {
-            every { repository.observeTelemetryLogs() } returns logsFlow
-            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            coEvery { repository.deleteTelemetryLogsBySimulator(Simulator.AceWindows) } answers {
-                logsFlow.update { logs -> logs.filterNot { it.simulator == Simulator.AceWindows } }
-            }
-            val viewModel = createViewModel()
-            selectedSimulator.update { Simulator.AceWindows }
-
-            logsFlow.update {
-                listOf(
-                    telemetryLog(id = 1, createdAt = 100, simulator = Simulator.AceWindows),
-                    telemetryLog(id = 2, createdAt = 200),
-                )
-            }
-            viewModel.uiState.first { it.logs.isNotEmpty() }
-
-            viewModel.resetDatabase()
-
-            val state = viewModel.uiState.first { it.resetSucceeded != null && it.logs.isEmpty() }
-            assertEquals(true, state.resetSucceeded)
-            assertFalse(state.isResetting)
-            assertEquals(listOf(telemetryLog(id = 2, createdAt = 200)), logsFlow.first())
-            verify(exactly = 1) { repository.observeTelemetryLogs() }
-            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.AceWindows) }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `resetDatabaseが失敗するとresetSucceededがfalseになる`() =
-        runTest(dispatcher) {
-            every { repository.observeTelemetryLogs() } returns logsFlow
-            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            coEvery { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) } throws
-                IllegalStateException("削除に失敗しました")
-            val viewModel = createViewModel()
-
-            viewModel.resetDatabase()
-
-            val state = viewModel.uiState.first { it.resetSucceeded != null }
-            assertEquals(false, state.resetSucceeded)
-            assertFalse(state.isResetting)
-            verify(exactly = 1) { repository.observeTelemetryLogs() }
-            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `onResetClickで確認ダイアログを表示する`() =
-        runTest(dispatcher) {
-            every { repository.observeTelemetryLogs() } returns logsFlow
-            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            val viewModel = createViewModel()
-
-            viewModel.onResetClick()
-
-            assertEquals(true, viewModel.uiState.first { it.showResetConfirmDialog }.showResetConfirmDialog)
-            verify(exactly = 1) { repository.observeTelemetryLogs() }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `onResetDismissで確認ダイアログを閉じる`() =
-        runTest(dispatcher) {
-            every { repository.observeTelemetryLogs() } returns logsFlow
-            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            val viewModel = createViewModel()
-
-            viewModel.onResetClick()
-            viewModel.uiState.first { it.showResetConfirmDialog }
-            viewModel.onResetDismiss()
-
-            assertFalse(viewModel.uiState.first { !it.showResetConfirmDialog }.showResetConfirmDialog)
-            verify(exactly = 1) { repository.observeTelemetryLogs() }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `onResetConfirmでダイアログを閉じてresetDatabaseを実行する`() =
-        runTest(dispatcher) {
-            every { repository.observeTelemetryLogs() } returns logsFlow
-            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            coEvery { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) } answers {
-                logsFlow.update { emptyList() }
-            }
-            val viewModel = createViewModel()
-
-            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
-            viewModel.uiState.first { it.logs.isNotEmpty() }
-            viewModel.onResetClick()
-            viewModel.uiState.first { it.showResetConfirmDialog }
-
-            viewModel.onResetConfirm()
-
-            val state = viewModel.uiState.first { it.resetSucceeded != null }
-            assertFalse(state.showResetConfirmDialog)
-            assertEquals(true, state.resetSucceeded)
-            verify(exactly = 1) { repository.observeTelemetryLogs() }
-            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `consumeResetResultでresetSucceededをnullに戻す`() =
-        runTest(dispatcher) {
-            every { repository.observeTelemetryLogs() } returns logsFlow
-            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            coEvery { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) } answers {
-                logsFlow.update { emptyList() }
-            }
-            val viewModel = createViewModel()
-
-            viewModel.resetDatabase()
-            viewModel.uiState.first { it.resetSucceeded != null }
-
-            viewModel.consumeResetResult()
-
-            assertNull(viewModel.uiState.first { it.resetSucceeded == null && !it.isResetting }.resetSucceeded)
-            verify(exactly = 1) { repository.observeTelemetryLogs() }
-            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.LmuWindows) }
-            confirmVerified(repository)
         }
 }
 

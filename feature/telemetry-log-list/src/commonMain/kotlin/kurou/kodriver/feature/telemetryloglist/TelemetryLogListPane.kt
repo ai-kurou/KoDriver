@@ -10,7 +10,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +29,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreVert
@@ -39,7 +37,6 @@ import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material.icons.outlined.Inbox
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -111,7 +108,6 @@ import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_hint_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_title
-import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_auto_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_auto_hint_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_auto_title
@@ -126,7 +122,6 @@ internal fun TelemetryLogListPane(
     uiState: TelemetryLogListUiState = TelemetryLogListUiState(),
     modifier: Modifier = Modifier,
     onLogClick: (Long) -> Unit = {},
-    onResetClick: () -> Unit = {},
     onFeedbackClick: (Long) -> Unit = {},
     onDeleteClick: (Long) -> Unit = {},
     scrollToTopRequest: Int = 0,
@@ -197,19 +192,11 @@ internal fun TelemetryLogListPane(
                             .fillMaxSize()
                             .padding(vertical = KoDriverSpacing.small),
                 ) {
-                    item(key = RESET_ITEM_KEY) {
-                        TelemetryLogResetListItem(
-                            isResetting = uiState.isResetting,
-                            onClick = onResetClick,
-                        )
-                        HorizontalDivider()
-                    }
                     item(key = NARRATION_OUTCOME_HINT_ITEM_KEY) {
                         TelemetryLogNarrationOutcomeHintRow(
                             modifier =
                                 Modifier
-                                    .padding(horizontal = KoDriverSpacing.small)
-                                    .padding(top = KoDriverSpacing.large),
+                                    .padding(horizontal = KoDriverSpacing.small),
                         )
                     }
                     items(
@@ -276,44 +263,6 @@ private fun NewTelemetryLogsButton(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
     ) {
         Text(stringResource(Res.string.new_telemetry_logs))
-    }
-}
-
-@Composable
-private fun TelemetryLogResetListItem(
-    isResetting: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-) {
-    val haptic = LocalHapticFeedback.current
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .clickable(enabled = !isResetting) {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onClick()
-                }.padding(vertical = KoDriverSpacing.medium),
-    ) {
-        if (isResetting) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.error,
-            )
-        } else {
-            Icon(
-                imageVector = Icons.Default.DeleteForever,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
-            )
-        }
-        Text(
-            text = stringResource(Res.string.telemetry_log_reset_item),
-            color = MaterialTheme.colorScheme.error,
-        )
     }
 }
 
@@ -674,9 +623,8 @@ internal fun Color.applySkippedAlpha(narrationOutcome: NarrationOutcome): Color 
 
 internal const val SKIPPED_CONTENT_ALPHA = 0.38f
 
-/** リセット項目とヒント行が先頭の index 0・1 を占めるため、先頭ログ(index 2)まで自動スクロール対象とする。 */
-private const val FIRST_VISIBLE_ITEM_INDEX_WITH_HINT_ROW_FOR_AUTO_SCROLL = 2
-private const val RESET_ITEM_KEY = "telemetry_log_reset_item"
+/** ヒント行が先頭の index 0 を占めるため、ヒント行が見えている間(index 0)のみ自動スクロール対象とする。 */
+private const val FIRST_VISIBLE_ITEM_INDEX_WITH_HINT_ROW_FOR_AUTO_SCROLL = 0
 private const val NARRATION_OUTCOME_HINT_ITEM_KEY = "telemetry_log_narration_outcome_hint"
 internal const val TELEMETRY_LOG_LIST_TEST_TAG = "telemetryLogList"
 private const val JST_OFFSET_MILLIS = 9 * MILLISECONDS_PER_HOUR
