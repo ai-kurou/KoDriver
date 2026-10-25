@@ -14,6 +14,7 @@ import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -35,6 +36,7 @@ private fun createTelemetryLogRepository(
             readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
             narratedText = "燃料は残り約1周",
             narrationOutcome = NarrationOutcome.QUEUED,
+            narrationSource = NarrationSource.AUTO,
             telemetryJson = """{"lapCount":1}""",
         ),
         TelemetryLog(
@@ -44,6 +46,7 @@ private fun createTelemetryLogRepository(
             readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
             narratedText = "イエローフラッグ",
             narrationOutcome = NarrationOutcome.QUEUED,
+            narrationSource = NarrationSource.AUTO,
             telemetryJson = """{"currentLap":2}""",
         ),
     ).forEach { log ->
@@ -54,6 +57,7 @@ private fun createTelemetryLogRepository(
                 log.readoutItemKey,
                 log.narratedText,
                 log.narrationOutcome,
+                log.narrationSource,
                 log.telemetryJson,
             )
         } answers {
@@ -91,6 +95,7 @@ class ObserveTelemetryLogsUseCaseTest {
                 readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                 narratedText = "イエローフラッグ",
                 narrationOutcome = NarrationOutcome.QUEUED,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson = """{"currentLap":2}""",
             )
             assertEquals(
@@ -102,6 +107,7 @@ class ObserveTelemetryLogsUseCaseTest {
                         readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                         narratedText = "イエローフラッグ",
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = """{"currentLap":2}""",
                     ),
                 ),
@@ -115,6 +121,7 @@ class ObserveTelemetryLogsUseCaseTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "イエローフラッグ",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = """{"currentLap":2}""",
                 )
             }

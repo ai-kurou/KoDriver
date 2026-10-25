@@ -15,7 +15,7 @@ GT7 PS5 の DataStore 設定は `:core:gt7-ps5-data` の `gt7Ps5DataModule` で�
 
 - `preferences`: Jetpack DataStore（Proto DataStore）によるユーザー設定の永続化。共通設定項目ごとに `XxxPreferences`（proto定義）・`XxxPreferencesSerializer`・`XxxPreferencesDataStoreFactory`・`XxxPreferencesRepositoryImpl`・`XxxPreferencesRepositoryFactory` の5点セットを増やしていくパターンを取る。新しい設定項目を追加する際は、既存の類似設定（同じシミュレーター向けのもの）をコピーして書くのが最も安全。
 - `websocket`: `:server` が配信する WebSocket エンドポイント（`/ws/<Simulator.id>/<feature>`）に接続し、`Flow` として購読するクライアント側実装。`WebSocketHttpClientFactory` が LMU・ACE の Android WebSocket が共有する `HttpClient` を生成し、各シミュレーターの `WebSocketXxxRepository` がエンドポイントごとのデシリアライズを担当する。LMU Windows の WebSocket 実装は `:core:lmu-windows-data` に配置し、`/ws/lmu_windows/brake_wear` から REST API 由来のブレーキ残り厚さを受信する。JSON `null` もそのまま流す。
-- `telemetrylog`: Room（`TelemetryLogDatabase` / `TelemetryLogDao` / `TelemetryLogEntity`）によるテレメトリログの永続化。DB バージョンは 5。4→5 の移行で `readoutItemKey` の `lmu_windows_` / `ace_windows_` / `gt7_ps5_` 直後に `auto_` を追加し、既存ログを保持する。変更済みのキーは維持する。
+- `telemetrylog`: Room（`TelemetryLogDatabase` / `TelemetryLogDao` / `TelemetryLogEntity`）によるテレメトリログの永続化。DB バージョンは 6。5→6 の移行で読み上げの起点 `narrationSource`（`auto` / `manual`）を追加し、既存行は `auto` として保持する。4→5 の移行で `readoutItemKey` の `lmu_windows_` / `ace_windows_` / `gt7_ps5_` 直後に `auto_` を追加し、既存ログを保持する。変更済みのキーは維持する。
 - `device`: 端末固有機能（ローカルネットワークアクセス許可の確認、触覚フィードバック対応可否）へのアクセス。
 - `release`: サーバー・アプリのバージョン情報の取得。`ServerVersionRepository`（`:server` のバージョン確認、Android 版アプリのみ登録。`:server` は Windows デスクトップアプリと同一プロセスで動作するため）は Android では `HttpServerVersionRepository` で `:server` へ HTTP アクセスして取得し、`AppUpdateRepository`（アプリ自体の最新リリース確認）は両プラットフォームで `GitHubAppReleaseRepository` により GitHub Releases API から取得する。
 - `feedback`: Sentry User Feedback API へのフィードバック送信（`SentryFeedbackSenderRepository`）。

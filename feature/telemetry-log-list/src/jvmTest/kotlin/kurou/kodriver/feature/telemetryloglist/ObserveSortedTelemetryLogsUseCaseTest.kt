@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -147,5 +148,6 @@ private fun telemetryLog(
         },
     narratedText = "イエローフラッグ",
     narrationOutcome = NarrationOutcome.INTERRUPTED,
+    narrationSource = NarrationSource.AUTO,
     telemetryJson = "{}",
 )

@@ -200,3 +200,5 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 
 
 手動読み上げ一覧の再生ボタン表示設定は `MANUAL_READOUT_PLAY_BUTTON_LAYOUT_ENABLED_DEFAULT`（false）を既定値とする。
+
+テレメトリログは読み上げの起点を `NarrationSource` で保持する。手動読み上げは `MANUAL`（`manual`）、それ以外（デバッグ読み上げを含む）は `AUTO`（`auto`）として保存する。

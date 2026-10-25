@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -52,6 +53,7 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
         narrationOutcome: NarrationOutcome,
+        narrationSource: NarrationSource,
         telemetryJson: String,
     ) {
         val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
@@ -64,6 +66,7 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
                     readoutItemKey = readoutItemKey,
                     narratedText = narratedText,
                     narrationOutcome = narrationOutcome,
+                    narrationSource = narrationSource,
                     telemetryJson = telemetryJson,
                 ),
         )

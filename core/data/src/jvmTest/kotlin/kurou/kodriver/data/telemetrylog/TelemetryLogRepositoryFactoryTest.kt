@@ -8,6 +8,7 @@ import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import java.nio.file.Files
@@ -34,6 +35,7 @@ class TelemetryLogRepositoryFactoryTest {
                 readoutItemKey = Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                 narratedText = "自己ベストラップ更新",
                 narrationOutcome = NarrationOutcome.INTERRUPTED,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson = "{}",
             )
             repository.saveTelemetryLog(
@@ -42,6 +44,7 @@ class TelemetryLogRepositoryFactoryTest {
                 readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = NarrationOutcome.SKIPPED,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson = "{}",
             )
 
@@ -63,6 +66,7 @@ class TelemetryLogRepositoryFactoryTest {
                 readoutItemKey = Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                 narratedText = "自己ベストラップ更新",
                 narrationOutcome = NarrationOutcome.QUEUED,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson = """{"current":{}}""",
             )
 
@@ -75,6 +79,7 @@ class TelemetryLogRepositoryFactoryTest {
                         readoutItemKey = Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                         narratedText = "自己ベストラップ更新",
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = """{"current":{}}""",
                     ),
                 ),
@@ -118,6 +123,7 @@ class TelemetryLogRepositoryFactoryTest {
                         readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                         narratedText = "",
                         narrationOutcome = NarrationOutcome.SPOKEN,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = "{}",
                     ),
                 ),

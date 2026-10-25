@@ -28,6 +28,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.lmuwindows.usecase.TyreTemperatureReadoutInput
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
@@ -353,7 +354,7 @@ internal class LmuWindowsNarratorEventProcessor(
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
-        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
+        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs, NarrationSource.MANUAL) {
             """{"state":${TelemetryLogJson.encodeToString(logContext.state)},""" +
                 """"settings":${TelemetryLogJson.encodeToString(logContext.settings)},""" +
                 """"observedAtMs":$observedAtMs}"""
@@ -407,6 +408,7 @@ internal class LmuWindowsNarratorEventProcessor(
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
+        narrationSource: NarrationSource = NarrationSource.AUTO,
         telemetryJson: () -> String,
     ) {
         events.forEach { event ->
@@ -423,6 +425,7 @@ internal class LmuWindowsNarratorEventProcessor(
                 readoutItemKey = event.readoutItemKey,
                 narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
+                narrationSource = narrationSource,
                 telemetryJson = telemetryJson(),
             )
         }
@@ -463,12 +466,14 @@ internal class LmuWindowsNarratorEventProcessor(
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
         narrationOutcome: NarrationOutcome,
+        narrationSource: NarrationSource,
         telemetryJson: String,
     ) {
         runCatchingTelemetryLogSave {
             saveTelemetryLog(
                 createdAt = createdAt,
                 narrationOutcome = narrationOutcome,
+                narrationSource = narrationSource,
                 simulator = Simulator.LmuWindows,
                 readoutItemKey = readoutItemKey,
                 narratedText = narratedText,

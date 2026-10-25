@@ -17,6 +17,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Test
@@ -127,6 +128,7 @@ private val manyTelemetryLogs =
                 readoutItemKey = AceWindowsReadoutItemKey.Flag.Root,
                 narratedText = "イエローフラッグ",
                 narrationOutcome = NarrationOutcome.INTERRUPTED,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson = """{"flag":"green"}""",
             )
         } else {
@@ -137,6 +139,7 @@ private val manyTelemetryLogs =
                 readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                 narratedText = "イエローフラッグ",
                 narrationOutcome = NarrationOutcome.INTERRUPTED,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
             )
         }

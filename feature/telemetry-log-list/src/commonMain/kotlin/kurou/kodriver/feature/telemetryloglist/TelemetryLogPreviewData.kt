@@ -4,6 +4,7 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 
@@ -16,6 +17,7 @@ private val previewAceWindowsTelemetryLogs: List<TelemetryLog> =
             readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
             narratedText = "残り燃料警告",
             narrationOutcome = NarrationOutcome.QUEUED,
+            narrationSource = NarrationSource.AUTO,
             telemetryJson = """{"remainingFuelLiters":8.2}""",
         ),
     )
@@ -29,6 +31,7 @@ private val previewLmuWindowsTelemetryLogs: List<TelemetryLog> =
             readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
             narratedText = "イエローフラッグ",
             narrationOutcome = NarrationOutcome.INTERRUPTED,
+            narrationSource = NarrationSource.AUTO,
             telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
         ),
         TelemetryLog(
@@ -38,6 +41,7 @@ private val previewLmuWindowsTelemetryLogs: List<TelemetryLog> =
             readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
             narratedText = "カーレフト",
             narrationOutcome = NarrationOutcome.SKIPPED,
+            narrationSource = NarrationSource.AUTO,
             telemetryJson = """{"left":true,"right":false}""",
         ),
     )
@@ -51,6 +55,7 @@ private val previewGt7Ps5TelemetryLogs: List<TelemetryLog> =
             readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
             narratedText = "燃料は残り約3周",
             narrationOutcome = NarrationOutcome.SPOKEN,
+            narrationSource = NarrationSource.AUTO,
             telemetryJson = """{"remainingFuelLaps":3.6,"fuelPercent":18.2}""",
         ),
     )

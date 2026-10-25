@@ -10,7 +10,7 @@ import androidx.sqlite.execSQL
 
 @Database(
     entities = [TelemetryLogEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = false,
 )
 @ConstructedBy(TelemetryLogDatabaseConstructor::class)
@@ -118,5 +118,16 @@ internal val TELEMETRY_LOG_MIGRATION_4_5 =
                     AND substr(readoutItemKey, 1, 13) != 'gt7_ps5_auto_'
                 """.trimIndent(),
             )
+        }
+    }
+
+/**
+ * narrationSource 追加に伴うスキーマ変更。既存行は手動・自動の区別を記録しておらず
+ * 復元できないため、auto（自動読み上げ扱い）で埋める。
+ */
+internal val TELEMETRY_LOG_MIGRATION_5_6 =
+    object : Migration(5, 6) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE telemetry_logs ADD COLUMN narrationSource TEXT NOT NULL DEFAULT 'auto'")
         }
     }

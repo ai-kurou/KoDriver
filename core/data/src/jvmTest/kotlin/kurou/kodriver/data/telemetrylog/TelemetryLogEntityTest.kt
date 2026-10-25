@@ -3,6 +3,7 @@ package kurou.kodriver.data.telemetrylog
 import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kotlin.test.BeforeTest
@@ -26,9 +27,11 @@ class TelemetryLogEntityTest {
                 readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = NarrationOutcome.QUEUED.id,
+                narrationSource = NarrationSource.AUTO.id,
                 telemetryJson = """{"lapCount":1}""",
             )
 
+        assertEquals(NarrationSource.MANUAL, entity.copy(narrationSource = "manual").toDomain()?.narrationSource)
         assertEquals(
             TelemetryLog(
                 id = 1L,
@@ -37,6 +40,7 @@ class TelemetryLogEntityTest {
                 readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = NarrationOutcome.QUEUED,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson = """{"lapCount":1}""",
             ),
             entity.toDomain(),
@@ -53,6 +57,7 @@ class TelemetryLogEntityTest {
                 readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = NarrationOutcome.QUEUED.id,
+                narrationSource = NarrationSource.AUTO.id,
                 telemetryJson = """{"lapCount":1}""",
             )
 
@@ -69,6 +74,7 @@ class TelemetryLogEntityTest {
                 readoutItemKey = "unknown",
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = NarrationOutcome.QUEUED.id,
+                narrationSource = NarrationSource.AUTO.id,
                 telemetryJson = """{"lapCount":1}""",
             )
 
@@ -85,6 +91,24 @@ class TelemetryLogEntityTest {
                 readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = "unknown",
+                narrationSource = NarrationSource.AUTO.id,
+                telemetryJson = """{"lapCount":1}""",
+            )
+
+        assertNull(entity.toDomain())
+    }
+
+    @Test
+    fun `toDomainは未知のnarrationSourceにnullを返す`() {
+        val entity =
+            TelemetryLogEntity(
+                id = 1L,
+                createdAt = 1000L,
+                simulatorId = Simulator.Gt7Ps5.id,
+                readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
+                narratedText = "燃料は残り約1周",
+                narrationOutcome = NarrationOutcome.QUEUED.id,
+                narrationSource = "unknown",
                 telemetryJson = """{"lapCount":1}""",
             )
 

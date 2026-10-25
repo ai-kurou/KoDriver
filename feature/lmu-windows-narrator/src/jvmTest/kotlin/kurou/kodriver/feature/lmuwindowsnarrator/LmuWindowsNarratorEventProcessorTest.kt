@@ -107,6 +107,7 @@ import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -219,6 +220,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -241,6 +243,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -263,6 +266,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -284,6 +288,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -306,6 +311,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -327,6 +333,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -349,6 +356,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -370,6 +378,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -392,6 +401,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -413,6 +423,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -435,6 +446,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -456,6 +468,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -478,6 +491,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -499,6 +513,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -531,6 +546,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         key,
                         event.narratedText,
                         NarrationOutcome.QUEUED,
+                        NarrationSource.AUTO,
                         capture(logs),
                     )
                 } just Runs
@@ -566,6 +582,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         key,
                         event.narratedText,
                         NarrationOutcome.QUEUED,
+                        NarrationSource.AUTO,
                         logs[index],
                     )
                 }
@@ -583,6 +600,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val warning = LmuWindowsTyreWearWarning(50)
             val events = listOf(manual, warning)
             val logs = mutableListOf<String>()
+            val sources = mapOf(manual to NarrationSource.MANUAL, warning to NarrationSource.AUTO)
             events.forEach { event ->
                 every { ttsEngine.speak(event.withResolvedText(event.narratedText), true) } just Runs
                 coEvery {
@@ -592,6 +610,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         key,
                         event.narratedText,
                         NarrationOutcome.QUEUED,
+                        sources.getValue(event),
                         capture(logs),
                     )
                 } just Runs
@@ -616,6 +635,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         key,
                         event.narratedText,
                         NarrationOutcome.QUEUED,
+                        sources.getValue(event),
                         logs[index],
                     )
                 }
@@ -636,6 +656,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -673,6 +694,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -695,6 +717,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = readoutItemKey,
                     narratedText = narratedText,
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } throws RuntimeException("db error")
@@ -717,6 +740,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = readoutItemKey,
                     narratedText = narratedText,
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -738,6 +762,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root,
                     narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -788,6 +813,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root,
                     narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -809,6 +835,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.BrakeTemperature.Root,
                     narratedText = "閾値700℃です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -859,6 +886,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.BrakeTemperature.Root,
                     narratedText = "閾値700℃です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -883,6 +911,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -933,6 +962,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -952,6 +982,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "ブルーフラッグ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -988,6 +1019,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "ブルーフラッグ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -1007,6 +1039,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "ブルーフラッグ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -1030,6 +1063,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "ブルーフラッグ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -1051,6 +1085,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "自己ベストラップ更新 1分23秒456",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -1076,6 +1111,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "自己ベストラップ更新 1分23秒456",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -1097,6 +1133,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "オーバーヒート",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -1120,6 +1157,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "オーバーヒート",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -1141,6 +1179,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "オーバーヒート",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -1177,6 +1216,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "オーバーヒート",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -1198,6 +1238,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "タイヤ脱落",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -1246,6 +1287,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "タイヤ脱落",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -1274,6 +1316,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "タイヤ交換まであと2周",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -1316,6 +1359,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "タイヤ交換まであと2周",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -1344,6 +1388,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "あと2周でピットへ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -1389,6 +1434,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "あと2周でピットへ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -1406,6 +1452,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1426,6 +1473,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -1443,6 +1491,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1463,6 +1512,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -1483,6 +1533,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1512,6 +1563,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -1531,6 +1583,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot()),
                 )
             } just Runs
@@ -1554,6 +1607,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot()),
                 )
             }
@@ -1575,6 +1629,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.INTERRUPTED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot()),
                 )
             } just Runs
@@ -1599,6 +1654,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.INTERRUPTED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot()),
                 )
             }
@@ -1619,6 +1675,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot()),
                 )
             } answers {
@@ -1632,6 +1689,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot()),
                 )
             } answers { saveCount += 1 }
@@ -1668,6 +1726,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot()),
                 )
             }
@@ -1678,6 +1737,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot()),
                 )
             }
@@ -1697,6 +1757,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1717,6 +1778,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -1734,6 +1796,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1752,6 +1815,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -1771,6 +1835,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1791,6 +1856,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -1808,6 +1874,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1826,6 +1893,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -1847,6 +1915,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1869,6 +1938,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -1886,6 +1956,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1904,6 +1975,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -1925,6 +1997,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1947,6 +2020,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -1964,6 +2038,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -1982,6 +2057,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -2002,6 +2078,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingFuel.Root,
                     narratedText = "燃料20%",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -2023,6 +2100,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingFuel.Root,
                     narratedText = "燃料20%",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -2040,6 +2118,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -2062,6 +2141,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -2079,6 +2159,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -2098,6 +2179,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -2115,6 +2197,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.BrakeTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -2134,6 +2217,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.BrakeTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -2153,6 +2237,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "タイヤを冷やして",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -2188,6 +2273,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "タイヤを冷やして",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -2205,6 +2291,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -2240,6 +2327,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -2257,6 +2345,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -2292,6 +2381,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -2311,6 +2401,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "タイヤを温めて",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -2346,6 +2437,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "タイヤを温めて",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -2363,6 +2455,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -2398,6 +2491,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -2415,6 +2509,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -2450,6 +2545,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -2481,6 +2577,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         readoutItemKey = key,
                         narratedText = text,
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = capture(telemetryJsonSlot),
                     )
                 } just Runs
@@ -2524,6 +2621,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         readoutItemKey = key,
                         narratedText = text,
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = telemetryJsonSlot.captured,
                     )
                 }
@@ -2552,6 +2650,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2572,6 +2671,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2589,6 +2689,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2609,6 +2710,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2626,6 +2728,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2646,6 +2749,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2665,6 +2769,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2685,6 +2790,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2702,6 +2808,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2722,6 +2829,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2739,6 +2847,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2759,6 +2868,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2778,6 +2888,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2798,6 +2909,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2815,6 +2927,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2835,6 +2948,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2852,6 +2966,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2872,6 +2987,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2891,6 +3007,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2911,6 +3028,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2928,6 +3046,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2948,6 +3067,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -2965,6 +3085,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -2985,6 +3106,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
             }
@@ -3025,6 +3147,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = key,
                     narratedText = "判定時の本文",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -3065,6 +3188,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         readoutItemKey = key,
                         narratedText = "判定時の本文",
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = telemetryJson,
                     )
                 }
@@ -3104,6 +3228,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = key,
                     narratedText = "判定時の本文1分23秒456",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -3134,6 +3259,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         readoutItemKey = key,
                         narratedText = "判定時の本文1分23秒456",
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = telemetryJson,
                     )
                 }
@@ -3178,6 +3304,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = key,
                     narratedText = "判定時の本文",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -3211,6 +3338,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         readoutItemKey = key,
                         narratedText = "判定時の本文",
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = telemetryJson,
                     )
                 }
@@ -3258,6 +3386,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = key,
                     narratedText = "判定時の本文",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -3291,6 +3420,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         readoutItemKey = key,
                         narratedText = "判定時の本文",
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = telemetryJson,
                     )
                 }
@@ -3338,6 +3468,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = key,
                     narratedText = "判定時の本文",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsons),
                 )
             } just Runs
@@ -3371,6 +3502,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         readoutItemKey = key,
                         narratedText = "判定時の本文",
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = telemetryJson,
                     )
                 }
@@ -3398,6 +3530,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -3418,6 +3551,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -3435,6 +3569,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingFuel.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(json),
                 )
             } just Runs
@@ -3457,6 +3592,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingFuel.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
             }
@@ -3482,6 +3618,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(skippedJson),
                 )
             } just Runs
@@ -3493,6 +3630,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         key,
                         "復旧",
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         capture(spokenJsons),
                     )
                 } just Runs
@@ -3536,6 +3674,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     skippedJson.captured,
                 )
             }
@@ -3547,6 +3686,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         key,
                         "復旧",
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         spokenJsons[index],
                     )
                 }
@@ -3590,6 +3730,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     match { it.isNotEmpty() },
                 )
             }
@@ -3611,6 +3752,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root,
                     narratedText = "残量20%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -3662,6 +3804,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root,
                     narratedText = "残量20%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -3683,6 +3826,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root,
                     narratedText = "残量20%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -3719,6 +3863,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root,
                     narratedText = "残量20%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -3747,6 +3892,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     request.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(telemetryJson),
                 )
             } just Runs
@@ -3771,6 +3917,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     key,
                     request.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     telemetryJson.captured,
                 )
             }

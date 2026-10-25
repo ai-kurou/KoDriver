@@ -28,6 +28,7 @@ import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -589,5 +590,6 @@ private fun telemetryLog(
     readoutItemKey = readoutItemKey,
     narratedText = "イエローフラッグ",
     narrationOutcome = NarrationOutcome.INTERRUPTED,
+    narrationSource = NarrationSource.AUTO,
     telemetryJson = telemetryJson,
 )

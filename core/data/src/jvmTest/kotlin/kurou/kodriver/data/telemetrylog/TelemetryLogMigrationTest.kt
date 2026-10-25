@@ -202,4 +202,51 @@ class TelemetryLogMigrationTest {
             connection.close()
         }
     }
+
+    @Test
+    fun `バージョン5から6への移行で既存行にnarrationSourceがautoで追加される`() {
+        val path = Files.createTempFile("telemetry_log_migration_test", ".db").toString()
+        val connection = BundledSQLiteDriver().open(path)
+        try {
+            connection.execSQL(
+                "CREATE TABLE telemetry_logs (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "createdAt INTEGER NOT NULL, " +
+                    "simulatorId TEXT NOT NULL, " +
+                    "readoutItemKey TEXT NOT NULL, " +
+                    "narratedText TEXT NOT NULL, " +
+                    "narrationOutcome TEXT NOT NULL, " +
+                    "telemetryJson TEXT NOT NULL)",
+            )
+            connection.execSQL(
+                "INSERT INTO telemetry_logs " +
+                    "(createdAt, simulatorId, readoutItemKey, narratedText, narrationOutcome, telemetryJson) " +
+                    "VALUES (1000, 'lmu_windows', 'lmu_windows_auto_flag', '読み上げ', 'queued', '{}')",
+            )
+
+            TELEMETRY_LOG_MIGRATION_5_6.migrate(connection)
+
+            val statement =
+                connection.prepare(
+                    "SELECT id, createdAt, simulatorId, readoutItemKey, narratedText, narrationOutcome, " +
+                        "telemetryJson, narrationSource FROM telemetry_logs",
+                )
+            try {
+                assertTrue(statement.step())
+                assertEquals(1L, statement.getLong(0))
+                assertEquals(1000L, statement.getLong(1))
+                assertEquals("lmu_windows", statement.getText(2))
+                assertEquals("lmu_windows_auto_flag", statement.getText(3))
+                assertEquals("読み上げ", statement.getText(4))
+                assertEquals(NarrationOutcome.QUEUED.id, statement.getText(5))
+                assertEquals("{}", statement.getText(6))
+                assertEquals("auto", statement.getText(7))
+                assertFalse(statement.step())
+            } finally {
+                statement.close()
+            }
+        } finally {
+            connection.close()
+        }
+    }
 }

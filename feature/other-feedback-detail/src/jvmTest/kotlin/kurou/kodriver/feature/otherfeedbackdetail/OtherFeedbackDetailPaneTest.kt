@@ -35,6 +35,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Rule
@@ -207,6 +208,7 @@ class OtherFeedbackDetailPaneTest {
                                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                                     narratedText = "イエローフラッグ",
                                     narrationOutcome = NarrationOutcome.INTERRUPTED,
+                                    narrationSource = NarrationSource.AUTO,
                                     telemetryJson = "",
                                 ),
                         ),
@@ -244,6 +246,7 @@ class OtherFeedbackDetailPaneTest {
                                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                                     narratedText = "イエローフラッグ",
                                     narrationOutcome = NarrationOutcome.INTERRUPTED,
+                                    narrationSource = NarrationSource.AUTO,
                                     telemetryJson = "",
                                 ),
                         ),

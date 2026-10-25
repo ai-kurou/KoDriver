@@ -50,6 +50,7 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -80,6 +81,7 @@ class AceWindowsNarratorEventProcessorTest {
                     event.readoutItemKey,
                     event.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -105,6 +107,7 @@ class AceWindowsNarratorEventProcessorTest {
                     event.readoutItemKey,
                     event.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -123,6 +126,7 @@ class AceWindowsNarratorEventProcessorTest {
                     event.readoutItemKey,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -134,6 +138,7 @@ class AceWindowsNarratorEventProcessorTest {
                     event.readoutItemKey,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -152,6 +157,7 @@ class AceWindowsNarratorEventProcessorTest {
                     event.readoutItemKey,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -163,6 +169,7 @@ class AceWindowsNarratorEventProcessorTest {
                     event.readoutItemKey,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -190,6 +197,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -216,6 +224,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -237,6 +246,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -266,6 +276,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -286,6 +297,7 @@ class AceWindowsNarratorEventProcessorTest {
                     currentKey,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -309,6 +321,7 @@ class AceWindowsNarratorEventProcessorTest {
                     currentKey,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -329,6 +342,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "残り20%",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -354,6 +368,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "残り20%",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -376,6 +391,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.INTERRUPTED,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -402,6 +418,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.INTERRUPTED,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -422,6 +439,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } throws RuntimeException("db error")
@@ -448,6 +466,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -468,6 +487,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -493,6 +513,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -513,6 +534,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -547,6 +569,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り20パーセント",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -569,6 +592,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -596,6 +620,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -619,6 +644,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -658,6 +684,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -677,6 +704,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -700,6 +728,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     jsons.first(),
                 )
             }
@@ -720,6 +749,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り約2周",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -746,6 +776,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り約2周",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -767,6 +798,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り約2周",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -805,6 +837,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料は残り約2周",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -825,6 +858,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "ブルーフラッグ",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -849,6 +883,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "ブルーフラッグ",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -870,6 +905,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "ブルーフラッグ",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -903,6 +939,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "ブルーフラッグ",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -923,6 +960,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "タイヤ過熱 110度",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -950,6 +988,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "タイヤ過熱 110度",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -971,6 +1010,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "タイヤ過熱 110度",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -1010,6 +1050,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "タイヤ過熱 110度",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -1050,6 +1091,7 @@ class AceWindowsNarratorEventProcessorTest {
                         event.readoutItemKey,
                         text.orEmpty(),
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         capture(jsons),
                     )
                 } just Runs
@@ -1083,6 +1125,7 @@ class AceWindowsNarratorEventProcessorTest {
                         event.readoutItemKey,
                         text.orEmpty(),
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         jsons.single(),
                     )
                 }
@@ -1126,6 +1169,7 @@ class AceWindowsNarratorEventProcessorTest {
                         event.readoutItemKey,
                         text.orEmpty(),
                         NarrationOutcome.SKIPPED,
+                        NarrationSource.AUTO,
                         capture(jsons),
                     )
                 } just Runs
@@ -1159,6 +1203,7 @@ class AceWindowsNarratorEventProcessorTest {
                         event.readoutItemKey,
                         text.orEmpty(),
                         NarrationOutcome.SKIPPED,
+                        NarrationSource.AUTO,
                         jsons.single(),
                     )
                 }
@@ -1182,6 +1227,7 @@ class AceWindowsNarratorEventProcessorTest {
                     event.readoutItemKey,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -1203,6 +1249,7 @@ class AceWindowsNarratorEventProcessorTest {
                     event.readoutItemKey,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -1236,6 +1283,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(skippedJson),
                 )
             } just Runs
@@ -1247,6 +1295,7 @@ class AceWindowsNarratorEventProcessorTest {
                         key,
                         "復旧",
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         capture(spokenJsons),
                     )
                 } just Runs
@@ -1290,6 +1339,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     skippedJson.captured,
                 )
             }
@@ -1301,6 +1351,7 @@ class AceWindowsNarratorEventProcessorTest {
                         key,
                         "復旧",
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         spokenJsons[index],
                     )
                 }
@@ -1344,6 +1395,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     match { it.isNotEmpty() },
                 )
             }
@@ -1365,6 +1417,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "周囲に注意",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1392,6 +1445,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "周囲に注意",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1412,6 +1466,7 @@ class AceWindowsNarratorEventProcessorTest {
                         key,
                         "",
                         NarrationOutcome.SKIPPED,
+                        NarrationSource.AUTO,
                         capture(json),
                     )
                 } just Runs
@@ -1439,6 +1494,7 @@ class AceWindowsNarratorEventProcessorTest {
                         key,
                         "",
                         NarrationOutcome.SKIPPED,
+                        NarrationSource.AUTO,
                         json.captured,
                     )
                 }
@@ -1459,6 +1515,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1486,6 +1543,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1525,6 +1583,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "過熱 110度",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1552,6 +1611,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "過熱 110度",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1571,6 +1631,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1598,6 +1659,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1617,6 +1679,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1644,6 +1707,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1663,6 +1727,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1690,6 +1755,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1729,6 +1795,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料残り20%",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1756,6 +1823,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "燃料残り20%",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1775,6 +1843,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1802,6 +1871,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1821,6 +1891,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1848,6 +1919,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1867,6 +1939,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1894,6 +1967,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1933,6 +2007,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "残り20周",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1960,6 +2035,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "残り20周",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1979,6 +2055,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -2006,6 +2083,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -2025,6 +2103,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -2052,6 +2131,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -2071,6 +2151,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -2098,6 +2179,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -2137,6 +2219,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     request.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(telemetryJson),
                 )
             } just Runs
@@ -2161,6 +2244,7 @@ class AceWindowsNarratorEventProcessorTest {
                     key,
                     request.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     telemetryJson.captured,
                 )
             }

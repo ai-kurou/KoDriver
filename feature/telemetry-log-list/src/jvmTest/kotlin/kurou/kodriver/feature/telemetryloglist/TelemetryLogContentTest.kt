@@ -29,6 +29,7 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -84,6 +85,7 @@ class TelemetryLogContentTest {
                                     readoutItemKey = AceWindowsReadoutItemKey.Flag.Root,
                                     narratedText = "イエローフラッグ",
                                     narrationOutcome = NarrationOutcome.INTERRUPTED,
+                                    narrationSource = NarrationSource.AUTO,
                                     telemetryJson = """{"flag":"green"}""",
                                 ),
                             ),
@@ -464,5 +466,6 @@ internal fun createTelemetryLog(
     readoutItemKey = readoutItemKey,
     narratedText = narratedText,
     narrationOutcome = narrationOutcome,
+    narrationSource = NarrationSource.AUTO,
     telemetryJson = """{"id":$id}""",
 )

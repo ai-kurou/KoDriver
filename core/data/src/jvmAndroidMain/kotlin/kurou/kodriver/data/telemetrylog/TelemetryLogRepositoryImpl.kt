@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -49,6 +50,7 @@ internal class TelemetryLogRepositoryImpl(
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
         narrationOutcome: NarrationOutcome,
+        narrationSource: NarrationSource,
         telemetryJson: String,
     ) {
         dao.insert(
@@ -58,6 +60,7 @@ internal class TelemetryLogRepositoryImpl(
                 readoutItemKey = readoutItemKey.value,
                 narratedText = narratedText,
                 narrationOutcome = narrationOutcome.id,
+                narrationSource = narrationSource.id,
                 telemetryJson = telemetryJson,
             ),
         )

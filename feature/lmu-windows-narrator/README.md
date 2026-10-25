@@ -107,3 +107,5 @@ LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingF
 タイヤ温度は既存の自動警告用購読を流用し、受信時に手動用の最新値と時刻を保持する。フラッグ更新では受信時刻を更新せず、`CURRENT_VALUE_MAX_AGE_MS`（5秒）で鮮度を判定する。
 
 自己ベストは `lmuTelemetryFlow` の共有前に受信値と受信時刻を保持し、シミュレーター切り替えで破棄する。手動依頼時に鮮度を判定し、`LmuWindowsManualReadoutItem.lapTimeMs` へ渡す。手動イベントは `LmuWindowsManualReadoutText` として Speaker / EventProcessor の共通経路を通るため、自動自己ベストの文言解決・有効判定は適用しない。
+
+テレメトリログは読み上げの起点を `NarrationSource` で保持する。手動読み上げは `MANUAL`（`manual`）、それ以外（デバッグ読み上げを含む）は `AUTO`（`auto`）として保存する。

@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -14,6 +15,7 @@ class SaveTelemetryLogUseCase(
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
         narrationOutcome: NarrationOutcome,
+        narrationSource: NarrationSource,
         telemetryJson: String,
     ) {
         repository.saveTelemetryLog(
@@ -22,6 +24,7 @@ class SaveTelemetryLogUseCase(
             readoutItemKey = readoutItemKey,
             narratedText = narratedText,
             narrationOutcome = narrationOutcome,
+            narrationSource = narrationSource,
             telemetryJson = telemetryJson,
         )
     }

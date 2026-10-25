@@ -56,6 +56,7 @@ import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
@@ -429,6 +430,7 @@ class Gt7Ps5NarratorViewModelTest {
                 key,
                 event.text,
                 NarrationOutcome.QUEUED,
+                NarrationSource.MANUAL,
                 capture(json),
             )
         } just Runs
@@ -461,6 +463,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     event.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -550,6 +553,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     event.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -573,6 +577,7 @@ class Gt7Ps5NarratorViewModelTest {
                         key,
                         event.text,
                         NarrationOutcome.QUEUED,
+                        NarrationSource.MANUAL,
                         json.captured,
                     )
                 }
@@ -609,6 +614,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(skippedJson),
                 )
             } just Runs
@@ -619,6 +625,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "復旧",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(spokenJson),
                 )
             } just Runs
@@ -645,6 +652,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     skippedJson.captured,
                 )
             }
@@ -655,6 +663,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "復旧",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     spokenJson.captured,
                 )
             }
@@ -705,6 +714,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     any(),
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -743,6 +753,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     any(),
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -923,6 +934,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
                     "燃料は残り30パーセント",
                     any(),
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -945,6 +957,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
                     "燃料は残り30パーセント",
                     any(),
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -1078,6 +1091,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
                     "タイヤ過熱 95度",
                     any(),
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -1117,6 +1131,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
                     "タイヤ過熱 95度",
                     any(),
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -1191,6 +1206,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     any(),
                 )
             } just Runs
@@ -1207,6 +1223,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     any(),
                 )
             }
@@ -1328,6 +1345,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     any(),
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -1357,6 +1375,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     any(),
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -1417,6 +1436,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                 myBestLapNarratedText,
                 any(),
+                NarrationSource.AUTO,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -1427,6 +1447,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 any(),
                 any(),
+                NarrationSource.AUTO,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -1437,6 +1458,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
                 "燃料は残り30パーセント",
                 any(),
+                NarrationSource.AUTO,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -1447,6 +1469,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
                 "タイヤ過熱 95度",
                 any(),
+                NarrationSource.AUTO,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -1496,6 +1519,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "温度108度",
                     any(),
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -1526,6 +1550,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "温度108度",
                     any(),
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -1548,6 +1573,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -1578,6 +1604,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -1604,6 +1631,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "更新1分23秒456",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -1624,6 +1652,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "更新1分23秒456",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -1649,6 +1678,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -1669,6 +1699,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -1692,6 +1723,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     request.text,
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(spokenJson),
                 )
             } just Runs
@@ -1702,6 +1734,7 @@ class Gt7Ps5NarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(skippedJson),
                 )
             } just Runs
@@ -1735,6 +1768,7 @@ class Gt7Ps5NarratorViewModelTest {
                         key,
                         request.text,
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         spokenJson.captured,
                     )
                 }
@@ -1745,6 +1779,7 @@ class Gt7Ps5NarratorViewModelTest {
                         key,
                         "",
                         NarrationOutcome.SKIPPED,
+                        NarrationSource.AUTO,
                         skippedJson.captured,
                     )
                 }

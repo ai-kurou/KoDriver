@@ -7,5 +7,6 @@ data class TelemetryLog(
     val readoutItemKey: ReadoutItemKey,
     val narratedText: String,
     val narrationOutcome: NarrationOutcome,
+    val narrationSource: NarrationSource,
     val telemetryJson: String,
 )
