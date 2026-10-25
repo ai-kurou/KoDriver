@@ -44,7 +44,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         ),
         manualReadoutItemDefinitionOf(
             LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy,
-            "エネルギーの残り周回数",
+            "バーチャルエネルギーの残り周回数",
             LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT,
         ),
         manualReadoutItemDefinitionOf(

@@ -268,12 +268,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             Triple(
                 listOf(energy.copy(remainingLaps = null, ratio = 1.0), wear),
                 root,
-                "エネルギーの残り周回数はデータがありません、タイヤ80%",
+                "バーチャルエネルギーの残り周回数はデータがありません、タイヤ80%",
             ),
             Triple(
                 listOf(energy.copy(remainingLaps = -1), wear),
                 root,
-                "エネルギーの残り周回数はデータがありません、タイヤ80%",
+                "バーチャルエネルギーの残り周回数はデータがありません、タイヤ80%",
             ),
             Triple(listOf(energy.copy(remainingLaps = null)), root, "データがありません"),
             Triple(listOf(energy.copy(remainingLaps = -1), wear.copy(ratio = null)), root, "データがありません"),
