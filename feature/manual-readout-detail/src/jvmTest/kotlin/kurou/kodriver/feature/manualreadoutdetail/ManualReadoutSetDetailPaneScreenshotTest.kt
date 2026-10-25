@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
@@ -56,8 +57,10 @@ class ManualReadoutSetDetailPaneScreenshotTest {
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
-                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                        ManualReadoutItemPickerSheet(lmuWindowsManualReadoutItemKeys(), {}, {})
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                            ManualReadoutItemPickerSheetContent(lmuWindowsManualReadoutItemKeys(), {})
+                        }
                     }
                 }
             }
@@ -168,8 +171,10 @@ class ManualReadoutSetDetailPaneAceScreenshotTest {
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
-                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                        ManualReadoutItemPickerSheet(aceWindowsManualReadoutItemKeys(), {}, {})
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                            ManualReadoutItemPickerSheetContent(aceWindowsManualReadoutItemKeys(), {})
+                        }
                     }
                 }
             }

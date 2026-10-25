@@ -434,33 +434,43 @@ internal fun ManualReadoutItemPickerSheet(
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         sheetMaxWidth = 560.dp,
     ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = KoDriverSpacing.large),
-        ) {
+        ManualReadoutItemPickerSheetContent(itemKeys, onSelect)
+    }
+}
+
+// 追加候補は1セット3件上限の項目一覧のため、ImmutableList化のコストに見合わない。
+@Suppress("UnstableCollections")
+@Composable
+internal fun ManualReadoutItemPickerSheetContent(
+    itemKeys: List<String>,
+    onSelect: (String) -> Unit,
+) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = KoDriverSpacing.large),
+    ) {
+        Text(
+            stringResource(Res.string.manual_readout_add_item),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.medium),
+        )
+        val categories =
+            itemKeys
+                .mapNotNull { key -> itemPresentations[key]?.let { key to it } }
+                .groupBy { it.second.category }
+        categories.forEach { (category, items) ->
             Text(
-                stringResource(Res.string.manual_readout_add_item),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.medium),
+                stringResource(category),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.small),
             )
-            val categories =
-                itemKeys
-                    .mapNotNull { key -> itemPresentations[key]?.let { key to it } }
-                    .groupBy { it.second.category }
-            categories.forEach { (category, items) ->
-                Text(
-                    stringResource(category),
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.small),
+            items.forEach { (key, presentation) ->
+                ListItem(
+                    headlineContent = { Text(stringResource(presentation.name)) },
+                    modifier = Modifier.clickable { onSelect(key) },
                 )
-                items.forEach { (key, presentation) ->
-                    ListItem(
-                        headlineContent = { Text(stringResource(presentation.name)) },
-                        modifier = Modifier.clickable { onSelect(key) },
-                    )
-                }
             }
         }
     }
