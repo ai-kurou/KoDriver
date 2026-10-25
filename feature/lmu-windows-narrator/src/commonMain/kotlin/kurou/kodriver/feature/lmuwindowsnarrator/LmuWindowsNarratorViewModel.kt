@@ -1076,9 +1076,12 @@ internal class LmuWindowsNarratorViewModel(
             LmuWindowsPitTimingSnapshot(telemetry, virtualEnergy, tyreWear, fuel)
         }.onEach { snapshot ->
             val (telemetry, virtualEnergy, tyreWear, receivedFuel) = snapshot
-            val fuel = receivedFuel?.takeIf {
-                it.receivedAtMs?.let { receivedAt -> currentTimeMs() - receivedAt <= CURRENT_VALUE_MAX_AGE_MS } ?: true
-            }
+            val fuel =
+                receivedFuel?.takeIf {
+                    it.receivedAtMs?.let { receivedAt ->
+                        currentTimeMs() - receivedAt <= CURRENT_VALUE_MAX_AGE_MS
+                    } ?: true
+                }
             val observedAtMs = currentTimeMs()
             latestPitTimingUpdatedAtMs = observedAtMs
             val state = narratorState
