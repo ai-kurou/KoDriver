@@ -47,6 +47,88 @@ class ManualReadoutSetDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `LMUの追加候補はカテゴリ見出しの下に項目を順番に表示する`() {
+        assertPickerCategories(
+            itemKeys = lmuWindowsManualReadoutItemKeys(),
+            expectedTexts =
+                listOf(
+                    "＋ 項目を追加",
+                    "バーチャルエネルギー",
+                    "バーチャルエネルギー残量",
+                    "エネルギーの残り周回数",
+                    "燃料",
+                    "残り燃料",
+                    "燃料の残り周回数",
+                    "タイヤ",
+                    "タイヤ摩耗",
+                    "タイヤ温度",
+                    "タイヤ摩耗の残り周回数",
+                    "ブレーキ",
+                    "ブレーキ残量",
+                    "ブレーキ温度",
+                    "ラップ",
+                    "自己ベストラップ",
+                    "キャンセル",
+                ),
+        )
+    }
+
+    @Test
+    fun `ACEの追加候補はカテゴリ見出しの下に項目を順番に表示する`() {
+        assertPickerCategories(
+            itemKeys = aceWindowsManualReadoutItemKeys(),
+            expectedTexts =
+                listOf(
+                    "＋ 項目を追加",
+                    "燃料",
+                    "残り燃料",
+                    "残り燃料の周回数",
+                    "ラップ",
+                    "自己ベストラップ",
+                    "タイヤ",
+                    "タイヤ温度",
+                    "キャンセル",
+                ),
+        )
+    }
+
+    @Test
+    fun `GT7の追加候補はカテゴリ見出しの下に項目を順番に表示する`() {
+        assertPickerCategories(
+            itemKeys = gt7Ps5ManualReadoutItemKeys(),
+            expectedTexts =
+                listOf(
+                    "＋ 項目を追加",
+                    "燃料",
+                    "残り燃料",
+                    "残り燃料の周回数",
+                    "タイヤ",
+                    "タイヤ温度",
+                    "ラップ",
+                    "自己ベストラップ",
+                    "キャンセル",
+                ),
+        )
+    }
+
+    private fun assertPickerCategories(
+        itemKeys: List<String>,
+        expectedTexts: List<String>,
+    ) {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutItemPickerDialog(itemKeys, {}, {})
+            }
+        }
+        val texts =
+            rule
+                .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
+                .fetchSemanticsNodes()
+                .flatMap { node -> node.config[SemanticsProperties.Text].map { it.text } }
+        assertEquals(expectedTexts, texts)
+    }
+
+    @Test
     fun `エネルギーの残り周回数を追加すると既定文言とプレビューを表示する`() {
         val state =
             mutableStateOf(
@@ -921,7 +1003,8 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("バーチャルエネルギー残量").assertDoesNotExist()
         rule.onNodeWithText("試聴").assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("エネルギー").assertExists()
+        rule.onNodeWithText("バーチャルエネルギー").assertExists()
+        rule.onNodeWithText("燃料").assertExists()
         rule.onNodeWithText("タイヤ").assertExists()
         rule.onNodeWithText("ブレーキ").assertExists()
         rule.onNodeWithText("ラップ").assertExists()
