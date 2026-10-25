@@ -19,6 +19,8 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatur
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
@@ -54,8 +56,12 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
     private val observePitTimingVirtualEnergyImminentReadoutText:
         ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase = mockk()
     private val observePitTimingTyreWearReadoutText: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase = mockk()
+    private val observePitTimingFuelReadoutText: ObserveLmuWindowsPitTimingFuelReadoutTextUseCase = mockk()
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
+
+    private val observePitTimingFuelImminentReadoutText:
+        ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
     private val observeBrakeText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase = mockk()
     private val observeBrakeWearText: ObserveLmuWindowsBrakeWearReadoutTextUseCase = mockk()
@@ -91,7 +97,9 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
                             virtualEnergy = observePitTimingVirtualEnergyReadoutText,
                             virtualEnergyImminent = observePitTimingVirtualEnergyImminentReadoutText,
                             tyreWear = observePitTimingTyreWearReadoutText,
+                            fuel = observePitTimingFuelReadoutText,
                             tyreWearImminent = observePitTimingTyreWearImminentReadoutText,
+                            fuelImminent = observePitTimingFuelImminentReadoutText,
                         ),
                     tyre =
                         LmuWindowsTyreReadoutTextUseCases(

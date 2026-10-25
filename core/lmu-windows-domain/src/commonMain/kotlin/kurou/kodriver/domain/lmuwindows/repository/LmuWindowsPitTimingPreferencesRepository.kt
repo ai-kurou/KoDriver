@@ -10,7 +10,11 @@ interface LmuWindowsPitTimingPreferencesRepository {
 
     fun observeTyreWearLaps(): Flow<Int>
 
+    fun observeFuelLaps(): Flow<Int>
+
     suspend fun saveTyreWearLaps(laps: Int)
+
+    suspend fun saveFuelLaps(laps: Int)
 
     fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 

@@ -25,6 +25,7 @@ data class LmuWindowsDebugState(
     val vehicleClass: LmuWindowsVehicleClassData? = null,
     val vehicleDamage: LmuWindowsVehicleDamageData? = null,
     val tyreDetached: LmuWindowsTyreDetachedData? = null,
+    val fuelBaseline: LmuWindowsFuelBaseline? = null,
 )
 
 internal val lmuWindowsSupportedCardKeys =

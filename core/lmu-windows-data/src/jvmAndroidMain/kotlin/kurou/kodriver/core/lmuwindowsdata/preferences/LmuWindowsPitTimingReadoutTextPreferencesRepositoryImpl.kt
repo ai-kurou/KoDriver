@@ -25,8 +25,14 @@ internal class LmuWindowsPitTimingReadoutTextPreferencesRepositoryImpl(
 
     override fun observeTyreWearReadoutText(): Flow<String> = dataStore.observeProperty { it.tyreWearReadoutText }
 
+    override fun observeFuelReadoutText(): Flow<String> = dataStore.observeProperty { it.fuelReadoutText }
+
     override suspend fun saveTyreWearReadoutText(text: String) {
         dataStore.saveProperty(text) { prefs, value -> prefs.copy(tyreWearReadoutText = value) }
+    }
+
+    override suspend fun saveFuelReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(fuelReadoutText = value) }
     }
 
     override fun observeTyreWearImminentReadoutText(): Flow<String> =
@@ -34,7 +40,16 @@ internal class LmuWindowsPitTimingReadoutTextPreferencesRepositoryImpl(
             it.tyreWearImminentReadoutText
         }
 
+    override fun observeFuelImminentReadoutText(): Flow<String> =
+        dataStore.observeProperty {
+            it.fuelImminentReadoutText
+        }
+
     override suspend fun saveTyreWearImminentReadoutText(text: String) {
         dataStore.saveProperty(text) { prefs, value -> prefs.copy(tyreWearImminentReadoutText = value) }
+    }
+
+    override suspend fun saveFuelImminentReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(fuelImminentReadoutText = value) }
     }
 }

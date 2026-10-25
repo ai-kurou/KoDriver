@@ -7,6 +7,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
@@ -74,6 +76,19 @@ class LmuWindowsPitTimingReadoutTextPreferencesRepositoryImplTest {
         }
 
     @Test
+    fun `FuelReadoutTextの既定値と保存した空文字や文言を取得できる`() =
+        runTest {
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT,
+                repository.observeFuelReadoutText().first(),
+            )
+            listOf("", " ", "残り{laps}周").forEach { text ->
+                repository.saveFuelReadoutText(text)
+                assertEquals(text, repository.observeFuelReadoutText().first())
+            }
+        }
+
+    @Test
     fun `TyreWearImminentReadoutTextの既定値と保存した空文字や文言を取得できる`() =
         runTest {
             assertEquals(
@@ -83,6 +98,19 @@ class LmuWindowsPitTimingReadoutTextPreferencesRepositoryImplTest {
             listOf("", " ", "残り{laps}周").forEach { text ->
                 repository.saveTyreWearImminentReadoutText(text)
                 assertEquals(text, repository.observeTyreWearImminentReadoutText().first())
+            }
+        }
+
+    @Test
+    fun `FuelImminentReadoutTextの既定値と保存した空文字や文言を取得できる`() =
+        runTest {
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT,
+                repository.observeFuelImminentReadoutText().first(),
+            )
+            listOf("", " ", "残り{laps}周").forEach { text ->
+                repository.saveFuelImminentReadoutText(text)
+                assertEquals(text, repository.observeFuelImminentReadoutText().first())
             }
         }
 }

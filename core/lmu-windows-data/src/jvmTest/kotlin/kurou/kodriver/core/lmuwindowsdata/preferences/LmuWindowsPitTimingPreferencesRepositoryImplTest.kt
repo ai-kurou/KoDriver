@@ -7,6 +7,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -52,6 +53,16 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
         }
 
     @Test
+    fun `燃料の初期値は両方とも3周`() =
+        runTest {
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+                repository.observeVirtualEnergyLaps().first(),
+            )
+            assertEquals(LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT, repository.observeFuelLaps().first())
+        }
+
+    @Test
     fun `保存したバーチャルエネルギー予想残り周回数を取得できる`() =
         runTest {
             repository.saveVirtualEnergyLaps(1)
@@ -65,6 +76,14 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
             repository.saveTyreWearLaps(5)
 
             assertEquals(5, repository.observeTyreWearLaps().first())
+        }
+
+    @Test
+    fun `保存した燃料予想残り周回数を取得できる`() =
+        runTest {
+            repository.saveFuelLaps(5)
+
+            assertEquals(5, repository.observeFuelLaps().first())
         }
 
     @Test
@@ -106,6 +125,21 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
                 mapOf<ReadoutItemKey, Boolean>(
                     LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to true,
                     LmuWindowsReadoutItemKey.PitTiming.TyreWear to false,
+                ),
+                repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `燃料の異なるキーで保存した値がすべて保持される`() =
+        runTest {
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, true)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Fuel, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to true,
+                    LmuWindowsReadoutItemKey.PitTiming.Fuel to false,
                 ),
                 repository.observeEnabledStates().first(),
             )

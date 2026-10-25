@@ -2,6 +2,7 @@ package kurou.kodriver.domain.lmuwindows.usecase
 
 import kotlinx.serialization.Serializable
 import kurou.kodriver.domain.engine.ReadoutTextEvent
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
@@ -39,7 +40,9 @@ data class LmuWindowsNarratorState(
     val lastPitTimingVirtualEnergyEvaluationLap: Int = -1,
     val pitTimingVirtualEnergyTrackingState: LmuWindowsPitTimingTrackingState = LmuWindowsPitTimingTrackingState(),
     val lastAnnouncedPitTimingTyreWearLaps: Int = -1,
+    val lastAnnouncedPitTimingFuelLaps: Int = -1,
     val lastPitTimingTyreWearEvaluationLap: Int = -1,
+    val lastPitTimingFuelEvaluationLap: Int = -1,
     val pitTimingTyreWearTrackingState: LmuWindowsPitTimingTrackingState = LmuWindowsPitTimingTrackingState(),
     val fuelLapsTrackingState: LmuWindowsPitTimingTrackingState = LmuWindowsPitTimingTrackingState(),
 )
@@ -108,6 +111,7 @@ data class LmuWindowsNarratorReadoutSettings(
     val energySource: LmuWindowsEnergySource,
     val pitTimingVirtualEnergyLapsThreshold: Int,
     val pitTimingTyreWearLapsThreshold: Int,
+    val pitTimingFuelLapsThreshold: Int = LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT,
 )
 
 /** LMU 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */

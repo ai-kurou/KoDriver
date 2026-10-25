@@ -4,4 +4,5 @@ package kurou.kodriver.domain.model
 enum class PitTimingSource {
     VirtualEnergy,
     TyreWear,
+    Fuel,
 }

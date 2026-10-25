@@ -28,6 +28,8 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneSyncTest {
                 virtualEnergyImminentText = "初期1",
                 tyreWearText = "初期2",
                 tyreWearImminentText = "初期3",
+                fuelText = "初期4",
+                fuelImminentText = "初期5",
                 isTextToSpeechAvailable = true,
             ),
         )
@@ -47,6 +49,8 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneSyncTest {
                 { state, value -> state.copy(virtualEnergyImminentText = value) },
                 { state, value -> state.copy(tyreWearText = value) },
                 { state, value -> state.copy(tyreWearImminentText = value) },
+                { state, value -> state.copy(fuelText = value) },
+                { state, value -> state.copy(fuelImminentText = value) },
             )
         updates.forEachIndexed { index, update ->
             rule
@@ -75,6 +79,8 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneSyncTest {
                 virtualEnergyImminentText = "初期1",
                 tyreWearText = "初期2",
                 tyreWearImminentText = "初期3",
+                fuelText = "初期4",
+                fuelImminentText = "初期5",
                 isTextToSpeechAvailable = true,
             ),
         )
@@ -94,6 +100,8 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneSyncTest {
                 { state, value -> state.copy(virtualEnergyImminentText = value) },
                 { state, value -> state.copy(tyreWearText = value) },
                 { state, value -> state.copy(tyreWearImminentText = value) },
+                { state, value -> state.copy(fuelText = value) },
+                { state, value -> state.copy(fuelImminentText = value) },
             )
         updates.forEachIndexed { index, update ->
             rule
@@ -125,6 +133,8 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneSyncTest {
                 virtualEnergyImminentText = "初期1",
                 tyreWearText = "初期2",
                 tyreWearImminentText = "初期3",
+                fuelText = "初期4",
+                fuelImminentText = "初期5",
                 isTextToSpeechAvailable = true,
             ),
         )
@@ -144,6 +154,8 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneSyncTest {
                 { state, value -> state.copy(virtualEnergyImminentText = value) },
                 { state, value -> state.copy(tyreWearText = value) },
                 { state, value -> state.copy(tyreWearImminentText = value) },
+                { state, value -> state.copy(fuelText = value) },
+                { state, value -> state.copy(fuelImminentText = value) },
             )
         val defaults =
             listOf(
@@ -151,8 +163,10 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneSyncTest {
                 LmuWindowsAutoReadoutPitTimingDetailUiState().virtualEnergyImminentText,
                 LmuWindowsAutoReadoutPitTimingDetailUiState().tyreWearText,
                 LmuWindowsAutoReadoutPitTimingDetailUiState().tyreWearImminentText,
+                LmuWindowsAutoReadoutPitTimingDetailUiState().fuelText,
+                LmuWindowsAutoReadoutPitTimingDetailUiState().fuelImminentText,
             )
-        val resetIndices = listOf(0, 1, 3, 4)
+        val resetIndices = listOf(0, 1, 3, 4, 6, 7)
         updates.forEachIndexed { index, update ->
             rule
                 .onNode(hasSetTextAction() and hasText("初期$index"))

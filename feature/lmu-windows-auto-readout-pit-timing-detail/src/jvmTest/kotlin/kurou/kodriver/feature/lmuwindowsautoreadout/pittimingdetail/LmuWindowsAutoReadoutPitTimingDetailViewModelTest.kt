@@ -17,11 +17,15 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelLapsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
@@ -29,6 +33,9 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtua
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingEnabledStateUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingFuelLapsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingTyreWearReadoutTextUseCase
@@ -46,6 +53,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@Suppress("TooManyFunctions")
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -57,6 +65,8 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
     private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val observeVolume: ObserveSoundVolumeUseCase = mockk()
+    private val fuelTextFlow = MutableStateFlow("燃料残り{laps}周")
+    private val fuelImminentTextFlow = MutableStateFlow("給油へ")
     private val tyreTextFlow = MutableStateFlow("タイヤ残り{laps}周")
     private val tyreImminentTextFlow = MutableStateFlow("タイヤ交換へ")
     private val textFlow = MutableStateFlow("残り{laps}周")
@@ -64,6 +74,7 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
 
     private val virtualEnergyLapsFlow = MutableStateFlow(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT)
     private val tyreWearLapsFlow = MutableStateFlow(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT)
+    private val fuelLapsFlow = MutableStateFlow(LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     @BeforeTest
@@ -79,11 +90,14 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
     private fun stubRepository(available: Boolean = true) {
         coEvery { checkAvailable() } returns available
         every { readoutTextRepository.observeTyreWearReadoutText() } returns tyreTextFlow
+        every { readoutTextRepository.observeFuelReadoutText() } returns fuelTextFlow
         every { readoutTextRepository.observeTyreWearImminentReadoutText() } returns tyreImminentTextFlow
+        every { readoutTextRepository.observeFuelImminentReadoutText() } returns fuelImminentTextFlow
         every { readoutTextRepository.observeVirtualEnergyReadoutText() } returns textFlow
         every { readoutTextRepository.observeVirtualEnergyImminentReadoutText() } returns imminentTextFlow
         every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
         every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
+        every { repository.observeFuelLaps() } returns fuelLapsFlow
         every { repository.observeEnabledStates() } returns enabledStatesFlow
     }
 
@@ -96,9 +110,11 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
                             repository,
                         ),
                     observeTyreWearLaps = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
+                    observeFuelLaps = ObserveLmuWindowsPitTimingFuelLapsUseCase(repository),
                     observeEnabledStates = ObserveLmuWindowsPitTimingEnabledStatesUseCase(repository),
                     saveVirtualEnergyLaps = SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
                     saveTyreWearLaps = SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
+                    saveFuelLaps = SaveLmuWindowsPitTimingFuelLapsUseCase(repository),
                     saveEnabledState = SaveLmuWindowsPitTimingEnabledStateUseCase(repository),
                 ),
             readout =
@@ -108,9 +124,13 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
                     SaveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase(readoutTextRepository),
                     SaveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase(readoutTextRepository),
                     ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase(readoutTextRepository),
+                    ObserveLmuWindowsPitTimingFuelReadoutTextUseCase(readoutTextRepository),
                     ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase(readoutTextRepository),
+                    ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase(readoutTextRepository),
                     SaveLmuWindowsPitTimingTyreWearReadoutTextUseCase(readoutTextRepository),
+                    SaveLmuWindowsPitTimingFuelReadoutTextUseCase(readoutTextRepository),
                     SaveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase(readoutTextRepository),
+                    SaveLmuWindowsPitTimingFuelImminentReadoutTextUseCase(readoutTextRepository),
                     speakText,
                     playStartSound,
                     checkAvailable,
@@ -130,11 +150,16 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
             assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, uiState.tyreWearLaps)
             assertEquals(true, uiState.virtualEnergyEnabled)
             assertEquals(true, uiState.tyreWearEnabled)
+            assertEquals(3, uiState.fuelLaps)
+            assertEquals(true, uiState.fuelEnabled)
             verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
             verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeFuelLaps() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelImminentReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyImminentReadoutText() }
             confirmVerified(repository, readoutTextRepository)
@@ -152,10 +177,13 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
             assertEquals(5, viewModel.uiState.first().virtualEnergyLaps)
             verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
             verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeFuelLaps() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             coVerify(exactly = 1) { repository.saveVirtualEnergyLaps(5) }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelImminentReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyImminentReadoutText() }
             confirmVerified(repository, readoutTextRepository)
@@ -173,10 +201,13 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
             assertEquals(1, viewModel.uiState.first().tyreWearLaps)
             verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
             verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeFuelLaps() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             coVerify(exactly = 1) { repository.saveTyreWearLaps(1) }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelImminentReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyImminentReadoutText() }
             confirmVerified(repository, readoutTextRepository)
@@ -196,12 +227,15 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().virtualEnergyEnabled)
             verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
             verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeFuelLaps() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             coVerify(exactly = 1) {
                 repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, false)
             }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelImminentReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyImminentReadoutText() }
             confirmVerified(repository, readoutTextRepository)
@@ -221,12 +255,15 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().tyreWearEnabled)
             verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
             verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeFuelLaps() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             coVerify(exactly = 1) {
                 repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.TyreWear, false)
             }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelImminentReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyImminentReadoutText() }
             confirmVerified(repository, readoutTextRepository)
@@ -374,9 +411,12 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
     private fun verifyRepositoryObservations() {
         verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
         verify(exactly = 1) { repository.observeTyreWearLaps() }
+        verify(exactly = 1) { repository.observeFuelLaps() }
         verify(exactly = 1) { repository.observeEnabledStates() }
         verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
+        verify(exactly = 1) { readoutTextRepository.observeFuelReadoutText() }
         verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
+        verify(exactly = 1) { readoutTextRepository.observeFuelImminentReadoutText() }
         verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyReadoutText() }
         verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyImminentReadoutText() }
     }
@@ -414,6 +454,106 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
             coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("残り1周", volume = 60) }
             verify(exactly = 1) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
+        }
+
+    @Test
+    fun `onFuelLapsChangedに1を渡すと保存されfuelLapsが1になる`() =
+        runTest {
+            stubRepository()
+            coEvery { repository.saveFuelLaps(1) } answers { fuelLapsFlow.update { 1 } }
+            val viewModel = createViewModel()
+
+            viewModel.onFuelLapsChanged(1)
+
+            assertEquals(1, viewModel.uiState.first().fuelLaps)
+            verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
+            verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeFuelLaps() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            coVerify(exactly = 1) { repository.saveFuelLaps(1) }
+            verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelImminentReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyImminentReadoutText() }
+            confirmVerified(repository, readoutTextRepository)
+        }
+
+    @Test
+    fun `onFuelEnabledChangedにfalseを渡すと保存されfuelEnabledがfalseになる`() =
+        runTest {
+            stubRepository()
+            coEvery { repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Fuel, false) } answers {
+                enabledStatesFlow.update { it + (LmuWindowsReadoutItemKey.PitTiming.Fuel to false) }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onFuelEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().fuelEnabled)
+            verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
+            verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeFuelLaps() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            coVerify(exactly = 1) {
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Fuel, false)
+            }
+            verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeFuelImminentReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyReadoutText() }
+            verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyImminentReadoutText() }
+            confirmVerified(repository, readoutTextRepository)
+        }
+
+    @Test
+    fun `燃料の文言の監視と保存をUiStateに反映する`() =
+        runTest {
+            stubRepository()
+            coEvery { readoutTextRepository.saveFuelReadoutText("残り{laps}周です") } answers {
+                fuelTextFlow.update { "残り{laps}周です" }
+            }
+            coEvery { readoutTextRepository.saveFuelImminentReadoutText("ピットへ") } answers {
+                fuelImminentTextFlow.update { "ピットへ" }
+            }
+            val viewModel = createViewModel()
+            assertEquals("燃料残り{laps}周", viewModel.uiState.first().fuelText)
+            assertEquals("給油へ", viewModel.uiState.first().fuelImminentText)
+            assertEquals(true, viewModel.uiState.first().isTextToSpeechAvailable)
+            viewModel.onFuelTextChanged("残り{laps}周です")
+            viewModel.onFuelImminentTextChanged("ピットへ")
+            assertEquals("残り{laps}周です", viewModel.uiState.first().fuelText)
+            assertEquals("ピットへ", viewModel.uiState.first().fuelImminentText)
+            coVerify(exactly = 1) { readoutTextRepository.saveFuelReadoutText("残り{laps}周です") }
+            coVerify(exactly = 1) { readoutTextRepository.saveFuelImminentReadoutText("ピットへ") }
+            verifyRepositoryObservations()
+            confirmVerified(repository, readoutTextRepository)
+        }
+
+    @Test
+    fun `燃料の通常は渡した3周に置換し切迫時は入力のまま開始音の後に試聴する`() =
+        runTest {
+            stubRepository()
+            every { observeVolume() } returns MutableStateFlow(60)
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) } returns Unit
+            coEvery { speakText("残り3周", volume = 60) } returns Unit
+            coEvery { speakText("必ず{laps}", volume = 60) } returns Unit
+            val viewModel = createViewModel()
+            viewModel.onFuelTextPreviewClicked("残り{laps}周", laps = 3)
+            viewModel.onFuelImminentTextPreviewClicked("必ず{laps}")
+            coVerify(exactly = 2) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
+            coVerify(exactly = 1) { speakText("残り3周", volume = 60) }
+            coVerify(exactly = 1) { speakText("必ず{laps}", volume = 60) }
+            coVerifyOrder {
+                playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root)
+                speakText("残り3周", volume = 60)
+                playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root)
+                speakText("必ず{laps}", volume = 60)
+            }
+            verify(exactly = 2) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
         }
 }

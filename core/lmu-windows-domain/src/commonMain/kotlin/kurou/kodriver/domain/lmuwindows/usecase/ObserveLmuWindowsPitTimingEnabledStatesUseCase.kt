@@ -12,6 +12,7 @@ private val pitTimingEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to true,
         LmuWindowsReadoutItemKey.PitTiming.TyreWear to true,
+        LmuWindowsReadoutItemKey.PitTiming.Fuel to true,
     )
 
 class ObserveLmuWindowsPitTimingEnabledStatesUseCase(

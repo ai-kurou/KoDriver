@@ -2,6 +2,7 @@ package kurou.kodriver.core.lmuwindowsdata.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -46,6 +47,21 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
         }
 
     @Test
+    fun `燃料のデフォルト値は両方とも3周`() =
+        runTest {
+            val repository =
+                createLmuWindowsPitTimingPreferencesRepository(
+                    directory = tempDir.absolutePath,
+                ).preferences
+
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+                repository.observeVirtualEnergyLaps().first(),
+            )
+            assertEquals(LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT, repository.observeFuelLaps().first())
+        }
+
+    @Test
     fun `保存した予想残り周回数を読み出せる`() =
         runTest {
             val repository =
@@ -58,6 +74,21 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
 
             assertEquals(5, repository.observeVirtualEnergyLaps().first())
             assertEquals(1, repository.observeTyreWearLaps().first())
+        }
+
+    @Test
+    fun `燃料の保存した予想残り周回数を読み出せる`() =
+        runTest {
+            val repository =
+                createLmuWindowsPitTimingPreferencesRepository(
+                    directory = tempDir.absolutePath,
+                ).preferences
+
+            repository.saveVirtualEnergyLaps(5)
+            repository.saveFuelLaps(1)
+
+            assertEquals(5, repository.observeVirtualEnergyLaps().first())
+            assertEquals(1, repository.observeFuelLaps().first())
         }
 
     @Test
@@ -87,6 +118,32 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
         }
 
     @Test
+    fun `燃料の共有DataStoreで設定と全四文言を交互に保存しても互いの値を保持する`() =
+        runTest {
+            val repositories = createLmuWindowsPitTimingPreferencesRepository(tempDir.absolutePath)
+            val preferences = repositories.preferences
+            val text = repositories.readoutText
+            text.saveVirtualEnergyReadoutText("VE予告")
+            preferences.saveVirtualEnergyLaps(4)
+            text.saveFuelReadoutText("タイヤ予告")
+            preferences.saveFuelLaps(2)
+            text.saveVirtualEnergyImminentReadoutText("VE直前")
+            preferences.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Fuel, false)
+            text.saveFuelImminentReadoutText("タイヤ直前")
+
+            assertEquals(4, preferences.observeVirtualEnergyLaps().first())
+            assertEquals(2, preferences.observeFuelLaps().first())
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.PitTiming.Fuel to false),
+                preferences.observeEnabledStates().first(),
+            )
+            assertEquals("VE予告", text.observeVirtualEnergyReadoutText().first())
+            assertEquals("タイヤ予告", text.observeFuelReadoutText().first())
+            assertEquals("VE直前", text.observeVirtualEnergyImminentReadoutText().first())
+            assertEquals("タイヤ直前", text.observeFuelImminentReadoutText().first())
+        }
+
+    @Test
     fun `既存ファイルの周回数と有効状態と全四文言を分離後も読み出せる`() =
         runTest {
             val original =
@@ -113,5 +170,34 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
             assertEquals("", repositories.readoutText.observeVirtualEnergyImminentReadoutText().first())
             assertEquals("タイヤ予告", repositories.readoutText.observeTyreWearReadoutText().first())
             assertEquals("タイヤ直前", repositories.readoutText.observeTyreWearImminentReadoutText().first())
+        }
+
+    @Test
+    fun `燃料の既存ファイルの周回数と有効状態と全四文言を分離後も読み出せる`() =
+        runTest {
+            val original =
+                LmuWindowsPitTimingPreferences(
+                    virtualEnergyLaps = 5,
+                    fuelLaps = 1,
+                    enabledStates = mapOf(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to false),
+                    virtualEnergyReadoutText = "VE予告",
+                    virtualEnergyImminentReadoutText = "",
+                    fuelReadoutText = "タイヤ予告",
+                    fuelImminentReadoutText = "タイヤ直前",
+                )
+            tempDir.resolve("lmu_windows_auto_pit_timing_preferences.pb").outputStream().use {
+                LmuWindowsPitTimingPreferencesSerializer.writeTo(original, it)
+            }
+            val repositories = createLmuWindowsPitTimingPreferencesRepository(tempDir.absolutePath)
+            assertEquals(5, repositories.preferences.observeVirtualEnergyLaps().first())
+            assertEquals(1, repositories.preferences.observeFuelLaps().first())
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to false),
+                repositories.preferences.observeEnabledStates().first(),
+            )
+            assertEquals("VE予告", repositories.readoutText.observeVirtualEnergyReadoutText().first())
+            assertEquals("", repositories.readoutText.observeVirtualEnergyImminentReadoutText().first())
+            assertEquals("タイヤ予告", repositories.readoutText.observeFuelReadoutText().first())
+            assertEquals("タイヤ直前", repositories.readoutText.observeFuelImminentReadoutText().first())
         }
 }

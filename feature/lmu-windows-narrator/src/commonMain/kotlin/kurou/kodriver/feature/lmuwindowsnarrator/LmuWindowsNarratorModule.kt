@@ -26,6 +26,9 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFuelUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelLapsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
@@ -166,7 +169,7 @@ val lmuWindowsNarratorModule: Module =
             )
         }
         factory { RemainingFuelUseCases(ObserveLmuWindowsFuelUseCase(get()), get()) }
-        factory { PitTimingUseCases(get(), get(), get()) }
+        factory { PitTimingUseCases(get(), get(), get(), get()) }
         factory {
             LmuWindowsNarratorEventProcessor(
                 get(named(Simulator.LmuWindows.id)),
@@ -221,6 +224,7 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRemainingFuelReadoutTextUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingTyreWearLapsUseCase(get()) }
+        factory { ObserveLmuWindowsPitTimingFuelLapsUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingEnabledStatesUseCase(get()) }
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
@@ -253,6 +257,8 @@ val lmuWindowsNarratorModule: Module =
             ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(get())
         }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsPitTimingFuelReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) {
@@ -291,7 +297,9 @@ val lmuWindowsNarratorModule: Module =
                                 virtualEnergy = get(named(Simulator.LmuWindows.id)),
                                 virtualEnergyImminent = get(named(Simulator.LmuWindows.id)),
                                 tyreWear = get(named(Simulator.LmuWindows.id)),
+                                fuel = get(named(Simulator.LmuWindows.id)),
                                 tyreWearImminent = get(named(Simulator.LmuWindows.id)),
+                                fuelImminent = get(named(Simulator.LmuWindows.id)),
                             ),
                         tyre =
                             LmuWindowsTyreReadoutTextUseCases(

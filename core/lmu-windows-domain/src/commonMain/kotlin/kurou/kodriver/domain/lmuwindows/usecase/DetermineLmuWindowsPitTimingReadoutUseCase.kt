@@ -139,6 +139,42 @@ class DetermineLmuWindowsPitTimingReadoutUseCase {
         )
     }
 
+    fun determinePitTimingFuel(
+        state: LmuWindowsNarratorState,
+        telemetry: LmuWindowsTelemetryData,
+        fuel: LmuWindowsRemainingFuelData,
+        settings: LmuWindowsNarratorReadoutSettings,
+        observedAtMs: Long,
+    ): LmuWindowsNarratorReadoutDecision {
+        if (!fuel.exactPercent.isFinite() || fuel.exactPercent !in 0.0..100.0) {
+            return LmuWindowsNarratorReadoutDecision(state, emptyList())
+        }
+        val stateAfterTracking = trackFuelLaps(state, telemetry, fuel, observedAtMs)
+        val trackingState = stateAfterTracking.fuelLapsTrackingState
+        val evaluation =
+            calculatePitTimingRemainingLaps(
+                trackingState = trackingState,
+                lastEvaluationLap = stateAfterTracking.lastPitTimingFuelEvaluationLap,
+                lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingFuelLaps,
+                threshold = settings.pitTimingFuelLapsThreshold,
+                enabled =
+                    settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.PitTiming.Root) &&
+                        settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.PitTiming.Fuel) &&
+                        settings.energySource == LmuWindowsEnergySource.Fuel,
+            )
+        val stateAfterEvaluation =
+            stateAfterTracking.copy(lastPitTimingFuelEvaluationLap = evaluation.evaluatedLap)
+        val remainingLaps =
+            evaluation.remainingLaps ?: return LmuWindowsNarratorReadoutDecision(
+                stateAfterEvaluation,
+                emptyList(),
+            )
+        return LmuWindowsNarratorReadoutDecision(
+            state = stateAfterEvaluation,
+            events = listOf(LmuWindowsPitTimingWarning(remainingLaps, source = PitTimingSource.Fuel)),
+        )
+    }
+
     /** 読み上げイベントを生成せず、燃料の周回ごとの消費量を追跡する。 */
     fun trackFuelLaps(
         state: LmuWindowsNarratorState,
@@ -147,16 +183,27 @@ class DetermineLmuWindowsPitTimingReadoutUseCase {
         observedAtMs: Long,
     ): LmuWindowsNarratorState {
         if (!fuel.exactPercent.isFinite() || fuel.exactPercent < 0.0 || fuel.exactPercent > 100.0) return state
+        val trackingState =
+            trackPitTimingValue(
+                state = state.fuelLapsTrackingState,
+                currentLap = telemetry.timing.currentLap,
+                bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+                currentValue = fuel.exactPercent / 100.0,
+                session = null,
+                observedAtMs = observedAtMs,
+            )
         return state.copy(
-            fuelLapsTrackingState =
-                trackPitTimingValue(
-                    state = state.fuelLapsTrackingState,
-                    currentLap = telemetry.timing.currentLap,
-                    bestLapTimeMs = telemetry.timing.bestLapTimeMs,
-                    currentValue = fuel.exactPercent / 100.0,
-                    session = null,
-                    observedAtMs = observedAtMs,
-                ),
+            fuelLapsTrackingState = trackingState,
+            lastAnnouncedPitTimingFuelLaps =
+                if (trackingState.isNewSession ||
+                    trackingState.hasRefilled
+                ) {
+                    -1
+                } else {
+                    state.lastAnnouncedPitTimingFuelLaps
+                },
+            lastPitTimingFuelEvaluationLap =
+                if (trackingState.isNewSession) -1 else state.lastPitTimingFuelEvaluationLap,
         )
     }
 
@@ -171,6 +218,7 @@ class DetermineLmuWindowsPitTimingReadoutUseCase {
         when (event.source) {
             PitTimingSource.VirtualEnergy -> state.copy(lastAnnouncedPitTimingVirtualEnergyLaps = event.laps)
             PitTimingSource.TyreWear -> state.copy(lastAnnouncedPitTimingTyreWearLaps = event.laps)
+            PitTimingSource.Fuel -> state.copy(lastAnnouncedPitTimingFuelLaps = event.laps)
         }
 }
 

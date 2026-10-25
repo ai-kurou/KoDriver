@@ -101,6 +101,10 @@ sealed interface LmuWindowsReadoutItemKey : ReadoutItemKey {
         data object TyreWear : PitTiming {
             override val value = "lmu_windows_auto_pit_timing_tyre_wear"
         }
+
+        data object Fuel : PitTiming {
+            override val value = "lmu_windows_auto_pit_timing_fuel"
+        }
     }
 
     sealed interface RemainingVirtualEnergy : LmuWindowsReadoutItemKey {

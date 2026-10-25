@@ -35,7 +35,7 @@ GT7・ACE・LMU はすべて移動済み。
 複数項目では「燃料の残り周回数はデータがありません」を連結し、全項目がデータ無しなら「データがありません」のみを読む。
 先頭項目なら開始音・優先度・ログ・キューに `RemainingFuel.Root` を使う。編集画面はACE・GT7の燃料項目と同じ「エネルギー」カテゴリに配置し、既存の
 `LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
-自動燃料警告の設定・状態は変更せず、自動読み上げには接続しない。
+手動の燃料読み上げは自動警告の有効状態・評価履歴を変更しない。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
@@ -214,3 +214,17 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 手動読み上げ一覧の再生ボタン表示設定は `MANUAL_READOUT_PLAY_BUTTON_LAYOUT_ENABLED_DEFAULT`（false）を既定値とする。
 
 テレメトリログは読み上げの起点を `NarrationSource` で保持する。手動読み上げは `MANUAL`（`manual`）、それ以外（デバッグ読み上げを含む）は `AUTO`（`auto`）として保存する。
+
+
+LMUピットタイミングの燃料は `LmuWindowsReadoutItemKey.PitTiming.Fuel`（`lmu_windows_auto_pit_timing_fuel`）で保存する。
+詳細のスイッチ・閾値（既定3周、1〜5周）・通常／切迫時文言は既存の PitTiming DataStore を共有し、
+ProtoNumber 8〜10を追加する。既存フィールド1〜7は維持し、旧データでは燃料の既定値を使う。
+`ObserveLmuWindowsPitTimingEnabledStatesUseCase` の既定値は有効で、Narratorのマージ済み有効状態と
+`determinePitTimingFuel` が `PitTiming.Root`／`PitTiming.Fuel` を判定する。
+燃料警告は `energySource == LmuWindowsEnergySource.Fuel`（P2/P2Elms/P3/GTE/Unknown）でのみ発火し、
+VEクラス・無効設定でも燃料消費の追跡と評価周の更新を続ける。詳細の燃料設定はクラスに関わらず表示し、listPaneは変更しない。
+`pitTimingJob` が `exactPercent / 100.0` を一度だけ追跡し、手動の燃料残り周回数と `fuelLapsTrackingState` を共有する。
+VE・タイヤ・燃料の候補の最小周回数を選び、共通の `PitTimingLapGate` を通った候補だけ読み上げ履歴へ記録する。
+給油周を消費量の推定から除外し、給油で警告履歴を再武装、周回巻き戻りで追跡・評価履歴を初期化する。
+通常の既定文言は「燃料は残り約{laps}周」、0周以下は「燃料残り1周未満」。保存文言の解決・開始音・優先度・キュー・ログは
+既存の `PitTiming.Root` の流儀を使い、ログに燃料スナップショットと判定状態を含める。

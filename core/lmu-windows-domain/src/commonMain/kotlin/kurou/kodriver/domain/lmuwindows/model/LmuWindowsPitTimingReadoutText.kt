@@ -18,6 +18,11 @@ fun defaultLmuWindowsPitTimingReadoutText(
                 LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT to
                     LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
             }
+
+            PitTimingSource.Fuel -> {
+                LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT to
+                    LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT
+            }
         }
     return if (laps <= 0) imminentText else formatLmuWindowsPitTimingReadoutText(text, laps)
 }

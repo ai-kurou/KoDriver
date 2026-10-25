@@ -13,10 +13,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
@@ -52,6 +54,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsRaceFlagReado
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsTyreReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVehicleReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVirtualEnergyReadoutUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorReadoutDecision
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsPitTimingTrackingState
@@ -60,6 +63,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemain
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFuelUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -177,6 +181,7 @@ internal data class BrakeWearUseCases(
 internal data class PitTimingUseCases(
     val observeVirtualEnergyLapsThreshold: ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
     val observeTyreWearLapsThreshold: ObserveLmuWindowsPitTimingTyreWearLapsUseCase,
+    val observeFuelLapsThreshold: ObserveLmuWindowsPitTimingFuelLapsUseCase,
     val observeEnabledStates: ObserveLmuWindowsPitTimingEnabledStatesUseCase,
 )
 
@@ -382,6 +387,11 @@ internal class LmuWindowsNarratorViewModel(
         pitTimingUseCases
             .observeTyreWearLapsThreshold()
             .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT)
+
+    private val pitTimingFuelLapsThreshold =
+        pitTimingUseCases
+            .observeFuelLapsThreshold()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT)
 
     private val skipFirstLap =
         vehicleApproachUseCases
@@ -692,7 +702,12 @@ internal class LmuWindowsNarratorViewModel(
         latestVirtualEnergy = null
         latestVirtualEnergyReceivedAtMs = 0L
         // 燃料はセッション情報を持たないため、LMU の選択解除で消費量を破棄して別セッションへ持ち越さない。
-        narratorState = narratorState.copy(fuelLapsTrackingState = LmuWindowsPitTimingTrackingState())
+        narratorState =
+            narratorState.copy(
+                fuelLapsTrackingState = LmuWindowsPitTimingTrackingState(),
+                lastAnnouncedPitTimingFuelLaps = -1,
+                lastPitTimingFuelEvaluationLap = -1,
+            )
     }
 
     private val virtualEnergyFlow =
@@ -734,14 +749,6 @@ internal class LmuWindowsNarratorViewModel(
                     observedAtMs = observedAtMs,
                     logContext = LmuWindowsTelemetryLogContext(state, settings, decision.state),
                 )
-            }.launchIn(viewModelScope)
-
-    @Suppress("UnusedPrivateProperty")
-    private val fuelLapsTrackingJob =
-        combine(lmuTelemetryFlow, fuelFlow) { telemetry, fuel -> telemetry to fuel }
-            .onEach { (telemetry, fuel) ->
-                narratorState =
-                    narratorUseCases.pitTimingReadout.trackFuelLaps(narratorState, telemetry, fuel, currentTimeMs())
             }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
@@ -1058,15 +1065,23 @@ internal class LmuWindowsNarratorViewModel(
     private val pitTimingJob =
         combine(
             lmuTelemetryFlow,
-            virtualEnergyFlow,
-            tyreWearFlow,
-        ) { telemetry, virtualEnergy, tyreWear -> Triple(telemetry, virtualEnergy, tyreWear) }
-            .onEach { (telemetry, virtualEnergy, tyreWear) ->
-                val observedAtMs = currentTimeMs()
-                latestPitTimingUpdatedAtMs = observedAtMs
-                val state = narratorState
-                val settings = currentSettings
-                val virtualEnergyDecision =
+            virtualEnergyFlow.map<LmuWindowsVirtualEnergyData, LmuWindowsVirtualEnergyData?> { it }.onStart {
+                emit(
+                    null,
+                )
+            },
+            tyreWearFlow.map<LmuWindowsTyreWearData, LmuWindowsTyreWearData?> { it }.onStart { emit(null) },
+            fuelFlow.map<LmuWindowsRemainingFuelData, LmuWindowsRemainingFuelData?> { it }.onStart { emit(null) },
+        ) { telemetry, virtualEnergy, tyreWear, fuel ->
+            LmuWindowsPitTimingSnapshot(telemetry, virtualEnergy, tyreWear, fuel)
+        }.onEach { snapshot ->
+            val (telemetry, virtualEnergy, tyreWear, fuel) = snapshot
+            val observedAtMs = currentTimeMs()
+            latestPitTimingUpdatedAtMs = observedAtMs
+            val state = narratorState
+            val settings = currentSettings
+            val virtualEnergyDecision =
+                virtualEnergy?.let {
                     narratorUseCases.pitTimingReadout.determinePitTimingVirtualEnergy(
                         state = state,
                         telemetry = telemetry,
@@ -1074,8 +1089,10 @@ internal class LmuWindowsNarratorViewModel(
                         settings = settings,
                         observedAtMs = observedAtMs,
                     )
-                narratorState = virtualEnergyDecision.state
-                val tyreWearDecision =
+                } ?: LmuWindowsNarratorReadoutDecision(state, emptyList())
+            narratorState = virtualEnergyDecision.state
+            val tyreWearDecision =
+                tyreWear?.let {
                     narratorUseCases.pitTimingReadout.determinePitTimingTyreWear(
                         state = virtualEnergyDecision.state,
                         telemetry = telemetry,
@@ -1083,37 +1100,54 @@ internal class LmuWindowsNarratorViewModel(
                         settings = settings,
                         observedAtMs = observedAtMs,
                     )
-                val pitTimingEvents =
-                    pitTimingLapGate.filter(
-                        currentLap = telemetry.timing.currentLap,
-                        events = selectLowerPitTimingEvent(virtualEnergyDecision.events, tyreWearDecision.events),
+                } ?: LmuWindowsNarratorReadoutDecision(virtualEnergyDecision.state, emptyList())
+            val fuelDecision =
+                fuel?.let {
+                    narratorUseCases.pitTimingReadout.determinePitTimingFuel(
+                        state = tyreWearDecision.state,
+                        telemetry = telemetry,
+                        fuel = fuel,
+                        settings = settings,
+                        observedAtMs = observedAtMs,
                     )
-                // 採用された警告だけ履歴へ反映する。優先度・音声再生の成否はこの周回ゲートとは別に扱う。
-                narratorState =
-                    pitTimingEvents
-                        .filterIsInstance<LmuWindowsPitTimingWarning>()
-                        .fold(tyreWearDecision.state) { finalState, event ->
-                            narratorUseCases.pitTimingReadout.recordPitTimingAnnounced(finalState, event)
-                        }
-                eventProcessor.processPitTiming(
-                    snapshot =
-                        LmuWindowsPitTimingSnapshot(
-                            telemetry = telemetry,
-                            virtualEnergy = virtualEnergy,
-                            tyreWear = tyreWear,
-                        ),
-                    events = pitTimingEvents,
-                    autoReadoutOrder = autoReadoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        LmuWindowsPitTimingLogContext(
-                            state = state,
-                            settings = settings,
-                            finalState = narratorState,
+                } ?: LmuWindowsNarratorReadoutDecision(tyreWearDecision.state, emptyList())
+            val pitTimingEvents =
+                pitTimingLapGate.filter(
+                    currentLap = telemetry.timing.currentLap,
+                    events =
+                        selectLowerPitTimingEvent(
+                            virtualEnergyDecision.events,
+                            tyreWearDecision.events,
+                            fuelDecision.events,
                         ),
                 )
-            }.launchIn(viewModelScope)
+            // 採用された警告だけ履歴へ反映する。優先度・音声再生の成否はこの周回ゲートとは別に扱う。
+            narratorState =
+                pitTimingEvents
+                    .filterIsInstance<LmuWindowsPitTimingWarning>()
+                    .fold(fuelDecision.state) { finalState, event ->
+                        narratorUseCases.pitTimingReadout.recordPitTimingAnnounced(finalState, event)
+                    }
+            eventProcessor.processPitTiming(
+                snapshot =
+                    LmuWindowsPitTimingSnapshot(
+                        telemetry = telemetry,
+                        virtualEnergy = virtualEnergy,
+                        tyreWear = tyreWear,
+                        fuel = fuel,
+                    ),
+                events = pitTimingEvents,
+                autoReadoutOrder = autoReadoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
+                observedAtMs = observedAtMs,
+                logContext =
+                    LmuWindowsPitTimingLogContext(
+                        state = state,
+                        settings = settings,
+                        finalState = narratorState,
+                    ),
+            )
+        }.launchIn(viewModelScope)
 
     private val currentSettings: LmuWindowsNarratorReadoutSettings
         get() =
@@ -1132,6 +1166,7 @@ internal class LmuWindowsNarratorViewModel(
                 energySource = energySourceFlow.value,
                 pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold.value,
                 pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
+                pitTimingFuelLapsThreshold = pitTimingFuelLapsThreshold.value,
             )
 }
 
@@ -1155,31 +1190,16 @@ private fun maxFiniteCelsius(readings: Collection<CelsiusReading>): Float? =
         .maxOrNull()
 
 /**
- * バーチャルエネルギー・タイヤ摩耗のピットタイミング警告が同一tickで両方発火した場合、
+ * バーチャルエネルギー・タイヤ摩耗・燃料のピットタイミング警告が同一tickで発火した場合、
  * 予想残り周回数が低い方（＝ピット作業がより緊急な方）のみを1回読み上げる。
  */
-private fun selectLowerPitTimingEvent(
+internal fun selectLowerPitTimingEvent(
     virtualEnergyEvents: List<SpeechEvent>,
     tyreWearEvents: List<SpeechEvent>,
-): List<LmuWindowsPitTimingWarning> {
-    val virtualEnergyEvent =
-        virtualEnergyEvents.filterIsInstance<LmuWindowsPitTimingWarning>().firstOrNull()
-    val tyreWearEvent = tyreWearEvents.filterIsInstance<LmuWindowsPitTimingWarning>().firstOrNull()
-    return when {
-        virtualEnergyEvent != null && tyreWearEvent != null -> {
-            if (virtualEnergyEvent.laps <= tyreWearEvent.laps) listOf(virtualEnergyEvent) else listOf(tyreWearEvent)
-        }
-
-        virtualEnergyEvent != null -> {
-            listOf(virtualEnergyEvent)
-        }
-
-        tyreWearEvent != null -> {
-            listOf(tyreWearEvent)
-        }
-
-        else -> {
-            emptyList()
-        }
-    }
-}
+    fuelEvents: List<SpeechEvent>,
+): List<LmuWindowsPitTimingWarning> =
+    listOfNotNull(
+        (virtualEnergyEvents + tyreWearEvents + fuelEvents)
+            .filterIsInstance<LmuWindowsPitTimingWarning>()
+            .minByOrNull { it.laps },
+    )

@@ -44,6 +44,7 @@ class DebugStatePitTimingRemainingLapsCardTest {
         rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
         rule.onNodeWithText("バーチャルエネルギー: 残り -周").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗: 残り -周").assertIsDisplayed()
+        rule.onNodeWithText("燃料: 残り -周").assertIsDisplayed()
     }
 
     @Test
@@ -85,6 +86,7 @@ class DebugStatePitTimingRemainingLapsCardTest {
                 PitTimingRemainingLapsContent(
                     virtualEnergy = null,
                     lmuWindowsTelemetry = sampleLmuTelemetry(5, mapOf(WheelIndex.FRONT_LEFT to 0.6)),
+                    fuelBaseline = null,
                 )
             }
         }
@@ -100,12 +102,26 @@ class DebugStatePitTimingRemainingLapsCardTest {
                 PitTimingRemainingLapsContent(
                     virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
                     lmuWindowsTelemetry = sampleLmuTelemetry(5, emptyMap()),
+                    fuelBaseline = null,
                 )
             }
         }
 
         rule.onNodeWithText("バーチャルエネルギー: 残り 5.0周").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗: 残り -周").assertIsDisplayed()
+        rule.onNodeWithText("燃料: 残り -周").assertIsDisplayed()
+    }
+
+    @Test
+    fun `VE未取得でも燃料の予想残り周回数を表示する`() {
+        val telemetry =
+            sampleLmuTelemetry(5, emptyMap()).copy(
+                fuel = LmuWindowsFuelData(LmuWindowsFuelUnit(50.0), LmuWindowsFuelUnit(100.0)),
+            )
+        rule.setContent {
+            MaterialTheme { PitTimingRemainingLapsContent(null, telemetry, LmuWindowsFuelBaseline(100.0, 0)) }
+        }
+        rule.onNodeWithText("燃料: 残り 5.0周").assertIsDisplayed()
     }
 
     private fun sampleLmuTelemetry(

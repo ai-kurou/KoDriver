@@ -87,7 +87,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             KoDriverTheme {
                 LmuWindowsAutoReadoutPitTimingDetailPaneContent(
                     uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
-                    modifier = Modifier.requiredSize(360.dp, 4000.dp),
+                    modifier = Modifier.requiredSize(360.dp, 6000.dp),
                 )
             }
         }
@@ -98,7 +98,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             "通常（残り1周以上）",
             "ピットイン必須（残り1周未満）",
         ).forEach { label ->
-            rule.onAllNodesWithText(label).assertCountEquals(2)
+            rule.onAllNodesWithText(label).assertCountEquals(3)
             rule.onAllNodesWithText(label).fetchSemanticsNodes().forEach { node ->
                 val labelBounds = node.boundsInRoot
                 val fieldBounds = fields.first { it.top >= labelBounds.bottom }
@@ -118,18 +118,18 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
         rule
             .onNodeWithText(
                 "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
-                    "毎周ベストラップの30秒前に、バーチャルエネルギー残量・タイヤ摩耗の予想残り周回数を判定し、" +
+                    "毎周ベストラップの30秒前に、バーチャルエネルギー残量・タイヤ摩耗・燃料残量の予想残り周回数を判定し、" +
                     "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。\n" +
-                    "燃料残量はこの機能の判定対象に含みません。\n" +
-                    "読み上げる文言は、バーチャルエネルギー・タイヤ摩耗それぞれ下の欄で設定できます。",
+                    "車両クラスに応じてバーチャルエネルギーまたは燃料を判定します。\n" +
+                    "読み上げる文言は、バーチャルエネルギー・タイヤ摩耗・燃料それぞれ下の欄で設定できます。",
             ).assertIsDisplayed()
         rule.onNodeWithText("バーチャルエネルギー").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("バーチャルエネルギー予想残り周回数").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗予想残り周回数").performScrollTo().assertIsDisplayed()
-        rule.onAllNodesWithText("残り約: 3 周").assertCountEquals(2)
-        rule.onAllNodesWithText("通常（残り1周以上）").assertCountEquals(2)
-        rule.onAllNodesWithText("ピットイン必須（残り1周未満）").assertCountEquals(2)
+        rule.onAllNodesWithText("残り約: 3 周").assertCountEquals(3)
+        rule.onAllNodesWithText("通常（残り1周以上）").assertCountEquals(3)
+        rule.onAllNodesWithText("ピットイン必須（残り1周未満）").assertCountEquals(3)
     }
 
     @Test
@@ -163,7 +163,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
                             tyreWearImminentText = "必須タイヤ",
                             isTextToSpeechAvailable = true,
                         ),
-                    modifier = Modifier.requiredSize(360.dp, 4000.dp),
+                    modifier = Modifier.requiredSize(360.dp, 6000.dp),
                 )
             }
         }
@@ -171,7 +171,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
         val groupSpacing = with(rule.density) { (KoDriverSpacing.large + KoDriverSpacing.small).toPx() }
         val labelSpacing = with(rule.density) { KoDriverSpacing.extraSmall.toPx() }
         val fields = rule.onAllNodes(hasSetTextAction())
-        repeat(2) { index ->
+        repeat(3) { index ->
             val imminentLabel = rule.onAllNodesWithText("ピットイン必須（残り1周未満）")[index]
             val imminentBounds = imminentLabel.fetchSemanticsNode().boundsInRoot
             val chipBounds = rule.onAllNodesWithText("{laps}を挿入")[index].fetchSemanticsNode().boundsInRoot
@@ -282,8 +282,8 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
 
         rule
             .onNodeWithText(
-                "直近に完走した1周分の消費量をもとに、バーチャルエネルギー残量またはタイヤ残存率から予想残り周回数を算出します。" +
-                    "バーチャルエネルギー残量の増加やタイヤ交換を検出した周は、消費量の計算に使いません。" +
+                "直近に完走した1周分の消費量をもとに、バーチャルエネルギー残量・タイヤ残存率・燃料残量から予想残り周回数を算出します。" +
+                    "バーチャルエネルギー補充・タイヤ交換・給油を検出した周は、消費量の計算に使いません。" +
                     "その後、補充・交換なしで1周を完走すると、推定に使う消費量を更新します。",
             ).assertIsDisplayed()
     }
@@ -492,6 +492,163 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
         rule.onNodeWithText("{lap}").assertIsNotEnabled()
         rule
             .onAllNodesWithText("この端末では音声合成を利用できないため、読み上げません")
-            .assertCountEquals(4)
+            .assertCountEquals(6)
+    }
+
+    @Test
+    fun `燃料の文言の中間のカーソル位置にlapsを挿入して保存通知する`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                    onFuelTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "前半後半"
+        rule.onAllNodes(hasSetTextAction())[4].performScrollTo().performTextReplacement(text)
+        rule.onAllNodes(hasSetTextAction())[4].performScrollTo().performTextInputSelection(TextRange(2))
+        rule
+            .onAllNodesWithText("{laps}を挿入")[2]
+            .performScrollTo()
+            .assertIsEnabled()
+            .performClick()
+        rule.waitForIdle()
+        assertEquals(listOf(text, "前半{laps}後半"), changed)
+    }
+
+    @Test
+    fun `燃料のスイッチをタップするとコールバックが呼ばれる`() {
+        var fuelEnabled = true
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(fuelEnabled = fuelEnabled),
+                    onFuelEnabledChanged = { fuelEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("燃料").performScrollTo().performClick()
+
+        assert(!fuelEnabled)
+    }
+
+    @Test
+    fun `燃料のスライダーを動かすとコールバックが呼ばれる`() {
+        var fuelLaps = 3
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(fuelLaps = fuelLaps),
+                    onFuelLapsChanged = { fuelLaps = it },
+                )
+            }
+        }
+
+        rule
+            .onAllNodes(
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 1f..5f, steps = 3)),
+            )[2]
+            .performScrollTo()
+            .performSemanticsAction(SemanticsActions.SetProgress) {
+                it(1f)
+            }
+
+        assert(fuelLaps == 1)
+    }
+
+    @Test
+    fun `燃料のスイッチOFFでも通常と切迫時の文言を編集し入力中の文言を試聴できる`() {
+        val changed = mutableListOf<String>()
+        val imminentChanged = mutableListOf<String>()
+        val previews = mutableListOf<Pair<String, Int>>()
+        val imminentPreviews = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutPitTimingDetailUiState(
+                            fuelEnabled = false,
+                            fuelLaps = 3,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onFuelTextChanged = { changed += it },
+                    onFuelImminentTextChanged = { imminentChanged += it },
+                    onFuelTextPreviewClicked = { text, laps -> previews += text to laps },
+                    onFuelImminentTextPreviewClicked = { imminentPreviews += it },
+                )
+            }
+        }
+        rule
+            .onAllNodes(hasSetTextAction())[4]
+            .performScrollTo()
+            .assertIsEnabled()
+            .performTextReplacement("あ".repeat(31))
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[4].performScrollTo().performClick()
+        rule.onAllNodes(hasSetTextAction())[5].performScrollTo().performTextReplacement("必ず{laps}")
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[5].performScrollTo().performClick()
+        assertEquals(listOf("あ".repeat(30)), changed)
+        assertEquals(listOf("あ".repeat(30) to 3), previews)
+        assertEquals(listOf("必ず{laps}"), imminentChanged)
+        assertEquals(imminentChanged, imminentPreviews)
+    }
+
+    @Test
+    fun `燃料の入力直後の文言にlapsを挿入し上限ちょうどで無効になる`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                    onFuelTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "あ".repeat(24)
+        rule.onAllNodes(hasSetTextAction())[4].performScrollTo().performTextReplacement(text)
+        rule
+            .onAllNodesWithText("{laps}を挿入")[2]
+            .performScrollTo()
+            .assertIsEnabled()
+            .performClick()
+        rule.waitForIdle()
+        assertEquals(listOf(text, text + "{laps}"), changed)
+        rule.onAllNodesWithText("{laps}を挿入")[2].assertIsNotEnabled()
+    }
+
+    @Test
+    fun `燃料の挿入で上限を超える場合は無効にする`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutPitTimingDetailUiState(
+                            fuelText = "あ".repeat(25),
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+        rule.onAllNodesWithText("{laps}を挿入")[2].assertIsNotEnabled()
+    }
+
+    @Test
+    fun `燃料の未知トークン警告は通常文言だけに表示し空欄なら読み上げない案内を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutPitTimingDetailUiState(
+                            fuelText = "{lap}{x}{lap}",
+                            fuelImminentText = "",
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+        rule.onNodeWithText("{lap}、{x} は置き換えられません。{laps} を使用してください").assertExists()
+        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
     }
 }

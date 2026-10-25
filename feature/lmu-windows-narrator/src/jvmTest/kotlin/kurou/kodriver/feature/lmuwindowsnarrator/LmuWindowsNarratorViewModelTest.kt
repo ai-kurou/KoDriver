@@ -123,6 +123,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemain
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFuelUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -417,6 +418,7 @@ class LmuWindowsNarratorViewModelTest {
             MutableStateFlow(pitTimingVirtualEnergyLapsThreshold)
         every { pitTimingPreferencesRepository.observeTyreWearLaps() } returns
             MutableStateFlow(pitTimingTyreWearLapsThreshold)
+        every { pitTimingPreferencesRepository.observeFuelLaps() } returns MutableStateFlow(3)
         every { pitTimingPreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(pitTimingEnabledOverrides)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns
@@ -641,6 +643,10 @@ class LmuWindowsNarratorViewModelTest {
                         ),
                     observeTyreWearLapsThreshold =
                         ObserveLmuWindowsPitTimingTyreWearLapsUseCase(
+                            pitTimingPreferencesRepository,
+                        ),
+                    observeFuelLapsThreshold =
+                        ObserveLmuWindowsPitTimingFuelLapsUseCase(
                             pitTimingPreferencesRepository,
                         ),
                     observeEnabledStates =
@@ -4549,6 +4555,57 @@ class LmuWindowsNarratorViewModelTest {
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `燃料クラスはVEとタイヤが未受信でも燃料のピットタイミングを読み上げる`() =
+        runTest(testDispatcher) {
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            var now = 0L
+            createViewModel(
+                telemetryChannel = telemetry,
+                ttsEngine = mockTts(spoken),
+                vehicleClass = LmuWindowsVehicleClassData.P2,
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.PitTiming.Root to true),
+                currentTimeMs = { now },
+            )
+            stubTelemetryLogSave(logs, createdAt = 150_000L, LmuWindowsReadoutItemKey.PitTiming.Root)
+
+            suspend fun send(
+                lap: Int,
+                liters: Double,
+            ) {
+                telemetry.send(
+                    fakeTelemetryData(
+                        currentLap = lap,
+                        bestLapTimeMs = 90_000L,
+                        fuelCurrentLiters = liters,
+                        fuelCapacityLiters = 100.0,
+                    ),
+                )
+            }
+            send(0, 100.0)
+            send(1, 100.0)
+            now = 45_000L
+            send(1, 90.0)
+            now = 90_000L
+            send(1, 80.0)
+            send(2, 80.0)
+            now = 150_000L
+            send(2, 5.0)
+            assertEquals(
+                listOf<SpeechEvent>(
+                    LmuWindowsPitTimingWarning(
+                        0,
+                        PitTimingSource.Fuel,
+                        resolvedText = "燃料残り1周未満",
+                    ),
+                ),
+                spoken,
+            )
+            assertEquals("燃料残り1周未満", logs.single().narratedText)
         }
 
     @Test

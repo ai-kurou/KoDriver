@@ -36,6 +36,8 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatur
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
@@ -88,8 +90,12 @@ class LmuWindowsReadoutTextSpeakerTest {
     private val observePitTimingVirtualEnergyImminentReadoutText:
         ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase = mockk()
     private val observePitTimingTyreWearReadoutText: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase = mockk()
+    private val observePitTimingFuelReadoutText: ObserveLmuWindowsPitTimingFuelReadoutTextUseCase = mockk()
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
+
+    private val observePitTimingFuelImminentReadoutText:
+        ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
     private val observeRemainingFuelText: ObserveLmuWindowsRemainingFuelReadoutTextUseCase = mockk()
     private val observeBrakeText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase = mockk()
@@ -126,7 +132,9 @@ class LmuWindowsReadoutTextSpeakerTest {
                             virtualEnergy = observePitTimingVirtualEnergyReadoutText,
                             virtualEnergyImminent = observePitTimingVirtualEnergyImminentReadoutText,
                             tyreWear = observePitTimingTyreWearReadoutText,
+                            fuel = observePitTimingFuelReadoutText,
                             tyreWearImminent = observePitTimingTyreWearImminentReadoutText,
+                            fuelImminent = observePitTimingFuelImminentReadoutText,
                         ),
                     tyre =
                         LmuWindowsTyreReadoutTextUseCases(
@@ -1449,6 +1457,122 @@ class LmuWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText(event.resolvedText, volume = 42) }
             confirmVerified(checkTextToSpeechAvailable, speakText)
+        }
+
+    @Test
+    fun `燃料残り1周は対応する文言を音量付きで読み上げる`() =
+        runTest {
+            every { observePitTimingFuelReadoutText() } returns flowOf("残り{laps}周")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("残り1周", volume = VOLUME) } just Runs
+
+            speaker(LmuWindowsPitTimingWarning(1, PitTimingSource.Fuel), VOLUME)
+
+            verify(exactly = 1) { observePitTimingFuelReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("残り1周", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `燃料残り5周は対応する文言を音量付きで読み上げる`() =
+        runTest {
+            every { observePitTimingFuelReadoutText() } returns flowOf("残り{laps}周")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("残り5周", volume = VOLUME) } just Runs
+
+            speaker(LmuWindowsPitTimingWarning(5, PitTimingSource.Fuel), VOLUME)
+
+            verify(exactly = 1) { observePitTimingFuelReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("残り5周", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `FuelReadoutTextは空白文言なら読み上げない`() =
+        runTest {
+            every { observePitTimingFuelReadoutText() } returns flowOf("  ")
+
+            val event = LmuWindowsPitTimingWarning(1, PitTimingSource.Fuel)
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+
+            verify(exactly = 2) { observePitTimingFuelReadoutText() }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `FuelReadoutTextはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observePitTimingFuelReadoutText() } returns flowOf("ピットイン")
+            coEvery { checkTextToSpeechAvailable() } returns false
+
+            val event = LmuWindowsPitTimingWarning(1, PitTimingSource.Fuel)
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+
+            verify(exactly = 2) { observePitTimingFuelReadoutText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `燃料残り0周は対応する文言を音量付きで読み上げる`() =
+        runTest {
+            every { observePitTimingFuelImminentReadoutText() } returns flowOf("必ず{laps}ピットイン")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("必ず{laps}ピットイン", volume = VOLUME) } just Runs
+
+            speaker(LmuWindowsPitTimingWarning(0, PitTimingSource.Fuel), VOLUME)
+
+            verify(exactly = 1) { observePitTimingFuelImminentReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("必ず{laps}ピットイン", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `燃料残り-1周は対応する文言を音量付きで読み上げる`() =
+        runTest {
+            every { observePitTimingFuelImminentReadoutText() } returns flowOf("必ず{laps}ピットイン")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("必ず{laps}ピットイン", volume = VOLUME) } just Runs
+
+            speaker(LmuWindowsPitTimingWarning(-1, PitTimingSource.Fuel), VOLUME)
+
+            verify(exactly = 1) { observePitTimingFuelImminentReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("必ず{laps}ピットイン", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `FuelImminentReadoutTextは空白文言なら読み上げない`() =
+        runTest {
+            every { observePitTimingFuelImminentReadoutText() } returns flowOf("  ")
+
+            val event = LmuWindowsPitTimingWarning(0, PitTimingSource.Fuel)
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+
+            verify(exactly = 2) { observePitTimingFuelImminentReadoutText() }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `FuelImminentReadoutTextはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observePitTimingFuelImminentReadoutText() } returns flowOf("ピットイン")
+            coEvery { checkTextToSpeechAvailable() } returns false
+
+            val event = LmuWindowsPitTimingWarning(0, PitTimingSource.Fuel)
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+
+            verify(exactly = 2) { observePitTimingFuelImminentReadoutText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            confirmAllMocksVerified()
         }
 }
 
