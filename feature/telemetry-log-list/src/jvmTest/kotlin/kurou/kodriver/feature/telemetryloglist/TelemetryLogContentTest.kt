@@ -459,6 +459,7 @@ internal fun createTelemetryLog(
     simulator: Simulator = Simulator.LmuWindows,
     narratedText: String = "イエローフラッグ",
     narrationOutcome: NarrationOutcome = NarrationOutcome.INTERRUPTED,
+    narrationSource: NarrationSource = NarrationSource.AUTO,
 ) = TelemetryLog(
     id = id,
     createdAt = id,
@@ -466,6 +467,6 @@ internal fun createTelemetryLog(
     readoutItemKey = readoutItemKey,
     narratedText = narratedText,
     narrationOutcome = narrationOutcome,
-    narrationSource = NarrationSource.AUTO,
+    narrationSource = narrationSource,
     telemetryJson = """{"id":$id}""",
 )

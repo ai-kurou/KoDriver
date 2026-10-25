@@ -16,7 +16,7 @@
 
 一覧の各行は、`:core:domain` の `NarrationOutcome` に応じて末尾のアイコン・アクセシビリティ用の説明・前景色を切り替える。
 
-ログが1件以上ある場合、リセット項目の直後に「読み上げ結果」のヒント行を表示する。ヘルプボタンを押すとボトムシートが開き、4種類の結果と説明を確認できる。ログがない場合は既存の空状態を表示し、ヒント行は表示しない。
+ログが1件以上ある場合、リセット項目の直後に「読み上げ結果」のヒント行を表示する。ヘルプボタンを押すとボトムシートが開き、4種類の結果と2種類の読み上げ経路（計6項目）の説明を確認できる。ログがない場合は既存の空状態を表示し、ヒント行は表示しない。
 
 | `NarrationOutcome` | アイコン | contentDescription | 前景色 |
 | --- | --- | --- | --- |
@@ -24,6 +24,8 @@
 | `SPOKEN` | `Icons.AutoMirrored.Filled.VolumeUp` | 通常再生 | 通常 |
 | `INTERRUPTED` | `Icons.Filled.PlaylistRemove` | 割り込み再生 | 通常 |
 | `SKIPPED` | `Icons.Filled.VolumeOff` | 読み上げなし | `SKIPPED_CONTENT_ALPHA`（0.38）で減光 |
+
+結果アイコンの左隣に、`NarrationSource.AUTO` は `Icons.Default.HeadsetMic`（自動読み上げ）、`MANUAL` は `Icons.Default.TouchApp`（手動読み上げ）の丸い経路バッジを表示する。自動は無彩色、手動は暖色とし、選択中は選択行に合わせた配色に切り替える。`SKIPPED` ではバッジの背景・アイコンも減光する。
 
 4つの値は `:core:narrator` の `speakWithPriority` が分岐する4経路と1対1に対応する。`SPOKEN` は「キュー再生が無効で、再生中の読み上げがなかったためそのまま読み上げた」ケースで、キュー再生を無効にしている場合はこれが最も多い。`INTERRUPTED` は再生中の読み上げを実際に止めた場合のみを指す。
 
