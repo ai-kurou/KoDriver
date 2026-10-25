@@ -36,10 +36,12 @@ class OtherListViewModelResetTest : OtherListViewModelTestFixture() {
             val viewModel = createViewModel()
 
             viewModel.onResetClick()
-            assertTrue(viewModel.uiState.first { it.reset.showResetConfirmDialog }.reset.showResetConfirmDialog)
+            val shownState = viewModel.uiState.first { it.reset.showResetConfirmDialog }
+            assertTrue(shownState.reset.showResetConfirmDialog)
             assertNull(viewModel.uiState.first().selectedItem)
             viewModel.onResetDismiss()
-            assertFalse(viewModel.uiState.first { !it.reset.showResetConfirmDialog }.reset.showResetConfirmDialog)
+            val dismissedState = viewModel.uiState.first { !it.reset.showResetConfirmDialog }
+            assertFalse(dismissedState.reset.showResetConfirmDialog)
             viewModel.onResetConfirm()
             Simulator.entries.forEach { simulator ->
                 coVerify(exactly = 0) { telemetryLogRepository.deleteTelemetryLogsBySimulator(simulator) }
@@ -110,7 +112,8 @@ class OtherListViewModelResetTest : OtherListViewModelTestFixture() {
             assertEquals(false, state.reset.resetSucceeded)
             assertFalse(state.reset.showResetConfirmDialog)
             viewModel.onResetClick()
-            assertTrue(viewModel.uiState.first { it.reset.showResetConfirmDialog }.reset.showResetConfirmDialog)
+            val shownState = viewModel.uiState.first { it.reset.showResetConfirmDialog }
+            assertTrue(shownState.reset.showResetConfirmDialog)
             coVerify(exactly = 1) { telemetryLogRepository.deleteTelemetryLogsBySimulator(firstSimulator) }
             confirmVerified(telemetryLogRepository)
         }
@@ -140,10 +143,12 @@ class OtherListViewModelResetTest : OtherListViewModelTestFixture() {
 
             viewModel.onResetClick()
             viewModel.onResetConfirm()
-            assertTrue(viewModel.uiState.first { it.reset.isResetting }.reset.isResetting)
+            val resettingState = viewModel.uiState.first { it.reset.isResetting }
+            assertTrue(resettingState.reset.isResetting)
             viewModel.onResetClick()
             viewModel.onResetConfirm()
-            assertFalse(viewModel.uiState.first().reset.showResetConfirmDialog)
+            val stateWhileResetting = viewModel.uiState.first()
+            assertFalse(stateWhileResetting.reset.showResetConfirmDialog)
             completion.complete(Unit)
             val resultState = viewModel.uiState.first { it.reset.resetSucceeded != null && !it.reset.isResetting }
             assertEquals(true, resultState.reset.resetSucceeded)
@@ -183,7 +188,8 @@ class OtherListViewModelResetTest : OtherListViewModelTestFixture() {
             store.put("otherList", viewModel)
             viewModel.onResetClick()
             viewModel.onResetConfirm()
-            assertTrue(viewModel.uiState.first { it.reset.isResetting }.reset.isResetting)
+            val resettingState = viewModel.uiState.first { it.reset.isResetting }
+            assertTrue(resettingState.reset.isResetting)
 
             store.clear()
 
