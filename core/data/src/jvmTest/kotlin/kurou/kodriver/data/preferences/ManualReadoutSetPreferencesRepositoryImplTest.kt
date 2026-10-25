@@ -14,6 +14,7 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutSetPreferencesRepositoryImplTest {
@@ -73,7 +74,7 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `一覧を購読する前に連続追加しても保存済みセットを保持する`() =
+    fun `未採番の既存セットの位置番号と重ならないよう採番し連続追加しても保持する`() =
         runTest {
             val existing = ManualReadoutSet("existing", listOf("SESSION", "REMOVED_KEY", "SIMULATOR"))
             val first = ManualReadoutSet("first")
@@ -84,7 +85,7 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
             repository.addSet(second)
 
             assertEquals(
-                listOf(existing, first.copy(number = 1), second.copy(number = 2)),
+                listOf(existing, first.copy(number = 2), second.copy(number = 3)),
                 repository.observeSets().first(),
             )
         }
@@ -104,7 +105,7 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
             assertEquals(existing, saved.first())
             assertEquals(added.size + 1, saved.size)
             assertEquals(added.toSet(), saved.drop(1).map { it.copy(number = 0) }.toSet())
-            assertEquals((1..10).toSet(), saved.drop(1).map { it.number }.toSet())
+            assertEquals((2..11).toSet(), saved.drop(1).map { it.number }.toSet())
         }
 
     @Test
@@ -205,7 +206,10 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
                 launch { repository.addSet(added) }
             }
 
-            assertEquals(listOf(updated, added.copy(number = 1)), repository.observeSets().first())
+            val saved = repository.observeSets().first()
+            // 追加が削除の前後どちらで走るかで、未採番の既存セットを含む保存数が変わるため番号は2か3になる。
+            assertTrue(saved.last().number in 2..3)
+            assertEquals(listOf(updated, added.copy(number = saved.last().number)), saved)
         }
 
     @Test

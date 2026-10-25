@@ -28,7 +28,7 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
         dataStore.updateData { prefs ->
             val numberedSet =
                 if (set.number == 0) {
-                    set.copy(number = (prefs.sets.maxOfOrNull { it.number } ?: 0) + 1)
+                    set.copy(number = maxOf(prefs.sets.size, prefs.sets.maxOfOrNull { it.number } ?: 0) + 1)
                 } else {
                     set
                 }
