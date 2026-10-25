@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import java.io.EOFException
 import java.net.ConnectException
+import java.net.ProtocolException
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -22,7 +23,7 @@ import java.net.UnknownHostException
  *
  * デコード失敗（不正な JSON）はフレーム単位でスキップして次のフレームを待つ。接続失敗・切断は
  * [retryDelayMs] 待機後にリトライする。接続拒否・タイムアウト・名前解決失敗・ソケット切断・
- * 接続中の EOF（サーバー側の切断）による
+ * 接続中の EOF（サーバー側の切断）、存在しないエンドポイントの HTTP ハンドシェイク 404 による
  * 想定内のネットワーク利用不可は Sentry へ送信せず、それ以外の失敗とデコード失敗のみ送信する。
  */
 internal fun <T> HttpClient.webSocketFlow(
@@ -65,4 +66,13 @@ internal fun Throwable.isExpectedNetworkFailure(): Boolean =
         this is ConnectException ||
         this is UnknownHostException ||
         this is SocketException ||
-        this is EOFException
+        this is EOFException ||
+        isMissingWebSocketEndpoint()
+
+// OkHttp のハンドシェイク失敗は構造化された HTTP ステータスを持たない ProtocolException になる。
+// reason phrase はサーバーごとに異なるため、例外型・文言全体・ステータスコードを限定する。
+private fun Throwable.isMissingWebSocketEndpoint(): Boolean =
+    this is ProtocolException && message?.matches(MISSING_WEB_SOCKET_ENDPOINT_MESSAGE) == true
+
+private val MISSING_WEB_SOCKET_ENDPOINT_MESSAGE =
+    Regex("""Expected HTTP 101 response but was '404 [^\r\n]*'""")
