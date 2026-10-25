@@ -52,28 +52,37 @@ data class OtherListAppVersionInfo(
     val appVersionLabel: String,
 )
 
-data class OtherListSettingsUseCases(
+data class OtherListOverlayUseCases(
     val observeOverlayVisible: ObserveOverlayVisibleUseCase,
     val saveOverlayVisible: SaveOverlayVisibleUseCase,
     val observeOverlayTextSize: ObserveOverlayTextSizeUseCase,
     val observeOverlayBackgroundOpacity: ObserveOverlayBackgroundOpacityUseCase,
     val observeOverlayTextColor: ObserveOverlayTextColorUseCase,
+)
+
+data class OtherListSpeechUseCases(
+    val observeVoice: ObserveVoiceUseCase,
+    val observeVoiceSpeed: ObserveVoiceSpeedUseCase,
+    val observeVoicePitch: ObserveVoicePitchUseCase,
+    val observeReadoutStartSoundType: ObserveReadoutStartSoundTypeUseCase,
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
+    val observeAndroidAudioUsage: ObserveAndroidAudioUsageUseCase,
+)
+
+data class OtherListDeviceSettingsUseCases(
     val observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
     val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
     val observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
     val saveDynamicColorEnabled: SaveDynamicColorEnabledUseCase,
     val observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
     val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
-    val observeVoice: ObserveVoiceUseCase,
-    val observeVoiceSpeed: ObserveVoiceSpeedUseCase,
-    val observeVoicePitch: ObserveVoicePitchUseCase,
-    val observeReadoutStartSoundType: ObserveReadoutStartSoundTypeUseCase,
-    val observeSoundVolume: ObserveSoundVolumeUseCase,
     val observeThemeMode: ObserveThemeModeUseCase,
+)
+
+data class OtherListConnectionUseCases(
     val observeServerIp: ObserveServerIpUseCase?,
     val observeConsoleAddress: ObserveConsoleAddressUseCase,
     val observeGt7Ps5UdpPort: ObserveGt7Ps5UdpPortUseCase,
-    val observeAndroidAudioUsage: ObserveAndroidAudioUsageUseCase,
 )
 
 /**
@@ -82,7 +91,10 @@ data class OtherListSettingsUseCases(
 @Suppress("LongParameterList")
 class OtherListViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
-    private val settingsUseCases: OtherListSettingsUseCases,
+    private val overlayUseCases: OtherListOverlayUseCases,
+    private val speechUseCases: OtherListSpeechUseCases,
+    private val deviceSettingsUseCases: OtherListDeviceSettingsUseCases,
+    private val connectionUseCases: OtherListConnectionUseCases,
     checkHapticFeedbackAvailable: CheckHapticFeedbackAvailableUseCase,
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
     private val checkTextToSpeechUnavailableReason: CheckTextToSpeechUnavailableReasonUseCase,
@@ -134,10 +146,10 @@ class OtherListViewModel(
     val uiState: StateFlow<OtherListUiState> =
         combine(
             _uiState,
-            settingsUseCases.observeOverlayVisible(),
-            settingsUseCases.observeKeepScreenOn(),
-            settingsUseCases.observeDynamicColorEnabled(),
-            settingsUseCases.observeHapticFeedbackEnabled(),
+            overlayUseCases.observeOverlayVisible(),
+            deviceSettingsUseCases.observeKeepScreenOn(),
+            deviceSettingsUseCases.observeDynamicColorEnabled(),
+            deviceSettingsUseCases.observeHapticFeedbackEnabled(),
         ) { state, overlayVisible, keepScreenOn, dynamicColorEnabled, hapticFeedbackEnabled ->
             state.copy(
                 overlayVisible = overlayVisible,
@@ -145,31 +157,31 @@ class OtherListViewModel(
                 dynamicColorEnabled = dynamicColorEnabled,
                 hapticFeedbackEnabled = hapticFeedbackEnabled,
             )
-        }.combine(settingsUseCases.observeServerIp?.invoke() ?: flowOf(null)) { state, serverIp ->
+        }.combine(connectionUseCases.observeServerIp?.invoke() ?: flowOf(null)) { state, serverIp ->
             state.copy(serverIp = serverIp)
-        }.combine(settingsUseCases.observeConsoleAddress()) { state, consoleAddress ->
+        }.combine(connectionUseCases.observeConsoleAddress()) { state, consoleAddress ->
             state.copy(consoleAddress = consoleAddress)
-        }.combine(settingsUseCases.observeGt7Ps5UdpPort()) { state, consolePort ->
+        }.combine(connectionUseCases.observeGt7Ps5UdpPort()) { state, consolePort ->
             state.copy(consolePort = consolePort)
-        }.combine(settingsUseCases.observeThemeMode()) { state, themeMode ->
+        }.combine(deviceSettingsUseCases.observeThemeMode()) { state, themeMode ->
             state.copy(themeMode = themeMode)
-        }.combine(settingsUseCases.observeVoice()) { state, voiceId ->
+        }.combine(speechUseCases.observeVoice()) { state, voiceId ->
             state.copy(voiceId = voiceId)
-        }.combine(settingsUseCases.observeVoiceSpeed()) { state, voiceSpeed ->
+        }.combine(speechUseCases.observeVoiceSpeed()) { state, voiceSpeed ->
             state.copy(voiceSpeed = voiceSpeed)
-        }.combine(settingsUseCases.observeAndroidAudioUsage()) { state, usage ->
+        }.combine(speechUseCases.observeAndroidAudioUsage()) { state, usage ->
             state.copy(androidAudioUsage = usage)
-        }.combine(settingsUseCases.observeVoicePitch()) { state, voicePitch ->
+        }.combine(speechUseCases.observeVoicePitch()) { state, voicePitch ->
             state.copy(voicePitch = voicePitch)
-        }.combine(settingsUseCases.observeOverlayTextSize()) { state, overlayTextSize ->
+        }.combine(overlayUseCases.observeOverlayTextSize()) { state, overlayTextSize ->
             state.copy(overlayTextSize = overlayTextSize)
-        }.combine(settingsUseCases.observeOverlayTextColor()) { state, overlayTextColor ->
+        }.combine(overlayUseCases.observeOverlayTextColor()) { state, overlayTextColor ->
             state.copy(overlayTextColor = overlayTextColor)
-        }.combine(settingsUseCases.observeOverlayBackgroundOpacity()) { state, overlayBackgroundOpacity ->
+        }.combine(overlayUseCases.observeOverlayBackgroundOpacity()) { state, overlayBackgroundOpacity ->
             state.copy(overlayBackgroundOpacity = overlayBackgroundOpacity)
-        }.combine(settingsUseCases.observeReadoutStartSoundType()) { state, type ->
+        }.combine(speechUseCases.observeReadoutStartSoundType()) { state, type ->
             state.copy(readoutStartSoundType = type)
-        }.combine(settingsUseCases.observeSoundVolume()) { state, soundVolume ->
+        }.combine(speechUseCases.observeSoundVolume()) { state, soundVolume ->
             state.copy(soundVolume = soundVolume)
         }.combine(deviceVolumePolling) { state, deviceVolume ->
             state.copy(deviceVolume = deviceVolume)
@@ -276,19 +288,19 @@ class OtherListViewModel(
     }
 
     fun onOverlayVisibleChange(visible: Boolean) {
-        viewModelScope.launch { settingsUseCases.saveOverlayVisible(visible) }
+        viewModelScope.launch { overlayUseCases.saveOverlayVisible(visible) }
     }
 
     fun onKeepScreenOnChange(enabled: Boolean) {
-        viewModelScope.launch { settingsUseCases.saveKeepScreenOn(enabled) }
+        viewModelScope.launch { deviceSettingsUseCases.saveKeepScreenOn(enabled) }
     }
 
     fun onDynamicColorEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { settingsUseCases.saveDynamicColorEnabled(enabled) }
+        viewModelScope.launch { deviceSettingsUseCases.saveDynamicColorEnabled(enabled) }
     }
 
     fun onHapticFeedbackEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { settingsUseCases.saveHapticFeedbackEnabled(enabled) }
+        viewModelScope.launch { deviceSettingsUseCases.saveHapticFeedbackEnabled(enabled) }
     }
 
     private companion object {
