@@ -76,7 +76,7 @@ class OtherListViewModelSelectionTest : OtherListViewModelTestFixture() {
         }
 
     @Test
-    fun `音量を選択すると選択状態になる`() =
+    fun `音量の選択後にログ削除を指定しても選択状態を維持する`() =
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -93,6 +93,9 @@ class OtherListViewModelSelectionTest : OtherListViewModelTestFixture() {
             val viewModel = createViewModel()
 
             viewModel.onItemSelected(OtherListItemType.Volume)
+
+            viewModel.onItemSelected(OtherListItemType.DeleteAllLogs)
+            viewModel.selectItem(OtherListItemType.DeleteAllLogs)
 
             assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
@@ -111,7 +114,7 @@ class OtherListViewModelSelectionTest : OtherListViewModelTestFixture() {
         }
 
     @Test
-    fun `GitHubレポジトリまたはリリースページまたはローカルネットワークへのアクセス許可を選択しても状態は変わらない`() =
+    fun `外部リンクやアクセス許可とログ削除を選択しても状態は変わらない`() =
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -131,6 +134,8 @@ class OtherListViewModelSelectionTest : OtherListViewModelTestFixture() {
             viewModel.onItemSelected(OtherListItemType.GitHubRepository)
             viewModel.onItemSelected(OtherListItemType.ReleasePage)
             viewModel.onItemSelected(OtherListItemType.AccessLocalNetworkPermission)
+            viewModel.onItemSelected(OtherListItemType.DeleteAllLogs)
+            viewModel.selectItem(OtherListItemType.DeleteAllLogs)
 
             assertEquals(initialState, viewModel.uiState.first())
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }

@@ -429,6 +429,7 @@ internal fun DefaultOtherDetailContent(
             OtherAndroidAudioUsageDetailPane(canNavigateBack, onBack)
         }
 
+        OtherListItemType.DeleteAllLogs,
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,

@@ -99,6 +99,10 @@ sealed interface OtherListItemType {
         override val id: String = "startup"
     }
 
+    data object DeleteAllLogs : OtherListItemType {
+        override val id: String = "delete_all_logs"
+    }
+
     data object GitHubRepository : OtherListItemType {
         override val id: String = "github_repository"
     }
@@ -144,6 +148,7 @@ sealed interface OtherListItemType {
                 DynamicColor,
                 HapticFeedback,
                 Startup,
+                DeleteAllLogs,
                 GitHubRepository,
                 ReleasePage,
                 Feedback,

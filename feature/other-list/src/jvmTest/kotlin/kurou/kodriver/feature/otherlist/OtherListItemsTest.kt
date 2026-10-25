@@ -47,6 +47,7 @@ class OtherListItemsTest {
                 OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.Startup,
+                OtherListItemType.DeleteAllLogs,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,

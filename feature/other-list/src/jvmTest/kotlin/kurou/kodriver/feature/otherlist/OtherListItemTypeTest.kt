@@ -6,7 +6,28 @@ import kotlin.test.assertNull
 
 class OtherListItemTypeTest {
     @Test
+    fun `データログはアプリ設定と情報の間にあり削除項目だけが所属する`() {
+        assertEquals(
+            listOf(
+                OtherListSection.ConnectionSettings,
+                OtherListSection.ReadoutSettings,
+                OtherListSection.OverlaySettings,
+                OtherListSection.AppSettings,
+                OtherListSection.DataLog,
+                OtherListSection.Information,
+            ),
+            otherListSections,
+        )
+        assertEquals(
+            listOf(OtherListItemType.DeleteAllLogs),
+            OtherListItemType.entries.filter { it.section() == OtherListSection.DataLog },
+        )
+    }
+
+    @Test
     fun `存在するidを渡すと対応するOtherListItemTypeを返す`() {
+        assertEquals("delete_all_logs", OtherListItemType.DeleteAllLogs.id)
+        assertEquals(OtherListItemType.DeleteAllLogs, OtherListItemType.fromId("delete_all_logs"))
         assertEquals("overlay_text_color", OtherListItemType.OverlayTextColor.id)
         assertEquals(OtherListItemType.OverlayTextColor, OtherListItemType.fromId("overlay_text_color"))
         assertEquals(OtherListItemType.Volume, OtherListItemType.fromId("volume"))
@@ -34,8 +55,8 @@ class OtherListItemTypeTest {
     }
 
     @Test
-    fun `entriesは全26項目を宣言順で返す`() {
-        assertEquals(26, OtherListItemType.entries.size)
+    fun `entriesは全27項目を宣言順で返す`() {
+        assertEquals(27, OtherListItemType.entries.size)
         assertEquals(
             listOf(
                 OtherListItemType.AccessLocalNetworkPermission,
@@ -59,6 +80,7 @@ class OtherListItemTypeTest {
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.Startup,
+                OtherListItemType.DeleteAllLogs,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
@@ -90,6 +112,7 @@ class OtherListItemTypeTest {
                 "dynamic_color",
                 "haptic_feedback",
                 "startup",
+                "delete_all_logs",
                 "github_repository",
                 "release_page",
                 "feedback",

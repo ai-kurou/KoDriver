@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.BedtimeOff
 import androidx.compose.material.icons.outlined.BrightnessHigh
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Computer
+import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.FormatColorText
@@ -29,12 +30,13 @@ import kotlin.test.assertEquals
 
 class OtherListItemIconsTest {
     @Test
-    fun `全25項目のアイコンはグループ化前と同じ`() {
+    fun `全項目に対応するアイコンを返す`() {
         val expectedIcons =
             mapOf(
                 OtherListItemType.AccessLocalNetworkPermission to Icons.Outlined.Wifi,
                 OtherListItemType.ServerIp to Icons.Outlined.Computer,
                 OtherListItemType.ConsoleIp to Icons.Outlined.SportsEsports,
+                OtherListItemType.DeleteAllLogs to Icons.Outlined.DeleteSweep,
                 OtherListItemType.GitHubRepository to Icons.Outlined.Star,
                 OtherListItemType.ReleasePage to Icons.Outlined.NewReleases,
                 OtherListItemType.Feedback to Icons.Outlined.Feedback,

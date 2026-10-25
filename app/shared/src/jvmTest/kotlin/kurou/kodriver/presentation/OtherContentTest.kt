@@ -49,6 +49,35 @@ class OtherContentTest {
         )
 
     @Test
+    fun `ログを全て削除をタップしても選択や詳細遷移を行わない`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
+        var backEnabled = false
+        var detailDisplayed = false
+        rule.setContent {
+            OtherContent(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.DeleteAllLogs),
+                        selectedItem = selectedItem,
+                    ),
+                onItemSelected = { selectedItem = it },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { _, _, _, _, _ -> detailDisplayed = true },
+            )
+        }
+
+        rule.onNodeWithText("ログを全て削除").assertExists().performTouchInput { click() }
+        rule.waitForIdle()
+
+        assertEquals(null, selectedItem)
+        assertFalse(backEnabled)
+        assertFalse(detailDisplayed)
+    }
+
+    @Test
     fun `文字色をタップするとダイアログを開き詳細ペインへ遷移しない`() {
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false

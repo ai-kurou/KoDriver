@@ -220,6 +220,7 @@ class OtherListViewModel(
 
     fun onItemSelected(itemType: OtherListItemType) {
         if (
+            itemType == OtherListItemType.DeleteAllLogs ||
             itemType == OtherListItemType.GitHubRepository ||
             itemType == OtherListItemType.ReleasePage ||
             itemType == OtherListItemType.AccessLocalNetworkPermission
@@ -235,6 +236,9 @@ class OtherListViewModel(
     }
 
     fun selectItem(itemType: OtherListItemType) {
+        if (itemType == OtherListItemType.DeleteAllLogs) {
+            return
+        }
         _uiState.update { it.copy(selectedItem = itemType, selectedFeedbackTelemetryLogId = null) }
     }
 

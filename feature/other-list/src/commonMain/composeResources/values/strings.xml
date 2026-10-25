@@ -60,4 +60,6 @@
     <string name="audio_usage_notification">通知</string>
     <string name="audio_usage_alarm">アラーム</string>
     <string name="audio_usage_assistant">アシスタント</string>
+    <string name="section_data_log">データ・ログ</string>
+    <string name="item_delete_all_logs">ログを全て削除</string>
 </resources>

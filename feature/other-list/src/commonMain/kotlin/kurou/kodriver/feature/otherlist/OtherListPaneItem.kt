@@ -336,6 +336,7 @@ internal fun OtherListItem(
                 OtherListItemType.OverlayTextSize,
                 OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
+                OtherListItemType.DeleteAllLogs,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
@@ -354,7 +355,9 @@ internal fun OtherListItem(
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
                 .clickable {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    if (item != OtherListItemType.DeleteAllLogs) {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    }
                     handleOtherListItemClick(
                         item = item,
                         uiState = uiState,
@@ -385,6 +388,8 @@ private fun handleOtherListItemClick(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
+        OtherListItemType.DeleteAllLogs -> {}
+
         OtherListItemType.OverlayVisible -> {
             onOverlayVisibleChange(!uiState.overlayVisible)
         }
