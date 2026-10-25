@@ -1,14 +1,22 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.Density
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -17,6 +25,7 @@ import kurou.kodriver.feature.main.LowVolumeWarningUiState
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class LowVolumeBannerTest {
     @get:Rule
@@ -75,6 +84,53 @@ class LowVolumeBannerTest {
         verify(exactly = 1) { onDismiss() }
         confirmVerified(onClick, onDismiss)
     }
+
+    @Test
+    fun `閉じる領域の右に本文があり本文の右にシェブロンがある`() {
+        show(LowVolumeWarningUiState(deviceVolume = 20, soundVolume = 30))
+
+        val closeBounds = unmergedBounds(rule.onNodeWithContentDescription("音量警告を閉じる", useUnmergedTree = true))
+        val messageBounds = unmergedBounds(rule.onNodeWithTag("lowVolumeBannerMessage", useUnmergedTree = true))
+        val chevronBounds = unmergedBounds(rule.onNodeWithTag("lowVolumeBannerChevron", useUnmergedTree = true))
+
+        assertTrue(closeBounds.right < messageBounds.left)
+        assertTrue(messageBounds.right < chevronBounds.left)
+    }
+
+    @Test
+    fun `文字サイズを拡大するとバナーの高さが文言に追従して伸びる`() {
+        val uiState = LowVolumeWarningUiState(deviceVolume = 20, soundVolume = 30)
+        var fontScale by mutableFloatStateOf(1f)
+        rule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
+                AppTheme {
+                    LowVolumeBanner(
+                        LowVolumeWarningUiState(deviceVolume = 20, soundVolume = 30),
+                        onClick,
+                        onDismiss,
+                    )
+                }
+            }
+        }
+        val normalHeight =
+            rule
+                .onRoot()
+                .fetchSemanticsNode()
+                .size.height
+
+        fontScale = 2f
+        rule.waitForIdle()
+
+        assertTrue(
+            rule
+                .onRoot()
+                .fetchSemanticsNode()
+                .size.height > normalHeight,
+        )
+    }
+
+    private fun unmergedBounds(node: SemanticsNodeInteraction) = node.fetchSemanticsNode().boundsInRoot
 
     private fun show(uiState: LowVolumeWarningUiState) {
         rule.setContent {
