@@ -11,6 +11,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
@@ -78,6 +80,37 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneSliderPreviewTest {
         assertEquals(
             listOf(
                 LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT to LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT,
+            ),
+            previews,
+        )
+    }
+
+    @Test
+    fun `燃料の周回数をデフォルトに戻すとuiStateに反映される前でもデフォルトの周回数で試聴する`() {
+        val previews = mutableListOf<Pair<String, Int>>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                    uiState =
+                        LmuWindowsAutoReadoutPitTimingDetailUiState(
+                            virtualEnergyLaps = LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+                            fuelLaps = 5,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onFuelTextPreviewClicked = { text, laps -> previews += text to laps },
+                )
+            }
+        }
+
+        rule
+            .onAllNodes(hasContentDescription("デフォルトに戻す") and isEnabled())[0]
+            .performScrollTo()
+            .performClick()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[4].performScrollTo().performClick()
+
+        assertEquals(
+            listOf(
+                LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT to LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT,
             ),
             previews,
         )

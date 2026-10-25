@@ -53,3 +53,14 @@ internal fun calculateLmuTyreWearRemainingLaps(telemetry: LmuWindowsTelemetryDat
     val avgConsumptionPerLap = consumedRatio / currentLap
     return worstRemainingRatio / avgConsumptionPerLap
 }
+
+/** 燃料の容量比から、給油を考慮しないレース開始後の平均消費量で近似する。 */
+internal fun calculateLmuFuelRemainingLaps(telemetry: LmuWindowsTelemetryData?): Double? {
+    val currentLap = telemetry?.timing?.currentLap ?: return null
+    val capacity = telemetry.fuel.capacityLiters.value
+    val current = telemetry.fuel.currentLiters.value
+    if (currentLap <= 0 || !capacity.isFinite() || capacity <= 0.0 || !current.isFinite()) return null
+    val ratio = current / capacity
+    if (ratio < 0.0 || ratio >= 1.0) return null
+    return ratio / ((1.0 - ratio) / currentLap)
+}

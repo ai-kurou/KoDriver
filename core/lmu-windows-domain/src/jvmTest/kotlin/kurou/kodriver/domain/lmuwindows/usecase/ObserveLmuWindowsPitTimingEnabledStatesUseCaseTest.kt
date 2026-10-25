@@ -26,6 +26,7 @@ private fun createLmuWindowsPitTimingPreferencesRepository(
     listOf(
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy,
         LmuWindowsReadoutItemKey.PitTiming.TyreWear,
+        LmuWindowsReadoutItemKey.PitTiming.Fuel,
         LmuWindowsReadoutItemKey.PitTiming.Root,
     ).forEach { key ->
         listOf(true, false).forEach { enabled ->
@@ -55,6 +56,7 @@ class ObserveLmuWindowsPitTimingEnabledStatesUseCaseTest {
                 mapOf<ReadoutItemKey, Boolean>(
                     LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to true,
                     LmuWindowsReadoutItemKey.PitTiming.TyreWear to true,
+                    LmuWindowsReadoutItemKey.PitTiming.Fuel to true,
                 )
             assertEquals(expected, useCase().first())
             verify(exactly = 1) { repo.observeEnabledStates() }
@@ -73,6 +75,7 @@ class ObserveLmuWindowsPitTimingEnabledStatesUseCaseTest {
                 mapOf<ReadoutItemKey, Boolean>(
                     LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to false,
                     LmuWindowsReadoutItemKey.PitTiming.TyreWear to true,
+                    LmuWindowsReadoutItemKey.PitTiming.Fuel to true,
                 )
             assertEquals(expected, useCase().first())
             coVerify(exactly = 1) {
@@ -94,6 +97,7 @@ class ObserveLmuWindowsPitTimingEnabledStatesUseCaseTest {
                 mapOf<ReadoutItemKey, Boolean>(
                     LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to true,
                     LmuWindowsReadoutItemKey.PitTiming.TyreWear to true,
+                    LmuWindowsReadoutItemKey.PitTiming.Fuel to true,
                     LmuWindowsReadoutItemKey.PitTiming.Root to false,
                 ),
                 useCase().first(),
@@ -102,6 +106,18 @@ class ObserveLmuWindowsPitTimingEnabledStatesUseCaseTest {
                 repo.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Root, false)
             }
             verify(exactly = 1) { repo.observeEnabledStates() }
+            confirmVerified(repo)
+        }
+
+    @Test
+    fun `燃料の保存済み無効状態を既定値より優先する`() =
+        runTest {
+            val repo = createLmuWindowsPitTimingPreferencesRepository(repository)
+            repo.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Fuel, false)
+            val states = ObserveLmuWindowsPitTimingEnabledStatesUseCase(repo)().first()
+            assertEquals(false, states.getValue(LmuWindowsReadoutItemKey.PitTiming.Fuel))
+            verify(exactly = 1) { repo.observeEnabledStates() }
+            coVerify(exactly = 1) { repo.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Fuel, false) }
             confirmVerified(repo)
         }
 }

@@ -44,3 +44,17 @@ Virtual Energy を使うのは Hypercar（`Hyper`）と GT3（`GT3`）のみで�
 `LmuWindowsRemainingFuelPreferences` は閾値%と自由文言を `lmu_windows_auto_remaining_fuel_preferences.pb` に保存する。既定値・文言置換は ACE 燃料警告と同じ。燃料テレメトリ自体は新規Repositoryを作らず `LmuWindowsRepository.telemetryStream()` から取得する。
 
 Android では `WebSocketLmuWindowsRepository` が timing と fuel を WebSocket で受信して補う。fuel 未受信時は容量0の初期値で timing の配信を継続する。
+
+
+LMUピットタイミングの燃料は `LmuWindowsReadoutItemKey.PitTiming.Fuel`（`lmu_windows_auto_pit_timing_fuel`）で保存する。
+詳細のスイッチ・閾値（既定3周、1〜5周）・通常／切迫時文言は既存の PitTiming DataStore を共有し、
+ProtoNumber 8〜10を追加する。既存フィールド1〜7は維持し、旧データでは燃料の既定値を使う。
+`ObserveLmuWindowsPitTimingEnabledStatesUseCase` の既定値は有効で、Narratorのマージ済み有効状態と
+`determinePitTimingFuel` が `PitTiming.Root`／`PitTiming.Fuel` を判定する。
+燃料警告は `energySource == LmuWindowsEnergySource.Fuel`（P2/P2Elms/P3/GTE/Unknown）でのみ発火し、
+VEクラス・無効設定でも燃料消費の追跡と評価周の更新を続ける。詳細の燃料設定はクラスに関わらず表示し、listPaneは変更しない。
+`pitTimingJob` が `exactPercent / 100.0` を一度だけ追跡し、手動の燃料残り周回数と `fuelLapsTrackingState` を共有する。
+VE・タイヤ・燃料の候補の最小周回数を選び、共通の `PitTimingLapGate` を通った候補だけ読み上げ履歴へ記録する。
+給油周を消費量の推定から除外し、給油で警告履歴を再武装、周回巻き戻りで追跡・評価履歴を初期化する。
+通常の既定文言は「燃料は残り約{laps}周」、0周以下は「燃料残り1周未満」。保存文言の解決・開始音・優先度・キュー・ログは
+既存の `PitTiming.Root` の流儀を使い、ログに燃料スナップショットと判定状態を含める。

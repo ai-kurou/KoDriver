@@ -158,6 +158,27 @@ class LmuFuelConsumptionCalculatorTest {
         )
     }
 
+    @Test
+    fun `燃料の容量比と周回数から残り周回数を推定する`() {
+        fun telemetry(
+            current: Double,
+            capacity: Double,
+            lap: Int = 5,
+        ) = sampleLmuTelemetry(lap).copy(
+            fuel = LmuWindowsFuelData(LmuWindowsFuelUnit(current), LmuWindowsFuelUnit(capacity)),
+        )
+        assertEquals(5.0, calculateLmuFuelRemainingLaps(telemetry(50.0, 100.0)))
+        assertEquals(0.0, calculateLmuFuelRemainingLaps(telemetry(0.0, 100.0)))
+        assertNull(calculateLmuFuelRemainingLaps(null))
+        listOf(0.0, -1.0, Double.NaN, Double.POSITIVE_INFINITY).forEach { capacity ->
+            assertNull(calculateLmuFuelRemainingLaps(telemetry(50.0, capacity)))
+        }
+        listOf(-1.0, 100.0, 101.0, Double.NaN, Double.POSITIVE_INFINITY).forEach { current ->
+            assertNull(calculateLmuFuelRemainingLaps(telemetry(current, 100.0)))
+        }
+        assertNull(calculateLmuFuelRemainingLaps(telemetry(50.0, 100.0, 0)))
+    }
+
     private fun sampleLmuTelemetry(
         currentLap: Int,
         wheels: Map<WheelIndex, Double> = emptyMap(),

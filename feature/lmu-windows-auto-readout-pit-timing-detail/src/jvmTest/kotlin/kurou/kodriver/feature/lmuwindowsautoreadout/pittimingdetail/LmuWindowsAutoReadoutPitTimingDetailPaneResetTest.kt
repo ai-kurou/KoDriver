@@ -14,6 +14,8 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import kurou.kodriver.buildlogic.screenshottest.assertEditableTextEquals
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
@@ -27,7 +29,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneResetTest {
     val rule = createComposeRule()
 
     @Test
-    fun `全4文言は編集するとリセットでき既定文言を表示して保存を通知する`() {
+    fun `全6文言は編集するとリセットでき既定文言を表示して保存を通知する`() {
         val changes = mutableListOf<Pair<Int, String>>()
         setResetTestContent(changes = changes)
 
@@ -53,7 +55,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneResetTest {
     }
 
     @Test
-    fun `全4文言は既定値と同じならリセットできず保存も通知しない`() {
+    fun `全6文言は既定値と同じならリセットできず保存も通知しない`() {
         val changes = mutableListOf<Pair<Int, String>>()
         setResetTestContent(changes = changes)
 
@@ -68,7 +70,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneResetTest {
     }
 
     @Test
-    fun `TTS利用不可では編集済みの全4文言をリセットできず保存も通知しない`() {
+    fun `TTS利用不可では編集済みの全6文言をリセットできず保存も通知しない`() {
         val changes = mutableListOf<Pair<Int, String>>()
         setResetTestContent(
             initialState =
@@ -162,6 +164,14 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneResetTest {
                         changes += 3 to it
                         uiState = uiState.copy(tyreWearImminentText = it)
                     },
+                    onFuelTextChanged = {
+                        changes += 4 to it
+                        uiState = uiState.copy(fuelText = it)
+                    },
+                    onFuelImminentTextChanged = {
+                        changes += 5 to it
+                        uiState = uiState.copy(fuelImminentText = it)
+                    },
                 )
             }
         }
@@ -173,8 +183,10 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneResetTest {
             LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,
             LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT,
             LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
+            LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT,
+            LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT,
         )
 
     // 各カードでは文言2つの後に周回数スライダーのリセットが並ぶ。
-    private val textResetIndices = listOf(0, 1, 3, 4)
+    private val textResetIndices = listOf(0, 1, 3, 4, 6, 7)
 }

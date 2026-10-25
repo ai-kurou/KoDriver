@@ -54,8 +54,9 @@ internal data class LmuWindowsPitTimingLogContext(
 
 internal data class LmuWindowsPitTimingSnapshot(
     val telemetry: LmuWindowsTelemetryData,
-    val virtualEnergy: LmuWindowsVirtualEnergyData,
-    val tyreWear: LmuWindowsTyreWearData,
+    val virtualEnergy: LmuWindowsVirtualEnergyData?,
+    val tyreWear: LmuWindowsTyreWearData?,
+    val fuel: LmuWindowsRemainingFuelData? = null,
 )
 
 internal class LmuWindowsNarratorEventProcessor(
@@ -395,6 +396,7 @@ internal class LmuWindowsNarratorEventProcessor(
                 telemetry = snapshot.telemetry,
                 virtualEnergy = snapshot.virtualEnergy,
                 tyreWear = snapshot.tyreWear,
+                fuel = snapshot.fuel,
                 settings = logContext.settings,
                 observedAtMs = observedAtMs,
                 finalState = logContext.finalState,
@@ -741,11 +743,13 @@ private fun buildTelemetryLogJson(
         finalStateJson = TelemetryLogJson.encodeToString(finalState),
     )
 
+@Suppress("LongParameterList")
 private fun buildPitTimingTelemetryLogJson(
     state: LmuWindowsNarratorState,
     telemetry: LmuWindowsTelemetryData,
-    virtualEnergy: LmuWindowsVirtualEnergyData,
-    tyreWear: LmuWindowsTyreWearData,
+    virtualEnergy: LmuWindowsVirtualEnergyData?,
+    tyreWear: LmuWindowsTyreWearData?,
+    fuel: LmuWindowsRemainingFuelData?,
     settings: LmuWindowsNarratorReadoutSettings,
     observedAtMs: Long,
     finalState: LmuWindowsNarratorState,
@@ -755,6 +759,7 @@ private fun buildPitTimingTelemetryLogJson(
         """"telemetry":${telemetry.toJson()},""" +
         """"virtualEnergy":${TelemetryLogJson.encodeToString(virtualEnergy)},""" +
         """"tyreWear":${TelemetryLogJson.encodeToString(tyreWear)},""" +
+        """"fuel":${TelemetryLogJson.encodeToString(fuel)},""" +
         """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
         """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +

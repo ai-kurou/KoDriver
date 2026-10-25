@@ -61,4 +61,25 @@ class PitTimingLapGateTest {
         assertEquals(virtualEnergy, gate.filter(currentLap = 1, events = virtualEnergy))
         assertEquals(tyreWear, gate.filter(currentLap = 1, events = tyreWear))
     }
+
+    @Test
+    fun `3ソースの候補から最小の周回数を選び同値では既存ソース順を保つ`() {
+        val energy = LmuWindowsPitTimingWarning(3, PitTimingSource.VirtualEnergy)
+        val tyre = LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear)
+        val fuel = LmuWindowsPitTimingWarning(1, PitTimingSource.Fuel)
+        assertEquals(listOf(fuel), selectLowerPitTimingEvent(listOf(energy), listOf(tyre), listOf(fuel)))
+        assertEquals(listOf(tyre), selectLowerPitTimingEvent(emptyList(), listOf(tyre), listOf(fuel.copy(laps = 2))))
+        assertEquals(listOf(energy), selectLowerPitTimingEvent(listOf(energy), emptyList(), emptyList()))
+        assertEquals(emptyList(), selectLowerPitTimingEvent(emptyList(), emptyList(), listOf(LmuWindowsRedFlag())))
+    }
+
+    @Test
+    fun `燃料候補にもソースをまたぐ周回ゲートを適用する`() {
+        val fuel = listOf<SpeechEvent>(LmuWindowsPitTimingWarning(1, PitTimingSource.Fuel))
+        assertEquals(warning(2), gate.filter(1, warning(2)))
+        assertEquals(fuel, gate.filter(1, fuel))
+        assertEquals(emptyList(), gate.filter(1, warning(1)))
+        assertEquals(emptyList(), gate.filter(1, fuel))
+        assertEquals(fuel, gate.filter(2, fuel))
+    }
 }

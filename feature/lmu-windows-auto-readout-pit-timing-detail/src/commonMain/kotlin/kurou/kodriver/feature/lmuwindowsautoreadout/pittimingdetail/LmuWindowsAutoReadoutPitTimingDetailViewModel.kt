@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelLapsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
@@ -16,6 +19,9 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtua
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingEnabledStateUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingFuelLapsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingTyreWearReadoutTextUseCase
@@ -32,9 +38,11 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
 internal data class PitTimingUseCases(
     val observeVirtualEnergyLaps: ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
     val observeTyreWearLaps: ObserveLmuWindowsPitTimingTyreWearLapsUseCase,
+    val observeFuelLaps: ObserveLmuWindowsPitTimingFuelLapsUseCase,
     val observeEnabledStates: ObserveLmuWindowsPitTimingEnabledStatesUseCase,
     val saveVirtualEnergyLaps: SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
     val saveTyreWearLaps: SaveLmuWindowsPitTimingTyreWearLapsUseCase,
+    val saveFuelLaps: SaveLmuWindowsPitTimingFuelLapsUseCase,
     val saveEnabledState: SaveLmuWindowsPitTimingEnabledStateUseCase,
 )
 
@@ -46,15 +54,20 @@ internal data class PitTimingReadoutUseCases(
     val saveText: SaveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase,
     val saveImminentText: SaveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase,
     val observeTyreWearText: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase,
+    val observeFuelText: ObserveLmuWindowsPitTimingFuelReadoutTextUseCase,
     val observeTyreWearImminentText: ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase,
+    val observeFuelImminentText: ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase,
     val saveTyreWearText: SaveLmuWindowsPitTimingTyreWearReadoutTextUseCase,
+    val saveFuelText: SaveLmuWindowsPitTimingFuelReadoutTextUseCase,
     val saveTyreWearImminentText: SaveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase,
+    val saveFuelImminentText: SaveLmuWindowsPitTimingFuelImminentReadoutTextUseCase,
     val speakText: SpeakTextUseCase,
     val playStartSoundForKey: PlayStartSoundForKeyUseCase,
     val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     val observeSoundVolume: ObserveSoundVolumeUseCase,
 )
 
+@Suppress("TooManyFunctions")
 internal class LmuWindowsAutoReadoutPitTimingDetailViewModel(
     private val pitTimingUseCases: PitTimingUseCases,
     private val readout: PitTimingReadoutUseCases,
@@ -71,14 +84,19 @@ internal class LmuWindowsAutoReadoutPitTimingDetailViewModel(
     val uiState: StateFlow<LmuWindowsAutoReadoutPitTimingDetailUiState> =
         combine(
             pitTimingUseCases.observeVirtualEnergyLaps(),
-            pitTimingUseCases.observeTyreWearLaps(),
+            combine(pitTimingUseCases.observeTyreWearLaps(), pitTimingUseCases.observeFuelLaps()) { tyre, fuel ->
+                tyre to fuel
+            },
             pitTimingUseCases.observeEnabledStates(),
             combine(
                 combine(readout.observeText(), readout.observeImminentText()) { text, imminent -> text to imminent },
                 combine(readout.observeTyreWearText(), readout.observeTyreWearImminentText()) { text, imminent ->
                     text to imminent
                 },
-            ) { virtualEnergy, tyreWear -> virtualEnergy to tyreWear },
+                combine(readout.observeFuelText(), readout.observeFuelImminentText()) { text, imminent ->
+                    text to imminent
+                },
+            ) { virtualEnergy, tyreWear, fuel -> Triple(virtualEnergy, tyreWear, fuel) },
             preview.textToSpeechAvailable,
         ) { virtualEnergyLaps, tyreWearLaps, enabledStates, texts, available ->
             LmuWindowsAutoReadoutPitTimingDetailUiState(
@@ -88,7 +106,11 @@ internal class LmuWindowsAutoReadoutPitTimingDetailViewModel(
                 virtualEnergyImminentText = texts.first.second,
                 isTextToSpeechAvailable = available,
                 tyreWearEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.PitTiming.TyreWear),
-                tyreWearLaps = tyreWearLaps,
+                tyreWearLaps = tyreWearLaps.first,
+                fuelEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.PitTiming.Fuel),
+                fuelLaps = tyreWearLaps.second,
+                fuelText = texts.third.first,
+                fuelImminentText = texts.third.second,
                 tyreWearText = texts.second.first,
                 tyreWearImminentText = texts.second.second,
             )
@@ -119,9 +141,21 @@ internal class LmuWindowsAutoReadoutPitTimingDetailViewModel(
         }
     }
 
+    fun onFuelEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            pitTimingUseCases.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Fuel, enabled)
+        }
+    }
+
     fun onTyreWearLapsChanged(laps: Int) {
         viewModelScope.launch {
             pitTimingUseCases.saveTyreWearLaps(laps)
+        }
+    }
+
+    fun onFuelLapsChanged(laps: Int) {
+        viewModelScope.launch {
+            pitTimingUseCases.saveFuelLaps(laps)
         }
     }
 
@@ -148,8 +182,16 @@ internal class LmuWindowsAutoReadoutPitTimingDetailViewModel(
         viewModelScope.launch { readout.saveTyreWearText(text) }
     }
 
+    fun onFuelTextChanged(text: String) {
+        viewModelScope.launch { readout.saveFuelText(text) }
+    }
+
     fun onTyreWearImminentTextChanged(text: String) {
         viewModelScope.launch { readout.saveTyreWearImminentText(text) }
+    }
+
+    fun onFuelImminentTextChanged(text: String) {
+        viewModelScope.launch { readout.saveFuelImminentText(text) }
     }
 
     fun onTyreWearTextPreviewClicked(
@@ -159,7 +201,18 @@ internal class LmuWindowsAutoReadoutPitTimingDetailViewModel(
         playReadoutPreview(formatLmuWindowsPitTimingReadoutText(text, laps))
     }
 
+    fun onFuelTextPreviewClicked(
+        text: String,
+        laps: Int,
+    ) {
+        playReadoutPreview(formatLmuWindowsPitTimingReadoutText(text, laps))
+    }
+
     fun onTyreWearImminentTextPreviewClicked(text: String) {
+        playReadoutPreview(text)
+    }
+
+    fun onFuelImminentTextPreviewClicked(text: String) {
         playReadoutPreview(text)
     }
 

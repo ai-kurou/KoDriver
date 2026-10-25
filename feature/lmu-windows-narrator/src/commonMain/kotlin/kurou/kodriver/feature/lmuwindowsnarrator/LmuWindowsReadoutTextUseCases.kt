@@ -5,6 +5,8 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatur
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
@@ -42,7 +44,9 @@ internal data class LmuWindowsPitTimingReadoutTextUseCases(
     val virtualEnergy: ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase,
     val virtualEnergyImminent: ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase,
     val tyreWear: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase,
+    val fuel: ObserveLmuWindowsPitTimingFuelReadoutTextUseCase,
     val tyreWearImminent: ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase,
+    val fuelImminent: ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase,
 )
 
 internal data class LmuWindowsTyreReadoutTextUseCases(

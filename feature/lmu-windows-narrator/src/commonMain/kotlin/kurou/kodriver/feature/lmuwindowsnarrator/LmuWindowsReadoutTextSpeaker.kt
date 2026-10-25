@@ -231,6 +231,13 @@ internal class LmuWindowsReadoutTextSpeaker(
                 formatLmuWindowsPitTimingReadoutText(readoutTexts.pitTiming.tyreWear().first(), event.laps)
             }
         }
+        if (event.source == PitTimingSource.Fuel) {
+            return if (event.laps <= 0) {
+                readoutTexts.pitTiming.fuelImminent().first()
+            } else {
+                formatLmuWindowsPitTimingReadoutText(readoutTexts.pitTiming.fuel().first(), event.laps)
+            }
+        }
         return if (event.laps <= 0) {
             readoutTexts.pitTiming.virtualEnergyImminent().first()
         } else {

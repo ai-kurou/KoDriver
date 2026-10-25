@@ -16,8 +16,14 @@ internal class LmuWindowsPitTimingPreferencesRepositoryImpl(
 
     override fun observeTyreWearLaps(): Flow<Int> = dataStore.observeProperty { it.tyreWearLaps }
 
+    override fun observeFuelLaps(): Flow<Int> = dataStore.observeProperty { it.fuelLaps }
+
     override suspend fun saveTyreWearLaps(laps: Int) {
         dataStore.saveProperty(laps) { prefs, value -> prefs.copy(tyreWearLaps = value) }
+    }
+
+    override suspend fun saveFuelLaps(laps: Int) {
+        dataStore.saveProperty(laps) { prefs, value -> prefs.copy(fuelLaps = value) }
     }
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =

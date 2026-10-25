@@ -4,6 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -61,6 +65,42 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneWiringTest {
             showPane = false
             rule.waitForIdle()
             verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.onPreviewStopped() }
+            confirmVerified(viewModel)
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
+    fun `燃料の状態を表示しスイッチと試聴をViewModelへ渡す`() {
+        val state =
+            LmuWindowsAutoReadoutPitTimingDetailUiState(
+                fuelText = "給油まで{laps}周",
+                fuelImminentText = "給油へ",
+                fuelLaps = 2,
+                isTextToSpeechAvailable = true,
+            )
+        every { viewModel.uiState } returns MutableStateFlow(state)
+        every { viewModel.onFuelEnabledChanged(false) } returns Unit
+        every { viewModel.onFuelTextPreviewClicked("給油まで{laps}周", 2) } returns Unit
+        every { viewModel.onFuelImminentTextPreviewClicked("給油へ") } returns Unit
+        every { viewModel.onPreviewStopped() } returns Unit
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            var showPane by mutableStateOf(true)
+            rule.setContent {
+                KoDriverTheme { if (showPane) LmuWindowsAutoReadoutPitTimingDetailPane() }
+            }
+            rule.onNodeWithText("燃料").performScrollTo().performClick()
+            rule.onAllNodesWithContentDescription("入力した文言を再生")[4].performScrollTo().performClick()
+            rule.onAllNodesWithContentDescription("入力した文言を再生")[5].performScrollTo().performClick()
+            showPane = false
+            rule.waitForIdle()
+            verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.onFuelEnabledChanged(false) }
+            verify(exactly = 1) { viewModel.onFuelTextPreviewClicked("給油まで{laps}周", 2) }
+            verify(exactly = 1) { viewModel.onFuelImminentTextPreviewClicked("給油へ") }
             verify(exactly = 1) { viewModel.onPreviewStopped() }
             confirmVerified(viewModel)
         } finally {

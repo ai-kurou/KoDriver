@@ -36,6 +36,9 @@ import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_LAPS_MAX
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_LAPS_MIN
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
@@ -49,6 +52,9 @@ import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsPitTimingRead
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_description
+import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_fuel_laps_help_icon_content_description
+import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_fuel_laps_subtitle
+import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_fuel_title
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_imminent_text_label
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_laps_help_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_laps_insert
@@ -90,15 +96,21 @@ fun LmuWindowsAutoReadoutPitTimingDetailPane(modifier: Modifier = Modifier) {
         onVirtualEnergyEnabledChanged = viewModel::onVirtualEnergyEnabledChanged,
         onVirtualEnergyLapsChanged = viewModel::onVirtualEnergyLapsChanged,
         onTyreWearEnabledChanged = viewModel::onTyreWearEnabledChanged,
+        onFuelEnabledChanged = viewModel::onFuelEnabledChanged,
         onTyreWearLapsChanged = viewModel::onTyreWearLapsChanged,
+        onFuelLapsChanged = viewModel::onFuelLapsChanged,
         onVirtualEnergyTextChanged = viewModel::onVirtualEnergyTextChanged,
         onTyreWearTextChanged = viewModel::onTyreWearTextChanged,
+        onFuelTextChanged = viewModel::onFuelTextChanged,
         onVirtualEnergyImminentTextChanged = viewModel::onVirtualEnergyImminentTextChanged,
         onTyreWearImminentTextChanged = viewModel::onTyreWearImminentTextChanged,
+        onFuelImminentTextChanged = viewModel::onFuelImminentTextChanged,
         onVirtualEnergyTextPreviewClicked = viewModel::onVirtualEnergyTextPreviewClicked,
         onTyreWearTextPreviewClicked = viewModel::onTyreWearTextPreviewClicked,
+        onFuelTextPreviewClicked = viewModel::onFuelTextPreviewClicked,
         onVirtualEnergyImminentTextPreviewClicked = viewModel::onVirtualEnergyImminentTextPreviewClicked,
         onTyreWearImminentTextPreviewClicked = viewModel::onTyreWearImminentTextPreviewClicked,
+        onFuelImminentTextPreviewClicked = viewModel::onFuelImminentTextPreviewClicked,
         modifier = modifier,
     )
 }
@@ -111,15 +123,21 @@ internal fun LmuWindowsAutoReadoutPitTimingDetailPaneContent(
     onVirtualEnergyEnabledChanged: (Boolean) -> Unit = {},
     onVirtualEnergyLapsChanged: (Int) -> Unit = {},
     onTyreWearEnabledChanged: (Boolean) -> Unit = {},
+    onFuelEnabledChanged: (Boolean) -> Unit = {},
     onTyreWearLapsChanged: (Int) -> Unit = {},
+    onFuelLapsChanged: (Int) -> Unit = {},
     onVirtualEnergyTextChanged: (String) -> Unit = {},
     onTyreWearTextChanged: (String) -> Unit = {},
+    onFuelTextChanged: (String) -> Unit = {},
     onVirtualEnergyImminentTextChanged: (String) -> Unit = {},
     onTyreWearImminentTextChanged: (String) -> Unit = {},
+    onFuelImminentTextChanged: (String) -> Unit = {},
     onVirtualEnergyTextPreviewClicked: (String, Int) -> Unit = { _, _ -> },
     onTyreWearTextPreviewClicked: (String, Int) -> Unit = { _, _ -> },
+    onFuelTextPreviewClicked: (String, Int) -> Unit = { _, _ -> },
     onVirtualEnergyImminentTextPreviewClicked: (String) -> Unit = {},
     onTyreWearImminentTextPreviewClicked: (String) -> Unit = {},
+    onFuelImminentTextPreviewClicked: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val sliderLabel = stringResource(Res.string.pit_timing_laps_slider_label)
@@ -128,9 +146,12 @@ internal fun LmuWindowsAutoReadoutPitTimingDetailPaneContent(
         stringResource(Res.string.pit_timing_virtual_energy_laps_help_icon_content_description)
     val tyreWearHelpIconContentDescription =
         stringResource(Res.string.pit_timing_tyre_wear_laps_help_icon_content_description)
+    val fuelHelpIconContentDescription =
+        stringResource(Res.string.pit_timing_fuel_laps_help_icon_content_description)
     // 保存値がuiStateへ反映される前でも、スライダーに表示中の周回数で試聴する。
     var virtualEnergyLaps by remember(uiState.virtualEnergyLaps) { mutableIntStateOf(uiState.virtualEnergyLaps) }
     var tyreWearLaps by remember(uiState.tyreWearLaps) { mutableIntStateOf(uiState.tyreWearLaps) }
+    var fuelLaps by remember(uiState.fuelLaps) { mutableIntStateOf(uiState.fuelLaps) }
 
     Column(
         modifier =
@@ -241,6 +262,59 @@ internal fun LmuWindowsAutoReadoutPitTimingDetailPaneContent(
                         onResetToDefault = {
                             tyreWearLaps = LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
                             onTyreWearLapsChanged(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT)
+                        },
+                        resetContentDescription = resetToDefaultLabel,
+                    )
+                }
+            },
+        )
+        DetailPaneCard(
+            title = stringResource(Res.string.pit_timing_fuel_title),
+            checked = uiState.fuelEnabled,
+            onCheckedChange = onFuelEnabledChanged,
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
+            bottomContent = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    PitTimingReadoutFields(
+                        text = uiState.fuelText,
+                        defaultText = LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT,
+                        imminentText = uiState.fuelImminentText,
+                        imminentDefaultText = LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT,
+                        available = uiState.isTextToSpeechAvailable,
+                        onTextChanged = onFuelTextChanged,
+                        onImminentTextChanged = onFuelImminentTextChanged,
+                        onPreviewClick = { onFuelTextPreviewClicked(it, fuelLaps) },
+                        onImminentPreviewClick = onFuelImminentTextPreviewClicked,
+                    )
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(
+                                horizontal = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.medium,
+                            ),
+                    )
+                    DetailPaneSubtitle(
+                        text = stringResource(Res.string.pit_timing_fuel_laps_subtitle),
+                        trailingContent = {
+                            HelpIconButton(
+                                contentDescription = fuelHelpIconContentDescription,
+                                sheetContent = { PitTimingLapsHelpSheetContent() },
+                            )
+                        },
+                    )
+                    ThresholdSlider(
+                        value = uiState.fuelLaps.toFloat(),
+                        valueRange = MINIMUM_PIT_TIMING_LAPS..MAXIMUM_PIT_TIMING_LAPS,
+                        labelFormatter = { sliderLabel.formatSliderLabel(it.roundToInt()) },
+                        onValueChangeFinished = {
+                            fuelLaps = it.roundToInt()
+                            onFuelLapsChanged(fuelLaps)
+                        },
+                        steps = 3,
+                        defaultValue = LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT.toFloat(),
+                        onResetToDefault = {
+                            fuelLaps = LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
+                            onFuelLapsChanged(LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT)
                         },
                         resetContentDescription = resetToDefaultLabel,
                     )

@@ -3460,7 +3460,187 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             assertEquals(state, decision.state)
         }
     }
+
+    @Test
+    fun `燃料クラスで閾値以下なら燃料ソースの候補を生成し採用時だけ記録する`() {
+        val decision =
+            pitTimingUseCase.determinePitTimingFuel(
+                fuelReadyState(),
+                lapTelemetry(3, 90_000L),
+                LmuWindowsRemainingFuelData(25),
+                settings(energySource = LmuWindowsEnergySource.Fuel),
+                60_000L,
+            )
+        val event = LmuWindowsPitTimingWarning(2, PitTimingSource.Fuel)
+        assertEquals(listOf(event), decision.events)
+        assertEquals(3, decision.state.lastPitTimingFuelEvaluationLap)
+        assertEquals(-1, decision.state.lastAnnouncedPitTimingFuelLaps)
+        assertEquals(2, pitTimingUseCase.recordPitTimingAnnounced(decision.state, event).lastAnnouncedPitTimingFuelLaps)
+    }
+
+    @Test
+    fun `VEクラスや無効スイッチでは発火せず燃料の追跡と評価周更新を続ける`() {
+        val disabledSettings =
+            listOf(
+                settings(energySource = LmuWindowsEnergySource.VirtualEnergy),
+                settings(energySource = LmuWindowsEnergySource.Fuel, enabledStates = pitTimingDisabledStates),
+                settings(
+                    energySource = LmuWindowsEnergySource.Fuel,
+                    enabledStates = allEnabledStates + (LmuWindowsReadoutItemKey.PitTiming.Fuel to false),
+                ),
+            )
+        disabledSettings.forEach { readoutSettings ->
+            val decision =
+                pitTimingUseCase.determinePitTimingFuel(
+                    fuelReadyState(),
+                    lapTelemetry(3, 90_000L),
+                    LmuWindowsRemainingFuelData(25),
+                    readoutSettings,
+                    60_000L,
+                )
+            assertEquals(emptyList<SpeechEvent>(), decision.events)
+            assertEquals(0.25, decision.state.fuelLapsTrackingState.currentValue)
+            assertEquals(3, decision.state.lastPitTimingFuelEvaluationLap)
+        }
+    }
+
+    @Test
+    fun `燃料の同一周評価と同じ周回数の再警告を抑止する`() {
+        listOf(
+            fuelReadyState().copy(lastPitTimingFuelEvaluationLap = 3),
+            fuelReadyState().copy(lastAnnouncedPitTimingFuelLaps = 2),
+        ).forEach { state ->
+            assertEquals(
+                emptyList<SpeechEvent>(),
+                pitTimingUseCase
+                    .determinePitTimingFuel(
+                        state,
+                        lapTelemetry(3, 90_000L),
+                        LmuWindowsRemainingFuelData(25),
+                        settings(energySource = LmuWindowsEnergySource.Fuel),
+                        60_000L,
+                    ).events,
+            )
+        }
+    }
+
+    @Test
+    fun `燃料の閾値超過と評価時刻前と消費量蓄積前は警告しない`() {
+        val states =
+            listOf(
+                fuelReadyState().copy(
+                    fuelLapsTrackingState =
+                        fuelReadyState().fuelLapsTrackingState.copy(currentValue = 0.9, refillBaselineValue = 0.9),
+                ),
+                fuelReadyState().copy(
+                    fuelLapsTrackingState =
+                        fuelReadyState().fuelLapsTrackingState.copy(currentLapStartedAtMs = 30_000L),
+                ),
+                LmuWindowsNarratorState(),
+            )
+        states.forEachIndexed { index, state ->
+            assertEquals(
+                emptyList<SpeechEvent>(),
+                pitTimingUseCase
+                    .determinePitTimingFuel(
+                        state,
+                        lapTelemetry(3, 90_000L),
+                        LmuWindowsRemainingFuelData(if (index == 0) 80 else 25),
+                        settings(energySource = LmuWindowsEnergySource.Fuel),
+                        60_000L,
+                    ).events,
+            )
+        }
+    }
+
+    @Test
+    fun `燃料は小数精度を維持し1周未満と空でも切迫候補を生成する`() {
+        listOf(0.0, 9.9).forEach { percent ->
+            val decision =
+                pitTimingUseCase.determinePitTimingFuel(
+                    fuelReadyState(),
+                    lapTelemetry(3, 90_000L),
+                    LmuWindowsRemainingFuelData(percent.toInt(), percent),
+                    settings(energySource = LmuWindowsEnergySource.Fuel),
+                    60_000L,
+                )
+            assertEquals(listOf(LmuWindowsPitTimingWarning(0, PitTimingSource.Fuel)), decision.events)
+            assertEquals(percent / 100.0, decision.state.fuelLapsTrackingState.currentValue)
+        }
+    }
+
+    @Test
+    fun `給油は履歴を再武装し評価周を維持して給油周の消費を推定に採用しない`() {
+        val refilled =
+            pitTimingUseCase.determinePitTimingFuel(
+                fuelReadyState().copy(lastAnnouncedPitTimingFuelLaps = 2, lastPitTimingFuelEvaluationLap = 3),
+                lapTelemetry(3, 90_000L),
+                LmuWindowsRemainingFuelData(90),
+                settings(energySource = LmuWindowsEnergySource.Fuel),
+                60_000L,
+            )
+        assertEquals(true, refilled.state.fuelLapsTrackingState.hasRefilled)
+        assertEquals(true, refilled.state.fuelLapsTrackingState.currentLapHasRefilled)
+        assertEquals(-1, refilled.state.lastAnnouncedPitTimingFuelLaps)
+        assertEquals(3, refilled.state.lastPitTimingFuelEvaluationLap)
+        val next =
+            pitTimingUseCase.trackFuelLaps(
+                refilled.state,
+                lapTelemetry(4, 90_000L),
+                LmuWindowsRemainingFuelData(80),
+                90_000L,
+            )
+        assertEquals(0.1, next.fuelLapsTrackingState.lastValidLapConsumption)
+    }
+
+    @Test
+    fun `周回巻き戻りは燃料の追跡と警告履歴を初期化する`() {
+        val decision =
+            pitTimingUseCase.determinePitTimingFuel(
+                fuelReadyState().copy(lastAnnouncedPitTimingFuelLaps = 2, lastPitTimingFuelEvaluationLap = 3),
+                lapTelemetry(1, 90_000L),
+                LmuWindowsRemainingFuelData(100),
+                settings(energySource = LmuWindowsEnergySource.Fuel),
+                60_000L,
+            )
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(-1, decision.state.lastAnnouncedPitTimingFuelLaps)
+        assertEquals(-1, decision.state.lastPitTimingFuelEvaluationLap)
+        assertEquals(null, decision.state.fuelLapsTrackingState.lastValidLapConsumption)
+    }
+
+    @Test
+    fun `燃料の無効な実残量は古い追跡値で評価しない`() {
+        listOf(Double.NaN, Double.POSITIVE_INFINITY, -0.1, 100.1).forEach { percent ->
+            val state = fuelReadyState()
+            val decision =
+                pitTimingUseCase.determinePitTimingFuel(
+                    state,
+                    lapTelemetry(3, 90_000L),
+                    LmuWindowsRemainingFuelData(0, percent),
+                    settings(energySource = LmuWindowsEnergySource.Fuel),
+                    60_000L,
+                )
+            assertEquals(state, decision.state)
+            assertEquals(emptyList<SpeechEvent>(), decision.events)
+        }
+    }
 }
+
+private fun fuelReadyState() =
+    LmuWindowsNarratorState(
+        fuelLapsTrackingState =
+            LmuWindowsPitTimingTrackingState(
+                currentLap = 3,
+                currentLapStartedAtMs = 0L,
+                currentLapStartedAtBoundary = true,
+                currentLapStartValue = 0.5,
+                currentValue = 0.4,
+                refillBaselineValue = 0.4,
+                lastValidLapConsumption = 0.1,
+                bestLapTimeMs = 90_000L,
+            ),
+    )
 
 private fun pitTimingBoundaryState(): LmuWindowsNarratorState =
     LmuWindowsNarratorState(

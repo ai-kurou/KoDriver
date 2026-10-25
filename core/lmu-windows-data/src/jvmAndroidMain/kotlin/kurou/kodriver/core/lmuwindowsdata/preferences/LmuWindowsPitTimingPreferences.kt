@@ -3,6 +3,9 @@ package kurou.kodriver.core.lmuwindowsdata.preferences
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
@@ -22,4 +25,8 @@ internal data class LmuWindowsPitTimingPreferences(
     @ProtoNumber(6) val tyreWearReadoutText: String = LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT,
     @ProtoNumber(7) val tyreWearImminentReadoutText: String =
         LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
+    @ProtoNumber(8) val fuelLaps: Int = LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT,
+    @ProtoNumber(9) val fuelReadoutText: String = LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT,
+    @ProtoNumber(10) val fuelImminentReadoutText: String =
+        LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT,
 )

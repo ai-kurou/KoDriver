@@ -20,6 +20,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.float
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
@@ -81,6 +82,8 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatur
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
@@ -139,8 +142,11 @@ class LmuWindowsNarratorEventProcessorTest {
     private val observePitTimingVirtualEnergyImminentReadoutText:
         ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase = mockk()
     private val observePitTimingTyreWearReadoutText: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase = mockk()
+    private val observePitTimingFuelReadoutText: ObserveLmuWindowsPitTimingFuelReadoutTextUseCase = mockk()
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
+    private val observePitTimingFuelImminentReadoutText:
+        ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
     private val observeRemainingFuelText: ObserveLmuWindowsRemainingFuelReadoutTextUseCase = mockk()
     private val observeBrakeText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase = mockk()
@@ -177,7 +183,9 @@ class LmuWindowsNarratorEventProcessorTest {
                             virtualEnergy = observePitTimingVirtualEnergyReadoutText,
                             virtualEnergyImminent = observePitTimingVirtualEnergyImminentReadoutText,
                             tyreWear = observePitTimingTyreWearReadoutText,
+                            fuel = observePitTimingFuelReadoutText,
                             tyreWearImminent = observePitTimingTyreWearImminentReadoutText,
+                            fuelImminent = observePitTimingFuelImminentReadoutText,
                         ),
                     tyre =
                         LmuWindowsTyreReadoutTextUseCases(
@@ -3922,6 +3930,203 @@ class LmuWindowsNarratorEventProcessorTest {
                 )
             }
             confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `読み上げたピットタイミングイベントに燃料データがシリアライズされて保存される`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every {
+                ttsEngine.speak(
+                    LmuWindowsPitTimingWarning(
+                        laps = 2,
+                        source = PitTimingSource.Fuel,
+                        resolvedText = "給油まであと2周",
+                    ),
+                    queue = false,
+                )
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
+                    narratedText = "給油まであと2周",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor { "給油まであと2周" }
+
+            processor.processPitTiming(
+                snapshot =
+                    pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)).copy(
+                        fuel = LmuWindowsRemainingFuelData(25),
+                    ),
+                events = listOf(LmuWindowsPitTimingWarning(laps = 2, source = PitTimingSource.Fuel)),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = pitTimingLogContext(),
+            )
+
+            val telemetryJson = telemetryJsonSlot.captured
+            val root = Json.parseToJsonElement(telemetryJson).jsonObject
+            assertWheelValues(
+                root["tyreWear"]!!.jsonObject["wheels"]!!.jsonObject,
+                frontLeft = 0.3,
+                frontRight = 0.9,
+                rearLeft = 0.9,
+                rearRight = 0.9,
+            )
+            assertEquals(0.5, root["virtualEnergy"]!!.jsonObject["remainingRatio"]!!.jsonPrimitive.double)
+            assertEquals(25, root["fuel"]!!.jsonObject["remainingPercent"]!!.jsonPrimitive.int)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) {
+                ttsEngine.speak(
+                    LmuWindowsPitTimingWarning(
+                        laps = 2,
+                        source = PitTimingSource.Fuel,
+                        resolvedText = "給油まであと2周",
+                    ),
+                    false,
+                )
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
+                    narratedText = "給油まであと2周",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
+                    telemetryJson = telemetryJson,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `燃料の本文がnullなら開始音と本文を要求せずスキップを記録する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+
+            createProcessor { null }.processPitTiming(
+                snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
+                events = listOf(LmuWindowsPitTimingWarning(0, PitTimingSource.Fuel)),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = pitTimingLogContext(),
+            )
+
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `燃料のピットタイミングはキュー待機中の設定変更でも判定時の本文を発話してログと一致する`() =
+        runTest {
+            val key = LmuWindowsReadoutItemKey.PitTiming.Root
+            val template = MutableStateFlow("判定時の本文")
+            val queuedEvents = mutableListOf<SpeechEvent>()
+            val telemetryJsons = mutableListOf<String>()
+            val events =
+                listOf<ReadoutTextEvent>(
+                    LmuWindowsPitTimingWarning(2, PitTimingSource.VirtualEnergy),
+                    LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy),
+                    LmuWindowsPitTimingWarning(2, PitTimingSource.Fuel),
+                    LmuWindowsPitTimingWarning(0, PitTimingSource.Fuel),
+                )
+            val resolvedEvents = events.map { it.withResolvedText("判定時の本文") }
+            every { observePitTimingVirtualEnergyReadoutText() } returns template
+            every { observePitTimingVirtualEnergyImminentReadoutText() } returns template
+            every { observePitTimingFuelReadoutText() } returns template
+            every { observePitTimingFuelImminentReadoutText() } returns template
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("判定時の本文", volume = 40) } just Runs
+            resolvedEvents.forEach { event ->
+                every { ttsEngine.speak(event, queue = true) } answers { queuedEvents += event }
+            }
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = key,
+                    narratedText = "判定時の本文",
+                    narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.AUTO,
+                    telemetryJson = capture(telemetryJsons),
+                )
+            } just Runs
+            val processor = createProcessor(speaker::readoutText)
+            processor.processPitTiming(
+                snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
+                events = events,
+                autoReadoutOrder = listOf(key),
+                queueEnabledStates = mapOf(key to true),
+                observedAtMs = 200L,
+                logContext = pitTimingLogContext(),
+            )
+            template.update { "変更後の本文" }
+            assertEquals<List<SpeechEvent>>(resolvedEvents, queuedEvents)
+            queuedEvents.forEach { speaker(it, 40) }
+            verify(exactly = 1) { observePitTimingVirtualEnergyReadoutText() }
+            verify(exactly = 1) { observePitTimingVirtualEnergyImminentReadoutText() }
+            verify(exactly = 1) { observePitTimingFuelReadoutText() }
+            verify(exactly = 1) { observePitTimingFuelImminentReadoutText() }
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            resolvedEvents.forEach { event ->
+                verify(exactly = 1) { ttsEngine.speak(event, queue = true) }
+            }
+            coVerify(exactly = 8) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 4) { speakText("判定時の本文", volume = 40) }
+            telemetryJsons.distinct().forEach { telemetryJson ->
+                coVerify(exactly = telemetryJsons.count { it == telemetryJson }) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        createdAt = 200L,
+                        simulator = Simulator.LmuWindows,
+                        readoutItemKey = key,
+                        narratedText = "判定時の本文",
+                        narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
+                        telemetryJson = telemetryJson,
+                    )
+                }
+            }
+            confirmVerified(
+                ttsEngine,
+                telemetryLogRepository,
+                observePitTimingVirtualEnergyReadoutText,
+                observePitTimingVirtualEnergyImminentReadoutText,
+                observePitTimingFuelReadoutText,
+                observePitTimingFuelImminentReadoutText,
+                checkTextToSpeechAvailable,
+                speakText,
+            )
         }
 }
 

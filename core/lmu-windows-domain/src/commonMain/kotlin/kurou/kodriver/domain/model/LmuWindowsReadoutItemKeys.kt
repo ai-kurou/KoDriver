@@ -25,6 +25,7 @@ val LMU_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
         LmuWindowsReadoutItemKey.PitTiming.Root,
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy,
         LmuWindowsReadoutItemKey.PitTiming.TyreWear,
+        LmuWindowsReadoutItemKey.PitTiming.Fuel,
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
         LmuWindowsReadoutItemKey.RemainingFuel.Root,

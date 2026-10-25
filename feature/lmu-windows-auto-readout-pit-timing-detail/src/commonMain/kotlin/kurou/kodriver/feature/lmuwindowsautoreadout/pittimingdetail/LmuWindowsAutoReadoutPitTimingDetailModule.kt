@@ -1,6 +1,9 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail
 
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelLapsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
@@ -8,6 +11,9 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtua
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingEnabledStateUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingFuelLapsUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingTyreWearReadoutTextUseCase
@@ -25,7 +31,7 @@ import org.koin.dsl.module
 /**
  * ピットタイミングアナウンス詳細設定（lmu-windows-auto-readout-pit-timing-detail feature）の Koin モジュール。
  *
- * 提供: LmuWindowsAutoReadoutPitTimingDetailViewModel と、予想残り周回数・有効状態・両ソースの文言の Observe/Save UseCase。
+ * 提供: LmuWindowsAutoReadoutPitTimingDetailViewModel と、予想残り周回数・有効状態・3ソースの文言の Observe/Save UseCase。
  * UseCase が依存する設定・文言の Repository は :core:data の
  * desktopDataModule / androidDataModule で束ねられる。試聴用の named(Simulator.LmuWindows.id) の
  * PlayStartSoundForKeyUseCase・SpeakTextUseCase は :feature:lmu-windows-narrator で登録される。
@@ -49,6 +55,10 @@ val lmuWindowsAutoReadoutPitTimingDetailModule =
                 get(),
                 get(),
                 get(),
+                get(),
+                get(),
+                get(),
+                get(),
                 get(named(Simulator.LmuWindows.id)),
                 get(named(Simulator.LmuWindows.id)),
                 get(),
@@ -60,16 +70,22 @@ val lmuWindowsAutoReadoutPitTimingDetailModule =
         factoryOf(::SaveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase)
         factoryOf(::SaveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase)
         factoryOf(::ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase)
+        factoryOf(::ObserveLmuWindowsPitTimingFuelReadoutTextUseCase)
         factoryOf(::ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase)
+        factoryOf(::ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase)
         factoryOf(::SaveLmuWindowsPitTimingTyreWearReadoutTextUseCase)
+        factoryOf(::SaveLmuWindowsPitTimingFuelReadoutTextUseCase)
         factoryOf(::SaveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase)
+        factoryOf(::SaveLmuWindowsPitTimingFuelImminentReadoutTextUseCase)
         factoryOf(::CheckTextToSpeechAvailableUseCase)
         factoryOf(::ObserveSoundVolumeUseCase)
-        factory { PitTimingUseCases(get(), get(), get(), get(), get(), get()) }
+        factory { PitTimingUseCases(get(), get(), get(), get(), get(), get(), get(), get()) }
         factoryOf(::ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
         factoryOf(::ObserveLmuWindowsPitTimingTyreWearLapsUseCase)
+        factoryOf(::ObserveLmuWindowsPitTimingFuelLapsUseCase)
         factoryOf(::ObserveLmuWindowsPitTimingEnabledStatesUseCase)
         factoryOf(::SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
         factoryOf(::SaveLmuWindowsPitTimingTyreWearLapsUseCase)
+        factoryOf(::SaveLmuWindowsPitTimingFuelLapsUseCase)
         factoryOf(::SaveLmuWindowsPitTimingEnabledStateUseCase)
     }

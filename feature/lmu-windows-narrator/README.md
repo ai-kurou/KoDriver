@@ -1,6 +1,6 @@
 # lmu-windows-narrator
 
-LMUの4種類のフラッグ本文と車両接近開始時・継続時の左右文言とバーチャルエネルギー/燃料残量警告とタイヤ摩耗警告とブレーキ過熱警告と車両故障警告とタイヤ過熱警告とバーチャルエネルギー・タイヤ摩耗由来のピットタイミング警告は、保存した自由文字列をOS標準TTSで読み上げる。エネルギー源は車両クラスで判定し、VEクラスはVE警告、燃料クラスは燃料警告を使う。
+LMUの4種類のフラッグ本文と車両接近開始時・継続時の左右文言とバーチャルエネルギー/燃料残量警告とタイヤ摩耗警告とブレーキ過熱警告と車両故障警告とタイヤ過熱警告とバーチャルエネルギー・タイヤ摩耗・燃料由来のピットタイミング警告は、保存した自由文字列をOS標準TTSで読み上げる。エネルギー源は車両クラスで判定し、VEクラスはVE警告、燃料クラスは燃料警告を使う。
 空白文言またはTTS利用不可時は本文を読み上げず、収録WAVへのフォールバックは行わない。
 開始音は既存の設定に従う。
 
@@ -21,7 +21,7 @@ Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を
 複数項目では「燃料の残り周回数はデータがありません」を連結し、全項目がデータ無しなら「データがありません」のみを読む。
 先頭項目なら開始音・優先度・ログ・キューに `RemainingFuel.Root` を使う。編集画面はACE・GT7の燃料項目と同じ「燃料」カテゴリに配置し、既存の
 `LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
-自動燃料警告の設定・状態は変更せず、自動読み上げには接続しない。
+手動の燃料読み上げは自動警告の有効状態・評価履歴を変更しない。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
@@ -36,7 +36,7 @@ Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を
 
 ピットタイミング（バーチャルエネルギー）の自動警告は `energySource == LmuWindowsEnergySource.VirtualEnergy` の場合のみ発火する。燃料クラスでも消費量の追跡・状態更新・評価周の更新は継続する。
 
-ピットタイミングの両ソースの警告は、残り1周以上で通常文言の `{laps}` を置換し、0周以下で専用文言を使う。空白・TTS利用不可時は開始音も要求せず、空文字と `SKIPPED` を記録する。通常・切迫時文言はピットタイミング詳細画面で設定・試聴できる。通常文言の試聴は `{laps}` を各スライダーに表示中の周回数に置換し、切迫時文言はそのまま読む。両ソースとも自由文言TTSを使用し、ピットタイミング用の収録WAVは使用しない。
+ピットタイミングの3ソースの警告は、残り1周以上で通常文言の `{laps}` を置換し、0周以下で専用文言を使う。空白・TTS利用不可時は開始音も要求せず、空文字と `SKIPPED` を記録する。通常・切迫時文言はピットタイミング詳細画面で設定・試聴できる。通常文言の試聴は `{laps}` を各スライダーに表示中の周回数に置換し、切迫時文言はそのまま読む。3ソースとも自由文言TTSを使用し、ピットタイミング用の収録WAVは使用しない。
 
 バーチャルエネルギー残量警告は設定した閾値（%）をイベントに持ち、保存文言の `{percent}` をその閾値に置換する。実際の残量は置換値に使わない。空白文言・TTS利用不可時は開始音も要求せず、ログに空文字と `SKIPPED` を記録する。残量警告の収録WAVは使用しない。
 
@@ -123,3 +123,17 @@ LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingF
 自己ベストは `lmuTelemetryFlow` の共有前に受信値と受信時刻を保持し、シミュレーター切り替えで破棄する。手動依頼時に鮮度を判定し、`LmuWindowsManualReadoutItem.lapTimeMs` へ渡す。手動イベントは `LmuWindowsManualReadoutText` として Speaker / EventProcessor の共通経路を通るため、自動自己ベストの文言解決・有効判定は適用しない。
 
 テレメトリログは読み上げの起点を `NarrationSource` で保持する。手動読み上げは `MANUAL`（`manual`）、それ以外（デバッグ読み上げを含む）は `AUTO`（`auto`）として保存する。
+
+
+LMUピットタイミングの燃料は `LmuWindowsReadoutItemKey.PitTiming.Fuel`（`lmu_windows_auto_pit_timing_fuel`）で保存する。
+詳細のスイッチ・閾値（既定3周、1〜5周）・通常／切迫時文言は既存の PitTiming DataStore を共有し、
+ProtoNumber 8〜10を追加する。既存フィールド1〜7は維持し、旧データでは燃料の既定値を使う。
+`ObserveLmuWindowsPitTimingEnabledStatesUseCase` の既定値は有効で、Narratorのマージ済み有効状態と
+`determinePitTimingFuel` が `PitTiming.Root`／`PitTiming.Fuel` を判定する。
+燃料警告は `energySource == LmuWindowsEnergySource.Fuel`（P2/P2Elms/P3/GTE/Unknown）でのみ発火し、
+VEクラス・無効設定でも燃料消費の追跡と評価周の更新を続ける。詳細の燃料設定はクラスに関わらず表示し、listPaneは変更しない。
+`pitTimingJob` が `exactPercent / 100.0` を一度だけ追跡し、手動の燃料残り周回数と `fuelLapsTrackingState` を共有する。
+VE・タイヤ・燃料の候補の最小周回数を選び、共通の `PitTimingLapGate` を通った候補だけ読み上げ履歴へ記録する。
+給油周を消費量の推定から除外し、給油で警告履歴を再武装、周回巻き戻りで追跡・評価履歴を初期化する。
+通常の既定文言は「燃料は残り約{laps}周」、0周以下は「燃料残り1周未満」。保存文言の解決・開始音・優先度・キュー・ログは
+既存の `PitTiming.Root` の流儀を使い、ログに燃料スナップショットと判定状態を含める。
