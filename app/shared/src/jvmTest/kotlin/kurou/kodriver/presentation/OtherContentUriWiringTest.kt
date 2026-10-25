@@ -59,6 +59,7 @@ class OtherContentUriWiringTest {
         every { viewModel.checkUpdate() } returns Unit
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { viewModel.consumeResetResult() } returns Unit
         every { viewModel.onResetClick() } answers {
             state.update { it.copy(showResetConfirmDialog = true) }
         }
@@ -97,6 +98,7 @@ class OtherContentUriWiringTest {
         every { viewModel.checkUpdate() } returns Unit
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { viewModel.consumeResetResult() } returns Unit
         every { uriHandler.openUri("https://github.com/ai-kurou/KoDriver") } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
@@ -127,6 +129,7 @@ class OtherContentUriWiringTest {
         every { viewModel.checkUpdate() } returns Unit
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { viewModel.consumeResetResult() } returns Unit
         every { uriHandler.openUri("https://github.com/ai-kurou/KoDriver/releases") } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
@@ -157,6 +160,7 @@ class OtherContentUriWiringTest {
         every { viewModel.checkUpdate() } returns Unit
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { viewModel.consumeResetResult() } returns Unit
         every {
             uriHandler.openUri(
                 "https://play.google.com/store/apps/details?id=com.google.android.tts",

@@ -92,6 +92,28 @@ class OtherContentTest {
     }
 
     @Test
+    fun `削除結果の表示中にタブを離れると結果を消費する`() {
+        var visible by mutableStateOf(true)
+        var consumed = 0
+        rule.setContent {
+            AppTheme {
+                if (visible) {
+                    OtherContent(
+                        uiState = OtherListUiState(resetSucceeded = true),
+                        onItemSelected = {},
+                        onClearSelectedItem = {},
+                        onResetResultConsumed = { consumed++ },
+                    )
+                }
+            }
+        }
+        rule.onNodeWithText("すべてのログを削除しました").assertExists()
+        rule.runOnIdle { visible = false }
+        rule.waitUntil(timeoutMillis = 5_000L) { consumed >= 1 }
+        assertTrue(consumed >= 1)
+    }
+
+    @Test
     fun `ログを全て削除をタップしても選択や詳細遷移を行わない`() {
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false

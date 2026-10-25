@@ -16,6 +16,7 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -342,6 +343,10 @@ private fun OtherResetEffects(
     val successMessage = stringResource(Res.string.telemetry_log_reset_success)
     val failureMessage = stringResource(Res.string.telemetry_log_reset_failure)
     val currentOnResetResultConsumed by rememberUpdatedState(onResetResultConsumed)
+    // タブ切替でスナックバー表示中にLaunchedEffectが中断されると結果が残り、戻った時に再表示されるため、離脱時に消費する。
+    DisposableEffect(Unit) {
+        onDispose { currentOnResetResultConsumed() }
+    }
     LaunchedEffect(uiState.resetSucceeded) {
         val succeeded = uiState.resetSucceeded ?: return@LaunchedEffect
         snackbarHostState.showSnackbar(if (succeeded) successMessage else failureMessage)
