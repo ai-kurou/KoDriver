@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +37,6 @@ import kurou.kodriver.feature.main.LowVolumeWarningUiState
 import org.jetbrains.compose.resources.stringResource
 
 private val LowVolumeBannerActionWidth = 40.dp
-private val LowVolumeBannerContentHeight = 18.dp + AppSpacing.small * 2
 
 @Composable
 internal fun LowVolumeBanner(
@@ -64,7 +64,7 @@ internal fun LowVolumeBanner(
                 },
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(LowVolumeBannerContentHeight),
+            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
@@ -90,7 +90,10 @@ internal fun LowVolumeBanner(
                         .padding(vertical = AppSpacing.small)
                         .background(contentColor.copy(alpha = 0.35f)),
             )
-            Box(modifier = Modifier.weight(1f).fillMaxHeight(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.weight(1f).fillMaxHeight().padding(vertical = AppSpacing.small),
+                contentAlignment = Alignment.Center,
+            ) {
                 Row(
                     modifier = Modifier.testTag("lowVolumeBannerMessage"),
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.small),
