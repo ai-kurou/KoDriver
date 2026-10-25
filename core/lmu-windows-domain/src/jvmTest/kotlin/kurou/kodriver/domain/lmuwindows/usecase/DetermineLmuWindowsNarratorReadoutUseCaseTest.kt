@@ -24,6 +24,7 @@ import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
@@ -262,7 +263,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val wear = LmuWindowsManualReadoutItem(tyre.value, "タイヤ{percent}%", 0.8)
         listOf(
             Triple(listOf(energy), root, "あと3周 {unknown}"),
-            Triple(listOf(energy.copy(remainingLaps = 0)), root, "エネルギー残り1周未満"),
+            Triple(listOf(energy.copy(remainingLaps = 0)), root, "バーチャルエネルギー残り1周未満"),
             Triple(listOf(energy, wear), root, "あと3周 {unknown}、タイヤ80%"),
             Triple(listOf(wear, energy), tyre, "タイヤ80%、あと3周 {unknown}"),
             Triple(
@@ -281,6 +282,11 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             Triple(listOf(energy.copy(textTemplate = "", remainingLaps = 0)), root, ""),
             Triple(listOf(energy, wear.copy(ratio = null)), root, "あと3周 {unknown}、タイヤ摩耗はデータがありません"),
             Triple(listOf(energy.copy(textTemplate = "エネルギーは残り約{laps}周")), root, "エネルギーは残り約3周"),
+            Triple(
+                listOf(energy.copy(textTemplate = LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT)),
+                root,
+                "バーチャルエネルギーは残り約3周",
+            ),
         ).forEach { (items, firstKey, text) ->
             val decision = manualUseCase.determineManualReadout(state, items)
             assertEquals(state, decision.state)
