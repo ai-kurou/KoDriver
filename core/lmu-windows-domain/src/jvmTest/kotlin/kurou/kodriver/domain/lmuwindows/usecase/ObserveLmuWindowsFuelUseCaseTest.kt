@@ -57,7 +57,7 @@ class ObserveLmuWindowsFuelUseCaseTest {
             val received = fuel(1.0, 4.0).copy(receivedAtMs = 123L)
             every { repository.telemetryStream() } returns flowOf(telemetry(received), telemetry(received))
             assertEquals(
-                listOf(123L, 123L),
+                listOf<Long?>(123L, 123L),
                 buildList { ObserveLmuWindowsFuelUseCase(repository)().collect { add(it.receivedAtMs) } },
             )
             verify(exactly = 1) { repository.telemetryStream() }
