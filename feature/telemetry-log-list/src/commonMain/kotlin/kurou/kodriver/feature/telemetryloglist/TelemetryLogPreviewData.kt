@@ -17,7 +17,7 @@ private val previewAceWindowsTelemetryLogs: List<TelemetryLog> =
             readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
             narratedText = "残り燃料警告",
             narrationOutcome = NarrationOutcome.QUEUED,
-            narrationSource = NarrationSource.AUTO,
+            narrationSource = NarrationSource.MANUAL,
             telemetryJson = """{"remainingFuelLiters":8.2}""",
         ),
     )

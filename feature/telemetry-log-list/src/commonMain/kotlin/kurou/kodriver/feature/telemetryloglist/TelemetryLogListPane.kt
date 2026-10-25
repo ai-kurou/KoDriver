@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
@@ -30,8 +32,10 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Feedback
+import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlaylistRemove
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material.icons.outlined.Inbox
 import androidx.compose.material3.ButtonDefaults
@@ -78,6 +82,7 @@ import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.util.MILLISECONDS_PER_DAY
@@ -107,6 +112,12 @@ import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_hint_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_title
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_auto_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_auto_hint_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_auto_title
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_manual_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_manual_hint_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_source_manual_title
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_time
 import org.jetbrains.compose.resources.stringResource
 
@@ -434,6 +445,11 @@ private fun TelemetryLogListItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
             ) {
+                TelemetryLogNarrationSourceBadge(
+                    source = log.narrationSource,
+                    isSelected = isSelected,
+                    narrationOutcome = log.narrationOutcome,
+                )
                 Icon(
                     imageVector = narrationOutcomeIcon(log.narrationOutcome),
                     contentDescription =
@@ -566,8 +582,66 @@ internal fun TelemetryLogNarrationOutcomeHintSheetContent(modifier: Modifier = M
             title = stringResource(Res.string.telemetry_log_narration_skipped_title),
             description = stringResource(Res.string.telemetry_log_narration_skipped_hint_description),
         )
+        KoDriverHintSheetRow(
+            icon = narrationSourceIcon(NarrationSource.AUTO),
+            title = stringResource(Res.string.telemetry_log_source_auto_title),
+            description = stringResource(Res.string.telemetry_log_source_auto_hint_description),
+        )
+        KoDriverHintSheetRow(
+            icon = narrationSourceIcon(NarrationSource.MANUAL),
+            title = stringResource(Res.string.telemetry_log_source_manual_title),
+            description = stringResource(Res.string.telemetry_log_source_manual_hint_description),
+        )
     }
 }
+
+@Composable
+private fun TelemetryLogNarrationSourceBadge(
+    source: NarrationSource,
+    isSelected: Boolean,
+    narrationOutcome: NarrationOutcome,
+) {
+    val backgroundColor =
+        when {
+            isSelected -> MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.12f)
+            source == NarrationSource.MANUAL -> MaterialTheme.colorScheme.tertiaryContainer
+            else -> MaterialTheme.colorScheme.surfaceVariant
+        }
+    val contentColor =
+        when {
+            isSelected -> MaterialTheme.colorScheme.onSecondaryContainer
+            source == NarrationSource.MANUAL -> MaterialTheme.colorScheme.onTertiaryContainer
+            else -> MaterialTheme.colorScheme.onSurfaceVariant
+        }
+    val backgroundAlpha = backgroundColor.copy(alpha = 1f).applySkippedAlpha(narrationOutcome).alpha
+    Box(
+        modifier =
+            Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(backgroundColor.copy(alpha = backgroundColor.alpha * backgroundAlpha)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = narrationSourceIcon(source),
+            contentDescription =
+                stringResource(
+                    when (source) {
+                        NarrationSource.AUTO -> Res.string.telemetry_log_source_auto_description
+                        NarrationSource.MANUAL -> Res.string.telemetry_log_source_manual_description
+                    },
+                ),
+            tint = contentColor.applySkippedAlpha(narrationOutcome),
+            modifier = Modifier.size(18.dp),
+        )
+    }
+}
+
+internal fun narrationSourceIcon(source: NarrationSource): ImageVector =
+    when (source) {
+        NarrationSource.AUTO -> Icons.Default.HeadsetMic
+        NarrationSource.MANUAL -> Icons.Default.TouchApp
+    }
 
 internal fun narrationOutcomeIcon(outcome: NarrationOutcome): ImageVector =
     when (outcome) {

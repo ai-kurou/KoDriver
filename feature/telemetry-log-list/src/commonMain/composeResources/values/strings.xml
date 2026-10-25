@@ -32,5 +32,11 @@
     <string name="telemetry_log_narration_interrupted_hint_description">読み上げ中の内容を止めて、優先して読み上げを要求しました。</string>
     <string name="telemetry_log_narration_skipped_title">読み上げなし</string>
     <string name="telemetry_log_narration_skipped_hint_description">優先度が低い、本文が空、またはTTSが使えないため読み上げませんでした。</string>
+    <string name="telemetry_log_source_auto_description">自動読み上げ</string>
+    <string name="telemetry_log_source_auto_title">自動読み上げ</string>
+    <string name="telemetry_log_source_auto_hint_description">走行状況に応じて自動で判定され、読み上げが要求されました。</string>
+    <string name="telemetry_log_source_manual_description">手動読み上げ</string>
+    <string name="telemetry_log_source_manual_title">手動読み上げ</string>
+    <string name="telemetry_log_source_manual_hint_description">手動読み上げタブの操作やホットキーで、読み上げが要求されました。</string>
     <string name="telemetry_log_time">%1$s / レース +%2$s</string>
 </resources>
