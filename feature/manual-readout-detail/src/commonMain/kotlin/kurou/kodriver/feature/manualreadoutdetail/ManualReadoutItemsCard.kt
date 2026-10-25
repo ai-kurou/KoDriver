@@ -1,10 +1,12 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -14,14 +16,17 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -62,7 +67,6 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_add_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_brake_temperature
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_brake_wear
-import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_brake
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_fuel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_lap
@@ -267,7 +271,7 @@ internal fun ManualReadoutItemsCard(
     val remaining = uiState.availableItemKeys.filterNot { it in uiState.selectedItemKeys }
     val atLimit = uiState.selectedItemKeys.size >= MANUAL_READOUT_SET_ITEM_MAX
     if (showPicker) {
-        ManualReadoutItemPickerDialog(
+        ManualReadoutItemPickerSheet(
             itemKeys = remaining,
             onSelect = {
                 onAddItem(it)
@@ -417,33 +421,47 @@ private fun manualReadoutMoveActions(
 }
 
 // 追加候補は1セット3件上限の項目一覧のため、ImmutableList化のコストに見合わない。
+@OptIn(ExperimentalMaterial3Api::class)
 @Suppress("UnstableCollections")
 @Composable
-internal fun ManualReadoutItemPickerDialog(
+internal fun ManualReadoutItemPickerSheet(
     itemKeys: List<String>,
     onSelect: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
+    ModalBottomSheet(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(Res.string.manual_readout_add_item)) },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                val categories =
-                    itemKeys
-                        .mapNotNull { key -> itemPresentations[key]?.let { key to it } }
-                        .groupBy { it.second.category }
-                categories.forEach { (category, items) ->
-                    Text(stringResource(category), style = MaterialTheme.typography.titleSmall)
-                    items.forEach { (key, presentation) ->
-                        TextButton(onClick = { onSelect(key) }) { Text(stringResource(presentation.name)) }
-                    }
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        sheetMaxWidth = 560.dp,
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = KoDriverSpacing.large),
+        ) {
+            Text(
+                stringResource(Res.string.manual_readout_add_item),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.medium),
+            )
+            val categories =
+                itemKeys
+                    .mapNotNull { key -> itemPresentations[key]?.let { key to it } }
+                    .groupBy { it.second.category }
+            categories.forEach { (category, items) ->
+                Text(
+                    stringResource(category),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.small),
+                )
+                items.forEach { (key, presentation) ->
+                    ListItem(
+                        headlineContent = { Text(stringResource(presentation.name)) },
+                        modifier = Modifier.clickable { onSelect(key) },
+                    )
                 }
             }
-        },
-        confirmButton = {},
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.manual_readout_cancel)) }
-        },
-    )
+        }
+    }
 }
