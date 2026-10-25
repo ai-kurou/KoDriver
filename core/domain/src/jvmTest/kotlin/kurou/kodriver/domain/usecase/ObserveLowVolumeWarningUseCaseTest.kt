@@ -22,17 +22,21 @@ class ObserveLowVolumeWarningUseCaseTest {
     private val enabledRepository: LowVolumeWarningEnabledPreferencesRepository = mockk()
 
     @Test
-    fun `端末音量だけが低い場合に警告する`() = assertWarning(deviceVolume = 20, soundVolume = 80, expected = LowVolumeWarning(20, null))
+    fun `端末音量が閾値未満の場合に警告する`() =
+        assertWarning(deviceVolume = 19, soundVolume = 70, expected = LowVolumeWarning(19, null))
 
     @Test
     fun `アプリ音量だけが低い場合に警告する`() =
-        assertWarning(deviceVolume = 30, soundVolume = 79, expected = LowVolumeWarning(null, 79))
+        assertWarning(deviceVolume = 20, soundVolume = 69, expected = LowVolumeWarning(null, 69))
 
     @Test
-    fun `両方低い場合に両方の値を警告する`() = assertWarning(deviceVolume = 29, soundVolume = 79, expected = LowVolumeWarning(29, 79))
+    fun `閾値ちょうどなら警告しない`() = assertWarning(deviceVolume = 20, soundVolume = 70, expected = null)
 
     @Test
-    fun `どちらも閾値以上なら警告しない`() = assertWarning(deviceVolume = 30, soundVolume = 80, expected = null)
+    fun `両方低い場合に両方の値を警告する`() = assertWarning(deviceVolume = 19, soundVolume = 69, expected = LowVolumeWarning(19, 69))
+
+    @Test
+    fun `どちらも閾値以上なら警告しない`() = assertWarning(deviceVolume = 21, soundVolume = 71, expected = null)
 
     @Test
     fun `無効のときnull`() = assertWarning(deviceVolume = 20, soundVolume = 20, expected = null, enabled = false)
@@ -41,8 +45,8 @@ class ObserveLowVolumeWarningUseCaseTest {
     fun `無効から有効にすると警告が出る`() =
         runTest {
             val enabled = MutableStateFlow(false)
-            every { deviceRepository.observeVolume() } returns MutableStateFlow(20)
-            every { soundRepository.volume() } returns MutableStateFlow(80)
+            every { deviceRepository.observeVolume() } returns MutableStateFlow(19)
+            every { soundRepository.volume() } returns MutableStateFlow(70)
             every { enabledRepository.observeLowVolumeWarningEnabled() } returns enabled
             val useCase =
                 ObserveLowVolumeWarningUseCase(
@@ -55,7 +59,7 @@ class ObserveLowVolumeWarningUseCaseTest {
             runCurrent()
             enabled.value = true
             runCurrent()
-            assertEquals(listOf(null, LowVolumeWarning(20, null)), result)
+            assertEquals(listOf(null, LowVolumeWarning(19, null)), result)
             job.cancel()
             verify(exactly = 1) { deviceRepository.observeVolume() }
             verify(exactly = 1) { soundRepository.volume() }
