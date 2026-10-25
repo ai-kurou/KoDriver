@@ -14,6 +14,7 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -52,12 +53,52 @@ class OtherContentUriWiringTest {
     private val uriHandler: UriHandler = mockk()
 
     @Test
+    fun `ログ削除の表示と確認とキャンセルをViewModelへ委譲する`() {
+        val state = MutableStateFlow(OtherListUiState(items = listOf(OtherListItemType.DeleteAllLogs)))
+        every { viewModel.uiState } returns state
+        every { viewModel.checkUpdate() } returns Unit
+        every { viewModel.checkStartupEnabled() } returns Unit
+        every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { viewModel.consumeResetResult() } returns Unit
+        every { viewModel.onResetClick() } answers {
+            state.update { it.copy(showResetConfirmDialog = true) }
+        }
+        every { viewModel.onResetDismiss() } answers {
+            state.update { it.copy(showResetConfirmDialog = false) }
+        }
+        every { viewModel.onResetConfirm() } answers {
+            state.update { it.copy(showResetConfirmDialog = false) }
+        }
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent { AppTheme { OtherContent() } }
+            rule.onNodeWithText("ログを全て削除").performClick()
+            rule.onNodeWithText("キャンセル").performClick()
+            rule.onNodeWithText("ログを全て削除").performClick()
+            rule.onNodeWithText("削除").performClick()
+
+            verify(exactly = 2) { viewModel.onResetClick() }
+            verify(exactly = 1) { viewModel.onResetDismiss() }
+            verify(exactly = 1) { viewModel.onResetConfirm() }
+            // 初回表示と、ダイアログ表示状態の変化(表示・閉じる・再表示・確認)のたびに再購読される。
+            verify(exactly = 4) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.checkUpdate() }
+            verify(exactly = 1) { viewModel.checkStartupEnabled() }
+            verify(exactly = 1) { viewModel.checkAccessLocalNetworkPermission() }
+            confirmVerified(viewModel)
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
     fun `GitHubレポジトリリンクをクリックするとGitHubレポジトリのURLが開かれる`() {
         every { viewModel.uiState } returns
             MutableStateFlow(OtherListUiState(items = listOf(OtherListItemType.GitHubRepository)))
         every { viewModel.checkUpdate() } returns Unit
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { viewModel.consumeResetResult() } returns Unit
         every { uriHandler.openUri("https://github.com/ai-kurou/KoDriver") } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
@@ -88,6 +129,7 @@ class OtherContentUriWiringTest {
         every { viewModel.checkUpdate() } returns Unit
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { viewModel.consumeResetResult() } returns Unit
         every { uriHandler.openUri("https://github.com/ai-kurou/KoDriver/releases") } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
@@ -118,6 +160,7 @@ class OtherContentUriWiringTest {
         every { viewModel.checkUpdate() } returns Unit
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { viewModel.consumeResetResult() } returns Unit
         every {
             uriHandler.openUri(
                 "https://play.google.com/store/apps/details?id=com.google.android.tts",

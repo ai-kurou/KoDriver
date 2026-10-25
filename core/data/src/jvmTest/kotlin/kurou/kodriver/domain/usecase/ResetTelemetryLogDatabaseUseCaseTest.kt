@@ -65,7 +65,7 @@ private fun createTelemetryLogRepository(
             logs.update { it + log.copy(id = nextId) }
         }
     }
-    listOf(Simulator.Gt7Ps5, Simulator.LmuWindows).forEach { simulator ->
+    Simulator.entries.forEach { simulator ->
         coEvery { repository.deleteTelemetryLogsBySimulator(simulator) } answers {
             logs.update { current -> current.filterNot { it.simulator == simulator } }
         }
@@ -82,7 +82,7 @@ class ResetTelemetryLogDatabaseUseCaseTest {
     private val repository: TelemetryLogRepository = mockk()
 
     @Test
-    fun `指定シミュレーターのログのみ削除して他シミュレーターのログを残す`() =
+    fun `全シミュレーターのログを削除する`() =
         runTest {
             val otherLog =
                 TelemetryLog(
@@ -116,10 +116,12 @@ class ResetTelemetryLogDatabaseUseCaseTest {
             val resetUseCase = ResetTelemetryLogDatabaseUseCase(repository)
             val observeUseCase = ObserveTelemetryLogsUseCase(repository)
 
-            resetUseCase(Simulator.Gt7Ps5)
+            resetUseCase()
 
-            assertEquals(listOf(otherLog), observeUseCase().first())
-            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.Gt7Ps5) }
+            assertEquals(emptyList(), observeUseCase().first())
+            Simulator.entries.forEach { simulator ->
+                coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(simulator) }
+            }
             verify(exactly = 1) { repository.observeTelemetryLogs() }
             confirmVerified(repository)
         }
