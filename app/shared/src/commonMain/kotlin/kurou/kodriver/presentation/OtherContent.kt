@@ -111,6 +111,8 @@ private fun handleOtherItemClick(
     onOpenTtsEngineInPlayStore: () -> Unit,
 ) {
     when (itemType) {
+        OtherListItemType.DeleteAllLogs -> Unit
+
         OtherListItemType.OverlayTextColor -> onOpenOverlayTextColorDialog()
 
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()

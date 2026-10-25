@@ -40,6 +40,38 @@ class OtherListPaneScreenshotTest {
         }
 
     @Test
+    fun `データログを情報の直上に表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            OtherListPane(
+                                uiState =
+                                    OtherListUiState(
+                                        items =
+                                            listOf(
+                                                OtherListItemType.Startup,
+                                                OtherListItemType.DeleteAllLogs,
+                                                OtherListItemType.GitHubRepository,
+                                            ),
+                                    ),
+                                onItemClick = {},
+                                onOverlayVisibleChange = {},
+                                onKeepScreenOnChange = {},
+                                onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
+                                onStartupEnabledChange = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
     fun `接続先IPアドレスを表示`() =
         composeScreenshotTest {
             setContent {

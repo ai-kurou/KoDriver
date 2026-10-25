@@ -27,6 +27,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_ne
 import kurou.kodriver.feature.otherlist.generated.resources.item_android_audio_usage
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
 import kurou.kodriver.feature.otherlist.generated.resources.item_debug_state
+import kurou.kodriver.feature.otherlist.generated.resources.item_delete_all_logs
 import kurou.kodriver.feature.otherlist.generated.resources.item_dynamic_color
 import kurou.kodriver.feature.otherlist.generated.resources.item_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_github_repository
@@ -51,6 +52,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_connection_settings
+import kurou.kodriver.feature.otherlist.generated.resources.section_data_log
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
 import kurou.kodriver.feature.otherlist.generated.resources.section_overlay_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_readout_settings
@@ -62,6 +64,7 @@ internal enum class OtherListSection {
     ReadoutSettings,
     OverlaySettings,
     AppSettings,
+    DataLog,
     Information,
 }
 
@@ -71,6 +74,7 @@ internal val otherListSections =
         OtherListSection.ReadoutSettings,
         OtherListSection.OverlaySettings,
         OtherListSection.AppSettings,
+        OtherListSection.DataLog,
         OtherListSection.Information,
     )
 
@@ -105,6 +109,8 @@ internal fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.Startup,
         -> OtherListSection.AppSettings
 
+        OtherListItemType.DeleteAllLogs -> OtherListSection.DataLog
+
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         OtherListItemType.Feedback,
@@ -135,6 +141,10 @@ internal fun otherItemDisplayName(itemType: OtherListItemType): String =
 
         is OtherListItemType.OverlaySettings -> {
             otherOverlaySettingsItemDisplayName(itemType)
+        }
+
+        OtherListItemType.DeleteAllLogs -> {
+            stringResource(Res.string.item_delete_all_logs)
         }
 
         OtherListItemType.GitHubRepository -> {
@@ -202,6 +212,7 @@ internal fun otherListSectionTitle(section: OtherListSection): String =
         OtherListSection.ReadoutSettings -> stringResource(Res.string.section_readout_settings)
         OtherListSection.OverlaySettings -> stringResource(Res.string.section_overlay_settings)
         OtherListSection.AppSettings -> stringResource(Res.string.section_app_settings)
+        OtherListSection.DataLog -> stringResource(Res.string.section_data_log)
         OtherListSection.Information -> stringResource(Res.string.section_information)
     }
 
@@ -281,6 +292,7 @@ internal fun OtherListItemTrailingIcon(
             Icon(imageVector = Icons.Outlined.UnfoldMore, contentDescription = null)
         }
 
+        OtherListItemType.DeleteAllLogs,
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,

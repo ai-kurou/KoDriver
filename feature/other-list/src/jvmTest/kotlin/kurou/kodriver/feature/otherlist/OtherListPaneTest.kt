@@ -12,6 +12,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isToggleable
@@ -38,6 +39,35 @@ private class FakeHapticFeedback : HapticFeedback {
 class OtherListPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `ログを全て削除は表示のみでタップしてもコールバックや触覚反応を起こさない`() {
+        val haptic = FakeHapticFeedback()
+        val callbacks = mutableListOf<String>()
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherListPane(
+                    uiState = OtherListUiState(items = listOf(OtherListItemType.DeleteAllLogs)),
+                    onItemClick = { callbacks += it.id },
+                    onOverlayVisibleChange = { callbacks += "overlay" },
+                    onKeepScreenOnChange = { callbacks += "screen" },
+                    onDynamicColorEnabledChange = { callbacks += "color" },
+                    onHapticFeedbackEnabledChange = { callbacks += "haptic" },
+                    onStartupEnabledChange = { callbacks += "startup" },
+                )
+            }
+        }
+
+        rule.onNodeWithText("データ・ログ").assertIsDisplayed()
+        rule
+            .onNodeWithText("ログを全て削除")
+            .assertIsDisplayed()
+            .assertIsNotSelected()
+            .performClick()
+        rule.onNodeWithText("ログを全て削除").assertIsNotSelected()
+        assertEquals(emptyList(), callbacks)
+        assertEquals(emptyList(), haptic.performedTypes)
+    }
 
     @Test
     fun `音声の用途をタップすると項目クリックコールバックを呼ぶ`() {
@@ -581,6 +611,7 @@ class OtherListPaneTest {
                                 OtherListItemType.ConsoleIp,
                                 OtherListItemType.Volume,
                                 OtherListItemType.Theme,
+                                OtherListItemType.DeleteAllLogs,
                                 OtherListItemType.License,
                             ),
                     ),
@@ -596,6 +627,7 @@ class OtherListPaneTest {
         rule.onAllNodesWithText("接続設定").assertCountEquals(1)
         rule.onAllNodesWithText("読み上げ設定").assertCountEquals(1)
         rule.onAllNodesWithText("アプリ設定").assertCountEquals(1)
+        rule.onAllNodesWithText("データ・ログ").assertCountEquals(1)
         rule.onAllNodesWithText("情報").assertCountEquals(1)
     }
 
@@ -619,6 +651,7 @@ class OtherListPaneTest {
         rule.onAllNodesWithText("接続設定").assertCountEquals(0)
         rule.onAllNodesWithText("読み上げ設定").assertCountEquals(1)
         rule.onAllNodesWithText("アプリ設定").assertCountEquals(0)
+        rule.onAllNodesWithText("データ・ログ").assertCountEquals(0)
         rule.onAllNodesWithText("情報").assertCountEquals(0)
     }
 

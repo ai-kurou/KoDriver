@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.BedtimeOff
 import androidx.compose.material.icons.outlined.BrightnessHigh
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Computer
+import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.FormatColorText
@@ -34,6 +35,7 @@ internal fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageV
         is OtherListItemType.ReadoutSettings -> otherReadoutSettingsItemLeadingIconVector(itemType)
         is OtherListItemType.OverlaySettings -> otherOverlaySettingsItemLeadingIconVector(itemType)
         is OtherListItemType.AppSettings -> otherAppSettingsItemLeadingIconVector(itemType)
+        OtherListItemType.DeleteAllLogs -> Icons.Outlined.DeleteSweep
         OtherListItemType.GitHubRepository -> Icons.Outlined.Star
         OtherListItemType.ReleasePage -> Icons.Outlined.NewReleases
         OtherListItemType.Feedback -> Icons.Outlined.Feedback
