@@ -108,7 +108,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
     /** セットの対応項目を保存順に連結し、自動読み上げの警告済み状態を維持する。 */
     fun determineManualReadout(
         state: AceWindowsNarratorState,
-        items: List<AceWindowsManualReadoutItem> = emptyList(),
+        items: List<AceWindowsManualReadoutItem>,
     ): AceWindowsNarratorReadoutDecision {
         val supportedKeys = aceWindowsManualReadoutItemKeys()
         val supportedItems = items.filter { it.key in supportedKeys }.take(MANUAL_READOUT_SET_ITEM_MAX)
