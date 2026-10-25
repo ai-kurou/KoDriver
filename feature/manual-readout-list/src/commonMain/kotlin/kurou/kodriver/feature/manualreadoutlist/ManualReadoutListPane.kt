@@ -189,10 +189,11 @@ internal fun ManualReadoutListPaneContent(
                     verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                 ) {
                     itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
+                        val setNumber = set.number.takeIf { it > 0 } ?: (index + 1)
                         ManualReadoutSetPlayButton(
                             set = set,
-                            title = set.name.ifBlank { manualReadoutSetTitle(simulatorId, index + 1) },
-                            setNumber = index + 1,
+                            title = set.name.ifBlank { manualReadoutSetTitle(simulatorId, setNumber) },
+                            setNumber = setNumber,
                             editMode = editMode,
                             canReadSet = uiState.canReadSets && set.itemKeys.isNotEmpty(),
                             showHotkeyChip = showHotkeyChip,
@@ -238,7 +239,7 @@ internal fun ManualReadoutListPaneContent(
                 ) {
                     itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
                         ManualReadoutSetRow(
-                            setNumber = index + 1,
+                            setNumber = set.number.takeIf { it > 0 } ?: (index + 1),
                             simulatorId = simulatorId,
                             itemCount = set.itemKeys.size,
                             set = set,

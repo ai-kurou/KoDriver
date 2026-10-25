@@ -35,6 +35,7 @@ class ManualReadoutSetPreferencesSerializerTest {
                                 hotkeyVirtualKeyCode = 0x41,
                                 hotkeyModifiers = 3,
                                 name = "レース用",
+                                number = 7,
                             ),
                             ManualReadoutSetPreference(),
                         ),
@@ -84,6 +85,7 @@ class ManualReadoutSetPreferencesSerializerTest {
             val restored = ManualReadoutSetPreferencesSerializer.readFrom(ByteArrayInputStream(legacy))
             assertEquals(listOf(ManualReadoutSetPreference("set-1", listOf("ENERGY"))), restored.sets)
             assertEquals("", restored.sets.single().name)
+            assertEquals(0, restored.sets.single().number)
             assertEquals(emptyMap(), restored.sets.single().itemTexts)
             assertEquals(null, restored.sets.single().hotkeyVirtualKeyCode)
             assertEquals(null, restored.sets.single().hotkeyModifiers)

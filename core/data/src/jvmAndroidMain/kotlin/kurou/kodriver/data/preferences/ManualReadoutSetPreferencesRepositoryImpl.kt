@@ -15,6 +15,7 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
                 ManualReadoutSet(
                     id = it.id,
                     name = it.name,
+                    number = it.number,
                     itemKeys = it.itemKeys,
                     itemTexts = it.itemTexts,
                     hotkeyVirtualKeyCode = it.hotkeyVirtualKeyCode,
@@ -25,7 +26,13 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
 
     override suspend fun addSet(set: ManualReadoutSet) {
         dataStore.updateData { prefs ->
-            prefs.copy(sets = prefs.sets + set.toPreference())
+            val numberedSet =
+                if (set.number == 0) {
+                    set.copy(number = (prefs.sets.maxOfOrNull { it.number } ?: 0) + 1)
+                } else {
+                    set
+                }
+            prefs.copy(sets = prefs.sets + numberedSet.toPreference())
         }
     }
 
@@ -52,4 +59,4 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
 }
 
 private fun ManualReadoutSet.toPreference() =
-    ManualReadoutSetPreference(id, itemKeys, itemTexts, hotkeyVirtualKeyCode, hotkeyModifiers.value, name)
+    ManualReadoutSetPreference(id, itemKeys, itemTexts, hotkeyVirtualKeyCode, hotkeyModifiers.value, name, number)

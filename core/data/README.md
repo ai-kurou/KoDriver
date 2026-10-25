@@ -60,6 +60,8 @@ Desktop・Android 両方で設定 Repository を登録し、Android の `HotkeyR
 
 ## 手動読み上げセット
 
+固定表示番号を protobuf フィールド7（`number`、既定値0）に保存する。追加時に未採番（0）なら、`updateData` 内で保存済み番号の最大値+1（空なら1）を採番する。指定済みの番号は保持し、削除後も他セットを詰め直さない。既存データの移行は行わず、0は表示側で一覧上の位置にフォールバックする。
+
 `ManualReadoutSetPreferencesRepository` は手動読み上げセットを
 `manual_readout_set_preferences_${simulator.id}.pb` にシミュレーターごとに保存する。
 Desktop／Android とも `named(simulator.id)` で登録し、セット識別子・項目キーの順序・項目キーごとの文言テンプレート・ホットキーの仮想キーコード・セット名（protobuf フィールド6、未設定は空文字）を保持する。

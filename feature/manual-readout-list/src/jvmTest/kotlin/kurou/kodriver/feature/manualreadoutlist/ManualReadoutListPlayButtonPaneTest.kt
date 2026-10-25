@@ -156,6 +156,31 @@ class ManualReadoutListPlayButtonPaneTest {
         rule.onNodeWithText("未設定", useUnmergedTree = true).assertDoesNotExist()
     }
 
+    @Test
+    fun `削除後も標準表示と再生ボタン表示で固定番号を使う`() {
+        val first = ManualReadoutSet("first", number = 1)
+        val third = ManualReadoutSet("third", itemKeys = listOf("SESSION"), number = 3)
+        val state = mutableStateOf(ManualReadoutListUiState(sets = listOf(first, third)))
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState = state.value,
+                    simulatorId = "lmu_windows",
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                )
+            }
+        }
+        rule.onNodeWithText("LMU(Windows)セット3").assertIsDisplayed()
+        rule.runOnIdle { state.value = state.value.copy(sets = listOf(third)) }
+        rule.onNodeWithText("LMU(Windows)セット3").assertIsDisplayed()
+        rule.onNodeWithContentDescription("セット 3 を読み上げ").assertIsDisplayed()
+        rule.runOnIdle { state.value = state.value.copy(playButtonLayoutEnabled = true) }
+        rule.onNodeWithText("LMU(Windows)セット3").assertIsDisplayed()
+        rule.onNodeWithContentDescription("セット 3 を読み上げ").assertIsDisplayed()
+    }
+
     private fun showPlayButtons(
         sets: List<ManualReadoutSet> = listOf(ManualReadoutSet("set-1", itemKeys = listOf("SESSION"))),
     ) {

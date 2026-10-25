@@ -533,7 +533,7 @@ class ManualReadoutSetDetailViewModelTest {
                 assertEquals(added, sets.value.single())
                 vm.removeItem(key)
                 assertEquals(original, sets.value.single())
-                sets.value = emptyList()
+                sets.update { emptyList() }
                 vm.removeItem(key)
                 vm.moveItem(0, 1)
                 verify(exactly = 5) { repository.observeSets() }
@@ -595,6 +595,26 @@ class ManualReadoutSetDetailViewModelTest {
                 coVerify(exactly = 1) { repository.updateSet(removed) }
                 confirmVerified(repository)
             } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `前のセットを削除しても固定番号を保持し対象不在なら番号はnullになる`() =
+        runTest(dispatcher) {
+            val target = ManualReadoutSet("target", number = 3)
+            val sets = MutableStateFlow(listOf(ManualReadoutSet("first", number = 1), target))
+            every { repository.observeSets() } returns sets
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                assertEquals(3, vm.uiState.first { !it.isLoading }.setNumber)
+                sets.update { listOf(target) }
+                assertEquals(3, vm.uiState.first().setNumber)
+                sets.update { emptyList() }
+                assertEquals(null, vm.uiState.first().setNumber)
+            } finally {
+                collection.cancel()
                 vm.viewModelScope.cancel()
             }
         }
@@ -778,7 +798,7 @@ class ManualReadoutSetDetailViewModelTest {
     fun `ホットキーは重複を拒否し最新状態で割り当てと解除を保存する`() =
         runTest(dispatcher) {
             val original = ManualReadoutSet("target", itemTexts = mapOf("UNKNOWN" to "保持"))
-            val other = ManualReadoutSet("other", hotkeyVirtualKeyCode = 0x41, name = "他セット")
+            val other = ManualReadoutSet("other", hotkeyVirtualKeyCode = 0x41, name = "他セット", number = 4)
             val assigned = original.copy(hotkeyVirtualKeyCode = 0x30)
             val sets = MutableStateFlow(listOf(other, original))
             every { repository.observeSets() } returns sets
@@ -791,7 +811,7 @@ class ManualReadoutSetDetailViewModelTest {
                 vm.assignHotkey(0x70)
                 vm.assignHotkey(0x41)
                 assertEquals(
-                    ManualReadoutHotkeyConflict.OtherSet(Simulator.LmuWindows.id, 1, "他セット"),
+                    ManualReadoutHotkeyConflict.OtherSet(Simulator.LmuWindows.id, 4, "他セット"),
                     vm.uiState.first().hotkeyConflict,
                 )
                 vm.assignHotkey(0x42)
@@ -851,7 +871,7 @@ class ManualReadoutSetDetailViewModelTest {
                 MutableStateFlow(
                     listOf(
                         ManualReadoutSet("gt7-1"),
-                        ManualReadoutSet("gt7-2", hotkeyVirtualKeyCode = 0x41, name = "GT7用"),
+                        ManualReadoutSet("gt7-2", hotkeyVirtualKeyCode = 0x41, name = "GT7用", number = 5),
                     ),
                 )
             val vm = viewModel()
@@ -859,7 +879,7 @@ class ManualReadoutSetDetailViewModelTest {
             try {
                 vm.assignHotkey(0x41)
                 assertEquals(
-                    ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2, "GT7用"),
+                    ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 5, "GT7用"),
                     vm.uiState.first().hotkeyConflict,
                 )
                 assertEquals(null, vm.uiState.first().hotkeyVirtualKeyCode)

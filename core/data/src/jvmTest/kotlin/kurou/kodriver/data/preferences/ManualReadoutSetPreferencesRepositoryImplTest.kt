@@ -49,14 +49,17 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
                     .single()
                     .name,
             )
-            val named = ManualReadoutSet("named", name = "レース用")
+            val named = ManualReadoutSet("named", name = "レース用", number = 7)
             repository.addSet(named)
             assertEquals(named, repository.observeSets().first().last())
             val renamed = named.copy(name = "予選用")
             repository.updateSet(renamed)
             assertEquals(renamed, repository.observeSets().first().last())
             repository.saveSets(listOf(named, renamed.copy(id = "duplicate", name = named.name)))
-            assertEquals(listOf("レース用", "レース用"), repository.observeSets().first().map { it.name })
+            assertEquals(
+                listOf(named, renamed.copy(id = "duplicate", name = named.name)),
+                repository.observeSets().first(),
+            )
         }
 
     @Test
@@ -66,7 +69,7 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
 
             repository.addSet(set)
 
-            assertEquals(listOf(set), repository.observeSets().first())
+            assertEquals(listOf(set.copy(number = 1)), repository.observeSets().first())
         }
 
     @Test
@@ -80,7 +83,10 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
             repository.addSet(first)
             repository.addSet(second)
 
-            assertEquals(listOf(existing, first, second), repository.observeSets().first())
+            assertEquals(
+                listOf(existing, first.copy(number = 1), second.copy(number = 2)),
+                repository.observeSets().first(),
+            )
         }
 
     @Test
@@ -97,7 +103,8 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
             val saved = repository.observeSets().first()
             assertEquals(existing, saved.first())
             assertEquals(added.size + 1, saved.size)
-            assertEquals(added.toSet(), saved.drop(1).toSet())
+            assertEquals(added.toSet(), saved.drop(1).map { it.copy(number = 0) }.toSet())
+            assertEquals((1..10).toSet(), saved.drop(1).map { it.number }.toSet())
         }
 
     @Test
@@ -198,7 +205,7 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
                 launch { repository.addSet(added) }
             }
 
-            assertEquals(listOf(updated, added), repository.observeSets().first())
+            assertEquals(listOf(updated, added.copy(number = 1)), repository.observeSets().first())
         }
 
     @Test
@@ -207,6 +214,7 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
             val assigned =
                 ManualReadoutSet(
                     "target",
+                    number = 1,
                     hotkeyVirtualKeyCode = 0x30,
                     hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_ALT,
                 )
@@ -224,6 +232,22 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
             assertEquals(listOf(cleared), repository.observeSets().first())
             repository.saveSets(listOf(updated, ManualReadoutSet("none")))
             assertEquals(listOf(updated, ManualReadoutSet("none")), repository.observeSets().first())
+        }
+
+    @Test
+    fun `削除しても既存番号を保持し最大番号の次を採番する`() =
+        runTest {
+            (1..3).forEach { repository.addSet(ManualReadoutSet("set-$it")) }
+            repository.deleteSet("set-2")
+            repository.addSet(ManualReadoutSet("set-4"))
+            assertEquals(
+                listOf(
+                    ManualReadoutSet("set-1", number = 1),
+                    ManualReadoutSet("set-3", number = 3),
+                    ManualReadoutSet("set-4", number = 4),
+                ),
+                repository.observeSets().first(),
+            )
         }
 
     @Test

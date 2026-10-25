@@ -262,7 +262,8 @@ class ManualReadoutListViewModelTest {
     @Test
     fun `選択と解除と対象セットの削除を一覧状態に反映する`() =
         runTest(dispatcher) {
-            val sets = MutableStateFlow(listOf(ManualReadoutSet("target"), ManualReadoutSet("other")))
+            val sets =
+                MutableStateFlow(listOf(ManualReadoutSet("other", number = 1), ManualReadoutSet("target", number = 3)))
             every { repository.observeSets() } returns sets
             every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns MutableStateFlow(false)
             coEvery { repository.deleteSet("other") } answers {
@@ -287,6 +288,12 @@ class ManualReadoutListViewModelTest {
                 assertEquals("target", viewModel.uiState.first().selectedSetId)
                 viewModel.deleteSet("other")
                 assertEquals("target", viewModel.uiState.first().selectedSetId)
+                val remainingSet =
+                    viewModel.uiState
+                        .first()
+                        .sets
+                        .single()
+                assertEquals(3, remainingSet.number)
                 viewModel.clearSelectedSet()
                 assertEquals(null, viewModel.uiState.first().selectedSetId)
                 viewModel.selectSet("target")

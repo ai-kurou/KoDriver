@@ -84,7 +84,7 @@ internal class ManualReadoutSetDetailViewModel(
                 }
             ManualReadoutSetDetailUiState(
                 simulatorId = simulatorId,
-                setNumber = if (index >= 0) index + 1 else null,
+                setNumber = if (index >= 0) sets[index].number.takeIf { it > 0 } ?: (index + 1) else null,
                 name = set?.name.orEmpty(),
                 availableItemKeys = availableItemKeys,
                 selectedItemKeys = sets.getOrNull(index)?.itemKeys.orEmpty(),
@@ -245,7 +245,11 @@ internal class ManualReadoutSetDetailViewModel(
                 it.id != setId && it.hotkeyVirtualKeyCode == virtualKeyCode && it.hotkeyModifiers == modifiers
             }
         if (ownIndex >= 0) {
-            return ManualReadoutHotkeyConflict.OtherSet(simulatorId, ownIndex + 1, sets[ownIndex].name)
+            return ManualReadoutHotkeyConflict.OtherSet(
+                simulatorId,
+                sets[ownIndex].number.takeIf { it > 0 } ?: (ownIndex + 1),
+                sets[ownIndex].name,
+            )
         }
         observeOtherSimulatorSets.forEach { (otherSimulatorId, observeOtherSets) ->
             val otherSets = observeOtherSets().first()
@@ -254,7 +258,11 @@ internal class ManualReadoutSetDetailViewModel(
                     it.hotkeyVirtualKeyCode == virtualKeyCode && it.hotkeyModifiers == modifiers
                 }
             if (index >= 0) {
-                return ManualReadoutHotkeyConflict.OtherSet(otherSimulatorId, index + 1, otherSets[index].name)
+                return ManualReadoutHotkeyConflict.OtherSet(
+                    otherSimulatorId,
+                    otherSets[index].number.takeIf { it > 0 } ?: (index + 1),
+                    otherSets[index].name,
+                )
             }
         }
         return null
