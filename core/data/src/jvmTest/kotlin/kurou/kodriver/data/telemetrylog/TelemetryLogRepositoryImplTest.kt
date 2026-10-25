@@ -11,6 +11,7 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -38,6 +39,7 @@ class TelemetryLogRepositoryImplTest {
                 readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = NarrationOutcome.QUEUED,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson = """{"lapCount":1}""",
             )
 
@@ -49,6 +51,7 @@ class TelemetryLogRepositoryImplTest {
                         readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
                         narratedText = "燃料は残り約1周",
                         narrationOutcome = NarrationOutcome.QUEUED.id,
+                        narrationSource = NarrationSource.AUTO.id,
                         telemetryJson = """{"lapCount":1}""",
                     ),
                 ),
@@ -68,6 +71,7 @@ class TelemetryLogRepositoryImplTest {
                 readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
                 narratedText = "残り燃料警告",
                 narrationOutcome = NarrationOutcome.QUEUED,
+                narrationSource = NarrationSource.MANUAL,
                 telemetryJson = """{"remainingFuelLiters":8.2}""",
             )
 
@@ -79,6 +83,7 @@ class TelemetryLogRepositoryImplTest {
                         readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root.value,
                         narratedText = "残り燃料警告",
                         narrationOutcome = NarrationOutcome.QUEUED.id,
+                        narrationSource = NarrationSource.MANUAL.id,
                         telemetryJson = """{"remainingFuelLiters":8.2}""",
                     ),
                 ),
@@ -142,6 +147,7 @@ class TelemetryLogRepositoryImplTest {
                                 readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root.value,
                                 narratedText = "イエローフラッグ",
                                 narrationOutcome = NarrationOutcome.QUEUED.id,
+                                narrationSource = NarrationSource.AUTO.id,
                                 telemetryJson = """{"currentLap":2}""",
                             ),
                         ),
@@ -157,6 +163,7 @@ class TelemetryLogRepositoryImplTest {
                         readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                         narratedText = "イエローフラッグ",
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = """{"currentLap":2}""",
                     ),
                 ),
@@ -178,6 +185,7 @@ class TelemetryLogRepositoryImplTest {
                                 readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root.value,
                                 narratedText = "残り燃料警告",
                                 narrationOutcome = NarrationOutcome.QUEUED.id,
+                                narrationSource = NarrationSource.AUTO.id,
                                 telemetryJson = """{"remainingFuelLiters":8.2}""",
                             ),
                         ),
@@ -193,6 +201,7 @@ class TelemetryLogRepositoryImplTest {
                         readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
                         narratedText = "残り燃料警告",
                         narrationOutcome = NarrationOutcome.QUEUED,
+                        narrationSource = NarrationSource.AUTO,
                         telemetryJson = """{"remainingFuelLiters":8.2}""",
                     ),
                 ),
@@ -451,6 +460,7 @@ private fun telemetryLogEntity(
         },
     narratedText = "イエローフラッグ",
     narrationOutcome = NarrationOutcome.QUEUED.id,
+    narrationSource = NarrationSource.AUTO.id,
     telemetryJson = """{"id":$id}""",
 )
 
@@ -462,5 +472,6 @@ private fun TelemetryLogEntity.toDomainLog() =
         readoutItemKey = ReadoutItemKey.fromValue(readoutItemKey) ?: error("Unknown readoutItemKey: $readoutItemKey"),
         narratedText = narratedText,
         narrationOutcome = NarrationOutcome.QUEUED,
+        narrationSource = NarrationSource.AUTO,
         telemetryJson = telemetryJson,
     )

@@ -87,6 +87,7 @@ import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -471,6 +472,7 @@ class AceWindowsNarratorViewModelTest {
                 key,
                 event.text,
                 NarrationOutcome.QUEUED,
+                NarrationSource.MANUAL,
                 capture(json),
             )
         } just Runs
@@ -552,6 +554,7 @@ class AceWindowsNarratorViewModelTest {
                 event.readoutItemKey,
                 event.text,
                 NarrationOutcome.QUEUED,
+                NarrationSource.MANUAL,
                 json,
             )
         }
@@ -624,6 +627,7 @@ class AceWindowsNarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(skippedJson),
                 )
             } just Runs
@@ -634,6 +638,7 @@ class AceWindowsNarratorViewModelTest {
                     key,
                     "復旧",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(spokenJson),
                 )
             } just Runs
@@ -661,6 +666,7 @@ class AceWindowsNarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     skippedJson.captured,
                 )
             }
@@ -671,6 +677,7 @@ class AceWindowsNarratorViewModelTest {
                     key,
                     "復旧",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     spokenJson.captured,
                 )
             }
@@ -734,6 +741,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.RemainingFuel.Root,
                     "燃料は残り20パーセント",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     match { it.isNotEmpty() },
                 )
             } just Runs
@@ -749,6 +757,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.RemainingFuel.Root,
                     "燃料は残り20パーセント",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(telemetryJsonSlot),
                 )
             }
@@ -818,6 +827,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
                     "燃料は残り約3周",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     match { it.isNotEmpty() },
                 )
             } just Runs
@@ -838,6 +848,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
                     "燃料は残り約3周",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(telemetryJsonSlot),
                 )
             }
@@ -878,6 +889,7 @@ class AceWindowsNarratorViewModelTest {
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
                 "燃料は残り約3周",
                 NarrationOutcome.SPOKEN,
+                NarrationSource.AUTO,
                 "{}",
             )
         } just Runs
@@ -941,6 +953,7 @@ class AceWindowsNarratorViewModelTest {
                 AceWindowsReadoutItemKey.RemainingFuel.Root,
                 "燃料は残り20パーセント",
                 NarrationOutcome.SPOKEN,
+                NarrationSource.AUTO,
                 "{}",
             )
         } just Runs
@@ -1197,6 +1210,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.TyreTemperature.Root,
                     "タイヤ過熱 95度",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     match { it.isNotEmpty() },
                 )
             } just Runs
@@ -1217,6 +1231,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.TyreTemperature.Root,
                     "タイヤ過熱 95度",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(telemetryJsonSlot),
                 )
             }
@@ -1275,6 +1290,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "周囲に注意",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1297,6 +1313,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "周囲に注意",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1322,6 +1339,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -1344,6 +1362,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -1483,6 +1502,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "車両接近",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -1515,6 +1535,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "車両接近",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -1591,6 +1612,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -1621,6 +1643,7 @@ class AceWindowsNarratorViewModelTest {
                     AceWindowsReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -1667,6 +1690,7 @@ class AceWindowsNarratorViewModelTest {
                     key,
                     request.text,
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(spokenJson),
                 )
             } just Runs
@@ -1677,6 +1701,7 @@ class AceWindowsNarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(skippedJson),
                 )
             } just Runs
@@ -1710,6 +1735,7 @@ class AceWindowsNarratorViewModelTest {
                         key,
                         request.text,
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         spokenJson.captured,
                     )
                 }
@@ -1720,6 +1746,7 @@ class AceWindowsNarratorViewModelTest {
                         key,
                         "",
                         NarrationOutcome.SKIPPED,
+                        NarrationSource.AUTO,
                         skippedJson.captured,
                     )
                 }

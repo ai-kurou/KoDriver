@@ -155,6 +155,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -729,6 +730,7 @@ class LmuWindowsNarratorViewModelTest {
         val telemetryJsonSlot = slot<String>()
         val narratedTextSlot = slot<String>()
         val narrationOutcomeSlot = slot<NarrationOutcome>()
+        val narrationSourceSlot = slot<NarrationSource>()
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = createdAt,
@@ -736,6 +738,7 @@ class LmuWindowsNarratorViewModelTest {
                 readoutItemKey = readoutItemKey,
                 narratedText = capture(narratedTextSlot),
                 narrationOutcome = capture(narrationOutcomeSlot),
+                narrationSource = capture(narrationSourceSlot),
                 telemetryJson = capture(telemetryJsonSlot),
             )
         } answers {
@@ -747,6 +750,7 @@ class LmuWindowsNarratorViewModelTest {
                     readoutItemKey = readoutItemKey,
                     narratedText = narratedTextSlot.captured,
                     narrationOutcome = narrationOutcomeSlot.captured,
+                    narrationSource = narrationSourceSlot.captured,
                     telemetryJson = telemetryJsonSlot.captured,
                 ),
             )
@@ -1260,6 +1264,7 @@ class LmuWindowsNarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(skippedJson),
                 )
             } just Runs
@@ -1270,6 +1275,7 @@ class LmuWindowsNarratorViewModelTest {
                     key,
                     "復旧",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(spokenJson),
                 )
             } just Runs
@@ -1296,6 +1302,7 @@ class LmuWindowsNarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     skippedJson.captured,
                 )
             }
@@ -1306,6 +1313,7 @@ class LmuWindowsNarratorViewModelTest {
                     key,
                     "復旧",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     spokenJson.captured,
                 )
             }
@@ -2172,6 +2180,7 @@ class LmuWindowsNarratorViewModelTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = any(),
                     narrationOutcome = any(),
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot()),
                 )
             } throws IllegalStateException("Failed to save")
@@ -2475,6 +2484,7 @@ class LmuWindowsNarratorViewModelTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = log.telemetryJson,
                 )
             }
@@ -3395,6 +3405,7 @@ class LmuWindowsNarratorViewModelTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = "読み上げる項目がありません",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.MANUAL,
                     telemetryJson = "",
                 )
             }
@@ -3456,6 +3467,7 @@ class LmuWindowsNarratorViewModelTest {
                     readoutItemKey = key,
                     narratedText = "読み上げる項目がありません",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.MANUAL,
                     telemetryJson = withArg { json -> assertTrue(logs.any { it.telemetryJson == json }) },
                 )
             }
@@ -3509,6 +3521,7 @@ class LmuWindowsNarratorViewModelTest {
                     readoutItemKey = key,
                     narratedText = "データがありません",
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.MANUAL,
                     telemetryJson = withArg { json -> assertTrue(logs.any { it.telemetryJson == json }) },
                 )
             }
@@ -3664,6 +3677,7 @@ class LmuWindowsNarratorViewModelTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = queued.single().narratedText,
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.MANUAL,
                     telemetryJson = log.telemetryJson,
                 )
             }
@@ -3726,6 +3740,7 @@ class LmuWindowsNarratorViewModelTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = queued.single().narratedText,
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.MANUAL,
                     telemetryJson = log.telemetryJson,
                 )
             }
@@ -3788,6 +3803,7 @@ class LmuWindowsNarratorViewModelTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = queued.single().narratedText,
                     narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationSource = NarrationSource.MANUAL,
                     telemetryJson = log.telemetryJson,
                 )
             }
@@ -5259,6 +5275,7 @@ class LmuWindowsNarratorViewModelTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = log.telemetryJson,
                 )
             }
@@ -5281,6 +5298,7 @@ class LmuWindowsNarratorViewModelTest {
                     key,
                     request.text,
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(spokenJson),
                 )
             } just Runs
@@ -5291,6 +5309,7 @@ class LmuWindowsNarratorViewModelTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(skippedJson),
                 )
             } just Runs
@@ -5324,6 +5343,7 @@ class LmuWindowsNarratorViewModelTest {
                         key,
                         request.text,
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         spokenJson.captured,
                     )
                 }
@@ -5334,6 +5354,7 @@ class LmuWindowsNarratorViewModelTest {
                         key,
                         "",
                         NarrationOutcome.SKIPPED,
+                        NarrationSource.AUTO,
                         skippedJson.captured,
                     )
                 }

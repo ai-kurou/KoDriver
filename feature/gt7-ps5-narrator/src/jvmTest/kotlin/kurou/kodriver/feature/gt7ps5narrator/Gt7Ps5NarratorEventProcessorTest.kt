@@ -29,6 +29,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
@@ -62,6 +63,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     event.readoutItemKey,
                     event.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -87,6 +89,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     event.readoutItemKey,
                     event.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -105,6 +108,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     event.readoutItemKey,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -116,6 +120,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     event.readoutItemKey,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -134,6 +139,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     event.readoutItemKey,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
@@ -145,6 +151,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     event.readoutItemKey,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.MANUAL,
                     json.captured,
                 )
             }
@@ -172,6 +179,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     sourceKey,
                     "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -200,6 +208,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     sourceKey,
                     "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -221,6 +230,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     sourceKey,
                     "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -273,6 +283,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     sourceKey,
                     "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -295,6 +306,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     sourceKey,
                     narratedText,
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsonSlot),
                 )
             } throws RuntimeException("db error")
@@ -318,6 +330,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     sourceKey,
                     narratedText,
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsonSlot.captured,
                 )
             }
@@ -338,6 +351,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     sourceKey,
                     "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -362,6 +376,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     sourceKey,
                     "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -384,6 +399,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     myBestLapKey,
                     "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -426,6 +442,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     myBestLapKey,
                     "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -446,6 +463,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     newEvent.readoutItemKey,
                     newEvent.narratedText,
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(json),
                 )
             } just Runs
@@ -470,6 +488,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     newEvent.readoutItemKey,
                     newEvent.narratedText,
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -490,6 +509,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                     "燃料は残り約2周",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -514,6 +534,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                     "燃料は残り約2周",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -536,6 +557,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.INTERRUPTED,
+                    NarrationSource.AUTO,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -561,6 +583,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.INTERRUPTED,
+                    NarrationSource.AUTO,
                     telemetryJsons.single(),
                 )
             }
@@ -582,6 +605,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新 1分0秒000",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot<String>()),
                 )
             } answers {
@@ -595,6 +619,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新 1分0秒000",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot<String>()),
                 )
             } answers { saveCount += 1 }
@@ -636,6 +661,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新 1分0秒000",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot<String>()),
                 )
             }
@@ -646,6 +672,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新 1分0秒000",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = capture(slot<String>()),
                 )
             }
@@ -667,6 +694,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "あと2周",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -697,6 +725,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "あと2周",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -716,6 +745,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -733,6 +763,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -755,6 +786,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "燃料切れです",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -775,6 +807,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "燃料切れです",
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -796,6 +829,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "残り30%",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -826,6 +860,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "残り30%",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -845,6 +880,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -862,6 +898,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -883,6 +920,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "タイヤ107度",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -913,6 +951,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "タイヤ107度",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -932,6 +971,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -949,6 +989,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -970,6 +1011,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "更新1分23秒456",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -1000,6 +1042,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "更新1分23秒456",
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -1019,6 +1062,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(jsons),
                 )
             } just Runs
@@ -1036,6 +1080,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     jsons.single(),
                 )
             }
@@ -1078,6 +1123,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                             event.readoutItemKey,
                             "",
                             NarrationOutcome.SKIPPED,
+                            NarrationSource.AUTO,
                             capture(jsons),
                         )
                     } just Runs
@@ -1104,6 +1150,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                             event.readoutItemKey,
                             "",
                             NarrationOutcome.SKIPPED,
+                            NarrationSource.AUTO,
                             jsons.single(),
                         )
                     }
@@ -1133,6 +1180,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     capture(skippedJson),
                 )
             } just Runs
@@ -1144,6 +1192,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                         key,
                         "復旧",
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         capture(spokenJsons),
                     )
                 } just Runs
@@ -1189,6 +1238,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     skippedJson.captured,
                 )
             }
@@ -1200,6 +1250,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                         key,
                         "復旧",
                         NarrationOutcome.SPOKEN,
+                        NarrationSource.AUTO,
                         spokenJsons[index],
                     )
                 }
@@ -1244,6 +1295,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "",
                     NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
                     match { it.isNotEmpty() },
                 )
             }
@@ -1265,6 +1317,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     request.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     capture(telemetryJson),
                 )
             } just Runs
@@ -1289,6 +1342,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     request.text,
                     NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
                     telemetryJson.captured,
                 )
             }

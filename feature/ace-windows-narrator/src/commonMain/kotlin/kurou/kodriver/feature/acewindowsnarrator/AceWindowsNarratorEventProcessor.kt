@@ -24,6 +24,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
@@ -67,6 +68,7 @@ internal class AceWindowsNarratorEventProcessor(
             readoutItemKey = event.readoutItemKey,
             narratedText = text.orEmpty(),
             narrationOutcome = outcome,
+            narrationSource = NarrationSource.AUTO,
             telemetryJson =
                 """{"state":${logContext.state.toRawTelemetryLogJson()},""" +
                     """"settings":${logContext.settings.toRawTelemetryLogJson()},""" +
@@ -94,6 +96,7 @@ internal class AceWindowsNarratorEventProcessor(
                 readoutItemKey = event.readoutItemKey,
                 narratedText = text.orEmpty(),
                 narrationOutcome = outcome,
+                narrationSource = NarrationSource.MANUAL,
                 telemetryJson =
                     """{"state":${logContext.state.toRawTelemetryLogJson()},""" +
                         """"settings":${logContext.settings.toRawTelemetryLogJson()},""" +
@@ -125,6 +128,7 @@ internal class AceWindowsNarratorEventProcessor(
                 readoutItemKey = event.readoutItemKey,
                 narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson =
                     buildMyBestLapTelemetryLogJson(
                         state = logContext.state,
@@ -162,6 +166,7 @@ internal class AceWindowsNarratorEventProcessor(
                 readoutItemKey = event.readoutItemKey,
                 narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson =
                     buildFlagTelemetryLogJson(
                         state = logContext.state,
@@ -199,6 +204,7 @@ internal class AceWindowsNarratorEventProcessor(
                 readoutItemKey = event.readoutItemKey,
                 narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson =
                     buildTelemetryLogJson(
                         state = logContext.state,
@@ -236,6 +242,7 @@ internal class AceWindowsNarratorEventProcessor(
                 readoutItemKey = event.readoutItemKey,
                 narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson =
                     buildRemainingFuelLapsTelemetryLogJson(
                         state = logContext.state,
@@ -273,6 +280,7 @@ internal class AceWindowsNarratorEventProcessor(
                 readoutItemKey = event.readoutItemKey,
                 narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson =
                     buildTyreTemperatureTelemetryLogJson(
                         state = logContext.state,
@@ -310,6 +318,7 @@ internal class AceWindowsNarratorEventProcessor(
                 readoutItemKey = event.readoutItemKey,
                 narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson =
                     buildVehicleApproachTelemetryLogJson(
                         state = logContext.state,
@@ -359,12 +368,14 @@ internal class AceWindowsNarratorEventProcessor(
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
         narrationOutcome: NarrationOutcome,
+        narrationSource: NarrationSource,
         telemetryJson: String,
     ) {
         runCatchingTelemetryLogSave {
             saveTelemetryLog(
                 createdAt = createdAt,
                 narrationOutcome = narrationOutcome,
+                narrationSource = narrationSource,
                 simulator = Simulator.AceWindows,
                 readoutItemKey = readoutItemKey,
                 narratedText = narratedText,

@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.Simulator
@@ -108,6 +109,7 @@ class NarratorOverlayViewModelTest {
                     readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
                     narratedText = "コーナー進入注意",
                     narrationOutcome = NarrationOutcome.INTERRUPTED,
+                    narrationSource = NarrationSource.AUTO,
                     telemetryJson = "{}",
                 )
             val telemetryLogFlow = MutableStateFlow<TelemetryLog?>(null)

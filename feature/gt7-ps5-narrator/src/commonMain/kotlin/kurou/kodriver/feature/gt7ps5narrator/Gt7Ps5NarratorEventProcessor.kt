@@ -19,6 +19,7 @@ import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
@@ -57,6 +58,7 @@ internal class Gt7Ps5NarratorEventProcessor(
             readoutItemKey = event.readoutItemKey,
             narratedText = text.orEmpty(),
             narrationOutcome = outcome,
+            narrationSource = NarrationSource.AUTO,
             telemetryJson =
                 """{"state":${logContext.state.toRawTelemetryLogJson()},""" +
                     """"settings":${logContext.settings.toRawTelemetryLogJson()},""" +
@@ -85,6 +87,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                 readoutItemKey = event.readoutItemKey,
                 narratedText = text.orEmpty(),
                 narrationOutcome = outcome,
+                narrationSource = NarrationSource.MANUAL,
                 telemetryJson =
                     """{"state":${logContext.state.toRawTelemetryLogJson()},""" +
                         """"settings":${logContext.settings.toRawTelemetryLogJson()},""" +
@@ -117,6 +120,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                 readoutItemKey = event.readoutItemKey,
                 narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
+                narrationSource = NarrationSource.AUTO,
                 telemetryJson =
                     buildTelemetryLogJson(
                         state = logContext.state,
@@ -166,12 +170,14 @@ internal class Gt7Ps5NarratorEventProcessor(
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
         narrationOutcome: NarrationOutcome,
+        narrationSource: NarrationSource,
         telemetryJson: String,
     ) {
         runCatchingTelemetryLogSave {
             saveTelemetryLog(
                 createdAt = createdAt,
                 narrationOutcome = narrationOutcome,
+                narrationSource = narrationSource,
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = readoutItemKey,
                 narratedText = narratedText,

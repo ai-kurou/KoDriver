@@ -10,6 +10,7 @@ import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -169,6 +170,7 @@ class NarratorOverlayContentScreenshotTest {
             readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
             narratedText = narratedText,
             narrationOutcome = NarrationOutcome.INTERRUPTED,
+            narrationSource = NarrationSource.AUTO,
             telemetryJson = "{}",
         )
 }

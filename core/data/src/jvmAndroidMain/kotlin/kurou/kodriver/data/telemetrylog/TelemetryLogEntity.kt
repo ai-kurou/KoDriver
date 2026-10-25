@@ -3,6 +3,7 @@ package kurou.kodriver.data.telemetrylog
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -16,6 +17,7 @@ internal data class TelemetryLogEntity(
     val readoutItemKey: String,
     val narratedText: String,
     val narrationOutcome: String,
+    val narrationSource: String,
     val telemetryJson: String,
 )
 
@@ -23,6 +25,7 @@ internal fun TelemetryLogEntity.toDomain(): TelemetryLog? {
     val simulator = Simulator.fromId(simulatorId) ?: return null
     val readoutItemKey = ReadoutItemKey.fromValue(readoutItemKey) ?: return null
     val narrationOutcome = NarrationOutcome.fromId(narrationOutcome) ?: return null
+    val narrationSource = NarrationSource.fromId(narrationSource) ?: return null
     return TelemetryLog(
         id = id,
         createdAt = createdAt,
@@ -30,6 +33,7 @@ internal fun TelemetryLogEntity.toDomain(): TelemetryLog? {
         readoutItemKey = readoutItemKey,
         narratedText = narratedText,
         narrationOutcome = narrationOutcome,
+        narrationSource = narrationSource,
         telemetryJson = telemetryJson,
     )
 }
