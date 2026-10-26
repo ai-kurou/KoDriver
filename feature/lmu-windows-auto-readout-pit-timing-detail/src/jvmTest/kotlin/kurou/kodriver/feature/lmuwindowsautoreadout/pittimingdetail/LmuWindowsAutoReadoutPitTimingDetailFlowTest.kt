@@ -60,22 +60,22 @@ class LmuWindowsAutoReadoutPitTimingDetailFlowTest {
                 flow.uiState.first(),
             )
 
-            virtualEnergyLaps.value = 4
-            tyreWearLaps.value = 2
-            fuelLaps.value = 1
+            virtualEnergyLaps.update { 4 }
+            tyreWearLaps.update { 2 }
+            fuelLaps.update { 1 }
             enabledStates.update {
                 it +
                     (LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to false) +
                     (LmuWindowsReadoutItemKey.PitTiming.TyreWear to false) +
                     (LmuWindowsReadoutItemKey.PitTiming.Fuel to false)
             }
-            virtualEnergyText.value = "VE {laps}周"
-            virtualEnergyImminentText.value = "VE ピット"
-            tyreWearText.value = "タイヤ {laps}周"
-            tyreWearImminentText.value = "タイヤ ピット"
-            fuelText.value = "燃料 {laps}周"
-            fuelImminentText.value = "燃料 ピット"
-            textToSpeechAvailable.value = true
+            virtualEnergyText.update { "VE {laps}周" }
+            virtualEnergyImminentText.update { "VE ピット" }
+            tyreWearText.update { "タイヤ {laps}周" }
+            tyreWearImminentText.update { "タイヤ ピット" }
+            fuelText.update { "燃料 {laps}周" }
+            fuelImminentText.update { "燃料 ピット" }
+            textToSpeechAvailable.update { true }
 
             assertEquals(
                 LmuWindowsAutoReadoutPitTimingDetailUiState(
