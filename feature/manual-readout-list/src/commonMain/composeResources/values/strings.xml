@@ -10,8 +10,8 @@
     <string name="manual_readout_list_empty_title">%1$sの手動読み上げセットはまだありません</string>
     <string name="manual_readout_hint_label">手動読み上げについて</string>
     <string name="manual_readout_hint_help_description">手動読み上げの説明を表示</string>
-    <string name="manual_readout_layout_toggle_to_play_buttons">再生ボタン表示に切り替え</string>
-    <string name="manual_readout_layout_toggle_to_standard">標準表示に切り替え</string>
+    <string name="manual_readout_layout_play_buttons">再生ボタン表示</string>
+    <string name="manual_readout_layout_standard">標準表示</string>
     <string name="manual_readout_hint_layout_title">表示の切り替え</string>
     <string name="manual_readout_hint_layout_description">見出し右の切り替えボタンで、標準表示と再生ボタン表示（2列の大きなボタン）を切り替えます。</string>
     <string name="manual_readout_hint_readout_title">読み上げ</string>

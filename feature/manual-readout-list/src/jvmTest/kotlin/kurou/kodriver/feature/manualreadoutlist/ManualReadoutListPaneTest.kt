@@ -58,7 +58,7 @@ class ManualReadoutListPaneTest {
                 )
             }
         }
-        rule.onNodeWithContentDescription("再生ボタン表示に切り替え").assertIsDisplayed().performClick()
+        rule.onNodeWithContentDescription("再生ボタン表示").assertIsDisplayed().performClick()
         rule.runOnIdle { assertEquals(1, toggleCount) }
     }
 

@@ -215,9 +215,9 @@ class ManualReadoutListPaneWiringTest {
             rule.waitForIdle()
             rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsEnabled()
             rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
-            rule.onNodeWithContentDescription("標準表示に切り替え").performClick()
+            rule.onNodeWithContentDescription("標準表示").performClick()
             coVerify(exactly = 0) { layoutRepository.saveManualReadoutPlayButtonLayoutEnabled(true) }
-            rule.onNodeWithContentDescription("再生ボタン表示に切り替え").performClick()
+            rule.onNodeWithContentDescription("再生ボタン表示").performClick()
             coVerify(exactly = 1) { layoutRepository.saveManualReadoutPlayButtonLayoutEnabled(true) }
             rule.onNodeWithText("gt7_ps5の手動読み上げセットはまだありません").assertDoesNotExist()
             rule.runOnIdle { simulatorId = Simulator.LmuWindows.id }

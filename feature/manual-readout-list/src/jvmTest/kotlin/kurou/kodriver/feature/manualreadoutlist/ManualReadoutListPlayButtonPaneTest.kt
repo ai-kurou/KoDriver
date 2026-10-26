@@ -135,10 +135,10 @@ class ManualReadoutListPlayButtonPaneTest {
             }
         }
         rule.onNodeWithContentDescription("編集モードにする").performClick()
-        rule.onNodeWithContentDescription("標準表示に切り替え").performClick()
+        rule.onNodeWithContentDescription("標準表示").performClick()
         rule.onNodeWithContentDescription("編集モードにする").assertDoesNotExist()
         rule.onNodeWithContentDescription("編集モードを終了").assertDoesNotExist()
-        rule.onNodeWithContentDescription("再生ボタン表示に切り替え").performClick()
+        rule.onNodeWithContentDescription("再生ボタン表示").performClick()
         rule.onNodeWithContentDescription("編集モードにする").assertIsDisplayed()
     }
 
@@ -243,7 +243,7 @@ class ManualReadoutListPlayButtonPaneTest {
                 )
             }
         }
-        rule.onNodeWithContentDescription("標準表示に切り替え").assertIsDisplayed()
+        rule.onNodeWithContentDescription("標準表示").assertIsDisplayed()
     }
 
     private fun showPlayButtonHotkeySets(showHotkeyChip: Boolean) {

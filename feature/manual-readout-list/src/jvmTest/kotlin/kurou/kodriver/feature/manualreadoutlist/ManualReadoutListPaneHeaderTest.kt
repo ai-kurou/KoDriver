@@ -41,8 +41,8 @@ class ManualReadoutListPaneHeaderTest {
                 )
             }
         }
-        val standard = rule.onNodeWithContentDescription("標準表示に切り替え")
-        val playButtons = rule.onNodeWithContentDescription("再生ボタン表示に切り替え")
+        val standard = rule.onNodeWithContentDescription("標準表示")
+        val playButtons = rule.onNodeWithContentDescription("再生ボタン表示")
         standard.assertIsSelected().assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
         playButtons.assertIsNotSelected().assert(
             SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton),

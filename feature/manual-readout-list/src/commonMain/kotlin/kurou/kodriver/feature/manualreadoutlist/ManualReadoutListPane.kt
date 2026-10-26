@@ -116,8 +116,8 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_queue_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_readout_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_readout_title
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_layout_toggle_to_play_buttons
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_layout_toggle_to_standard
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_layout_play_buttons
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_layout_standard
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_add_set
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_cancel
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete
@@ -712,37 +712,45 @@ private fun ManualReadoutHintRow(
     onTogglePlayButtonLayout: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KoDriverHintRow(
-        label = stringResource(Res.string.manual_readout_hint_label),
-        helpContentDescription = stringResource(Res.string.manual_readout_hint_help_description),
-        modifier = modifier,
-        trailingText = if (setCount > 0) stringResource(Res.string.manual_readout_list_set_count, setCount) else null,
-        trailingContent = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (playButtonLayoutEnabled) {
-                    ManualReadoutEditButton(editMode, onToggleEditMode)
-                }
-                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceContainerHighest) {
-                    Row(modifier = Modifier.selectableGroup()) {
-                        ManualReadoutLayoutSegment(
-                            playButtonLayout = false,
-                            selected = !playButtonLayoutEnabled,
-                            onClick = onTogglePlayButtonLayout,
-                        )
-                        ManualReadoutLayoutSegment(
-                            playButtonLayout = true,
-                            selected = playButtonLayoutEnabled,
-                            onClick = onTogglePlayButtonLayout,
-                        )
+    Column(modifier = modifier) {
+        KoDriverHintRow(
+            label = stringResource(Res.string.manual_readout_hint_label),
+            helpContentDescription = stringResource(Res.string.manual_readout_hint_help_description),
+            trailingContent = {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (playButtonLayoutEnabled) {
+                        ManualReadoutEditButton(editMode, onToggleEditMode)
+                    }
+                    Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceContainerHighest) {
+                        Row(modifier = Modifier.selectableGroup()) {
+                            ManualReadoutLayoutSegment(
+                                playButtonLayout = false,
+                                selected = !playButtonLayoutEnabled,
+                                onClick = onTogglePlayButtonLayout,
+                            )
+                            ManualReadoutLayoutSegment(
+                                playButtonLayout = true,
+                                selected = playButtonLayoutEnabled,
+                                onClick = onTogglePlayButtonLayout,
+                            )
+                        }
                     }
                 }
-            }
-        },
-    ) {
-        ManualReadoutHintSheetContent(showHotkeyHint = isManualReadoutHotkeySupported())
+            },
+        ) {
+            ManualReadoutHintSheetContent(showHotkeyHint = isManualReadoutHotkeySupported())
+        }
+        if (setCount > 0) {
+            Text(
+                text = stringResource(Res.string.manual_readout_list_set_count, setCount),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = KoDriverSpacing.small),
+            )
+        }
     }
 }
 
@@ -755,7 +763,7 @@ private fun ManualReadoutLayoutSegment(
     Box(
         modifier =
             Modifier
-                .size(width = 40.dp, height = 32.dp)
+                .size(width = 36.dp, height = 32.dp)
                 .clip(CircleShape)
                 .background(if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
                 .selectable(selected = selected, role = Role.RadioButton, onClick = { if (!selected) onClick() }),
@@ -766,9 +774,9 @@ private fun ManualReadoutLayoutSegment(
             contentDescription =
                 stringResource(
                     if (playButtonLayout) {
-                        Res.string.manual_readout_layout_toggle_to_play_buttons
+                        Res.string.manual_readout_layout_play_buttons
                     } else {
-                        Res.string.manual_readout_layout_toggle_to_standard
+                        Res.string.manual_readout_layout_standard
                     },
                 ),
             modifier = Modifier.size(20.dp),
