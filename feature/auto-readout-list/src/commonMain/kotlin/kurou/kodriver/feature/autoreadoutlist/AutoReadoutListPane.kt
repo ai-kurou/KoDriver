@@ -2,6 +2,7 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -64,6 +65,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
@@ -190,96 +192,108 @@ internal fun AutoReadoutListPane(
         listState.animateScrollToItem(0)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            state = listState,
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(vertical = KoDriverSpacing.large),
-        ) {
-            if (isAceSelected) {
-                item(key = "aceReadoutTimingHint") {
-                    AceAutoReadoutTimingHintRow(
-                        modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+    val visibleState = remember { MutableTransitionState(false).apply { targetState = true } }
+    val entryOffset = with(LocalDensity.current) { 12.dp.roundToPx() }
+    AnimatedVisibility(
+        visibleState = visibleState,
+        enter =
+            slideInVertically(
+                initialOffsetY = { entryOffset },
+                animationSpec = tween(durationMillis = 200),
+            ) + fadeIn(animationSpec = tween(durationMillis = 200)),
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                state = listState,
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(vertical = KoDriverSpacing.large),
+            ) {
+                if (isAceSelected) {
+                    item(key = "aceReadoutTimingHint") {
+                        AceAutoReadoutTimingHintRow(
+                            modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+                        )
+                    }
+                }
+                if (isGt7Ps5DesktopHintShown) {
+                    item(key = "gt7Ps5DesktopReadoutHint") {
+                        Gt7Ps5DesktopAutoReadoutHintRow(
+                            modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+                        )
+                    }
+                }
+                item(key = "priorityHint") {
+                    PriorityHintRow(
+                        modifier =
+                            Modifier.padding(
+                                start = KoDriverSpacing.small,
+                                end = KoDriverSpacing.small,
+                            ),
                     )
                 }
-            }
-            if (isGt7Ps5DesktopHintShown) {
-                item(key = "gt7Ps5DesktopReadoutHint") {
-                    Gt7Ps5DesktopAutoReadoutHintRow(
-                        modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
-                    )
+                itemsIndexed(uiState.items, key = { _, item -> item.value }) { index, item ->
+                    ReorderableItem(reorderableState, key = item.value) {
+                        val isSelected =
+                            AutoReadoutListItemType.fromId(uiState.selectedSimulator, item) == uiState.selectedItem
+                        val cardContainerColor by animateColorAsState(
+                            targetValue =
+                                if (isSelected) {
+                                    MaterialTheme.colorScheme.secondaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceContainerLow
+                                },
+                            animationSpec = tween(durationMillis = 500),
+                            label = "cardContainerColor",
+                        )
+                        val itemName = autoReadoutItemDisplayName(item)
+                        val readoutEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(item)
+                        AutoReadoutListItemCard(
+                            item = item,
+                            index = index,
+                            itemName = itemName,
+                            dragHandleModifier = Modifier.draggableHandle(),
+                            readoutEnabled = readoutEnabled,
+                            queueEnabled = uiState.queueEnabledStates[item] ?: false,
+                            startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,
+                            containerColor = cardContainerColor,
+                            isSelected = isSelected,
+                            onItemClick = onItemClick,
+                            onQueueEnabledChanged = onQueueEnabledChanged,
+                            onReadoutEnabledChanged = onReadoutEnabledChanged,
+                            onStartSoundEnabledChanged = onStartSoundEnabledChanged,
+                        )
+                    }
                 }
             }
-            item(key = "priorityHint") {
-                PriorityHintRow(
-                    modifier =
-                        Modifier.padding(
-                            start = KoDriverSpacing.small,
-                            end = KoDriverSpacing.small,
-                        ),
+
+            AnimatedVisibility(
+                visible = !isAtTop,
+                enter =
+                    slideInVertically(
+                        initialOffsetY = { -it },
+                        animationSpec = tween(durationMillis = 300),
+                    ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                exit =
+                    slideOutVertically(
+                        targetOffsetY = { -it },
+                        animationSpec = tween(durationMillis = 200),
+                    ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = KoDriverSpacing.large),
+            ) {
+                ScrollToTopButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            listState.animateScrollToItem(0)
+                        }
+                    },
                 )
             }
-            itemsIndexed(uiState.items, key = { _, item -> item.value }) { index, item ->
-                ReorderableItem(reorderableState, key = item.value) {
-                    val isSelected =
-                        AutoReadoutListItemType.fromId(uiState.selectedSimulator, item) == uiState.selectedItem
-                    val cardContainerColor by animateColorAsState(
-                        targetValue =
-                            if (isSelected) {
-                                MaterialTheme.colorScheme.secondaryContainer
-                            } else {
-                                MaterialTheme.colorScheme.surfaceContainerLow
-                            },
-                        animationSpec = tween(durationMillis = 500),
-                        label = "cardContainerColor",
-                    )
-                    val itemName = autoReadoutItemDisplayName(item)
-                    val readoutEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(item)
-                    AutoReadoutListItemCard(
-                        item = item,
-                        index = index,
-                        itemName = itemName,
-                        dragHandleModifier = Modifier.draggableHandle(),
-                        readoutEnabled = readoutEnabled,
-                        queueEnabled = uiState.queueEnabledStates[item] ?: false,
-                        startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,
-                        containerColor = cardContainerColor,
-                        isSelected = isSelected,
-                        onItemClick = onItemClick,
-                        onQueueEnabledChanged = onQueueEnabledChanged,
-                        onReadoutEnabledChanged = onReadoutEnabledChanged,
-                        onStartSoundEnabledChanged = onStartSoundEnabledChanged,
-                    )
-                }
-            }
-        }
-
-        AnimatedVisibility(
-            visible = !isAtTop,
-            enter =
-                slideInVertically(
-                    initialOffsetY = { -it },
-                    animationSpec = tween(durationMillis = 300),
-                ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-            exit =
-                slideOutVertically(
-                    targetOffsetY = { -it },
-                    animationSpec = tween(durationMillis = 200),
-                ) + fadeOut(animationSpec = tween(durationMillis = 200)),
-            modifier =
-                Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = KoDriverSpacing.large),
-        ) {
-            ScrollToTopButton(
-                onClick = {
-                    coroutineScope.launch {
-                        listState.animateScrollToItem(0)
-                    }
-                },
-            )
         }
     }
 }
