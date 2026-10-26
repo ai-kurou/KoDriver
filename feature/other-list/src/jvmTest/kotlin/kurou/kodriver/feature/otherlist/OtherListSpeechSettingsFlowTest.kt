@@ -8,6 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AndroidAudioUsage
@@ -77,12 +78,12 @@ class OtherListSpeechSettingsFlowTest {
                     }
                 }
 
-            voice.value = "voice-id"
-            speed.value = 1.5f
-            pitch.value = 0.8f
-            usage.value = AndroidAudioUsage.COMMUNICATION
-            startSound.value = ReadoutStartSoundType.ELECTRONIC_NOISE
-            volume.value = 42
+            voice.update { "voice-id" }
+            speed.update { 1.5f }
+            pitch.update { 0.8f }
+            usage.update { AndroidAudioUsage.COMMUNICATION }
+            startSound.update { ReadoutStartSoundType.ELECTRONIC_NOISE }
+            volume.update { 42 }
 
             assertEquals(
                 OtherListSpeechSettingsUiState(
