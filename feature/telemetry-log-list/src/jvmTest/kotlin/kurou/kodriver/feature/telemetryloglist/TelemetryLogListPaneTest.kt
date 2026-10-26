@@ -50,8 +50,8 @@ class TelemetryLogListPaneTest {
 
         rule.onNodeWithText("読み上げ結果").assertIsDisplayed()
         rule.onNodeWithContentDescription("読み上げ結果の見方を表示").performClick()
-        rule.onNodeWithText("キューに追加").assertIsDisplayed()
-        rule.onNodeWithText("キューに追加しました。順番が来ると読み上げが要求されます。").assertIsDisplayed()
+        rule.onNodeWithText("キュー経由で再生").assertIsDisplayed()
+        rule.onNodeWithText("キュー経由で読み上げを要求しました。").assertIsDisplayed()
         rule.onNodeWithText("通常再生").assertIsDisplayed()
         rule.onNodeWithText("すぐに読み上げを要求しました。").assertIsDisplayed()
         rule.onNodeWithText("割り込み再生").assertIsDisplayed()
