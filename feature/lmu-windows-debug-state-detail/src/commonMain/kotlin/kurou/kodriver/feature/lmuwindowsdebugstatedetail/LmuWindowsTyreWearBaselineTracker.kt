@@ -15,6 +15,7 @@ data class LmuWindowsTyreWearBaseline(
 internal class LmuWindowsTyreWearBaselineTracker {
     private var baseline: LmuWindowsTyreWearBaseline? = null
     private var lowestRatioSinceBaseline = 0.0
+    private var lastLap = 0
 
     fun update(telemetry: LmuWindowsTelemetryData?): LmuWindowsTyreWearBaseline? {
         val ratio =
@@ -29,12 +30,13 @@ internal class LmuWindowsTyreWearBaselineTracker {
         val current = baseline
         // 補給・交換が複数フレームに分かれて微小に増える場合も検出できるよう、起点以降の最小値からの増加量で判定する。
         val refilled = ratio - lowestRatioSinceBaseline > INCREASE_DETECTION_TOLERANCE_RATIO
-        if (current == null || lap < current.lap || refilled) {
+        if (current == null || lap < lastLap || refilled) {
             baseline = LmuWindowsTyreWearBaseline(ratio, lap)
             lowestRatioSinceBaseline = ratio
         } else {
             lowestRatioSinceBaseline = minOf(lowestRatioSinceBaseline, ratio)
         }
+        lastLap = lap
         return baseline
     }
 }

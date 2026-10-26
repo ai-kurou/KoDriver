@@ -44,6 +44,13 @@ class LmuWindowsVirtualEnergyBaselineTrackerTest {
     }
 
     @Test
+    fun `基準点より後の周回でも直前の観測より周回が戻れば起点を取り直す`() {
+        update(0.5, 3)
+        update(0.4, 10)
+        assertEquals(LmuWindowsVirtualEnergyBaseline(0.35, 5), update(0.35, 5))
+    }
+
+    @Test
     fun `補給または交換後の基準点から消費計算を再開する`() {
         update(0.2, 3)
         val baseline = update(0.5, 5)
