@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.semantics.SemanticsActions
@@ -54,21 +55,27 @@ class ManualReadoutSetDetailPaneTest {
             itemKeys = lmuWindowsManualReadoutItemKeys(),
             expectedTexts =
                 listOf(
-                    "＋ 項目を追加",
+                    "読み上げる項目を選択",
+                    "あと3項目追加できます",
                     "バーチャルエネルギー",
+                    "2",
                     "バーチャルエネルギー残量",
                     "バーチャルエネルギーの残り周回数",
                     "燃料",
+                    "2",
                     "残り燃料",
                     "燃料の残り周回数",
                     "タイヤ",
+                    "3",
                     "タイヤ摩耗",
                     "タイヤ温度",
                     "タイヤ摩耗の残り周回数",
                     "ブレーキ",
+                    "2",
                     "ブレーキ残量",
                     "ブレーキ温度",
                     "ラップ",
+                    "1",
                     "自己ベストラップ",
                 ),
         )
@@ -80,13 +87,17 @@ class ManualReadoutSetDetailPaneTest {
             itemKeys = aceWindowsManualReadoutItemKeys(),
             expectedTexts =
                 listOf(
-                    "＋ 項目を追加",
+                    "読み上げる項目を選択",
+                    "あと3項目追加できます",
                     "燃料",
+                    "2",
                     "残り燃料",
                     "残り燃料の周回数",
                     "ラップ",
+                    "1",
                     "自己ベストラップ",
                     "タイヤ",
+                    "1",
                     "タイヤ温度",
                 ),
         )
@@ -98,16 +109,63 @@ class ManualReadoutSetDetailPaneTest {
             itemKeys = gt7Ps5ManualReadoutItemKeys(),
             expectedTexts =
                 listOf(
-                    "＋ 項目を追加",
+                    "読み上げる項目を選択",
+                    "あと3項目追加できます",
                     "燃料",
+                    "2",
                     "残り燃料",
                     "残り燃料の周回数",
                     "タイヤ",
+                    "1",
                     "タイヤ温度",
                     "ラップ",
+                    "1",
                     "自己ベストラップ",
                 ),
         )
+    }
+
+    @Test
+    fun `選択数に応じてシートの残り枠を表示する`() {
+        val selectedCount = mutableIntStateOf(0)
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutItemPickerSheetContent(
+                    itemKeys = gt7Ps5ManualReadoutItemKeys(),
+                    selectedCount = selectedCount.intValue,
+                    onSelect = {},
+                )
+            }
+        }
+        rule.onNodeWithText("読み上げる項目を選択").assertExists()
+        for (count in 0..MANUAL_READOUT_SET_ITEM_MAX) {
+            rule.runOnIdle { selectedCount.intValue = count }
+            rule.onNodeWithText("あと${MANUAL_READOUT_SET_ITEM_MAX - count}項目追加できます").assertExists()
+        }
+    }
+
+    @Test
+    fun `選択済み項目数を追加シートの残り枠に反映する`() {
+        val keys = gt7Ps5ManualReadoutItemKeys()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState =
+                        ManualReadoutSetDetailUiState(
+                            simulatorId = Simulator.Gt7Ps5.id,
+                            setNumber = 1,
+                            availableItemKeys = keys,
+                            selectedItemKeys = keys.take(2),
+                        ),
+                    onAddItem = {},
+                    onDelete = {},
+                    showHotkey = false,
+                )
+            }
+        }
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("読み上げる項目を選択").assertExists()
+        rule.onNodeWithText("あと1項目追加できます").assertExists()
     }
 
     private fun assertPickerCategories(
@@ -116,7 +174,7 @@ class ManualReadoutSetDetailPaneTest {
     ) {
         rule.setContent {
             KoDriverTheme {
-                ManualReadoutItemPickerSheet(itemKeys, {}, {})
+                ManualReadoutItemPickerSheet(itemKeys, 0, {}, {})
             }
         }
         val texts =
