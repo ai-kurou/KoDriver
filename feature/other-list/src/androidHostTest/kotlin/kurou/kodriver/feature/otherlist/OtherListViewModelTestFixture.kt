@@ -198,8 +198,8 @@ abstract class OtherListViewModelTestFixture {
                     saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
                     observeThemeMode = ObserveThemeModeUseCase(themeRepository),
                 ),
-            connectionUseCases =
-                OtherListConnectionUseCases(
+            connectionFlow =
+                OtherListConnectionFlow(
                     observeServerIp = ObserveServerIpUseCase(serverIpRepository),
                     observeConsoleAddress = ObserveConsoleAddressUseCase(consoleAddressRepository),
                     observeGt7Ps5UdpPort = ObserveGt7Ps5UdpPortUseCase(consolePortRepository),

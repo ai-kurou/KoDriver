@@ -6,15 +6,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
-import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 
 /**
@@ -25,12 +21,6 @@ data class OtherListAppVersionInfo(
     val appVersionLabel: String,
 )
 
-data class OtherListConnectionUseCases(
-    val observeServerIp: ObserveServerIpUseCase?,
-    val observeConsoleAddress: ObserveConsoleAddressUseCase,
-    val observeGt7Ps5UdpPort: ObserveGt7Ps5UdpPortUseCase,
-)
-
 /**
  * OtherList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
@@ -39,7 +29,7 @@ class OtherListViewModel(
     private val overlaySettingsFlow: OtherListOverlaySettingsFlow,
     private val speechSettingsFlow: OtherListSpeechSettingsFlow,
     private val deviceSettingsFlow: OtherListDeviceSettingsFlow,
-    private val connectionUseCases: OtherListConnectionUseCases,
+    private val connectionFlow: OtherListConnectionFlow,
     checkHapticFeedbackAvailable: CheckHapticFeedbackAvailableUseCase,
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
     private val openWindowsSpeechSettings: OpenWindowsSpeechSettingsUseCase,
@@ -70,7 +60,8 @@ class OtherListViewModel(
             overlaySettingsFlow.uiState,
             deviceSettingsFlow.uiState,
             speechSettingsFlow.uiState,
-        ) { state, overlaySettings, deviceSettings, speechSettings ->
+            connectionFlow.uiState,
+        ) { state, overlaySettings, deviceSettings, speechSettings, connection ->
             state.copy(
                 overlayVisible = overlaySettings.overlayVisible,
                 overlayTextSize = overlaySettings.overlayTextSize,
@@ -86,13 +77,10 @@ class OtherListViewModel(
                 androidAudioUsage = speechSettings.androidAudioUsage,
                 readoutStartSoundType = speechSettings.readoutStartSoundType,
                 soundVolume = speechSettings.soundVolume,
+                serverIp = connection.serverIp,
+                consoleAddress = connection.consoleAddress,
+                consolePort = connection.consolePort,
             )
-        }.combine(connectionUseCases.observeServerIp?.invoke() ?: flowOf(null)) { state, serverIp ->
-            state.copy(serverIp = serverIp)
-        }.combine(connectionUseCases.observeConsoleAddress()) { state, consoleAddress ->
-            state.copy(consoleAddress = consoleAddress)
-        }.combine(connectionUseCases.observeGt7Ps5UdpPort()) { state, consolePort ->
-            state.copy(consolePort = consolePort)
         }.combine(deviceVolumeFlow.volume) { state, deviceVolume ->
             state.copy(deviceVolume = deviceVolume)
         }.combine(ttsAvailabilityFlow.uiState) { state, ttsAvailability ->

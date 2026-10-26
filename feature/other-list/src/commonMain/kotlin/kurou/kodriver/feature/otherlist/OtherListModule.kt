@@ -63,7 +63,7 @@ val otherListModule =
         factory { OtherListOverlaySettingsFlow(get(), get(), get(), get(), get()) }
 
         factory {
-            OtherListConnectionUseCases(
+            OtherListConnectionFlow(
                 // 接続先IPの設定はAndroidのみ。項目がないプラットフォームでは購読しない。
                 if (OtherListItemType.ServerIp in buildOtherListItems()) get() else null,
                 get(),
