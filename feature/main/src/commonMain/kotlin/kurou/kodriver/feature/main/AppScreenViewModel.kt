@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,28 +37,15 @@ class AppScreenViewModel(
     private var updateCheckStarted = false
     private val _hasAppUpdate = MutableStateFlow(false)
     private val _accessLocalNetworkPermissionGranted = MutableStateFlow(checkAccessLocalNetworkPermissionGranted())
-    private val badgeState =
-        combine(_hasAppUpdate, _accessLocalNetworkPermissionGranted) { hasUpdate, accessLocalNetworkPermissionGranted ->
-            hasUpdate to accessLocalNetworkPermissionGranted
-        }
-
     val uiState: StateFlow<AppScreenUiState> =
-        combine(
-            badgeState,
-            settingsUseCases.observeEffectiveKeepScreenOn(),
-            settingsUseCases.observeDynamicColorEnabled(),
-            settingsUseCases.observeHapticFeedbackEnabled(),
-            settingsUseCases.observeSelectedSimulator(),
-        ) { (hasUpdate, permissionGranted), keepOn, dynamicColorEnabled, hapticFeedbackEnabled, selectedSimulator ->
-            AppScreenUiState(
-                hasAppUpdate = hasUpdate,
-                accessLocalNetworkPermissionGranted = permissionGranted,
-                keepScreenOn = keepOn,
-                dynamicColorEnabled = dynamicColorEnabled,
-                hapticFeedbackEnabled = hapticFeedbackEnabled,
-                selectedSimulator = selectedSimulator,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppScreenUiState())
+        AppScreenFlow(
+            hasAppUpdate = _hasAppUpdate,
+            accessLocalNetworkPermissionGranted = _accessLocalNetworkPermissionGranted,
+            keepScreenOn = settingsUseCases.observeEffectiveKeepScreenOn(),
+            dynamicColorEnabled = settingsUseCases.observeDynamicColorEnabled(),
+            hapticFeedbackEnabled = settingsUseCases.observeHapticFeedbackEnabled(),
+            selectedSimulator = settingsUseCases.observeSelectedSimulator(),
+        ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppScreenUiState())
 
     fun checkUpdate() {
         if (currentVersion.isBlank() || updateCheckStarted) return
