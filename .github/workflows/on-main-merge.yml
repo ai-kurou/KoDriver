@@ -92,7 +92,7 @@ jobs:
       - uses: ./.github/actions/setup-screenshot
 
       - name: Verify JVM screenshot tests
-        run: ./gradlew verifyRoborazziJvmTests
+        run: ./gradlew verifyRoborazziJvmTests -Dorg.gradle.workers.max=4
 
   android-screenshot-test-verify:
     runs-on: ubuntu-latest
@@ -107,7 +107,7 @@ jobs:
       - uses: ./.github/actions/setup-screenshot
 
       - name: Verify Android screenshot tests
-        run: ./gradlew verifyRoborazziAndroidHostTests
+        run: ./gradlew verifyRoborazziAndroidHostTests -Dorg.gradle.workers.max=4
 
   # koverXmlReport はデスクトップの JAR を生成するが、Android の APK は生成しない。
   android-build:

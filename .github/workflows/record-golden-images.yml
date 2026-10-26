@@ -29,7 +29,7 @@ jobs:
         # record タスク自体が失敗（コンパイルエラー等）しても、正常に記録できたモジュール分の
         # golden 画像だけはアップロード・コミットできるようにする。
         continue-on-error: true
-        run: ./gradlew recordRoborazziJvmTests --continue
+        run: ./gradlew recordRoborazziJvmTests --continue -Dorg.gradle.workers.max=4
 
       - name: Upload JVM snapshots
         if: always()
@@ -55,7 +55,7 @@ jobs:
         # record タスク自体が失敗（コンパイルエラー等）しても、正常に記録できたモジュール分の
         # golden 画像だけはアップロード・コミットできるようにする。
         continue-on-error: true
-        run: ./gradlew recordRoborazziAndroidHostTests --continue
+        run: ./gradlew recordRoborazziAndroidHostTests --continue -Dorg.gradle.workers.max=4
 
       - name: Upload Android snapshots
         if: always()
