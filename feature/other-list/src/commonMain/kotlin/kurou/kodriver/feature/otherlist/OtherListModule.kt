@@ -44,11 +44,11 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
-                get(),
                 OtherListAppVersionInfo(
                     currentVersion = currentAppVersion(),
                     appVersionLabel = currentAppVersionLabel(),
                 ),
+                get(),
                 get(),
                 get(),
             )
@@ -101,6 +101,8 @@ val otherListModule =
         factory { OtherListStartupRegistrationFlow(get()) }
         factory { OtherListTtsAvailabilityFlow(get()) }
         factory { OtherListDeviceVolumeFlow(get()) }
+        // CheckAppUpdateAvailableUseCase は既存の mainModule の登録を使用する。
+        factory { OtherListAppUpdateFlow(get(), currentAppVersion()) }
         factory { ResetTelemetryLogDatabaseUseCase(get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:windows-startup-data の Repository を解決）
