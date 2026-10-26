@@ -80,6 +80,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
@@ -220,6 +221,8 @@ internal fun ManualReadoutListPaneContent(
                     modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
                 )
                 if (uiState.playButtonLayoutEnabled) {
+                    var tallestTileHeightPx by remember { mutableIntStateOf(0) }
+                    val density = LocalDensity.current
                     LazyVerticalGrid(
                         state = gridState,
                         columns = GridCells.Fixed(2),
@@ -240,11 +243,13 @@ internal fun ManualReadoutListPaneContent(
                                 setId = set.id,
                                 enteredSetIds = enteredSetIds,
                                 modifier =
-                                    Modifier.animateItem(
-                                        fadeInSpec = null,
-                                        placementSpec = tween(200),
-                                        fadeOutSpec = null,
-                                    ),
+                                    Modifier
+                                        .onSizeChanged { tallestTileHeightPx = maxOf(tallestTileHeightPx, it.height) }
+                                        .animateItem(
+                                            fadeInSpec = null,
+                                            placementSpec = tween(200),
+                                            fadeOutSpec = null,
+                                        ),
                             ) {
                                 ManualReadoutSetPlayButton(
                                     set = set,
@@ -271,7 +276,11 @@ internal fun ManualReadoutListPaneContent(
                                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
                             ) {
                                 Column(
-                                    modifier = Modifier.heightIn(min = 104.dp).padding(KoDriverSpacing.medium),
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .heightIn(min = maxOf(104.dp, with(density) { tallestTileHeightPx.toDp() }))
+                                            .padding(KoDriverSpacing.medium),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement =
                                         Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterVertically),
