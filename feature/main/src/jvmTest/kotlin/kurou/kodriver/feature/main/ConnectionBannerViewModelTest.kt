@@ -88,6 +88,45 @@ class ConnectionBannerViewModelTest {
         }
 
     @Test
+    fun `シミュレーター切り替え後に各接続経路の状態と選択中Simulatorを反映する`() =
+        runTest {
+            val lmuChecker = FakeLmuBannerConnectionChecker(isConnected = true)
+            val aceChecker = FakeAceBannerConnectionChecker(isConnected = true)
+            val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.LmuWindows)
+            val viewModel =
+                createViewModel(
+                    lmuChecker = lmuChecker,
+                    aceChecker = aceChecker,
+                    simulatorRepository = simulatorRepository,
+                    consoleAddressRepository = FakeConsoleAddressPreferencesRepository(initial = null),
+                )
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            dispatcher.scheduler.runCurrent()
+
+            assertEquals(
+                ConnectionBannerVmUiState(ConnectionBannerVmStatus.CONNECTED, Simulator.LmuWindows),
+                viewModel.uiState.first(),
+            )
+
+            simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5)
+            dispatcher.scheduler.runCurrent()
+
+            assertEquals(
+                ConnectionBannerVmUiState(ConnectionBannerVmStatus.IP_NOT_CONFIGURED, Simulator.Gt7Ps5),
+                viewModel.uiState.first(),
+            )
+
+            simulatorRepository.saveSelectedSimulator(Simulator.AceWindows)
+            dispatcher.scheduler.runCurrent()
+
+            assertEquals(
+                ConnectionBannerVmUiState(ConnectionBannerVmStatus.CONNECTED, Simulator.AceWindows),
+                viewModel.uiState.first(),
+            )
+            collectionJob.cancelAndJoin()
+        }
+
+    @Test
     fun `LMU選択に切り替えると接続確認を開始する`() =
         runTest {
             val lmuChecker = FakeLmuBannerConnectionChecker(isConnected = true)
