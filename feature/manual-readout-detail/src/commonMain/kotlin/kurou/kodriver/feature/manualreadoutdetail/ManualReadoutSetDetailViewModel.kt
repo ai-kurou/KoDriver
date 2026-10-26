@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -12,7 +11,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
@@ -64,46 +62,25 @@ internal class ManualReadoutSetDetailViewModel(
     // セット全体の取得→変更→保存を直列化し、項目・文言・キーの連続操作による上書きや削除後の更新を防ぐ。
     private val mutationMutex = Mutex()
 
+    private val detailFlow =
+        ManualReadoutSetDetailFlow(
+            sets = observeSets(),
+            deleted = deleted,
+            hotkeyConflict = hotkeyConflict,
+            debugHotkeyVirtualKeyCode = observeDebugHotkeyVirtualKeyCode(),
+            hotkeyRegistrationState = observeHotkeyRegistrationState(simulatorId, setId),
+            textToSpeechAvailable = preview.textToSpeechAvailable,
+            isPreviewing = preview.isPreviewing,
+            simulatorId = simulatorId,
+            setId = setId,
+            availableItemKeys = availableItemKeys,
+        )
+
     val uiState =
-        combine(
-            observeSets(),
-            deleted,
-            hotkeyConflict,
-            observeDebugHotkeyVirtualKeyCode(),
-            observeHotkeyRegistrationState(simulatorId, setId),
-        ) { sets, isDeleted, conflict, debugVirtualKeyCode, registration ->
-            val index = sets.indexOfFirst { it.id == setId }
-            val set = sets.getOrNull(index)
-            val hotkey = set?.hotkeyVirtualKeyCode
-            val modifiers = set?.hotkeyModifiers ?: MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
-            // 保存後にデバッグ用ホットキーが同じキーへ変更された場合も警告する。
-            val savedConflict =
-                ManualReadoutHotkeyConflict.DebugHotkey.takeIf {
-                    modifiers == ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT &&
-                        hotkey != null && hotkey == debugVirtualKeyCode
-                }
-            ManualReadoutSetDetailUiState(
-                simulatorId = simulatorId,
-                setNumber = if (index >= 0) sets[index].number.takeIf { it > 0 } ?: (index + 1) else null,
-                name = set?.name.orEmpty(),
-                availableItemKeys = availableItemKeys,
-                selectedItemKeys = sets.getOrNull(index)?.itemKeys.orEmpty(),
-                itemTexts = sets.getOrNull(index)?.itemTexts.orEmpty(),
-                hotkeyVirtualKeyCode = hotkey,
-                hotkeyModifiers = modifiers,
-                hotkeyRegistrationState = registration,
-                hotkeyConflict = conflict ?: savedConflict,
-                isLoading = false,
-                deleted = isDeleted,
-            )
-        }.combine(preview.textToSpeechAvailable) { state, available ->
-            state.copy(isTextToSpeechAvailable = available)
-        }.combine(preview.isPreviewing) { state, previewing ->
-            state.copy(isPreviewing = previewing)
-        }.stateIn(
+        detailFlow.uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            ManualReadoutSetDetailUiState(simulatorId = simulatorId, availableItemKeys = availableItemKeys),
+            detailFlow.initialUiState,
         )
 
     fun onPreviewStopped() = preview.stop()
