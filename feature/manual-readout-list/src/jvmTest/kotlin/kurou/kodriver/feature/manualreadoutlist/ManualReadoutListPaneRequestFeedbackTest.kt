@@ -52,6 +52,18 @@ class ManualReadoutListPaneRequestFeedbackTest {
     }
 
     @Test
+    fun `項目なしの標準表示では依頼中表示を出す`() {
+        every { onReadSet("set-1") } returns Unit
+        showPane(playButtonLayoutEnabled = false, itemKeys = emptyList())
+
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
+        rule.mainClock.advanceTimeByFrame()
+        rule.onNodeWithContentDescription("読み上げを依頼しました").assertIsDisplayed()
+        verify(exactly = 1) { onReadSet("set-1") }
+        confirmVerified(onReadSet)
+    }
+
+    @Test
     fun `項目なしの再生タイルでは依頼中表示を出さない`() {
         showPane(playButtonLayoutEnabled = true, itemKeys = emptyList())
         assertNoRequestFeedback()

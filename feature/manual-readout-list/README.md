@@ -20,7 +20,7 @@ Windows デスクトップでは、各セット行の左側にセット名・項
 - `IsManualReadoutHotkeySupported.kt` / `IsManualReadoutHotkeySupported.android.kt` / `IsManualReadoutHotkeySupported.jvm.kt`: ホットキー説明と行のチップの表示に使う対応判定。Windows デスクトップのみ true を返す。
 - `src/commonMain/composeResources/values/strings.xml`: 見出し・セットのタイトルと項目数・読み上げボタン・説明シート・空状態・セット追加 FAB の表示文言。
 - `ManualReadoutHotkeyLabel.kt` / `ManualReadoutHotkeyLabelTest.kt`: 一覧専用のラベル生成と、全修飾キー・英数字・未割り当て・範囲外コードの検証。
-- `ManualReadoutListPaneRequestFeedbackTest.kt`: 両表示の依頼中表示・約1.5秒後の復帰・連打時の延長と、編集時・再生不可時に表示しないことを確認する JVM テスト。
+- `ManualReadoutListPaneRequestFeedbackTest.kt`: 両表示の依頼中表示・約1.5秒後の復帰・連打時の延長・項目なしの標準表示での表示と、編集時・再生不可時に表示しないことを確認する JVM テスト。
 - `ManualReadoutListPaneHeaderTest.kt`: 表示切替セグメントの選択状態・未選択側だけの切替通知と、セット数の表示・更新・0件時の非表示を確認する JVM テスト。
 - `ManualReadoutListPaneTest.kt`: 再生タイルの再生・無効状態・長押し編集・ラベル付き編集ボタンによる編集切替・追加タイル・空グリッド、およびホットキーチップの割り当て済み・未設定・非対応時の表示分岐と、Content のセット追加 FAB の表示とクリック・見出し・空状態の表示分岐・複数セットのタイトルと項目数・読み上げボタンの有効・無効状態とセット ID の送信・ヘルプの表示とホットキー説明の表示分岐を確認する JVM テスト。
 - `ManualReadoutListPaneScreenshotTest.kt`: 再生ボタン表示と編集モード（割り当て済みチップ付き）、見出し・セット追加 FAB 付きの空状態・読み上げボタンが有効な LMU の保存済みセット一覧と説明シート（ホットキーあり・なし）を確認する Desktop/JVM 向けスクリーンショットテスト。
