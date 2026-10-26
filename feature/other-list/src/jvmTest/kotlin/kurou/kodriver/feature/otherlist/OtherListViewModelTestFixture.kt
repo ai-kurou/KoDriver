@@ -176,8 +176,8 @@ abstract class OtherListViewModelTestFixture {
             accessLocalNetworkPermissionRepository.isGranted()
         } returns accessLocalNetworkPermissionGranted
         return OtherListViewModel(
-            overlayUseCases =
-                OtherListOverlayUseCases(
+            overlaySettingsFlow =
+                OtherListOverlaySettingsFlow(
                     observeOverlayVisible = ObserveOverlayVisibleUseCase(overlayVisibleRepository),
                     saveOverlayVisible = SaveOverlayVisibleUseCase(overlayVisibleRepository),
                     observeOverlayTextSize = ObserveOverlayTextSizeUseCase(overlayTextSizeRepository),
