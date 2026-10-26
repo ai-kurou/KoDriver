@@ -13,9 +13,16 @@ class OtherListConnectionFlow(
     observeConsoleAddress: ObserveConsoleAddressUseCase,
     observeGt7Ps5UdpPort: ObserveGt7Ps5UdpPortUseCase,
 ) {
+    private val serverIpFlow =
+        if (observeServerIp == null) {
+            flowOf(null)
+        } else {
+            observeServerIp()
+        }
+
     val uiState: Flow<OtherListConnectionUiState> =
         combine(
-            observeServerIp?.invoke() ?: flowOf(null),
+            serverIpFlow,
             observeConsoleAddress(),
             observeGt7Ps5UdpPort(),
         ) { serverIp, consoleAddress, consolePort ->
