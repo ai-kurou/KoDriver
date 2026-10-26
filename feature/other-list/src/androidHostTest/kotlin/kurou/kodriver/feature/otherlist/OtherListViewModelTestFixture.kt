@@ -147,6 +147,10 @@ abstract class OtherListViewModelTestFixture {
     @BeforeTest
     open fun setUp() {
         Dispatchers.setMain(dispatcher)
+        every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+        every { themeRepository.observeThemeMode() } returns themeModeFlow
         every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
         every { voicePitchRepository.voicePitch() } returns voicePitchFlow
         every { audioUsageRepository.observeAndroidAudioUsage() } returns audioUsageFlow
@@ -184,8 +188,8 @@ abstract class OtherListViewModelTestFixture {
                     observeReadoutStartSoundType = ObserveReadoutStartSoundTypeUseCase(readoutStartSoundRepository),
                     observeSoundVolume = ObserveSoundVolumeUseCase(soundVolumeRepository),
                 ),
-            deviceSettingsUseCases =
-                OtherListDeviceSettingsUseCases(
+            deviceSettingsFlow =
+                OtherListDeviceSettingsFlow(
                     observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
                     saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
                     observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorRepository),
