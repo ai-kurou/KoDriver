@@ -4,12 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutPlayButtonLayoutEnabledUseCase
@@ -35,29 +33,21 @@ internal class ManualReadoutListViewModel(
     private val playButtonLayoutUseCases: PlayButtonLayoutUseCases,
     private val generateSetId: () -> String = { Uuid.random().toString() },
 ) : ViewModel() {
-    private val canReadSets =
-        simulatorId == Simulator.LmuWindows.id ||
-            simulatorId == Simulator.Gt7Ps5.id ||
-            simulatorId == Simulator.AceWindows.id
-
     private val selectedSetId = MutableStateFlow<String?>(null)
 
+    private val listFlow =
+        ManualReadoutListFlow(
+            sets = observeManualReadoutSets(),
+            selectedSetId = selectedSetId,
+            playButtonLayoutEnabled = playButtonLayoutUseCases.observe(),
+            simulatorId = simulatorId,
+        )
+
     val uiState =
-        combine(
-            observeManualReadoutSets(),
-            selectedSetId,
-            playButtonLayoutUseCases.observe(),
-        ) { sets, selectedId, enabled ->
-            ManualReadoutListUiState(
-                sets = sets,
-                canReadSets = canReadSets,
-                selectedSetId = selectedId?.takeIf { id -> sets.any { it.id == id } },
-                playButtonLayoutEnabled = enabled,
-            )
-        }.stateIn(
+        listFlow.uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            ManualReadoutListUiState(canReadSets = canReadSets),
+            listFlow.initialUiState,
         )
 
     fun selectSet(setId: String) {
