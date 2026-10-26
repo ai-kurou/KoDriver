@@ -2,6 +2,7 @@ package kurou.kodriver.feature.telemetryloglist
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -64,6 +65,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
@@ -125,59 +127,59 @@ internal fun TelemetryLogListPane(
     onDeleteClick: (Long) -> Unit = {},
     scrollToTopRequest: Int = 0,
 ) {
-    if (uiState.logs.isEmpty()) {
-        TelemetryLogEmptyState(
-            selectedSimulator = uiState.selectedSimulator,
-            modifier = modifier.fillMaxSize(),
-        )
-        return
-    }
-
-    key(uiState.selectedSimulator) {
-        val listState = rememberLazyListState()
-        val coroutineScope = rememberCoroutineScope()
-        val firstLogId = uiState.logs.first().id
-        var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
-        var showNewLogsButton by rememberSaveable { mutableStateOf(false) }
-        val isAtTop by remember {
-            derivedStateOf {
-                listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
-            }
+    val visibleState = remember { MutableTransitionState(false).apply { targetState = true } }
+    val entryOffset = with(LocalDensity.current) { 12.dp.roundToPx() }
+    AnimatedVisibility(
+        visibleState = visibleState,
+        enter =
+            slideInVertically(
+                initialOffsetY = { entryOffset },
+                animationSpec = tween(durationMillis = 200),
+            ) + fadeIn(animationSpec = tween(durationMillis = 200)),
+        modifier = modifier.fillMaxSize(),
+    ) {
+        if (uiState.logs.isEmpty()) {
+            TelemetryLogEmptyState(
+                selectedSimulator = uiState.selectedSimulator,
+                modifier = Modifier.fillMaxSize(),
+            )
+            return@AnimatedVisibility
         }
 
-        LaunchedEffect(firstLogId) {
-            if (previousFirstLogId != firstLogId) {
-                if (listState.firstVisibleItemIndex <= FIRST_VISIBLE_ITEM_INDEX_WITH_HINT_ROW_FOR_AUTO_SCROLL) {
-                    listState.animateScrollToItem(0)
-                } else {
-                    showNewLogsButton = true
+        key(uiState.selectedSimulator) {
+            val listState = rememberLazyListState()
+            val coroutineScope = rememberCoroutineScope()
+            val firstLogId = uiState.logs.first().id
+            var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
+            var showNewLogsButton by rememberSaveable { mutableStateOf(false) }
+            val isAtTop by remember {
+                derivedStateOf {
+                    listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
                 }
-                previousFirstLogId = firstLogId
             }
-        }
 
-        ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
-            listState.animateScrollToItem(0)
-            showNewLogsButton = false
-        }
+            LaunchedEffect(firstLogId) {
+                if (previousFirstLogId != firstLogId) {
+                    if (listState.firstVisibleItemIndex <= FIRST_VISIBLE_ITEM_INDEX_WITH_HINT_ROW_FOR_AUTO_SCROLL) {
+                        listState.animateScrollToItem(0)
+                    } else {
+                        showNewLogsButton = true
+                    }
+                    previousFirstLogId = firstLogId
+                }
+            }
 
-        LaunchedEffect(isAtTop) {
-            if (isAtTop) {
+            ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+                listState.animateScrollToItem(0)
                 showNewLogsButton = false
             }
-        }
 
-        // visible は常に true。表示/非表示の切り替えではなく、初回コンポジション時の
-        // スライドイン＋フェードイン演出のみを目的とした AnimatedVisibility。
-        AnimatedVisibility(
-            visible = true,
-            enter =
-                slideInVertically(
-                    initialOffsetY = { it },
-                    animationSpec = tween(durationMillis = 400),
-                ) + fadeIn(animationSpec = tween(durationMillis = 400)),
-            modifier = modifier.fillMaxSize(),
-        ) {
+            LaunchedEffect(isAtTop) {
+                if (isAtTop) {
+                    showNewLogsButton = false
+                }
+            }
+
             Box(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(
                     state = listState,
