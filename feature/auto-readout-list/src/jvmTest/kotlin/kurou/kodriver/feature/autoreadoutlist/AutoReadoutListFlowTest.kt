@@ -23,6 +23,10 @@ import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveAutoReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,6 +39,10 @@ class AutoReadoutListFlowTest {
     private val readoutRepository: AutoReadoutPreferencesRepository = mockk()
     private val queueRepository: QueuePreferencesRepository = mockk()
     private val startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository = mockk()
+    private val saveAutoReadoutOrderUseCase: SaveAutoReadoutOrderUseCase = mockk()
+    private val saveAutoReadoutEnabledStateUseCase: SaveAutoReadoutEnabledStateUseCase = mockk()
+    private val saveQueueEnabledStateUseCase: SaveQueueEnabledStateUseCase = mockk()
+    private val saveReadoutStartSoundEnabledStateUseCase: SaveReadoutStartSoundEnabledStateUseCase = mockk()
 
     @Test
     fun `選択シミュレーターごとの設定とlocalOrder優先を反映する`() =
@@ -65,16 +73,23 @@ class AutoReadoutListFlowTest {
                         AutoReadoutOrderUseCases(
                             ObserveAutoReadoutOrderUseCase(readoutRepository),
                             ResolveAutoReadoutOrderUseCase(),
-                            mockk(),
+                            saveAutoReadoutOrderUseCase,
                         ),
                     autoReadoutEnabledUseCases =
                         AutoReadoutEnabledUseCases(
                             ObserveAutoReadoutEnabledStatesUseCase(readoutRepository),
-                            mockk(),
+                            saveAutoReadoutEnabledStateUseCase,
                         ),
-                    queueUseCases = QueueUseCases(ObserveQueueEnabledStatesUseCase(queueRepository), mockk()),
+                    queueUseCases =
+                        QueueUseCases(
+                            ObserveQueueEnabledStatesUseCase(queueRepository),
+                            saveQueueEnabledStateUseCase,
+                        ),
                     startSoundUseCases =
-                        StartSoundUseCases(ObserveReadoutStartSoundEnabledStatesUseCase(startSoundRepository), mockk()),
+                        StartSoundUseCases(
+                            ObserveReadoutStartSoundEnabledStatesUseCase(startSoundRepository),
+                            saveReadoutStartSoundEnabledStateUseCase,
+                        ),
                     localOrder = localOrder,
                     selectedItem = MutableStateFlow(null),
                 )
