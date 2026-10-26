@@ -15,9 +15,6 @@ import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUse
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
@@ -25,14 +22,10 @@ import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
-import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
-import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
-import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 
 /**
@@ -60,16 +53,6 @@ data class OtherListSpeechUseCases(
     val observeAndroidAudioUsage: ObserveAndroidAudioUsageUseCase,
 )
 
-data class OtherListDeviceSettingsUseCases(
-    val observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
-    val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
-    val observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
-    val saveDynamicColorEnabled: SaveDynamicColorEnabledUseCase,
-    val observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
-    val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
-    val observeThemeMode: ObserveThemeModeUseCase,
-)
-
 data class OtherListConnectionUseCases(
     val observeServerIp: ObserveServerIpUseCase?,
     val observeConsoleAddress: ObserveConsoleAddressUseCase,
@@ -83,7 +66,7 @@ data class OtherListConnectionUseCases(
 class OtherListViewModel(
     private val overlayUseCases: OtherListOverlayUseCases,
     private val speechUseCases: OtherListSpeechUseCases,
-    private val deviceSettingsUseCases: OtherListDeviceSettingsUseCases,
+    private val deviceSettingsFlow: OtherListDeviceSettingsFlow,
     private val connectionUseCases: OtherListConnectionUseCases,
     checkHapticFeedbackAvailable: CheckHapticFeedbackAvailableUseCase,
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
@@ -113,15 +96,14 @@ class OtherListViewModel(
         combine(
             _uiState,
             overlayUseCases.observeOverlayVisible(),
-            deviceSettingsUseCases.observeKeepScreenOn(),
-            deviceSettingsUseCases.observeDynamicColorEnabled(),
-            deviceSettingsUseCases.observeHapticFeedbackEnabled(),
-        ) { state, overlayVisible, keepScreenOn, dynamicColorEnabled, hapticFeedbackEnabled ->
+            deviceSettingsFlow.uiState,
+        ) { state, overlayVisible, deviceSettings ->
             state.copy(
                 overlayVisible = overlayVisible,
-                keepScreenOn = keepScreenOn,
-                dynamicColorEnabled = dynamicColorEnabled,
-                hapticFeedbackEnabled = hapticFeedbackEnabled,
+                keepScreenOn = deviceSettings.keepScreenOn,
+                dynamicColorEnabled = deviceSettings.dynamicColorEnabled,
+                hapticFeedbackEnabled = deviceSettings.hapticFeedbackEnabled,
+                themeMode = deviceSettings.themeMode,
             )
         }.combine(connectionUseCases.observeServerIp?.invoke() ?: flowOf(null)) { state, serverIp ->
             state.copy(serverIp = serverIp)
@@ -129,8 +111,6 @@ class OtherListViewModel(
             state.copy(consoleAddress = consoleAddress)
         }.combine(connectionUseCases.observeGt7Ps5UdpPort()) { state, consolePort ->
             state.copy(consolePort = consolePort)
-        }.combine(deviceSettingsUseCases.observeThemeMode()) { state, themeMode ->
-            state.copy(themeMode = themeMode)
         }.combine(speechUseCases.observeVoice()) { state, voiceId ->
             state.copy(voiceId = voiceId)
         }.combine(speechUseCases.observeVoiceSpeed()) { state, voiceSpeed ->
@@ -248,14 +228,14 @@ class OtherListViewModel(
     }
 
     fun onKeepScreenOnChange(enabled: Boolean) {
-        viewModelScope.launch { deviceSettingsUseCases.saveKeepScreenOn(enabled) }
+        viewModelScope.launch { deviceSettingsFlow.onKeepScreenOnChange(enabled) }
     }
 
     fun onDynamicColorEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { deviceSettingsUseCases.saveDynamicColorEnabled(enabled) }
+        viewModelScope.launch { deviceSettingsFlow.onDynamicColorEnabledChange(enabled) }
     }
 
     fun onHapticFeedbackEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { deviceSettingsUseCases.saveHapticFeedbackEnabled(enabled) }
+        viewModelScope.launch { deviceSettingsFlow.onHapticFeedbackEnabledChange(enabled) }
     }
 }

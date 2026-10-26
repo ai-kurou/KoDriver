@@ -5,6 +5,9 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
+import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
@@ -18,6 +21,9 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
+import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 import org.koin.core.module.dsl.viewModel
@@ -76,18 +82,6 @@ val otherListModule =
         }
 
         factory {
-            OtherListDeviceSettingsUseCases(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-            )
-        }
-
-        factory {
             OtherListConnectionUseCases(
                 // 接続先IPの設定はAndroidのみ。項目がないプラットフォームでは購読しない。
                 if (OtherListItemType.ServerIp in buildOtherListItems()) get() else null,
@@ -99,6 +93,7 @@ val otherListModule =
         // ログ削除フローは ViewModel ごとに生成し、実行は viewModelScope に従わせる。
         factory { OtherListResetFlow(get()) }
         factory { OtherListStartupRegistrationFlow(get()) }
+        factory { OtherListDeviceSettingsFlow(get(), get(), get(), get(), get(), get(), get()) }
         factory { OtherListTtsAvailabilityFlow(get()) }
         factory { OtherListDeviceVolumeFlow(get()) }
         // CheckAppUpdateAvailableUseCase は既存の mainModule の登録を使用する。
@@ -120,6 +115,12 @@ val otherListModule =
         factory { ObserveOverlayTextSizeUseCase(get()) }
         factory { ObserveOverlayBackgroundOpacityUseCase(get()) }
         factory { ObserveOverlayTextColorUseCase(get()) }
+        factory { ObserveKeepScreenOnEnabledUseCase(get()) }
+        factory { SaveKeepScreenOnEnabledUseCase(get()) }
+        factory { ObserveDynamicColorEnabledUseCase(get()) }
+        factory { SaveDynamicColorEnabledUseCase(get()) }
+        factory { ObserveHapticFeedbackEnabledUseCase(get()) }
+        factory { SaveHapticFeedbackEnabledUseCase(get()) }
 
         // other-theme-detail と同じfactory定義なので、どちらが後から登録されても同じ依存を解決する。
         factory { ObserveThemeModeUseCase(get()) }
