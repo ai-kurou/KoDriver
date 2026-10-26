@@ -14,13 +14,8 @@ import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 
 /**
  * アプリバージョン表示に必要な情報（現在バージョン・プラットフォーム別ラベル）。
@@ -28,14 +23,6 @@ import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 data class OtherListAppVersionInfo(
     val currentVersion: String,
     val appVersionLabel: String,
-)
-
-data class OtherListOverlayUseCases(
-    val observeOverlayVisible: ObserveOverlayVisibleUseCase,
-    val saveOverlayVisible: SaveOverlayVisibleUseCase,
-    val observeOverlayTextSize: ObserveOverlayTextSizeUseCase,
-    val observeOverlayBackgroundOpacity: ObserveOverlayBackgroundOpacityUseCase,
-    val observeOverlayTextColor: ObserveOverlayTextColorUseCase,
 )
 
 data class OtherListConnectionUseCases(
@@ -49,7 +36,7 @@ data class OtherListConnectionUseCases(
  */
 @Suppress("LongParameterList")
 class OtherListViewModel(
-    private val overlayUseCases: OtherListOverlayUseCases,
+    private val overlaySettingsFlow: OtherListOverlaySettingsFlow,
     private val speechSettingsFlow: OtherListSpeechSettingsFlow,
     private val deviceSettingsFlow: OtherListDeviceSettingsFlow,
     private val connectionUseCases: OtherListConnectionUseCases,
@@ -80,12 +67,15 @@ class OtherListViewModel(
     val uiState: StateFlow<OtherListUiState> =
         combine(
             _uiState,
-            overlayUseCases.observeOverlayVisible(),
+            overlaySettingsFlow.uiState,
             deviceSettingsFlow.uiState,
             speechSettingsFlow.uiState,
-        ) { state, overlayVisible, deviceSettings, speechSettings ->
+        ) { state, overlaySettings, deviceSettings, speechSettings ->
             state.copy(
-                overlayVisible = overlayVisible,
+                overlayVisible = overlaySettings.overlayVisible,
+                overlayTextSize = overlaySettings.overlayTextSize,
+                overlayTextColor = overlaySettings.overlayTextColor,
+                overlayBackgroundOpacity = overlaySettings.overlayBackgroundOpacity,
                 keepScreenOn = deviceSettings.keepScreenOn,
                 dynamicColorEnabled = deviceSettings.dynamicColorEnabled,
                 hapticFeedbackEnabled = deviceSettings.hapticFeedbackEnabled,
@@ -103,12 +93,6 @@ class OtherListViewModel(
             state.copy(consoleAddress = consoleAddress)
         }.combine(connectionUseCases.observeGt7Ps5UdpPort()) { state, consolePort ->
             state.copy(consolePort = consolePort)
-        }.combine(overlayUseCases.observeOverlayTextSize()) { state, overlayTextSize ->
-            state.copy(overlayTextSize = overlayTextSize)
-        }.combine(overlayUseCases.observeOverlayTextColor()) { state, overlayTextColor ->
-            state.copy(overlayTextColor = overlayTextColor)
-        }.combine(overlayUseCases.observeOverlayBackgroundOpacity()) { state, overlayBackgroundOpacity ->
-            state.copy(overlayBackgroundOpacity = overlayBackgroundOpacity)
         }.combine(deviceVolumeFlow.volume) { state, deviceVolume ->
             state.copy(deviceVolume = deviceVolume)
         }.combine(ttsAvailabilityFlow.uiState) { state, ttsAvailability ->
@@ -204,7 +188,7 @@ class OtherListViewModel(
     }
 
     fun onOverlayVisibleChange(visible: Boolean) {
-        viewModelScope.launch { overlayUseCases.saveOverlayVisible(visible) }
+        viewModelScope.launch { overlaySettingsFlow.onOverlayVisibleChange(visible) }
     }
 
     fun onKeepScreenOnChange(enabled: Boolean) {

@@ -34,6 +34,31 @@ import kotlin.test.assertNull
 @OptIn(ExperimentalCoroutinesApi::class)
 class OtherListViewModelObservedSettingsTest : OtherListViewModelTestFixture() {
     @Test
+    fun `オーバーレイ表示は保存済み設定とその変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel()
+            assertEquals(true, viewModel.uiState.first().overlayVisible)
+
+            overlayVisibleFlow.update { false }
+
+            assertEquals(false, viewModel.uiState.first { !it.overlayVisible }.overlayVisible)
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
+            confirmVerified(overlayVisibleRepository)
+        }
+
+    @Test
     fun `ゲーム機の保存済みIPとポートおよび変更を反映する`() =
         runTest {
             every { soundVolumeRepository.volume() } returns soundVolumeFlow

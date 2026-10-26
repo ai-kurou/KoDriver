@@ -60,15 +60,7 @@ val otherListModule =
             )
         }
 
-        factory {
-            OtherListOverlayUseCases(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-            )
-        }
+        factory { OtherListOverlaySettingsFlow(get(), get(), get(), get(), get()) }
 
         factory {
             OtherListConnectionUseCases(

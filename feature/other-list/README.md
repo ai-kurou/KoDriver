@@ -40,6 +40,8 @@ TTS利用可否の判定と一覧案内項目・警告表示への反映は `Oth
 
 画面常時オン、ダイナミックカラー、ハプティックフィードバック、テーマの設定観測と、前3項目の保存操作は `OtherListDeviceSettingsFlow` が管理する。状態は専用UiStateとしてFlowで公開し、`OtherListViewModel` は `uiState` の購読中に `OtherListUiState` へ合成し、保存操作を `viewModelScope` でFlowへ委譲する。
 
+オーバーレイ表示、文字サイズ、文字色、背景透明度の設定観測と表示ON/OFFの保存操作は `OtherListOverlaySettingsFlow` が専用UiStateへ集約する。Flowは冷たい状態Flowとして公開し、`OtherListViewModel` の `uiState` 購読中に `OtherListUiState` へ合成する。表示ON/OFFの保存はViewModelが `viewModelScope` で起動してFlowへ委譲する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

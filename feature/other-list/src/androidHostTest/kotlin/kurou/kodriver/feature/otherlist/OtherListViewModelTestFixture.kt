@@ -170,8 +170,8 @@ abstract class OtherListViewModelTestFixture {
         every { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() } returns hapticFeedbackAvailable
         every { accessLocalNetworkPermissionRepository.isGranted() } returns true
         return OtherListViewModel(
-            overlayUseCases =
-                OtherListOverlayUseCases(
+            overlaySettingsFlow =
+                OtherListOverlaySettingsFlow(
                     observeOverlayVisible = ObserveOverlayVisibleUseCase(overlayVisibleRepository),
                     saveOverlayVisible = SaveOverlayVisibleUseCase(overlayVisibleRepository),
                     observeOverlayTextSize = ObserveOverlayTextSizeUseCase(overlayTextSizeRepository),
