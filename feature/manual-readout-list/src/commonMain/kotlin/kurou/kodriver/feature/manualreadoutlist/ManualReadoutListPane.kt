@@ -64,7 +64,9 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -91,10 +93,12 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.delay
 import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverHintRow
 import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.PlayingEqualizer
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_edit_mode_disable
@@ -130,6 +134,7 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_no_items
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set_named
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_requesting
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_count
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_ace
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_gt7
@@ -138,6 +143,8 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+
+private const val REQUEST_FEEDBACK_MS = 1_500L
 
 /** 選択中シミュレーターの手動読み上げセット一覧を表示する。 */
 @Composable
@@ -386,6 +393,13 @@ private fun ManualReadoutSetPlayButton(
 ) {
     val haptic = LocalHapticFeedback.current
     val enabled = editMode || canReadSet
+    var requestCount by remember { mutableIntStateOf(0) }
+    LaunchedEffect(requestCount) {
+        if (requestCount != 0) {
+            delay(REQUEST_FEEDBACK_MS)
+            requestCount = 0
+        }
+    }
     Surface(
         modifier =
             Modifier
@@ -396,6 +410,7 @@ private fun ManualReadoutSetPlayButton(
                             onSetClick()
                         } else if (canReadSet) {
                             onReadSet()
+                            requestCount++
                         }
                     },
                     onLongClick = {
@@ -413,11 +428,7 @@ private fun ManualReadoutSetPlayButton(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall, Alignment.CenterVertically),
         ) {
-            Icon(
-                imageVector = if (editMode) Icons.Filled.Edit else Icons.Filled.PlayArrow,
-                contentDescription = if (editMode) null else manualReadoutPlayButtonDescription(set, setNumber),
-                modifier = Modifier.size(32.dp),
-            )
+            ManualReadoutPlayTileIcon(editMode, requestCount != 0, set, setNumber)
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
@@ -434,6 +445,26 @@ private fun ManualReadoutSetPlayButton(
                 ManualReadoutHotkeyChip(set, playButtonLayout = true)
             }
         }
+    }
+}
+
+@Composable
+private fun ManualReadoutPlayTileIcon(
+    editMode: Boolean,
+    requesting: Boolean,
+    set: ManualReadoutSet,
+    setNumber: Int,
+) {
+    if (!editMode && requesting) {
+        Box(Modifier.size(32.dp), contentAlignment = Alignment.Center) {
+            PlayingEqualizer(stringResource(Res.string.manual_readout_list_requesting))
+        }
+    } else {
+        Icon(
+            imageVector = if (editMode) Icons.Filled.Edit else Icons.Filled.PlayArrow,
+            contentDescription = if (editMode) null else manualReadoutPlayButtonDescription(set, setNumber),
+            modifier = Modifier.size(32.dp),
+        )
     }
 }
 
@@ -480,6 +511,13 @@ private fun ManualReadoutSetRow(
             ?.let { manualReadoutCategoryColor(it) }
             ?: MaterialTheme.colorScheme.outlineVariant
     val haptic = LocalHapticFeedback.current
+    var requestCount by remember { mutableIntStateOf(0) }
+    LaunchedEffect(requestCount) {
+        if (requestCount != 0) {
+            delay(REQUEST_FEEDBACK_MS)
+            requestCount = 0
+        }
+    }
     var menuExpanded by remember { mutableStateOf(false) }
     var longPressPosition by remember { mutableStateOf(Offset.Unspecified) }
     var pointerDownPosition by remember { mutableStateOf(Offset.Unspecified) }
@@ -586,7 +624,10 @@ private fun ManualReadoutSetRow(
                 }
             }
             FilledIconButton(
-                onClick = onReadSet,
+                onClick = {
+                    onReadSet()
+                    requestCount++
+                },
                 enabled = canReadSet,
                 modifier = Modifier.size(52.dp),
                 shape = CircleShape,
@@ -598,15 +639,14 @@ private fun ManualReadoutSetRow(
                         disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     ),
             ) {
-                Icon(
-                    imageVector = Icons.Filled.PlayArrow,
-                    contentDescription =
-                        if (set.name.isBlank()) {
-                            stringResource(Res.string.manual_readout_list_readout_set, setNumber)
-                        } else {
-                            stringResource(Res.string.manual_readout_list_readout_set_named, set.name)
-                        },
-                )
+                if (requestCount != 0) {
+                    PlayingEqualizer(stringResource(Res.string.manual_readout_list_requesting))
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.PlayArrow,
+                        contentDescription = manualReadoutPlayButtonDescription(set, setNumber),
+                    )
+                }
             }
         }
     }
