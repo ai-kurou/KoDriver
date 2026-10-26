@@ -31,9 +31,11 @@ class DebugStateVirtualEnergyCardTest {
                             cardOrder = listOf(LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY),
                             lmuWindows =
                                 LmuWindowsDebugState(
+                                    virtualEnergyBaseline = LmuWindowsVirtualEnergyBaseline(0.5, 3),
+                                    tyreWearBaseline = LmuWindowsTyreWearBaseline(0.5, 3),
                                     virtualEnergy =
                                         LmuWindowsVirtualEnergyData(
-                                            remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                            remainingRatio = LmuWindowsVirtualEnergyRatio(0.4),
                                         ),
                                     telemetry = sampleLmuTelemetry(currentLap = 5),
                                 ),
@@ -45,9 +47,9 @@ class DebugStateVirtualEnergyCardTest {
         }
 
         rule.onNodeWithText("バーチャルエネルギー").assertIsDisplayed()
-        rule.onNodeWithText("残量 50.0%").assertIsDisplayed()
-        rule.onNodeWithText("消費 10.0%/周").assertIsDisplayed()
-        rule.onNodeWithText("残り 5.0周").assertIsDisplayed()
+        rule.onNodeWithText("残量 40.0%").assertIsDisplayed()
+        rule.onNodeWithText("消費 5.0%/周").assertIsDisplayed()
+        rule.onNodeWithText("残り 8.0周").assertIsDisplayed()
     }
 
     @Test
@@ -64,7 +66,7 @@ class DebugStateVirtualEnergyCardTest {
                                         LmuWindowsVirtualEnergyData(
                                             remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
                                         ),
-                                    telemetry = sampleLmuTelemetry(currentLap = 0),
+                                    telemetry = sampleLmuTelemetry(currentLap = 5),
                                 ),
                         ),
                     canNavigateBack = true,
@@ -75,6 +77,8 @@ class DebugStateVirtualEnergyCardTest {
 
         rule.onNodeWithText("バーチャルエネルギー").assertIsDisplayed()
         rule.onNodeWithText("残量 50.0%").assertIsDisplayed()
+        rule.onNodeWithText("消費 10.0%/周").assertDoesNotExist()
+        rule.onNodeWithText("残り 5.0周").assertDoesNotExist()
     }
 
     @Test
@@ -87,6 +91,8 @@ class DebugStateVirtualEnergyCardTest {
                             cardOrder = listOf(LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY),
                             lmuWindows =
                                 LmuWindowsDebugState(
+                                    virtualEnergyBaseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
+                                    tyreWearBaseline = LmuWindowsTyreWearBaseline(1.0, 0),
                                     virtualEnergy = null,
                                     telemetry = sampleLmuTelemetry(currentLap = 5),
                                 ),

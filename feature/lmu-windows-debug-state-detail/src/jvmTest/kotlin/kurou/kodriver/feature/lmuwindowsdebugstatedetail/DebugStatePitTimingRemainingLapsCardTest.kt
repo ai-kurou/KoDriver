@@ -57,14 +57,16 @@ class DebugStatePitTimingRemainingLapsCardTest {
                             cardOrder = listOf(LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
                             lmuWindows =
                                 LmuWindowsDebugState(
+                                    virtualEnergyBaseline = LmuWindowsVirtualEnergyBaseline(0.5, 3),
+                                    tyreWearBaseline = LmuWindowsTyreWearBaseline(0.5, 3),
                                     virtualEnergy =
                                         LmuWindowsVirtualEnergyData(
-                                            remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                            remainingRatio = LmuWindowsVirtualEnergyRatio(0.4),
                                         ),
                                     telemetry =
                                         sampleLmuTelemetry(
                                             currentLap = 5,
-                                            wheels = mapOf(WheelIndex.FRONT_LEFT to 0.6),
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to 0.4),
                                         ),
                                 ),
                         ),
@@ -75,8 +77,8 @@ class DebugStatePitTimingRemainingLapsCardTest {
         }
 
         rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("バーチャルエネルギー: 残り 5.0周").assertIsDisplayed()
-        rule.onNodeWithText("タイヤ摩耗: 残り 7.5周").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエネルギー: 残り 8.0周").assertIsDisplayed()
+        rule.onNodeWithText("タイヤ摩耗: 残り 8.0周").assertIsDisplayed()
     }
 
     @Test
@@ -86,6 +88,8 @@ class DebugStatePitTimingRemainingLapsCardTest {
                 PitTimingRemainingLapsContent(
                     virtualEnergy = null,
                     lmuWindowsTelemetry = sampleLmuTelemetry(5, mapOf(WheelIndex.FRONT_LEFT to 0.6)),
+                    virtualEnergyBaseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
+                    tyreWearBaseline = LmuWindowsTyreWearBaseline(1.0, 0),
                     fuelBaseline = null,
                 )
             }
@@ -102,6 +106,8 @@ class DebugStatePitTimingRemainingLapsCardTest {
                 PitTimingRemainingLapsContent(
                     virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
                     lmuWindowsTelemetry = sampleLmuTelemetry(5, emptyMap()),
+                    virtualEnergyBaseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
+                    tyreWearBaseline = LmuWindowsTyreWearBaseline(1.0, 0),
                     fuelBaseline = null,
                 )
             }
@@ -119,7 +125,15 @@ class DebugStatePitTimingRemainingLapsCardTest {
                 fuel = LmuWindowsFuelData(LmuWindowsFuelUnit(50.0), LmuWindowsFuelUnit(100.0)),
             )
         rule.setContent {
-            MaterialTheme { PitTimingRemainingLapsContent(null, telemetry, LmuWindowsFuelBaseline(100.0, 0)) }
+            MaterialTheme {
+                PitTimingRemainingLapsContent(
+                    null,
+                    telemetry,
+                    null,
+                    null,
+                    LmuWindowsFuelBaseline(100.0, 0),
+                )
+            }
         }
         rule.onNodeWithText("燃料: 残り 5.0周").assertIsDisplayed()
     }

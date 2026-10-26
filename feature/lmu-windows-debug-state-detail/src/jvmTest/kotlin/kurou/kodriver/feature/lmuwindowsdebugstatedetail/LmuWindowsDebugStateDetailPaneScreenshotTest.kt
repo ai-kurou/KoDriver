@@ -233,6 +233,8 @@ class LmuWindowsDebugStateDetailPaneScreenshotTest {
                 LmuWindowsDebugState(
                     raceFlags = sampleRaceFlags,
                     virtualEnergy = sampleVirtualEnergy,
+                    virtualEnergyBaseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
+                    tyreWearBaseline = LmuWindowsTyreWearBaseline(1.0, 0),
                     telemetry = sampleLmuWindowsTelemetry,
                     vehicleApproach = sampleVehicleApproach,
                     sideBySideDurations = sampleSideBySideDurations,

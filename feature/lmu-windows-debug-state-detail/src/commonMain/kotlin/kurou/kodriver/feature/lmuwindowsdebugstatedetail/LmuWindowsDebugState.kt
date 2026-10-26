@@ -25,6 +25,8 @@ data class LmuWindowsDebugState(
     val vehicleClass: LmuWindowsVehicleClassData? = null,
     val vehicleDamage: LmuWindowsVehicleDamageData? = null,
     val tyreDetached: LmuWindowsTyreDetachedData? = null,
+    val virtualEnergyBaseline: LmuWindowsVirtualEnergyBaseline? = null,
+    val tyreWearBaseline: LmuWindowsTyreWearBaseline? = null,
     val fuelBaseline: LmuWindowsFuelBaseline? = null,
 )
 

@@ -26,6 +26,7 @@ class LmuFuelConsumptionCalculatorTest {
             calculateLmuVirtualEnergyConsumption(
                 virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.0)),
                 telemetry = sampleLmuTelemetry(currentLap = 1),
+                baseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
             )
 
         assertEquals(100.0, result?.consumptionPerLap)
@@ -35,6 +36,7 @@ class LmuFuelConsumptionCalculatorTest {
             0.0,
             calculateLmuTyreWearRemainingLaps(
                 sampleLmuTelemetry(currentLap = 1, wheels = mapOf(WheelIndex.FRONT_LEFT to 0.0)),
+                baseline = LmuWindowsTyreWearBaseline(1.0, 0),
             ),
         )
     }
@@ -48,6 +50,7 @@ class LmuFuelConsumptionCalculatorTest {
                     currentLap = 5,
                     wheels = mapOf(WheelIndex.FRONT_LEFT to 0.8, WheelIndex.FRONT_RIGHT to 0.5),
                 ),
+                baseline = LmuWindowsTyreWearBaseline(1.0, 0),
             ),
         )
     }
@@ -58,6 +61,7 @@ class LmuFuelConsumptionCalculatorTest {
             calculateLmuVirtualEnergyConsumption(
                 virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
                 telemetry = sampleLmuTelemetry(currentLap = 5),
+                baseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
             )
 
         assertEquals(10.0, result?.consumptionPerLap)
@@ -68,7 +72,11 @@ class LmuFuelConsumptionCalculatorTest {
     @Test
     fun `LMU virtualEnergyがnullの場合はnullを返す`() {
         assertNull(
-            calculateLmuVirtualEnergyConsumption(virtualEnergy = null, telemetry = sampleLmuTelemetry(currentLap = 5)),
+            calculateLmuVirtualEnergyConsumption(
+                virtualEnergy = null,
+                telemetry = sampleLmuTelemetry(currentLap = 5),
+                baseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
+            ),
         )
     }
 
@@ -78,6 +86,7 @@ class LmuFuelConsumptionCalculatorTest {
             calculateLmuVirtualEnergyConsumption(
                 virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
                 telemetry = null,
+                baseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
             ),
         )
     }
@@ -88,6 +97,7 @@ class LmuFuelConsumptionCalculatorTest {
             calculateLmuVirtualEnergyConsumption(
                 virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
                 telemetry = sampleLmuTelemetry(currentLap = 0),
+                baseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
             ),
         )
     }
@@ -98,6 +108,7 @@ class LmuFuelConsumptionCalculatorTest {
             calculateLmuVirtualEnergyConsumption(
                 virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(1.0)),
                 telemetry = sampleLmuTelemetry(currentLap = 3),
+                baseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
             ),
         )
     }
@@ -110,10 +121,6 @@ class LmuFuelConsumptionCalculatorTest {
                 LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
             ),
         )
-    }
-
-    @Test
-    fun `LMU virtualEnergyがnullの場合は残量割合を返さない`() {
         assertNull(calculateLmuVirtualEnergyRemainingPercent(null))
     }
 
@@ -125,6 +132,7 @@ class LmuFuelConsumptionCalculatorTest {
                     currentLap = 5,
                     wheels = mapOf(WheelIndex.FRONT_LEFT to 0.5, WheelIndex.FRONT_RIGHT to 0.8),
                 ),
+                baseline = LmuWindowsTyreWearBaseline(1.0, 0),
             )
 
         assertEquals(5.0, result)
@@ -132,7 +140,7 @@ class LmuFuelConsumptionCalculatorTest {
 
     @Test
     fun `タイヤ摩耗 telemetryがnullの場合はnullを返す`() {
-        assertNull(calculateLmuTyreWearRemainingLaps(null))
+        assertNull(calculateLmuTyreWearRemainingLaps(null, baseline = LmuWindowsTyreWearBaseline(1.0, 0)))
     }
 
     @Test
@@ -140,13 +148,19 @@ class LmuFuelConsumptionCalculatorTest {
         assertNull(
             calculateLmuTyreWearRemainingLaps(
                 sampleLmuTelemetry(currentLap = 0, wheels = mapOf(WheelIndex.FRONT_LEFT to 0.5)),
+                baseline = LmuWindowsTyreWearBaseline(1.0, 0),
             ),
         )
     }
 
     @Test
     fun `タイヤ摩耗 wheelsが空の場合はnullを返す`() {
-        assertNull(calculateLmuTyreWearRemainingLaps(sampleLmuTelemetry(currentLap = 5, wheels = emptyMap())))
+        assertNull(
+            calculateLmuTyreWearRemainingLaps(
+                sampleLmuTelemetry(currentLap = 5, wheels = emptyMap()),
+                baseline = LmuWindowsTyreWearBaseline(1.0, 0),
+            ),
+        )
     }
 
     @Test
@@ -154,6 +168,7 @@ class LmuFuelConsumptionCalculatorTest {
         assertNull(
             calculateLmuTyreWearRemainingLaps(
                 sampleLmuTelemetry(currentLap = 3, wheels = mapOf(WheelIndex.FRONT_LEFT to 1.0)),
+                baseline = LmuWindowsTyreWearBaseline(1.0, 0),
             ),
         )
     }
@@ -175,6 +190,55 @@ class LmuFuelConsumptionCalculatorTest {
         assertNull(calculateLmuFuelRemainingLaps(fuelTelemetry(25.0, 5), baseline))
         listOf(-1.0, Double.NaN, Double.POSITIVE_INFINITY).forEach { current ->
             assertNull(calculateLmuFuelRemainingLaps(fuelTelemetry(current, 5), baseline))
+        }
+    }
+
+    @Test
+    fun `50パーセントから2周で40パーセントになれば残り8周になる`() {
+        val telemetry = sampleLmuTelemetry(12, mapOf(WheelIndex.FRONT_LEFT to 0.4))
+        val energy = LmuWindowsVirtualEnergyData(LmuWindowsVirtualEnergyRatio(0.4))
+        val result = calculateLmuVirtualEnergyConsumption(energy, telemetry, LmuWindowsVirtualEnergyBaseline(0.5, 10))
+        assertEquals(8.0, result!!.preciseRemainingLaps, 0.000001)
+        assertEquals(5.0, result.consumptionPerLap, 0.000001)
+        assertEquals(
+            8.0,
+            calculateLmuTyreWearRemainingLaps(telemetry, LmuWindowsTyreWearBaseline(0.5, 10))!!,
+            0.000001,
+        )
+    }
+
+    @Test
+    fun `基準点なしまたは基準点以降の消費が未確定なら計算しない`() {
+        val telemetry = sampleLmuTelemetry(12, mapOf(WheelIndex.FRONT_LEFT to 0.4))
+        val energy = LmuWindowsVirtualEnergyData(LmuWindowsVirtualEnergyRatio(0.4))
+        assertNull(calculateLmuVirtualEnergyConsumption(energy, telemetry, null))
+        assertNull(calculateLmuTyreWearRemainingLaps(telemetry, null))
+        listOf(12, 13).forEach { lap ->
+            assertNull(
+                calculateLmuVirtualEnergyConsumption(energy, telemetry, LmuWindowsVirtualEnergyBaseline(0.5, lap)),
+            )
+            assertNull(calculateLmuTyreWearRemainingLaps(telemetry, LmuWindowsTyreWearBaseline(0.5, lap)))
+        }
+        listOf(0.4, 0.3).forEach { ratio ->
+            assertNull(
+                calculateLmuVirtualEnergyConsumption(energy, telemetry, LmuWindowsVirtualEnergyBaseline(ratio, 10)),
+            )
+            assertNull(calculateLmuTyreWearRemainingLaps(telemetry, LmuWindowsTyreWearBaseline(ratio, 10)))
+        }
+        listOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).forEach { ratio ->
+            assertNull(
+                calculateLmuVirtualEnergyConsumption(
+                    LmuWindowsVirtualEnergyData(LmuWindowsVirtualEnergyRatio(ratio)),
+                    telemetry,
+                    LmuWindowsVirtualEnergyBaseline(0.5, 10),
+                ),
+            )
+            assertNull(
+                calculateLmuTyreWearRemainingLaps(
+                    sampleLmuTelemetry(12, mapOf(WheelIndex.FRONT_LEFT to ratio)),
+                    LmuWindowsTyreWearBaseline(0.5, 10),
+                ),
+            )
         }
     }
 

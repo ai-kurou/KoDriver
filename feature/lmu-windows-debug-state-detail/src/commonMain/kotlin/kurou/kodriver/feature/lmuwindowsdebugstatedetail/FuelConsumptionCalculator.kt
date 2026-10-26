@@ -14,18 +14,20 @@ internal data class FuelConsumptionResult(
 /**
  * LMUはリッター単位の燃料ではなくバーチャルエネルギー残量割合（0.0〜1.0）を基準に走行するため、
  * 消費量はラップあたりの残量割合の減少をパーセント換算した値で表す。
- * 直近の給油・ピットインは考慮せず、レース開始からの平均消費量で近似する簡易計算。
+ * 観測開始・補給後の基準点からの平均消費量で近似する簡易計算。
  */
 internal fun calculateLmuVirtualEnergyConsumption(
     virtualEnergy: LmuWindowsVirtualEnergyData?,
     telemetry: LmuWindowsTelemetryData?,
+    baseline: LmuWindowsVirtualEnergyBaseline?,
 ): FuelConsumptionResult? {
     val currentLap = telemetry?.timing?.currentLap ?: return null
     val remainingRatio = virtualEnergy?.remainingRatio?.value ?: return null
-    if (currentLap <= 0) return null
-    val consumedRatio = 1.0 - remainingRatio
-    if (consumedRatio <= 0.0) return null
-    val avgConsumptionPerLap = consumedRatio / currentLap
+    if (baseline == null || !remainingRatio.isFinite()) return null
+    val elapsedLaps = currentLap - baseline.lap
+    val consumedRatio = baseline.ratio - remainingRatio
+    if (elapsedLaps <= 0 || consumedRatio <= 0.0) return null
+    val avgConsumptionPerLap = consumedRatio / elapsedLaps
     val preciseRemainingLaps = remainingRatio / avgConsumptionPerLap
     return FuelConsumptionResult(
         consumptionPerLap = avgConsumptionPerLap * PERCENT_MULTIPLIER,
@@ -38,19 +40,22 @@ internal fun calculateLmuVirtualEnergyRemainingPercent(virtualEnergy: LmuWindows
     virtualEnergy?.remainingRatio?.value?.times(PERCENT_MULTIPLIER)
 
 /**
- * 4輪のうち最も摩耗が進んでいるタイヤの残溝割合を基準に、レース開始からの平均摩耗量で近似する簡易計算。
- * 直近のタイヤ交換は考慮しない。
+ * 4輪のうち最も摩耗が進んでいるタイヤの残溝割合を基準に、観測開始・タイヤ交換後の基準点からの平均摩耗量で近似する簡易計算。
  */
-internal fun calculateLmuTyreWearRemainingLaps(telemetry: LmuWindowsTelemetryData?): Double? {
+internal fun calculateLmuTyreWearRemainingLaps(
+    telemetry: LmuWindowsTelemetryData?,
+    baseline: LmuWindowsTyreWearBaseline?,
+): Double? {
     val currentLap = telemetry?.timing?.currentLap ?: return null
-    if (currentLap <= 0) return null
     val worstRemainingRatio =
         telemetry.tyres.wheels.values
             .minOfOrNull { it.wear }
             ?.value ?: return null
-    val consumedRatio = 1.0 - worstRemainingRatio
-    if (consumedRatio <= 0.0) return null
-    val avgConsumptionPerLap = consumedRatio / currentLap
+    if (baseline == null || !worstRemainingRatio.isFinite()) return null
+    val elapsedLaps = currentLap - baseline.lap
+    val consumedRatio = baseline.ratio - worstRemainingRatio
+    if (elapsedLaps <= 0 || consumedRatio <= 0.0) return null
+    val avgConsumptionPerLap = consumedRatio / elapsedLaps
     return worstRemainingRatio / avgConsumptionPerLap
 }
 
