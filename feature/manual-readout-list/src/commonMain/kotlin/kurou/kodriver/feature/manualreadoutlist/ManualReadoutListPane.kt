@@ -1,5 +1,10 @@
 package kurou.kodriver.feature.manualreadoutlist
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -162,6 +167,12 @@ internal fun ManualReadoutListPaneContent(
     gridState: LazyGridState = rememberLazyGridState(),
 ) {
     var editMode by remember { mutableStateOf(false) }
+    var additionBaseline by remember(simulatorId) { mutableStateOf<Set<String>?>(null) }
+    val enteredSetIds = remember(simulatorId) { mutableSetOf<String>() }
+    val addSet = {
+        additionBaseline = uiState.sets.map { it.id }.toSet()
+        onAddSet()
+    }
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
             ManualReadoutHintRow(
@@ -190,20 +201,38 @@ internal fun ManualReadoutListPaneContent(
                 ) {
                     itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
                         val setNumber = set.number.takeIf { it > 0 } ?: (index + 1)
-                        ManualReadoutSetPlayButton(
-                            set = set,
-                            title = set.name.ifBlank { manualReadoutSetTitle(simulatorId, setNumber) },
-                            setNumber = setNumber,
-                            editMode = editMode,
-                            canReadSet = uiState.canReadSets && set.itemKeys.isNotEmpty(),
-                            showHotkeyChip = showHotkeyChip,
-                            onReadSet = { onReadSet(set.id) },
-                            onSetClick = { onSetClick(set.id) },
-                        )
+                        ManualReadoutSetEntry(
+                            animate = additionBaseline?.let { set.id !in it } == true,
+                            setId = set.id,
+                            enteredSetIds = enteredSetIds,
+                            modifier =
+                                Modifier.animateItem(
+                                    fadeInSpec = null,
+                                    placementSpec = tween(200),
+                                    fadeOutSpec = null,
+                                ),
+                        ) {
+                            ManualReadoutSetPlayButton(
+                                set = set,
+                                title = set.name.ifBlank { manualReadoutSetTitle(simulatorId, setNumber) },
+                                setNumber = setNumber,
+                                editMode = editMode,
+                                canReadSet = uiState.canReadSets && set.itemKeys.isNotEmpty(),
+                                showHotkeyChip = showHotkeyChip,
+                                onReadSet = { onReadSet(set.id) },
+                                onSetClick = { onSetClick(set.id) },
+                            )
+                        }
                     }
-                    item {
+                    item(key = "add-set") {
                         Surface(
-                            onClick = onAddSet,
+                            modifier =
+                                Modifier.animateItem(
+                                    fadeInSpec = null,
+                                    placementSpec = tween(200),
+                                    fadeOutSpec = null,
+                                ),
+                            onClick = addSet,
                             shape = MaterialTheme.shapes.large,
                             color = MaterialTheme.colorScheme.surfaceContainerHigh,
                         ) {
@@ -238,24 +267,36 @@ internal fun ManualReadoutListPaneContent(
                     contentPadding = PaddingValues(bottom = 56.dp + KoDriverSpacing.large),
                 ) {
                     itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
-                        ManualReadoutSetRow(
-                            setNumber = set.number.takeIf { it > 0 } ?: (index + 1),
-                            simulatorId = simulatorId,
-                            itemCount = set.itemKeys.size,
-                            set = set,
-                            showHotkeyChip = showHotkeyChip,
-                            canReadSet = uiState.canReadSets,
-                            onReadSet = { onReadSet(set.id) },
-                            onSetClick = { onSetClick(set.id) },
-                            onDeleteSet = { onDeleteSet(set.id) },
-                        )
+                        ManualReadoutSetEntry(
+                            animate = additionBaseline?.let { set.id !in it } == true,
+                            setId = set.id,
+                            enteredSetIds = enteredSetIds,
+                            modifier =
+                                Modifier.animateItem(
+                                    fadeInSpec = null,
+                                    placementSpec = tween(200),
+                                    fadeOutSpec = null,
+                                ),
+                        ) {
+                            ManualReadoutSetRow(
+                                setNumber = set.number.takeIf { it > 0 } ?: (index + 1),
+                                simulatorId = simulatorId,
+                                itemCount = set.itemKeys.size,
+                                set = set,
+                                showHotkeyChip = showHotkeyChip,
+                                canReadSet = uiState.canReadSets,
+                                onReadSet = { onReadSet(set.id) },
+                                onSetClick = { onSetClick(set.id) },
+                                onDeleteSet = { onDeleteSet(set.id) },
+                            )
+                        }
                     }
                 }
             }
         }
         if (!uiState.playButtonLayoutEnabled) {
             ExtendedFloatingActionButton(
-                onClick = onAddSet,
+                onClick = addSet,
                 icon = {
                     Icon(
                         imageVector = Icons.Filled.Add,
@@ -266,6 +307,28 @@ internal fun ManualReadoutListPaneContent(
                 modifier = Modifier.align(Alignment.BottomEnd).padding(KoDriverSpacing.large),
             )
         }
+    }
+}
+
+/** 追加操作で増えたセットだけを展開し、スクロールや表示切替では再生しない。 */
+@Composable
+private fun ManualReadoutSetEntry(
+    animate: Boolean,
+    setId: String,
+    enteredSetIds: MutableSet<String>,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    val visibleState =
+        remember(setId) {
+            MutableTransitionState(!(animate && enteredSetIds.add(setId))).apply { targetState = true }
+        }
+    AnimatedVisibility(
+        visibleState = visibleState,
+        modifier = modifier,
+        enter = fadeIn(tween(180)) + expandVertically(tween(220), expandFrom = Alignment.Top),
+    ) {
+        content()
     }
 }
 
