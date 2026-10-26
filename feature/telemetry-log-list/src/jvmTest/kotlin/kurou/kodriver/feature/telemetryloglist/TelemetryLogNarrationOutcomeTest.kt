@@ -19,8 +19,8 @@ class TelemetryLogNarrationOutcomeTest {
     val rule = createComposeRule()
 
     @Test
-    fun `キューに追加されたログはキュー追加アイコンだけを表示する`() {
-        assertOnlyIconShown(NarrationOutcome.QUEUED, "キューに追加")
+    fun `キュー経由で再生されたログはキュー経由で再生アイコンだけを表示する`() {
+        assertOnlyIconShown(NarrationOutcome.QUEUED, "キュー経由で再生")
     }
 
     @Test
@@ -90,6 +90,6 @@ class TelemetryLogNarrationOutcomeTest {
     }
 
     private companion object {
-        val allDescriptions = listOf("キューに追加", "通常再生", "割り込み再生", "読み上げなし")
+        val allDescriptions = listOf("キュー経由で再生", "通常再生", "割り込み再生", "読み上げなし")
     }
 }

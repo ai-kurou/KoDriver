@@ -10,7 +10,7 @@ package kurou.kodriver.domain.model
 enum class NarrationOutcome(
     val id: String,
 ) {
-    /** キュー再生が有効で、読み上げキューへ追加された。 */
+    /** キュー再生が有効で、読み上げキュー経由で再生を要求した（再生中の読み上げの有無は問わない）。 */
     QUEUED("queued"),
 
     /** キュー再生が無効で、再生中の読み上げがなかったため、そのまま読み上げた。 */
