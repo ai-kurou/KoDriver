@@ -3,19 +3,12 @@
 package kurou.kodriver.feature.otherlist
 
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
@@ -205,96 +198,6 @@ class OtherListViewModelSettingsTest : OtherListViewModelTestFixture() {
             assertEquals(OtherListItemType.VoicePitch, viewModel.uiState.first().selectedItem)
             viewModel.onItemSelected(OtherListItemType.VoicePitch)
             assertNull(viewModel.uiState.first().selectedItem)
-        }
-
-    @Test
-    fun `音量の変更と端末音量の定期取得を反映し購読終了後は取得を停止する`() =
-        runTest {
-            every { soundVolumeRepository.volume() } returns soundVolumeFlow
-            var deviceVolume = 60
-            coEvery { deviceVolumeRepository.getVolume() } answers { deviceVolume }
-            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
-            every { voiceRepository.voiceId() } returns voiceFlow
-            every { themeRepository.observeThemeMode() } returns themeModeFlow
-            every { serverIpRepository.serverIp() } returns serverIpFlow
-            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
-            every { consolePortRepository.port() } returns consolePortFlow
-            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
-            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
-            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
-            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
-            val viewModel = createViewModel(hapticFeedbackAvailable = true)
-            coVerify(exactly = 0) { deviceVolumeRepository.getVolume() }
-            val subscription =
-                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                    viewModel.uiState.collect()
-                }
-            runCurrent()
-            val initial = viewModel.uiState.first { it.soundVolume == 80 && it.deviceVolume == 60 }
-            assertEquals(80, initial.soundVolume)
-            assertEquals(60, initial.deviceVolume)
-
-            soundVolumeFlow.update { 100 }
-            assertEquals(100, viewModel.uiState.first { it.soundVolume == 100 }.soundVolume)
-            deviceVolume = 0
-            advanceTimeBy(1_999)
-            assertEquals(60, viewModel.uiState.first().deviceVolume)
-            advanceTimeBy(1)
-            runCurrent()
-            assertEquals(0, viewModel.uiState.first { it.deviceVolume == 0 }.deviceVolume)
-
-            subscription.cancel()
-            runCurrent()
-            advanceTimeBy(5_000)
-            runCurrent()
-            // 購読中の2回と、購読終了後の5秒の猶予中の2回。猶予が終了すると停止する。
-            coVerify(exactly = 4) { deviceVolumeRepository.getVolume() }
-            advanceTimeBy(1_000)
-            runCurrent()
-            coVerify(exactly = 4) { deviceVolumeRepository.getVolume() }
-            confirmVerified(deviceVolumeRepository)
-        }
-
-    @Test
-    fun `端末音量の取得に失敗しても直前の値を維持して取得を続ける`() =
-        runTest(dispatcher) {
-            every { soundVolumeRepository.volume() } returns MutableStateFlow(80)
-            var attempt = 0
-            coEvery { deviceVolumeRepository.getVolume() } answers {
-                when (attempt++) {
-                    0 -> throw IllegalStateException("no audio endpoint")
-                    1 -> 60
-                    else -> throw IllegalStateException("device removed")
-                }
-            }
-            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
-            every { voiceRepository.voiceId() } returns voiceFlow
-            every { themeRepository.observeThemeMode() } returns themeModeFlow
-            every { serverIpRepository.serverIp() } returns serverIpFlow
-            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
-            every { consolePortRepository.port() } returns consolePortFlow
-            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
-            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
-            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
-            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
-            val viewModel = createViewModel(hapticFeedbackAvailable = true)
-            val subscription =
-                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                    viewModel.uiState.collect()
-                }
-            runCurrent()
-
-            assertEquals(0, viewModel.uiState.first { it.soundVolume == 80 }.deviceVolume)
-            advanceTimeBy(2_000)
-            runCurrent()
-            assertEquals(60, viewModel.uiState.first { it.deviceVolume == 60 }.deviceVolume)
-            advanceTimeBy(2_000)
-            runCurrent()
-            assertEquals(60, viewModel.uiState.first().deviceVolume)
-
-            subscription.cancel()
-            coVerify(atLeast = 3) { deviceVolumeRepository.getVolume() }
-            confirmVerified(deviceVolumeRepository)
         }
 
     @Test

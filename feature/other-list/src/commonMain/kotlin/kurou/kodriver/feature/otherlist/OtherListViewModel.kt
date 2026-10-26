@@ -2,23 +2,18 @@ package kurou.kodriver.feature.otherlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
-import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
-import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
@@ -98,7 +93,7 @@ class OtherListViewModel(
     private val startupRegistrationFlow: OtherListStartupRegistrationFlow,
     private val ttsAvailabilityFlow: OtherListTtsAvailabilityFlow,
     appVersionInfo: OtherListAppVersionInfo,
-    private val getDeviceVolume: GetDeviceVolumeUseCase,
+    private val deviceVolumeFlow: OtherListDeviceVolumeFlow,
     private val resetFlow: OtherListResetFlow,
 ) : ViewModel() {
     private val currentVersion = appVersionInfo.currentVersion
@@ -116,28 +111,6 @@ class OtherListViewModel(
                 accessLocalNetworkPermissionGranted = checkAccessLocalNetworkPermissionGranted(),
             ),
         )
-
-    // 端末のマスター音量はOSへの問い合わせが必要なため、購読中だけ一定間隔で取得する。
-    // 既定の出力デバイスがない場合などで取得に失敗しても一覧全体を止めないよう、
-    // 失敗時は直前の値（初回は最小値）を維持する。
-    private val deviceVolumePolling =
-        flow {
-            var latest = DEVICE_VOLUME_MIN
-            while (true) {
-                latest =
-                    try {
-                        getDeviceVolume()
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (
-                        @Suppress("TooGenericExceptionCaught") e: Exception,
-                    ) {
-                        latest
-                    }
-                emit(latest)
-                delay(DEVICE_VOLUME_POLLING_INTERVAL_MS)
-            }
-        }
 
     val uiState: StateFlow<OtherListUiState> =
         combine(
@@ -179,7 +152,7 @@ class OtherListViewModel(
             state.copy(readoutStartSoundType = type)
         }.combine(speechUseCases.observeSoundVolume()) { state, soundVolume ->
             state.copy(soundVolume = soundVolume)
-        }.combine(deviceVolumePolling) { state, deviceVolume ->
+        }.combine(deviceVolumeFlow.volume) { state, deviceVolume ->
             state.copy(deviceVolume = deviceVolume)
         }.combine(ttsAvailabilityFlow.uiState) { state, ttsAvailability ->
             state.copy(
@@ -290,9 +263,5 @@ class OtherListViewModel(
 
     fun onHapticFeedbackEnabledChange(enabled: Boolean) {
         viewModelScope.launch { deviceSettingsUseCases.saveHapticFeedbackEnabled(enabled) }
-    }
-
-    private companion object {
-        const val DEVICE_VOLUME_POLLING_INTERVAL_MS = 2_000L
     }
 }
