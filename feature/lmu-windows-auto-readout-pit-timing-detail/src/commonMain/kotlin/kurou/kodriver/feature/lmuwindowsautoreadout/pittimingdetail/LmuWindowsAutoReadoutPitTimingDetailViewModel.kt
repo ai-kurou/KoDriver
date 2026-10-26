@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
@@ -82,39 +81,19 @@ internal class LmuWindowsAutoReadoutPitTimingDetailViewModel(
         )
 
     val uiState: StateFlow<LmuWindowsAutoReadoutPitTimingDetailUiState> =
-        combine(
-            pitTimingUseCases.observeVirtualEnergyLaps(),
-            combine(pitTimingUseCases.observeTyreWearLaps(), pitTimingUseCases.observeFuelLaps()) { tyre, fuel ->
-                tyre to fuel
-            },
-            pitTimingUseCases.observeEnabledStates(),
-            combine(
-                combine(readout.observeText(), readout.observeImminentText()) { text, imminent -> text to imminent },
-                combine(readout.observeTyreWearText(), readout.observeTyreWearImminentText()) { text, imminent ->
-                    text to imminent
-                },
-                combine(readout.observeFuelText(), readout.observeFuelImminentText()) { text, imminent ->
-                    text to imminent
-                },
-            ) { virtualEnergy, tyreWear, fuel -> Triple(virtualEnergy, tyreWear, fuel) },
-            preview.textToSpeechAvailable,
-        ) { virtualEnergyLaps, tyreWearLaps, enabledStates, texts, available ->
-            LmuWindowsAutoReadoutPitTimingDetailUiState(
-                virtualEnergyEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy),
-                virtualEnergyLaps = virtualEnergyLaps,
-                virtualEnergyText = texts.first.first,
-                virtualEnergyImminentText = texts.first.second,
-                isTextToSpeechAvailable = available,
-                tyreWearEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.PitTiming.TyreWear),
-                tyreWearLaps = tyreWearLaps.first,
-                fuelEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.PitTiming.Fuel),
-                fuelLaps = tyreWearLaps.second,
-                fuelText = texts.third.first,
-                fuelImminentText = texts.third.second,
-                tyreWearText = texts.second.first,
-                tyreWearImminentText = texts.second.second,
-            )
-        }.stateIn(
+        LmuWindowsAutoReadoutPitTimingDetailFlow(
+            virtualEnergyLaps = pitTimingUseCases.observeVirtualEnergyLaps(),
+            tyreWearLaps = pitTimingUseCases.observeTyreWearLaps(),
+            fuelLaps = pitTimingUseCases.observeFuelLaps(),
+            enabledStates = pitTimingUseCases.observeEnabledStates(),
+            virtualEnergyText = readout.observeText(),
+            virtualEnergyImminentText = readout.observeImminentText(),
+            tyreWearText = readout.observeTyreWearText(),
+            tyreWearImminentText = readout.observeTyreWearImminentText(),
+            fuelText = readout.observeFuelText(),
+            fuelImminentText = readout.observeFuelImminentText(),
+            textToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsAutoReadoutPitTimingDetailUiState(),
