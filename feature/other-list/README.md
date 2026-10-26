@@ -28,6 +28,8 @@ Windows/Androidの「読み上げ速度」項目を読み上げ音声の次に�
 
 「アプリ設定」と「情報」の間に「データ・ログ」カテゴリを表示し、「ログを全て削除」を配置する。タップすると確認ダイアログを表示し、確認後にすべてのシミュレーターのログを削除する。選択状態や詳細ペインは変わらない。削除中は二重実行を防ぎ、成功・失敗をスナックバーで通知する。削除フローの状態・操作・UseCase依存は `OtherListResetFlow` が管理し、`OtherListViewModel` は `viewModelScope` での実行と `OtherListUiState.reset` への状態合成を担う。
 
+OS起動時自動起動の状態取得・変更と表示状態は `OtherListStartupRegistrationFlow` が管理し、`OtherListViewModel` は `viewModelScope` で操作を起動して `OtherListUiState.startupEnabled` に状態を合成する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

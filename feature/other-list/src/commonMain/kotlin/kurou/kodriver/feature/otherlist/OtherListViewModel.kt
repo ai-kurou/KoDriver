@@ -42,7 +42,6 @@ import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
-import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 
 /**
  * アプリバージョン表示に必要な情報（現在バージョン・プラットフォーム別ラベル）。
@@ -99,7 +98,7 @@ class OtherListViewModel(
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
     private val checkTextToSpeechUnavailableReason: CheckTextToSpeechUnavailableReasonUseCase,
     private val openWindowsSpeechSettings: OpenWindowsSpeechSettingsUseCase,
-    private val startupRegistration: StartupRegistrationUseCases,
+    private val startupRegistrationFlow: OtherListStartupRegistrationFlow,
     appVersionInfo: OtherListAppVersionInfo,
     private val getDeviceVolume: GetDeviceVolumeUseCase,
     private val resetFlow: OtherListResetFlow,
@@ -192,6 +191,8 @@ class OtherListViewModel(
             )
         }.combine(resetFlow.uiState) { state, reset ->
             state.copy(reset = reset)
+        }.combine(startupRegistrationFlow.uiState) { state, startupRegistration ->
+            state.copy(startupEnabled = startupRegistration.startupEnabled)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun onResetClick() {
@@ -229,10 +230,7 @@ class OtherListViewModel(
     }
 
     fun checkStartupEnabled() {
-        viewModelScope.launch {
-            val enabled = startupRegistration.getEnabled()
-            _uiState.update { it.copy(startupEnabled = enabled) }
-        }
+        viewModelScope.launch { startupRegistrationFlow.checkStartupEnabled() }
     }
 
     fun checkTextToSpeechAvailability() {
@@ -243,10 +241,7 @@ class OtherListViewModel(
     }
 
     fun onStartupEnabledChange(enabled: Boolean) {
-        viewModelScope.launch {
-            startupRegistration.setEnabled(enabled)
-            _uiState.update { it.copy(startupEnabled = enabled) }
-        }
+        viewModelScope.launch { startupRegistrationFlow.onStartupEnabledChange(enabled) }
     }
 
     fun onItemSelected(itemType: OtherListItemType) {

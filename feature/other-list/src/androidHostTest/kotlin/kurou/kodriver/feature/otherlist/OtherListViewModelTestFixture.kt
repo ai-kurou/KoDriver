@@ -206,7 +206,8 @@ abstract class OtherListViewModelTestFixture {
                 CheckAccessLocalNetworkPermissionGrantedUseCase(accessLocalNetworkPermissionRepository),
             checkTextToSpeechUnavailableReason = CheckTextToSpeechUnavailableReasonUseCase(textToSpeechRepository),
             openWindowsSpeechSettings = OpenWindowsSpeechSettingsUseCase(speechSettingsRepository),
-            startupRegistration = StartupRegistrationUseCases(startupRegistrationRepository),
+            startupRegistrationFlow =
+                OtherListStartupRegistrationFlow(StartupRegistrationUseCases(startupRegistrationRepository)),
             getDeviceVolume = GetDeviceVolumeUseCase(deviceVolumeRepository),
             resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(telemetryLogRepository)),
             appVersionInfo =
