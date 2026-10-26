@@ -53,6 +53,8 @@ internal class LmuWindowsDebugStateSource(
     sideBySideTickIntervalMs: Long,
 ) {
     private val sideBySideDurationTracker = LmuWindowsSideBySideDurationTracker()
+    private val virtualEnergyBaselineTracker = LmuWindowsVirtualEnergyBaselineTracker()
+    private val tyreWearBaselineTracker = LmuWindowsTyreWearBaselineTracker()
     private val fuelBaselineTracker = LmuWindowsFuelBaselineTracker()
     private val _lmuWindowsVehicleApproach =
         useCases.observeVehicleApproach().shareIn(scope, SharingStarted.Eagerly, replay = 1)
@@ -207,7 +209,12 @@ internal class LmuWindowsDebugStateSource(
 
     private val base: StateFlow<LmuWindowsDebugState> =
         combine(_raceState, telemetry) { race, telemetry ->
-            race.copy(telemetry = telemetry, fuelBaseline = fuelBaselineTracker.update(telemetry))
+            race.copy(
+                telemetry = telemetry,
+                fuelBaseline = fuelBaselineTracker.update(telemetry),
+                virtualEnergyBaseline = virtualEnergyBaselineTracker.update(race.virtualEnergy, telemetry),
+                tyreWearBaseline = tyreWearBaselineTracker.update(telemetry),
+            )
         }.stateIn(scope, SharingStarted.Eagerly, LmuWindowsDebugState())
 
     val state: StateFlow<LmuWindowsDebugState> =

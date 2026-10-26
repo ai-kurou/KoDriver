@@ -32,6 +32,8 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTimingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearRatio
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
@@ -70,6 +72,7 @@ import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -1397,8 +1400,10 @@ class LmuWindowsDebugStateDetailViewModelTest {
         runTest {
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.GREEN_FLAG))
-            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(10))
-            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(3))
+            val energyFlow = MutableStateFlow(sampleVirtualEnergy(10))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns energyFlow
+            val telemetryFlow = MutableStateFlow(baselineTelemetry(3, 0.5))
+            every { lmuWindowsRepository.telemetryStream() } returns telemetryFlow
             every { vehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleVehicleApproach(setOf(1)))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1417,6 +1422,49 @@ class LmuWindowsDebugStateDetailViewModelTest {
             val enabledCardKeys = viewModel.uiState.first().enabledCardKeys
 
             assertEquals(defaultDebugStateCardOrder.toSet(), enabledCardKeys)
+            assertEquals(
+                LmuWindowsVirtualEnergyBaseline(0.5, 3),
+                viewModel.uiState
+                    .first()
+                    .lmuWindows.virtualEnergyBaseline,
+            )
+            assertEquals(
+                LmuWindowsTyreWearBaseline(0.5, 3),
+                viewModel.uiState
+                    .first()
+                    .lmuWindows.tyreWearBaseline,
+            )
+            telemetryFlow.update { baselineTelemetry(5, 0.4) }
+            energyFlow.update { it.copy(remainingRatio = LmuWindowsVirtualEnergyRatio(0.4)) }
+            testScheduler.runCurrent()
+            assertEquals(
+                LmuWindowsVirtualEnergyBaseline(0.5, 3),
+                viewModel.uiState
+                    .first()
+                    .lmuWindows.virtualEnergyBaseline,
+            )
+            assertEquals(
+                LmuWindowsTyreWearBaseline(0.5, 3),
+                viewModel.uiState
+                    .first()
+                    .lmuWindows.tyreWearBaseline,
+            )
+            energyFlow.update { it.copy(remainingRatio = LmuWindowsVirtualEnergyRatio(0.8)) }
+            testScheduler.runCurrent()
+            assertEquals(
+                LmuWindowsVirtualEnergyBaseline(0.8, 5),
+                viewModel.uiState
+                    .first()
+                    .lmuWindows.virtualEnergyBaseline,
+            )
+            telemetryFlow.update { baselineTelemetry(5, 0.8) }
+            testScheduler.runCurrent()
+            assertEquals(
+                LmuWindowsTyreWearBaseline(0.8, 5),
+                viewModel.uiState
+                    .first()
+                    .lmuWindows.tyreWearBaseline,
+            )
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
@@ -1513,3 +1561,24 @@ private fun sampleTyreDetached(vararg detachedWheels: WheelIndex) =
     LmuWindowsTyreDetachedData(wheels = WheelIndex.entries.associateWith { it in detachedWheels })
 
 private fun sampleBrakeWear() = LmuWindowsBrakeWearData(mapOf(WheelIndex.FRONT_LEFT to BrakeThicknessMeters(0.036f)))
+
+private fun baselineTelemetry(
+    lap: Int,
+    ratio: Double,
+): LmuWindowsTelemetryData =
+    sampleLmuWindowsTelemetry(lap).copy(
+        tyres =
+            LmuWindowsTyreData(
+                wheels =
+                    mapOf(
+                        WheelIndex.FRONT_LEFT to
+                            LmuWindowsTyreWheelData(
+                                surfaceTemperature = CelsiusReading(0f),
+                                carcassTemperature = CelsiusReading(0f),
+                                brakeTemperature = CelsiusReading(0f),
+                                pressureKpa = PressureKpa(0.0),
+                                wear = LmuWindowsTyreWearRatio(ratio),
+                            ),
+                    ),
+            ),
+    )

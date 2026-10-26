@@ -18,13 +18,14 @@ import kotlin.math.round
 internal fun VirtualEnergyContent(
     virtualEnergy: LmuWindowsVirtualEnergyData?,
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
+    baseline: LmuWindowsVirtualEnergyBaseline?,
 ) {
     val remainingPercent = calculateLmuVirtualEnergyRemainingPercent(virtualEnergy)
     if (remainingPercent == null) {
         DebugStateUnavailableContent()
         return
     }
-    val consumption = calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry)
+    val consumption = calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry, baseline)
     Column {
         Text(
             text =

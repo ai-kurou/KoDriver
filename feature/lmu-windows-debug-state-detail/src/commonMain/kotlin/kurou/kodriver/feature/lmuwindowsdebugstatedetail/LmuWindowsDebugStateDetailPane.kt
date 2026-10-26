@@ -252,12 +252,15 @@ private val debugStateCardContents:
             VirtualEnergyContent(
                 uiState.lmuWindows.virtualEnergy,
                 uiState.lmuWindows.telemetry,
+                uiState.lmuWindows.virtualEnergyBaseline,
             )
         },
         LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS to { uiState ->
             PitTimingRemainingLapsContent(
                 uiState.lmuWindows.virtualEnergy,
                 uiState.lmuWindows.telemetry,
+                uiState.lmuWindows.virtualEnergyBaseline,
+                uiState.lmuWindows.tyreWearBaseline,
                 uiState.lmuWindows.fuelBaseline,
             )
         },
