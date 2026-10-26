@@ -6,7 +6,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -25,7 +24,7 @@ class TelemetryLogListViewModel internal constructor(
     private val deleteTelemetryLog: DeleteTelemetryLogUseCase,
 ) : ViewModel() {
     private val _selectedLogId = MutableStateFlow<Long?>(null)
-    private val _deleteState = MutableStateFlow(DeleteState())
+    private val _deleteState = MutableStateFlow(TelemetryLogListDeleteState())
     private val _pendingDeleteLogId = MutableStateFlow<Long?>(null)
 
     private var previousSimulator: Simulator? = null
@@ -38,22 +37,13 @@ class TelemetryLogListViewModel internal constructor(
         }
 
     val uiState: StateFlow<TelemetryLogListUiState> =
-        combine(
-            observeSortedTelemetryLogs(),
-            _selectedLogId,
-            _deleteState,
-            _pendingDeleteLogId,
-            selectedSimulator,
-        ) { logs, selectedLogId, deleteState, pendingDeleteLogId, selectedSimulator ->
-            TelemetryLogListUiState(
-                logs = logs,
-                selectedLogId = selectedLogId?.takeIf { selectedId -> logs.any { it.id == selectedId } },
-                selectedSimulator = selectedSimulator,
-                pendingDeleteLogId = pendingDeleteLogId,
-                isDeleting = deleteState.isDeleting,
-                deleteSucceeded = deleteState.deleteSucceeded,
-            )
-        }.stateIn(
+        TelemetryLogListFlow(
+            logs = observeSortedTelemetryLogs(),
+            selectedLogId = _selectedLogId,
+            deleteState = _deleteState,
+            pendingDeleteLogId = _pendingDeleteLogId,
+            selectedSimulator = selectedSimulator,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             TelemetryLogListUiState(),
@@ -101,9 +91,4 @@ class TelemetryLogListViewModel internal constructor(
             _deleteState.update { it.copy(isDeleting = false, deleteSucceeded = succeeded) }
         }
     }
-
-    private data class DeleteState(
-        val isDeleting: Boolean = false,
-        val deleteSucceeded: Boolean? = null,
-    )
 }
