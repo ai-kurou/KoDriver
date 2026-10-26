@@ -13,7 +13,7 @@
     <string name="manual_readout_layout_toggle_to_play_buttons">再生ボタン表示に切り替え</string>
     <string name="manual_readout_layout_toggle_to_standard">標準表示に切り替え</string>
     <string name="manual_readout_hint_layout_title">表示の切り替え</string>
-    <string name="manual_readout_hint_layout_description">見出し右のボタンで、標準表示と再生ボタン表示（2列の大きなボタン）を切り替えます。</string>
+    <string name="manual_readout_hint_layout_description">見出し右の切り替えボタンで、標準表示と再生ボタン表示（2列の大きなボタン）を切り替えます。</string>
     <string name="manual_readout_hint_readout_title">読み上げ</string>
     <string name="manual_readout_hint_readout_description">自動読み上げのON/OFFに関係なく読み上げます。自動読み上げの「読み上げ済み」の状態は変わりません。</string>
     <string name="manual_readout_hint_queue_title">順番待ち</string>
@@ -31,11 +31,13 @@
     <string name="manual_readout_hint_delete_description">標準表示では、セットを長押しすると、確認してから削除できます。再生ボタン表示では、編集画面から削除します。</string>
     <string name="manual_readout_list_hotkey_unassigned">未設定</string>
     <string name="manual_readout_list_readout_set_named">%1$s を読み上げ</string>
+    <string name="manual_readout_edit_mode_label">編集</string>
+    <string name="manual_readout_list_set_count">%1$dセット</string>
     <string name="manual_readout_edit_mode_enable">編集モードにする</string>
     <string name="manual_readout_edit_mode_disable">編集モードを終了</string>
     <string name="manual_readout_tap_to_edit">タップで編集</string>
     <string name="manual_readout_hint_edit_mode_title">編集モード</string>
-    <string name="manual_readout_hint_edit_mode_description">再生ボタン表示では、見出しの鉛筆でボタンのタップが編集に切り替わります。ボタンの長押しでも編集できます。</string>
+    <string name="manual_readout_hint_edit_mode_description">再生ボタン表示では、見出しの「編集」ボタンでボタンのタップが編集に切り替わります。ボタンの長押しでも編集できます。</string>
     <string name="manual_readout_category_virtual_energy">バーチャルエネルギー</string>
     <string name="manual_readout_category_fuel">燃料</string>
     <string name="manual_readout_category_tyre">タイヤ</string>

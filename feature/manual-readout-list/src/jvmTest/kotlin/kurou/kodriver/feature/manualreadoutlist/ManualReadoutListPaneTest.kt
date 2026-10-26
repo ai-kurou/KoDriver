@@ -44,7 +44,7 @@ class ManualReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `標準表示は再生ボタン表示への切替アイコンを表示してクリックを通知する`() {
+    fun `標準表示は再生ボタン表示への切替セグメントを表示してクリックを通知する`() {
         var toggleCount = 0
         rule.setContent {
             KoDriverTheme {
@@ -278,10 +278,14 @@ class ManualReadoutListPaneTest {
             }
         }
 
+        rule
+            .onNodeWithText("見出し右の切り替えボタンで、標準表示と再生ボタン表示（2列の大きなボタン）を切り替えます。")
+            .performScrollTo()
+            .assertIsDisplayed()
         rule.onNodeWithText("編集モード").performScrollTo().assertIsDisplayed()
         rule
             .onNodeWithText(
-                "再生ボタン表示では、見出しの鉛筆でボタンのタップが編集に切り替わります。ボタンの長押しでも編集できます。",
+                "再生ボタン表示では、見出しの「編集」ボタンでボタンのタップが編集に切り替わります。ボタンの長押しでも編集できます。",
             ).performScrollTo()
             .assertIsDisplayed()
         rule

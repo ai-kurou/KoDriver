@@ -99,12 +99,14 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
-    fun `鉛筆で編集を開始するとタップと長押しで編集し終了すると再生に戻る`() {
+    fun `編集ボタンで編集を開始するとタップと長押しで編集し終了すると再生に戻る`() {
         every { onSetClick("set-1") } returns Unit
         every { onReadSet("set-1") } returns Unit
         showPlayButtons()
 
+        rule.onNodeWithText("編集").assertIsDisplayed()
         rule.onNodeWithContentDescription("編集モードにする").performClick()
+        rule.onNodeWithText("編集").assertIsDisplayed()
         rule.onNodeWithText("タップで編集").assertIsDisplayed()
         rule.onNodeWithText("LMU(Windows)セット1").performClick()
         rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
@@ -118,7 +120,7 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
-    fun `表示切替後は編集モードを解除し標準表示には鉛筆を出さない`() {
+    fun `表示切替後は編集モードを解除し標準表示には編集ボタンを出さない`() {
         val playLayout = mutableStateOf(true)
         rule.setContent {
             KoDriverTheme {
@@ -229,7 +231,7 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
-    fun `再生ボタン表示は標準表示への切替アイコンを表示する`() {
+    fun `再生ボタン表示は標準表示への切替セグメントを表示する`() {
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutListPaneContent(

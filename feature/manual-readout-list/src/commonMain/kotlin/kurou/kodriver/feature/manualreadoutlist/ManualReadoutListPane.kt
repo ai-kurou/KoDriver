@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,6 +35,8 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -54,7 +58,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
@@ -68,6 +71,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -76,6 +80,9 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
@@ -92,6 +99,7 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_edit_mode_disable
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_edit_mode_enable
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_edit_mode_label
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_edit_mode_description
@@ -122,6 +130,7 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_no_items
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set_named
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_count
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_ace
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_gt7
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_lmu
@@ -193,6 +202,7 @@ internal fun ManualReadoutListPaneContent(
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
                 ManualReadoutHintRow(
+                    setCount = uiState.sets.size,
                     playButtonLayoutEnabled = uiState.playButtonLayoutEnabled,
                     onTogglePlayButtonLayout = {
                         editMode = false
@@ -695,6 +705,7 @@ internal fun ManualReadoutListDeleteConfirmDialog(
 
 @Composable
 private fun ManualReadoutHintRow(
+    setCount: Int,
     editMode: Boolean,
     onToggleEditMode: () -> Unit,
     playButtonLayoutEnabled: Boolean,
@@ -705,54 +716,106 @@ private fun ManualReadoutHintRow(
         label = stringResource(Res.string.manual_readout_hint_label),
         helpContentDescription = stringResource(Res.string.manual_readout_hint_help_description),
         modifier = modifier,
+        trailingText = if (setCount > 0) stringResource(Res.string.manual_readout_list_set_count, setCount) else null,
         trailingContent = {
-            Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 if (playButtonLayoutEnabled) {
-                    IconButton(onClick = onToggleEditMode, modifier = Modifier.size(24.dp)) {
-                        Icon(
-                            imageVector = Icons.Filled.Edit,
-                            contentDescription =
-                                stringResource(
-                                    if (editMode) {
-                                        Res.string.manual_readout_edit_mode_disable
-                                    } else {
-                                        Res.string.manual_readout_edit_mode_enable
-                                    },
-                                ),
-                            modifier = Modifier.size(20.dp),
-                            tint =
-                                if (editMode) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                                },
+                    ManualReadoutEditButton(editMode, onToggleEditMode)
+                }
+                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceContainerHighest) {
+                    Row(modifier = Modifier.selectableGroup()) {
+                        ManualReadoutLayoutSegment(
+                            playButtonLayout = false,
+                            selected = !playButtonLayoutEnabled,
+                            onClick = onTogglePlayButtonLayout,
+                        )
+                        ManualReadoutLayoutSegment(
+                            playButtonLayout = true,
+                            selected = playButtonLayoutEnabled,
+                            onClick = onTogglePlayButtonLayout,
                         )
                     }
-                }
-                IconButton(onClick = onTogglePlayButtonLayout, modifier = Modifier.size(24.dp)) {
-                    Icon(
-                        imageVector =
-                            if (playButtonLayoutEnabled) {
-                                Icons.AutoMirrored.Filled.ViewList
-                            } else {
-                                Icons.Filled.GridView
-                            },
-                        contentDescription =
-                            stringResource(
-                                if (playButtonLayoutEnabled) {
-                                    Res.string.manual_readout_layout_toggle_to_standard
-                                } else {
-                                    Res.string.manual_readout_layout_toggle_to_play_buttons
-                                },
-                            ),
-                        modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
                 }
             }
         },
     ) {
         ManualReadoutHintSheetContent(showHotkeyHint = isManualReadoutHotkeySupported())
+    }
+}
+
+@Composable
+private fun ManualReadoutLayoutSegment(
+    playButtonLayout: Boolean,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier =
+            Modifier
+                .size(width = 40.dp, height = 32.dp)
+                .clip(CircleShape)
+                .background(if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
+                .selectable(selected = selected, role = Role.RadioButton, onClick = { if (!selected) onClick() }),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = if (playButtonLayout) Icons.Filled.GridView else Icons.AutoMirrored.Filled.ViewList,
+            contentDescription =
+                stringResource(
+                    if (playButtonLayout) {
+                        Res.string.manual_readout_layout_toggle_to_play_buttons
+                    } else {
+                        Res.string.manual_readout_layout_toggle_to_standard
+                    },
+                ),
+            modifier = Modifier.size(20.dp),
+            tint =
+                if (selected) {
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+        )
+    }
+}
+
+@Composable
+private fun ManualReadoutEditButton(
+    editMode: Boolean,
+    onClick: () -> Unit,
+) {
+    val description =
+        stringResource(
+            if (editMode) Res.string.manual_readout_edit_mode_disable else Res.string.manual_readout_edit_mode_enable,
+        )
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.height(32.dp).semantics(mergeDescendants = true) { contentDescription = description },
+        shape = CircleShape,
+        color =
+            if (editMode) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceContainerHighest
+            },
+        contentColor =
+            if (editMode) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+    ) {
+        Row(
+            modifier = Modifier.heightIn(min = 32.dp).padding(horizontal = KoDriverSpacing.small),
+            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Filled.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(stringResource(Res.string.manual_readout_edit_mode_label), style = MaterialTheme.typography.labelLarge)
+        }
     }
 }
 
