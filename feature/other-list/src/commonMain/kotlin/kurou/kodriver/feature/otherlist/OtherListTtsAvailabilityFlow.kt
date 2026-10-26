@@ -3,10 +3,14 @@ package kurou.kodriver.feature.otherlist
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 
-/** TTS利用可否の判定と一覧項目・警告表示への反映を管理する。実行のライフサイクルは呼び出し元に従う。 */
+/**
+ * TTS利用可否の判定と一覧項目・警告表示への反映を管理する。
+ * 実行のライフサイクルは呼び出し元に従う。
+ */
 class OtherListTtsAvailabilityFlow(
     private val checkUnavailableReason: CheckTextToSpeechUnavailableReasonUseCase,
 ) {

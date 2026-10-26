@@ -89,8 +89,11 @@ class OtherListTtsAvailabilityFlowTest {
             flow.checkAvailability()
 
             assertEquals(
-                listOf(OtherListItemType.HapticFeedback, OtherListItemType.TtsEngineMissing, OtherListItemType.KeepScreenOn)
-                    .sortedBy { it.ordinal },
+                listOf(
+                    OtherListItemType.HapticFeedback,
+                    OtherListItemType.TtsEngineMissing,
+                    OtherListItemType.KeepScreenOn,
+                ).sortedBy { it.ordinal },
                 flow.applyGuidance(
                     listOf(
                         OtherListItemType.KeepScreenOn,
