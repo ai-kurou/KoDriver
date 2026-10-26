@@ -17,6 +17,7 @@ digraph G {
   ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:manual-readout-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:manual-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:telemetry-log-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:telemetry-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -52,6 +53,8 @@ digraph G {
   ":feature:main" -> ":core:ace-windows-domain"
   ":feature:manual-readout-detail" -> ":core:domain"
   ":feature:manual-readout-detail" -> ":core:ace-windows-domain"
+  ":feature:manual-readout-list" -> ":core:domain"
+  ":feature:manual-readout-list" -> ":core:ace-windows-domain"
   ":feature:narrator-overlay" -> ":core:domain"
   ":feature:narrator-overlay" -> ":core:ace-windows-domain"
   ":feature:telemetry-log-detail" -> ":core:domain"
