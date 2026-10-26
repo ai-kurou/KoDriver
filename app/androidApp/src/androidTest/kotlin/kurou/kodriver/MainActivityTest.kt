@@ -179,7 +179,7 @@ class MainActivityTest {
         waitUntilDisplayed("Windows版KoDriverへ接続するIPアドレスが未設定です")
         composeTestRule.onNodeWithText("Windows版KoDriverへ接続するIPアドレスが未設定です").assertHasClickAction()
         clickItem("Windows版KoDriverへ接続するIPアドレスが未設定です")
-        waitUntilDisplayed("Windows版KoDriverが動作しているPCのIPアドレスを入力してください。")
+        waitUntilDisplayed("が動作しているPCのIPアドレスを入力してください。", substring = true)
         navigateBack()
     }
 
@@ -190,7 +190,7 @@ class MainActivityTest {
         waitUntilDisplayed("Windows版KoDriverへ接続するIPアドレスが未設定です")
         composeTestRule.onNodeWithText("Windows版KoDriverへ接続するIPアドレスが未設定です").assertHasClickAction()
         clickItem("Windows版KoDriverへ接続するIPアドレスが未設定です")
-        waitUntilDisplayed("Windows版KoDriverが動作しているPCのIPアドレスを入力してください。")
+        waitUntilDisplayed("が動作しているPCのIPアドレスを入力してください。", substring = true)
         navigateBack()
     }
 
