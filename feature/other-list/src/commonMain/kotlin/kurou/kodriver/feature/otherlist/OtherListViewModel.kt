@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
-import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
@@ -82,7 +81,6 @@ data class OtherListConnectionUseCases(
  */
 @Suppress("LongParameterList")
 class OtherListViewModel(
-    private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val overlayUseCases: OtherListOverlayUseCases,
     private val speechUseCases: OtherListSpeechUseCases,
     private val deviceSettingsUseCases: OtherListDeviceSettingsUseCases,
@@ -93,11 +91,10 @@ class OtherListViewModel(
     private val startupRegistrationFlow: OtherListStartupRegistrationFlow,
     private val ttsAvailabilityFlow: OtherListTtsAvailabilityFlow,
     appVersionInfo: OtherListAppVersionInfo,
+    private val appUpdateFlow: OtherListAppUpdateFlow,
     private val deviceVolumeFlow: OtherListDeviceVolumeFlow,
     private val resetFlow: OtherListResetFlow,
 ) : ViewModel() {
-    private val currentVersion = appVersionInfo.currentVersion
-    private var updateCheckStarted = false
     private val hapticFeedbackAvailable = checkHapticFeedbackAvailable()
     private val _uiState =
         MutableStateFlow(
@@ -163,6 +160,8 @@ class OtherListViewModel(
             state.copy(reset = reset)
         }.combine(startupRegistrationFlow.uiState) { state, startupRegistration ->
             state.copy(startupEnabled = startupRegistration.startupEnabled)
+        }.combine(appUpdateFlow.uiState) { state, appUpdate ->
+            state.copy(hasAppUpdate = appUpdate.hasAppUpdate)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun onResetClick() {
@@ -182,12 +181,7 @@ class OtherListViewModel(
     }
 
     fun checkUpdate() {
-        if (currentVersion.isBlank() || updateCheckStarted) return
-        updateCheckStarted = true
-        viewModelScope.launch {
-            val hasUpdate = checkAppUpdateAvailable(currentVersion)
-            _uiState.update { it.copy(hasAppUpdate = hasUpdate) }
-        }
+        viewModelScope.launch { appUpdateFlow.checkUpdate() }
     }
 
     fun checkAccessLocalNetworkPermission() {

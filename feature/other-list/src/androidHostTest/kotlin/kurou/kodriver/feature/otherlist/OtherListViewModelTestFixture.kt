@@ -166,7 +166,6 @@ abstract class OtherListViewModelTestFixture {
         every { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() } returns hapticFeedbackAvailable
         every { accessLocalNetworkPermissionRepository.isGranted() } returns true
         return OtherListViewModel(
-            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
             overlayUseCases =
                 OtherListOverlayUseCases(
                     observeOverlayVisible = ObserveOverlayVisibleUseCase(overlayVisibleRepository),
@@ -209,6 +208,8 @@ abstract class OtherListViewModelTestFixture {
                 OtherListStartupRegistrationFlow(StartupRegistrationUseCases(startupRegistrationRepository)),
             ttsAvailabilityFlow =
                 OtherListTtsAvailabilityFlow(CheckTextToSpeechUnavailableReasonUseCase(textToSpeechRepository)),
+            appUpdateFlow =
+                OtherListAppUpdateFlow(CheckAppUpdateAvailableUseCase(appUpdateRepository), "0.5.0"),
             deviceVolumeFlow = OtherListDeviceVolumeFlow(GetDeviceVolumeUseCase(deviceVolumeRepository)),
             resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(telemetryLogRepository)),
             appVersionInfo =

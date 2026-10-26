@@ -34,6 +34,8 @@ OS起動時自動起動の状態取得・変更と表示状態は `OtherListStar
 
 TTS利用可否の判定と一覧案内項目・警告表示への反映は `OtherListTtsAvailabilityFlow` が管理し、判定処理のライフサイクルは呼び出し元の `viewModelScope` に従う。`OtherListViewModel` は `OtherListUiState` へ状態を合成する。
 
+アプリ更新の一度限りの確認と更新有無の状態は `OtherListAppUpdateFlow` が管理する。現在バージョンが空白の場合は確認せず、確認中・更新なし・リリース情報なしの場合も再実行しない。`OtherListViewModel` は `viewModelScope` で確認を実行し、`OtherListUiState.hasAppUpdate` に状態を合成する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

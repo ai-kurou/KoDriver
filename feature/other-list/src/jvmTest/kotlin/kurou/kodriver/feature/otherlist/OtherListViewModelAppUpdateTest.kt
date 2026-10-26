@@ -37,7 +37,7 @@ class OtherListViewModelAppUpdateTest : OtherListViewModelTestFixture() {
 
             viewModel.checkUpdate()
 
-            assertTrue(viewModel.uiState.first().hasAppUpdate)
+            assertTrue(viewModel.uiState.first { it.hasAppUpdate }.hasAppUpdate)
             coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
@@ -77,7 +77,7 @@ class OtherListViewModelAppUpdateTest : OtherListViewModelTestFixture() {
             viewModel.checkUpdate()
             advanceUntilIdle()
 
-            assertTrue(viewModel.uiState.first().hasAppUpdate)
+            assertTrue(viewModel.uiState.first { it.hasAppUpdate }.hasAppUpdate)
             coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
@@ -118,7 +118,7 @@ class OtherListViewModelAppUpdateTest : OtherListViewModelTestFixture() {
             release.complete(AppUpdate("v9.9.9"))
             advanceUntilIdle()
 
-            assertTrue(viewModel.uiState.first().hasAppUpdate)
+            assertTrue(viewModel.uiState.first { it.hasAppUpdate }.hasAppUpdate)
             coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
