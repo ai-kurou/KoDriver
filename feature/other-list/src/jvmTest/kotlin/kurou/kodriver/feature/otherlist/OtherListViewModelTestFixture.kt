@@ -215,7 +215,7 @@ abstract class OtherListViewModelTestFixture {
                 OtherListStartupRegistrationFlow(StartupRegistrationUseCases(startupRegistrationRepository)),
             ttsAvailabilityFlow =
                 OtherListTtsAvailabilityFlow(CheckTextToSpeechUnavailableReasonUseCase(textToSpeechRepository)),
-            getDeviceVolume = GetDeviceVolumeUseCase(deviceVolumeRepository),
+            deviceVolumeFlow = OtherListDeviceVolumeFlow(GetDeviceVolumeUseCase(deviceVolumeRepository)),
             resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(telemetryLogRepository)),
             appVersionInfo =
                 OtherListAppVersionInfo(
