@@ -6,12 +6,14 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.unit.height
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -20,6 +22,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
@@ -244,6 +247,38 @@ class ManualReadoutListPlayButtonPaneTest {
             }
         }
         rule.onNodeWithContentDescription("標準表示").assertIsDisplayed()
+    }
+
+    @Test
+    fun `追加タイルは同じ行の再生タイルと同じ高さになる`() {
+        showPlayButtons()
+
+        val playHeight = rule.onNodeWithContentDescription("セット 1 を読み上げ").getUnclippedBoundsInRoot().height
+        val addHeight = rule.onNodeWithText("セットを追加").getUnclippedBoundsInRoot().height
+        assertEquals(playHeight, addHeight)
+    }
+
+    @Test
+    fun `再生タイルが低くなると追加タイルも同じ高さに縮む`() {
+        val longName = "とても長いセット名".repeat(8)
+        val sets = mutableStateOf(listOf(ManualReadoutSet(id = "set-1", name = longName)))
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState = ManualReadoutListUiState(playButtonLayoutEnabled = true, sets = sets.value),
+                    simulatorId = "lmu_windows",
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                )
+            }
+        }
+        sets.value = listOf(ManualReadoutSet(id = "set-1"))
+        rule.waitForIdle()
+
+        val playHeight = rule.onNodeWithContentDescription("セット 1 を読み上げ").getUnclippedBoundsInRoot().height
+        val addHeight = rule.onNodeWithText("セットを追加").getUnclippedBoundsInRoot().height
+        assertEquals(playHeight, addHeight)
     }
 
     private fun showPlayButtonHotkeySets(showHotkeyChip: Boolean) {
