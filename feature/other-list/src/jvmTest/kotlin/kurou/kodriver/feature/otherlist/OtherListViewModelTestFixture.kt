@@ -210,10 +210,11 @@ abstract class OtherListViewModelTestFixture {
             checkHapticFeedbackAvailable = CheckHapticFeedbackAvailableUseCase(hapticFeedbackAvailabilityRepository),
             checkAccessLocalNetworkPermissionGranted =
                 CheckAccessLocalNetworkPermissionGrantedUseCase(accessLocalNetworkPermissionRepository),
-            checkTextToSpeechUnavailableReason = CheckTextToSpeechUnavailableReasonUseCase(textToSpeechRepository),
             openWindowsSpeechSettings = OpenWindowsSpeechSettingsUseCase(speechSettingsRepository),
             startupRegistrationFlow =
                 OtherListStartupRegistrationFlow(StartupRegistrationUseCases(startupRegistrationRepository)),
+            ttsAvailabilityFlow =
+                OtherListTtsAvailabilityFlow(CheckTextToSpeechUnavailableReasonUseCase(textToSpeechRepository)),
             getDeviceVolume = GetDeviceVolumeUseCase(deviceVolumeRepository),
             resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(telemetryLogRepository)),
             appVersionInfo =
