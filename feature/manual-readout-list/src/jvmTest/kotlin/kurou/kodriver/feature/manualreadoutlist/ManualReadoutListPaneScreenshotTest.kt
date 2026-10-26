@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Test
 
@@ -39,11 +40,21 @@ class ManualReadoutListPaneScreenshotTest {
                                                 ManualReadoutSet(
                                                     id = "set-1",
                                                     name = "燃料とタイヤ",
-                                                    itemKeys = listOf("SESSION", "FLAG"),
+                                                    itemKeys =
+                                                        listOf(
+                                                            LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
+                                                            LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                                                        ),
                                                     hotkeyVirtualKeyCode = 0x41,
                                                 ),
                                                 ManualReadoutSet(id = "set-2"),
-                                                ManualReadoutSet(id = "set-3", itemKeys = listOf("SESSION")),
+                                                ManualReadoutSet(
+                                                    id = "set-3",
+                                                    itemKeys =
+                                                        listOf(
+                                                            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
+                                                        ),
+                                                ),
                                             ),
                                     ),
                                 simulatorId = "lmu_windows",
@@ -76,11 +87,21 @@ class ManualReadoutListPaneScreenshotTest {
                                                 ManualReadoutSet(
                                                     id = "set-1",
                                                     name = "燃料とタイヤ",
-                                                    itemKeys = listOf("SESSION", "FLAG"),
+                                                    itemKeys =
+                                                        listOf(
+                                                            LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
+                                                            LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                                                        ),
                                                     hotkeyVirtualKeyCode = 0x41,
                                                 ),
                                                 ManualReadoutSet(id = "set-2"),
-                                                ManualReadoutSet(id = "set-3", itemKeys = listOf("SESSION")),
+                                                ManualReadoutSet(
+                                                    id = "set-3",
+                                                    itemKeys =
+                                                        listOf(
+                                                            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
+                                                        ),
+                                                ),
                                             ),
                                     ),
                                 simulatorId = "lmu_windows",
@@ -134,7 +155,14 @@ class ManualReadoutListPaneScreenshotTest {
                                         sets =
                                             listOf(
                                                 ManualReadoutSet(id = "set-1", hotkeyVirtualKeyCode = 0x41),
-                                                ManualReadoutSet(id = "set-2", itemKeys = listOf("SESSION", "FLAG")),
+                                                ManualReadoutSet(
+                                                    id = "set-2",
+                                                    itemKeys =
+                                                        listOf(
+                                                            LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
+                                                            LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                                                        ),
+                                                ),
                                             ),
                                     ),
                                 simulatorId = "lmu_windows",

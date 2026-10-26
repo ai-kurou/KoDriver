@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
@@ -51,8 +52,10 @@ import androidx.compose.material3.DropdownMenuPopupPositionProvider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Surface
@@ -65,6 +68,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
@@ -294,7 +298,6 @@ internal fun ManualReadoutListPaneContent(
                                 ManualReadoutSetRow(
                                     setNumber = set.number.takeIf { it > 0 } ?: (index + 1),
                                     simulatorId = simulatorId,
-                                    itemCount = set.itemKeys.size,
                                     set = set,
                                     showHotkeyChip = showHotkeyChip,
                                     canReadSet = uiState.canReadSets,
@@ -416,6 +419,7 @@ private fun ManualReadoutSetPlayButton(
                 text = manualReadoutPlayButtonSubtitle(editMode, set.itemKeys.size),
                 style = MaterialTheme.typography.bodyMedium,
             )
+            ManualReadoutCategoryDots(remember(set.itemKeys) { manualReadoutCategorySummary(set.itemKeys) })
             if (showHotkeyChip && manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null) {
                 ManualReadoutHotkeyChip(set, playButtonLayout = true)
             }
@@ -445,13 +449,12 @@ private fun manualReadoutPlayButtonSubtitle(
         else -> stringResource(Res.string.manual_readout_list_item_count, itemCount)
     }
 
-/** セット番号と項目数、対応環境ではホットキーを表示する。LMU のセットは読み上げボタンから依頼を送る。 */
+/** セット名・カテゴリ別件数・対応環境のホットキーと読み上げボタンを表示する。 */
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ManualReadoutSetRow(
     setNumber: Int,
     simulatorId: String,
-    itemCount: Int,
     set: ManualReadoutSet,
     showHotkeyChip: Boolean,
     canReadSet: Boolean,
@@ -459,6 +462,13 @@ private fun ManualReadoutSetRow(
     onSetClick: () -> Unit,
     onDeleteSet: () -> Unit,
 ) {
+    val categories = remember(set.itemKeys) { manualReadoutCategorySummary(set.itemKeys) }
+    val stripeColor =
+        categories.counts
+            .firstOrNull()
+            ?.first
+            ?.let { manualReadoutCategoryColor(it) }
+            ?: MaterialTheme.colorScheme.outlineVariant
     val haptic = LocalHapticFeedback.current
     var menuExpanded by remember { mutableStateOf(false) }
     var longPressPosition by remember { mutableStateOf(Offset.Unspecified) }
@@ -541,8 +551,9 @@ private fun ManualReadoutSetRow(
             modifier =
                 Modifier
                     .fillMaxWidth()
+                    .drawBehind { drawRect(stripeColor, size = size.copy(width = 5.dp.toPx())) }
                     .padding(
-                        start = KoDriverSpacing.small,
+                        start = KoDriverSpacing.large,
                         end = KoDriverSpacing.large,
                         top = KoDriverSpacing.medium,
                         bottom = KoDriverSpacing.medium,
@@ -559,21 +570,24 @@ private fun ManualReadoutSetRow(
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                Text(
-                    text =
-                        if (itemCount == 0) {
-                            stringResource(Res.string.manual_readout_list_no_items)
-                        } else {
-                            stringResource(Res.string.manual_readout_list_item_count, itemCount)
-                        },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                ManualReadoutCategoryChips(categories, set.itemKeys.size)
                 if (showHotkeyChip) {
                     ManualReadoutHotkeyChip(set)
                 }
             }
-            IconButton(onClick = onReadSet, enabled = canReadSet) {
+            FilledIconButton(
+                onClick = onReadSet,
+                enabled = canReadSet,
+                modifier = Modifier.size(52.dp),
+                shape = CircleShape,
+                colors =
+                    IconButtonDefaults.filledIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
+            ) {
                 Icon(
                     imageVector = Icons.Filled.PlayArrow,
                     contentDescription =
@@ -628,6 +642,7 @@ private fun ManualReadoutHotkeyChip(
     playButtonLayout: Boolean = false,
 ) {
     val label = manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode)
+    val borderColor = if (label == null) MaterialTheme.colorScheme.outlineVariant else MaterialTheme.colorScheme.outline
     Surface(
         shape = MaterialTheme.shapes.small,
         color =
@@ -646,12 +661,18 @@ private fun ManualReadoutHotkeyChip(
             } else {
                 MaterialTheme.colorScheme.onSecondaryContainer
             },
-        border = if (label == null) BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant) else null,
+        border = BorderStroke(1.dp, borderColor),
     ) {
         Text(
             text = label ?: stringResource(Res.string.manual_readout_list_hotkey_unassigned),
             style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
+            modifier =
+                Modifier
+                    .drawBehind {
+                        if (label != null) {
+                            drawLine(borderColor, Offset(0f, size.height), Offset(size.width, size.height), 3.dp.toPx())
+                        }
+                    }.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
         )
     }
 }

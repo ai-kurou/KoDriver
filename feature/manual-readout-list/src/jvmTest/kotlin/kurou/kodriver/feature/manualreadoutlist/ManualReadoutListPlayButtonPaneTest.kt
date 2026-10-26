@@ -17,6 +17,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Rule
@@ -179,6 +180,30 @@ class ManualReadoutListPlayButtonPaneTest {
         rule.runOnIdle { state.value = state.value.copy(playButtonLayoutEnabled = true) }
         rule.onNodeWithText("LMU(Windows)セット3").assertIsDisplayed()
         rule.onNodeWithContentDescription("セット 3 を読み上げ").assertIsDisplayed()
+    }
+
+    @Test
+    fun `再生タイルはカテゴリドットを集計して編集モードでも表示する`() {
+        showPlayButtons(
+            sets =
+                listOf(
+                    ManualReadoutSet(
+                        "categories",
+                        itemKeys =
+                            listOf(
+                                LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
+                                LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                                LmuWindowsReadoutItemKey.RemainingFuel.Laps.value,
+                                "unknown",
+                            ),
+                    ),
+                ),
+        )
+        rule.onNodeWithContentDescription("燃料 2", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithContentDescription("タイヤ 1", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithContentDescription("編集モードにする").performClick()
+        rule.onNodeWithContentDescription("燃料 2", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithContentDescription("タイヤ 1", useUnmergedTree = true).assertIsDisplayed()
     }
 
     private fun showPlayButtons(

@@ -35,6 +35,23 @@ class ExtendedColorsTest {
         assertNotEquals(LightExtendedColorScheme.heatHot, DarkExtendedColorScheme.heatHot)
     }
 
+    @Test
+    fun `カテゴリ色は5種がそれぞれ異なりライトとダークで別の値を持つ`() {
+        listOf(LightExtendedColorScheme, DarkExtendedColorScheme).forEach { scheme ->
+            assertEquals(
+                5,
+                setOf(
+                    scheme.categoryVirtualEnergy,
+                    scheme.categoryFuel,
+                    scheme.categoryTyre,
+                    scheme.categoryBrake,
+                    scheme.categoryLap,
+                ).size,
+            )
+        }
+        assertNotEquals(LightExtendedColorScheme.categoryFuel, DarkExtendedColorScheme.categoryFuel)
+    }
+
     private fun captureExtendedColorScheme(darkTheme: Boolean): ExtendedColorScheme {
         var extendedColorScheme: ExtendedColorScheme? = null
         composeRule.setContent {
