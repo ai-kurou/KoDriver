@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,7 +28,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
-import kurou.kodriver.domain.model.takeManualReadoutSetName
+import kurou.kodriver.domain.model.MANUAL_READOUT_SET_NAME_MAX_LENGTH
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_set_name
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_set_name_confirm
@@ -62,10 +63,23 @@ internal fun ManualReadoutSetNameRow(
         LaunchedEffect(Unit) { focusRequester.requestFocus() }
         OutlinedTextField(
             value = input,
-            onValueChange = { input = it.trimStart().takeManualReadoutSetName() },
+            onValueChange = {
+                val normalized = it.trimStart().filterNot { char -> char == '\n' || char == '\r' }
+                if (normalized.length <= MANUAL_READOUT_SET_NAME_MAX_LENGTH) {
+                    input = normalized
+                }
+            },
             singleLine = true,
             label = { Text(stringResource(Res.string.manual_readout_set_name)) },
             placeholder = { Text(defaultName) },
+            supportingText = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    Text("${input.length}/$MANUAL_READOUT_SET_NAME_MAX_LENGTH")
+                }
+            },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = { finishEditing() }),
             trailingIcon = {

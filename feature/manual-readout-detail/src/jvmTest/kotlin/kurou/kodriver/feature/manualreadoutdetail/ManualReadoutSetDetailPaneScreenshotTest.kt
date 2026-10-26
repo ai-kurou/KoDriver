@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.DpSize
@@ -46,6 +48,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                 }
             }
             onNodeWithContentDescription("セット名を編集").performClick()
+            onNodeWithText("3/20", useUnmergedTree = true).assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
