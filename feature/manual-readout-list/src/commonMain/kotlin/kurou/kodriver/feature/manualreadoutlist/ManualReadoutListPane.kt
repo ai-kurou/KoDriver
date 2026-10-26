@@ -34,7 +34,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
@@ -77,7 +76,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
@@ -570,10 +568,9 @@ private fun ManualReadoutSetRow(
                 Text(
                     text = set.name.ifBlank { manualReadoutSetTitle(simulatorId, setNumber) },
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                ManualReadoutCategoryChips(categories)
+                ManualReadoutCategoryChips(categories, set.itemKeys.size)
                 if (showHotkeyChip) {
                     ManualReadoutHotkeyChip(set)
                 }
@@ -647,7 +644,7 @@ private fun ManualReadoutHotkeyChip(
     val label = manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode)
     val borderColor = if (label == null) MaterialTheme.colorScheme.outlineVariant else MaterialTheme.colorScheme.outline
     Surface(
-        shape = RoundedCornerShape(6.dp),
+        shape = MaterialTheme.shapes.small,
         color =
             if (playButtonLayout) {
                 MaterialTheme.colorScheme.primaryContainer

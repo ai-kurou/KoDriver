@@ -1,7 +1,6 @@
 package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -26,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_category_brake
@@ -34,19 +34,20 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_category_tyre
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_category_virtual_energy
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_category_count
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_item_count
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_no_items
 import org.jetbrains.compose.resources.stringResource
 
-/** 読み上げカテゴリ専用。警告・温度を表す designsystem の色とは区別する。 */
+/** 読み上げカテゴリ専用。警告・温度を表す色とは別の拡張カラーを参照する。 */
 @Composable
 internal fun manualReadoutCategoryColor(category: ManualReadoutItemCategory): Color {
-    val dark = isSystemInDarkTheme()
+    val colors = KoDriverExtendedColors.current
     return when (category) {
-        ManualReadoutItemCategory.VIRTUAL_ENERGY -> if (dark) Color(0xFF6FD3EC) else Color(0xFF0A7F9C)
-        ManualReadoutItemCategory.FUEL -> if (dark) Color(0xFFF0A066) else Color(0xFFC2570C)
-        ManualReadoutItemCategory.TYRE -> if (dark) Color(0xFF7FD0A0) else Color(0xFF2F7D4F)
-        ManualReadoutItemCategory.BRAKE -> if (dark) Color(0xFFFF9D94) else Color(0xFFB3261E)
-        ManualReadoutItemCategory.LAP -> if (dark) Color(0xFFC3B2FF) else Color(0xFF6A4FC7)
+        ManualReadoutItemCategory.VIRTUAL_ENERGY -> colors.categoryVirtualEnergy
+        ManualReadoutItemCategory.FUEL -> colors.categoryFuel
+        ManualReadoutItemCategory.TYRE -> colors.categoryTyre
+        ManualReadoutItemCategory.BRAKE -> colors.categoryBrake
+        ManualReadoutItemCategory.LAP -> colors.categoryLap
     }
 }
 
@@ -63,11 +64,18 @@ private fun manualReadoutCategoryLabel(category: ManualReadoutItemCategory): Str
     )
 
 @Composable
-internal fun ManualReadoutCategoryChips(summary: ManualReadoutCategorySummary) {
+internal fun ManualReadoutCategoryChips(
+    summary: ManualReadoutCategorySummary,
+    itemCount: Int,
+) {
     val counts = summary.counts
     if (counts.isEmpty()) {
         Text(
-            stringResource(Res.string.manual_readout_list_no_items),
+            if (itemCount == 0) {
+                stringResource(Res.string.manual_readout_list_no_items)
+            } else {
+                stringResource(Res.string.manual_readout_list_item_count, itemCount)
+            },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

@@ -48,4 +48,27 @@ class ManualReadoutListPaneCategoryChipTest {
         }
         rule.onNodeWithText("unknown", useUnmergedTree = true).assertDoesNotExist()
     }
+
+    @Test
+    fun `不明なキーだけのセットは項目なしではなく項目数を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState =
+                        ManualReadoutListUiState(
+                            sets =
+                                listOf(
+                                    ManualReadoutSet("unknown-only", itemKeys = listOf("unknown-1", "unknown-2")),
+                                ),
+                        ),
+                    simulatorId = "lmu_windows",
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                )
+            }
+        }
+        rule.onNodeWithText("2項目", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithText("項目なし", useUnmergedTree = true).assertDoesNotExist()
+    }
 }
