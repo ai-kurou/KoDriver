@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
@@ -38,16 +40,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.Res
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_connectivity_warning
-import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_description
+import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_description_link
+import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_description_suffix
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovering
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_show_button
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_guide_description
@@ -63,6 +75,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private const val WINDOWS_INSTALL_GUIDE_URL =
     "https://github.com/ai-kurou/KoDriver/blob/main/docs/windows-install.md"
+private const val WINDOWS_INSTALL_GUIDE_LINK_ICON_ID = "windows-install-guide-link-icon"
 
 private val BUTTON_CONTENT_HEIGHT = 20.dp
 
@@ -159,7 +172,49 @@ fun OtherServerIpDetailPaneContent(
                     .verticalScroll(rememberScrollState())
                     .padding(KoDriverSpacing.large),
         ) {
-            Text(stringResource(Res.string.server_ip_description))
+            Text(
+                text =
+                    buildAnnotatedString {
+                        withLink(
+                            LinkAnnotation.Clickable(
+                                tag = "windows-install-guide",
+                                styles =
+                                    TextLinkStyles(
+                                        style =
+                                            SpanStyle(
+                                                color = MaterialTheme.colorScheme.primary,
+                                                textDecoration = TextDecoration.Underline,
+                                            ),
+                                    ),
+                                linkInteractionListener = { onOpenGuideWithHaptic() },
+                            ),
+                        ) {
+                            append(stringResource(Res.string.server_ip_description_link))
+                            appendInlineContent(WINDOWS_INSTALL_GUIDE_LINK_ICON_ID)
+                        }
+                        append(stringResource(Res.string.server_ip_description_suffix))
+                    },
+                style = MaterialTheme.typography.bodyMedium,
+                inlineContent =
+                    mapOf(
+                        WINDOWS_INSTALL_GUIDE_LINK_ICON_ID to
+                            InlineTextContent(
+                                placeholder =
+                                    Placeholder(
+                                        width = 12.sp,
+                                        height = 12.sp,
+                                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                                    ),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(12.dp),
+                                )
+                            },
+                    ),
+            )
             Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             TextField(
                 value = uiState.inputIp,
