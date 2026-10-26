@@ -67,6 +67,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -221,7 +222,7 @@ internal fun ManualReadoutListPaneContent(
                     modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
                 )
                 if (uiState.playButtonLayoutEnabled) {
-                    var tallestTileHeightPx by remember { mutableIntStateOf(0) }
+                    val tileHeightsPx = remember { mutableStateMapOf<String, Int>() }
                     val density = LocalDensity.current
                     LazyVerticalGrid(
                         state = gridState,
@@ -244,7 +245,7 @@ internal fun ManualReadoutListPaneContent(
                                 enteredSetIds = enteredSetIds,
                                 modifier =
                                     Modifier
-                                        .onSizeChanged { tallestTileHeightPx = maxOf(tallestTileHeightPx, it.height) }
+                                        .onSizeChanged { tileHeightsPx[set.id] = it.height }
                                         .animateItem(
                                             fadeInSpec = null,
                                             placementSpec = tween(200),
@@ -264,6 +265,7 @@ internal fun ManualReadoutListPaneContent(
                             }
                         }
                         item(key = "add-set") {
+                            val tallestTileHeightPx = uiState.sets.maxOfOrNull { tileHeightsPx[it.id] ?: 0 } ?: 0
                             Surface(
                                 modifier =
                                     Modifier.animateItem(

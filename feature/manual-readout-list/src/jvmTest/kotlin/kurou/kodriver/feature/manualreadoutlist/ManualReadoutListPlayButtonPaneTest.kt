@@ -258,6 +258,29 @@ class ManualReadoutListPlayButtonPaneTest {
         assertEquals(playHeight, addHeight)
     }
 
+    @Test
+    fun `再生タイルが低くなると追加タイルも同じ高さに縮む`() {
+        val longName = "とても長いセット名".repeat(8)
+        val sets = mutableStateOf(listOf(ManualReadoutSet(id = "set-1", name = longName)))
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState = ManualReadoutListUiState(playButtonLayoutEnabled = true, sets = sets.value),
+                    simulatorId = "lmu_windows",
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                )
+            }
+        }
+        sets.value = listOf(ManualReadoutSet(id = "set-1"))
+        rule.waitForIdle()
+
+        val playHeight = rule.onNodeWithContentDescription("セット 1 を読み上げ").getUnclippedBoundsInRoot().height
+        val addHeight = rule.onNodeWithText("セットを追加").getUnclippedBoundsInRoot().height
+        assertEquals(playHeight, addHeight)
+    }
+
     private fun showPlayButtonHotkeySets(showHotkeyChip: Boolean) {
         rule.setContent {
             KoDriverTheme {
