@@ -2,12 +2,9 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,12 +25,6 @@ import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
 private data class LocalOrderState(
     val simulator: Simulator?,
     val items: List<ReadoutItemKey>,
-)
-
-private data class EnabledStates(
-    val autoReadoutEnabledStates: Map<ReadoutItemKey, Boolean>,
-    val queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-    val startSoundEnabledStates: Map<ReadoutItemKey, Boolean>,
 )
 
 data class SimulatorUseCases(
@@ -71,7 +62,7 @@ class AutoReadoutListViewModel(
     private val queueUseCases: QueueUseCases,
     private val startSoundUseCases: StartSoundUseCases,
 ) : ViewModel() {
-    private val _selectedSimulator: StateFlow<Simulator> =
+    private val _selectedSimulator =
         simulatorUseCases
             .observeSelectedSimulator()
             .stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
@@ -79,81 +70,22 @@ class AutoReadoutListViewModel(
     // ドラッグ操作後のインメモリ順序（DataStore 反映前の即時 UI 更新用）
     private val _localOrder = MutableStateFlow(LocalOrderState(null, emptyList()))
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val _persistedOrder: StateFlow<List<ReadoutItemKey>> =
-        _selectedSimulator
-            .flatMapLatest { simulator ->
-                autoReadoutOrderUseCases.observeAutoReadoutOrder(simulator.id)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val _autoReadoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
-        _selectedSimulator
-            .flatMapLatest { simulator ->
-                autoReadoutEnabledUseCases.observeAutoReadoutEnabledStates(simulator.id)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
-
-    private val _queueEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
-        queueUseCases
-            .observeQueueEnabledStates()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
-
-    private val _startSoundEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
-        startSoundUseCases
-            .observeReadoutStartSoundEnabledStates()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
-
     private val _selectedItem = MutableStateFlow<AutoReadoutListItemType?>(null)
-
-    private val _effectiveOrder: StateFlow<List<ReadoutItemKey>> =
-        combine(
-            _selectedSimulator,
-            _persistedOrder,
-            _localOrder,
-        ) { selected, persisted, local ->
-            val defaultItems = AutoReadoutListItemType.defaultOrder(selected)
-            // ドラッグ中の localOrder を最優先（DataStore の非同期更新より常に新しい）
-            if (local.simulator == selected) {
-                local.items
-            } else {
-                autoReadoutOrderUseCases.resolveAutoReadoutOrder(
-                    persistedOrder = persisted,
-                    defaultOrder = defaultItems,
-                )
-            }
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-    private val _enabledStates: StateFlow<EnabledStates> =
-        combine(
-            _autoReadoutEnabledStates,
-            _queueEnabledStates,
-            _startSoundEnabledStates,
-        ) { autoReadoutEnabledStates, queueEnabledStates, startSoundEnabledStates ->
-            EnabledStates(autoReadoutEnabledStates, queueEnabledStates, startSoundEnabledStates)
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            EnabledStates(emptyMap(), emptyMap(), emptyMap()),
+    private val flow =
+        AutoReadoutListFlow(
+            observeSelectedSimulator = _selectedSimulator,
+            autoReadoutOrderUseCases = autoReadoutOrderUseCases,
+            autoReadoutEnabledUseCases = autoReadoutEnabledUseCases,
+            queueUseCases = queueUseCases,
+            startSoundUseCases = startSoundUseCases,
+            localOrder = _localOrder.map { it.simulator to it.items },
+            selectedItem = _selectedItem,
         )
 
-    val uiState: StateFlow<AutoReadoutListUiState> =
-        combine(
-            _selectedSimulator,
-            _effectiveOrder,
-            _enabledStates,
-            _selectedItem,
-        ) { selected, items, enabledStates, selectedItem ->
-            AutoReadoutListUiState(
-                selectedSimulator = selected,
-                items = items,
-                autoReadoutEnabledStates = enabledStates.autoReadoutEnabledStates,
-                queueEnabledStates = enabledStates.queueEnabledStates,
-                startSoundEnabledStates = enabledStates.startSoundEnabledStates,
-                selectedItem = selectedItem?.takeIf { it.belongsTo(selected) },
-            )
-        }.stateIn(
+    val uiState =
+        flow.uiState.stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
+            SharingStarted.Eagerly,
             AutoReadoutListUiState(),
         )
 
@@ -163,7 +95,7 @@ class AutoReadoutListViewModel(
     ) {
         val selected = _selectedSimulator.value
         val newItems =
-            _effectiveOrder.value
+            uiState.value.items
                 .toMutableList()
                 .also { it.add(toIndex, it.removeAt(fromIndex)) }
         _localOrder.update { LocalOrderState(selected, newItems) }
