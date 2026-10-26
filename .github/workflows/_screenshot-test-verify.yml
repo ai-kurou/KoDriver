@@ -39,14 +39,15 @@ jobs:
         # --continue を付けないと、いずれかのモジュールの検証が失敗した時点で
         # Gradle が以降の未実行タスクのスケジューリングを止めてしまい、他のモジュールの
         # スクリーンショット差分が実行されないまま見逃されることがある（#1395）。
-        run: ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests --continue
+        # gradle.properties の workers.max=2 はローカルのメモリ節約用。CI（4 vCPU）では 4 に上書きして短縮する
+        run: ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests --continue -Dorg.gradle.workers.max=4
 
       - name: Record golden images
         if: steps.verify.outcome == 'failure'
         # record タスク自体が失敗（コンパイルエラー等）しても、後続の commit ステップで
         # 正常に記録できたモジュール分の golden 画像だけはコミットできるようにする。
         continue-on-error: true
-        run: ./gradlew recordRoborazzi${{ inputs.taskSuffix }}Tests --continue
+        run: ./gradlew recordRoborazzi${{ inputs.taskSuffix }}Tests --continue -Dorg.gradle.workers.max=4
 
       - name: Commit updated golden images
         if: steps.verify.outcome == 'failure'
