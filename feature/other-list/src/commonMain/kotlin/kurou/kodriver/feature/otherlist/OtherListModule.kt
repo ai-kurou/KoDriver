@@ -71,17 +71,6 @@ val otherListModule =
         }
 
         factory {
-            OtherListSpeechUseCases(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-            )
-        }
-
-        factory {
             OtherListConnectionUseCases(
                 // 接続先IPの設定はAndroidのみ。項目がないプラットフォームでは購読しない。
                 if (OtherListItemType.ServerIp in buildOtherListItems()) get() else null,
@@ -94,6 +83,7 @@ val otherListModule =
         factory { OtherListResetFlow(get()) }
         factory { OtherListStartupRegistrationFlow(get()) }
         factory { OtherListDeviceSettingsFlow(get(), get(), get(), get(), get(), get(), get()) }
+        factory { OtherListSpeechSettingsFlow(get(), get(), get(), get(), get(), get()) }
         factory { OtherListTtsAvailabilityFlow(get()) }
         factory { OtherListDeviceVolumeFlow(get()) }
         // CheckAppUpdateAvailableUseCase は既存の mainModule の登録を使用する。

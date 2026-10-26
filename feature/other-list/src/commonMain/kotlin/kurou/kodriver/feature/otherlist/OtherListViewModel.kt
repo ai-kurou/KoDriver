@@ -13,18 +13,12 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
-import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
-import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
-import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
-import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 
@@ -44,15 +38,6 @@ data class OtherListOverlayUseCases(
     val observeOverlayTextColor: ObserveOverlayTextColorUseCase,
 )
 
-data class OtherListSpeechUseCases(
-    val observeVoice: ObserveVoiceUseCase,
-    val observeVoiceSpeed: ObserveVoiceSpeedUseCase,
-    val observeVoicePitch: ObserveVoicePitchUseCase,
-    val observeReadoutStartSoundType: ObserveReadoutStartSoundTypeUseCase,
-    val observeSoundVolume: ObserveSoundVolumeUseCase,
-    val observeAndroidAudioUsage: ObserveAndroidAudioUsageUseCase,
-)
-
 data class OtherListConnectionUseCases(
     val observeServerIp: ObserveServerIpUseCase?,
     val observeConsoleAddress: ObserveConsoleAddressUseCase,
@@ -65,7 +50,7 @@ data class OtherListConnectionUseCases(
 @Suppress("LongParameterList")
 class OtherListViewModel(
     private val overlayUseCases: OtherListOverlayUseCases,
-    private val speechUseCases: OtherListSpeechUseCases,
+    private val speechSettingsFlow: OtherListSpeechSettingsFlow,
     private val deviceSettingsFlow: OtherListDeviceSettingsFlow,
     private val connectionUseCases: OtherListConnectionUseCases,
     checkHapticFeedbackAvailable: CheckHapticFeedbackAvailableUseCase,
@@ -97,13 +82,20 @@ class OtherListViewModel(
             _uiState,
             overlayUseCases.observeOverlayVisible(),
             deviceSettingsFlow.uiState,
-        ) { state, overlayVisible, deviceSettings ->
+            speechSettingsFlow.uiState,
+        ) { state, overlayVisible, deviceSettings, speechSettings ->
             state.copy(
                 overlayVisible = overlayVisible,
                 keepScreenOn = deviceSettings.keepScreenOn,
                 dynamicColorEnabled = deviceSettings.dynamicColorEnabled,
                 hapticFeedbackEnabled = deviceSettings.hapticFeedbackEnabled,
                 themeMode = deviceSettings.themeMode,
+                voiceId = speechSettings.voiceId,
+                voiceSpeed = speechSettings.voiceSpeed,
+                voicePitch = speechSettings.voicePitch,
+                androidAudioUsage = speechSettings.androidAudioUsage,
+                readoutStartSoundType = speechSettings.readoutStartSoundType,
+                soundVolume = speechSettings.soundVolume,
             )
         }.combine(connectionUseCases.observeServerIp?.invoke() ?: flowOf(null)) { state, serverIp ->
             state.copy(serverIp = serverIp)
@@ -111,24 +103,12 @@ class OtherListViewModel(
             state.copy(consoleAddress = consoleAddress)
         }.combine(connectionUseCases.observeGt7Ps5UdpPort()) { state, consolePort ->
             state.copy(consolePort = consolePort)
-        }.combine(speechUseCases.observeVoice()) { state, voiceId ->
-            state.copy(voiceId = voiceId)
-        }.combine(speechUseCases.observeVoiceSpeed()) { state, voiceSpeed ->
-            state.copy(voiceSpeed = voiceSpeed)
-        }.combine(speechUseCases.observeAndroidAudioUsage()) { state, usage ->
-            state.copy(androidAudioUsage = usage)
-        }.combine(speechUseCases.observeVoicePitch()) { state, voicePitch ->
-            state.copy(voicePitch = voicePitch)
         }.combine(overlayUseCases.observeOverlayTextSize()) { state, overlayTextSize ->
             state.copy(overlayTextSize = overlayTextSize)
         }.combine(overlayUseCases.observeOverlayTextColor()) { state, overlayTextColor ->
             state.copy(overlayTextColor = overlayTextColor)
         }.combine(overlayUseCases.observeOverlayBackgroundOpacity()) { state, overlayBackgroundOpacity ->
             state.copy(overlayBackgroundOpacity = overlayBackgroundOpacity)
-        }.combine(speechUseCases.observeReadoutStartSoundType()) { state, type ->
-            state.copy(readoutStartSoundType = type)
-        }.combine(speechUseCases.observeSoundVolume()) { state, soundVolume ->
-            state.copy(soundVolume = soundVolume)
         }.combine(deviceVolumeFlow.volume) { state, deviceVolume ->
             state.copy(deviceVolume = deviceVolume)
         }.combine(ttsAvailabilityFlow.uiState) { state, ttsAvailability ->

@@ -185,8 +185,8 @@ abstract class OtherListViewModelTestFixture {
                     observeOverlayBackgroundOpacity =
                         ObserveOverlayBackgroundOpacityUseCase(overlayBackgroundOpacityRepository),
                 ),
-            speechUseCases =
-                OtherListSpeechUseCases(
+            speechSettingsFlow =
+                OtherListSpeechSettingsFlow(
                     observeVoice = ObserveVoiceUseCase(voiceRepository),
                     observeVoiceSpeed = ObserveVoiceSpeedUseCase(voiceSpeedRepository),
                     observeVoicePitch = ObserveVoicePitchUseCase(voicePitchRepository),
