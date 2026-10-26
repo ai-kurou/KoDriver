@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import io.mockk.mockk
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Rule
@@ -193,7 +194,14 @@ class ManualReadoutListPaneTest {
                             sets =
                                 listOf(
                                     ManualReadoutSet(id = "set-1"),
-                                    ManualReadoutSet(id = "set-2", itemKeys = listOf("SESSION", "FLAG")),
+                                    ManualReadoutSet(
+                                        id = "set-2",
+                                        itemKeys =
+                                            listOf(
+                                                LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
+                                                LmuWindowsReadoutItemKey.RemainingFuel.Laps.value,
+                                            ),
+                                    ),
                                 ),
                         ),
                     simulatorId = "lmu_windows",
@@ -210,7 +218,7 @@ class ManualReadoutListPaneTest {
         rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
         rule.onNodeWithText("項目なし").assertIsDisplayed()
         rule.onNodeWithText("LMU(Windows)セット2").assertIsDisplayed()
-        rule.onNodeWithText("2項目").assertIsDisplayed()
+        rule.onNodeWithText("燃料 2", useUnmergedTree = true).assertIsDisplayed()
         rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsDisplayed().assertIsNotEnabled()
         rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsDisplayed().assertIsNotEnabled()
         rule.onNodeWithContentDescription("セットを追加").assertIsDisplayed()
