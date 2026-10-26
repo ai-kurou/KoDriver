@@ -36,6 +36,8 @@ TTS利用可否の判定と一覧案内項目・警告表示への反映は `Oth
 
 アプリ更新の一度限りの確認と更新有無の状態は `OtherListAppUpdateFlow` が管理する。現在バージョンが空白の場合は確認せず、確認中・更新なし・リリース情報なしの場合も再実行しない。`OtherListViewModel` は `viewModelScope` で確認を実行し、`OtherListUiState.hasAppUpdate` に状態を合成する。
 
+読み上げ音声ID・速度・ピッチ・Android音声用途・開始音種別・アプリ音量の設定観測は `OtherListSpeechSettingsFlow` が専用UiStateへ集約する。Flowは冷たい状態Flowとして公開し、`OtherListViewModel` の `uiState` 購読中に `OtherListUiState` へ合成する。
+
 画面常時オン、ダイナミックカラー、ハプティックフィードバック、テーマの設定観測と、前3項目の保存操作は `OtherListDeviceSettingsFlow` が管理する。状態は専用UiStateとしてFlowで公開し、`OtherListViewModel` は `uiState` の購読中に `OtherListUiState` へ合成し、保存操作を `viewModelScope` でFlowへ委譲する。
 
 <!-- MODULE-GRAPH-START -->
