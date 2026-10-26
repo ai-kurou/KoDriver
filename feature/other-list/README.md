@@ -42,6 +42,8 @@ TTS利用可否の判定と一覧案内項目・警告表示への反映は `Oth
 
 オーバーレイ表示、文字サイズ、文字色、背景透明度の設定観測と表示ON/OFFの保存操作は `OtherListOverlaySettingsFlow` が専用UiStateへ集約する。Flowは冷たい状態Flowとして公開し、`OtherListViewModel` の `uiState` 購読中に `OtherListUiState` へ合成する。表示ON/OFFの保存はViewModelが `viewModelScope` で起動してFlowへ委譲する。
 
+接続先サーバーIP、ゲーム機アドレス、GT7 UDPポートの観測は `OtherListConnectionFlow` が専用UiStateへ集約する。Flowは冷たい状態Flowとして公開し、`OtherListViewModel` の `uiState` 購読中に `OtherListUiState` へ合成する。サーバーIP項目がないプラットフォームでは server IP UseCase を渡さず、IPをnullとして扱う。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
