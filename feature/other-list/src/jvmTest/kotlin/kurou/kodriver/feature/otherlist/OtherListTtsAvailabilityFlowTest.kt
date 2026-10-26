@@ -19,11 +19,12 @@ class OtherListTtsAvailabilityFlowTest {
     @Test
     fun `初期状態は案内なし`() {
         val flow = createFlow()
+        val items = listOf(OtherListItemType.HapticFeedback, OtherListItemType.KeepScreenOn)
 
         assertEquals(emptyList(), flow.uiState.value.guidanceItems)
         assertEquals(
-            listOf(OtherListItemType.HapticFeedback, OtherListItemType.KeepScreenOn),
-            flow.applyGuidance(listOf(OtherListItemType.HapticFeedback, OtherListItemType.KeepScreenOn)),
+            listOf(OtherListItemType.KeepScreenOn, OtherListItemType.HapticFeedback),
+            flow.applyGuidance(items),
         )
         assertEquals(null, flow.uiState.value.ttsUnavailableGuidance)
         confirmVerified(repository)
