@@ -30,6 +30,8 @@ Windows/Androidの「読み上げ速度」項目を読み上げ音声の次に�
 
 OS起動時自動起動の状態取得・変更と表示状態は `OtherListStartupRegistrationFlow` が管理し、`OtherListViewModel` は `viewModelScope` で操作を起動して `OtherListUiState.startupEnabled` に状態を合成する。
 
+TTS利用可否の判定と一覧案内項目・警告表示への反映は `OtherListTtsAvailabilityFlow` が管理し、判定処理のライフサイクルは呼び出し元の `viewModelScope` に従う。`OtherListViewModel` は `OtherListUiState` へ状態を合成する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

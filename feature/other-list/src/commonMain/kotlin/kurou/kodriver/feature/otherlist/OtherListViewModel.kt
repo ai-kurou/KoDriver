@@ -15,11 +15,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
-import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
-import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
@@ -96,9 +94,9 @@ class OtherListViewModel(
     private val connectionUseCases: OtherListConnectionUseCases,
     checkHapticFeedbackAvailable: CheckHapticFeedbackAvailableUseCase,
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
-    private val checkTextToSpeechUnavailableReason: CheckTextToSpeechUnavailableReasonUseCase,
     private val openWindowsSpeechSettings: OpenWindowsSpeechSettingsUseCase,
     private val startupRegistrationFlow: OtherListStartupRegistrationFlow,
+    private val ttsAvailabilityFlow: OtherListTtsAvailabilityFlow,
     appVersionInfo: OtherListAppVersionInfo,
     private val getDeviceVolume: GetDeviceVolumeUseCase,
     private val resetFlow: OtherListResetFlow,
@@ -106,7 +104,6 @@ class OtherListViewModel(
     private val currentVersion = appVersionInfo.currentVersion
     private var updateCheckStarted = false
     private val hapticFeedbackAvailable = checkHapticFeedbackAvailable()
-    private val textToSpeechUnavailableReason = MutableStateFlow<TextToSpeechUnavailableReason?>(null)
     private val _uiState =
         MutableStateFlow(
             OtherListUiState(
@@ -184,10 +181,10 @@ class OtherListViewModel(
             state.copy(soundVolume = soundVolume)
         }.combine(deviceVolumePolling) { state, deviceVolume ->
             state.copy(deviceVolume = deviceVolume)
-        }.combine(textToSpeechUnavailableReason) { state, ttsUnavailableReason ->
+        }.combine(ttsAvailabilityFlow.uiState) { state, ttsAvailability ->
             state.copy(
-                items = state.items.withTtsGuidance(ttsUnavailableReason),
-                ttsUnavailableGuidance = ttsUnavailableReason?.toGuidance(),
+                items = ttsAvailabilityFlow.applyGuidance(state.items),
+                ttsUnavailableGuidance = ttsAvailability.ttsUnavailableGuidance,
             )
         }.combine(resetFlow.uiState) { state, reset ->
             state.copy(reset = reset)
@@ -234,10 +231,7 @@ class OtherListViewModel(
     }
 
     fun checkTextToSpeechAvailability() {
-        viewModelScope.launch {
-            val reason = checkTextToSpeechUnavailableReason()
-            textToSpeechUnavailableReason.update { reason }
-        }
+        viewModelScope.launch { ttsAvailabilityFlow.checkAvailability() }
     }
 
     fun onStartupEnabledChange(enabled: Boolean) {
@@ -302,31 +296,3 @@ class OtherListViewModel(
         const val DEVICE_VOLUME_POLLING_INTERVAL_MS = 2_000L
     }
 }
-
-/**
- * TTS案内項目を [reason] に対応する1つだけに差し替える。
- * 追加した項目がセクション内の並びを崩さないよう、enumの宣言順に並べ直す。
- */
-private fun List<OtherListItemType>.withTtsGuidance(reason: TextToSpeechUnavailableReason?): List<OtherListItemType> {
-    val guidance =
-        when (reason) {
-            TextToSpeechUnavailableReason.EngineMissing -> OtherListItemType.TtsEngineMissing
-            TextToSpeechUnavailableReason.LanguageDataMissing -> OtherListItemType.TtsLanguageDataMissing
-            TextToSpeechUnavailableReason.WindowsSpeechUnavailable -> OtherListItemType.WindowsSpeechUnavailable
-            null -> null
-        }
-    return (
-        filterNot {
-            it == OtherListItemType.WindowsSpeechUnavailable ||
-                it == OtherListItemType.TtsEngineMissing ||
-                it == OtherListItemType.TtsLanguageDataMissing
-        } + listOfNotNull(guidance)
-    ).sortedBy { it.ordinal }
-}
-
-private fun TextToSpeechUnavailableReason.toGuidance(): TtsUnavailableGuidance =
-    when (this) {
-        TextToSpeechUnavailableReason.EngineMissing -> TtsUnavailableGuidance.EngineMissing
-        TextToSpeechUnavailableReason.LanguageDataMissing -> TtsUnavailableGuidance.LanguageDataMissing
-        TextToSpeechUnavailableReason.WindowsSpeechUnavailable -> TtsUnavailableGuidance.WindowsSpeechUnavailable
-    }

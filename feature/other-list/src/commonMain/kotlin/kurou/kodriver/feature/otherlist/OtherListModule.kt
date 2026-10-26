@@ -99,6 +99,7 @@ val otherListModule =
         // ログ削除フローは ViewModel ごとに生成し、実行は viewModelScope に従わせる。
         factory { OtherListResetFlow(get()) }
         factory { OtherListStartupRegistrationFlow(get()) }
+        factory { OtherListTtsAvailabilityFlow(get()) }
         factory { ResetTelemetryLogDatabaseUseCase(get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:windows-startup-data の Repository を解決）
