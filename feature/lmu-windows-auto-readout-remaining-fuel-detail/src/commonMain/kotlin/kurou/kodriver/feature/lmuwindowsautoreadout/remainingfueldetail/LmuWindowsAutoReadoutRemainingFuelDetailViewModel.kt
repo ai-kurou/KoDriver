@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
@@ -15,7 +14,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsRemainingFuelReado
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -54,19 +52,12 @@ internal class LmuWindowsAutoReadoutRemainingFuelDetailViewModel(
         )
 
     val uiState: StateFlow<LmuWindowsAutoReadoutRemainingFuelDetailUiState> =
-        combine(
-            remainingFuelUseCases.observeThresholdPercentage(),
-            remainingFuelUseCases.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
-            readout.observeText(),
-            preview.textToSpeechAvailable,
-        ) { thresholdPercentage, enabledStates, text, available ->
-            LmuWindowsAutoReadoutRemainingFuelDetailUiState(
-                thresholdPercentage = thresholdPercentage,
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout),
-            )
-        }.stateIn(
+        LmuWindowsAutoReadoutRemainingFuelDetailFlow(
+            thresholdPercentages = remainingFuelUseCases.observeThresholdPercentage(),
+            enabledStates = remainingFuelUseCases.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
+            readoutTexts = readout.observeText(),
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsAutoReadoutRemainingFuelDetailUiState(),
