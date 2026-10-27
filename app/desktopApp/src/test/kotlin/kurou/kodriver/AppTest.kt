@@ -54,16 +54,22 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import java.nio.file.Files
+import java.nio.file.Path
 import kotlin.test.BeforeTest
 
 class AppTest {
     companion object {
+        private lateinit var tempDirectory: Path
+
         private const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。"
 
         @BeforeClass
         @JvmStatic
         fun setUpKoin() {
+            tempDirectory = Files.createTempDirectory("kodriver-app-test")
+            val directory = tempDirectory.toString()
             registerReadoutItemKeys()
             startKoin {
                 // Koinは同一型のsingleが複数登録された場合、後から登録した方で上書きする。
@@ -74,11 +80,9 @@ class AppTest {
                 // fakeLmuWindowsNarratorModule / fakeGt7Ps5DataModule が最後に上書きするため実質未使用になる。
                 modules(
                     listOf(
-                        desktopDataModule,
-                        desktopAceWindowsPreferencesDataModule("/tmp/kodriver-test"),
-                        desktopLmuWindowsPreferencesDataModule(
-                            "${System.getProperty("user.home")}/.kodriver",
-                        ),
+                        desktopDataModule(directory),
+                        desktopAceWindowsPreferencesDataModule(directory),
+                        desktopLmuWindowsPreferencesDataModule(directory),
                         aceWindowsDataModule,
                         textToSpeechDataModule,
                     ) +
@@ -104,7 +108,11 @@ class AppTest {
         @AfterClass
         @JvmStatic
         fun tearDownKoin() {
-            stopKoin()
+            try {
+                stopKoin()
+            } finally {
+                tempDirectory.toFile().deleteRecursively()
+            }
         }
     }
 

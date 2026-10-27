@@ -77,7 +77,7 @@ fun main() {
                                     // get で解決）を束ねる。
                                     modules(
                                         listOf(
-                                            desktopDataModule,
+                                            desktopDataModule(kodriverDirectory),
                                             desktopAceWindowsPreferencesDataModule(kodriverDirectory),
                                             desktopLmuWindowsPreferencesDataModule(kodriverDirectory),
                                             lmuWindowsDataModule,

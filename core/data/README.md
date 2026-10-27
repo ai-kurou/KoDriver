@@ -6,7 +6,7 @@
 
 ## Koin モジュール
 
-Android は `androidDataModule(context)`、Desktop は `desktopDataModule` が共通の Repository を登録する。
+Android は `androidDataModule(context)`、Desktop は `desktopDataModule(directory)` が共通の Repository を登録する。
 GT7 PS5 の DataStore 設定は `:core:gt7-ps5-data` の `gt7Ps5DataModule` で登録する。共通のカード順序・手動読み上げセットは本モジュールの DataModule が登録する。ACE Windows の設定と Android WebSocket 実装は `:core:ace-windows-data` の `desktopAceWindowsPreferencesDataModule(directory)`・`androidAceWindowsDataModule(context)` で登録する。LMU Windows の設定と Android WebSocket
 実装は `:core:lmu-windows-data` の `desktopLmuWindowsPreferencesDataModule(directory)`・
 `androidLmuWindowsDataModule(context)` で登録する。WebSocket 用 `HttpClient` は Android の共通モジュールで生成し、LMU・ACE の各モジュールの Android WebSocket リポジトリが Koin の `get()` で解決して共有する。
