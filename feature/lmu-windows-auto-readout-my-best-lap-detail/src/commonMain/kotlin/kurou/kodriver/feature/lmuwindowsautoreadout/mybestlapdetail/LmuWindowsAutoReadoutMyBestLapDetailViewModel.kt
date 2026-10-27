@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
@@ -12,7 +11,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsMyBestLapReadou
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -54,17 +52,11 @@ internal class LmuWindowsAutoReadoutMyBestLapDetailViewModel(
         )
 
     val uiState: StateFlow<LmuWindowsAutoReadoutMyBestLapDetailUiState> =
-        combine(
-            myBestLapUseCases.observeEnabledStates(Simulator.LmuWindows.id),
-            readout.observeText(),
-            preview.textToSpeechAvailable,
-        ) { states, text, available ->
-            LmuWindowsAutoReadoutMyBestLapDetailUiState(
-                enabled = states.readoutEnabled(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled),
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-            )
-        }.stateIn(
+        LmuWindowsAutoReadoutMyBestLapDetailFlow(
+            enabledStates = myBestLapUseCases.observeEnabledStates(Simulator.LmuWindows.id),
+            readoutText = readout.observeText(),
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsAutoReadoutMyBestLapDetailUiState(),
