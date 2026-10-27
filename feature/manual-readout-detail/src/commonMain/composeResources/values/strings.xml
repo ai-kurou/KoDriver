@@ -13,7 +13,7 @@
     <string name="manual_readout_text_reset">文言をデフォルトに戻す</string>
     <string name="manual_readout_text_blank">空欄のままなら読み上げません</string>
     <string name="manual_readout_text_unknown">未対応のプレースホルダー: %1$s（そのまま読み上げます）</string>
-    <string name="manual_readout_percent_insert">{percent} を挿入</string>
+    <string name="manual_readout_percent_insert">{percent}を挿入</string>
     <string name="manual_readout_percent_hint">{percent} は現在の残量（%）に置き換わります</string>
     <string name="manual_readout_hotkey_title">ホットキー</string>
     <string name="manual_readout_hotkey_none">割り当てなし</string>
@@ -48,7 +48,7 @@
     <string name="manual_readout_category_brake">ブレーキ</string>
     <string name="manual_readout_tyre_temperature">タイヤ温度</string>
     <string name="manual_readout_brake_temperature">ブレーキ温度</string>
-    <string name="manual_readout_celsius_insert">{celsius} を挿入</string>
+    <string name="manual_readout_celsius_insert">{celsius}を挿入</string>
     <string name="manual_readout_celsius_hint">{celsius} は現在の項目の最高温度（℃）に置き換わります</string>
     <string name="manual_readout_remaining_fuel">残り燃料</string>
     <string name="manual_readout_remaining_fuel_laps">残り燃料の周回数</string>
@@ -60,7 +60,7 @@
     <string name="manual_readout_hotkey_other_set_named">%1$s の「%2$s」で使用中のため割り当てできません</string>
     <string name="manual_readout_my_best_lap">自己ベストラップ</string>
     <string name="manual_readout_category_lap">ラップ</string>
-    <string name="manual_readout_laptime_insert">ラップタイム挿入</string>
+    <string name="manual_readout_laptime_insert">{laptime}を挿入</string>
     <string name="manual_readout_laptime_hint">{laptime} はセッションの自己ベストラップタイムに置き換わります</string>
     <string name="manual_readout_virtual_energy_laps_hint">{laps}は残りエネルギーで走れる周回数に置き換わります。</string>
     <string name="manual_readout_virtual_energy_laps">バーチャルエネルギーの残り周回数</string>
