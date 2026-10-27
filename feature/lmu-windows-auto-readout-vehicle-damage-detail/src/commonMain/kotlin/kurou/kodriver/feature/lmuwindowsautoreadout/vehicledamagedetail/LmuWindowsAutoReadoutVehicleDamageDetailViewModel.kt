@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsOverheating
@@ -61,23 +60,13 @@ internal class LmuWindowsAutoReadoutVehicleDamageDetailViewModel(
     fun onPreviewStopped() = previewHelper.stop()
 
     val uiState: StateFlow<LmuWindowsAutoReadoutVehicleDamageDetailUiState> =
-        combine(
+        LmuWindowsAutoReadoutVehicleDamageDetailFlow(
             vehicleDamageUseCases.observeEnabledStates(),
             vehicleDamageUseCases.observeOverheatReadoutText(),
             vehicleDamageUseCases.observePartDetachedReadoutText(),
             vehicleDamageUseCases.observeTyreDetachedReadoutText(),
             previewHelper.textToSpeechAvailable,
-        ) { states, overheatText, partDetachedText, tyreDetachedText, available ->
-            LmuWindowsAutoReadoutVehicleDamageDetailUiState(
-                overheatEnabled = states.getValue(LmuWindowsReadoutItemKey.VehicleDamage.Overheat),
-                partDetachedEnabled = states.getValue(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached),
-                tyreDetachedEnabled = states.getValue(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached),
-                overheatReadoutText = overheatText,
-                partDetachedReadoutText = partDetachedText,
-                tyreDetachedReadoutText = tyreDetachedText,
-                isTextToSpeechAvailable = available,
-            )
-        }.stateIn(
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsAutoReadoutVehicleDamageDetailUiState(),
