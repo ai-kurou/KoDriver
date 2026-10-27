@@ -38,6 +38,7 @@ import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
@@ -69,6 +70,7 @@ import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -81,6 +83,13 @@ import org.koin.dsl.module
  */
 fun desktopDataModule(directory: String): Module =
     module {
+        single {
+            CoreAutoReadoutSettingsResetter(
+                autoReadoutPreferencesRepository = get(),
+                queuePreferencesRepository = get(),
+                readoutStartSoundEnabledPreferencesRepository = get(),
+            )
+        } bind AutoReadoutSettingsResetter::class
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<ReadoutHotkeyPreferencesRepository> {

@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 interface LmuWindowsPitTimingPreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeVirtualEnergyLaps(): Flow<Int>
 
     suspend fun saveVirtualEnergyLaps(laps: Int)

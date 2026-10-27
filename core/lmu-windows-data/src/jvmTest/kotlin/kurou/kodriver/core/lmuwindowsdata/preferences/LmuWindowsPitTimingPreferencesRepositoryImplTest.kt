@@ -18,6 +18,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsPitTimingPreferencesRepositoryImplTest {
@@ -153,5 +154,60 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
                 it.copy(enabledStates = mapOf(key.value to false, "future_pit_timing" to true))
             }
             assertEquals(mapOf<ReadoutItemKey, Boolean>(key to false), repository.observeEnabledStates().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val readoutTextRepository = LmuWindowsPitTimingReadoutTextPreferencesRepositoryImpl(pitTimingDataStore)
+            val defaultVirtualEnergyReadoutText = readoutTextRepository.observeVirtualEnergyReadoutText().first()
+            val defaultVirtualEnergyImminentReadoutText =
+                readoutTextRepository
+                    .observeVirtualEnergyImminentReadoutText()
+                    .first()
+            val defaultTyreWearReadoutText = readoutTextRepository.observeTyreWearReadoutText().first()
+            val defaultFuelReadoutText = readoutTextRepository.observeFuelReadoutText().first()
+            val defaultTyreWearImminentReadoutText = readoutTextRepository.observeTyreWearImminentReadoutText().first()
+            val defaultFuelImminentReadoutText = readoutTextRepository.observeFuelImminentReadoutText().first()
+            val defaultVirtualEnergyLaps = repository.observeVirtualEnergyLaps().first()
+            val defaultTyreWearLaps = repository.observeTyreWearLaps().first()
+            val defaultFuelLaps = repository.observeFuelLaps().first()
+            val defaultEnabledStates = repository.observeEnabledStates().first()
+
+            repository.saveVirtualEnergyLaps(7)
+            repository.saveTyreWearLaps(7)
+            repository.saveFuelLaps(7)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, false)
+
+            readoutTextRepository.saveVirtualEnergyReadoutText("変更した文言")
+            readoutTextRepository.saveVirtualEnergyImminentReadoutText("変更した文言")
+            readoutTextRepository.saveTyreWearReadoutText("変更した文言")
+            readoutTextRepository.saveFuelReadoutText("変更した文言")
+            readoutTextRepository.saveTyreWearImminentReadoutText("変更した文言")
+            readoutTextRepository.saveFuelImminentReadoutText("変更した文言")
+
+            assertNotEquals(LmuWindowsPitTimingPreferencesSerializer.defaultValue, pitTimingDataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(LmuWindowsPitTimingPreferencesSerializer.defaultValue, pitTimingDataStore.data.first())
+            assertEquals(defaultVirtualEnergyLaps, repository.observeVirtualEnergyLaps().first())
+            assertEquals(defaultTyreWearLaps, repository.observeTyreWearLaps().first())
+            assertEquals(defaultFuelLaps, repository.observeFuelLaps().first())
+            assertEquals(defaultEnabledStates, repository.observeEnabledStates().first())
+            assertEquals(
+                defaultVirtualEnergyReadoutText,
+                readoutTextRepository.observeVirtualEnergyReadoutText().first(),
+            )
+            assertEquals(
+                defaultVirtualEnergyImminentReadoutText,
+                readoutTextRepository.observeVirtualEnergyImminentReadoutText().first(),
+            )
+            assertEquals(defaultTyreWearReadoutText, readoutTextRepository.observeTyreWearReadoutText().first())
+            assertEquals(defaultFuelReadoutText, readoutTextRepository.observeFuelReadoutText().first())
+            assertEquals(
+                defaultTyreWearImminentReadoutText,
+                readoutTextRepository.observeTyreWearImminentReadoutText().first(),
+            )
+            assertEquals(defaultFuelImminentReadoutText, readoutTextRepository.observeFuelImminentReadoutText().first())
         }
 }

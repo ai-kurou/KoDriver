@@ -3,6 +3,8 @@ package kurou.kodriver.domain.gt7ps5.repository
 import kotlinx.coroutines.flow.Flow
 
 interface Gt7Ps5RemainingFuelLapsPreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeRemainingFuelLaps(): Flow<Int>
 
     suspend fun saveRemainingFuelLaps(laps: Int)

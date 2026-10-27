@@ -16,6 +16,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
@@ -149,5 +150,30 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
             }
             assertEquals(mapOf<ReadoutItemKey, Boolean>(key to false), repository.observeEnabledStates().first())
             assertEquals(mapOf(SessionPhase.FORMATION to true), repository.observeLowWarningPhases().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val readoutTextRepository = LmuWindowsTyreTemperatureReadoutTextPreferencesRepositoryImpl(dataStore)
+            val defaultOverheatReadoutText = readoutTextRepository.observeOverheatReadoutText().first()
+            val defaultColdReadoutText = readoutTextRepository.observeColdReadoutText().first()
+            val defaultEnabledStates = repository.observeEnabledStates().first()
+            val defaultLowWarningPhases = repository.observeLowWarningPhases().first()
+
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
+            repository.saveLowWarningPhases(emptySet())
+
+            readoutTextRepository.saveOverheatReadoutText("変更した文言")
+            readoutTextRepository.saveColdReadoutText("変更した文言")
+
+            assertNotEquals(LmuWindowsTyreTemperaturePreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(LmuWindowsTyreTemperaturePreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultEnabledStates, repository.observeEnabledStates().first())
+            assertEquals(defaultLowWarningPhases, repository.observeLowWarningPhases().first())
+            assertEquals(defaultOverheatReadoutText, readoutTextRepository.observeOverheatReadoutText().first())
+            assertEquals(defaultColdReadoutText, readoutTextRepository.observeColdReadoutText().first())
         }
 }

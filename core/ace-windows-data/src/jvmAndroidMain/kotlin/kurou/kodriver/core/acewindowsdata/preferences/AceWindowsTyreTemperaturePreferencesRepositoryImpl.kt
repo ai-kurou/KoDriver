@@ -10,6 +10,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 internal class AceWindowsTyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsTyreTemperaturePreferences>,
 ) : AceWindowsTyreTemperaturePreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { AceWindowsTyreTemperaturePreferences() }
+    }
+
     override fun observeHighThresholdCelsius(): Flow<Celsius> =
         dataStore.observeProperty { it.highThresholdCelsius }.map { Celsius(it) }
 

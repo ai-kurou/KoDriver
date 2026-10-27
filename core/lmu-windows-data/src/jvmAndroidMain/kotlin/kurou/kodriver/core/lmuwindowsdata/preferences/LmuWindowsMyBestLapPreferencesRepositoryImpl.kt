@@ -7,6 +7,10 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsMyBestLapPreference
 internal class LmuWindowsMyBestLapPreferencesRepositoryImpl(
     private val dataStore: DataStore<MyBestLapPreferences>,
 ) : LmuWindowsMyBestLapPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { MyBestLapPreferences() }
+    }
+
     override fun observeReadoutText(): Flow<String> = dataStore.observeProperty { it.lmuWindowsReadoutText }
 
     override suspend fun saveReadoutText(text: String) {

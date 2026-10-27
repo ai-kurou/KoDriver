@@ -13,6 +13,7 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsRemainingFuelLapsPreferencesRepositoryImplTest {
@@ -85,5 +86,31 @@ class AceWindowsRemainingFuelLapsPreferencesRepositoryImplTest {
             repository.saveEmptyReadoutText("")
             assertEquals("", repository.observeEmptyReadoutText().first())
             assertEquals(5, repository.observeThresholdLaps().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultThresholdLaps = repository.observeThresholdLaps().first()
+            val defaultReadoutText = repository.observeReadoutText().first()
+            val defaultEmptyReadoutText = repository.observeEmptyReadoutText().first()
+
+            repository.saveThresholdLaps(7)
+            repository.saveReadoutText("変更した文言")
+            repository.saveEmptyReadoutText("変更した文言")
+
+            assertNotEquals(
+                AceWindowsRemainingFuelLapsPreferencesSerializer.defaultValue,
+                thresholdLapsDataStore.data.first(),
+            )
+            repository.resetToDefault()
+
+            assertEquals(
+                AceWindowsRemainingFuelLapsPreferencesSerializer.defaultValue,
+                thresholdLapsDataStore.data.first(),
+            )
+            assertEquals(defaultThresholdLaps, repository.observeThresholdLaps().first())
+            assertEquals(defaultReadoutText, repository.observeReadoutText().first())
+            assertEquals(defaultEmptyReadoutText, repository.observeEmptyReadoutText().first())
         }
 }

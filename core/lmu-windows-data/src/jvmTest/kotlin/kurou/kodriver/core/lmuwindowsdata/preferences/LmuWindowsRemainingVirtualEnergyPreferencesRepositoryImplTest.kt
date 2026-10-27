@@ -11,6 +11,7 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsRemainingVirtualEnergyPreferencesRepositoryImplTest {
@@ -66,5 +67,22 @@ class LmuWindowsRemainingVirtualEnergyPreferencesRepositoryImplTest {
             }
             repository.saveThresholdPercentage(80)
             assertEquals("エネルギー警告", repository.observeReadoutText().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultThresholdPercentage = repository.observeThresholdPercentage().first()
+            val defaultReadoutText = repository.observeReadoutText().first()
+
+            repository.saveThresholdPercentage(7)
+            repository.saveReadoutText("変更した文言")
+
+            assertNotEquals(LmuWindowsRemainingVirtualEnergyPreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(LmuWindowsRemainingVirtualEnergyPreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultThresholdPercentage, repository.observeThresholdPercentage().first())
+            assertEquals(defaultReadoutText, repository.observeReadoutText().first())
         }
 }

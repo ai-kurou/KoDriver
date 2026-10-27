@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 interface LmuWindowsVehicleDamagePreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
     suspend fun saveEnabledState(

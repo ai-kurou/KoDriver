@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 
 /** LMU のフラッグごとの自由文字列を永続化する。空白文言では本文を読み上げない。 */
 interface LmuWindowsFlagReadoutTextPreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeSectorYellowFlagText(): Flow<String>
 
     suspend fun saveSectorYellowFlagText(text: String)

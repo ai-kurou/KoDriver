@@ -8,6 +8,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleApproachPreferences>,
 ) : LmuWindowsVehicleApproachPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { LmuWindowsVehicleApproachPreferences() }
+    }
+
     override fun observeSkipFirstLap(): Flow<Boolean> = dataStore.observeProperty { it.skipFirstLap }
 
     override suspend fun saveSkipFirstLap(skip: Boolean) {

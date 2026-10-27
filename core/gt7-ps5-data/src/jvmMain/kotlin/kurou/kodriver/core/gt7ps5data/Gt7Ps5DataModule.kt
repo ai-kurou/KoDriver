@@ -15,8 +15,10 @@ import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelPreferencesRep
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
+import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 private const val GT7_PS5_SCOPE_QUALIFIER = "gt7_ps5_scope"
@@ -31,6 +33,14 @@ private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
  */
 val gt7Ps5DataModule =
     module {
+        single {
+            Gt7Ps5AutoReadoutSettingsResetter(
+                myBestLapPreferencesRepository = get(),
+                remainingFuelLapsPreferencesRepository = get(),
+                remainingFuelPreferencesRepository = get(),
+                tyreTemperaturePreferencesRepository = get(),
+            )
+        } bind AutoReadoutSettingsResetter::class
         // UDP 受信を回す専用スコープ（named で他スコープと分離）
         single(named(GT7_PS5_SCOPE_QUALIFIER)) { CoroutineScope(SupervisorJob()) }
 

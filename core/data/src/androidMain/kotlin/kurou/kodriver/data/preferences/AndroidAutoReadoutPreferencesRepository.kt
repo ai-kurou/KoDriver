@@ -14,6 +14,10 @@ import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 internal class AndroidAutoReadoutPreferencesRepository(
     private val dataStore: DataStore<Preferences>,
 ) : AutoReadoutPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.edit { it.clear() }
+    }
+
     private fun enabledKey(
         simulator: String,
         key: ReadoutItemKey,

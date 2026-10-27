@@ -8,6 +8,10 @@ import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepos
 internal class ReadoutStartSoundEnabledPreferencesRepositoryImpl(
     private val dataStore: DataStore<ReadoutStartSoundEnabledPreferences>,
 ) : ReadoutStartSoundEnabledPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { ReadoutStartSoundEnabledPreferences() }
+    }
+
     override fun observeStartSoundEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.observeProperty { prefs ->
             prefs.enabledStates

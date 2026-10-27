@@ -3,6 +3,8 @@ package kurou.kodriver.domain.lmuwindows.repository
 import kotlinx.coroutines.flow.Flow
 
 interface LmuWindowsVehicleApproachThresholdsPreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeLongitudinalThresholdMeters(): Flow<Double>
 
     fun observeLateralThresholdMeters(): Flow<Double>

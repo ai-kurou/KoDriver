@@ -16,6 +16,7 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleClassBrakeWearPreferencesRepositoryImplTest {
@@ -143,5 +144,25 @@ class LmuWindowsVehicleClassBrakeWearPreferencesRepositoryImplTest {
             repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gt3)
             repository.saveLowThresholdPercent(LmuWindowsVehicleClassData.Gt3, 40)
             assertEquals("過熱警告", repository.observeReadoutText().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultLowThresholdPercent = repository.observeLowThresholdPercent().first()
+            val defaultSelectedVehicleClass = repository.observeSelectedVehicleClass().first()
+            val defaultReadoutText = repository.observeReadoutText().first()
+
+            repository.saveLowThresholdPercent(LmuWindowsVehicleClassData.Gte, 7)
+            repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte)
+            repository.saveReadoutText("変更した文言")
+
+            assertNotEquals(LmuWindowsVehicleClassBrakeWearPreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(LmuWindowsVehicleClassBrakeWearPreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultLowThresholdPercent, repository.observeLowThresholdPercent().first())
+            assertEquals(defaultSelectedVehicleClass, repository.observeSelectedVehicleClass().first())
+            assertEquals(defaultReadoutText, repository.observeReadoutText().first())
         }
 }

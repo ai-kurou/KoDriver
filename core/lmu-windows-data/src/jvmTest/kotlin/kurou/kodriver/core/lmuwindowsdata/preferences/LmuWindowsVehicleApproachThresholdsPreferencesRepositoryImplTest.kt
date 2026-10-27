@@ -13,6 +13,7 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
@@ -87,5 +88,31 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
             repository.saveSustainedApproachDurationSeconds(6)
             assertEquals(6, repository.observeSustainedApproachDurationSeconds().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultLongitudinalThresholdMeters = repository.observeLongitudinalThresholdMeters().first()
+            val defaultLateralThresholdMeters = repository.observeLateralThresholdMeters().first()
+            val defaultSustainedApproachDurationSeconds = repository.observeSustainedApproachDurationSeconds().first()
+
+            repository.saveLongitudinalThresholdMeters(7.5)
+            repository.saveLateralThresholdMeters(7.5)
+            repository.saveSustainedApproachDurationSeconds(7)
+
+            assertNotEquals(
+                LmuWindowsVehicleApproachThresholdsPreferencesSerializer.defaultValue,
+                dataStore.data.first(),
+            )
+            repository.resetToDefault()
+
+            assertEquals(LmuWindowsVehicleApproachThresholdsPreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultLongitudinalThresholdMeters, repository.observeLongitudinalThresholdMeters().first())
+            assertEquals(defaultLateralThresholdMeters, repository.observeLateralThresholdMeters().first())
+            assertEquals(
+                defaultSustainedApproachDurationSeconds,
+                repository.observeSustainedApproachDurationSeconds().first(),
+            )
         }
 }

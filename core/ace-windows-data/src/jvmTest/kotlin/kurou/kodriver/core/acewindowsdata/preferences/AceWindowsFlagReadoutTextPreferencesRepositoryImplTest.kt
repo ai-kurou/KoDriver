@@ -14,6 +14,7 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsFlagReadoutTextPreferencesRepositoryImplTest {
@@ -367,5 +368,21 @@ class AceWindowsFlagReadoutTextPreferencesRepositoryImplTest {
                     "ストライプ保存値",
                 )
             assertEquals(expected, AceWindowsFlagReadoutTextKey.entries.map { repository.observeText(it).first() })
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultValue0 = AceWindowsFlagReadoutTextKey.entries.map { repository.observeText(it).first() }
+
+            AceWindowsFlagReadoutTextKey.entries.forEach { flagKey ->
+                repository.saveText(flagKey, "変更した文言")
+            }
+
+            assertNotEquals(AceWindowsFlagReadoutTextPreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(AceWindowsFlagReadoutTextPreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultValue0, AceWindowsFlagReadoutTextKey.entries.map { repository.observeText(it).first() })
         }
 }

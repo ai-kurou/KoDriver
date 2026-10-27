@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 
 interface LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeHighThresholdCelsius(): Flow<Map<LmuWindowsVehicleClassData, Int>>
 
     suspend fun saveHighThresholdCelsius(

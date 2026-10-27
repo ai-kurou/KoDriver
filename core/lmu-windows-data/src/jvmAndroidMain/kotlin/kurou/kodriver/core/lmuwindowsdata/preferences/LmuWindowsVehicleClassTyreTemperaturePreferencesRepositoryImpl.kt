@@ -13,6 +13,10 @@ import kurou.kodriver.domain.model.Celsius
 internal class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleClassTyreTemperaturePreferences>,
 ) : LmuWindowsVehicleClassTyreTemperaturePreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { LmuWindowsVehicleClassTyreTemperaturePreferences() }
+    }
+
     override fun observeHighThresholdCelsius(): Flow<Map<LmuWindowsVehicleClassData, Celsius>> =
         dataStore.observeProperty { prefs ->
             lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->

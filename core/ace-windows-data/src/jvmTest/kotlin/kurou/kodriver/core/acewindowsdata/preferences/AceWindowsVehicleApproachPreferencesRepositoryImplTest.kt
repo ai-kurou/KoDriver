@@ -18,6 +18,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
@@ -147,5 +148,25 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
             assertEquals("", repository.observeReadoutText().first())
             save("  " + "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1) + "  ")
             assertEquals("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH), repository.observeReadoutText().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultReadoutText = repository.observeReadoutText().first()
+            val defaultThresholdMeters = repository.observeThresholdMeters().first()
+            val defaultEnabledStates = repository.observeEnabledStates().first()
+
+            repository.saveReadoutText("変更した文言")
+            repository.saveThresholdMeters(7.5)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, false)
+
+            assertNotEquals(AceWindowsVehicleApproachPreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(AceWindowsVehicleApproachPreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultReadoutText, repository.observeReadoutText().first())
+            assertEquals(defaultThresholdMeters, repository.observeThresholdMeters().first())
+            assertEquals(defaultEnabledStates, repository.observeEnabledStates().first())
         }
 }

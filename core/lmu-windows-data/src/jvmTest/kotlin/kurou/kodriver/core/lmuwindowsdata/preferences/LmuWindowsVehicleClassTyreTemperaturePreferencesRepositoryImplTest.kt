@@ -16,6 +16,7 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
@@ -126,5 +127,28 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
             val result = repository.observeSelectedVehicleClass().first()
 
             assertEquals(true, result is LmuWindowsVehicleClassData.Unknown)
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultHighThresholdCelsius = repository.observeHighThresholdCelsius().first()
+            val defaultSelectedVehicleClass = repository.observeSelectedVehicleClass().first()
+
+            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, Celsius(177))
+            repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte)
+
+            assertNotEquals(
+                LmuWindowsVehicleClassTyreTemperaturePreferencesSerializer.defaultValue,
+                dataStore.data.first(),
+            )
+            repository.resetToDefault()
+
+            assertEquals(
+                LmuWindowsVehicleClassTyreTemperaturePreferencesSerializer.defaultValue,
+                dataStore.data.first(),
+            )
+            assertEquals(defaultHighThresholdCelsius, repository.observeHighThresholdCelsius().first())
+            assertEquals(defaultSelectedVehicleClass, repository.observeSelectedVehicleClass().first())
         }
 }

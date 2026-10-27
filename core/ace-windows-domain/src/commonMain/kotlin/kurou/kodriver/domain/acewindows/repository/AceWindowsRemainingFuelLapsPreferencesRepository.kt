@@ -3,6 +3,8 @@ package kurou.kodriver.domain.acewindows.repository
 import kotlinx.coroutines.flow.Flow
 
 interface AceWindowsRemainingFuelLapsPreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeThresholdLaps(): Flow<Int>
 
     suspend fun saveThresholdLaps(laps: Int)

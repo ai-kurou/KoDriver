@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 interface AceWindowsVehicleApproachPreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeReadoutText(): Flow<String>
 
     suspend fun saveReadoutText(text: String)

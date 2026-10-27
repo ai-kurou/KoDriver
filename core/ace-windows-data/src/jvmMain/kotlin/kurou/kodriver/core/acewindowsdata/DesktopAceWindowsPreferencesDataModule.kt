@@ -14,7 +14,9 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPr
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import org.koin.core.module.Module
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -22,6 +24,17 @@ import org.koin.dsl.module
  */
 fun desktopAceWindowsPreferencesDataModule(directory: String): Module =
     module {
+        single {
+            AceWindowsAutoReadoutSettingsResetter(
+                flagPreferencesRepository = get(),
+                flagReadoutTextPreferencesRepository = get(),
+                myBestLapPreferencesRepository = get(),
+                remainingFuelLapsPreferencesRepository = get(),
+                remainingFuelPreferencesRepository = get(),
+                tyreTemperaturePreferencesRepository = get(),
+                vehicleApproachPreferencesRepository = get(),
+            )
+        } bind AutoReadoutSettingsResetter::class
         single<AceWindowsMyBestLapPreferencesRepository> {
             createAceWindowsMyBestLapPreferencesRepository(directory = directory)
         }

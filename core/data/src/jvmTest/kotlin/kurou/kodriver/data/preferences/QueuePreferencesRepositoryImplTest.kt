@@ -15,6 +15,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -72,5 +73,19 @@ class QueuePreferencesRepositoryImplTest {
                 ),
                 repository.observeQueueEnabledStates().first(),
             )
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultQueueEnabledStates = repository.observeQueueEnabledStates().first()
+
+            repository.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
+
+            assertNotEquals(QueuePreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(QueuePreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultQueueEnabledStates, repository.observeQueueEnabledStates().first())
         }
 }

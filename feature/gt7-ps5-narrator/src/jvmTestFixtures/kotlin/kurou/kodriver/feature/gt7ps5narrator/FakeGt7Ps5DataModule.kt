@@ -56,6 +56,8 @@ private class FakeGt7Ps5UdpPortPreferencesRepository : Gt7Ps5UdpPortPreferencesR
 }
 
 private class FakeGt7Ps5MyBestLapPreferencesRepository : Gt7Ps5MyBestLapPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val flow = MutableStateFlow(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT)
 
     override fun observeReadoutText(): Flow<String> = flow
@@ -66,6 +68,8 @@ private class FakeGt7Ps5MyBestLapPreferencesRepository : Gt7Ps5MyBestLapPreferen
 }
 
 private class FakeGt7Ps5RemainingFuelLapsPreferencesRepository : Gt7Ps5RemainingFuelLapsPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val flow = MutableStateFlow(3)
     private val readoutText = MutableStateFlow(GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT)
     private val emptyReadoutText = MutableStateFlow(GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT)
@@ -90,6 +94,8 @@ private class FakeGt7Ps5RemainingFuelLapsPreferencesRepository : Gt7Ps5Remaining
 }
 
 private class FakeGt7Ps5RemainingFuelPreferencesRepository : Gt7Ps5RemainingFuelPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val flow = MutableStateFlow(30)
     private val readoutText = MutableStateFlow(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT)
 
@@ -107,6 +113,8 @@ private class FakeGt7Ps5RemainingFuelPreferencesRepository : Gt7Ps5RemainingFuel
 }
 
 private class FakeGt7Ps5TyreTemperaturePreferencesRepository : Gt7Ps5TyreTemperaturePreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val textFlow = MutableStateFlow(GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT)
 
     override fun observeOverheatReadoutText(): Flow<String> = textFlow

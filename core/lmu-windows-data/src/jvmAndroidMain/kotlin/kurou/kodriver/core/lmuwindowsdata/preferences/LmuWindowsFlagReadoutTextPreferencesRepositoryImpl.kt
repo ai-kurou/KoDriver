@@ -7,6 +7,10 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagReadoutTextPref
 internal class LmuWindowsFlagReadoutTextPreferencesRepositoryImpl(
     private val dataStore: DataStore<FlagReadoutTextPreferences>,
 ) : LmuWindowsFlagReadoutTextPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { FlagReadoutTextPreferences() }
+    }
+
     override fun observeSectorYellowFlagText(): Flow<String> = dataStore.observeProperty { it.sectorYellowFlagText }
 
     override suspend fun saveSectorYellowFlagText(text: String) {

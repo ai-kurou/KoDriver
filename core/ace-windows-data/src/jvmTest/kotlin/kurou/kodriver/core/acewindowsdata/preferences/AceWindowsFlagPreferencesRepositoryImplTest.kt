@@ -14,6 +14,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -71,5 +72,19 @@ class AceWindowsFlagPreferencesRepositoryImplTest {
                 ),
                 repository.observeFlagEnabledStates().first(),
             )
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultFlagEnabledStates = repository.observeFlagEnabledStates().first()
+
+            repository.saveFlagEnabledState(AceWindowsReadoutItemKey.Flag.BlueFlag, false)
+
+            assertNotEquals(AceWindowsFlagPreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(AceWindowsFlagPreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultFlagEnabledStates, repository.observeFlagEnabledStates().first())
         }
 }

@@ -10,6 +10,8 @@ import kurou.kodriver.domain.model.ReadoutItemKey
  * キーの有効状態と並び順はシミュレーターごとに独立して保存される。
  */
 interface AutoReadoutPreferencesRepository {
+    suspend fun resetToDefault()
+
     /** 指定シミュレーターの読み上げ有効状態を購読する。未保存のキーは domain のデフォルト値で補完する。 */
     fun observeAutoReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>>
 

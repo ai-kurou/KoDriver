@@ -46,6 +46,7 @@ import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
@@ -80,6 +81,7 @@ import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
@@ -99,6 +101,13 @@ private val Context.hapticFeedbackEnabledDataStore by preferencesDataStore("hapt
  */
 fun androidDataModule(context: Context) =
     module {
+        single {
+            CoreAutoReadoutSettingsResetter(
+                autoReadoutPreferencesRepository = get(),
+                queuePreferencesRepository = get(),
+                readoutStartSoundEnabledPreferencesRepository = get(),
+            )
+        } bind AutoReadoutSettingsResetter::class
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutHotkeyRepository> { UnsupportedManualReadoutHotkeyRepository() }
         single<HotkeyRepository> { UnsupportedHotkeyRepository() }

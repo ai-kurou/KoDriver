@@ -50,6 +50,7 @@ kotlin {
             dependsOn(jvmAndroidMain)
         }
         jvmTest.dependencies {
+            implementation(libs.mockk)
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
