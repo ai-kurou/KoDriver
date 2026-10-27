@@ -30,6 +30,12 @@ OKで保存され、キャンセル・ダイアログ外タップ・ViewModel破
 文字サイズは共有Repositoryのプレビュー値を含めて購読するため、設定ダイアログのラジオボタン選択で
 即時に変わる。OKで保存され、キャンセル・ダイアログ外タップ・ViewModel破棄では保存値に戻る。
 
+`NarratorOverlayFlow` は最新の読み上げログ・文字サイズ・文字色・背景不透明度の4つの入力を
+`NarratorOverlayUiState` に合成する冷たい Flow を提供する。
+`NarratorOverlayViewModel` は UseCase から入力を取得し、`viewModelScope` と
+`SharingStarted.WhileSubscribed(5_000)`、初期値 `NarratorOverlayUiState()` を指定した
+`stateIn` によって、UI が購読する `StateFlow` を保持する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
