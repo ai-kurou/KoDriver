@@ -1,6 +1,6 @@
 # lmu-windows-debug-state-detail
 
-LMU Windows 専用のデバッグ状態画面。テレメトリ、レース状態、タイヤ・ブレーキ、燃料、バーチャルエネルギー、並走時間などを19枚のカードで表示し、ドラッグしたカード順序を保存する。
+LMU Windows 専用のデバッグ状態画面。テレメトリ、レース状態、タイヤ・ブレーキ、燃料、バーチャルエネルギー、並走時間、前後車両との時間差などを20枚のカードで表示し、ドラッグしたカード順序を保存する。
 自己完結モジュールとして、表示ヘルパーもこのモジュール内に保持する。
 「その他」タブのバージョンを5回タップすると、選択中のシミュレーターに対応するペインを表示する。
 
@@ -19,6 +19,7 @@ LMU Windows 専用のデバッグ状態画面。テレメトリ、レース状�
 - `LmuWindowsSideBySideDurationTracker.kt`: 左右それぞれの最長並走時間を車両IDごとに追跡する。Source が並走中に周期的に更新する。
 - `LmuWindowsDebugStateCards.kt` / `DebugState*Card.kt`: LMU 専用のカード表示。フレーム、未取得表示、温度・摩耗・ラップタイム等の整形ヘルパーも同梱する。
 - `LmuWindowsDebugStateDetailModule.kt` / `LmuWindowsDebugStateModule.kt`: ViewModel と UseCase の Koin 定義。利用側が必要な Repository を登録する。
+- `DebugStateCarGapCard.kt` / `CarGapFormatter.kt`: 前後車両・順位上の前後車両との差を秒で小数1桁表示する。符号・ゼロを保持し、NaN・Infinity は `--` にする。
 
 ## カード順序と未取得表示
 

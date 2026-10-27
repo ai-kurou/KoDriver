@@ -61,6 +61,7 @@ private val debugStateCardSymbols =
         LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE to "⚠",
         LmuWindowsDebugStateCardKey.CURRENT_LAP to "⏱",
         LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to "↔",
+        LmuWindowsDebugStateCardKey.CAR_GAP to "↕",
         LmuWindowsDebugStateCardKey.BEST_LAP to "🏆",
         LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE to "🔥",
         LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to "◎",

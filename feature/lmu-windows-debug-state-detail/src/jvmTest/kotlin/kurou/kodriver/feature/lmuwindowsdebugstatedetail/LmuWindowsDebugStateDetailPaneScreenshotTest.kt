@@ -12,6 +12,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearWheelRemaining
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
@@ -226,11 +227,39 @@ class LmuWindowsDebugStateDetailPaneScreenshotTest {
             onRoot().captureRoboImage()
         }
 
+    @Test
+    fun `前後車両との時間差カードに符号とゼロを保持して表示する`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsDebugStateDetailPaneContent(
+                                uiState =
+                                    LmuWindowsDebugStateDetailUiState(
+                                        cardOrder = listOf(LmuWindowsDebugStateCardKey.CAR_GAP),
+                                        enabledCardKeys = setOf(LmuWindowsDebugStateCardKey.CAR_GAP),
+                                        lmuWindows =
+                                            LmuWindowsDebugState(
+                                                carGap = LmuWindowsCarGapData(1.0, -2.3, 0.0, 4.5),
+                                            ),
+                                    ),
+                                canNavigateBack = true,
+                                onBack = {},
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
     private val allCardsFilledUiState =
         LmuWindowsDebugStateDetailUiState(
             enabledCardKeys = defaultDebugStateCardOrder.toSet(),
             lmuWindows =
                 LmuWindowsDebugState(
+                    carGap = LmuWindowsCarGapData(1.0, -2.3, 4.5, 0.0),
                     raceFlags = sampleRaceFlags,
                     virtualEnergy = sampleVirtualEnergy,
                     virtualEnergyBaseline = LmuWindowsVirtualEnergyBaseline(1.0, 0),
