@@ -80,24 +80,25 @@ internal class LmuWindowsAutoReadoutFlagDetailViewModel(
             speakText,
         )
 
-    val uiState: StateFlow<LmuWindowsAutoReadoutFlagDetailUiState> =
+    private val flagTexts: Flow<Map<FlagReadoutItem, String>> =
         combine(
-            settingsUseCases.observeFlagEnabledStates(),
-            combine(
-                FlagReadoutItem.entries.map { item ->
-                    settingsUseCases.readoutTexts.observe(item).map { item to it }
-                },
-            ) {
-                it.toMap()
+            FlagReadoutItem.entries.map { item ->
+                settingsUseCases.readoutTexts.observe(item).map { item to it }
             },
-            preview.textToSpeechAvailable,
-        ) { enabledStates, flagTexts, isTextToSpeechAvailable ->
-            LmuWindowsAutoReadoutFlagDetailUiState(
-                enabledStates = enabledStates,
-                flagTexts = flagTexts,
-                isTextToSpeechAvailable = isTextToSpeechAvailable,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsAutoReadoutFlagDetailUiState())
+        ) {
+            it.toMap()
+        }
+
+    val uiState: StateFlow<LmuWindowsAutoReadoutFlagDetailUiState> =
+        LmuWindowsAutoReadoutFlagDetailFlow(
+            enabledStates = settingsUseCases.observeFlagEnabledStates(),
+            flagTexts = flagTexts,
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LmuWindowsAutoReadoutFlagDetailUiState(),
+        )
 
     /** ペインを離れるときに試聴を止める。 */
     fun onPreviewStopped() = preview.stop()
