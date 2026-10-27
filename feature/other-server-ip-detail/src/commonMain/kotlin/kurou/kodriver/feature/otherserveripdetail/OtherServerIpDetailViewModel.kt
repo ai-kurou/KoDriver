@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -14,20 +13,10 @@ import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 
 internal class OtherServerIpDetailViewModel(
     observeServerIp: ObserveServerIpUseCase,
-    private val validateServerIpAddress: ValidateServerIpAddressUseCase,
+    validateServerIpAddress: ValidateServerIpAddressUseCase,
     private val saveServerIpWithConnectivityCheck: SaveServerIpWithConnectivityCheckUseCase,
     private val windowsServerDiscovery: WindowsServerDiscovery,
 ) : ViewModel() {
-    private data class MutableState(
-        val userInput: String? = null,
-        val saveFailed: Boolean = false,
-        val isCheckingConnectivity: Boolean = false,
-        val connectivityWarning: Boolean = false,
-        val isSaved: Boolean = false,
-        val isDiscoveryDialogDismissed: Boolean = false,
-        val selectedDiscoveredServer: DiscoveredServer? = null,
-    )
-
     private val savedIp: StateFlow<String> =
         observeServerIp()
             .map { it ?: "" }
@@ -40,27 +29,19 @@ internal class OtherServerIpDetailViewModel(
             .discover()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    private val _mutable: MutableStateFlow<MutableState> = MutableStateFlow(MutableState())
+    private val _mutable: MutableStateFlow<OtherServerIpDetailMutableState> =
+        MutableStateFlow(OtherServerIpDetailMutableState())
+
+    private val detailFlow =
+        OtherServerIpDetailFlow(
+            savedIp = savedIp,
+            mutableState = _mutable,
+            discoveredServers = discoveredServers,
+            validateServerIpAddress = validateServerIpAddress,
+        )
 
     val uiState: StateFlow<OtherServerIpDetailUiState> =
-        combine(
-            savedIp,
-            _mutable,
-            discoveredServers,
-        ) { saved, m, discovered ->
-            val current = m.userInput ?: saved
-            OtherServerIpDetailUiState(
-                inputIp = current,
-                isInputValid = current.isEmpty() || validateServerIpAddress(current),
-                saveFailed = m.saveFailed,
-                isCheckingConnectivity = m.isCheckingConnectivity,
-                connectivityWarning = m.connectivityWarning,
-                isSaved = m.isSaved,
-                discoveredServers = discovered,
-                isDiscoveryDialogVisible = !m.isSaved && discovered.isNotEmpty() && !m.isDiscoveryDialogDismissed,
-                selectedDiscoveredServer = m.selectedDiscoveredServer ?: discovered.firstOrNull(),
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherServerIpDetailUiState())
+        detailFlow.uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), detailFlow.initialUiState)
 
     fun onIpChanged(ip: String) {
         _mutable.update { it.copy(userInput = ip, connectivityWarning = false) }
@@ -104,7 +85,7 @@ internal class OtherServerIpDetailViewModel(
     }
 
     fun onDismiss() {
-        _mutable.update { MutableState() }
+        _mutable.update { OtherServerIpDetailMutableState() }
     }
 
     private fun applySaveResult(result: SaveServerIpResult) {
@@ -116,3 +97,13 @@ internal class OtherServerIpDetailViewModel(
         }
     }
 }
+
+internal data class OtherServerIpDetailMutableState(
+    val userInput: String? = null,
+    val saveFailed: Boolean = false,
+    val isCheckingConnectivity: Boolean = false,
+    val connectivityWarning: Boolean = false,
+    val isSaved: Boolean = false,
+    val isDiscoveryDialogDismissed: Boolean = false,
+    val selectedDiscoveredServer: DiscoveredServer? = null,
+)
