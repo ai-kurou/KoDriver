@@ -13,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
@@ -214,12 +215,13 @@ class ManualReadoutListPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                             ManualReadoutHintSheetContent(showHotkeyHint = true)
                         }
                     }
                 }
             }
+            onNodeWithText("ステアリングのボタンから実行する設定を開く").performScrollTo().assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
