@@ -9,14 +9,14 @@
 `ReadoutItemKey` を新設・変更する際は、以下の両方を必ず確認すること。
 
 1. listPane / detailPane のスイッチがどの `DataStore`（`AutoReadoutPreferencesRepository` か、各機能固有の Preferences Repository か）に保存されるか
-2. その `ReadoutItemKey` が実際に Narrator の読み上げ判定（LMU: `LmuWindowsNarratorViewModel` の `enabledStates` マージ処理と `DetermineLmuWindowsNarratorReadoutUseCase`、GT7: `Gt7Ps5NarratorViewModel` とその判定処理）で参照されているか
+2. その `ReadoutItemKey` が実際に Narrator の読み上げ判定（LMU: `LmuWindowsNarratorViewModel` の `enabledStates` マージ処理と `core/lmu-windows-domain/src/commonMain/kotlin/kurou/kodriver/domain/lmuwindows/usecase/` の `DetermineLmuWindowsVehicleReadoutUseCase.kt`・`DetermineLmuWindowsTyreReadoutUseCase.kt`・`DetermineLmuWindowsBrakeReadoutUseCase.kt`・`DetermineLmuWindowsFuelReadoutUseCase.kt`・`DetermineLmuWindowsVirtualEnergyReadoutUseCase.kt`・`DetermineLmuWindowsPitTimingReadoutUseCase.kt`・`DetermineLmuWindowsRaceFlagReadoutUseCase.kt`・`DetermineLmuWindowsMyBestLapReadoutUseCase.kt`、GT7: `Gt7Ps5NarratorViewModel` とその判定処理）で参照されているか
 
 `ReadoutItemKey` は複数の独立した `DataStore` に同名キーとして存在しうるため、片方だけ実装してもう片方（Narrator側の実際のゲート処理）への配線を忘れると、スイッチが存在するのに効果がない死んだ実装になる。過去に以下のバグが発生している。
 
 - #464: タイヤ温度・自己ベストラップのデフォルト無効状態が Narrator に未反映だった
-- #472: listPane の `VehicleDamage` スイッチが `DetermineLmuWindowsNarratorReadoutUseCase.determineVehicleDamage` から参照されておらず、子項目 `Overheat` のみでゲートされていたため、`VehicleDamage` をOFFにしても過熱警告の読み上げが止まらなかった
+- #472: listPane の `VehicleDamage` スイッチが当時の `DetermineLmuWindowsNarratorReadoutUseCase.determineVehicleDamage`（現在は責務別に分割済みで `DetermineLmuWindowsVehicleReadoutUseCase.determineVehicleDamage`）から参照されておらず、子項目 `Overheat` のみでゲートされていたため、`VehicleDamage` をOFFにしても過熱警告の読み上げが止まらなかった
 
-新しい `ReadoutItemKey` を読み上げ判定ロジックに追加する場合は、対応する `Determine*NarratorReadoutUseCase` のテストに「その項目を無効にした場合は読み上げられない」ケースを必ず追加すること。
+新しい `ReadoutItemKey` を読み上げ判定ロジックに追加する場合は、対応する読み上げ判定 UseCase のテストに「その項目を無効にした場合は読み上げられない」ケースを必ず追加すること。
 
 ACEの全10フラッグ（Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCircle・RedYellowStripes）は保存した自由文言をOS標準TTSのみで読み上げ、WAVは使用しない。既定文言はドメイン定数を参照し、OrangeCircleは「オレンジボールフラッグ、車両に不具合があります」、RedYellowStripesは「レッド・イエローストライプフラッグ、路面が滑りやすいです」。保存先は `ace_windows_auto_flag_readout_text_preferences.pb`。既存の `ace_windows_auto_flag_preferences.pb`（enabledStates）は変更せず、詳細の個別キー（`AceWindowsReadoutItemKey.Flag.WhiteFlag` 等）と一覧の `Flag.Root` の有効状態を従来どおり判定する。空白文言またはTTS利用不可の場合は本文と開始音を要求せず、ログに `narratedText` 空文字と `narrationOutcome=SKIPPED` を記録する。全10種の `SpeechEvent.readoutItemKey` は `Flag.Root` のため、開始音・優先度・キュー・詳細画面のTTS試聴の開始音も `Flag.Root` を参照する。試聴は空白・TTS利用不可・音量0以下では再生しない。WAVフォールバックは行わない。
 判定時に解決した本文を `resolvedText` に保持し、キュー待機中に設定が変わっても発話とログを一致させる。

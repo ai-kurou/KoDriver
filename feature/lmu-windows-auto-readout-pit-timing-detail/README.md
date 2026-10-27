@@ -2,6 +2,8 @@
 
 文言欄は最新入力の正規化値と保存値が異なる間、古い保存結果による巻き戻りを防ぐ。前後の空白除去・30文字制限後の保存値が一致したら待機を解除し、以降の外部更新を反映する。保存値が変わらない入力でも待機を解除する。編集直後に編集前の保存値へ戻す操作の競合は [#1884](https://github.com/ai-kurou/KoDriver/issues/1884) で別途扱う。
 
+UI 状態の合成は `LmuWindowsAutoReadoutPitTimingDetailFlow` が cold Flow として担う。共有・初期値・`viewModelScope` での実行は ViewModel が管理する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
