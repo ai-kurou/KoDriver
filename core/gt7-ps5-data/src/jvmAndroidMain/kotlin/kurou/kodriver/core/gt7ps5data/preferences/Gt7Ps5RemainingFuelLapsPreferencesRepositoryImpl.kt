@@ -7,6 +7,10 @@ import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelLapsPreference
 internal class Gt7Ps5RemainingFuelLapsPreferencesRepositoryImpl(
     private val dataStore: DataStore<Gt7Ps5RemainingFuelLapsPreferences>,
 ) : Gt7Ps5RemainingFuelLapsPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { Gt7Ps5RemainingFuelLapsPreferences() }
+    }
+
     override fun observeRemainingFuelLaps(): Flow<Int> = dataStore.observeProperty { it.remainingFuelLaps }
 
     override suspend fun saveRemainingFuelLaps(laps: Int) {

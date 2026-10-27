@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 interface LmuWindowsFlagPreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
     suspend fun saveFlagEnabledState(

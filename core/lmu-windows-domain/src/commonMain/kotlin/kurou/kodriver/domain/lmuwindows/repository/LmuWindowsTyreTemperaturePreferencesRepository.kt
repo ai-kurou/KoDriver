@@ -5,6 +5,8 @@ import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 interface LmuWindowsTyreTemperaturePreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
     suspend fun saveEnabledState(

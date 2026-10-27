@@ -14,6 +14,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -272,5 +273,24 @@ class AutoReadoutPreferencesRepositoryImplTest {
             repository.saveAutoReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
 
             assertTrue(repository.observeAutoReadoutOrder("lmu_windows").first().isEmpty())
+        }
+
+    @Test
+    fun `全シミュレーターの有効状態と順序を既定値に戻す`() =
+        runTest {
+            val simulators = listOf("lmu_windows", "ace_windows", "gt7_ps5")
+            simulators.forEach { simulator ->
+                repository.saveAutoReadoutEnabledState(simulator, LmuWindowsReadoutItemKey.Flag.Root, false)
+                repository.saveAutoReadoutOrder(simulator, listOf(LmuWindowsReadoutItemKey.Flag.Root))
+            }
+            assertNotEquals(AutoReadoutPreferencesSerializer.defaultValue, dataStore.data.first())
+
+            repository.resetToDefault()
+
+            assertEquals(AutoReadoutPreferencesSerializer.defaultValue, dataStore.data.first())
+            simulators.forEach { simulator ->
+                assertEquals(emptyMap(), repository.observeAutoReadoutEnabledStates(simulator).first())
+                assertEquals(emptyList(), repository.observeAutoReadoutOrder(simulator).first())
+            }
         }
 }

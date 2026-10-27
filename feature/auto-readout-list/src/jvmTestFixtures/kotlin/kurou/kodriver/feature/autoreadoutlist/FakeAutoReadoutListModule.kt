@@ -44,6 +44,8 @@ private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepos
 
 private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl :
     LmuWindowsVehicleApproachThresholdsPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val lateral = MutableStateFlow(5.0)
     private val longitudinal = MutableStateFlow(1.0)
     private val sustainedApproachDurationSeconds = MutableStateFlow(4)
@@ -68,6 +70,8 @@ private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl :
 }
 
 private class FakeLmuWindowsFlagPreferencesRepositoryImpl : LmuWindowsFlagPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
@@ -81,6 +85,8 @@ private class FakeLmuWindowsFlagPreferencesRepositoryImpl : LmuWindowsFlagPrefer
 }
 
 private class FakeQueuePreferencesRepositoryImpl : QueuePreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     override fun observeQueueEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
@@ -94,6 +100,8 @@ private class FakeQueuePreferencesRepositoryImpl : QueuePreferencesRepository {
 }
 
 private class FakeReadoutStartSoundEnabledPreferencesRepositoryImpl : ReadoutStartSoundEnabledPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     override fun observeStartSoundEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
@@ -107,6 +115,8 @@ private class FakeReadoutStartSoundEnabledPreferencesRepositoryImpl : ReadoutSta
 }
 
 private class FakeAutoReadoutPreferencesRepositoryImpl : AutoReadoutPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val enabledStates = MutableStateFlow<Map<String, Map<ReadoutItemKey, Boolean>>>(emptyMap())
     private val orders = MutableStateFlow<Map<String, List<ReadoutItemKey>>>(emptyMap())
 

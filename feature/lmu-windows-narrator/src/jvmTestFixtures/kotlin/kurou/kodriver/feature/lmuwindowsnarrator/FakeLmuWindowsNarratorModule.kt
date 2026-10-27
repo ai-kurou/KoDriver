@@ -131,6 +131,8 @@ class FakeLmuWindowsRepository : LmuWindowsRepository {
 class FakeLmuWindowsVehicleApproachPreferencesRepository :
     LmuWindowsVehicleApproachPreferencesRepository,
     LmuWindowsVehicleApproachReadoutTextPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val skipFirstLapFlow = MutableStateFlow(true)
     private val startLeftReadoutTextFlow =
         MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT)
@@ -183,6 +185,8 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository :
 }
 
 class FakeLmuWindowsVehicleDamagePreferencesRepository : LmuWindowsVehicleDamagePreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = MutableStateFlow(emptyMap())
 
     override suspend fun saveEnabledState(
@@ -255,6 +259,8 @@ class FakeLmuWindowsBrakeTemperatureRepository : LmuWindowsBrakeTemperatureRepos
 }
 
 class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTemperaturePreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     private val lowWarningPhasesFlow = MutableStateFlow<Map<SessionPhase, Boolean>>(emptyMap())
 
@@ -297,6 +303,8 @@ class FakeLmuWindowsTyreWearRepository : LmuWindowsTyreWearRepository {
 }
 
 class FakeLmuWindowsTyreWearPreferencesRepository : LmuWindowsTyreWearPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val flow = MutableStateFlow(50)
     private val text = MutableStateFlow(LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT)
 
@@ -314,6 +322,8 @@ class FakeLmuWindowsTyreWearPreferencesRepository : LmuWindowsTyreWearPreference
 }
 
 class FakeLmuWindowsMyBestLapPreferencesRepository : LmuWindowsMyBestLapPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val flow = MutableStateFlow(LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT)
 
     override fun observeReadoutText(): Flow<String> = flow
@@ -337,6 +347,8 @@ class FakeLmuWindowsPitStatusRepository : LmuWindowsPitStatusRepository {
 
 class FakeLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository :
     LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val thresholds =
         MutableStateFlow(
             lmuWindowsAllVehicleClasses.associateWith {
@@ -369,6 +381,8 @@ class FakeLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository :
 }
 
 class FakeLmuWindowsVehicleClassBrakeWearPreferencesRepository : LmuWindowsVehicleClassBrakeWearPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
     private val thresholds =
         MutableStateFlow(
             lmuWindowsAllVehicleClasses.associateWith {

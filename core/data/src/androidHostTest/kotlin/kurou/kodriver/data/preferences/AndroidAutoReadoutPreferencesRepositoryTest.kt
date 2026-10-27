@@ -105,4 +105,21 @@ class AndroidAutoReadoutPreferencesRepositoryTest {
             assertEquals(emptyMap(), failingRepository.observeAutoReadoutEnabledStates("lmu_windows").first())
             assertEquals(emptyList(), failingRepository.observeAutoReadoutOrder("lmu_windows").first())
         }
+
+    @Test
+    fun `全シミュレーターの有効状態と順序を既定値に戻す`() =
+        runTest(testDispatcher) {
+            val simulators = listOf("lmu_windows", "ace_windows", "gt7_ps5")
+            simulators.forEach { simulator ->
+                repository.saveAutoReadoutEnabledState(simulator, LmuWindowsReadoutItemKey.Flag.Root, false)
+                repository.saveAutoReadoutOrder(simulator, listOf(LmuWindowsReadoutItemKey.Flag.Root))
+            }
+
+            repository.resetToDefault()
+
+            simulators.forEach { simulator ->
+                assertEquals(emptyMap(), repository.observeAutoReadoutEnabledStates(simulator).first())
+                assertEquals(emptyList(), repository.observeAutoReadoutOrder(simulator).first())
+            }
+        }
 }

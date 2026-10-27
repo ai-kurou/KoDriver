@@ -5,6 +5,8 @@ Le Mans Ultimate 向けのデータ実装を提供する Kotlin Multiplatform �
 
 共有メモリに含まれない情報（天候予報、Virtual Energy消費履歴、ピットメニューの状態等）をLMU内蔵のローカルREST APIから補えないかを調査した資料が [`docs/lmu-windows-rest-api.md`](../../docs/lmu-windows-rest-api.md) にあります（未統合の調査メモ）。
 
+`LmuWindowsAutoReadoutSettingsResetter` は LMU の自動読み上げ設定・自由文言を端末ローカルで既定値に戻し、Desktop / Android で `AutoReadoutSettingsResetter` として登録します。PitTiming・TyreTemperature・VehicleApproach の設定と文言は共有 DataStore を設定側から一度だけリセットします。
+
 ## DataStore helper の複製
 
 `:core:data` との依存は moduleGraphAssert により data 系モジュール間で禁止されているため、LMU が使う共通 DataStore helper・WebSocket helper を `internal` のままこのモジュールに複製しています。proto の `FlagReadoutTextPreferences` と `MyBestLapPreferences` もフィールド番号・既定値を維持して複製し、ACE は `:core:ace-windows-data`、GT7 は `:core:gt7-ps5-data` にそれぞれ自モジュールへ複製した定義を持ちます。LMU 固有コードは `kurou.kodriver.core.lmuwindowsdata.preferences` / `.websocket` パッケージに置き、同一クラス名の jar 間衝突を避けます。

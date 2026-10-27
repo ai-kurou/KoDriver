@@ -10,6 +10,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsTyreTemperaturePreferences>,
 ) : LmuWindowsTyreTemperaturePreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { LmuWindowsTyreTemperaturePreferences() }
+    }
+
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.observeProperty { prefs ->
             prefs.enabledStates

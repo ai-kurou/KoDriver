@@ -13,6 +13,7 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5RemainingFuelLapsPreferencesRepositoryImplTest {
@@ -81,5 +82,31 @@ class Gt7Ps5RemainingFuelLapsPreferencesRepositoryImplTest {
             repository.saveEmptyReadoutText("")
             assertEquals("", repository.observeEmptyReadoutText().first())
             assertEquals(5, repository.observeRemainingFuelLaps().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultRemainingFuelLaps = repository.observeRemainingFuelLaps().first()
+            val defaultReadoutText = repository.observeReadoutText().first()
+            val defaultEmptyReadoutText = repository.observeEmptyReadoutText().first()
+
+            repository.saveRemainingFuelLaps(7)
+            repository.saveReadoutText("変更した文言")
+            repository.saveEmptyReadoutText("変更した文言")
+
+            assertNotEquals(
+                Gt7Ps5RemainingFuelLapsPreferencesSerializer.defaultValue,
+                remainingFuelLapsDataStore.data.first(),
+            )
+            repository.resetToDefault()
+
+            assertEquals(
+                Gt7Ps5RemainingFuelLapsPreferencesSerializer.defaultValue,
+                remainingFuelLapsDataStore.data.first(),
+            )
+            assertEquals(defaultRemainingFuelLaps, repository.observeRemainingFuelLaps().first())
+            assertEquals(defaultReadoutText, repository.observeReadoutText().first())
+            assertEquals(defaultEmptyReadoutText, repository.observeEmptyReadoutText().first())
         }
 }

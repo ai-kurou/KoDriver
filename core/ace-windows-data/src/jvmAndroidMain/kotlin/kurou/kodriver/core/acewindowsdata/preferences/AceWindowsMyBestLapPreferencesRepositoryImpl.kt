@@ -7,6 +7,10 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsMyBestLapPreference
 internal class AceWindowsMyBestLapPreferencesRepositoryImpl(
     private val dataStore: DataStore<MyBestLapPreferences>,
 ) : AceWindowsMyBestLapPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { MyBestLapPreferences() }
+    }
+
     override fun observeReadoutText(): Flow<String> = dataStore.observeProperty { it.aceWindowsReadoutText }
 
     override suspend fun saveReadoutText(text: String) {

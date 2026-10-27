@@ -7,6 +7,10 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRemainingFuelPrefer
 internal class LmuWindowsRemainingFuelPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsRemainingFuelPreferences>,
 ) : LmuWindowsRemainingFuelPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { LmuWindowsRemainingFuelPreferences() }
+    }
+
     override fun observeThresholdPercentage(): Flow<Int> = dataStore.observeProperty { it.thresholdPercentage }
 
     override suspend fun saveThresholdPercentage(value: Int) {

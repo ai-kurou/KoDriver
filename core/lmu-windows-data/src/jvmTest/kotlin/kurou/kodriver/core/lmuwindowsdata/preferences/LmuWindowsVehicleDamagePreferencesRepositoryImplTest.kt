@@ -14,6 +14,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
@@ -130,5 +131,28 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
                 assertEquals("オーバーヒート", repository.observeOverheatReadoutText().first())
                 assertEquals("部品脱落", repository.observePartDetachedReadoutText().first())
             }
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultEnabledStates = repository.observeEnabledStates().first()
+            val defaultOverheatReadoutText = repository.observeOverheatReadoutText().first()
+            val defaultPartDetachedReadoutText = repository.observePartDetachedReadoutText().first()
+            val defaultTyreDetachedReadoutText = repository.observeTyreDetachedReadoutText().first()
+
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, false)
+            repository.saveOverheatReadoutText("変更した文言")
+            repository.savePartDetachedReadoutText("変更した文言")
+            repository.saveTyreDetachedReadoutText("変更した文言")
+
+            assertNotEquals(LmuWindowsVehicleDamagePreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(LmuWindowsVehicleDamagePreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultEnabledStates, repository.observeEnabledStates().first())
+            assertEquals(defaultOverheatReadoutText, repository.observeOverheatReadoutText().first())
+            assertEquals(defaultPartDetachedReadoutText, repository.observePartDetachedReadoutText().first())
+            assertEquals(defaultTyreDetachedReadoutText, repository.observeTyreDetachedReadoutText().first())
         }
 }

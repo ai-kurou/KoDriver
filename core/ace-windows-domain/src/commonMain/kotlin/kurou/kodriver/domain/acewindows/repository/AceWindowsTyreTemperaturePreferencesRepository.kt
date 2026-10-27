@@ -5,6 +5,8 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 interface AceWindowsTyreTemperaturePreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeHighThresholdCelsius(): Flow<Celsius>
 
     suspend fun saveHighThresholdCelsius(celsius: Celsius)

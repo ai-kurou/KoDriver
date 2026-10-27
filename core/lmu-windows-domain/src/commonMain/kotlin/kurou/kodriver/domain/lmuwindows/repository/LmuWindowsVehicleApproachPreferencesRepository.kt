@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 interface LmuWindowsVehicleApproachPreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeSkipFirstLap(): Flow<Boolean>
 
     suspend fun saveSkipFirstLap(skip: Boolean)

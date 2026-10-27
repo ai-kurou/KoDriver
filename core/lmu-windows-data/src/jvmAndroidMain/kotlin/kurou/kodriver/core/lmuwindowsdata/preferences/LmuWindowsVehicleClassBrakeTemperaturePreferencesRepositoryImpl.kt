@@ -12,6 +12,10 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeTe
 internal class LmuWindowsVehicleClassBrakeTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleClassBrakeTemperaturePreferences>,
 ) : LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { LmuWindowsVehicleClassBrakeTemperaturePreferences() }
+    }
+
     override fun observeHighThresholdCelsius(): Flow<Map<LmuWindowsVehicleClassData, Int>> =
         dataStore.observeProperty { prefs ->
             lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->

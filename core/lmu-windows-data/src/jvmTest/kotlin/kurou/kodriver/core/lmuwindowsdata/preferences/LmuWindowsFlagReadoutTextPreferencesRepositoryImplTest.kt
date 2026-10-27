@@ -10,6 +10,7 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
@@ -100,5 +101,28 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
             repository.saveRedFlagText("レッドフラッグ、セッション中断")
 
             assertEquals("レッドフラッグ、セッション中断", repository.observeRedFlagText().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultSectorYellowFlagText = repository.observeSectorYellowFlagText().first()
+            val defaultBlueFlagText = repository.observeBlueFlagText().first()
+            val defaultFullCourseYellowFlagText = repository.observeFullCourseYellowFlagText().first()
+            val defaultRedFlagText = repository.observeRedFlagText().first()
+
+            repository.saveSectorYellowFlagText("変更した文言")
+            repository.saveBlueFlagText("変更した文言")
+            repository.saveFullCourseYellowFlagText("変更した文言")
+            repository.saveRedFlagText("変更した文言")
+
+            assertNotEquals(FlagReadoutTextPreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(FlagReadoutTextPreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultSectorYellowFlagText, repository.observeSectorYellowFlagText().first())
+            assertEquals(defaultBlueFlagText, repository.observeBlueFlagText().first())
+            assertEquals(defaultFullCourseYellowFlagText, repository.observeFullCourseYellowFlagText().first())
+            assertEquals(defaultRedFlagText, repository.observeRedFlagText().first())
         }
 }

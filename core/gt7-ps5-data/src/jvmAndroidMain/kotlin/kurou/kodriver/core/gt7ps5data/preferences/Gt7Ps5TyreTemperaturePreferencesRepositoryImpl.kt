@@ -10,6 +10,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 internal class Gt7Ps5TyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<Gt7Ps5TyreTemperaturePreferences>,
 ) : Gt7Ps5TyreTemperaturePreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { Gt7Ps5TyreTemperaturePreferences() }
+    }
+
     override fun observeHighThresholdCelsius(): Flow<Celsius> =
         dataStore
             .observeProperty {

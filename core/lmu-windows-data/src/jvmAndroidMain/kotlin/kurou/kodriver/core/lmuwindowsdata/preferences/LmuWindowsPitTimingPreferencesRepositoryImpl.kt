@@ -8,6 +8,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 internal class LmuWindowsPitTimingPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsPitTimingPreferences>,
 ) : LmuWindowsPitTimingPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { LmuWindowsPitTimingPreferences() }
+    }
+
     override fun observeVirtualEnergyLaps(): Flow<Int> = dataStore.observeProperty { it.virtualEnergyLaps }
 
     override suspend fun saveVirtualEnergyLaps(laps: Int) {

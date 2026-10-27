@@ -4,6 +4,8 @@
 
 自動読み上げ詳細設定のファイル名にはシミュレーター接頭辞の直後に `auto_` を置き、共通の一覧設定は Desktop では `auto_readout_preferences.pb`、Android では `auto_readout_preferences.preferences_pb` に保存する。導入時はユーザー了承のもと設定を意図的に初期化し、旧ファイルの移行は行わない。開始音・ホットキーなどの共通設定ファイル名は維持する。
 
+`CoreAutoReadoutSettingsResetter` は自動読み上げの有効状態・順序、キュー、開始音の有効状態を端末ローカルで既定値に戻します。開始音種別・音量・手動読み上げなどの設定は対象外で、Desktop / Android の Koin モジュールに `AutoReadoutSettingsResetter` として登録します。
+
 ## Koin モジュール
 
 Android は `androidDataModule(context)`、Desktop は `desktopDataModule(directory)` が共通の Repository を登録する。

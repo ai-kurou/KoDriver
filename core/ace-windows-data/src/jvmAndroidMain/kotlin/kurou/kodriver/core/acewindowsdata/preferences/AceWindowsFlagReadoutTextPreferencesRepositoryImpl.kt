@@ -8,6 +8,10 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagReadoutTextPref
 internal class AceWindowsFlagReadoutTextPreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsFlagReadoutTextPreferences>,
 ) : AceWindowsFlagReadoutTextPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { AceWindowsFlagReadoutTextPreferences() }
+    }
+
     override fun observeText(key: AceWindowsFlagReadoutTextKey): Flow<String> =
         dataStore.observeProperty { prefs ->
             when (key) {

@@ -17,6 +17,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
@@ -143,5 +144,25 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
             repository.saveHighThresholdCelsius(Celsius(100))
             repository.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.Root, true)
             assertEquals(" ", repository.observeOverheatReadoutText().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultHighThresholdCelsius = repository.observeHighThresholdCelsius().first()
+            val defaultEnabledStates = repository.observeEnabledStates().first()
+            val defaultOverheatReadoutText = repository.observeOverheatReadoutText().first()
+
+            repository.saveHighThresholdCelsius(Celsius(177))
+            repository.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning, false)
+            repository.saveOverheatReadoutText("変更した文言")
+
+            assertNotEquals(Gt7Ps5TyreTemperaturePreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(Gt7Ps5TyreTemperaturePreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultHighThresholdCelsius, repository.observeHighThresholdCelsius().first())
+            assertEquals(defaultEnabledStates, repository.observeEnabledStates().first())
+            assertEquals(defaultOverheatReadoutText, repository.observeOverheatReadoutText().first())
         }
 }

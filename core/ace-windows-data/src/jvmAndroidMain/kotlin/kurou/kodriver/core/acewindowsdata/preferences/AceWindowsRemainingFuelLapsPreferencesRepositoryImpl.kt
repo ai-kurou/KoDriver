@@ -7,6 +7,10 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPr
 internal class AceWindowsRemainingFuelLapsPreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsRemainingFuelLapsPreferences>,
 ) : AceWindowsRemainingFuelLapsPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { AceWindowsRemainingFuelLapsPreferences() }
+    }
+
     override fun observeThresholdLaps(): Flow<Int> = dataStore.observeProperty { it.thresholdLaps }
 
     override suspend fun saveThresholdLaps(laps: Int) {

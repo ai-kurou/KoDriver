@@ -11,6 +11,7 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsMyBestLapPreferencesRepositoryImplTest {
@@ -57,5 +58,19 @@ class LmuWindowsMyBestLapPreferencesRepositoryImplTest {
             repository.saveReadoutText("")
             assertEquals("", repository.observeReadoutText().first())
             assertEquals("casual", dataStore.data.first().voiceType)
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultReadoutText = repository.observeReadoutText().first()
+
+            repository.saveReadoutText("変更した文言")
+
+            assertNotEquals(MyBestLapPreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(MyBestLapPreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultReadoutText, repository.observeReadoutText().first())
         }
 }

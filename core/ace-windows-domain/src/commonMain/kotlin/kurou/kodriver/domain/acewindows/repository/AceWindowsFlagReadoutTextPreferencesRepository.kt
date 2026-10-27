@@ -5,6 +5,8 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsFlagReadoutTextKey
 
 /** ACE のフラッグごとの自由文言を永続化する。空白文言では読み上げない。 */
 interface AceWindowsFlagReadoutTextPreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeText(key: AceWindowsFlagReadoutTextKey): Flow<String>
 
     suspend fun saveText(

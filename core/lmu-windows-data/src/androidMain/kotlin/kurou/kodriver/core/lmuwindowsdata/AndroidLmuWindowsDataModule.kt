@@ -59,7 +59,9 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassTyreTem
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import org.koin.core.module.Module
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -67,6 +69,24 @@ import org.koin.dsl.module
  */
 fun androidLmuWindowsDataModule(context: Context): Module =
     module {
+        single {
+            LmuWindowsAutoReadoutSettingsResetter(
+                flagPreferencesRepository = get(),
+                flagReadoutTextPreferencesRepository = get(),
+                myBestLapPreferencesRepository = get(),
+                pitTimingPreferencesRepository = get(),
+                remainingFuelPreferencesRepository = get(),
+                remainingVirtualEnergyPreferencesRepository = get(),
+                tyreTemperaturePreferencesRepository = get(),
+                tyreWearPreferencesRepository = get(),
+                vehicleApproachPreferencesRepository = get(),
+                vehicleApproachThresholdsPreferencesRepository = get(),
+                vehicleClassBrakeTemperaturePreferencesRepository = get(),
+                vehicleClassBrakeWearPreferencesRepository = get(),
+                vehicleClassTyreTemperaturePreferencesRepository = get(),
+                vehicleDamagePreferencesRepository = get(),
+            )
+        } bind AutoReadoutSettingsResetter::class
         includes(androidLmuWindowsPreferencesDataModule(context))
         single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(serverIpRepository = get(), client = get()) }
         single<LmuWindowsFlagRepository> {

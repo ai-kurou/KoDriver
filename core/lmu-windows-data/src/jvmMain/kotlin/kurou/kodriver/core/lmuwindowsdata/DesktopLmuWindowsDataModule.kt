@@ -34,7 +34,9 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeTe
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamagePreferencesRepository
+import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import org.koin.core.module.Module
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -42,6 +44,24 @@ import org.koin.dsl.module
  */
 fun desktopLmuWindowsPreferencesDataModule(directory: String): Module =
     module {
+        single {
+            LmuWindowsAutoReadoutSettingsResetter(
+                flagPreferencesRepository = get(),
+                flagReadoutTextPreferencesRepository = get(),
+                myBestLapPreferencesRepository = get(),
+                pitTimingPreferencesRepository = get(),
+                remainingFuelPreferencesRepository = get(),
+                remainingVirtualEnergyPreferencesRepository = get(),
+                tyreTemperaturePreferencesRepository = get(),
+                tyreWearPreferencesRepository = get(),
+                vehicleApproachPreferencesRepository = get(),
+                vehicleApproachThresholdsPreferencesRepository = get(),
+                vehicleClassBrakeTemperaturePreferencesRepository = get(),
+                vehicleClassBrakeWearPreferencesRepository = get(),
+                vehicleClassTyreTemperaturePreferencesRepository = get(),
+                vehicleDamagePreferencesRepository = get(),
+            )
+        } bind AutoReadoutSettingsResetter::class
         single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
             createLmuWindowsVehicleApproachThresholdsPreferencesRepository(directory = directory)
         }

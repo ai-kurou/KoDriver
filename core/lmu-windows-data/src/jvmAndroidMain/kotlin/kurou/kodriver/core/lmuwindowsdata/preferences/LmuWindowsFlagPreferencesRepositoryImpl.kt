@@ -8,6 +8,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 internal class LmuWindowsFlagPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsFlagPreferences>,
 ) : LmuWindowsFlagPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { LmuWindowsFlagPreferences() }
+    }
+
     override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.observeProperty { prefs ->
             prefs.enabledStates

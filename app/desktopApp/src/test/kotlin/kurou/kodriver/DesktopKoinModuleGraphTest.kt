@@ -36,6 +36,7 @@ import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelReado
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
@@ -55,6 +56,7 @@ import org.koin.dsl.module
 import org.koin.test.check.checkKoinModules
 import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertSame
 
@@ -96,6 +98,42 @@ class DesktopKoinModuleGraphTest {
         @JvmStatic
         fun tearDownDirectory() {
             tempDirectory.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `自動読み上げ設定のresetterを全データモジュールから取得できる`() {
+        val application =
+            koinApplication {
+                modules(
+                    desktopDataModule(directory),
+                    desktopLmuWindowsPreferencesDataModule(directory),
+                    desktopAceWindowsPreferencesDataModule(directory),
+                    gt7Ps5DataModule,
+                )
+            }
+        try {
+            val resetters = application.koin.getAll<AutoReadoutSettingsResetter>()
+            assertEquals(4, resetters.size)
+            assertEquals(
+                setOf(
+                    "CoreAutoReadoutSettingsResetter",
+                    "LmuWindowsAutoReadoutSettingsResetter",
+                    "AceWindowsAutoReadoutSettingsResetter",
+                    "Gt7Ps5AutoReadoutSettingsResetter",
+                ),
+                resetters.map { it::class.simpleName }.toSet(),
+            )
+            resetters.forEach { resetter ->
+                assertSame(
+                    resetter,
+                    application.koin.getAll<AutoReadoutSettingsResetter>().single {
+                        it::class == resetter::class
+                    },
+                )
+            }
+        } finally {
+            application.close()
         }
     }
 

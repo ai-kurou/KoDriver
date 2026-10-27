@@ -8,6 +8,10 @@ import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 internal class AutoReadoutPreferencesRepositoryImpl(
     private val dataStore: DataStore<AutoReadoutPreferences>,
 ) : AutoReadoutPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { AutoReadoutPreferences() }
+    }
+
     override fun observeAutoReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.observeProperty { prefs ->
             prefs.simulatorStates

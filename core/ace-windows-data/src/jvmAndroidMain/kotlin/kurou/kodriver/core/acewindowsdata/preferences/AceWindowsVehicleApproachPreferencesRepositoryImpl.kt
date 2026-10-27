@@ -8,6 +8,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 internal class AceWindowsVehicleApproachPreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsVehicleApproachPreferences>,
 ) : AceWindowsVehicleApproachPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { AceWindowsVehicleApproachPreferences() }
+    }
+
     override fun observeReadoutText(): Flow<String> = dataStore.observeProperty { it.readoutText }
 
     override suspend fun saveReadoutText(text: String) {

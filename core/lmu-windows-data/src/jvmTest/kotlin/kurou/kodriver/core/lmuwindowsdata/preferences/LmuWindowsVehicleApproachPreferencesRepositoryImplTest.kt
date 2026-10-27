@@ -14,6 +14,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
@@ -99,6 +100,43 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
                     LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to false,
                 ),
                 repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val readoutTextRepository = LmuWindowsVehicleApproachReadoutTextPreferencesRepositoryImpl(dataStore)
+            val defaultStartLeftReadoutText = readoutTextRepository.observeStartLeftReadoutText().first()
+            val defaultStartRightReadoutText = readoutTextRepository.observeStartRightReadoutText().first()
+            val defaultSustainedLeftReadoutText = readoutTextRepository.observeSustainedLeftReadoutText().first()
+            val defaultSustainedRightReadoutText = readoutTextRepository.observeSustainedRightReadoutText().first()
+            val defaultSkipFirstLap = repository.observeSkipFirstLap().first()
+            val defaultEnabledStates = repository.observeEnabledStates().first()
+
+            repository.saveSkipFirstLap(false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Sustained, false)
+
+            readoutTextRepository.saveStartLeftReadoutText("変更した文言")
+            readoutTextRepository.saveStartRightReadoutText("変更した文言")
+            readoutTextRepository.saveSustainedLeftReadoutText("変更した文言")
+            readoutTextRepository.saveSustainedRightReadoutText("変更した文言")
+
+            assertNotEquals(LmuWindowsVehicleApproachPreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(LmuWindowsVehicleApproachPreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultSkipFirstLap, repository.observeSkipFirstLap().first())
+            assertEquals(defaultEnabledStates, repository.observeEnabledStates().first())
+            assertEquals(defaultStartLeftReadoutText, readoutTextRepository.observeStartLeftReadoutText().first())
+            assertEquals(defaultStartRightReadoutText, readoutTextRepository.observeStartRightReadoutText().first())
+            assertEquals(
+                defaultSustainedLeftReadoutText,
+                readoutTextRepository.observeSustainedLeftReadoutText().first(),
+            )
+            assertEquals(
+                defaultSustainedRightReadoutText,
+                readoutTextRepository.observeSustainedRightReadoutText().first(),
             )
         }
 }

@@ -5,6 +5,8 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.Celsius
 
 interface LmuWindowsVehicleClassTyreTemperaturePreferencesRepository {
+    suspend fun resetToDefault()
+
     fun observeHighThresholdCelsius(): Flow<Map<LmuWindowsVehicleClassData, Celsius>>
 
     suspend fun saveHighThresholdCelsius(

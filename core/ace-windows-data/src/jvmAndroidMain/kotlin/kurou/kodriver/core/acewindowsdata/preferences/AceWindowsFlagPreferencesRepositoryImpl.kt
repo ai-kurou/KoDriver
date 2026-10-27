@@ -8,6 +8,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 internal class AceWindowsFlagPreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsFlagPreferences>,
 ) : AceWindowsFlagPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { AceWindowsFlagPreferences() }
+    }
+
     override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.observeProperty { prefs ->
             prefs.enabledStates

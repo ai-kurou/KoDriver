@@ -15,6 +15,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -72,5 +73,19 @@ class ReadoutStartSoundEnabledPreferencesRepositoryImplTest {
                 ),
                 repository.observeStartSoundEnabledStates().first(),
             )
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultStartSoundEnabledStates = repository.observeStartSoundEnabledStates().first()
+
+            repository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
+
+            assertNotEquals(ReadoutStartSoundEnabledPreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(ReadoutStartSoundEnabledPreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultStartSoundEnabledStates, repository.observeStartSoundEnabledStates().first())
         }
 }
