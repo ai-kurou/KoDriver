@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
@@ -19,7 +18,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsVehicleClassBrakeW
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsVehicleClassBrakeWearSelectionUseCase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -63,21 +61,13 @@ internal class LmuWindowsAutoReadoutBrakeWearDetailViewModel(
     fun onPreviewStopped() = previewHelper.stop()
 
     private val settingsState =
-        combine(
-            brakeWearUseCases.observeVehicleClassLowThreshold(),
-            brakeWearUseCases.observeVehicleClassSelection(),
-            observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
-            brakeWearUseCases.observeText(),
-            previewHelper.textToSpeechAvailable,
-        ) { vehicleClassLowThresholdPercent, selectedVehicleClass, enabledStates, text, available ->
-            LmuWindowsAutoReadoutBrakeWearDetailUiState(
-                vehicleClassLowThresholdPercent = vehicleClassLowThresholdPercent,
-                selectedVehicleClass = selectedVehicleClass,
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.BrakeWear.WarningReadout),
-            )
-        }
+        LmuWindowsAutoReadoutBrakeWearDetailFlow(
+            vehicleClassLowThreshold = brakeWearUseCases.observeVehicleClassLowThreshold(),
+            vehicleClassSelection = brakeWearUseCases.observeVehicleClassSelection(),
+            enabledStates = observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
+            readoutText = brakeWearUseCases.observeText(),
+            isTextToSpeechAvailable = previewHelper.textToSpeechAvailable,
+        ).uiState
 
     val uiState: StateFlow<LmuWindowsAutoReadoutBrakeWearDetailUiState> =
         settingsState.stateIn(
