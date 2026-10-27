@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
@@ -17,7 +16,6 @@ import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelLapsR
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelLapsThresholdUseCase
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -58,21 +56,13 @@ internal class AceWindowsAutoReadoutRemainingFuelLapsDetailViewModel(
         )
 
     val uiState: StateFlow<AceWindowsAutoReadoutRemainingFuelLapsDetailUiState> =
-        combine(
+        AceWindowsAutoReadoutRemainingFuelLapsDetailFlow(
             remainingFuelLapsUseCases.observeThreshold(),
             remainingFuelLapsUseCases.observeAutoReadoutEnabledStates(Simulator.AceWindows.id),
             readout.observeText(),
             readout.observeEmptyText(),
             preview.textToSpeechAvailable,
-        ) { remainingFuelLaps, enabledStates, text, emptyText, available ->
-            AceWindowsAutoReadoutRemainingFuelLapsDetailUiState(
-                remainingFuelLaps = remainingFuelLaps,
-                readoutText = text,
-                emptyReadoutText = emptyText,
-                isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled),
-            )
-        }.stateIn(
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             AceWindowsAutoReadoutRemainingFuelLapsDetailUiState(),
