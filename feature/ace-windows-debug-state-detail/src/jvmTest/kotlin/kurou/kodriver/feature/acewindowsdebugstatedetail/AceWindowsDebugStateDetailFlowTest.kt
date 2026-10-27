@@ -74,7 +74,8 @@ class AceWindowsDebugStateDetailFlowTest {
                     cardOrder = MutableStateFlow(defaultDebugStateCardOrder),
                     receivedCardKeys = MutableStateFlow(emptySet()),
                     aceWindows = MutableStateFlow(AceWindowsDebugState()),
-                    selectedReadoutItemKey = MutableStateFlow(AceWindowsDebugStateDetailUiState().selectedReadoutItemKey),
+                    selectedReadoutItemKey =
+                        MutableStateFlow(AceWindowsDebugStateDetailUiState().selectedReadoutItemKey),
                     debugReadoutText = MutableStateFlow(""),
                 )
 

@@ -75,10 +75,18 @@ internal class AceWindowsDebugStateDetailViewModel(
         )
 
     private val _header: StateFlow<AceWindowsDebugStateDetailUiState> =
-        detailFlow.header.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsDebugStateDetailUiState())
+        detailFlow.header.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            AceWindowsDebugStateDetailUiState(),
+        )
 
     val uiState: StateFlow<AceWindowsDebugStateDetailUiState> =
-        detailFlow.uiState(_header).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsDebugStateDetailUiState())
+        detailFlow.uiState(_header).stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            AceWindowsDebugStateDetailUiState(),
+        )
 
     fun selectReadoutItem(value: String) {
         val key =
