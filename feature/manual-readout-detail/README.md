@@ -88,7 +88,7 @@ GT7 の手動「自己ベストラップ」は `MyBestLap.Root` を使い、`cur
 セット名は詳細画面でインライン編集できる（最大20文字、重複可）。編集中は文字数カウンターを表示し、上限を超える入力・貼り付けは既存文字を保持したまま拒否する。確定・Done・フォーカス喪失時に保存し、ViewModel でも前後の空白除去と上限の防御を行う。未設定時は作成時に採番された固定番号による「セット N」を表示する。未採番（0）のセットは一覧上の位置を使う。削除しても他の採番済みセットの番号は変わらない。
 名前は表示専用で、読み上げ文には含めない。ACE・LMU・GT7 共通仕様。
 
-自己ベストの文言欄には「ラップタイム挿入」チップと `{laptime}` の置換ヒントを表示する。未知プレースホルダー検出は `findUnknownLmuWindowsMyBestLapReadoutPlaceholders` を再利用し、`{percent}`・`{celsius}`・`{laps}` は未知として警告する。試聴は83456msを使い、先頭項目が自己ベストなら `MyBestLap.Root` の開始音で再生する。
+自己ベストの文言欄には「{laptime}を挿入」チップと `{laptime}` の置換ヒントを表示する。未知プレースホルダー検出は `findUnknownLmuWindowsMyBestLapReadoutPlaceholders` を再利用し、`{percent}`・`{celsius}`・`{laps}` は未知として警告する。試聴は83456msを使い、先頭項目が自己ベストなら `MyBestLap.Root` の開始音で再生する。
 
 バーチャルエネルギーの残り周回数は「バーチャルエネルギー」、タイヤ摩耗の残り周回数は「タイヤ」カテゴリに表示し、`{laps}` 用のヒント・挿入ボタンを共用する。未知プレースホルダー検出は `findUnknownLmuWindowsPitTimingReadoutPlaceholders`、試聴は3周と `formatLmuWindowsPitTimingReadoutText` を使い、先頭項目なら `PitTiming.Root` の開始音を再生する。
 
