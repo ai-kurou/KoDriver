@@ -35,7 +35,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -717,7 +717,7 @@ internal fun AppScreenContent(
 
     CompositionLocalProvider(LocalHapticFeedback provides effectiveHapticFeedback) {
         AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColorEnabled) {
-            val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+            val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
             val resolvedLayoutType = layoutType ?: windowSizeClass.resolveNavigationSuiteType()
             KeepScreenOnEffect(keepScreenOn)
             AppScreenScaffold(
