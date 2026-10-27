@@ -60,6 +60,11 @@ Android 17（API 37）以降では、起動時に求められるローカルネ�
 
 LMU / ACEとの接続先の設定は、[Windows版のインストール手順](docs/windows-install.md#android-アプリと連携する場合)を参照してください。
 
+## ステアリングのボタンから手動読み上げを実行する
+
+Windows 版では、手動読み上げセットに割り当てたホットキーを、SimHub の Control mapper でステアリングのボタンから実行できます。
+設定手順は [ステアリングのボタンから手動読み上げを実行する設定](docs/simhub-hotkey-setup.md) を参照してください。
+
 ## GT7 (PS5) 接続設定
 
 GT7 (PS5) と接続する場合は、PS5 へ直接接続する構成と SimHub の UDP フォワーディングを利用する構成があります。
