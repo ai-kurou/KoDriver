@@ -51,7 +51,7 @@ class ManualReadoutHotkeyGuideTest {
             }
         }
         rule
-            .onNodeWithText("ステアリングのボタンから実行する設定を開く")
+            .onNodeWithText("ステアリングのボタンから実行する方法を見る")
             .performScrollTo()
             .assertIsDisplayed()
             .performSemanticsAction(SemanticsActions.OnClick) { it() }
@@ -79,7 +79,7 @@ class ManualReadoutHotkeyGuideTest {
             }
         }
         rule
-            .onNodeWithText("ステアリングのボタンから実行する設定を開く")
+            .onNodeWithText("ステアリングのボタンから実行する方法を見る")
             .assertDoesNotExist()
     }
 
@@ -102,11 +102,31 @@ class ManualReadoutHotkeyGuideTest {
             }
         }
         rule
-            .onNodeWithText("ステアリングのボタンから実行する設定を開く")
+            .onNodeWithText("ステアリングのボタンから実行する方法を見る")
             .performSemanticsAction(SemanticsActions.OnClick) { it() }
 
         verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         verify(exactly = 1) { onOpenGuide() }
         confirmVerified(haptic, onOpenGuide)
+    }
+
+    @Test
+    fun `GT7ではホットキーカードにSimHub手順書のリンクを表示しない`() {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState =
+                        ManualReadoutSetDetailUiState(
+                            simulatorId = Simulator.Gt7Ps5.id,
+                            setNumber = 1,
+                        ),
+                    onAddItem = {},
+                    onDelete = {},
+                    showHotkey = true,
+                    showSimHubGuideLink = false,
+                )
+            }
+        }
+        rule.onNodeWithText("ステアリングのボタンから実行する方法を見る").assertDoesNotExist()
     }
 }

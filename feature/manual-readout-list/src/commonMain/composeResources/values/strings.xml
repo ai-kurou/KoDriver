@@ -20,7 +20,7 @@
     <string name="manual_readout_hint_queue_description">読み上げ中のときや自動読み上げと重なったときは、キューの最後に並んで順番に読み上げます。</string>
     <string name="manual_readout_hint_no_data_title">データがないとき</string>
     <string name="manual_readout_hint_no_data_description">読み上げる値がない項目は「データがありません」と読み上げます。</string>
-    <string name="manual_readout_hint_hotkey_guide_link">ステアリングのボタンから実行する設定を開く</string>
+    <string name="manual_readout_hint_hotkey_guide_link">ステアリングのボタンから実行する方法を見る</string>
     <string name="manual_readout_hint_hotkey_title">ホットキー</string>
     <string name="manual_readout_hint_hotkey_description">選んだ修飾キーと数字または英字キーの組み合わせで、セットを読み上げられます。</string>
     <string name="manual_readout_list_delete">削除</string>

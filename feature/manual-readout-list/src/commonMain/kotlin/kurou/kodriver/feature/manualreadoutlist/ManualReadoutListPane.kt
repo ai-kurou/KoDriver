@@ -105,6 +105,7 @@ import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.PlayingEqualizer
 import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_edit_mode_disable
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_edit_mode_enable
@@ -219,6 +220,7 @@ internal fun ManualReadoutListPaneContent(
             Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
                 ManualReadoutHintRow(
                     setCount = uiState.sets.size,
+                    showSimHubGuideLink = simulatorId != Simulator.Gt7Ps5.id,
                     playButtonLayoutEnabled = uiState.playButtonLayoutEnabled,
                     onTogglePlayButtonLayout = {
                         editMode = false
@@ -764,6 +766,7 @@ internal fun ManualReadoutListDeleteConfirmDialog(
 @Composable
 private fun ManualReadoutHintRow(
     setCount: Int,
+    showSimHubGuideLink: Boolean,
     editMode: Boolean,
     onToggleEditMode: () -> Unit,
     playButtonLayoutEnabled: Boolean,
@@ -802,6 +805,7 @@ private fun ManualReadoutHintRow(
         ) {
             ManualReadoutHintSheetContent(
                 showHotkeyHint = isManualReadoutHotkeySupported(),
+                showSimHubGuideLink = showSimHubGuideLink,
                 onOpenHotkeyGuide = { uriHandler.openUri(SIMHUB_HOTKEY_SETUP_URL) },
             )
         }
@@ -893,6 +897,7 @@ private fun ManualReadoutEditButton(
 internal fun ManualReadoutHintSheetContent(
     showHotkeyHint: Boolean,
     modifier: Modifier = Modifier,
+    showSimHubGuideLink: Boolean = true,
     onOpenHotkeyGuide: () -> Unit = {},
 ) {
     val haptic = LocalHapticFeedback.current
@@ -941,29 +946,31 @@ internal fun ManualReadoutHintSheetContent(
                     title = stringResource(Res.string.manual_readout_hint_hotkey_title),
                     description = stringResource(Res.string.manual_readout_hint_hotkey_description),
                 )
-                // KoDriverHintSheetRow のアイコン幅（24dp + 左右の余白）と行間隔に揃える。
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
-                    modifier =
-                        Modifier
-                            .padding(start = 24.dp + KoDriverSpacing.small * 2 + KoDriverSpacing.medium)
-                            .clickable {
-                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                onOpenHotkeyGuide()
-                            },
-                ) {
-                    Text(
-                        text = stringResource(Res.string.manual_readout_hint_hotkey_guide_link),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(12.dp),
-                    )
+                if (showSimHubGuideLink) {
+                    // KoDriverHintSheetRow のアイコン幅（24dp + 左右の余白）と行間隔に揃える。
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+                        modifier =
+                            Modifier
+                                .padding(start = 24.dp + KoDriverSpacing.small * 2 + KoDriverSpacing.medium)
+                                .clickable {
+                                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                    onOpenHotkeyGuide()
+                                },
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.manual_readout_hint_hotkey_guide_link),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(12.dp),
+                        )
+                    }
                 }
             }
         }

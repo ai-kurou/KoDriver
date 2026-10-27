@@ -221,7 +221,7 @@ class ManualReadoutListPaneScreenshotTest {
                     }
                 }
             }
-            onNodeWithText("ステアリングのボタンから実行する設定を開く").performScrollTo().assertIsDisplayed()
+            onNodeWithText("ステアリングのボタンから実行する方法を見る").performScrollTo().assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 

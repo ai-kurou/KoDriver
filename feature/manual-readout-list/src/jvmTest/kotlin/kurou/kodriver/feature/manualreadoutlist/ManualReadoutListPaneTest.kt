@@ -301,10 +301,10 @@ class ManualReadoutListPaneTest {
         // ホットキーの説明は Windows デスクトップでのみ表示するため、実行OSに合わせて検証する。
         if (isManualReadoutHotkeySupported()) {
             rule.onNodeWithText("ホットキー").performScrollTo().assertIsDisplayed()
-            rule.onNodeWithText("ステアリングのボタンから実行する設定を開く").performScrollTo().assertIsDisplayed()
+            rule.onNodeWithText("ステアリングのボタンから実行する方法を見る").performScrollTo().assertIsDisplayed()
         } else {
             rule.onNodeWithText("ホットキー").assertDoesNotExist()
-            rule.onNodeWithText("ステアリングのボタンから実行する設定を開く").assertDoesNotExist()
+            rule.onNodeWithText("ステアリングのボタンから実行する方法を見る").assertDoesNotExist()
         }
     }
 
@@ -367,7 +367,7 @@ class ManualReadoutListPaneTest {
         rule.onNodeWithText("順番待ち").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("データがないとき").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("ホットキー").assertDoesNotExist()
-        rule.onNodeWithText("ステアリングのボタンから実行する設定を開く").assertDoesNotExist()
+        rule.onNodeWithText("ステアリングのボタンから実行する方法を見る").assertDoesNotExist()
         rule
             .onNodeWithText("選んだ修飾キーと数字または英字キーの組み合わせで、セットを読み上げられます。")
             .assertDoesNotExist()

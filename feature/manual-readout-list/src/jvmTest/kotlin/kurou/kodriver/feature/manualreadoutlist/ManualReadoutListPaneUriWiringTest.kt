@@ -54,7 +54,7 @@ class ManualReadoutListPaneUriWiringTest {
             }
             rule.onNodeWithContentDescription("手動読み上げの説明を表示").performClick()
             rule
-                .onNodeWithText("ステアリングのボタンから実行する設定を開く")
+                .onNodeWithText("ステアリングのボタンから実行する方法を見る")
                 .performScrollTo()
                 .performSemanticsAction(SemanticsActions.OnClick)
 
@@ -82,12 +82,47 @@ class ManualReadoutListPaneUriWiringTest {
             }
         }
         rule
-            .onNodeWithText("ステアリングのボタンから実行する設定を開く")
+            .onNodeWithText("ステアリングのボタンから実行する方法を見る")
             .performScrollTo()
             .performSemanticsAction(SemanticsActions.OnClick)
 
         assertEquals(1, openCount)
         verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(haptic)
+    }
+
+    @Test
+    fun `GT7の説明シートにはSimHub手順書のリンクを表示しない`() {
+        mockkStatic(::isManualReadoutHotkeySupported)
+        try {
+            every { isManualReadoutHotkeySupported() } returns true
+            rule.setContent {
+                KoDriverTheme {
+                    ManualReadoutListPaneContent(
+                        uiState = ManualReadoutListUiState(),
+                        simulatorId = "gt7_ps5",
+                        simulatorName = "GT7",
+                        onAddSet = {},
+                        onReadSet = {},
+                    )
+                }
+            }
+            rule.onNodeWithContentDescription("手動読み上げの説明を表示").performClick()
+
+            rule.onNodeWithText("ホットキー").assertExists()
+            rule.onNodeWithText("ステアリングのボタンから実行する方法を見る").assertDoesNotExist()
+        } finally {
+            unmockkStatic(::isManualReadoutHotkeySupported)
+        }
+    }
+
+    @Test
+    fun `リンク非表示指定の説明シートにはホットキー説明だけを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutHintSheetContent(showHotkeyHint = true, showSimHubGuideLink = false)
+            }
+        }
+        rule.onNodeWithText("ステアリングのボタンから実行する方法を見る").assertDoesNotExist()
     }
 }
