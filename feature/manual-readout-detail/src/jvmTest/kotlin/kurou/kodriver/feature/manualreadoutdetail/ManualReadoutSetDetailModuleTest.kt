@@ -22,7 +22,6 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
@@ -43,7 +42,6 @@ class ManualReadoutSetDetailModuleTest {
     private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val hotkeyRepository: ManualReadoutHotkeyRepository = mockk()
-    private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()
     private val lmuRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val gt7Repository: ManualReadoutSetPreferencesRepository = mockk()
@@ -69,7 +67,6 @@ class ManualReadoutSetDetailModuleTest {
                     Simulator.Gt7Ps5.id to gt7Repository,
                     Simulator.AceWindows.id to aceRepository,
                 )
-            every { debugRepository.observeVirtualKeyCode() } returns flowOf(0x70)
             repositories.forEach { (id, repository) ->
                 every { repository.observeSets() } returns flowOf(listOf(ManualReadoutSet(id = id)))
             }
@@ -89,7 +86,6 @@ class ManualReadoutSetDetailModuleTest {
                                 single<SpeakTextUseCase>(named(simulator.id)) { speakText }
                             }
                             single<ManualReadoutHotkeyRepository> { hotkeyRepository }
-                            single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                             repositories.forEach { (id, repository) ->
                                 single<ManualReadoutSetPreferencesRepository>(named(id)) { repository }
                             }

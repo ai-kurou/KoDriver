@@ -10,7 +10,6 @@ internal fun manualReadoutHotkeyLabel(
     if (virtualKeyCode == null) return null
     val prefix =
         when (modifiers) {
-            ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT -> "Ctrl+Alt+Shift"
             ManualReadoutHotkeyModifiers.CTRL_ALT -> "Ctrl+Alt"
             ManualReadoutHotkeyModifiers.CTRL_SHIFT -> "Ctrl+Shift"
             ManualReadoutHotkeyModifiers.ALT_SHIFT -> "Alt+Shift"

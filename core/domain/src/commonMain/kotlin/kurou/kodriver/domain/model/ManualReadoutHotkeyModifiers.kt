@@ -4,7 +4,6 @@ package kurou.kodriver.domain.model
 enum class ManualReadoutHotkeyModifiers(
     val value: Int,
 ) {
-    CTRL_ALT_SHIFT(1 or 2 or 4),
     CTRL_ALT(1 or 2),
     CTRL_SHIFT(2 or 4),
     ALT_SHIFT(1 or 4),

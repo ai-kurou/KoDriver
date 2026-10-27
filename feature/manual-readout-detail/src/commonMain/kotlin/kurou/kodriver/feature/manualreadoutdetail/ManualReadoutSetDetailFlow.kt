@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
-import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 
 /** 手動読み上げセット詳細と画面内状態を合成する冷たい Flow。 */
@@ -13,7 +12,6 @@ internal class ManualReadoutSetDetailFlow(
     sets: Flow<List<ManualReadoutSet>>,
     deleted: Flow<Boolean>,
     hotkeyConflict: Flow<ManualReadoutHotkeyConflict?>,
-    debugHotkeyVirtualKeyCode: Flow<Int?>,
     hotkeyRegistrationState: Flow<HotkeyRegistrationState>,
     textToSpeechAvailable: Flow<Boolean>,
     isPreviewing: Flow<Boolean>,
@@ -25,23 +23,16 @@ internal class ManualReadoutSetDetailFlow(
         ManualReadoutSetDetailUiState(simulatorId = simulatorId, availableItemKeys = availableItemKeys)
 
     val uiState: Flow<ManualReadoutSetDetailUiState> =
-        combine(sets, deleted, hotkeyConflict, debugHotkeyVirtualKeyCode, hotkeyRegistrationState) {
+        combine(sets, deleted, hotkeyConflict, hotkeyRegistrationState) {
             sets,
             isDeleted,
             conflict,
-            debugVirtualKeyCode,
             registration,
             ->
             val index = sets.indexOfFirst { it.id == setId }
             val set = sets.getOrNull(index)
             val hotkey = set?.hotkeyVirtualKeyCode
             val modifiers = set?.hotkeyModifiers ?: MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
-            // 保存後にデバッグ用ホットキーが同じキーへ変更された場合も警告する。
-            val savedConflict =
-                ManualReadoutHotkeyConflict.DebugHotkey.takeIf {
-                    modifiers == ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT &&
-                        hotkey != null && hotkey == debugVirtualKeyCode
-                }
             ManualReadoutSetDetailUiState(
                 simulatorId = simulatorId,
                 setNumber = if (index >= 0) sets[index].number.takeIf { it > 0 } ?: (index + 1) else null,
@@ -52,7 +43,7 @@ internal class ManualReadoutSetDetailFlow(
                 hotkeyVirtualKeyCode = hotkey,
                 hotkeyModifiers = modifiers,
                 hotkeyRegistrationState = registration,
-                hotkeyConflict = conflict ?: savedConflict,
+                hotkeyConflict = conflict,
                 isLoading = false,
                 deleted = isDeleted,
             )

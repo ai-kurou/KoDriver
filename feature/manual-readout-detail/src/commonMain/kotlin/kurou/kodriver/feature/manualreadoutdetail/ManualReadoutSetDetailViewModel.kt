@@ -23,7 +23,6 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyVirtualKeyCodeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.RetryManualReadoutHotkeyRegistrationUseCase
@@ -37,7 +36,6 @@ internal class ManualReadoutSetDetailViewModel(
     private val observeSets: ObserveManualReadoutSetsUseCase,
     private val updateSet: UpdateManualReadoutSetUseCase,
     private val deleteSet: DeleteManualReadoutSetUseCase,
-    private val observeDebugHotkeyVirtualKeyCode: ObserveReadoutHotkeyVirtualKeyCodeUseCase,
     private val observeOtherSimulatorSets: Map<String, ObserveManualReadoutSetsUseCase>,
     observeHotkeyRegistrationState: ObserveManualReadoutHotkeyRegistrationStateUseCase,
     private val retryHotkeyRegistration: RetryManualReadoutHotkeyRegistrationUseCase,
@@ -67,7 +65,6 @@ internal class ManualReadoutSetDetailViewModel(
             sets = observeSets(),
             deleted = deleted,
             hotkeyConflict = hotkeyConflict,
-            debugHotkeyVirtualKeyCode = observeDebugHotkeyVirtualKeyCode(),
             hotkeyRegistrationState = observeHotkeyRegistrationState(simulatorId, setId),
             textToSpeechAvailable = preview.textToSpeechAvailable,
             isPreviewing = preview.isPreviewing,
@@ -174,12 +171,7 @@ internal class ManualReadoutSetDetailViewModel(
                     hotkeyConflict.update { null }
                     return@withLock
                 }
-                val conflict =
-                    findOtherSetConflict(sets, virtualKeyCode, set.hotkeyModifiers)
-                        ?: ManualReadoutHotkeyConflict.DebugHotkey.takeIf {
-                            set.hotkeyModifiers == ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT &&
-                                observeDebugHotkeyVirtualKeyCode().first() == virtualKeyCode
-                        }
+                val conflict = findOtherSetConflict(sets, virtualKeyCode, set.hotkeyModifiers)
                 if (conflict == null) updateSet(set.copy(hotkeyVirtualKeyCode = virtualKeyCode))
                 hotkeyConflict.update { conflict }
             }
@@ -197,14 +189,7 @@ internal class ManualReadoutSetDetailViewModel(
                     return@withLock
                 }
                 val key = set.hotkeyVirtualKeyCode
-                val conflict =
-                    key?.let {
-                        findOtherSetConflict(sets, it, modifiers)
-                            ?: ManualReadoutHotkeyConflict.DebugHotkey.takeIf {
-                                modifiers == ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT &&
-                                    observeDebugHotkeyVirtualKeyCode().first() == key
-                            }
-                    }
+                val conflict = key?.let { findOtherSetConflict(sets, it, modifiers) }
                 if (conflict == null) updateSet(set.copy(hotkeyModifiers = modifiers))
                 hotkeyConflict.update { conflict }
             }

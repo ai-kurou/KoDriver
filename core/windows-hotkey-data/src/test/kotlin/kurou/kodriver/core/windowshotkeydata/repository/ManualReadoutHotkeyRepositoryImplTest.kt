@@ -78,11 +78,13 @@ class ManualReadoutHotkeyRepositoryImplTest {
             assertEquals(listOf(0x41, 0x42, 0x43), source.requested)
             assertEquals(listOf(0x41), source.released)
             lmuSets.update {
-                listOf(first.copy(hotkeyVirtualKeyCode = 0x43, hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_ALT))
+                listOf(
+                    first.copy(hotkeyVirtualKeyCode = 0x43, hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_SHIFT),
+                )
             }
             testScheduler.runCurrent()
             assertEquals(
-                listOf(GlobalHotkey(7, 0x41), GlobalHotkey(7, 0x42), GlobalHotkey(7, 0x43), GlobalHotkey(3, 0x43)),
+                listOf(GlobalHotkey(3, 0x41), GlobalHotkey(3, 0x42), GlobalHotkey(3, 0x43), GlobalHotkey(6, 0x43)),
                 source.hotkeys,
             )
             assertEquals(listOf(0x41, 0x43), source.released)

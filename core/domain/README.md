@@ -100,7 +100,7 @@ LMU のバーチャルエネルギー残量・燃料残量・タイヤ摩耗・�
 `RequestManualReadoutUseCase` / `ObserveManualReadoutRequestsUseCase` は
 `ManualReadoutRequestRepository` を通じてアプリ内の依頼を送信・購読する。
 
-`ManualReadoutSet.hotkeyModifiers` は `ManualReadoutHotkeyModifiers` の4種類から選択する。Windows の修飾キー値を保持し、既定値は `ReadoutHotkeyDefaults.kt` の `MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT`（Ctrl + Alt + Shift）。不明値・null は既定値として扱う。
+`ManualReadoutSet.hotkeyModifiers` は `ManualReadoutHotkeyModifiers` の3種類から選択する。Windows の修飾キー値を保持し、既定値は `ReadoutHotkeyDefaults.kt` の `MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT`（Ctrl + Alt）。不明値・null は既定値として扱う。
 
 `ManualReadoutHotkeyRepository` はセットホットキーの押下（`ManualReadoutRequest`）とセット別の登録状態を配信し、競合・失敗時の再試行を受け付ける。対応する Observe / Retry UseCase を通じて Narrator とセット詳細画面から利用する。
 

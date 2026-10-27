@@ -53,7 +53,7 @@ class ManualReadoutHotkeyKeyTest {
             assertEquals("${code.toChar()}", manualReadoutHotkeyDisplayName(code))
         }
         assertEquals(
-            listOf("Ctrl + Alt + Shift", "Ctrl + Alt", "Ctrl + Shift", "Alt + Shift"),
+            listOf("Ctrl + Alt", "Ctrl + Shift", "Alt + Shift"),
             ManualReadoutHotkeyModifiers.entries.map { it.displayName() },
         )
         assertEquals(null, manualReadoutHotkeyVirtualKeyCode(Key.F1))
