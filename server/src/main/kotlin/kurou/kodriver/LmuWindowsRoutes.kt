@@ -45,4 +45,7 @@ internal fun Route.lmuWindowsRoutes(useCases: KoDriverServerUseCases) {
     telemetryWebSocket(KoDriverServerFeature.TYRE_DETACHED, Simulator.LmuWindows) {
         useCases.lmuWindows.observeLmuWindowsTyreDetached()
     }
+    telemetryWebSocket(KoDriverServerFeature.CAR_GAP, Simulator.LmuWindows, distinct = false) {
+        useCases.lmuWindows.observeLmuWindowsCarGap()
+    }
 }

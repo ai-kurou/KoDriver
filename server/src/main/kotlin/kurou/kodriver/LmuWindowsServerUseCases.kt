@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
@@ -16,6 +17,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
@@ -28,6 +30,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageReposi
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -54,6 +57,7 @@ data class LmuWindowsServerUseCases(
     val observeLmuWindowsPitStatus: ObserveLmuWindowsPitStatusUseCase,
     val observeLmuWindowsBrakeWear: ObserveLmuWindowsBrakeWearUseCase,
     val observeLmuWindowsTyreDetached: ObserveLmuWindowsTyreDetachedUseCase,
+    val observeLmuWindowsCarGap: ObserveLmuWindowsCarGapUseCase,
 )
 
 internal fun lmuWindowsServerUseCasesFrom(koin: Koin): LmuWindowsServerUseCases =
@@ -98,6 +102,10 @@ internal fun lmuWindowsServerUseCasesFrom(koin: Koin): LmuWindowsServerUseCases 
             ObserveLmuWindowsTyreDetachedUseCase(
                 koin.get<LmuWindowsTyreDetachedRepository>(),
             ),
+        observeLmuWindowsCarGap =
+            ObserveLmuWindowsCarGapUseCase(
+                koin.get<LmuWindowsCarGapRepository>(),
+            ),
     )
 
 internal fun emptyLmuWindowsServerUseCases(): LmuWindowsServerUseCases =
@@ -138,6 +146,10 @@ internal fun emptyLmuWindowsServerUseCases(): LmuWindowsServerUseCases =
         observeLmuWindowsTyreDetached =
             ObserveLmuWindowsTyreDetachedUseCase(
                 EmptyLmuWindowsTyreDetachedRepository,
+            ),
+        observeLmuWindowsCarGap =
+            ObserveLmuWindowsCarGapUseCase(
+                EmptyLmuWindowsCarGapRepository,
             ),
     )
 
@@ -187,6 +199,10 @@ private object EmptyLmuWindowsPitStatusRepository : LmuWindowsPitStatusRepositor
 
 private object EmptyLmuWindowsTyreDetachedRepository : LmuWindowsTyreDetachedRepository {
     override fun tyreDetachedStream(): Flow<LmuWindowsTyreDetachedData> = emptyFlow()
+}
+
+private object EmptyLmuWindowsCarGapRepository : LmuWindowsCarGapRepository {
+    override fun carGapStream(): Flow<LmuWindowsCarGapData> = emptyFlow()
 }
 
 private object EmptyLmuWindowsBrakeWearRepository : LmuWindowsBrakeWearRepository {

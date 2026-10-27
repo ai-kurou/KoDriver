@@ -20,6 +20,7 @@ import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsVehicleCla
 import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsBrakeWearRepository
+import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsCarGapRepository
 import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsFlagRepository
 import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsPitStatusRepository
 import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsRepository
@@ -32,6 +33,7 @@ import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsVehicleDa
 import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
@@ -124,6 +126,9 @@ fun androidLmuWindowsDataModule(context: Context): Module =
         }
         single<LmuWindowsTyreDetachedRepository> {
             WebSocketLmuWindowsTyreDetachedRepository(serverIpRepository = get(), client = get())
+        }
+        single<LmuWindowsCarGapRepository> {
+            WebSocketLmuWindowsCarGapRepository(serverIpRepository = get(), client = get())
         }
     }
 
