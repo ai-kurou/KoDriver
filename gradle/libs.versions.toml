@@ -42,7 +42,7 @@ reorderable = "3.1.0"
 aboutLibraries = "15.3.0"
 sentry = "8.60.0"
 dokka = "2.2.0"
-navigation3 = "1.1.2"
+navigation3 = "1.2.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
