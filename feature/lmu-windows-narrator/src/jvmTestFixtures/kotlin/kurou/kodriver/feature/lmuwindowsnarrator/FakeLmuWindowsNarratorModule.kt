@@ -19,6 +19,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_DAMAGE_PART_DE
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
@@ -35,6 +36,7 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeTempera
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitStatusRepository
@@ -89,6 +91,7 @@ val fakeLmuWindowsNarratorModule =
         single<LmuWindowsVehicleDamagePreferencesRepository> { FakeLmuWindowsVehicleDamagePreferencesRepository() }
         single<LmuWindowsVehicleDamageRepository> { FakeLmuWindowsVehicleDamageRepository() }
         single<LmuWindowsTyreDetachedRepository> { FakeLmuWindowsTyreDetachedRepository() }
+        single<LmuWindowsCarGapRepository> { FakeLmuWindowsCarGapRepository() }
         single<SoundPlayer>(named(Simulator.LmuWindows.id)) { NoOpSoundPlayer() }
         single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
         single<LmuWindowsTyreCarcassTemperatureRepository> { FakeLmuWindowsTyreCarcassTemperatureRepository() }
@@ -225,6 +228,10 @@ class FakeLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRepository 
 
 class FakeLmuWindowsTyreDetachedRepository : LmuWindowsTyreDetachedRepository {
     override fun tyreDetachedStream(): Flow<LmuWindowsTyreDetachedData> = emptyFlow()
+}
+
+class FakeLmuWindowsCarGapRepository : LmuWindowsCarGapRepository {
+    override fun carGapStream(): Flow<LmuWindowsCarGapData> = emptyFlow()
 }
 
 class NoOpSoundPlayer : SoundPlayer {

@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
@@ -46,6 +47,7 @@ import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
@@ -57,6 +59,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageReposi
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -124,6 +127,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
 
     private val vehicleDamageRepository: LmuWindowsVehicleDamageRepository = mockk()
 
+    private val carGapRepository: LmuWindowsCarGapRepository = mockk()
     private val tyreDetachedRepository: LmuWindowsTyreDetachedRepository = mockk()
 
     // saveCardOrder は戻り値 Unit の suspend 関数のため relaxUnitFun でスタブ不要にし、
@@ -163,6 +167,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 observeVehicleClass = ObserveLmuWindowsVehicleClassUseCase(vehicleClassRepository),
                 observePitStatus = ObserveLmuWindowsPitStatusUseCase(lmuWindowsPitStatusRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(vehicleDamageRepository),
+                observeCarGap = ObserveLmuWindowsCarGapUseCase(carGapRepository),
                 observeTyreDetached = ObserveLmuWindowsTyreDetachedUseCase(tyreDetachedRepository),
             ),
         cardOrderUseCases =
@@ -186,6 +191,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns emptyFlow()
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns emptyFlow()
             every { vehicleDamageRepository.vehicleDamageStream() } returns emptyFlow()
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -287,6 +293,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns emptyFlow()
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns emptyFlow()
             every { vehicleDamageRepository.vehicleDamageStream() } returns emptyFlow()
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -336,6 +343,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -372,6 +380,51 @@ class LmuWindowsDebugStateDetailViewModelTest {
         }
 
     @Test
+    fun `車両時間差の購読結果と更新をuiStateに反映する`() =
+        runTest {
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
+                MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
+            every { brakeWearRepository.brakeWearStream() } returns emptyFlow()
+            every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
+            every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
+            every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            val gapFlow = MutableStateFlow(LmuWindowsCarGapData(1.0, -2.0, 0.0, 4.0))
+            every { carGapRepository.carGapStream() } returns gapFlow
+            every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+            testScheduler.runCurrent()
+
+            assertEquals(
+                gapFlow.value,
+                viewModel.uiState
+                    .first()
+                    .lmuWindows.carGap,
+            )
+            assertTrue(LmuWindowsDebugStateCardKey.CAR_GAP in viewModel.uiState.first().enabledCardKeys)
+
+            gapFlow.update { LmuWindowsCarGapData(-3.5, 0.0, 5.0, -6.0) }
+            testScheduler.runCurrent()
+
+            assertEquals(
+                gapFlow.value,
+                viewModel.uiState
+                    .first()
+                    .lmuWindows.carGap,
+            )
+            verify(exactly = 1) { carGapRepository.carGapStream() }
+            confirmVerified(carGapRepository)
+        }
+
+    @Test
     fun `ブレーキ残量が未受信でも他の状態を表示する`() =
         runTest {
             every { flagRepository.flagStream() } returns
@@ -388,6 +441,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -395,6 +449,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
             assertEquals(null, state.lmuWindows.brakeWear)
+            assertFalse(LmuWindowsDebugStateCardKey.CAR_GAP in state.enabledCardKeys)
+            assertEquals(null, state.lmuWindows.carGap)
             assertFalse(LmuWindowsDebugStateCardKey.BRAKE_WEAR in state.enabledCardKeys)
             assertTrue(LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE in state.enabledCardKeys)
         }
@@ -416,6 +472,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -434,6 +491,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -447,6 +505,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -469,6 +528,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -488,6 +548,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -501,6 +562,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -523,6 +585,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -541,6 +604,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -554,6 +618,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -576,6 +641,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -599,6 +665,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -612,6 +679,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -634,6 +702,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -652,6 +721,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -665,6 +735,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -687,6 +758,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             var nowMs = 1_000L
@@ -710,6 +782,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -723,6 +796,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -745,6 +819,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             var nowMs = 1_000L
@@ -767,6 +842,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -780,6 +856,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -807,6 +884,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             var nowMs = 1_000L
@@ -863,6 +941,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -876,6 +955,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -902,6 +982,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -925,6 +1006,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -938,6 +1020,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -961,6 +1044,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(LmuWindowsVehicleClassData.fromRawValue("LMP2"))
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -979,6 +1063,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -992,6 +1077,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -1015,6 +1101,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns
                 MutableStateFlow(samplePitStatus(pitState = LmuWindowsPitState.ENTERING))
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1033,6 +1120,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1046,6 +1134,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -1069,6 +1158,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns
                 MutableStateFlow(sampleVehicleDamage(overheating = true, partDetached = true))
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1088,6 +1178,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1101,6 +1192,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -1123,6 +1215,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns
                 MutableStateFlow(sampleTyreDetached(WheelIndex.FRONT_LEFT))
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
@@ -1147,6 +1240,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1160,6 +1254,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -1182,6 +1277,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1200,6 +1296,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                     LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE,
                     LmuWindowsDebugStateCardKey.CURRENT_LAP,
                     LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                    LmuWindowsDebugStateCardKey.CAR_GAP,
                     LmuWindowsDebugStateCardKey.BEST_LAP,
                     LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE,
                     LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
@@ -1223,6 +1320,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1236,6 +1334,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -1258,6 +1357,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns
                 MutableStateFlow(listOf("FUEL_CONSUMPTION", "SIMULATOR"))
@@ -1278,6 +1378,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                     LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE,
                     LmuWindowsDebugStateCardKey.CURRENT_LAP,
                     LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                    LmuWindowsDebugStateCardKey.CAR_GAP,
                     LmuWindowsDebugStateCardKey.BEST_LAP,
                     LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE,
                     LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
@@ -1300,6 +1401,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1313,6 +1415,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -1335,6 +1438,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns emptyFlow()
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1354,6 +1458,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                     LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE,
                     LmuWindowsDebugStateCardKey.CURRENT_LAP,
                     LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                    LmuWindowsDebugStateCardKey.CAR_GAP,
                     LmuWindowsDebugStateCardKey.BEST_LAP,
                     LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE,
                     LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
@@ -1376,6 +1481,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             coVerify(exactly = 1) { cardOrderRepository.saveCardOrder(expectedCardOrder.map { it.name }) }
@@ -1390,6 +1496,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
@@ -1414,6 +1521,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { carGapRepository.carGapStream() } returns
+                MutableStateFlow(LmuWindowsCarGapData(1.0, -2.0, 0.0, 4.0))
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1475,6 +1584,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { carGapRepository.carGapStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1488,6 +1598,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 vehicleClassRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
+                carGapRepository,
                 tyreDetachedRepository,
                 cardOrderRepository,
             )

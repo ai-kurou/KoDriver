@@ -27,6 +27,7 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_temperature_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_wear_title
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_car_gap_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_current_lap_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_flag_info_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_fuel_consumption_title
@@ -185,6 +186,7 @@ private val debugStateCardTitles: Map<LmuWindowsDebugStateCardKey, StringResourc
         LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE to Res.string.debug_state_yellow_flag_state_title,
         LmuWindowsDebugStateCardKey.CURRENT_LAP to Res.string.debug_state_current_lap_title,
         LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to Res.string.debug_state_side_by_side_title,
+        LmuWindowsDebugStateCardKey.CAR_GAP to Res.string.debug_state_car_gap_title,
         LmuWindowsDebugStateCardKey.BEST_LAP to Res.string.debug_state_best_lap_title,
         LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE to Res.string.debug_state_tyre_temperature_title,
         LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to Res.string.debug_state_tyre_carcass_temperature_title,
@@ -228,6 +230,9 @@ private val debugStateCardContents:
                     uiState.lmuWindows.sideBySideDurations,
                 )
             },
+        LmuWindowsDebugStateCardKey.CAR_GAP to { uiState ->
+            CarGapContent(uiState.lmuWindows.carGap)
+        },
         LmuWindowsDebugStateCardKey.BEST_LAP to { uiState ->
             BestLapContent(uiState.lmuWindows.telemetry)
         },

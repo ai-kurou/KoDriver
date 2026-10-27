@@ -35,6 +35,7 @@ class DebugStateCardOrderUseCasesTest {
             "YELLOW_FLAG_STATE",
             "CURRENT_LAP",
             "SIDE_BY_SIDE_VEHICLES",
+            "CAR_GAP",
             "BEST_LAP",
             "TYRE_TEMPERATURE",
             "TYRE_CARCASS_TEMPERATURE",

@@ -58,7 +58,7 @@ class LmuWindowsDebugStateDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("未取得").assertCountEquals(16)
+        rule.onAllNodesWithText("未取得").assertCountEquals(17)
     }
 
     @Test

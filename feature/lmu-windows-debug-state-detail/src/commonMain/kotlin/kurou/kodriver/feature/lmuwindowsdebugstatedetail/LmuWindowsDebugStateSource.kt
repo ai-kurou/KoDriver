@@ -14,12 +14,14 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -31,6 +33,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageUs
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 
 internal data class LmuWindowsDebugStateUseCases(
+    val observeCarGap: ObserveLmuWindowsCarGapUseCase,
     val observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
     val observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     val observeTelemetry: ObserveLmuWindowsUseCase,
@@ -181,9 +184,16 @@ internal class LmuWindowsDebugStateSource(
             LmuWindowsDebugState(),
         )
 
+    private val _carGap: StateFlow<LmuWindowsCarGapData?> =
+        useCases
+            .observeCarGap()
+            .onEach {
+                markCardsReceived(setOf(LmuWindowsDebugStateCardKey.CAR_GAP))
+            }.stateIn(scope, SharingStarted.Eagerly, null)
+
     private val _raceState: StateFlow<LmuWindowsDebugState> =
-        combine(_raceStateWithoutBrakeWear, _lmuWindowsBrakeWear) { base, brakeWear ->
-            base.copy(brakeWear = brakeWear)
+        combine(_raceStateWithoutBrakeWear, _lmuWindowsBrakeWear, _carGap) { base, brakeWear, carGap ->
+            base.copy(brakeWear = brakeWear, carGap = carGap)
         }.stateIn(
             scope,
             SharingStarted.Eagerly,
