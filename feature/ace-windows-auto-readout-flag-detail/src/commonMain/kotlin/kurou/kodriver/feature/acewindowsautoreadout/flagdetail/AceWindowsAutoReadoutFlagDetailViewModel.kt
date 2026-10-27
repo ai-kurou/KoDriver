@@ -131,7 +131,11 @@ internal class AceWindowsAutoReadoutFlagDetailViewModel(
             enabledStates = settingsUseCases.observeFlagEnabledStates(),
             flagTexts = flagTexts,
             isTextToSpeechAvailable = preview.textToSpeechAvailable,
-        ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsAutoReadoutFlagDetailUiState())
+        ).uiState.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            AceWindowsAutoReadoutFlagDetailUiState(),
+        )
 
     /** ペインを離れるときに試聴を止める。 */
     fun onPreviewStopped() = preview.stop()
