@@ -14,3 +14,6 @@
 旧口調設定は参照しない。WAVへのフォールバックは行わない。
 
 試聴中に試聴ボタンを再押しすると停止する。詳細ペインを離れたときも試聴を停止する。
+
+UI状態の合成は `Gt7Ps5AutoReadoutMyBestLapDetailFlow`（cold Flow）が担う。
+ViewModelは入力Flowの取得、`stateIn`による共有・初期値の管理、保存・試聴の副作用を担う。

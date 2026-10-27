@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
@@ -12,7 +11,6 @@ import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5MyBestLapReadoutTextUse
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -54,17 +52,11 @@ internal class Gt7Ps5AutoReadoutMyBestLapDetailViewModel(
         )
 
     val uiState: StateFlow<Gt7Ps5AutoReadoutMyBestLapDetailUiState> =
-        combine(
-            myBestLapUseCases.observeEnabledStates(Simulator.Gt7Ps5.id),
-            readout.observeText(),
-            preview.textToSpeechAvailable,
-        ) { states, text, available ->
-            Gt7Ps5AutoReadoutMyBestLapDetailUiState(
-                enabled = states.readoutEnabled(Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled),
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-            )
-        }.stateIn(
+        Gt7Ps5AutoReadoutMyBestLapDetailFlow(
+            enabledStates = myBestLapUseCases.observeEnabledStates(Simulator.Gt7Ps5.id),
+            readoutText = readout.observeText(),
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             Gt7Ps5AutoReadoutMyBestLapDetailUiState(),
