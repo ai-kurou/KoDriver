@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
@@ -52,19 +51,12 @@ internal class AceWindowsAutoReadoutVehicleApproachDetailViewModel(
         )
 
     val uiState: StateFlow<AceWindowsAutoReadoutVehicleApproachDetailUiState> =
-        combine(
-            thresholds.observeThresholdMeters(),
-            observeEnabledStates(),
-            observeReadoutText(),
-            preview.textToSpeechAvailable,
-        ) { thresholdMeters, enabledStates, readoutText, isTextToSpeechAvailable ->
-            AceWindowsAutoReadoutVehicleApproachDetailUiState(
-                thresholdMeters = thresholdMeters,
-                readoutText = readoutText,
-                isTextToSpeechAvailable = isTextToSpeechAvailable,
-                startReadoutEnabled = enabledStates.getValue(AceWindowsReadoutItemKey.VehicleApproach.StartReadout),
-            )
-        }.stateIn(
+        AceWindowsAutoReadoutVehicleApproachDetailFlow(
+            thresholdMeters = thresholds.observeThresholdMeters(),
+            enabledStates = observeEnabledStates(),
+            readoutText = observeReadoutText(),
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             AceWindowsAutoReadoutVehicleApproachDetailUiState(),
