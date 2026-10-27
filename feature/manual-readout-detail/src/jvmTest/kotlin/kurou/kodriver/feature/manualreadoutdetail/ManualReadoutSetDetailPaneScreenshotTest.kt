@@ -159,6 +159,9 @@ class ManualReadoutSetDetailPaneScreenshotTest {
     fun `ホットキー未割り当て`() = screenshot(emptyList(), hotkey = null to null)
 
     @Test
+    fun `GT7ではSimHub手順書リンクなし`() = screenshot(gt7Ps5ManualReadoutItemKeys(), hotkey = null to null)
+
+    @Test
     fun `ホットキー割り当て済み`() = screenshot(emptyList(), hotkey = 0x41 to null)
 
     @Test
@@ -218,6 +221,7 @@ private fun screenshot(
     hotkey: Pair<Int?, ManualReadoutHotkeyConflict?>? = null,
     registration: HotkeyRegistrationState = HotkeyRegistrationState.Unsupported,
 ) = composeScreenshotTest {
+    val showSimHubGuideLink = simulatorIdForKeys(keys) != Simulator.Gt7Ps5.id
     setContent {
         KoDriverTheme {
             Surface {
@@ -236,6 +240,7 @@ private fun screenshot(
                                 hotkeyRegistrationState = registration,
                             ),
                         showHotkey = hotkey != null,
+                        showSimHubGuideLink = showSimHubGuideLink,
                         onAddItem = {},
                         onDelete = {},
                         canNavigateBack = canNavigateBack,
@@ -245,7 +250,8 @@ private fun screenshot(
         }
     }
     if (hotkey != null) {
-        onNodeWithText("ステアリングのボタンから実行する設定を開く").assertIsDisplayed()
+        val guideLink = onNodeWithText("ステアリングのボタンから実行する方法を見る")
+        if (showSimHubGuideLink) guideLink.assertIsDisplayed() else guideLink.assertDoesNotExist()
     }
     onRoot().captureRoboImage()
 }

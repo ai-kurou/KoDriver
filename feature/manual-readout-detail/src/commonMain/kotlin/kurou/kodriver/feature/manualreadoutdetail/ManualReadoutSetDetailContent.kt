@@ -109,6 +109,7 @@ fun ManualReadoutSetDetailContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     showHotkey: Boolean = isManualReadoutHotkeySupported(),
+    showSimHubGuideLink: Boolean = simulatorId != Simulator.Gt7Ps5.id,
 ) {
     val viewModel: ManualReadoutSetDetailViewModel =
         koinViewModel(key = "$simulatorId:$setId", parameters = { parametersOf(simulatorId, setId) })
@@ -127,6 +128,7 @@ fun ManualReadoutSetDetailContent(
         onClearHotkey = viewModel::clearHotkey,
         onRetryHotkeyRegistration = viewModel::onRetryHotkeyRegistration,
         showHotkey = showHotkey,
+        showSimHubGuideLink = showSimHubGuideLink,
         onAddItem = viewModel::addItem,
         onRemoveItem = viewModel::removeItem,
         onMoveItem = viewModel::moveItem,
@@ -158,6 +160,7 @@ internal fun ManualReadoutSetDetailPane(
     onRetryHotkeyRegistration: () -> Unit = {},
     modifier: Modifier = Modifier,
     showHotkey: Boolean = isManualReadoutHotkeySupported(),
+    showSimHubGuideLink: Boolean = true,
 ) {
     val uriHandler = LocalUriHandler.current
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -222,6 +225,7 @@ internal fun ManualReadoutSetDetailPane(
                         onRetryHotkeyRegistration,
                         onSelectModifiers,
                         onOpenGuide = { uriHandler.openUri(SIMHUB_HOTKEY_SETUP_URL) },
+                        showGuideLink = showSimHubGuideLink,
                     )
                 }
             } else if (!uiState.isLoading) {

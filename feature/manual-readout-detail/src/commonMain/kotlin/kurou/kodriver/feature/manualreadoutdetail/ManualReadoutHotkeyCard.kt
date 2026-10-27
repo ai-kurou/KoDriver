@@ -61,6 +61,7 @@ internal fun ManualReadoutHotkeyCard(
     onRetry: () -> Unit,
     onSelectModifiers: (ManualReadoutHotkeyModifiers) -> Unit,
     onOpenGuide: () -> Unit,
+    showGuideLink: Boolean = true,
 ) {
     val haptic = LocalHapticFeedback.current
     DetailPaneCard(
@@ -121,26 +122,28 @@ internal fun ManualReadoutHotkeyCard(
                     ManualReadoutHotkeyRegistration(state.hotkeyRegistrationState, onRetry)
                 }
                 Text(stringResource(Res.string.manual_readout_hotkey_hint))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier =
-                        Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            onOpenGuide()
-                        },
-                ) {
-                    Text(
-                        text = stringResource(Res.string.manual_readout_hotkey_guide_link),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(12.dp),
-                    )
+                if (showGuideLink) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier =
+                            Modifier.clickable {
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                onOpenGuide()
+                            },
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.manual_readout_hotkey_guide_link),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(12.dp),
+                        )
+                    }
                 }
             }
         },

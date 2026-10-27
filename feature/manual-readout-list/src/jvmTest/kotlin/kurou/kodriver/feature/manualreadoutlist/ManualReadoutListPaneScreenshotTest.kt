@@ -221,7 +221,23 @@ class ManualReadoutListPaneScreenshotTest {
                     }
                 }
             }
-            onNodeWithText("ステアリングのボタンから実行する設定を開く").performScrollTo().assertIsDisplayed()
+            onNodeWithText("ステアリングのボタンから実行する方法を見る").performScrollTo().assertIsDisplayed()
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `ヘルプボトムシートGT7ではSimHub手順書リンクなし`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                            ManualReadoutHintSheetContent(showHotkeyHint = true, showSimHubGuideLink = false)
+                        }
+                    }
+                }
+            }
+            onNodeWithText("ステアリングのボタンから実行する方法を見る").assertDoesNotExist()
             onRoot().captureRoboImage()
         }
 
