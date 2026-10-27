@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
@@ -15,7 +14,6 @@ import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5RemainingFuelReadoutTextUs
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -54,19 +52,12 @@ internal class Gt7Ps5AutoReadoutRemainingFuelDetailViewModel(
         )
 
     val uiState: StateFlow<Gt7Ps5AutoReadoutRemainingFuelDetailUiState> =
-        combine(
-            remainingFuelUseCases.observeThresholdPercentage(),
-            remainingFuelUseCases.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id),
-            readout.observeText(),
-            preview.textToSpeechAvailable,
-        ) { thresholdPercentage, enabledStates, text, available ->
-            Gt7Ps5AutoReadoutRemainingFuelDetailUiState(
-                thresholdPercentage = thresholdPercentage,
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled),
-            )
-        }.stateIn(
+        Gt7Ps5AutoReadoutRemainingFuelDetailFlow(
+            thresholdPercentage = remainingFuelUseCases.observeThresholdPercentage(),
+            enabledStates = remainingFuelUseCases.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id),
+            readoutText = readout.observeText(),
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             Gt7Ps5AutoReadoutRemainingFuelDetailUiState(),
