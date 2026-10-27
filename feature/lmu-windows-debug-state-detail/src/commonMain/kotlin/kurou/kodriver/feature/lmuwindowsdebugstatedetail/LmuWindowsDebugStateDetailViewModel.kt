@@ -69,26 +69,33 @@ internal class LmuWindowsDebugStateDetailViewModel(
             local ?: resolveCardOrder(persistedOrder = persisted, defaultOrder = defaultDebugStateCardOrder)
         }.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
 
+    private val detailFlow =
+        LmuWindowsDebugStateDetailFlow(
+            cardOrder = _cardOrder,
+            receivedCardKeys = _receivedCardKeys,
+            lmuWindows = lmuWindowsSource.state,
+            selectedReadoutItemKey = _selectedReadoutItemKey,
+            debugReadoutText = _debugReadoutText,
+            hotkey = _hotkey,
+        )
     private val _header: StateFlow<LmuWindowsDebugStateDetailUiState> =
-        combine(
-            _cardOrder,
-            _receivedCardKeys,
-        ) { cardOrder, receivedCardKeys ->
-            LmuWindowsDebugStateDetailUiState(
-                enabledCardKeys = receivedCardKeys intersect lmuWindowsSupportedCardKeys,
-                cardOrder = cardOrder,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsDebugStateDetailUiState())
-
+        detailFlow.header.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LmuWindowsDebugStateDetailUiState(),
+        )
     private val _detailState: StateFlow<LmuWindowsDebugStateDetailUiState> =
-        combine(_header, lmuWindowsSource.state, _selectedReadoutItemKey, _debugReadoutText) { header, lmu, key, text ->
-            header.copy(lmuWindows = lmu, selectedReadoutItemKey = key, debugReadoutText = text)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsDebugStateDetailUiState())
-
+        detailFlow.detail(_header).stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LmuWindowsDebugStateDetailUiState(),
+        )
     val uiState: StateFlow<LmuWindowsDebugStateDetailUiState> =
-        combine(_detailState, _hotkey) { detail, hotkey ->
-            detail.copy(readoutHotkey = hotkey)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsDebugStateDetailUiState())
+        detailFlow.uiState(_detailState).stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LmuWindowsDebugStateDetailUiState(),
+        )
 
     fun selectHotkey(virtualKeyCode: Int) {
         hotkeyCheckJob?.cancel()
