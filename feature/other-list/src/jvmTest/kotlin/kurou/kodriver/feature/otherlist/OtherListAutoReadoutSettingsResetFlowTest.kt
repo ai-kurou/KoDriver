@@ -22,11 +22,11 @@ import kotlin.test.assertTrue
 
 class OtherListAutoReadoutSettingsResetFlowTest {
     private val repository: AutoReadoutSettingsResetter = mockk()
+    private val secondResetter: AutoReadoutSettingsResetter = mockk()
 
     @Test
     fun `登録された全resetterを実行してから成功を通知する`() =
         runTest {
-            val secondResetter: AutoReadoutSettingsResetter = mockk()
             coEvery { repository.resetToDefault() } returns Unit
             coEvery { secondResetter.resetToDefault() } returns Unit
             val resetFlow =
