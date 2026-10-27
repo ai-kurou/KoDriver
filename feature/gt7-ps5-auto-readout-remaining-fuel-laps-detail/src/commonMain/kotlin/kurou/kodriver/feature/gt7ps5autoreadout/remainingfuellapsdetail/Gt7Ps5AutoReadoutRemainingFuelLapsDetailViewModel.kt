@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
@@ -17,7 +16,6 @@ import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5RemainingFuelLapsReadoutTe
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -58,21 +56,13 @@ internal class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModel(
         )
 
     val uiState: StateFlow<Gt7Ps5AutoReadoutRemainingFuelLapsDetailUiState> =
-        combine(
+        Gt7Ps5AutoReadoutRemainingFuelLapsDetailFlow(
             remainingFuelLapsUseCases.observeRemainingFuelLaps(),
             remainingFuelLapsUseCases.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id),
             readout.observeText(),
             readout.observeEmptyText(),
             preview.textToSpeechAvailable,
-        ) { remainingFuelLaps, enabledStates, text, emptyText, available ->
-            Gt7Ps5AutoReadoutRemainingFuelLapsDetailUiState(
-                remainingFuelLaps = remainingFuelLaps,
-                readoutText = text,
-                emptyReadoutText = emptyText,
-                isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled),
-            )
-        }.stateIn(
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             Gt7Ps5AutoReadoutRemainingFuelLapsDetailUiState(),
