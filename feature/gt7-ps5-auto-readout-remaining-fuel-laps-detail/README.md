@@ -10,6 +10,8 @@ GT7 の燃料残り周回数を読み上げる機能の詳細設定画面。残�
 
 各文言の「デフォルトに戻す」ボタンで既定文言に戻せる（TTS利用不可、または既にデフォルトと同じ場合は無効）。TTS利用不可では入力・試聴・挿入も無効にし、説明を表示する。保存が非同期でも入力中の最新文言を古い保存値で巻き戻さない。
 
+`Gt7Ps5AutoReadoutRemainingFuelLapsDetailFlow` は、閾値・有効状態・2種類の文言・TTS利用可否の入力FlowからUiStateを合成するcold Flow。ViewModelは `stateIn` による共有・初期値の管理と、保存・試聴の副作用を担当する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
