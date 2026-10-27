@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
@@ -19,7 +18,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsVehicleClassBrakeT
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -63,21 +61,13 @@ internal class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModel(
     fun onPreviewStopped() = previewHelper.stop()
 
     val uiState: StateFlow<LmuWindowsAutoReadoutBrakeTemperatureDetailUiState> =
-        combine(
-            brakeTemperatureUseCases.observeVehicleClassHighThreshold(),
-            brakeTemperatureUseCases.observeVehicleClassSelection(),
-            observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
-            brakeTemperatureUseCases.observeText(),
-            previewHelper.textToSpeechAvailable,
-        ) { vehicleClassHighThresholdCelsius, selectedVehicleClass, enabledStates, text, available ->
-            LmuWindowsAutoReadoutBrakeTemperatureDetailUiState(
-                vehicleClassHighThresholdCelsius = vehicleClassHighThresholdCelsius,
-                selectedVehicleClass = selectedVehicleClass,
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.BrakeTemperature.WarningReadout),
-            )
-        }.stateIn(
+        LmuWindowsAutoReadoutBrakeTemperatureDetailFlow(
+            vehicleClassHighThreshold = brakeTemperatureUseCases.observeVehicleClassHighThreshold(),
+            vehicleClassSelection = brakeTemperatureUseCases.observeVehicleClassSelection(),
+            enabledStates = observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
+            readoutText = brakeTemperatureUseCases.observeText(),
+            isTextToSpeechAvailable = previewHelper.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsAutoReadoutBrakeTemperatureDetailUiState(),
