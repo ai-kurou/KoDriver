@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
@@ -15,7 +14,6 @@ import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelReado
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -54,19 +52,12 @@ internal class AceWindowsAutoReadoutRemainingFuelDetailViewModel(
         )
 
     val uiState: StateFlow<AceWindowsAutoReadoutRemainingFuelDetailUiState> =
-        combine(
-            remainingFuelUseCases.observeThresholdPercentage(),
-            remainingFuelUseCases.observeAutoReadoutEnabledStates(Simulator.AceWindows.id),
-            readout.observeText(),
-            preview.textToSpeechAvailable,
-        ) { thresholdPercentage, enabledStates, text, available ->
-            AceWindowsAutoReadoutRemainingFuelDetailUiState(
-                thresholdPercentage = thresholdPercentage,
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled),
-            )
-        }.stateIn(
+        AceWindowsAutoReadoutRemainingFuelDetailFlow(
+            thresholdPercentage = remainingFuelUseCases.observeThresholdPercentage(),
+            enabledStates = remainingFuelUseCases.observeAutoReadoutEnabledStates(Simulator.AceWindows.id),
+            readoutText = readout.observeText(),
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             AceWindowsAutoReadoutRemainingFuelDetailUiState(),

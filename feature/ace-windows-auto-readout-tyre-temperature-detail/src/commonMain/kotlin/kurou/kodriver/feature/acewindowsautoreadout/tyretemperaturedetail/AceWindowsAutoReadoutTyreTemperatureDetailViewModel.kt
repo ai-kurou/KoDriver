@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
@@ -58,19 +57,12 @@ internal class AceWindowsAutoReadoutTyreTemperatureDetailViewModel(
         )
 
     val uiState: StateFlow<AceWindowsAutoReadoutTyreTemperatureDetailUiState> =
-        combine(
-            tyreTemperatureUseCases.observeEnabledStates(),
-            tyreTemperatureUseCases.observeHighThreshold(),
-            readout.observeText(),
-            preview.textToSpeechAvailable,
-        ) { states, highThresholdCelsius, text, available ->
-            AceWindowsAutoReadoutTyreTemperatureDetailUiState(
-                overheatWarningEnabled = states.getValue(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning),
-                highThresholdCelsius = highThresholdCelsius.value,
-                overheatReadoutText = text,
-                isTextToSpeechAvailable = available,
-            )
-        }.stateIn(
+        AceWindowsAutoReadoutTyreTemperatureDetailFlow(
+            enabledStates = tyreTemperatureUseCases.observeEnabledStates(),
+            highThresholdCelsius = tyreTemperatureUseCases.observeHighThreshold(),
+            overheatReadoutText = readout.observeText(),
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             AceWindowsAutoReadoutTyreTemperatureDetailUiState(),
