@@ -20,6 +20,11 @@ LMU（Le Mans Ultimate）固有のドメイン層（モデル・Repository イ�
 `LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
 手動の燃料読み上げは自動警告の有効状態・評価履歴を変更しない。
 
+## 車両との時間差
+
+`LmuWindowsCarGapData`・`LmuWindowsCarGapRepository`・`ObserveLmuWindowsCarGapUseCase` は、前方・後方車両および前順位・後順位車両との時間差（秒）を扱う。
+共有メモリの生の値を保持し、車両不在時の値の意味（0か負値か）は実機未確認のため解釈しない。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

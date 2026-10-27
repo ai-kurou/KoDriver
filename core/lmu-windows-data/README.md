@@ -33,6 +33,11 @@ Virtual Energy を使うのは Hypercar（`Hyper`）と GT3（`GT3`）のみで�
 
 `LmuWindowsMapper.kt` のコメントに pyLMUSharedMemory の ctypes レイアウト（`_pack_=4`）を記載済み。
 
+## 車両との時間差
+
+`LmuWindowsCarGapRepositoryImpl` はプレイヤー車両の Telemetry +780〜+792 から4種類の時間差を秒単位で読み取る。プレイヤー車両が無効なら配信せず、非 Windows では空 Flow を返す。
+共有メモリの生の値を保持し、車両不在時の値の意味（0か負値か）は実機未確認のため解釈しない。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
