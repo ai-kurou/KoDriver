@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
@@ -15,7 +14,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsRemainingVirtualEn
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -54,19 +52,12 @@ internal class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailViewModel(
         )
 
     val uiState: StateFlow<LmuWindowsAutoReadoutRemainingVirtualEnergyDetailUiState> =
-        combine(
-            remainingVirtualEnergyUseCases.observeThresholdPercentage(),
-            remainingVirtualEnergyUseCases.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
-            readout.observeText(),
-            preview.textToSpeechAvailable,
-        ) { thresholdPercentage, enabledStates, text, available ->
-            LmuWindowsAutoReadoutRemainingVirtualEnergyDetailUiState(
-                thresholdPercentage = thresholdPercentage,
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout),
-            )
-        }.stateIn(
+        LmuWindowsAutoReadoutRemainingVirtualEnergyDetailFlow(
+            thresholdPercentages = remainingVirtualEnergyUseCases.observeThresholdPercentage(),
+            enabledStates = remainingVirtualEnergyUseCases.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
+            readoutTexts = readout.observeText(),
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsAutoReadoutRemainingVirtualEnergyDetailUiState(),
