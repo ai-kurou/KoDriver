@@ -47,21 +47,28 @@ internal class Gt7Ps5DebugStateDetailViewModel(
             local ?: resolveCardOrder(persistedOrder = persisted, defaultOrder = defaultDebugStateCardOrder)
         }.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
 
+    private val debugStateDetailFlow =
+        Gt7Ps5DebugStateDetailFlow(
+            cardOrder = _cardOrder,
+            receivedCardKeys = _receivedCardKeys,
+            gt7Ps5 = gt7Ps5Source.state,
+            selectedReadoutItemKey = _selectedReadoutItemKey,
+            debugReadoutText = _debugReadoutText,
+        )
+
     private val _header: StateFlow<Gt7Ps5DebugStateDetailUiState> =
-        combine(
-            _cardOrder,
-            _receivedCardKeys,
-        ) { cardOrder, receivedCardKeys ->
-            Gt7Ps5DebugStateDetailUiState(
-                enabledCardKeys = receivedCardKeys intersect gt7Ps5SupportedCardKeys,
-                cardOrder = cardOrder,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Gt7Ps5DebugStateDetailUiState())
+        debugStateDetailFlow.header.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            Gt7Ps5DebugStateDetailUiState(),
+        )
 
     val uiState: StateFlow<Gt7Ps5DebugStateDetailUiState> =
-        combine(_header, gt7Ps5Source.state, _selectedReadoutItemKey, _debugReadoutText) { header, gt7Ps5, key, text ->
-            header.copy(gt7Ps5 = gt7Ps5, selectedReadoutItemKey = key, debugReadoutText = text)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Gt7Ps5DebugStateDetailUiState())
+        debugStateDetailFlow.detail(_header).stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            Gt7Ps5DebugStateDetailUiState(),
+        )
 
     fun selectReadoutItem(value: String) {
         val key =
