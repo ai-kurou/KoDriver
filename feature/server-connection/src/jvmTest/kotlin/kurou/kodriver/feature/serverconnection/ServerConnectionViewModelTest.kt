@@ -243,6 +243,7 @@ class ServerConnectionViewModelTest {
             dispatcher.scheduler.runCurrent()
 
             assertEquals("1.0.0", viewModel.uiState.first().serverVersion)
+            assertEquals("1.0.0", viewModel.uiState.first().appVersion)
             verify(exactly = 1) { serverIpRepository.serverIp() }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
