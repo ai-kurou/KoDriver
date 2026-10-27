@@ -65,21 +65,28 @@ internal class AceWindowsDebugStateDetailViewModel(
             local ?: resolveCardOrder(persistedOrder = persisted, defaultOrder = defaultDebugStateCardOrder)
         }.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
 
+    private val detailFlow =
+        AceWindowsDebugStateDetailFlow(
+            cardOrder = _cardOrder,
+            receivedCardKeys = _receivedCardKeys,
+            aceWindows = aceWindowsSource.state,
+            selectedReadoutItemKey = _selectedReadoutItemKey,
+            debugReadoutText = _debugReadoutText,
+        )
+
     private val _header: StateFlow<AceWindowsDebugStateDetailUiState> =
-        combine(
-            _cardOrder,
-            _receivedCardKeys,
-        ) { cardOrder, receivedCardKeys ->
-            AceWindowsDebugStateDetailUiState(
-                enabledCardKeys = receivedCardKeys intersect aceWindowsSupportedCardKeys,
-                cardOrder = cardOrder,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsDebugStateDetailUiState())
+        detailFlow.header.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            AceWindowsDebugStateDetailUiState(),
+        )
 
     val uiState: StateFlow<AceWindowsDebugStateDetailUiState> =
-        combine(_header, aceWindowsSource.state, _selectedReadoutItemKey, _debugReadoutText) { header, ace, key, text ->
-            header.copy(aceWindows = ace, selectedReadoutItemKey = key, debugReadoutText = text)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsDebugStateDetailUiState())
+        detailFlow.uiState(_header).stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            AceWindowsDebugStateDetailUiState(),
+        )
 
     fun selectReadoutItem(value: String) {
         val key =
