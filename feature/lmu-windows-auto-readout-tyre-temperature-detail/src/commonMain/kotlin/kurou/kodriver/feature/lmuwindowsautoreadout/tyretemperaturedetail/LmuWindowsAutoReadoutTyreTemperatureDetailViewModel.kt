@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
@@ -66,31 +65,16 @@ internal class LmuWindowsAutoReadoutTyreTemperatureDetailViewModel(
             readout.speakText,
         )
 
-    private val temperatureSettings =
-        combine(
-            tyreTemperatureUseCases.observeEnabledStates(),
-            tyreTemperatureUseCases.observeLowWarningPhases(),
-            tyreTemperatureUseCases.observeVehicleClassHighThreshold(),
-            tyreTemperatureUseCases.observeVehicleClassSelection(),
-        ) { states, lowWarningPhases, vehicleClassHighThresholdCelsius, selectedVehicleClass ->
-            LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
-                overheatWarningEnabled = states.getValue(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning),
-                lowWarningEnabled = states.getValue(LmuWindowsReadoutItemKey.TyreTemperature.LowWarning),
-                lowWarningPhases = lowWarningPhases,
-                vehicleClassHighThresholdCelsius = vehicleClassHighThresholdCelsius.mapValues { it.value.value },
-                selectedVehicleClass = selectedVehicleClass,
-            )
-        }
-
     val uiState: StateFlow<LmuWindowsAutoReadoutTyreTemperatureDetailUiState> =
-        combine(
-            temperatureSettings,
-            readout.observeText(),
-            readout.observeColdText(),
-            preview.textToSpeechAvailable,
-        ) { settings, text, coldText, available ->
-            settings.copy(overheatReadoutText = text, coldReadoutText = coldText, isTextToSpeechAvailable = available)
-        }.stateIn(
+        LmuWindowsAutoReadoutTyreTemperatureDetailFlow(
+            enabledStates = tyreTemperatureUseCases.observeEnabledStates(),
+            lowWarningPhases = tyreTemperatureUseCases.observeLowWarningPhases(),
+            vehicleClassHighThreshold = tyreTemperatureUseCases.observeVehicleClassHighThreshold(),
+            vehicleClassSelection = tyreTemperatureUseCases.observeVehicleClassSelection(),
+            overheatReadoutText = readout.observeText(),
+            coldReadoutText = readout.observeColdText(),
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsAutoReadoutTyreTemperatureDetailUiState(),
