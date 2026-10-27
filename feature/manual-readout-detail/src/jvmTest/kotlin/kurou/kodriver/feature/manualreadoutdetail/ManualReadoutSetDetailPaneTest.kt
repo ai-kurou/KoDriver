@@ -1563,8 +1563,8 @@ class ManualReadoutSetDetailPaneTest {
             }
         }
         rule.onNodeWithTag("manual_readout_hotkey_modifiers").performClick()
-        rule.onNodeWithTag("manual_readout_hotkey_modifiers_CTRL_ALT").performClick()
-        rule.runOnIdle { assertEquals(listOf(ManualReadoutHotkeyModifiers.CTRL_ALT), modifiers) }
+        rule.onNodeWithTag("manual_readout_hotkey_modifiers_CTRL_SHIFT").performClick()
+        rule.runOnIdle { assertEquals(listOf(ManualReadoutHotkeyModifiers.CTRL_SHIFT), modifiers) }
         rule.onNodeWithText("割り当てなし").assertExists()
         rule.onNodeWithText("割り当てを解除").assertIsNotEnabled()
         rule.onNodeWithTag("manual_readout_hotkey_key").performClick().performKeyInput {
@@ -1584,8 +1584,6 @@ class ManualReadoutSetDetailPaneTest {
                 state.value.copy(hotkeyConflict = ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2))
         }
         rule.onNodeWithText("Gran Turismo 7（PS5） のセット2で使用中のため割り当てできません").assertExists()
-        rule.runOnIdle { state.value = state.value.copy(hotkeyConflict = ManualReadoutHotkeyConflict.DebugHotkey) }
-        rule.onNodeWithText("デバッグ用の読み上げホットキーで使用中のため割り当てできません").assertExists()
         rule.runOnIdle { showHotkey.value = false }
         rule.onNodeWithTag("manual_readout_hotkey_card").assertDoesNotExist()
     }

@@ -5,7 +5,6 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyVirtualKeyCodeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.RetryManualReadoutHotkeyRegistrationUseCase
 import kurou.kodriver.domain.usecase.UpdateManualReadoutSetUseCase
@@ -31,7 +30,6 @@ val manualReadoutSetDetailModule =
                 speakText = get(named(simulatorId)),
                 observeSets = ObserveManualReadoutSetsUseCase(get(named(simulatorId))),
                 updateSet = UpdateManualReadoutSetUseCase(get(named(simulatorId))),
-                observeDebugHotkeyVirtualKeyCode = ObserveReadoutHotkeyVirtualKeyCodeUseCase(get()),
                 observeHotkeyRegistrationState = ObserveManualReadoutHotkeyRegistrationStateUseCase(get()),
                 retryHotkeyRegistration = RetryManualReadoutHotkeyRegistrationUseCase(get()),
                 deleteSet = DeleteManualReadoutSetUseCase(get(named(simulatorId))),

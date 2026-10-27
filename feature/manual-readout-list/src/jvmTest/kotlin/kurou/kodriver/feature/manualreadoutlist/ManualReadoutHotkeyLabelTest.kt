@@ -10,7 +10,6 @@ class ManualReadoutHotkeyLabelTest {
     fun `全修飾キーで英字と数字と範囲外を空白なしで表示し未設定はnullを返す`() {
         val prefixes =
             mapOf(
-                ManualReadoutHotkeyModifiers.CTRL_ALT_SHIFT to "Ctrl+Alt+Shift",
                 ManualReadoutHotkeyModifiers.CTRL_ALT to "Ctrl+Alt",
                 ManualReadoutHotkeyModifiers.CTRL_SHIFT to "Ctrl+Shift",
                 ManualReadoutHotkeyModifiers.ALT_SHIFT to "Alt+Shift",

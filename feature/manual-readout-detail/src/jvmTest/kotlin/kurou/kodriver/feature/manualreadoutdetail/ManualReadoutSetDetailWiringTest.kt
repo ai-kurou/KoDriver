@@ -39,7 +39,6 @@ import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
@@ -87,7 +86,6 @@ class ManualReadoutSetDetailWiringTest {
     private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val hotkeyRepository: ManualReadoutHotkeyRepository = mockk()
-    private val debugRepository: ReadoutHotkeyPreferencesRepository = mockk()
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
     private val otherRepository: ManualReadoutSetPreferencesRepository = mockk()
 
@@ -133,7 +131,6 @@ class ManualReadoutSetDetailWiringTest {
         val named = removed.copy(name = "レース用")
         val sets = MutableStateFlow(listOf(original))
         every { repository.observeSets() } returns sets
-        every { debugRepository.observeVirtualKeyCode() } returns MutableStateFlow(0x70)
         coEvery { repository.updateSet(selected) } answers { sets.value = listOf(selected) }
         coEvery { repository.updateSet(edited) } answers { sets.value = listOf(edited) }
         coEvery { repository.updateSet(reset) } answers { sets.value = listOf(reset) }
@@ -157,7 +154,6 @@ class ManualReadoutSetDetailWiringTest {
                         single<SpeakTextUseCase>(named(simulator.id)) { speakText }
                     }
                     single<ManualReadoutHotkeyRepository> { hotkeyRepository }
-                    single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(targetSimulator.id)) { repository }
                     Simulator.entries.filter { it != targetSimulator }.forEach { simulator ->
                         single<ManualReadoutSetPreferencesRepository>(named(simulator.id)) { otherRepository }
@@ -226,11 +222,10 @@ class ManualReadoutSetDetailWiringTest {
             registration.value = HotkeyRegistrationState.Registered
         }
         val original = ManualReadoutSet("target")
-        val modified = original.copy(hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_ALT)
+        val modified = original.copy(hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_SHIFT)
         val assigned = modified.copy(hotkeyVirtualKeyCode = 0x41)
         val sets = MutableStateFlow(listOf(original))
         every { repository.observeSets() } returns sets
-        every { debugRepository.observeVirtualKeyCode() } returns MutableStateFlow(0x70)
         every { otherRepository.observeSets() } returns MutableStateFlow(emptyList())
         coEvery { repository.updateSet(assigned) } answers { sets.value = listOf(assigned) }
         coEvery { repository.updateSet(modified) } answers { sets.value = listOf(modified) }
@@ -249,7 +244,6 @@ class ManualReadoutSetDetailWiringTest {
                         single<SpeakTextUseCase>(named(simulator.id)) { speakText }
                     }
                     single<ManualReadoutHotkeyRepository> { hotkeyRepository }
-                    single<ReadoutHotkeyPreferencesRepository> { debugRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) { repository }
                     Simulator.entries.filter { it != Simulator.Gt7Ps5 }.forEach { simulator ->
                         single<ManualReadoutSetPreferencesRepository>(named(simulator.id)) { otherRepository }
@@ -273,8 +267,8 @@ class ManualReadoutSetDetailWiringTest {
                 }
             }
             rule.onNodeWithTag("manual_readout_hotkey_modifiers").performClick()
-            rule.onNodeWithTag("manual_readout_hotkey_modifiers_CTRL_ALT").performClick()
-            rule.onNodeWithText("Ctrl + Alt").assertIsDisplayed()
+            rule.onNodeWithTag("manual_readout_hotkey_modifiers_CTRL_SHIFT").performClick()
+            rule.onNodeWithText("Ctrl + Shift").assertIsDisplayed()
             rule.onNodeWithTag("manual_readout_hotkey_key").performClick().performKeyInput { pressKey(Key.A) }
             rule.onNodeWithText("A").assertIsDisplayed()
             rule.onNodeWithText("他のアプリが使用中のため登録できません").assertIsDisplayed()
@@ -283,13 +277,12 @@ class ManualReadoutSetDetailWiringTest {
             rule.onNodeWithText("割り当てを解除").performClick()
             rule.onNodeWithText("割り当てなし").assertIsDisplayed()
             verify(exactly = 4) { repository.observeSets() }
-            verify(exactly = 1) { debugRepository.observeVirtualKeyCode() }
             verify(exactly = 2) { otherRepository.observeSets() }
             coVerify(exactly = 1) { repository.updateSet(assigned) }
             coVerify(exactly = 2) { repository.updateSet(modified) }
             verify(exactly = 1) { hotkeyRepository.registrationStateStream(Simulator.Gt7Ps5.id, "target") }
             coVerify(exactly = 1) { hotkeyRepository.retryRegistration(Simulator.Gt7Ps5.id, "target") }
-            confirmVerified(repository, debugRepository, otherRepository, hotkeyRepository)
+            confirmVerified(repository, otherRepository, hotkeyRepository)
         } finally {
             owner.viewModelStore.clear()
             stopKoin()

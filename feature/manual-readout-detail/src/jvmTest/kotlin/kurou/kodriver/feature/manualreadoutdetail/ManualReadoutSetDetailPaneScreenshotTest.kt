@@ -170,9 +170,6 @@ class ManualReadoutSetDetailPaneScreenshotTest {
         )
 
     @Test
-    fun `ホットキーデバッグ重複`() = screenshot(emptyList(), hotkey = null to ManualReadoutHotkeyConflict.DebugHotkey)
-
-    @Test
     fun `ホットキー登録競合と再試行`() =
         screenshot(emptyList(), hotkey = 0x41 to null, registration = HotkeyRegistrationState.Conflict)
 }

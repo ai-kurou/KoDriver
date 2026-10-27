@@ -262,11 +262,16 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
                     listOf(
                         ManualReadoutSetPreference("legacy", hotkeyVirtualKeyCode = 0x41),
                         ManualReadoutSetPreference("unknown", hotkeyModifiers = 99),
+                        ManualReadoutSetPreference("removed", hotkeyModifiers = 7),
                     ),
                 )
             }
             assertEquals(
-                listOf(ManualReadoutSet("legacy", hotkeyVirtualKeyCode = 0x41), ManualReadoutSet("unknown")),
+                listOf(
+                    ManualReadoutSet("legacy", hotkeyVirtualKeyCode = 0x41),
+                    ManualReadoutSet("unknown"),
+                    ManualReadoutSet("removed", hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_ALT),
+                ),
                 repository.observeSets().first(),
             )
         }

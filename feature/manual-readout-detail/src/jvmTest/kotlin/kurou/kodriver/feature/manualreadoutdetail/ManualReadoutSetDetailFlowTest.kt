@@ -21,11 +21,10 @@ class ManualReadoutSetDetailFlowTest {
             val sets = MutableStateFlow(listOf(ManualReadoutSet(id = "target", number = 0)))
             val deleted = MutableStateFlow(false)
             val conflict = MutableStateFlow<ManualReadoutHotkeyConflict?>(null)
-            val debugHotkey = MutableStateFlow<Int?>(null)
             val registration = MutableStateFlow<HotkeyRegistrationState>(HotkeyRegistrationState.Registered)
             val ttsAvailable = MutableStateFlow(true)
             val previewing = MutableStateFlow(false)
-            val flow = createFlow(sets, deleted, conflict, debugHotkey, registration, ttsAvailable, previewing)
+            val flow = createFlow(sets, deleted, conflict, registration, ttsAvailable, previewing)
 
             assertEquals(
                 ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, availableItemKeys = listOf("key")),
@@ -86,7 +85,6 @@ class ManualReadoutSetDetailFlowTest {
                     MutableStateFlow(listOf(ManualReadoutSet(id = "other"))),
                     MutableStateFlow(false),
                     MutableStateFlow<ManualReadoutHotkeyConflict?>(null),
-                    MutableStateFlow<Int?>(null),
                     MutableStateFlow(HotkeyRegistrationState.Unsupported),
                     MutableStateFlow(false),
                     MutableStateFlow(false),
@@ -100,28 +98,12 @@ class ManualReadoutSetDetailFlowTest {
         }
 
     @Test
-    fun `保存済みデバッグ競合は同じキーかつ既定修飾キーの場合だけ表示する`() =
-        runTest {
-            val sets = MutableStateFlow(listOf(ManualReadoutSet(id = "target", hotkeyVirtualKeyCode = 65)))
-            val debugHotkey = MutableStateFlow<Int?>(65)
-            val flow = createFlow(sets, debugHotkey = debugHotkey)
-
-            assertEquals(ManualReadoutHotkeyConflict.DebugHotkey, flow.uiState.first().hotkeyConflict)
-            debugHotkey.update { 66 }
-            assertNull(flow.uiState.first().hotkeyConflict)
-            debugHotkey.update { 65 }
-            sets.update { listOf(it.single().copy(hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_ALT)) }
-            assertNull(flow.uiState.first().hotkeyConflict)
-        }
-
-    @Test
-    fun `ローカル競合は保存済みデバッグ競合より優先する`() =
+    fun `セット間の競合を反映する`() =
         runTest {
             val flow =
                 createFlow(
                     MutableStateFlow(listOf(ManualReadoutSet(id = "target", hotkeyVirtualKeyCode = 65))),
                     conflict = MutableStateFlow(ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2)),
-                    debugHotkey = MutableStateFlow(65),
                 )
             assertEquals(
                 ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2),
@@ -146,7 +128,6 @@ class ManualReadoutSetDetailFlowTest {
         sets: MutableStateFlow<List<ManualReadoutSet>> = MutableStateFlow(emptyList()),
         deleted: MutableStateFlow<Boolean> = MutableStateFlow(false),
         conflict: MutableStateFlow<ManualReadoutHotkeyConflict?> = MutableStateFlow(null),
-        debugHotkey: MutableStateFlow<Int?> = MutableStateFlow(null),
         registration: MutableStateFlow<HotkeyRegistrationState> = MutableStateFlow(HotkeyRegistrationState.Unsupported),
         ttsAvailable: MutableStateFlow<Boolean> = MutableStateFlow(false),
         previewing: MutableStateFlow<Boolean> = MutableStateFlow(false),
@@ -154,7 +135,6 @@ class ManualReadoutSetDetailFlowTest {
         sets = sets,
         deleted = deleted,
         hotkeyConflict = conflict,
-        debugHotkeyVirtualKeyCode = debugHotkey,
         hotkeyRegistrationState = registration,
         textToSpeechAvailable = ttsAvailable,
         isPreviewing = previewing,

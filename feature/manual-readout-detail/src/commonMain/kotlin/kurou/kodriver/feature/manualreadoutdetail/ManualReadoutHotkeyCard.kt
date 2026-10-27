@@ -30,7 +30,6 @@ import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_clear
-import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_debug
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_none
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_other_set
@@ -95,10 +94,6 @@ internal fun ManualReadoutHotkeyCard(
                                     conflict.name,
                                 )
                             }
-                        }
-
-                        ManualReadoutHotkeyConflict.DebugHotkey -> {
-                            stringResource(Res.string.manual_readout_hotkey_debug)
                         }
 
                         null -> {

@@ -6,6 +6,4 @@ internal sealed interface ManualReadoutHotkeyConflict {
         val setNumber: Int,
         val name: String = "",
     ) : ManualReadoutHotkeyConflict
-
-    data object DebugHotkey : ManualReadoutHotkeyConflict
 }
