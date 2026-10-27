@@ -67,112 +67,88 @@ import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-
-internal val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
 
 /**
  * デスクトップ（JVM）版の Repository バインドを行う Koin モジュール（:core:data / jvmMain）。
  *
  * app エントリーポイント（desktopApp）で composition root として束ねられる。ここで束ねた
  * Repository 実装が、各 feature モジュールの UseCase から get() で解決される。
- * 大半は `~/.kodriver` 配下の DataStore バインド。例外は AppUpdate（GitHub ネットワーク）・
+ * 大半は引数 `directory` 配下（Desktop アプリは `~/.kodriver`）の DataStore バインド。例外は AppUpdate（GitHub ネットワーク）・
  * KeepScreenOn（プラットフォーム実装）・TelemetryLog（Room DB）。Android 版は AndroidDataModule を参照。
  */
-val desktopDataModule =
+fun desktopDataModule(directory: String): Module =
     module {
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<ReadoutHotkeyPreferencesRepository> {
-            createReadoutHotkeyPreferencesRepository(kodriverDirectory)
+            createReadoutHotkeyPreferencesRepository(directory)
         }
-        includes(desktopDataModuleCommonSimulatorPreferences())
-        // 設定永続化（DataStore。ファイルは ~/.kodriver 配下）
+        includes(desktopDataModuleCommonSimulatorPreferences(directory))
+        includes(desktopDataModuleWindowsSimulatorPreferences(directory))
+        // 設定永続化（DataStore。ファイルは directory 配下）
         single<SimulatorPreferencesRepository> {
-            createSimulatorPreferencesRepository(directory = kodriverDirectory)
+            createSimulatorPreferencesRepository(directory = directory)
         }
         single<AutoReadoutPreferencesRepository> {
-            createAutoReadoutPreferencesRepository(directory = kodriverDirectory)
+            createAutoReadoutPreferencesRepository(directory = directory)
         }
         single<QueuePreferencesRepository> {
-            createQueuePreferencesRepository(directory = kodriverDirectory)
+            createQueuePreferencesRepository(directory = directory)
         }
         single<AndroidAudioUsagePreferencesRepository> {
-            createAndroidAudioUsagePreferencesRepository(directory = kodriverDirectory)
+            createAndroidAudioUsagePreferencesRepository(directory = directory)
         }
         single<ReadoutStartSoundEnabledPreferencesRepository> {
-            createReadoutStartSoundEnabledPreferencesRepository(directory = kodriverDirectory)
-        }
-        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
-            createDebugStateCardOrderPreferencesRepository(
-                directory = kodriverDirectory,
-                simulator = Simulator.LmuWindows,
-            )
-        }
-        single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) {
-            createManualReadoutSetPreferencesRepository(
-                directory = kodriverDirectory,
-                simulator = Simulator.LmuWindows,
-            )
-        }
-        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.AceWindows.id)) {
-            createDebugStateCardOrderPreferencesRepository(
-                directory = kodriverDirectory,
-                simulator = Simulator.AceWindows,
-            )
-        }
-        single<ManualReadoutSetPreferencesRepository>(named(Simulator.AceWindows.id)) {
-            createManualReadoutSetPreferencesRepository(
-                directory = kodriverDirectory,
-                simulator = Simulator.AceWindows,
-            )
+            createReadoutStartSoundEnabledPreferencesRepository(directory = directory)
         }
         single<SoundVolumePreferencesRepository> {
-            createSoundVolumePreferencesRepository(directory = kodriverDirectory)
+            createSoundVolumePreferencesRepository(directory = directory)
         }
         single<VoiceSpeedPreferencesRepository> {
-            createVoiceSpeedPreferencesRepository(directory = kodriverDirectory)
+            createVoiceSpeedPreferencesRepository(directory = directory)
         }
         single<VoicePitchPreferencesRepository> {
-            createVoicePitchPreferencesRepository(directory = kodriverDirectory)
+            createVoicePitchPreferencesRepository(directory = directory)
         }
         single<VoicePreferencesRepository> {
-            createVoicePreferencesRepository(directory = kodriverDirectory)
+            createVoicePreferencesRepository(directory = directory)
         }
         single<ReadoutStartSoundPreferencesRepository> {
-            createReadoutStartSoundPreferencesRepository(directory = kodriverDirectory)
+            createReadoutStartSoundPreferencesRepository(directory = directory)
         }
         single<ThemePreferencesRepository> {
-            createThemePreferencesRepository(directory = kodriverDirectory)
+            createThemePreferencesRepository(directory = directory)
         }
         single<OverlayTextSizePreferencesRepository> {
-            createOverlayTextSizePreferencesRepository(directory = kodriverDirectory)
+            createOverlayTextSizePreferencesRepository(directory = directory)
         }
         // オーバーレイの文字色設定
         single<OverlayTextColorPreferencesRepository> {
-            createOverlayTextColorPreferencesRepository(directory = kodriverDirectory)
+            createOverlayTextColorPreferencesRepository(directory = directory)
         }
         single<OverlayBackgroundOpacityPreferencesRepository> {
-            createOverlayBackgroundOpacityPreferencesRepository(directory = kodriverDirectory)
+            createOverlayBackgroundOpacityPreferencesRepository(directory = directory)
         }
         single<OverlayVisiblePreferencesRepository> {
-            createOverlayVisiblePreferencesRepository(directory = kodriverDirectory)
+            createOverlayVisiblePreferencesRepository(directory = directory)
         }
         single<LowVolumeWarningEnabledPreferencesRepository> {
-            createLowVolumeWarningEnabledPreferencesRepository(directory = kodriverDirectory)
+            createLowVolumeWarningEnabledPreferencesRepository(directory = directory)
         }
         single<ManualReadoutPlayButtonLayoutEnabledPreferencesRepository> {
-            createManualReadoutPlayButtonLayoutPreferencesRepository(directory = kodriverDirectory)
+            createManualReadoutPlayButtonLayoutPreferencesRepository(directory = directory)
         }
         single<OverlayWindowBoundsPreferencesRepository> {
-            createOverlayWindowBoundsPreferencesRepository(directory = kodriverDirectory)
+            createOverlayWindowBoundsPreferencesRepository(directory = directory)
         }
         single<ConsoleAddressPreferencesRepository> {
-            createConsoleAddressPreferencesRepository(directory = kodriverDirectory)
+            createConsoleAddressPreferencesRepository(directory = directory)
         }
         single<FeedbackCooldownPreferencesRepository> {
-            createFeedbackCooldownPreferencesRepository(directory = kodriverDirectory)
+            createFeedbackCooldownPreferencesRepository(directory = directory)
         }
         // アプリ更新確認（GitHub リリース API を叩くネットワーク実装）
         single<AppUpdateRepository> { GitHubAppReleaseRepository() }
@@ -187,18 +163,47 @@ val desktopDataModule =
         single<AccessLocalNetworkPermissionRepository> { JvmAccessLocalNetworkPermissionRepository() }
         // テレメトリログ（Room データベース）
         single<TelemetryLogRepository> {
-            createTelemetryLogRepository(directory = kodriverDirectory)
+            createTelemetryLogRepository(directory = directory)
         }
         single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
     }
 
 /** GT7 向けの共通 DataStore Repository バインド。 */
-private fun desktopDataModuleCommonSimulatorPreferences() =
+private fun desktopDataModuleCommonSimulatorPreferences(directory: String) =
     module {
         single<DebugStateCardOrderPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
-            createDebugStateCardOrderPreferencesRepository(kodriverDirectory, Simulator.Gt7Ps5)
+            createDebugStateCardOrderPreferencesRepository(directory, Simulator.Gt7Ps5)
         }
         single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
-            createManualReadoutSetPreferencesRepository(kodriverDirectory, Simulator.Gt7Ps5)
+            createManualReadoutSetPreferencesRepository(directory, Simulator.Gt7Ps5)
+        }
+    }
+
+/** LMU・ACE 向けの共通 DataStore Repository バインド。 */
+private fun desktopDataModuleWindowsSimulatorPreferences(directory: String) =
+    module {
+        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+            createDebugStateCardOrderPreferencesRepository(
+                directory = directory,
+                simulator = Simulator.LmuWindows,
+            )
+        }
+        single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+            createManualReadoutSetPreferencesRepository(
+                directory = directory,
+                simulator = Simulator.LmuWindows,
+            )
+        }
+        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.AceWindows.id)) {
+            createDebugStateCardOrderPreferencesRepository(
+                directory = directory,
+                simulator = Simulator.AceWindows,
+            )
+        }
+        single<ManualReadoutSetPreferencesRepository>(named(Simulator.AceWindows.id)) {
+            createManualReadoutSetPreferencesRepository(
+                directory = directory,
+                simulator = Simulator.AceWindows,
+            )
         }
     }
