@@ -1,10 +1,14 @@
 package kurou.kodriver.feature.otherserveripdetail
 
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.text.TextLayoutResult
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -83,6 +87,28 @@ class OtherServerIpDetailPaneContentTest {
         setContent(onOpenGuide = { guideCount++ })
 
         rule.onNodeWithText("インストールガイドを開く").performClick()
+
+        assertEquals(1, guideCount)
+    }
+
+    @Test
+    fun `説明文のWindows版KoDriverリンクをクリックするとonOpenGuideが呼ばれる`() {
+        var guideCount = 0
+        setContent(onOpenGuide = { guideCount++ })
+
+        val node = rule.onNodeWithText("が動作しているPC", substring = true)
+        val textLayoutResults = mutableListOf<TextLayoutResult>()
+        node
+            .fetchSemanticsNode()
+            .config[SemanticsActions.GetTextLayoutResult]
+            .action
+            ?.invoke(textLayoutResults)
+        val textLayoutResult = textLayoutResults.first()
+        val linkStart =
+            textLayoutResult.layoutInput.text.text
+                .indexOf("Windows版KoDriver")
+        val boundingBox = textLayoutResult.getBoundingBox(linkStart)
+        node.performTouchInput { click(boundingBox.center) }
 
         assertEquals(1, guideCount)
     }
