@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
@@ -96,6 +97,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+private const val SIMHUB_HOTKEY_SETUP_URL =
+    "https://github.com/ai-kurou/KoDriver/blob/main/docs/simhub-hotkey-setup.md"
+
 @Composable
 fun ManualReadoutSetDetailContent(
     simulatorId: String,
@@ -155,6 +159,7 @@ internal fun ManualReadoutSetDetailPane(
     modifier: Modifier = Modifier,
     showHotkey: Boolean = isManualReadoutHotkeySupported(),
 ) {
+    val uriHandler = LocalUriHandler.current
     var showDeleteDialog by remember { mutableStateOf(false) }
     if (showDeleteDialog) {
         ManualReadoutSetDeleteConfirmDialog(
@@ -216,6 +221,7 @@ internal fun ManualReadoutSetDetailPane(
                         onClearHotkey,
                         onRetryHotkeyRegistration,
                         onSelectModifiers,
+                        onOpenGuide = { uriHandler.openUri(SIMHUB_HOTKEY_SETUP_URL) },
                     )
                 }
             } else if (!uiState.isLoading) {

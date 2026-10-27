@@ -1,13 +1,19 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -17,12 +23,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.simulatorDisplayName
@@ -30,6 +40,7 @@ import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_clear
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_guide_link
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_none
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_other_set
@@ -49,7 +60,9 @@ internal fun ManualReadoutHotkeyCard(
     onClear: () -> Unit,
     onRetry: () -> Unit,
     onSelectModifiers: (ManualReadoutHotkeyModifiers) -> Unit,
+    onOpenGuide: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     DetailPaneCard(
         title = stringResource(Res.string.manual_readout_hotkey_title),
         modifier = Modifier.testTag("manual_readout_hotkey_card"),
@@ -108,6 +121,27 @@ internal fun ManualReadoutHotkeyCard(
                     ManualReadoutHotkeyRegistration(state.hotkeyRegistrationState, onRetry)
                 }
                 Text(stringResource(Res.string.manual_readout_hotkey_hint))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier =
+                        Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            onOpenGuide()
+                        },
+                ) {
+                    Text(
+                        text = stringResource(Res.string.manual_readout_hotkey_guide_link),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(12.dp),
+                    )
+                }
             }
         },
     )
