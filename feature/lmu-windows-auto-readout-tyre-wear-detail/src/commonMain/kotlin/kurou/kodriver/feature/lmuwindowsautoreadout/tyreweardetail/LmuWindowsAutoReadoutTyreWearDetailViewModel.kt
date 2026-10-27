@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
@@ -16,7 +15,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsTyreWearReadoutTex
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -58,19 +56,12 @@ internal class LmuWindowsAutoReadoutTyreWearDetailViewModel(
     fun onPreviewStopped() = previewHelper.stop()
 
     val uiState: StateFlow<LmuWindowsAutoReadoutTyreWearDetailUiState> =
-        combine(
-            tyreWearUseCases.observeThresholdPercentage(),
-            tyreWearUseCases.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
-            tyreWearUseCases.observeText(),
-            previewHelper.textToSpeechAvailable,
-        ) { thresholdPercentage, enabledStates, text, available ->
-            LmuWindowsAutoReadoutTyreWearDetailUiState(
-                thresholdPercentage = thresholdPercentage,
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreWear.WarningReadout),
-            )
-        }.stateIn(
+        LmuWindowsAutoReadoutTyreWearDetailFlow(
+            thresholdPercentages = tyreWearUseCases.observeThresholdPercentage(),
+            enabledStates = tyreWearUseCases.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id),
+            readoutTexts = tyreWearUseCases.observeText(),
+            isTextToSpeechAvailable = previewHelper.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsAutoReadoutTyreWearDetailUiState(),
