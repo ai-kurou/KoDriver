@@ -50,6 +50,10 @@ jobs:
         if: steps.jst.outputs.weekday == 'Tuesday' || steps.jst.outputs.weekday == 'Wednesday'
         uses: ./.github/actions/setup
 
+      - name: Generate Kover report for Tuesday coverage check
+        if: steps.jst.outputs.weekday == 'Tuesday'
+        run: ./gradlew koverXmlReport --console=plain
+
       - name: Run Claude Code to file improvement issues
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -62,14 +66,14 @@ jobs:
           printf '# 夜間調査: 未完了\n\n実行中、または結果を取得できませんでした。\n' > "$diagnostics/summary.md"
           allowed_tools="Read,Grep,Glob,WebSearch,WebFetch,Bash(gh issue list:*),Bash(gh issue view:*),Bash(gh issue create:*),Bash(gh run list:*),Bash(gh api repos/*/actions/runs*)"
           case "$JST_WEEKDAY" in
-            Tuesday) allowed_tools+=",Bash(./gradlew koverXmlReport:*)" ;;
             Wednesday) allowed_tools+=",Bash(./gradlew detekt:*),Bash(./gradlew ktlintCheck:*)" ;;
           esac
           prompt="$(cat <<PROMPT
           KoDriverの夜間調査を行ってください。日付: ${JST_DATE}、JST曜日: ${JST_WEEKDAY}。
           docs/nightly-todo-list.mdを読み、毎晩実行する全項目と当日の曜日ローテーション項目だけを調査してください。
           ページ送り・日時判定・いいね数など、同ドキュメントの共通ルールも遵守してください。
-          火曜のカバレッジ確認では ./gradlew koverXmlReport、水曜の静的解析では ./gradlew detekt と ./gradlew ktlintCheck を別々に実行してください。
+          火曜のカバレッジ確認では、事前に生成済みの build/reports/kover/report.xml をRead・Grepで確認してください（Gradleは実行しません）。水曜の静的解析では ./gradlew detekt と ./gradlew ktlintCheck を別々に実行してください。
+          ライブラリの最新安定版は、search.maven.orgのAPIではなく、各ライブラリのGitHub Releasesや公式リリースページで確認してください。
           Gradleの通常のビルド成果物・レポート生成は許可されていますが、ソースや設定の変更・自動整形は行いません。
           Gradleコマンドは run_in_background を使わずフォアグラウンドで実行し、Bashのtimeoutには上限の600000を指定してください。
           MonitorやoutputファイルのcatによるポーリングはdontAsk環境で拒否されるため行わないでください。
