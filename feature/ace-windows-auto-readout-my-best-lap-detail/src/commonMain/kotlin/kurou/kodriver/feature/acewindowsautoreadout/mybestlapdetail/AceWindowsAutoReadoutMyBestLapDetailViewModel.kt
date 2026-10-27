@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
@@ -12,7 +11,6 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsMyBestLapReadou
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
@@ -54,17 +52,11 @@ internal class AceWindowsAutoReadoutMyBestLapDetailViewModel(
         )
 
     val uiState: StateFlow<AceWindowsAutoReadoutMyBestLapDetailUiState> =
-        combine(
+        AceWindowsAutoReadoutMyBestLapDetailFlow(
             myBestLapUseCases.observeEnabledStates(Simulator.AceWindows.id),
             readout.observeText(),
             preview.textToSpeechAvailable,
-        ) { states, text, available ->
-            AceWindowsAutoReadoutMyBestLapDetailUiState(
-                enabled = states.readoutEnabled(AceWindowsReadoutItemKey.MyBestLap.DetailEnabled),
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-            )
-        }.stateIn(
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             AceWindowsAutoReadoutMyBestLapDetailUiState(),
