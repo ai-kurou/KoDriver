@@ -244,6 +244,9 @@ private fun screenshot(
             }
         }
     }
+    if (hotkey != null) {
+        onNodeWithText("ステアリングのボタンから実行する設定を開く").assertIsDisplayed()
+    }
     onRoot().captureRoboImage()
 }
 
