@@ -97,6 +97,7 @@ subprojects {
                         classes("*PreviewKt")
                         classes("*PreviewKt\$*")
                         classes("*PreviewParameterProvider")
+                        packages("*.generated.resources")
                     }
                 }
             }
@@ -561,6 +562,7 @@ kover {
                 classes("*PreviewKt")
                 classes("*PreviewKt\$*")
                 classes("*PreviewParameterProvider")
+                packages("*.generated.resources")
                 classes("kurou.kodriver.core.windowshotkeydata.JnaHotkeyNativeApi")
                 classes("kurou.kodriver.core.windowsstartupdata.windows.JnaStartupRegistryApi")
             }
