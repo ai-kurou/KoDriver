@@ -24,7 +24,7 @@ data class OtherListAppVersionInfo(
 /**
  * OtherList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "TooManyFunctions")
 class OtherListViewModel(
     private val overlaySettingsFlow: OtherListOverlaySettingsFlow,
     private val speechSettingsFlow: OtherListSpeechSettingsFlow,
@@ -39,6 +39,7 @@ class OtherListViewModel(
     private val appUpdateFlow: OtherListAppUpdateFlow,
     private val deviceVolumeFlow: OtherListDeviceVolumeFlow,
     private val resetFlow: OtherListResetFlow,
+    private val autoReadoutSettingsResetFlow: OtherListAutoReadoutSettingsResetFlow,
 ) : ViewModel() {
     private val hapticFeedbackAvailable = checkHapticFeedbackAvailable()
     private val _uiState =
@@ -90,6 +91,8 @@ class OtherListViewModel(
             )
         }.combine(resetFlow.uiState) { state, reset ->
             state.copy(reset = reset)
+        }.combine(autoReadoutSettingsResetFlow.uiState) { state, reset ->
+            state.copy(autoReadoutSettingsReset = reset)
         }.combine(startupRegistrationFlow.uiState) { state, startupRegistration ->
             state.copy(startupEnabled = startupRegistration.startupEnabled)
         }.combine(appUpdateFlow.uiState) { state, appUpdate ->
@@ -110,6 +113,22 @@ class OtherListViewModel(
 
     fun consumeResetResult() {
         resetFlow.consumeResetResult()
+    }
+
+    fun onAutoReadoutSettingsResetClick() {
+        autoReadoutSettingsResetFlow.onResetClick()
+    }
+
+    fun onAutoReadoutSettingsResetDismiss() {
+        autoReadoutSettingsResetFlow.onResetDismiss()
+    }
+
+    fun onAutoReadoutSettingsResetConfirm() {
+        viewModelScope.launch { autoReadoutSettingsResetFlow.onResetConfirm() }
+    }
+
+    fun consumeAutoReadoutSettingsResetResult() {
+        autoReadoutSettingsResetFlow.consumeResetResult()
     }
 
     fun checkUpdate() {
@@ -140,6 +159,7 @@ class OtherListViewModel(
     fun onItemSelected(itemType: OtherListItemType) {
         if (
             itemType == OtherListItemType.DeleteAllLogs ||
+            itemType == OtherListItemType.ResetAutoReadoutSettings ||
             itemType == OtherListItemType.GitHubRepository ||
             itemType == OtherListItemType.ReleasePage ||
             itemType == OtherListItemType.AccessLocalNetworkPermission
@@ -155,7 +175,10 @@ class OtherListViewModel(
     }
 
     fun selectItem(itemType: OtherListItemType) {
-        if (itemType == OtherListItemType.DeleteAllLogs) {
+        if (
+            itemType == OtherListItemType.DeleteAllLogs ||
+            itemType == OtherListItemType.ResetAutoReadoutSettings
+        ) {
             return
         }
         _uiState.update { it.copy(selectedItem = itemType, selectedFeedbackTelemetryLogId = null) }

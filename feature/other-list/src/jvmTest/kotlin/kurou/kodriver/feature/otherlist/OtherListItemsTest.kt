@@ -48,6 +48,7 @@ class OtherListItemsTest {
                 OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.Startup,
                 OtherListItemType.DeleteAllLogs,
+                OtherListItemType.ResetAutoReadoutSettings,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,

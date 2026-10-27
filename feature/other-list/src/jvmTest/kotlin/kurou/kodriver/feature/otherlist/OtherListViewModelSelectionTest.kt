@@ -96,6 +96,8 @@ class OtherListViewModelSelectionTest : OtherListViewModelTestFixture() {
 
             viewModel.onItemSelected(OtherListItemType.DeleteAllLogs)
             viewModel.selectItem(OtherListItemType.DeleteAllLogs)
+            viewModel.onItemSelected(OtherListItemType.ResetAutoReadoutSettings)
+            viewModel.selectItem(OtherListItemType.ResetAutoReadoutSettings)
 
             assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
@@ -136,6 +138,8 @@ class OtherListViewModelSelectionTest : OtherListViewModelTestFixture() {
             viewModel.onItemSelected(OtherListItemType.AccessLocalNetworkPermission)
             viewModel.onItemSelected(OtherListItemType.DeleteAllLogs)
             viewModel.selectItem(OtherListItemType.DeleteAllLogs)
+            viewModel.onItemSelected(OtherListItemType.ResetAutoReadoutSettings)
+            viewModel.selectItem(OtherListItemType.ResetAutoReadoutSettings)
 
             assertEquals(initialState, viewModel.uiState.first())
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }

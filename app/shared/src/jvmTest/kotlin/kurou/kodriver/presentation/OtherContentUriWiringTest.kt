@@ -60,6 +60,7 @@ class OtherContentUriWiringTest {
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
         every { viewModel.consumeResetResult() } returns Unit
+        every { viewModel.consumeAutoReadoutSettingsResetResult() } returns Unit
         every { viewModel.onResetClick() } answers {
             state.update { it.copy(reset = it.reset.copy(showResetConfirmDialog = true)) }
         }
@@ -92,6 +93,52 @@ class OtherContentUriWiringTest {
     }
 
     @Test
+    fun `自動設定初期化の表示と確認とキャンセルをViewModelへ委譲する`() {
+        val state = MutableStateFlow(OtherListUiState(items = listOf(OtherListItemType.ResetAutoReadoutSettings)))
+        every { viewModel.uiState } returns state
+        every { viewModel.checkUpdate() } returns Unit
+        every { viewModel.checkStartupEnabled() } returns Unit
+        every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
+        every { viewModel.consumeAutoReadoutSettingsResetResult() } returns Unit
+        every { viewModel.consumeResetResult() } returns Unit
+        every { viewModel.onAutoReadoutSettingsResetClick() } answers {
+            state.update {
+                it.copy(autoReadoutSettingsReset = it.autoReadoutSettingsReset.copy(showResetConfirmDialog = true))
+            }
+        }
+        every { viewModel.onAutoReadoutSettingsResetDismiss() } answers {
+            state.update {
+                it.copy(autoReadoutSettingsReset = it.autoReadoutSettingsReset.copy(showResetConfirmDialog = false))
+            }
+        }
+        every { viewModel.onAutoReadoutSettingsResetConfirm() } answers {
+            state.update {
+                it.copy(autoReadoutSettingsReset = it.autoReadoutSettingsReset.copy(showResetConfirmDialog = false))
+            }
+        }
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent { AppTheme { OtherContent() } }
+            rule.onNodeWithText("自動タブの設定を初期化").performClick()
+            rule.onNodeWithText("キャンセル").performClick()
+            rule.onNodeWithText("自動タブの設定を初期化").performClick()
+            rule.onNodeWithText("初期化").performClick()
+
+            verify(exactly = 2) { viewModel.onAutoReadoutSettingsResetClick() }
+            verify(exactly = 1) { viewModel.onAutoReadoutSettingsResetDismiss() }
+            verify(exactly = 1) { viewModel.onAutoReadoutSettingsResetConfirm() }
+            // 初回表示と、ダイアログ表示状態の変化(表示・閉じる・再表示・確認)のたびに再購読される。
+            verify(exactly = 4) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.checkUpdate() }
+            verify(exactly = 1) { viewModel.checkStartupEnabled() }
+            verify(exactly = 1) { viewModel.checkAccessLocalNetworkPermission() }
+            confirmVerified(viewModel)
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
     fun `GitHubレポジトリリンクをクリックするとGitHubレポジトリのURLが開かれる`() {
         every { viewModel.uiState } returns
             MutableStateFlow(OtherListUiState(items = listOf(OtherListItemType.GitHubRepository)))
@@ -99,6 +146,7 @@ class OtherContentUriWiringTest {
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
         every { viewModel.consumeResetResult() } returns Unit
+        every { viewModel.consumeAutoReadoutSettingsResetResult() } returns Unit
         every { uriHandler.openUri("https://github.com/ai-kurou/KoDriver") } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
@@ -130,6 +178,7 @@ class OtherContentUriWiringTest {
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
         every { viewModel.consumeResetResult() } returns Unit
+        every { viewModel.consumeAutoReadoutSettingsResetResult() } returns Unit
         every { uriHandler.openUri("https://github.com/ai-kurou/KoDriver/releases") } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
@@ -161,6 +210,7 @@ class OtherContentUriWiringTest {
         every { viewModel.checkStartupEnabled() } returns Unit
         every { viewModel.checkAccessLocalNetworkPermission() } returns Unit
         every { viewModel.consumeResetResult() } returns Unit
+        every { viewModel.consumeAutoReadoutSettingsResetResult() } returns Unit
         every {
             uriHandler.openUri(
                 "https://play.google.com/store/apps/details?id=com.google.android.tts",

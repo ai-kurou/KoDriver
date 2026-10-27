@@ -23,6 +23,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_communic
 import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_media
 import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_notification
 import kurou.kodriver.feature.otherlist.generated.resources.audio_usage_ringtone
+import kurou.kodriver.feature.otherlist.generated.resources.auto_readout_settings_reset_item
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
 import kurou.kodriver.feature.otherlist.generated.resources.item_android_audio_usage
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
@@ -109,7 +110,9 @@ internal fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.Startup,
         -> OtherListSection.AppSettings
 
-        OtherListItemType.DeleteAllLogs -> OtherListSection.DataLog
+        OtherListItemType.DeleteAllLogs,
+        OtherListItemType.ResetAutoReadoutSettings,
+        -> OtherListSection.DataLog
 
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
@@ -141,6 +144,10 @@ internal fun otherItemDisplayName(itemType: OtherListItemType): String =
 
         is OtherListItemType.OverlaySettings -> {
             otherOverlaySettingsItemDisplayName(itemType)
+        }
+
+        OtherListItemType.ResetAutoReadoutSettings -> {
+            stringResource(Res.string.auto_readout_settings_reset_item)
         }
 
         OtherListItemType.DeleteAllLogs -> {
@@ -293,6 +300,7 @@ internal fun OtherListItemTrailingIcon(
         }
 
         OtherListItemType.DeleteAllLogs,
+        OtherListItemType.ResetAutoReadoutSettings,
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,

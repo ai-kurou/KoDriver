@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.RecordVoiceOver
+import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material.icons.outlined.Star
@@ -37,6 +38,7 @@ class OtherListItemIconsTest {
                 OtherListItemType.ServerIp to Icons.Outlined.Computer,
                 OtherListItemType.ConsoleIp to Icons.Outlined.SportsEsports,
                 OtherListItemType.DeleteAllLogs to Icons.Outlined.DeleteSweep,
+                OtherListItemType.ResetAutoReadoutSettings to Icons.Outlined.RestartAlt,
                 OtherListItemType.GitHubRepository to Icons.Outlined.Star,
                 OtherListItemType.ReleasePage to Icons.Outlined.NewReleases,
                 OtherListItemType.Feedback to Icons.Outlined.Feedback,

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.RecordVoiceOver
+import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material.icons.outlined.Star
@@ -36,6 +37,7 @@ internal fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageV
         is OtherListItemType.OverlaySettings -> otherOverlaySettingsItemLeadingIconVector(itemType)
         is OtherListItemType.AppSettings -> otherAppSettingsItemLeadingIconVector(itemType)
         OtherListItemType.DeleteAllLogs -> Icons.Outlined.DeleteSweep
+        OtherListItemType.ResetAutoReadoutSettings -> Icons.Outlined.RestartAlt
         OtherListItemType.GitHubRepository -> Icons.Outlined.Star
         OtherListItemType.ReleasePage -> Icons.Outlined.NewReleases
         OtherListItemType.Feedback -> Icons.Outlined.Feedback

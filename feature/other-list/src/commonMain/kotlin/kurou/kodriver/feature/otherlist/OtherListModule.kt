@@ -20,6 +20,7 @@ import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
+import kurou.kodriver.domain.usecase.ResetAutoReadoutSettingsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
@@ -57,6 +58,7 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
+                get(),
             )
         }
 
@@ -73,6 +75,8 @@ val otherListModule =
 
         // ログ削除フローは ViewModel ごとに生成し、実行は viewModelScope に従わせる。
         factory { OtherListResetFlow(get()) }
+        factory { OtherListAutoReadoutSettingsResetFlow(get()) }
+        factory { ResetAutoReadoutSettingsUseCase(getAll()) }
         factory { OtherListStartupRegistrationFlow(get()) }
         factory { OtherListDeviceSettingsFlow(get(), get(), get(), get(), get(), get(), get()) }
         factory { OtherListSpeechSettingsFlow(get(), get(), get(), get(), get(), get()) }

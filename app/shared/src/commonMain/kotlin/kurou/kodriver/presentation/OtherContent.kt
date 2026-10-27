@@ -33,12 +33,15 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
+import kurou.kodriver.feature.otherlist.AutoReadoutSettingsResetConfirmDialog
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListPane
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.otherlist.OtherListViewModel
 import kurou.kodriver.feature.otherlist.TelemetryLogResetConfirmDialog
 import kurou.kodriver.feature.otherlist.generated.resources.Res
+import kurou.kodriver.feature.otherlist.generated.resources.auto_readout_settings_reset_failure
+import kurou.kodriver.feature.otherlist.generated.resources.auto_readout_settings_reset_success
 import kurou.kodriver.feature.otherlist.generated.resources.telemetry_log_reset_failure
 import kurou.kodriver.feature.otherlist.generated.resources.telemetry_log_reset_success
 import org.jetbrains.compose.resources.stringResource
@@ -83,9 +86,13 @@ fun OtherContent(
         uiState = uiState,
         onItemSelected = viewModel::onItemSelected,
         onResetClick = viewModel::onResetClick,
+        onAutoReadoutSettingsResetClick = viewModel::onAutoReadoutSettingsResetClick,
         onResetConfirm = viewModel::onResetConfirm,
+        onAutoReadoutSettingsResetConfirm = viewModel::onAutoReadoutSettingsResetConfirm,
         onResetDismiss = viewModel::onResetDismiss,
+        onAutoReadoutSettingsResetDismiss = viewModel::onAutoReadoutSettingsResetDismiss,
         onResetResultConsumed = viewModel::consumeResetResult,
+        onAutoReadoutSettingsResetResultConsumed = viewModel::consumeAutoReadoutSettingsResetResult,
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
         onOpenWindowsSpeechSettings = viewModel::openWindowsSpeechSettings,
@@ -115,6 +122,7 @@ private fun handleOtherItemClick(
     itemType: OtherListItemType,
     onItemSelected: (OtherListItemType) -> Unit,
     onResetClick: () -> Unit,
+    onAutoReadoutSettingsResetClick: () -> Unit,
     onOpenGitHubRepository: () -> Unit,
     onOpenReleasePage: () -> Unit,
     onOpenReadoutStartSoundDialog: () -> Unit,
@@ -126,6 +134,8 @@ private fun handleOtherItemClick(
 ) {
     when (itemType) {
         OtherListItemType.DeleteAllLogs -> onResetClick()
+
+        OtherListItemType.ResetAutoReadoutSettings -> onAutoReadoutSettingsResetClick()
 
         OtherListItemType.OverlayTextColor -> onOpenOverlayTextColorDialog()
 
@@ -172,9 +182,13 @@ internal fun OtherContent(
     uiState: OtherListUiState,
     onItemSelected: (OtherListItemType) -> Unit,
     onResetClick: () -> Unit = {},
+    onAutoReadoutSettingsResetClick: () -> Unit = {},
     onResetConfirm: () -> Unit = {},
+    onAutoReadoutSettingsResetConfirm: () -> Unit = {},
     onResetDismiss: () -> Unit = {},
+    onAutoReadoutSettingsResetDismiss: () -> Unit = {},
     onResetResultConsumed: () -> Unit = {},
+    onAutoReadoutSettingsResetResultConsumed: () -> Unit = {},
     onOpenGitHubRepository: () -> Unit = {},
     onOpenReleasePage: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
@@ -279,6 +293,13 @@ internal fun OtherContent(
         onResetDismiss = onResetDismiss,
         onResetResultConsumed = onResetResultConsumed,
     )
+    OtherAutoReadoutSettingsResetEffects(
+        uiState = uiState,
+        snackbarHostState = snackbarHostState,
+        onAutoReadoutSettingsResetConfirm = onAutoReadoutSettingsResetConfirm,
+        onAutoReadoutSettingsResetDismiss = onAutoReadoutSettingsResetDismiss,
+        onAutoReadoutSettingsResetResultConsumed = onAutoReadoutSettingsResetResultConsumed,
+    )
 
     Box(modifier = modifier) {
         ListDetailPaneScaffold(
@@ -301,6 +322,7 @@ internal fun OtherContent(
                             itemType = itemType,
                             onItemSelected = onItemSelected,
                             onResetClick = onResetClick,
+                            onAutoReadoutSettingsResetClick = onAutoReadoutSettingsResetClick,
                             onOpenGitHubRepository = onOpenGitHubRepository,
                             onOpenReleasePage = onOpenReleasePage,
                             onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
@@ -354,6 +376,34 @@ private fun OtherResetEffects(
     }
     if (uiState.reset.showResetConfirmDialog) {
         TelemetryLogResetConfirmDialog(onConfirm = onResetConfirm, onDismiss = onResetDismiss)
+    }
+}
+
+@Composable
+private fun OtherAutoReadoutSettingsResetEffects(
+    uiState: OtherListUiState,
+    snackbarHostState: SnackbarHostState,
+    onAutoReadoutSettingsResetConfirm: () -> Unit,
+    onAutoReadoutSettingsResetDismiss: () -> Unit,
+    onAutoReadoutSettingsResetResultConsumed: () -> Unit,
+) {
+    val successMessage = stringResource(Res.string.auto_readout_settings_reset_success)
+    val failureMessage = stringResource(Res.string.auto_readout_settings_reset_failure)
+    val currentOnResetResultConsumed by rememberUpdatedState(onAutoReadoutSettingsResetResultConsumed)
+    // タブ切替でスナックバー表示中にLaunchedEffectが中断されると結果が残り、戻った時に再表示されるため、離脱時に消費する。
+    DisposableEffect(Unit) {
+        onDispose { currentOnResetResultConsumed() }
+    }
+    LaunchedEffect(uiState.autoReadoutSettingsReset.resetSucceeded) {
+        val succeeded = uiState.autoReadoutSettingsReset.resetSucceeded ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(if (succeeded) successMessage else failureMessage)
+        currentOnResetResultConsumed()
+    }
+    if (uiState.autoReadoutSettingsReset.showResetConfirmDialog) {
+        AutoReadoutSettingsResetConfirmDialog(
+            onConfirm = onAutoReadoutSettingsResetConfirm,
+            onDismiss = onAutoReadoutSettingsResetDismiss,
+        )
     }
 }
 
