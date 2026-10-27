@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.Posture
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor
@@ -45,8 +45,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun AutoReadoutContent(
     modifier: Modifier = Modifier,
-    scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
-    windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
+    scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfoV2()),
+    windowPosture: Posture = currentWindowAdaptiveInfoV2().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (AutoReadoutListItemType) -> Unit = {},
@@ -81,9 +81,9 @@ internal fun AutoReadoutContent(
     onItemSelected: (ReadoutItemKey) -> Unit,
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
-    scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
-    windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
-    windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
+    scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfoV2()),
+    windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass,
+    windowPosture: Posture = currentWindowAdaptiveInfoV2().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (AutoReadoutListItemType) -> Unit = {},

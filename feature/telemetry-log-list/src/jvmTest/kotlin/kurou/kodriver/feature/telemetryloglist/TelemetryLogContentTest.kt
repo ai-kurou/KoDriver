@@ -2,11 +2,15 @@ package kurou.kodriver.feature.telemetryloglist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.HingeInfo
 import androidx.compose.material3.adaptive.Posture
+import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -15,7 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -23,8 +29,10 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -54,6 +62,70 @@ class TelemetryLogContentTest {
             defaultPanePreferredWidth = 360.dp,
             excludedBounds = emptyList(),
         )
+
+    @Test
+    fun `large幅では未選択時は一覧のみで選択時は一覧と詳細を表示する`() {
+        val selected = mutableStateOf(false)
+        val sizeClass = WindowSizeClass(minWidthDp = 1200, minHeightDp = 0)
+        val directive = calculatePaneScaffoldDirective(WindowAdaptiveInfo(sizeClass, Posture()))
+        rule.setContent {
+            KoDriverTheme {
+                CompositionLocalProvider(LocalDensity provides Density(0.5f)) {
+                    Box(modifier = Modifier.requiredSize(1200.dp, 640.dp)) {
+                        TelemetryLogContentScaffold(
+                            uiState =
+                                previewTelemetryLogListUiState.copy(
+                                    selectedLogId = if (selected.value) 2L else null,
+                                ),
+                            windowSizeClass = sizeClass,
+                            scaffoldDirective = directive,
+                            detailContent = { Text("詳細スロット") },
+                        )
+                    }
+                }
+            }
+        }
+        rule.onNodeWithText("09:30:20.000").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertDoesNotExist()
+        rule.runOnIdle { selected.value = true }
+        rule.onNodeWithText("09:30:20.000").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertIsDisplayed()
+        rule.runOnIdle { selected.value = false }
+        rule.onNodeWithText("09:30:20.000").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertDoesNotExist()
+    }
+
+    @Test
+    fun `extraLarge幅では未選択時は一覧のみで選択時は一覧と詳細を表示する`() {
+        val selected = mutableStateOf(false)
+        val sizeClass = WindowSizeClass(minWidthDp = 1600, minHeightDp = 0)
+        val directive = calculatePaneScaffoldDirective(WindowAdaptiveInfo(sizeClass, Posture()))
+        rule.setContent {
+            KoDriverTheme {
+                CompositionLocalProvider(LocalDensity provides Density(0.5f)) {
+                    Box(modifier = Modifier.requiredSize(1600.dp, 640.dp)) {
+                        TelemetryLogContentScaffold(
+                            uiState =
+                                previewTelemetryLogListUiState.copy(
+                                    selectedLogId = if (selected.value) 2L else null,
+                                ),
+                            windowSizeClass = sizeClass,
+                            scaffoldDirective = directive,
+                            detailContent = { Text("詳細スロット") },
+                        )
+                    }
+                }
+            }
+        }
+        rule.onNodeWithText("09:30:20.000").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertDoesNotExist()
+        rule.runOnIdle { selected.value = true }
+        rule.onNodeWithText("09:30:20.000").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertIsDisplayed()
+        rule.runOnIdle { selected.value = false }
+        rule.onNodeWithText("09:30:20.000").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertDoesNotExist()
+    }
 
     @Test
     fun `一覧ペインにログを表示する`() {

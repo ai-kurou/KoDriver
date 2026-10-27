@@ -1,14 +1,22 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.HingeInfo
 import androidx.compose.material3.adaptive.Posture
+import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
@@ -17,6 +25,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.feature.otherlist.OtherListItemType
@@ -48,6 +57,76 @@ class OtherContentTest {
             defaultPanePreferredWidth = 360.dp,
             excludedBounds = emptyList(),
         )
+
+    @Test
+    fun `large幅では未選択時は一覧のみで選択時は一覧と詳細を表示する`() {
+        val selected = mutableStateOf(false)
+        val sizeClass = WindowSizeClass(minWidthDp = 1200, minHeightDp = 0)
+        val directive = calculatePaneScaffoldDirective(WindowAdaptiveInfo(sizeClass, Posture()))
+        rule.setContent {
+            AppTheme {
+                CompositionLocalProvider(LocalDensity provides Density(0.5f)) {
+                    Box(modifier = Modifier.requiredSize(1200.dp, 640.dp)) {
+                        OtherContent(
+                            uiState =
+                                OtherListUiState(
+                                    items = listOf(OtherListItemType.VoicePitch),
+                                    selectedItem = if (selected.value) OtherListItemType.VoicePitch else null,
+                                ),
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            windowSizeClass = sizeClass,
+                            scaffoldDirective = directive,
+                            detailContent = { _, _, _, _, _ -> Text("詳細スロット") },
+                        )
+                    }
+                }
+            }
+        }
+        rule.onNodeWithText("声の高さ").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertDoesNotExist()
+        rule.runOnIdle { selected.value = true }
+        rule.onNodeWithText("声の高さ").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertIsDisplayed()
+        rule.runOnIdle { selected.value = false }
+        rule.onNodeWithText("声の高さ").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertDoesNotExist()
+    }
+
+    @Test
+    fun `extraLarge幅では未選択時は一覧のみで選択時は一覧と詳細を表示する`() {
+        val selected = mutableStateOf(false)
+        val sizeClass = WindowSizeClass(minWidthDp = 1600, minHeightDp = 0)
+        val directive = calculatePaneScaffoldDirective(WindowAdaptiveInfo(sizeClass, Posture()))
+        rule.setContent {
+            AppTheme {
+                CompositionLocalProvider(LocalDensity provides Density(0.5f)) {
+                    Box(modifier = Modifier.requiredSize(1600.dp, 640.dp)) {
+                        OtherContent(
+                            uiState =
+                                OtherListUiState(
+                                    items = listOf(OtherListItemType.VoicePitch),
+                                    selectedItem = if (selected.value) OtherListItemType.VoicePitch else null,
+                                ),
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            windowSizeClass = sizeClass,
+                            scaffoldDirective = directive,
+                            detailContent = { _, _, _, _, _ -> Text("詳細スロット") },
+                        )
+                    }
+                }
+            }
+        }
+        rule.onNodeWithText("声の高さ").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertDoesNotExist()
+        rule.runOnIdle { selected.value = true }
+        rule.onNodeWithText("声の高さ").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertIsDisplayed()
+        rule.runOnIdle { selected.value = false }
+        rule.onNodeWithText("声の高さ").assertIsDisplayed()
+        rule.onNodeWithText("詳細スロット").assertDoesNotExist()
+    }
 
     @Test
     fun `ログ削除ダイアログの確認とキャンセルを配線する`() {
