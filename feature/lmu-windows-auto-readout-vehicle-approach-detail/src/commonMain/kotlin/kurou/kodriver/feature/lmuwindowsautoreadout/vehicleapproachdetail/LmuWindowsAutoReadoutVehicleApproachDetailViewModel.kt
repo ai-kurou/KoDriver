@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
@@ -37,31 +36,14 @@ internal class LmuWindowsAutoReadoutVehicleApproachDetailViewModel(
             readoutTextUseCases.speakText,
         )
     val uiState: StateFlow<LmuWindowsAutoReadoutVehicleApproachDetailUiState> =
-        combine(
-            combine(
-                thresholds.observeLateralThresholdMeters(),
-                thresholds.observeLongitudinalThresholdMeters(),
-                thresholds.observeSustainedApproachDurationSeconds(),
-            ) { lateral, longitudinal, duration -> Triple(lateral, longitudinal, duration) },
-            vehicleApproachPreferences.observeSkipFirstLap(),
-            observeEnabledStates(),
-            readoutTextSettings.uiState,
-        ) { thresholdValues, skipFirstLap, enabledStates, textState ->
-            val (lateral, longitudinal, duration) = thresholdValues
-            LmuWindowsAutoReadoutVehicleApproachDetailUiState(
-                lateralThresholdMeters = lateral,
-                longitudinalThresholdMeters = longitudinal,
-                sustainedApproachDurationSeconds = duration,
-                skipFirstLap = skipFirstLap,
-                startReadoutEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout),
-                startLeftText = textState.startLeftText,
-                startRightText = textState.startRightText,
-                sustainedReadoutEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.VehicleApproach.Sustained),
-                sustainedLeftText = textState.sustainedLeftText,
-                sustainedRightText = textState.sustainedRightText,
-                isTextToSpeechAvailable = textState.isTextToSpeechAvailable,
-            )
-        }.stateIn(
+        LmuWindowsAutoReadoutVehicleApproachDetailFlow(
+            lateralThresholdMeters = thresholds.observeLateralThresholdMeters(),
+            longitudinalThresholdMeters = thresholds.observeLongitudinalThresholdMeters(),
+            sustainedApproachDurationSeconds = thresholds.observeSustainedApproachDurationSeconds(),
+            skipFirstLap = vehicleApproachPreferences.observeSkipFirstLap(),
+            enabledStates = observeEnabledStates(),
+            readoutTextSettings = readoutTextSettings.uiState,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsAutoReadoutVehicleApproachDetailUiState(),
