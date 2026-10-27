@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -42,6 +43,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.ViewList
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -84,6 +86,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -112,6 +115,7 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_edit_mode_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_help_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_description
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_guide_link
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_label
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_layout_description
@@ -145,6 +149,9 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+
+private const val SIMHUB_HOTKEY_SETUP_URL =
+    "https://github.com/ai-kurou/KoDriver/blob/main/docs/simhub-hotkey-setup.md"
 
 private const val REQUEST_FEEDBACK_MS = 1_500L
 
@@ -763,6 +770,7 @@ private fun ManualReadoutHintRow(
     onTogglePlayButtonLayout: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val uriHandler = LocalUriHandler.current
     Column(modifier = modifier) {
         KoDriverHintRow(
             label = stringResource(Res.string.manual_readout_hint_label),
@@ -792,7 +800,10 @@ private fun ManualReadoutHintRow(
                 }
             },
         ) {
-            ManualReadoutHintSheetContent(showHotkeyHint = isManualReadoutHotkeySupported())
+            ManualReadoutHintSheetContent(
+                showHotkeyHint = isManualReadoutHotkeySupported(),
+                onOpenHotkeyGuide = { uriHandler.openUri(SIMHUB_HOTKEY_SETUP_URL) },
+            )
         }
         if (setCount > 0) {
             Text(
@@ -882,7 +893,9 @@ private fun ManualReadoutEditButton(
 internal fun ManualReadoutHintSheetContent(
     showHotkeyHint: Boolean,
     modifier: Modifier = Modifier,
+    onOpenHotkeyGuide: () -> Unit = {},
 ) {
+    val haptic = LocalHapticFeedback.current
     Column(
         modifier =
             modifier
@@ -922,11 +935,37 @@ internal fun ManualReadoutHintSheetContent(
             description = stringResource(Res.string.manual_readout_hint_delete_description),
         )
         if (showHotkeyHint) {
-            KoDriverHintSheetRow(
-                icon = Icons.Filled.Keyboard,
-                title = stringResource(Res.string.manual_readout_hint_hotkey_title),
-                description = stringResource(Res.string.manual_readout_hint_hotkey_description),
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
+                KoDriverHintSheetRow(
+                    icon = Icons.Filled.Keyboard,
+                    title = stringResource(Res.string.manual_readout_hint_hotkey_title),
+                    description = stringResource(Res.string.manual_readout_hint_hotkey_description),
+                )
+                // KoDriverHintSheetRow のアイコン幅（24dp + 左右の余白）と行間隔に揃える。
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+                    modifier =
+                        Modifier
+                            .padding(start = 24.dp + KoDriverSpacing.small * 2 + KoDriverSpacing.medium)
+                            .clickable {
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                onOpenHotkeyGuide()
+                            },
+                ) {
+                    Text(
+                        text = stringResource(Res.string.manual_readout_hint_hotkey_guide_link),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(12.dp),
+                    )
+                }
+            }
         }
     }
 }
