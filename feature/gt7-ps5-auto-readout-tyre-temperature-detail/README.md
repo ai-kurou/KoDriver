@@ -6,6 +6,8 @@ GT7 PS5 のタイヤ温度アナウンス詳細設定を提供する feature モ
 ## Responsibilities
 
 - `Gt7Ps5AutoReadoutTyreTemperatureDetailPane` でタイトル・説明・過熱警告の有効/無効・高温閾値・読み上げ文言の設定 UI を表示する
+- `Gt7Ps5AutoReadoutTyreTemperatureDetailFlow` で有効状態・高温閾値・読み上げ文言・TTS利用可否の入力 Flow から UiState を合成する（cold Flow）
+- `Gt7Ps5AutoReadoutTyreTemperatureDetailViewModel` で `stateIn` による共有・初期値と、設定保存・試聴の副作用を管理する
 - 高温閾値（スライダー）・過熱警告の有効/無効・文言はいずれも DataStore に永続化され、Narrator の読み上げ判定にも反映される
 
 高温閾値の設定範囲は90〜120℃です。デフォルト値とリセット値は105℃です。保存データに閾値が明記されている場合はその値を使用し、省略されている場合は105℃として読み込みます。旧デフォルト値95℃を復元する互換処理は行いません。

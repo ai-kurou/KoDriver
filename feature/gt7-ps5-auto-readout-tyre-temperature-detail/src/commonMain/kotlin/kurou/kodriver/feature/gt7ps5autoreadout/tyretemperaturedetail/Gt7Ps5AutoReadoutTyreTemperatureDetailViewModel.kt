@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
@@ -58,19 +57,12 @@ internal class Gt7Ps5AutoReadoutTyreTemperatureDetailViewModel(
         )
 
     val uiState: StateFlow<Gt7Ps5AutoReadoutTyreTemperatureDetailUiState> =
-        combine(
-            tyreTemperatureUseCases.observeEnabledStates(),
-            tyreTemperatureUseCases.observeHighThreshold(),
-            readout.observeText(),
-            preview.textToSpeechAvailable,
-        ) { states, highThresholdCelsius, text, available ->
-            Gt7Ps5AutoReadoutTyreTemperatureDetailUiState(
-                overheatWarningEnabled = states.getValue(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning),
-                highThresholdCelsius = highThresholdCelsius.value,
-                readoutText = text,
-                isTextToSpeechAvailable = available,
-            )
-        }.stateIn(
+        Gt7Ps5AutoReadoutTyreTemperatureDetailFlow(
+            enabledStates = tyreTemperatureUseCases.observeEnabledStates(),
+            highThresholdCelsius = tyreTemperatureUseCases.observeHighThreshold(),
+            readoutText = readout.observeText(),
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             Gt7Ps5AutoReadoutTyreTemperatureDetailUiState(),
