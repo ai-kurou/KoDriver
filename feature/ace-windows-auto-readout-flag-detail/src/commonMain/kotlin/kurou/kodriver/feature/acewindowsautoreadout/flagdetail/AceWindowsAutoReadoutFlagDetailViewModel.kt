@@ -117,24 +117,25 @@ internal class AceWindowsAutoReadoutFlagDetailViewModel(
             speakText,
         )
 
-    val uiState: StateFlow<AceWindowsAutoReadoutFlagDetailUiState> =
+    private val flagTexts: Flow<Map<FlagReadoutItem, String>> =
         combine(
-            settingsUseCases.observeFlagEnabledStates(),
-            combine(
-                FlagReadoutItem.entries.map { item ->
-                    settingsUseCases.readoutTexts.observe(item).map { item to it }
-                },
-            ) {
-                it.toMap()
+            FlagReadoutItem.entries.map { item ->
+                settingsUseCases.readoutTexts.observe(item).map { item to it }
             },
-            preview.textToSpeechAvailable,
-        ) { enabledStates, flagTexts, isTextToSpeechAvailable ->
-            AceWindowsAutoReadoutFlagDetailUiState(
-                enabledStates = enabledStates,
-                flagTexts = flagTexts,
-                isTextToSpeechAvailable = isTextToSpeechAvailable,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsAutoReadoutFlagDetailUiState())
+        ) {
+            it.toMap()
+        }
+
+    val uiState: StateFlow<AceWindowsAutoReadoutFlagDetailUiState> =
+        AceWindowsAutoReadoutFlagDetailFlow(
+            enabledStates = settingsUseCases.observeFlagEnabledStates(),
+            flagTexts = flagTexts,
+            isTextToSpeechAvailable = preview.textToSpeechAvailable,
+        ).uiState.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            AceWindowsAutoReadoutFlagDetailUiState(),
+        )
 
     /** ペインを離れるときに試聴を止める。 */
     fun onPreviewStopped() = preview.stop()
