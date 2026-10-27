@@ -21,6 +21,7 @@ import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
@@ -64,6 +65,7 @@ import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
+import kurou.kodriver.domain.usecase.ResetAutoReadoutSettingsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
@@ -79,6 +81,8 @@ import kotlin.test.BeforeTest
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LargeClass")
 abstract class OtherListViewModelTestFixture {
+    protected val autoReadoutSettingsResetter: AutoReadoutSettingsResetter = mockk()
+
     protected val telemetryLogRepository: TelemetryLogRepository = mockk()
 
     protected val dispatcher = UnconfinedTestDispatcher()
@@ -222,6 +226,10 @@ abstract class OtherListViewModelTestFixture {
                 OtherListAppUpdateFlow(CheckAppUpdateAvailableUseCase(appUpdateRepository), currentVersion),
             deviceVolumeFlow = OtherListDeviceVolumeFlow(GetDeviceVolumeUseCase(deviceVolumeRepository)),
             resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(telemetryLogRepository)),
+            autoReadoutSettingsResetFlow =
+                OtherListAutoReadoutSettingsResetFlow(
+                    ResetAutoReadoutSettingsUseCase(listOf(autoReadoutSettingsResetter)),
+                ),
             appVersionInfo =
                 OtherListAppVersionInfo(
                     currentVersion = currentVersion,

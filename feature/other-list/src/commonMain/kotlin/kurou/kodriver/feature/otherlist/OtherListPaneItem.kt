@@ -337,6 +337,7 @@ internal fun OtherListItem(
                 OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.DeleteAllLogs,
+                OtherListItemType.ResetAutoReadoutSettings,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
@@ -386,7 +387,9 @@ private fun handleOtherListItemClick(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
-        OtherListItemType.DeleteAllLogs -> {
+        OtherListItemType.DeleteAllLogs,
+        OtherListItemType.ResetAutoReadoutSettings,
+        -> {
             onItemClick(item)
         }
 

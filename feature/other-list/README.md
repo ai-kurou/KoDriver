@@ -30,6 +30,8 @@ Windows/Androidの「読み上げ速度」項目を読み上げ音声の次に�
 
 「アプリ設定」と「情報」の間に「データ・ログ」カテゴリを表示し、「ログを全て削除」を配置する。タップすると確認ダイアログを表示し、確認後にすべてのシミュレーターのログを削除する。選択状態や詳細ペインは変わらない。削除中は二重実行を防ぎ、成功・失敗をスナックバーで通知する。削除フローの状態・操作・UseCase依存は `OtherListResetFlow` が管理し、`OtherListViewModel` は `viewModelScope` での実行と `OtherListUiState.reset` への状態合成を担う。
 
+「ログを全て削除」の次に「自動タブの設定を初期化」を全プラットフォームで表示する。確認後、操作した端末の自動タブの設定を LMU・ACE・GT7 一括で既定値へ戻す（有効/無効、並び順、閾値、読み上げ文言など）。選択状態や詳細ペインは変わらない。`OtherListAutoReadoutSettingsResetFlow` が確認・二重実行防止・成功/失敗を管理し、ViewModel が `viewModelScope` で実行して `OtherListUiState.autoReadoutSettingsReset` へ合成する。`ResetAutoReadoutSettingsUseCase(getAll())` に登録済みの全 resetter を渡し、OtherContent がダイアログとスナックバー、離脱時の結果消費を扱う。
+
 OS起動時自動起動の状態取得・変更と表示状態は `OtherListStartupRegistrationFlow` が管理し、`OtherListViewModel` は `viewModelScope` で操作を起動して `OtherListUiState.startupEnabled` に状態を合成する。
 
 TTS利用可否の判定と一覧案内項目・警告表示への反映は `OtherListTtsAvailabilityFlow` が管理し、判定処理のライフサイクルは呼び出し元の `viewModelScope` に従う。`OtherListViewModel` は `OtherListUiState` へ状態を合成する。

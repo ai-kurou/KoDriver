@@ -430,6 +430,7 @@ internal fun DefaultOtherDetailContent(
         }
 
         OtherListItemType.DeleteAllLogs,
+        OtherListItemType.ResetAutoReadoutSettings,
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,

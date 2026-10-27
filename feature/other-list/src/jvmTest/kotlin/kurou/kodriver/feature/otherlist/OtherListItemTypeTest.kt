@@ -6,7 +6,7 @@ import kotlin.test.assertNull
 
 class OtherListItemTypeTest {
     @Test
-    fun `データログはアプリ設定と情報の間にあり削除項目だけが所属する`() {
+    fun `データログはアプリ設定と情報の間にあり削除と初期化の項目が所属する`() {
         assertEquals(
             listOf(
                 OtherListSection.ConnectionSettings,
@@ -19,13 +19,18 @@ class OtherListItemTypeTest {
             otherListSections,
         )
         assertEquals(
-            listOf(OtherListItemType.DeleteAllLogs),
+            listOf(OtherListItemType.DeleteAllLogs, OtherListItemType.ResetAutoReadoutSettings),
             OtherListItemType.entries.filter { it.section() == OtherListSection.DataLog },
         )
     }
 
     @Test
     fun `存在するidを渡すと対応するOtherListItemTypeを返す`() {
+        assertEquals("reset_auto_readout_settings", OtherListItemType.ResetAutoReadoutSettings.id)
+        assertEquals(
+            OtherListItemType.ResetAutoReadoutSettings,
+            OtherListItemType.fromId("reset_auto_readout_settings"),
+        )
         assertEquals("delete_all_logs", OtherListItemType.DeleteAllLogs.id)
         assertEquals(OtherListItemType.DeleteAllLogs, OtherListItemType.fromId("delete_all_logs"))
         assertEquals("overlay_text_color", OtherListItemType.OverlayTextColor.id)
@@ -55,8 +60,8 @@ class OtherListItemTypeTest {
     }
 
     @Test
-    fun `entriesは全27項目を宣言順で返す`() {
-        assertEquals(27, OtherListItemType.entries.size)
+    fun `entriesは全28項目を宣言順で返す`() {
+        assertEquals(28, OtherListItemType.entries.size)
         assertEquals(
             listOf(
                 OtherListItemType.AccessLocalNetworkPermission,
@@ -81,6 +86,7 @@ class OtherListItemTypeTest {
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.Startup,
                 OtherListItemType.DeleteAllLogs,
+                OtherListItemType.ResetAutoReadoutSettings,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
@@ -113,6 +119,7 @@ class OtherListItemTypeTest {
                 "haptic_feedback",
                 "startup",
                 "delete_all_logs",
+                "reset_auto_readout_settings",
                 "github_repository",
                 "release_page",
                 "feedback",

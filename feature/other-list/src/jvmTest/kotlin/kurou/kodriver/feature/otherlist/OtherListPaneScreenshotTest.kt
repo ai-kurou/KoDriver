@@ -53,6 +53,7 @@ class OtherListPaneScreenshotTest {
                                             listOf(
                                                 OtherListItemType.Startup,
                                                 OtherListItemType.DeleteAllLogs,
+                                                OtherListItemType.ResetAutoReadoutSettings,
                                                 OtherListItemType.GitHubRepository,
                                             ),
                                     ),

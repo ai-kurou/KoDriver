@@ -103,6 +103,10 @@ sealed interface OtherListItemType {
         override val id: String = "delete_all_logs"
     }
 
+    data object ResetAutoReadoutSettings : OtherListItemType {
+        override val id: String = "reset_auto_readout_settings"
+    }
+
     data object GitHubRepository : OtherListItemType {
         override val id: String = "github_repository"
     }
@@ -149,6 +153,7 @@ sealed interface OtherListItemType {
                 HapticFeedback,
                 Startup,
                 DeleteAllLogs,
+                ResetAutoReadoutSettings,
                 GitHubRepository,
                 ReleasePage,
                 Feedback,
