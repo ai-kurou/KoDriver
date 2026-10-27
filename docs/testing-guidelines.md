@@ -7,6 +7,7 @@
 - Fake / Stub / Spy などのテストダブル
 - Koin などの DI Module
 - 単純な Preview・サンプルデータ・定数定義
+- Compose Multiplatform が `generated.resources` パッケージに生成するリソースアクセサコード（`Res`・リソースコレクター等）
 - プラットフォーム固有の外部 API（JNA, UDP ソケット等）を直接呼び出すためモックが現実的でない箇所
 
 ## テストの配置先（commonTest / jvmTest）
