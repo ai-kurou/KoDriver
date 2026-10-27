@@ -10,6 +10,8 @@
 
 詳細ペインを離れたときも試聴を停止する。
 
+`LmuWindowsAutoReadoutVehicleDamageDetailFlow` は有効状態・3種類の文言・TTS利用可否の5入力から UI 状態を合成する cold Flow。共有と初期状態は ViewModel が管理する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
