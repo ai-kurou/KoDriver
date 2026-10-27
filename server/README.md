@@ -23,6 +23,7 @@ WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパター�
 | `/ws/lmu_windows/virtual_energy` | `ObserveLmuWindowsVirtualEnergyUseCase`（`LmuWindowsVirtualEnergyRepository`） | `LmuWindowsVirtualEnergyData`（同一値も継続配信） |
 | `/ws/lmu_windows/pit_status` | `ObserveLmuWindowsPitStatusUseCase`（`LmuWindowsPitStatusRepository`） | `LmuWindowsPitStatusData` |
 | `/ws/lmu_windows/tyre_detached` | `ObserveLmuWindowsTyreDetachedUseCase`（`LmuWindowsTyreDetachedRepository`） | `LmuWindowsTyreDetachedData` |
+| `/ws/lmu_windows/car_gap` | `ObserveLmuWindowsCarGapUseCase`（`LmuWindowsCarGapRepository`） | `LmuWindowsCarGapData`（同一値も継続配信） |
 
 ### ACE（`/ws/ace_windows/...`）
 

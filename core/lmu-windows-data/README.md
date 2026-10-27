@@ -39,6 +39,7 @@ Virtual Energy を使うのは Hypercar（`Hyper`）と GT3（`GT3`）のみで�
 
 `LmuWindowsCarGapRepositoryImpl` はプレイヤー車両の Telemetry +780〜+792 から4種類の時間差を秒単位で読み取る。プレイヤー車両が無効なら配信せず、非 Windows では空 Flow を返す。
 共有メモリの生の値を保持し、車両不在時の値の意味（0か負値か）は実機未確認のため解釈しない。
+server は `/ws/lmu_windows/car_gap` で同一値も継続配信する。Android は `WebSocketLmuWindowsCarGapRepository` で受信し、`LmuWindowsCarGapData` として復元する。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
