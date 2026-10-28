@@ -46,6 +46,26 @@ class ConnectionBannerViewModelTest {
     }
 
     @Test
+    fun `購読前は既定状態を保持し購読終了後は状態更新を停止する`() =
+        runTest {
+            val lmuChecker = FakeLmuBannerConnectionChecker(isConnected = true)
+            val viewModel = createViewModel(lmuChecker = lmuChecker)
+            dispatcher.scheduler.runCurrent()
+            assertEquals(ConnectionBannerVmUiState(), viewModel.uiState.first())
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            dispatcher.scheduler.runCurrent()
+            assertEquals(ConnectionBannerVmStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+
+            collectionJob.cancelAndJoin()
+            dispatcher.scheduler.runCurrent()
+            lmuChecker.isConnected = false
+            dispatcher.scheduler.advanceTimeBy(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
+            dispatcher.scheduler.runCurrent()
+            assertEquals(ConnectionBannerVmStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+            dispatcher.scheduler.runCurrent()
+        }
+
+    @Test
     fun `LMU選択時に接続確認結果を反映する`() =
         runTest {
             val lmuChecker = FakeLmuBannerConnectionChecker(isConnected = true)
