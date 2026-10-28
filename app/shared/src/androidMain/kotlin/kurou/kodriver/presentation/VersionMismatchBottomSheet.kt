@@ -16,7 +16,7 @@ import org.koin.compose.viewmodel.koinViewModel
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-actual fun VersionMismatchBottomSheetEffect() {
+actual fun VersionMismatchBottomSheetEffect(hapticFeedbackEnabled: Boolean) {
     val viewModel: ServerConnectionViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -29,6 +29,7 @@ actual fun VersionMismatchBottomSheetEffect() {
             VersionMismatchBottomSheetContent(
                 windowsKoDriverVersion = uiState.serverVersion.orEmpty(),
                 appVersion = uiState.appVersion,
+                hapticFeedbackEnabled = hapticFeedbackEnabled,
                 onDismiss = { viewModel.dismissVersionMismatchBottomSheet() },
             )
         }
@@ -43,6 +44,7 @@ private fun VersionMismatchBottomSheetContentWindowsNewerPreview() {
             VersionMismatchBottomSheetContent(
                 windowsKoDriverVersion = "2.0.0",
                 appVersion = "1.0.0",
+                hapticFeedbackEnabled = true,
                 onDismiss = {},
             )
         }
@@ -57,6 +59,7 @@ private fun VersionMismatchBottomSheetContentAppNewerPreview() {
             VersionMismatchBottomSheetContent(
                 windowsKoDriverVersion = "1.0.0",
                 appVersion = "2.0.0",
+                hapticFeedbackEnabled = true,
                 onDismiss = {},
             )
         }

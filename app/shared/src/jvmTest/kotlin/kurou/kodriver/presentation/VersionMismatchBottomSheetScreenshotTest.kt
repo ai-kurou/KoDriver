@@ -35,6 +35,7 @@ class VersionMismatchBottomSheetScreenshotTest {
                         VersionMismatchBottomSheetContent(
                             windowsKoDriverVersion = windowsKoDriverVersion,
                             appVersion = appVersion,
+                            hapticFeedbackEnabled = true,
                             onDismiss = {},
                         )
                     }
