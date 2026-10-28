@@ -198,6 +198,37 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
+    fun `ViewModelの終了でテレメトリと要求の購読を止め読み上げを処理しない`() =
+        runTest(testDispatcher) {
+            stubReadoutDefaults()
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val viewModel = createViewModel(channel, ttsEngine)
+            try {
+                runCurrent()
+                assertEquals(1, manualRequests.subscriptionCount.value)
+                assertEquals(1, manualHotkeyPresses.subscriptionCount.value)
+                assertEquals(1, debugRequests.subscriptionCount.value)
+                viewModel.viewModelScope.cancel()
+                runCurrent()
+                assertEquals(0, manualRequests.subscriptionCount.value)
+                assertEquals(0, manualHotkeyPresses.subscriptionCount.value)
+                assertEquals(0, debugRequests.subscriptionCount.value)
+                channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+                channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+                manualRequests.emit(ManualReadoutRequest(Simulator.Gt7Ps5.id, "set-1"))
+                manualHotkeyPresses.emit(ManualReadoutRequest(Simulator.Gt7Ps5.id, "set-1"))
+                debugRequests.emit(
+                    DebugReadoutRequest(Simulator.Gt7Ps5, Gt7Ps5ReadoutItemKey.MyBestLap.Root, "テスト"),
+                )
+                runCurrent()
+                confirmVerified(ttsEngine, telemetryLogRepository)
+            } finally {
+                viewModel.viewModelScope.cancel()
+                channel.close()
+            }
+        }
+
+    @Test
     fun `手動タイヤ温度は未受信ならデータなしを読む`() =
         runTest(testDispatcher) {
             assertManualReadout(false, selectedTemperature = true, expectedText = "タイヤ温度はデータがありません")

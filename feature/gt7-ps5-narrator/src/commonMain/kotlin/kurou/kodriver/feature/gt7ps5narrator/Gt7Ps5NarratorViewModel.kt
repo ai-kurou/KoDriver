@@ -2,14 +2,9 @@ package kurou.kodriver.feature.gt7ps5narrator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
@@ -76,7 +71,7 @@ internal data class TyreTemperatureUseCases(
     val observeTyreTemperatureEnabledStates: ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase,
 )
 
-@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalTime::class)
 @Suppress("LongParameterList")
 internal class Gt7Ps5NarratorViewModel(
     myBestLapUseCases: MyBestLapUseCases,
@@ -97,24 +92,21 @@ internal class Gt7Ps5NarratorViewModel(
             .observeSelectedSimulator()
             .stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
-    // listPane（readoutStates）とdetailPane（tyreTemperatureStates）を統合した、
-    // Narratorの読み上げ判定に実際に使う唯一のenabledStates。
+    private val narratorFlow = Gt7Ps5NarratorFlow(selectedSimulator)
+
     private val mergedEnabledStates =
-        combine(
-            selectedSimulator
-                .flatMapLatest { simulator ->
-                    readoutListUseCases.observeAutoReadoutEnabledStates(simulator.id)
+        narratorFlow
+            .enabledStates(
+                observeAutoReadoutEnabledStates = { simulatorId ->
+                    readoutListUseCases.observeAutoReadoutEnabledStates(simulatorId)
                 },
-            tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
-        ) { readoutStates, tyreTemperatureStates ->
-            readoutStates + tyreTemperatureStates
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+                tyreTemperatureStates = tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
+            ).stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val autoReadoutOrder =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                readoutListUseCases.observeAutoReadoutOrder(simulator)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        narratorFlow
+            .autoReadoutOrder { simulator -> readoutListUseCases.observeAutoReadoutOrder(simulator) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。
     private val queueEnabledStates =
@@ -156,14 +148,9 @@ internal class Gt7Ps5NarratorViewModel(
     }
 
     private val telemetryFlow =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator !is Simulator.Gt7Ps5) {
-                    emptyFlow()
-                } else {
-                    myBestLapUseCases.observeGt7Ps5()
-                }
-            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+        narratorFlow
+            .telemetry { myBestLapUseCases.observeGt7Ps5() }
+            .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     @Suppress("UnusedPrivateProperty")
     private val debugReadoutRequestJob =
@@ -306,15 +293,16 @@ internal class Gt7Ps5NarratorViewModel(
 
     @Suppress("UnusedPrivateProperty")
     private val manualReadoutRequestJob =
-        merge(
-            manualReadoutUseCases.observeRequests(),
-            manualReadoutUseCases.observeHotkeyPresses(),
-        ).onEach { request ->
-            if (request.simulatorId == Simulator.Gt7Ps5.id) {
-                val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
-                readManualReadout(set)
-            }
-        }.launchIn(viewModelScope)
+        narratorFlow
+            .manualReadoutRequests(
+                manualReadoutUseCases.observeRequests(),
+                manualReadoutUseCases.observeHotkeyPresses(),
+            ).onEach { request ->
+                if (request.simulatorId == Simulator.Gt7Ps5.id) {
+                    val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
+                    readManualReadout(set)
+                }
+            }.launchIn(viewModelScope)
 
     private fun manualReadoutValue(
         key: String,
