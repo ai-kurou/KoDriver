@@ -23,6 +23,8 @@ Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を
 `LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
 手動の燃料読み上げは自動警告の有効状態・評価履歴を変更しない。
 
+`LmuWindowsNarratorFlow` は LMU の選択切り替え、有効状態・クラス別閾値・テレメトリ入力の合成、手動要求のマージを cold Flow として提供する。`LmuWindowsNarratorViewModel` は `viewModelScope` と `stateIn` / `shareIn`、初期値、最新値・受信時刻の保持と選択解除時の破棄、読み上げ判定・イベント処理を管理する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

@@ -4493,6 +4493,36 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `ブレーキ残量のnull受信は鮮度内の手動読み上げ用の最新値も消去する`() =
+        runTest(testDispatcher) {
+            val wear = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.BrakeWear.Root
+            val viewModel =
+                createViewModel(
+                    brakeWearChannel = wear,
+                    manualRequestChannel = requests,
+                    manualSets = listOf(ManualReadoutSet("brake", listOf(key.value))),
+                    ttsEngine = mockTts(spoken),
+                    enabledOverrides = mapOf(key to false),
+                    currentTimeMs = { 123L },
+                )
+            try {
+                val request = ManualReadoutRequest(Simulator.LmuWindows.id, "brake")
+                wear.send(brakeWearData(thickness = 0.035f))
+                wear.send(brakeWearData(thickness = 0.03f))
+                requests.send(request)
+                wear.send(null)
+                requests.send(request)
+
+                assertEquals(listOf("ブレーキ残量50%", "データがありません"), spoken.map { it.narratedText })
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
+        }
+
+    @Test
     fun `手動ブレーキ残量はシミュレーター切り替えで古い値を破棄する`() =
         runTest(testDispatcher) {
             val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
