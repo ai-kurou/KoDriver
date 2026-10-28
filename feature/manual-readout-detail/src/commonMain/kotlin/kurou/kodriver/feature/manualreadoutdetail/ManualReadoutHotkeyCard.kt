@@ -84,6 +84,7 @@ internal fun ManualReadoutHotkeyCard(
                                 .onPreviewKeyEvent { event ->
                                     val code = manualReadoutHotkeyVirtualKeyCode(event.key)
                                     if (event.type == KeyEventType.KeyDown && code != null) {
+                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                         onAssign(code)
                                         true
                                     } else {
@@ -115,11 +116,17 @@ internal fun ManualReadoutHotkeyCard(
                         }
                     }
                 if (conflictText != null) Text(conflictText, color = MaterialTheme.colorScheme.error)
-                TextButton(onClick = onClear, enabled = state.hotkeyVirtualKeyCode != null) {
+                TextButton(onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onClear()
+                }, enabled = state.hotkeyVirtualKeyCode != null) {
                     Text(stringResource(Res.string.manual_readout_hotkey_clear))
                 }
                 if (state.hotkeyVirtualKeyCode != null) {
-                    ManualReadoutHotkeyRegistration(state.hotkeyRegistrationState, onRetry)
+                    ManualReadoutHotkeyRegistration(state.hotkeyRegistrationState) {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onRetry()
+                    }
                 }
                 Text(stringResource(Res.string.manual_readout_hotkey_hint))
                 if (showGuideLink) {
@@ -191,8 +198,12 @@ private fun ManualReadoutHotkeyModifiersDropdown(
     modifiers: ManualReadoutHotkeyModifiers,
     onSelect: (ManualReadoutHotkeyModifiers) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     var expanded by remember { mutableStateOf(false) }
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        expanded = it
+    }) {
         OutlinedTextField(
             value = modifiers.displayName(),
             onValueChange = {},
@@ -209,6 +220,7 @@ private fun ManualReadoutHotkeyModifiersDropdown(
                     text = { Text(value.displayName()) },
                     modifier = Modifier.testTag("manual_readout_hotkey_modifiers_${value.name}"),
                     onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         onSelect(value)
                         expanded = false
                     },

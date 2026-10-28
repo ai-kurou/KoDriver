@@ -47,6 +47,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
@@ -290,6 +292,7 @@ internal fun ManualReadoutItemsCard(
     onItemTextChanged: (String, String) -> Unit,
     onPreviewClick: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     var showPicker by remember { mutableStateOf(false) }
     val remaining = uiState.availableItemKeys.filterNot { it in uiState.selectedItemKeys }
     val atLimit = uiState.selectedItemKeys.size >= MANUAL_READOUT_SET_ITEM_MAX
@@ -332,7 +335,10 @@ internal fun ManualReadoutItemsCard(
                                         Modifier.draggableHandle().size(20.dp),
                                     )
                                     Text(name, modifier = Modifier.weight(1f))
-                                    IconButton(onClick = { onRemoveItem(itemKey) }) {
+                                    IconButton(onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                        onRemoveItem(itemKey)
+                                    }) {
                                         Icon(
                                             Icons.Default.Close,
                                             stringResource(Res.string.manual_readout_remove_item, name),
@@ -375,7 +381,10 @@ internal fun ManualReadoutItemsCard(
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
-                TextButton(onClick = { showPicker = true }, enabled = remaining.isNotEmpty() && !atLimit) {
+                TextButton(onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    showPicker = true
+                }, enabled = remaining.isNotEmpty() && !atLimit) {
                     Text(stringResource(Res.string.manual_readout_add_item))
                 }
                 if (uiState.selectedItemKeys.isNotEmpty()) {
@@ -390,7 +399,10 @@ internal fun ManualReadoutItemsCard(
                     }
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                         FilledTonalButton(
-                            onClick = onPreviewClick,
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                onPreviewClick()
+                            },
                             enabled = uiState.isTextToSpeechAvailable && preview.isNotBlank(),
                         ) {
                             Icon(
@@ -471,6 +483,7 @@ internal fun ManualReadoutItemPickerSheetContent(
     selectedCount: Int,
     onSelect: (String) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     Column(
         Modifier
             .fillMaxWidth()
@@ -517,7 +530,11 @@ internal fun ManualReadoutItemPickerSheetContent(
                             if (index > 0) HorizontalDivider()
                             ListItem(
                                 headlineContent = { Text(stringResource(presentation.name)) },
-                                modifier = Modifier.clickable { onSelect(key) },
+                                modifier =
+                                    Modifier.clickable {
+                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                        onSelect(key)
+                                    },
                                 colors =
                                     ListItemDefaults.colors(
                                         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
