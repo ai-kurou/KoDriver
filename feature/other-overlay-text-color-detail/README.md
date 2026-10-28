@@ -13,6 +13,11 @@ JVMの操作・ViewModel・配線・スクリーンショットテストと、�
 確定した選択が保存中の間は解除せず、保存完了（失敗を含む）までプレビューを維持する。
 保存中に選び直された場合は、ダイアログ破棄時に未保存のプレビューと選択を解除する。
 
+`OtherOverlayTextColorDetailFlow` は観測した文字色と未保存の選択から UI 状態を合成する cold Flow。
+`selectedOverlayTextColor` は観測値、`pendingOverlayTextColor` は未保存の選択があればその値、なければ観測値を使う。
+ViewModel は `stateIn` による状態の共有、未保存の選択の管理、プレビュー・保存、エラー・キャンセル処理、
+ライフサイクルと離脱・保存完了の競合制御を担当する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
