@@ -22,7 +22,11 @@ class AceWindowsAutoReadoutMyBestLapDetailFlowTest {
         runTest {
             val inputs = Inputs()
 
-            assertEquals(AceWindowsAutoReadoutMyBestLapDetailUiState(), inputs.flow().first())
+            val state = AceWindowsAutoReadoutMyBestLapDetailUiState()
+            assertEquals(ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, state.readoutText)
+            assertEquals(false, state.isTextToSpeechAvailable)
+            assertEquals(true, state.enabled)
+            assertEquals(state, inputs.flow().first())
             assertEquals(0, inputs.activeSubscriptions)
         }
 
@@ -36,9 +40,9 @@ class AceWindowsAutoReadoutMyBestLapDetailFlowTest {
             var expected = AceWindowsAutoReadoutMyBestLapDetailUiState()
             assertEquals(expected, states.last())
 
-            inputs.readoutText.update { "更新{laptime}" }
+            inputs.readoutText.update { "注意{laptime}" }
             testScheduler.runCurrent()
-            expected = expected.copy(readoutText = "更新{laptime}")
+            expected = expected.copy(readoutText = "注意{laptime}")
             assertEquals(expected, states.last())
 
             inputs.isTextToSpeechAvailable.update { true }
@@ -52,6 +56,10 @@ class AceWindowsAutoReadoutMyBestLapDetailFlowTest {
             testScheduler.runCurrent()
             expected = expected.copy(enabled = false)
             assertEquals(expected, states.last())
+            val state = states.last()
+            assertEquals("注意{laptime}", state.readoutText)
+            assertEquals(true, state.isTextToSpeechAvailable)
+            assertEquals(false, state.enabled)
 
             inputs.enabledStates.update { mapOf(key to true) }
             testScheduler.runCurrent()
