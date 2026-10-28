@@ -72,7 +72,10 @@ internal fun LowVolumeBanner(
                     Modifier
                         .width(LowVolumeBannerActionWidth)
                         .fillMaxHeight()
-                        .clickable(role = Role.Button, onClick = onDismiss),
+                        .clickable(role = Role.Button) {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            onDismiss()
+                        },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
