@@ -84,25 +84,25 @@ import kotlin.time.Clock
  *   mTireCarcassTemperature : +204 (Kelvin)
  */
 internal object LmuWindowsMapper {
-    private const val SCORING_BASE = 1632
-    private const val VEHICLE_SCORING_BASE = 2192
-    private const val VEHICLE_SCORING_STRIDE = 584
-    private const val MAX_SCORING_VEHICLES = 104
+    internal const val SCORING_BASE = 1632
+    internal const val VEHICLE_SCORING_BASE = 2192
+    internal const val VEHICLE_SCORING_STRIDE = 584
+    internal const val MAX_SCORING_VEHICLES = 104
 
     private const val OFF_SCORING_CURRENT_ET = 68
     private const val OFF_SCORING_SESSION = 64
     private const val OFF_SCORING_MAX_LAPS = 84
-    private const val OFF_SCORING_NUM_VEHICLES = 104
+    internal const val OFF_SCORING_NUM_VEHICLES = 104
 
     private const val OFF_SCORING_IN_PITS = 198
     private const val OFF_SCORING_BEST_LAP_TIME = 144
     private const val OFF_SCORING_LAST_LAP_TIME = 168
-    private const val OFF_SCORING_IS_PLAYER = 196
+    internal const val OFF_SCORING_IS_PLAYER = 196
     private const val OFF_SCORING_VEHICLE_CLASS = 200
     private const val VEHICLE_CLASS_LENGTH = 32
     private const val OFF_SCORING_LAP_START_ET = 256
     private const val OFF_SCORING_PIT_STATE = 457
-    private const val OFF_SCORING_IN_GARAGE_STALL = 507
+    internal const val OFF_SCORING_IN_GARAGE_STALL = 507
     private const val OFF_SCORING_BEST_LAP_SECTOR1 = 576
     private const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
 

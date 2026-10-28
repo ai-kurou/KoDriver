@@ -41,6 +41,12 @@ Virtual Energy を使うのは Hypercar（`Hyper`）と GT3（`GT3`）のみで�
 共有メモリの生の値を保持し、車両不在時の値の意味（0か負値か）は実機未確認のため解釈しない。
 server は `/ws/lmu_windows/car_gap` で同一値も継続配信する。Android は `WebSocketLmuWindowsCarGapRepository` で受信し、`LmuWindowsCarGapData` として復元する。
 
+### 同クラス前後車両との時間ギャップ
+
+`LmuWindowsClassCarGapRepositoryImpl` は Scoring のみを使用し、`mVehicleClass` が自車と完全一致する、自車以外かつ `mInGarageStall` が false の車両を対象とする。TinyPedal の `get_vehicles_info` と同じく、他車と自車の `mTimeIntoLap` の差を自車の `mEstimatedLapTime` で周回補正し、前方・後方それぞれの最小秒差を `LmuWindowsClassCarGapData` で返す。同位置なら両方 0。周回遅れ・周回先行の車両も、順位ではなくコース上の位置関係で前後の対象に含む。
+
+自車が Scoring に存在しなければ配信しない。推定ラップタイムが非有限または 0 以下の場合、あるいは対象車両がない場合は両方 null。非有限の時間差は対象から除外する。非 Windows では空 Flow を返す。既存の Telemetry 生値版 `LmuWindowsCarGapRepositoryImpl` とは独立した domain / data の実装であり、server・Android WebSocket・UI への接続は含まない。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

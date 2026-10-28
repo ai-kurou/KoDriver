@@ -575,7 +575,9 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | ピットレーン走行中 | `mInPits` | scoringVehicleBase+198 |
 | 車両クラス名 | `mVehicleClass[32]` | scoringVehicleBase+200 |
 | ピット状態 | `mPitState` | scoringVehicleBase+457 |
-| ガレージストール内 | `mInGarageStall` | scoringVehicleBase+507 |
+| ラップ内推定経過時間（同クラスギャップ計算） | `mTimeIntoLap` | scoringVehicleBase+464 |
+| 推定ラップタイム（同クラスギャップの周回補正） | `mEstimatedLapTime` | scoringVehicleBase+472 |
+| ガレージストール内（同クラスギャップの対象除外にも使用） | `mInGarageStall` | scoringVehicleBase+507 |
 | ブレーキ温度 | `mBrakeTemp` | wheelBase+24 |
 | タイヤ空気圧 | `mPressure` | wheelBase+120 |
 | タイヤ表面温度（中央） | `mTemperature[1]` | wheelBase+136 |
