@@ -159,6 +159,7 @@ private fun AudioVolumeSection(
     onOpenVolumePanel: (() -> Unit)?,
     onOpenSoundSettings: (() -> Unit)?,
 ) {
+    val haptic = LocalHapticFeedback.current
     Column(Modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large)) {
         Spacer(Modifier.height(KoDriverSpacing.medium))
         HorizontalDivider()
@@ -179,7 +180,13 @@ private fun AudioVolumeSection(
         )
         Spacer(Modifier.height(KoDriverSpacing.medium))
         onOpenVolumePanel?.let {
-            Button(onClick = it, modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    it()
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
                 Icon(Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
                 Text(
                     stringResource(Res.string.audio_usage_volume_panel),
@@ -194,7 +201,13 @@ private fun AudioVolumeSection(
             )
         }
         onOpenSoundSettings?.let {
-            OutlinedButton(onClick = it, modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    it()
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
                 Icon(Icons.Outlined.Settings, contentDescription = null)
                 Text(
                     stringResource(Res.string.audio_usage_sound_settings),
