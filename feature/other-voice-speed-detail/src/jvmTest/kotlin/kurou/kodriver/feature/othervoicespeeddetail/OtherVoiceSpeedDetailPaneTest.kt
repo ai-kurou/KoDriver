@@ -1,6 +1,10 @@
 package kurou.kodriver.feature.othervoicespeeddetail
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -13,12 +17,22 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.performTouchInput
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class OtherVoiceSpeedDetailPaneTest {
+    private val onSpeedChanged: (Float) -> Unit = mockk()
+    private val onPreviewClicked: (String) -> Unit = mockk()
+    private val haptic: HapticFeedback = mockk()
+
     @get:Rule
     val rule = createComposeRule()
 
@@ -78,13 +92,15 @@ class OtherVoiceSpeedDetailPaneTest {
 
     @Test
     fun `速度スライダー操作を完了すると変更後の速度を通知する`() {
-        var changedSpeed: Float? = null
+        every { onSpeedChanged(2.0f) } returns Unit
         rule.setContent {
-            KoDriverTheme {
-                OtherVoiceSpeedDetailPaneContent(
-                    uiState = OtherVoiceSpeedDetailUiState(),
-                    onSpeedChanged = { changedSpeed = it },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherVoiceSpeedDetailPaneContent(
+                        uiState = OtherVoiceSpeedDetailUiState(),
+                        onSpeedChanged = onSpeedChanged,
+                    )
+                }
             }
         }
 
@@ -95,25 +111,69 @@ class OtherVoiceSpeedDetailPaneTest {
                 },
             ).performSemanticsAction(SemanticsActions.SetProgress) { it(2.0f) }
 
-        assertEquals(2.0f, changedSpeed)
+        verify(exactly = 1) { onSpeedChanged(2.0f) }
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onSpeedChanged, haptic)
         rule.onNodeWithText("2.0倍").assertIsDisplayed()
     }
 
     @Test
-    fun `リセット操作はデフォルト速度を通知する`() {
-        var changedSpeed: Float? = null
+    fun `速度スライダーのドラッグは振動せず完了時だけ速度を通知する`() {
+        val changedSpeeds = mutableListOf<Float>()
         rule.setContent {
-            KoDriverTheme {
-                OtherVoiceSpeedDetailPaneContent(
-                    uiState = OtherVoiceSpeedDetailUiState(speed = 1.5f),
-                    onSpeedChanged = { changedSpeed = it },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherVoiceSpeedDetailPaneContent(
+                        uiState = OtherVoiceSpeedDetailUiState(),
+                        onSpeedChanged = { changedSpeeds.add(it) },
+                    )
+                }
+            }
+        }
+
+        val slider =
+            rule.onNode(
+                SemanticsMatcher("ProgressBarRangeInfoを持つスライダー") {
+                    it.config.contains(SemanticsProperties.ProgressBarRangeInfo)
+                },
+            )
+        slider.performTouchInput {
+            down(center)
+            moveTo(center.copy(x = width * 0.8f))
+        }
+        rule.runOnIdle {
+            assertTrue(changedSpeeds.isEmpty())
+            verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        }
+        slider.performTouchInput { up() }
+        rule.waitForIdle()
+
+        assertEquals(1, changedSpeeds.size)
+        assertTrue(changedSpeeds.single() > 1.0f)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `リセット操作はデフォルト速度を通知する`() {
+        every { onSpeedChanged(1.0f) } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherVoiceSpeedDetailPaneContent(
+                        uiState = OtherVoiceSpeedDetailUiState(speed = 1.5f),
+                        onSpeedChanged = onSpeedChanged,
+                    )
+                }
             }
         }
 
         rule.onNode(hasContentDescription("読み上げ速度をデフォルトに戻す")).performClick()
 
-        assertEquals(1.0f, changedSpeed)
+        verify(exactly = 1) { onSpeedChanged(1.0f) }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onSpeedChanged, haptic)
     }
 
     @Test
@@ -129,32 +189,45 @@ class OtherVoiceSpeedDetailPaneTest {
 
     @Test
     fun `試聴ボタンを押すと試聴用の文言を通知する`() {
-        var previewText: String? = null
+        every { onPreviewClicked("これは読み上げ速度の試聴です。") } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
-            KoDriverTheme {
-                OtherVoiceSpeedDetailPaneContent(
-                    uiState = OtherVoiceSpeedDetailUiState(),
-                    onPreviewClicked = { previewText = it },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherVoiceSpeedDetailPaneContent(
+                        uiState = OtherVoiceSpeedDetailUiState(),
+                        onPreviewClicked = onPreviewClicked,
+                    )
+                }
             }
         }
 
         rule.onNodeWithText("試聴").performClick()
 
-        assertEquals("これは読み上げ速度の試聴です。", previewText)
+        verify(exactly = 1) { onPreviewClicked("これは読み上げ速度の試聴です。") }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onPreviewClicked, haptic)
     }
 
     @Test
-    fun `試聴中は停止ボタンを表示する`() {
+    fun `試聴中は停止ボタンを表示して停止操作と振動を通知する`() {
+        every { onPreviewClicked("これは読み上げ速度の試聴です。") } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
-            KoDriverTheme {
-                OtherVoiceSpeedDetailPaneContent(
-                    uiState = OtherVoiceSpeedDetailUiState(isPreviewing = true),
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherVoiceSpeedDetailPaneContent(
+                        uiState = OtherVoiceSpeedDetailUiState(isPreviewing = true),
+                        onPreviewClicked = onPreviewClicked,
+                    )
+                }
             }
         }
 
-        rule.onNodeWithText("試聴を停止").assertIsDisplayed()
+        rule.onNodeWithText("試聴を停止").assertIsDisplayed().performClick()
         rule.onNodeWithText("試聴").assertDoesNotExist()
+        verify(exactly = 1) { onPreviewClicked("これは読み上げ速度の試聴です。") }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onPreviewClicked, haptic)
     }
 }
