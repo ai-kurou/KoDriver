@@ -75,14 +75,24 @@ class LowVolumeBannerTest {
     }
 
     @Test
-    fun `閉じるボタンをタップするとdismissだけを実行する`() {
+    fun `閉じるボタンをタップするとハプティックとdismissを実行する`() {
         every { onDismiss() } returns Unit
-        show(LowVolumeWarningUiState(soundVolume = 20))
+        val feedback = mutableListOf<HapticFeedbackType>()
+        val haptic = recordingHaptic(feedback)
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                AppTheme {
+                    LowVolumeBanner(LowVolumeWarningUiState(soundVolume = 20), onClick, onDismiss)
+                }
+            }
+        }
 
         rule.onNodeWithContentDescription("音量警告を閉じる").performClick()
 
         verify(exactly = 1) { onDismiss() }
+        verify(exactly = 0) { onClick() }
         confirmVerified(onClick, onDismiss)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), feedback)
     }
 
     @Test
