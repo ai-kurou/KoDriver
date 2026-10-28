@@ -17,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
@@ -87,6 +89,11 @@ fun OtherVolumeDetailPaneContent(
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onPreviewClickedWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onPreviewClicked()
+    }
     val volumeLabel = stringResource(Res.string.volume_label)
 
     DetailPaneScaffold(
@@ -121,7 +128,7 @@ fun OtherVolumeDetailPaneContent(
                 steps = 99,
             )
             FilledTonalButton(
-                onClick = onPreviewClicked,
+                onClick = onPreviewClickedWithHaptic,
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
             ) {
                 Icon(
