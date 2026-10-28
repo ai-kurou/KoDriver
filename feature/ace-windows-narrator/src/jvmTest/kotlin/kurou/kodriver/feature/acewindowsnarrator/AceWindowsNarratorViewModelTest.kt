@@ -275,6 +275,25 @@ class AceWindowsNarratorViewModelTest {
     }
 
     @Test
+    fun `ViewModelのスコープ終了で手動とデバッグの要求購読を解除する`() =
+        runTest(testDispatcher) {
+            stubReadoutDefaults(thresholdPercentage = 30)
+            val viewModel = createViewModel(Channel(Channel.UNLIMITED), ttsEngine)
+            try {
+                runCurrent()
+                assertEquals(1, manualRequests.subscriptionCount.value)
+                assertEquals(1, manualHotkeyPresses.subscriptionCount.value)
+                assertEquals(1, debugRequests.subscriptionCount.value)
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
+            runCurrent()
+            assertEquals(0, manualRequests.subscriptionCount.value)
+            assertEquals(0, manualHotkeyPresses.subscriptionCount.value)
+            assertEquals(0, debugRequests.subscriptionCount.value)
+        }
+
+    @Test
     fun `一覧の依頼はキュー設定が無効でも項目なし文言を末尾に追加してログ保存する`() =
         runTest(testDispatcher) {
             assertManualReadout(hotkey = false)
