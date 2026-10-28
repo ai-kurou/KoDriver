@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 
 /** ヘルプシートを開く見出し行。開閉状態は保存・復元する。 */
@@ -41,6 +43,7 @@ fun KoDriverHintRow(
 ) {
     var showHelpSheet by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
+    val haptic = LocalHapticFeedback.current
 
     if (showHelpSheet) {
         ModalBottomSheet(
@@ -62,7 +65,10 @@ fun KoDriverHintRow(
             color = MaterialTheme.colorScheme.onSurface,
         )
         IconButton(
-            onClick = { showHelpSheet = true },
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                showHelpSheet = true
+            },
             modifier = Modifier.size(24.dp),
         ) {
             Icon(

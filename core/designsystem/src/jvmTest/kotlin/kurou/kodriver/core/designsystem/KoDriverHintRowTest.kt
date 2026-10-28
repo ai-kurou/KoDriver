@@ -3,6 +3,10 @@ package kurou.kodriver.core.designsystem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
@@ -13,6 +17,15 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
+
+private class HintRowHapticFeedback : HapticFeedback {
+    val performedTypes = mutableListOf<HapticFeedbackType>()
+
+    override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+        performedTypes += hapticFeedbackType
+    }
+}
 
 class KoDriverHintRowTest {
     @get:Rule
@@ -45,27 +58,34 @@ class KoDriverHintRowTest {
     }
 
     @Test
-    fun `末尾テキストを省略してシートを開く`() {
+    fun `末尾テキストを省略してシートを開くたびにContextClickを発生させる`() {
+        val haptic = HintRowHapticFeedback()
         rule.setContent {
             KoDriverTheme {
-                KoDriverHintRow(
-                    label = "手動読み上げ",
-                    helpContentDescription = "操作の説明",
-                ) {
-                    Text("セットを読み上げます")
+                CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                    KoDriverHintRow(
+                        label = "手動読み上げ",
+                        helpContentDescription = "操作の説明",
+                    ) {
+                        Text("セットを読み上げます")
+                    }
                 }
             }
         }
 
         rule.onNodeWithText("手動読み上げ").assertIsDisplayed()
         rule.onNodeWithText("セットを読み上げます").assertDoesNotExist()
+        assertEquals(emptyList(), haptic.performedTypes)
         rule.onNodeWithContentDescription("操作の説明").performClick()
         rule.onNodeWithText("セットを読み上げます").assertIsDisplayed()
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
         rule
             .onNode(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
             .performSemanticsAction(SemanticsActions.Dismiss)
         rule.onNodeWithText("セットを読み上げます").assertDoesNotExist()
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
         rule.onNodeWithContentDescription("操作の説明").performClick()
         rule.onNodeWithText("セットを読み上げます").assertIsDisplayed()
+        assertEquals(listOf(HapticFeedbackType.ContextClick, HapticFeedbackType.ContextClick), haptic.performedTypes)
     }
 }
