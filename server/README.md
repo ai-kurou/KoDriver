@@ -36,8 +36,9 @@ WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパター�
 | `/ws/ace_windows/vehicle_approach` | `ObserveAceWindowsVehicleApproachUseCase`（`AceWindowsVehicleApproachRepository`） | `AceWindowsVehicleApproachData` |
 | `/ws/ace_windows/my_best_lap` | `ObserveAceWindowsBestLapTimeUseCase`（`AceWindowsBestLapTimeRepository`） | `AceWindowsBestLapTimeData` |
 | `/ws/ace_windows/remaining_fuel_laps` | `ObserveAceWindowsRemainingFuelLapsUseCase`（`AceWindowsRemainingFuelLapsRepository`） | `AceWindowsRemainingFuelLapsData`（同一値も継続配信） |
+| `/ws/ace_windows/car_gap` | `ObserveAceWindowsGapUseCase`（`AceWindowsGapRepository`） | `AceWindowsGapData`（同一値も継続配信） |
 
-明記のないエンドポイントでは、同一内容の連続値は送信しない。読み上げ側で受信時刻を鮮度判定に使うエンドポイント（燃料、残り周回数、タイヤ摩耗、バーチャルエネルギー、ブレーキ摩耗、タイヤ温度、ブレーキ温度）では同一値も継続配信する。共有メモリのフレーム識別子（ACE の `packetId`、LMU の `mCurrentET`）が進んだときだけバッファを配信するため、停止したフレームの古い値を再送し続けることはない。エンドポイントを追加・変更したときは、この表も同じ PR で更新すること。
+明記のないエンドポイントでは、同一内容の連続値は送信しない。読み上げ側で受信時刻を鮮度判定に使うエンドポイント（燃料、残り周回数、タイヤ摩耗、バーチャルエネルギー、ブレーキ摩耗、タイヤ温度、ブレーキ温度、前後車両ギャップ）では同一値も継続配信する。共有メモリのフレーム識別子（ACE の `packetId`、LMU の `mCurrentET`）が進んだときだけバッファを配信するため、停止したフレームの古い値を再送し続けることはない。エンドポイントを追加・変更したときは、この表も同じ PR で更新すること。
 
 LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws/<Simulator.id>/flags` 等へ接続する。外部端末から接続するには Windows ファイアウォールで TCP 8080 番ポートの受信を許可する必要がある場合がある。現時点では認証・暗号化を実装していないため、信頼できる LAN 内でのみ使用すること。
 

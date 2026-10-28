@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -28,6 +29,7 @@ class AceWindowsServerUseCasesTest {
     private val aceWindowsVehicleApproachRepository: AceWindowsVehicleApproachRepository = mockk()
     private val aceWindowsBestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
     private val aceWindowsRemainingFuelLapsRepository: AceWindowsRemainingFuelLapsRepository = mockk()
+    private val aceWindowsGapRepository: AceWindowsGapRepository = mockk()
 
     @Test
     fun `KoinのRepositoryから全UseCaseを組み立てる`() {
@@ -38,6 +40,7 @@ class AceWindowsServerUseCasesTest {
         every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
         every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
         every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
+        every { aceWindowsGapRepository.gapStream() } returns emptyFlow()
         val koin =
             startKoin {
                 modules(
@@ -51,6 +54,7 @@ class AceWindowsServerUseCasesTest {
                         single<AceWindowsVehicleApproachRepository> { aceWindowsVehicleApproachRepository }
                         single<AceWindowsBestLapTimeRepository> { aceWindowsBestLapTimeRepository }
                         single<AceWindowsRemainingFuelLapsRepository> { aceWindowsRemainingFuelLapsRepository }
+                        single<AceWindowsGapRepository> { aceWindowsGapRepository }
                     },
                 )
             }.koin
@@ -63,6 +67,7 @@ class AceWindowsServerUseCasesTest {
             useCases.observeAceWindowsVehicleApproach()
             useCases.observeAceWindowsBestLapTime()
             useCases.observeAceWindowsRemainingFuelLaps()
+            useCases.observeAceWindowsGap()
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
@@ -70,6 +75,7 @@ class AceWindowsServerUseCasesTest {
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
+            verify(exactly = 1) { aceWindowsGapRepository.gapStream() }
             confirmVerified(
                 aceWindowsFuelRepository,
                 aceWindowsFlagRepository,
@@ -78,6 +84,7 @@ class AceWindowsServerUseCasesTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsGapRepository,
             )
         } finally {
             stopKoin()
@@ -95,5 +102,6 @@ class AceWindowsServerUseCasesTest {
             assertEquals(emptyList(), useCases.observeAceWindowsVehicleApproach().toList())
             assertEquals(emptyList(), useCases.observeAceWindowsBestLapTime().toList())
             assertEquals(emptyList(), useCases.observeAceWindowsRemainingFuelLaps().toList())
+            assertEquals(emptyList(), useCases.observeAceWindowsGap().toList())
         }
 }

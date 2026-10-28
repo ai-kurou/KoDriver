@@ -20,6 +20,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
@@ -29,6 +30,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -36,6 +38,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachRepo
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
@@ -189,6 +192,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -276,6 +280,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -361,6 +366,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -461,6 +467,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -558,6 +565,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -651,6 +659,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -750,6 +759,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -847,6 +857,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -945,6 +956,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1045,6 +1057,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1143,6 +1156,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1241,6 +1255,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1343,6 +1358,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1441,6 +1457,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1543,6 +1560,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1641,6 +1659,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1738,6 +1757,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1833,6 +1853,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1932,6 +1953,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2027,6 +2049,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2127,6 +2150,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2223,6 +2247,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2325,6 +2350,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2423,6 +2449,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2525,6 +2552,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2623,6 +2651,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2720,6 +2749,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2815,6 +2845,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2912,6 +2943,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3005,6 +3037,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3101,6 +3134,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         repository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3118,6 +3152,106 @@ class ApplicationTest {
 
                     assertEquals(ACE_REMAINING_FUEL_LAPS_JSON, message)
                     assertEquals(ACE_REMAINING_FUEL_LAPS_JSON, repeatedMessage)
+                }
+        }
+
+    @Test
+    fun `ACEの前後ギャップをJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeAceWindowsGapRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        lmuWindows =
+                            LmuWindowsServerUseCases(
+                                observeLmuWindowsRaceFlags =
+                                    ObserveLmuWindowsRaceFlagsUseCase(
+                                        FakeLmuWindowsFlagRepository(),
+                                    ),
+                                observeLmuWindowsVehicleApproach =
+                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                        EmptyLmuWindowsVehicleApproachRepository,
+                                    ),
+                                observeLmuWindowsVehicleDamage =
+                                    ObserveLmuWindowsVehicleDamageUseCase(
+                                        EmptyLmuWindowsVehicleDamageRepository,
+                                    ),
+                                observeLmuWindowsTyreCarcassTemperature =
+                                    ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeLmuWindowsBrakeTemperature =
+                                    ObserveLmuWindowsBrakeTemperatureUseCase(
+                                        EmptyLmuWindowsBrakeTemperatureRepository,
+                                    ),
+                                observeLmuWindowsVehicleClass =
+                                    ObserveLmuWindowsVehicleClassUseCase(
+                                        EmptyLmuWindowsVehicleClassRepository,
+                                    ),
+                                observeLmuWindowsTyreWear =
+                                    ObserveLmuWindowsTyreWearUseCase(
+                                        EmptyLmuWindowsTyreWearRepository,
+                                    ),
+                                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                                observeLmuWindowsVirtualEnergy =
+                                    ObserveLmuWindowsVirtualEnergyUseCase(
+                                        EmptyLmuWindowsVirtualEnergyRepository,
+                                    ),
+                                observeLmuWindowsPitStatus =
+                                    ObserveLmuWindowsPitStatusUseCase(
+                                        EmptyLmuWindowsPitStatusRepository,
+                                    ),
+                                observeLmuWindowsBrakeWear =
+                                    ObserveLmuWindowsBrakeWearUseCase(EmptyLmuWindowsBrakeWearRepository),
+                                observeLmuWindowsTyreDetached =
+                                    ObserveLmuWindowsTyreDetachedUseCase(
+                                        EmptyLmuWindowsTyreDetachedRepository,
+                                    ),
+                                observeLmuWindowsCarGap =
+                                    ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                            ),
+                        aceWindows =
+                            AceWindowsServerUseCases(
+                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                                observeAceWindowsStatus =
+                                    ObserveAceWindowsStatusUseCase(
+                                        EmptyAceWindowsStatusRepository,
+                                    ),
+                                observeAceWindowsTyreCarcassTemperature =
+                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeAceWindowsVehicleApproach =
+                                    ObserveAceWindowsVehicleApproachUseCase(
+                                        EmptyAceWindowsVehicleApproachRepository,
+                                    ),
+                                observeAceWindowsBestLapTime =
+                                    ObserveAceWindowsBestLapTimeUseCase(
+                                        EmptyAceWindowsBestLapTimeRepository,
+                                    ),
+                                observeAceWindowsRemainingFuelLaps =
+                                    ObserveAceWindowsRemainingFuelLapsUseCase(
+                                        EmptyAceWindowsRemainingFuelLapsRepository,
+                                    ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(repository),
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/ace_windows/car_gap") {
+                    repository.emit(aceGapData)
+                    repository.emit(aceGapData)
+
+                    val message = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val repeatedMessage = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+                    assertEquals(ACE_GAP_JSON, message)
+                    assertEquals(ACE_GAP_JSON, repeatedMessage)
                 }
         }
 
@@ -3197,6 +3331,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3292,6 +3427,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3389,6 +3525,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3484,6 +3621,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3582,6 +3720,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3682,6 +3821,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3784,6 +3924,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 port = port,
@@ -3878,6 +4019,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3975,6 +4117,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -4073,6 +4216,7 @@ class ApplicationTest {
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         EmptyAceWindowsRemainingFuelLapsRepository,
                                     ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -4121,6 +4265,7 @@ class ApplicationTest {
                         }
                         single<AceWindowsVehicleApproachRepository> { EmptyAceWindowsVehicleApproachRepository }
                         single<AceWindowsBestLapTimeRepository> { EmptyAceWindowsBestLapTimeRepository }
+                        single<AceWindowsGapRepository> { EmptyAceWindowsGapRepository }
                         single<AceWindowsRemainingFuelLapsRepository> {
                             EmptyAceWindowsRemainingFuelLapsRepository
                         }
@@ -4746,3 +4891,21 @@ private const val CAR_GAP_JSON_1 =
 private const val CAR_GAP_JSON_2 =
     """{"timeGapCarAheadSeconds":2.0,"timeGapCarBehindSeconds":3.0,""" +
         """"timeGapPlaceAheadSeconds":4.0,"timeGapPlaceBehindSeconds":5.0}"""
+
+private object EmptyAceWindowsGapRepository : AceWindowsGapRepository {
+    override fun gapStream(): Flow<AceWindowsGapData> = emptyFlow()
+}
+
+private class FakeAceWindowsGapRepository : AceWindowsGapRepository {
+    private val channel = Channel<AceWindowsGapData>(capacity = Channel.UNLIMITED)
+
+    override fun gapStream(): Flow<AceWindowsGapData> = channel.receiveAsFlow()
+
+    fun emit(data: AceWindowsGapData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private val aceGapData = AceWindowsGapData(gapAheadSeconds = -1.5f, gapBehindSeconds = 2.25f)
+
+private const val ACE_GAP_JSON = """{"gapAheadSeconds":-1.5,"gapBehindSeconds":2.25}"""
