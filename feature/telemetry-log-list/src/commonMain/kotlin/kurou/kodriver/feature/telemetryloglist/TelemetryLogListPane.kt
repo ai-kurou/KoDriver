@@ -431,6 +431,7 @@ private fun TelemetryLogListItem(
                             leadingIcon = { Icon(imageVector = Icons.Default.Feedback, contentDescription = null) },
                             onClick = {
                                 menuExpanded = false
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                 onFeedbackClick()
                             },
                         )
@@ -450,6 +451,7 @@ private fun TelemetryLogListItem(
                             },
                             onClick = {
                                 menuExpanded = false
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                 onDeleteClick()
                             },
                         )
