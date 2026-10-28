@@ -50,7 +50,7 @@ class LmuWindowsDebugStateDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("前後車両との時間差").assertIsDisplayed()
+        rule.onNodeWithText("前後車両との時間差（全クラス）").assertIsDisplayed()
         rule.onNodeWithText("同クラス前後車両との時間差").assertIsDisplayed()
         rule.onAllNodesWithText("未取得").assertCountEquals(2)
     }

@@ -16,7 +16,7 @@ class DebugStateCarGapCardTest {
     fun `前後車両と順位上の前後車両との差を生値のまま表示する`() {
         showCarGapCard(LmuWindowsCarGapData(1.0, -2.34, 0.0, 4.56))
 
-        rule.onNodeWithText("前後車両との時間差").assertIsDisplayed()
+        rule.onNodeWithText("前後車両との時間差（全クラス）").assertIsDisplayed()
         rule.onNodeWithText("前車との差 1.0 秒").assertIsDisplayed()
         rule.onNodeWithText("後車との差 -2.3 秒").assertIsDisplayed()
         rule.onNodeWithText("順位上の前車との差 0.0 秒").assertIsDisplayed()

@@ -102,7 +102,7 @@
     <string name="readout_hotkey_waiting">ホットキーを押してください（最大10秒）</string>
     <string name="readout_hotkey_detected">検出しました</string>
     <string name="readout_hotkey_timed_out">検出されませんでした</string>
-    <string name="debug_state_car_gap_title">前後車両との時間差</string>
+    <string name="debug_state_car_gap_title">前後車両との時間差（全クラス）</string>
     <string name="debug_state_car_gap_car_ahead">前車との差 %1$s 秒</string>
     <string name="debug_state_car_gap_car_behind">後車との差 %1$s 秒</string>
     <string name="debug_state_car_gap_place_ahead">順位上の前車との差 %1$s 秒</string>
