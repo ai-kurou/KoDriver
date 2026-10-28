@@ -2,14 +2,9 @@ package kurou.kodriver.feature.acewindowsnarrator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
@@ -103,7 +98,7 @@ internal data class ReadoutListUseCases(
 )
 
 @Suppress("LongParameterList")
-@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalTime::class)
 internal class AceWindowsNarratorViewModel(
     myBestLapUseCases: MyBestLapUseCases,
     remainingFuelUseCases: RemainingFuelUseCases,
@@ -125,29 +120,26 @@ internal class AceWindowsNarratorViewModel(
             .observeSelectedSimulator()
             .stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
-    private val listEnabledStates =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                readoutListUseCases.observeAutoReadoutEnabledStates(simulator.id)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+    private val narratorFlow = AceWindowsNarratorFlow(selectedSimulator)
 
-    // listPane（listEnabledStates）とdetailPane（flagEnabledStates・tyreTemperatureEnabledStates）を統合した、
-    // Narratorの読み上げ判定に実際に使う唯一のenabledStates。
+    private val listEnabledStates =
+        narratorFlow
+            .listEnabledStates { simulatorId -> readoutListUseCases.observeAutoReadoutEnabledStates(simulatorId) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
     private val mergedEnabledStates =
-        combine(
-            listEnabledStates,
-            flagUseCases.observeFlagEnabledStates(),
-            tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
-            vehicleApproachUseCases.observeEnabledStates(),
-        ) { readoutStates, flagStates, tyreTemperatureStates, vehicleApproachStates ->
-            readoutStates + flagStates + tyreTemperatureStates + vehicleApproachStates
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
+        narratorFlow
+            .mergedEnabledStates(
+                listEnabledStates,
+                flagUseCases.observeFlagEnabledStates(),
+                tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
+                vehicleApproachUseCases.observeEnabledStates(),
+            ).stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     private val autoReadoutOrder =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                readoutListUseCases.observeAutoReadoutOrder(simulator)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        narratorFlow
+            .autoReadoutOrder { simulator -> readoutListUseCases.observeAutoReadoutOrder(simulator) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。
     private val queueEnabledStates =
@@ -222,60 +214,34 @@ internal class AceWindowsNarratorViewModel(
             )
 
     private val bestLapTimeFlow =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator !is Simulator.AceWindows) {
-                    emptyFlow()
-                } else {
-                    myBestLapUseCases.observeBestLapTime()
-                }
-            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+        narratorFlow
+            .telemetry { myBestLapUseCases.observeBestLapTime() }
+            .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val fuelFlow =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator !is Simulator.AceWindows) {
-                    emptyFlow()
-                } else {
-                    remainingFuelUseCases.observeAceWindowsFuel()
-                }
-            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+        narratorFlow
+            .telemetry { remainingFuelUseCases.observeAceWindowsFuel() }
+            .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val remainingFuelLapsFlow =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator !is Simulator.AceWindows) {
-                    emptyFlow()
-                } else {
-                    remainingFuelLapsUseCases.observeAceWindowsRemainingFuelLaps()
-                }
-            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+        narratorFlow
+            .telemetry { remainingFuelLapsUseCases.observeAceWindowsRemainingFuelLaps() }
+            .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val flagFlow =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator !is Simulator.AceWindows) emptyFlow() else flagUseCases.observeAceWindowsFlag()
-            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+        narratorFlow
+            .telemetry { flagUseCases.observeAceWindowsFlag() }
+            .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val tyreTemperatureFlow =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator !is Simulator.AceWindows) {
-                    emptyFlow()
-                } else {
-                    tyreTemperatureUseCases.observeAceWindowsTyreCarcassTemperature()
-                }
-            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+        narratorFlow
+            .telemetry { tyreTemperatureUseCases.observeAceWindowsTyreCarcassTemperature() }
+            .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val vehicleApproachFlow =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator !is Simulator.AceWindows) {
-                    emptyFlow()
-                } else {
-                    vehicleApproachUseCases.observeVehicleApproach()
-                }
-            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+        narratorFlow
+            .telemetry { vehicleApproachUseCases.observeVehicleApproach() }
+            .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     @Suppress("UnusedPrivateProperty")
     private val debugReadoutRequestJob =
@@ -295,15 +261,16 @@ internal class AceWindowsNarratorViewModel(
 
     @Suppress("UnusedPrivateProperty")
     private val manualReadoutRequestJob =
-        merge(
-            manualReadoutUseCases.observeRequests(),
-            manualReadoutUseCases.observeHotkeyPresses(),
-        ).onEach { request ->
-            if (request.simulatorId == Simulator.AceWindows.id) {
-                val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
-                readManualReadout(set)
-            }
-        }.launchIn(viewModelScope)
+        narratorFlow
+            .manualReadoutRequests(
+                manualReadoutUseCases.observeRequests(),
+                manualReadoutUseCases.observeHotkeyPresses(),
+            ).onEach { request ->
+                if (request.simulatorId == Simulator.AceWindows.id) {
+                    val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
+                    readManualReadout(set)
+                }
+            }.launchIn(viewModelScope)
 
     private suspend fun readManualReadout(set: ManualReadoutSet?) {
         if (set == null || selectedSimulator.value !is Simulator.AceWindows) return

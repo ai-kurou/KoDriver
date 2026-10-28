@@ -3,6 +3,11 @@
 ACE (Assetto Corsa EVO) Windows版の開始音WAV再生・自由文言TTSとアナウンス制御。`feature:lmu-windows-narrator` /
 `feature:gt7-ps5-narrator` に相当する ACE 版。
 
+`AceWindowsNarratorFlow` は、選択シミュレーターに応じた一覧設定・順序の購読切替、
+一覧と詳細の有効設定の合成、ACE 選択中だけのテレメトリ購読、手動要求とホットキー要求の合流を担う。
+`stateIn`・`shareIn` の共有と初期値、`viewModelScope`、イベント処理と最新テレメトリの保持は
+`AceWindowsNarratorViewModel` が管理する。設定のスナップショットも ViewModel で各 StateFlow の現在値から取得する。
+
 `AceWindowsNarratorViewModel` が `ObserveAceWindowsFuelUseCase` の燃料残量と
 `ObserveAceWindowsRemainingFuelThresholdPercentageUseCase` の閾値を監視し、
 `AceWindowsNarratorEventProcessor` を通じて `AceWindowsRemainingFuelWarning` を
