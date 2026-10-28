@@ -20,6 +20,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DE
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
@@ -37,6 +38,7 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLow
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsClassCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitStatusRepository
@@ -92,6 +94,7 @@ val fakeLmuWindowsNarratorModule =
         single<LmuWindowsVehicleDamageRepository> { FakeLmuWindowsVehicleDamageRepository() }
         single<LmuWindowsTyreDetachedRepository> { FakeLmuWindowsTyreDetachedRepository() }
         single<LmuWindowsCarGapRepository> { FakeLmuWindowsCarGapRepository() }
+        single<LmuWindowsClassCarGapRepository> { FakeLmuWindowsClassCarGapRepository() }
         single<SoundPlayer>(named(Simulator.LmuWindows.id)) { NoOpSoundPlayer() }
         single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
         single<LmuWindowsTyreCarcassTemperatureRepository> { FakeLmuWindowsTyreCarcassTemperatureRepository() }
@@ -232,6 +235,10 @@ class FakeLmuWindowsTyreDetachedRepository : LmuWindowsTyreDetachedRepository {
 
 class FakeLmuWindowsCarGapRepository : LmuWindowsCarGapRepository {
     override fun carGapStream(): Flow<LmuWindowsCarGapData> = emptyFlow()
+}
+
+class FakeLmuWindowsClassCarGapRepository : LmuWindowsClassCarGapRepository {
+    override fun classCarGapStream(): Flow<LmuWindowsClassCarGapData> = emptyFlow()
 }
 
 class NoOpSoundPlayer : SoundPlayer {

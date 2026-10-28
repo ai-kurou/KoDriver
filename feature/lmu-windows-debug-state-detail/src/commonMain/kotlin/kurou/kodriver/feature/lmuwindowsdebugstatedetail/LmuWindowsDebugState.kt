@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
@@ -15,6 +16,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 
 data class LmuWindowsDebugState(
     val carGap: LmuWindowsCarGapData? = null,
+    val classCarGap: LmuWindowsClassCarGapData? = null,
     val raceFlags: LmuWindowsRaceFlagsData? = null,
     val virtualEnergy: LmuWindowsVirtualEnergyData? = null,
     val telemetry: LmuWindowsTelemetryData? = null,
@@ -44,6 +46,7 @@ internal val lmuWindowsSupportedCardKeys =
         LmuWindowsDebugStateCardKey.CURRENT_LAP,
         LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
         LmuWindowsDebugStateCardKey.CAR_GAP,
+        LmuWindowsDebugStateCardKey.CLASS_CAR_GAP,
         LmuWindowsDebugStateCardKey.BEST_LAP,
         LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE,
         LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,

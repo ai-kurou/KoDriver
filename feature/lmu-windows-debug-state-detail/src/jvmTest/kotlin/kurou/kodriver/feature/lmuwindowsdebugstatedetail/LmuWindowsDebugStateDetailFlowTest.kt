@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
@@ -60,7 +61,11 @@ class LmuWindowsDebugStateDetailFlowTest {
             expected = expected.copy(enabledCardKeys = lmuWindowsSupportedCardKeys)
             assertEquals(expected, states.last())
 
-            val lmu = LmuWindowsDebugState(virtualEnergyBaseline = LmuWindowsVirtualEnergyBaseline(0.8, 3))
+            val lmu =
+                LmuWindowsDebugState(
+                    virtualEnergyBaseline = LmuWindowsVirtualEnergyBaseline(0.8, 3),
+                    classCarGap = LmuWindowsClassCarGapData(1.5, null),
+                )
             inputs.lmu.update { lmu }
             testScheduler.runCurrent()
             expected = expected.copy(lmuWindows = lmu)

@@ -27,6 +27,35 @@ class LmuWindowsDebugStateDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `同クラス時間差カードは前後車両時間差カードの直後に表示する`() {
+        val order = defaultDebugStateCardOrder
+        assertEquals(
+            LmuWindowsDebugStateCardKey.CLASS_CAR_GAP,
+            order[order.indexOf(LmuWindowsDebugStateCardKey.CAR_GAP) + 1],
+        )
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
+                    uiState =
+                        LmuWindowsDebugStateDetailUiState(
+                            cardOrder =
+                                listOf(
+                                    LmuWindowsDebugStateCardKey.CAR_GAP,
+                                    LmuWindowsDebugStateCardKey.CLASS_CAR_GAP,
+                                ),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+        rule.onNodeWithText("前後車両との時間差").assertIsDisplayed()
+        rule.onNodeWithText("同クラス前後車両との時間差").assertIsDisplayed()
+        rule.onAllNodesWithText("未取得").assertCountEquals(2)
+    }
+
+    @Test
     fun `タイトルを表示して戻る操作を通知する`() {
         var backCount = 0
         rule.setContent {
@@ -58,7 +87,7 @@ class LmuWindowsDebugStateDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("未取得").assertCountEquals(17)
+        rule.onAllNodesWithText("未取得").assertCountEquals(18)
     }
 
     @Test

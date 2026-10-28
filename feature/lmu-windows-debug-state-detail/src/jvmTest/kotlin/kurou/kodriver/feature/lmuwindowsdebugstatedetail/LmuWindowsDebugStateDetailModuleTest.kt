@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsClassCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
@@ -29,6 +30,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyReposi
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsCarGapUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsClassCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -64,6 +66,7 @@ class LmuWindowsDebugStateDetailModuleTest {
     private val lmuWindowsRepository: LmuWindowsRepository = mockk()
     private val lmuWindowsTyreCarcassTemperatureRepository: LmuWindowsTyreCarcassTemperatureRepository = mockk()
     private val carGapRepository: LmuWindowsCarGapRepository = mockk()
+    private val classCarGapRepository: LmuWindowsClassCarGapRepository = mockk()
     private val lmuWindowsTyreDetachedRepository: LmuWindowsTyreDetachedRepository = mockk()
     private val lmuWindowsVehicleApproachRepository: LmuWindowsVehicleApproachRepository = mockk()
     private val lmuWindowsVehicleClassRepository: LmuWindowsVehicleClassRepository = mockk()
@@ -91,6 +94,7 @@ class LmuWindowsDebugStateDetailModuleTest {
         every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
         every { lmuWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
         every { carGapRepository.carGapStream() } returns emptyFlow()
+        every { classCarGapRepository.classCarGapStream() } returns emptyFlow()
         every { lmuWindowsTyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
         every { lmuWindowsVehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
         every { lmuWindowsVehicleClassRepository.vehicleClassStream() } returns emptyFlow()
@@ -117,6 +121,7 @@ class LmuWindowsDebugStateDetailModuleTest {
                             lmuWindowsTyreCarcassTemperatureRepository
                         }
                         single<LmuWindowsCarGapRepository> { carGapRepository }
+                        single<LmuWindowsClassCarGapRepository> { classCarGapRepository }
                         single<LmuWindowsTyreDetachedRepository> { lmuWindowsTyreDetachedRepository }
                         single<LmuWindowsVehicleApproachRepository> { lmuWindowsVehicleApproachRepository }
                         single<LmuWindowsVehicleClassRepository> { lmuWindowsVehicleClassRepository }
@@ -141,6 +146,7 @@ class LmuWindowsDebugStateDetailModuleTest {
             assertNotNull(koin.get<ObserveLmuWindowsPitStatusUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsVehicleDamageUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsCarGapUseCase>())
+            assertNotNull(koin.get<ObserveLmuWindowsClassCarGapUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsTyreDetachedUseCase>())
             val viewModel = koin.get<LmuWindowsDebugStateDetailViewModel>()
             try {

@@ -15,6 +15,7 @@ internal val defaultDebugStateCardOrder =
         LmuWindowsDebugStateCardKey.CURRENT_LAP,
         LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
         LmuWindowsDebugStateCardKey.CAR_GAP,
+        LmuWindowsDebugStateCardKey.CLASS_CAR_GAP,
         LmuWindowsDebugStateCardKey.BEST_LAP,
         LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE,
         LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,

@@ -11,6 +11,7 @@ enum class LmuWindowsDebugStateCardKey {
     CURRENT_LAP,
     SIDE_BY_SIDE_VEHICLES,
     CAR_GAP,
+    CLASS_CAR_GAP,
     BEST_LAP,
     TYRE_TEMPERATURE,
     TYRE_CARCASS_TEMPERATURE,

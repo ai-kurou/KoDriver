@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsCarGapUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsClassCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -20,9 +21,24 @@ import org.koin.core.module.Module
  */
 internal fun Module.lmuWindowsDebugStateDefinitions() {
     factory {
-        LmuWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+        LmuWindowsDebugStateUseCases(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
     }
     factory { ObserveLmuWindowsCarGapUseCase(get()) }
+    factory { ObserveLmuWindowsClassCarGapUseCase(get()) }
     factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
     factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
     factory { ObserveLmuWindowsUseCase(get()) }
