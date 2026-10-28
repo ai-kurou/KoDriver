@@ -7,7 +7,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -29,23 +28,25 @@ internal class OtherFeedbackDetailViewModel(
     private val _telemetryLogId = MutableStateFlow<Long?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    private val detailFlow =
+        OtherFeedbackDetailFlow(
+            mutableState = _uiState,
+            attachedTelemetryLog =
+                _telemetryLogId.flatMapLatest { id ->
+                    if (id == null) {
+                        flowOf(null)
+                    } else {
+                        observeTelemetryLogDetail(id).map { it?.current }
+                    }
+                },
+            canSendFeedback = canSendFeedback(),
+        )
+
     val uiState: StateFlow<OtherFeedbackDetailUiState> =
-        combine(
-            _uiState,
-            _telemetryLogId.flatMapLatest { id ->
-                if (id == null) {
-                    flowOf(null)
-                } else {
-                    observeTelemetryLogDetail(id).map { it?.current }
-                }
-            },
-            canSendFeedback(),
-        ) { state, attachedTelemetryLog, canSend ->
-            state.copy(attachedTelemetryLog = attachedTelemetryLog, isCoolingDown = !canSend)
-        }.stateIn(
+        detailFlow.uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            OtherFeedbackDetailUiState(),
+            detailFlow.initialUiState,
         )
 
     fun setTelemetryLogId(id: Long?) {
