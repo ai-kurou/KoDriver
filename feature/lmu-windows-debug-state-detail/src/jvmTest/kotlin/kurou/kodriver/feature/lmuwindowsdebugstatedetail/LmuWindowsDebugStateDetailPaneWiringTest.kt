@@ -29,6 +29,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -72,6 +73,50 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
     private val viewModel: LmuWindowsDebugStateDetailViewModel = mockk()
 
     private val onBack: () -> Unit = mockk()
+
+    @Test
+    fun `Paneは同クラス時間差の未受信と受信後の更新を表示する`() {
+        val state =
+            MutableStateFlow(
+                LmuWindowsDebugStateDetailUiState(
+                    cardOrder = listOf(LmuWindowsDebugStateCardKey.CLASS_CAR_GAP),
+                ),
+            )
+        excludeRecords { viewModel.uiState }
+        every { viewModel.uiState } returns state
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent {
+                KoDriverTheme {
+                    LmuWindowsDebugStateDetailPane(
+                        true,
+                        {},
+                        Modifier.requiredSize(1560.dp, 1080.dp),
+                    )
+                }
+            }
+            rule.onNodeWithText("同クラス前後車両との時間差").assertIsDisplayed()
+            rule.onNodeWithText("未取得").assertIsDisplayed()
+
+            state.update {
+                it.copy(
+                    enabledCardKeys = setOf(LmuWindowsDebugStateCardKey.CLASS_CAR_GAP),
+                    lmuWindows = LmuWindowsDebugState(classCarGap = LmuWindowsClassCarGapData(1.5, null)),
+                )
+            }
+            rule.onNodeWithText("同クラスの前車との差 1.5 秒").assertIsDisplayed()
+            rule.onNodeWithText("同クラスの後車との差 -- 秒").assertIsDisplayed()
+
+            state.update {
+                it.copy(lmuWindows = LmuWindowsDebugState(classCarGap = LmuWindowsClassCarGapData(null, -2.3)))
+            }
+            rule.onNodeWithText("同クラスの前車との差 -- 秒").assertIsDisplayed()
+            rule.onNodeWithText("同クラスの後車との差 -2.3 秒").assertIsDisplayed()
+            confirmVerified(viewModel)
+        } finally {
+            stopKoin()
+        }
+    }
 
     @Test
     fun `PaneはKoinの状態を表示しカード移動と戻る操作を通知する`() {

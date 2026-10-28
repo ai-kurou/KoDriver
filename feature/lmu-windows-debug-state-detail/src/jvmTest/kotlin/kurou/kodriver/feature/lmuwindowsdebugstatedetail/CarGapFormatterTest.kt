@@ -19,4 +19,9 @@ class CarGapFormatterTest {
         assertEquals("--", formatCarGapSeconds(Double.POSITIVE_INFINITY))
         assertEquals("--", formatCarGapSeconds(Double.NEGATIVE_INFINITY))
     }
+
+    @Test
+    fun `nullは非有限値と同じ欠損表示にする`() {
+        assertEquals("--", formatCarGapSeconds(null))
+    }
 }
