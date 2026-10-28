@@ -24,7 +24,12 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailFlowTest {
         runTest {
             val inputs = Inputs()
 
-            assertEquals(Gt7Ps5AutoReadoutTyreTemperatureDetailUiState(), inputs.flow().first())
+            val state = Gt7Ps5AutoReadoutTyreTemperatureDetailUiState()
+            assertEquals(GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT, state.readoutText)
+            assertEquals(GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value, state.highThresholdCelsius)
+            assertEquals(false, state.isTextToSpeechAvailable)
+            assertEquals(true, state.overheatWarningEnabled)
+            assertEquals(state, inputs.flow().first())
             assertEquals(0, inputs.activeSubscriptions)
         }
 
@@ -38,14 +43,14 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailFlowTest {
             var expected = Gt7Ps5AutoReadoutTyreTemperatureDetailUiState()
             assertEquals(expected, states.last())
 
-            inputs.highThresholdCelsius.update { Celsius(110) }
+            inputs.highThresholdCelsius.update { Celsius(105) }
             testScheduler.runCurrent()
-            expected = expected.copy(highThresholdCelsius = 110)
+            expected = expected.copy(highThresholdCelsius = 105)
             assertEquals(expected, states.last())
 
-            inputs.readoutText.update { "更新{celsius}" }
+            inputs.readoutText.update { "注意{celsius}度" }
             testScheduler.runCurrent()
-            expected = expected.copy(readoutText = "更新{celsius}")
+            expected = expected.copy(readoutText = "注意{celsius}度")
             assertEquals(expected, states.last())
 
             inputs.isTextToSpeechAvailable.update { true }
@@ -59,6 +64,11 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailFlowTest {
             testScheduler.runCurrent()
             expected = expected.copy(overheatWarningEnabled = false)
             assertEquals(expected, states.last())
+            val state = states.last()
+            assertEquals("注意{celsius}度", state.readoutText)
+            assertEquals(true, state.isTextToSpeechAvailable)
+            assertEquals(false, state.overheatWarningEnabled)
+            assertEquals(105, state.highThresholdCelsius)
 
             inputs.enabledStates.update { mapOf(key to true) }
             testScheduler.runCurrent()

@@ -24,7 +24,12 @@ class AceWindowsAutoReadoutTyreTemperatureDetailFlowTest {
         runTest {
             val inputs = Inputs()
 
-            assertEquals(AceWindowsAutoReadoutTyreTemperatureDetailUiState(), inputs.flow().first())
+            val state = AceWindowsAutoReadoutTyreTemperatureDetailUiState()
+            assertEquals(ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT, state.overheatReadoutText)
+            assertEquals(ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value, state.highThresholdCelsius)
+            assertEquals(true, state.overheatWarningEnabled)
+            assertEquals(false, state.isTextToSpeechAvailable)
+            assertEquals(state, inputs.flow().first())
             assertEquals(0, inputs.activeSubscriptions)
         }
 
