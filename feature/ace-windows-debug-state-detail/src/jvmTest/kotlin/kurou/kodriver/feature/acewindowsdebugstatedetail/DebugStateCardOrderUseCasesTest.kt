@@ -33,6 +33,7 @@ class DebugStateCardOrderUseCasesTest {
             "BEST_LAP",
             "TYRE_CARCASS_TEMPERATURE",
             "FUEL_CONSUMPTION",
+            "CAR_GAP",
         )
 
     @Test

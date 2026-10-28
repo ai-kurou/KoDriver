@@ -3,6 +3,7 @@ package kurou.kodriver.feature.acewindowsdebugstatedetail
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
@@ -16,6 +17,7 @@ data class AceWindowsDebugState(
     val remainingFuelLaps: AceWindowsRemainingFuelLapsData? = null,
     val vehicleApproach: AceWindowsVehicleApproachData? = null,
     val tyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData? = null,
+    val gap: AceWindowsGapData? = null,
 )
 
 internal val aceWindowsSupportedCardKeys =
@@ -27,4 +29,5 @@ internal val aceWindowsSupportedCardKeys =
         AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
         AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
         AceWindowsDebugStateCardKey.BEST_LAP,
+        AceWindowsDebugStateCardKey.CAR_GAP,
     )

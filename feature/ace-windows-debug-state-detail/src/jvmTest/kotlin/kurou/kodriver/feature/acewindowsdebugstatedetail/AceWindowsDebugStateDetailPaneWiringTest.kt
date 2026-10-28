@@ -27,6 +27,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -169,6 +170,39 @@ class AceWindowsDebugStateDetailPaneWiringTest {
                 )
             }
             rule.onNodeWithText("PitLane（ピットレーン）").assertIsDisplayed()
+
+            verify(exactly = 0) { onBack() }
+            confirmVerified(viewModel, onBack)
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
+    fun `Paneは前後車両ギャップの状態更新を表示する`() {
+        val state =
+            MutableStateFlow(
+                AceWindowsDebugStateDetailUiState(cardOrder = listOf(AceWindowsDebugStateCardKey.CAR_GAP)),
+            )
+        excludeRecords { viewModel.uiState }
+        every { viewModel.uiState } returns state
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent {
+                KoDriverTheme {
+                    AceWindowsDebugStateDetailPane(false, onBack)
+                }
+            }
+            rule.onNodeWithText("前後車両との時間差").assertIsDisplayed()
+            rule.onNodeWithText("未取得").assertIsDisplayed()
+            state.update {
+                it.copy(
+                    aceWindows = AceWindowsDebugState(gap = AceWindowsGapData(1.26f, -2.34f)),
+                    enabledCardKeys = setOf(AceWindowsDebugStateCardKey.CAR_GAP),
+                )
+            }
+            rule.onNodeWithText("前車との差 1.3 秒").assertIsDisplayed()
+            rule.onNodeWithText("後車との差 -2.3 秒").assertIsDisplayed()
 
             verify(exactly = 0) { onBack() }
             confirmVerified(viewModel, onBack)

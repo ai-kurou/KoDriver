@@ -21,6 +21,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
@@ -29,6 +30,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -36,6 +38,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachRepo
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
@@ -56,6 +59,8 @@ import org.junit.Before
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions", "LongMethod")
@@ -68,6 +73,8 @@ class AceWindowsDebugStateDetailViewModelTest {
     private val requestDebugReadout: RequestDebugReadoutUseCase = mockk(relaxUnitFun = true)
 
     private val testDispatcher = UnconfinedTestDispatcher()
+
+    private val gapRepository: AceWindowsGapRepository = mockk()
 
     private val fuelRepository: AceWindowsFuelRepository = mockk()
 
@@ -111,6 +118,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                     observeVehicleApproach = ObserveAceWindowsVehicleApproachUseCase(vehicleApproachRepository),
                     observeBestLapTime = ObserveAceWindowsBestLapTimeUseCase(bestLapTimeRepository),
                     observeRemainingFuelLaps = ObserveAceWindowsRemainingFuelLapsUseCase(remainingFuelLapsRepository),
+                    observeGap = ObserveAceWindowsGapUseCase(gapRepository),
                 ),
             cardOrderUseCases =
                 DebugStateCardOrderUseCases(
@@ -123,6 +131,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     @Test
     fun `未受信でもシミュレーターカードは常に有効になる`() =
         runTest {
+            every { gapRepository.gapStream() } returns emptyFlow()
             every { fuelRepository.fuelStream() } returns emptyFlow()
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
@@ -156,7 +165,10 @@ class AceWindowsDebugStateDetailViewModelTest {
 
             assertEquals(setOf(AceWindowsDebugStateCardKey.SIMULATOR), state.enabledCardKeys)
             assertEquals(AceWindowsDebugState(), state.aceWindows)
+            assertEquals(null, state.aceWindows.gap)
+            assertFalse(AceWindowsDebugStateCardKey.CAR_GAP in state.enabledCardKeys)
             assertEquals(defaultDebugStateCardOrder, state.cardOrder)
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -167,6 +179,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
                 requestDebugReadout,
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
@@ -182,6 +195,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     fun `燃料の受信だけで対応カードを有効にして状態を反映する`() =
         runTest {
             val flow = MutableSharedFlow<AceWindowsFuelData>()
+            every { gapRepository.gapStream() } returns emptyFlow()
             every { fuelRepository.fuelStream() } returns flow
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
@@ -204,6 +218,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.FUEL_CONSUMPTION),
                 state.enabledCardKeys,
             )
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -213,6 +228,67 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
+                gapRepository,
+                fuelRepository,
+                flagRepository,
+                statusRepository,
+                tyreCarcassTemperatureRepository,
+                vehicleApproachRepository,
+                bestLapTimeRepository,
+                remainingFuelLapsRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `ギャップの受信だけで対応カードを有効にして状態を反映する`() =
+        runTest {
+            val flow = MutableSharedFlow<AceWindowsGapData>()
+            every { gapRepository.gapStream() } returns flow
+            every { fuelRepository.fuelStream() } returns emptyFlow()
+            every { flagRepository.flagStream() } returns emptyFlow()
+            every { statusRepository.statusStream() } returns emptyFlow()
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
+            every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+            viewModel.uiState.first()
+            testScheduler.runCurrent()
+
+            val data = AceWindowsGapData(1.26f, -2.34f)
+            flow.emit(data)
+            testScheduler.runCurrent()
+            val state = viewModel.uiState.first()
+
+            assertEquals(data, state.aceWindows.gap)
+            assertEquals(
+                setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.CAR_GAP),
+                state.enabledCardKeys,
+            )
+            val updated = AceWindowsGapData(0.0f, Float.NaN)
+            flow.emit(updated)
+            testScheduler.runCurrent()
+            assertEquals(
+                updated,
+                viewModel.uiState
+                    .first()
+                    .aceWindows.gap,
+            )
+            assertTrue(AceWindowsDebugStateCardKey.CAR_GAP in viewModel.uiState.first().enabledCardKeys)
+
+            verify(exactly = 1) { gapRepository.gapStream() }
+            verify(exactly = 1) { fuelRepository.fuelStream() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { statusRepository.statusStream() }
+            verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
@@ -228,6 +304,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     fun `フラッグの受信だけで対応カードを有効にして状態を反映する`() =
         runTest {
             val flow = MutableSharedFlow<AceWindowsFlagData>()
+            every { gapRepository.gapStream() } returns emptyFlow()
             every { fuelRepository.fuelStream() } returns emptyFlow()
             every { flagRepository.flagStream() } returns flow
             every { statusRepository.statusStream() } returns emptyFlow()
@@ -250,6 +327,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.FLAG_INFO),
                 state.enabledCardKeys,
             )
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -259,6 +337,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
@@ -274,6 +353,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     fun `ステータスの受信だけで対応カードを有効にして状態を反映する`() =
         runTest {
             val flow = MutableSharedFlow<AceWindowsStatusData>()
+            every { gapRepository.gapStream() } returns emptyFlow()
             every { fuelRepository.fuelStream() } returns emptyFlow()
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns flow
@@ -296,6 +376,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.VEHICLE_LOCATION),
                 state.enabledCardKeys,
             )
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -305,6 +386,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
@@ -320,6 +402,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     fun `タイヤカーカス温度の受信だけで対応カードを有効にして状態を反映する`() =
         runTest {
             val flow = MutableSharedFlow<AceWindowsTyreCarcassTemperatureData>()
+            every { gapRepository.gapStream() } returns emptyFlow()
             every { fuelRepository.fuelStream() } returns emptyFlow()
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
@@ -342,6 +425,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
                 state.enabledCardKeys,
             )
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -351,6 +435,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
@@ -366,6 +451,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     fun `周辺車両の受信だけで対応カードを有効にして状態を反映する`() =
         runTest {
             val flow = MutableSharedFlow<AceWindowsVehicleApproachData>()
+            every { gapRepository.gapStream() } returns emptyFlow()
             every { fuelRepository.fuelStream() } returns emptyFlow()
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
@@ -388,6 +474,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                 state.enabledCardKeys,
             )
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -397,6 +484,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
@@ -412,6 +500,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     fun `ベストラップの受信だけで対応カードを有効にして状態を反映する`() =
         runTest {
             val flow = MutableSharedFlow<AceWindowsBestLapTimeData>()
+            every { gapRepository.gapStream() } returns emptyFlow()
             every { fuelRepository.fuelStream() } returns emptyFlow()
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
@@ -434,6 +523,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.BEST_LAP),
                 state.enabledCardKeys,
             )
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -443,6 +533,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
@@ -458,6 +549,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     fun `燃料残り周数の受信だけで対応カードを有効にして状態を反映する`() =
         runTest {
             val flow = MutableSharedFlow<AceWindowsRemainingFuelLapsData>()
+            every { gapRepository.gapStream() } returns emptyFlow()
             every { fuelRepository.fuelStream() } returns emptyFlow()
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
@@ -480,6 +572,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.FUEL_CONSUMPTION),
                 state.enabledCardKeys,
             )
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -489,6 +582,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
@@ -504,6 +598,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     fun `全ストリームを集約し更新しても受信済みカードを維持する`() =
         runTest {
             val flow = MutableStateFlow(AceWindowsFuelData(remainingPercent = FuelPercent(50.0)))
+            every { gapRepository.gapStream() } returns MutableStateFlow(AceWindowsGapData(1.26f, -2.34f))
             every { fuelRepository.fuelStream() } returns flow
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG))
@@ -525,6 +620,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             assertEquals(aceWindowsSupportedCardKeys, viewModel.uiState.first().enabledCardKeys)
             assertEquals(
                 AceWindowsDebugState(
+                    gap = AceWindowsGapData(1.26f, -2.34f),
                     fuel = AceWindowsFuelData(remainingPercent = FuelPercent(50.0)),
                     flag = AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG),
                     status = AceWindowsStatusData(AceWindowsStatusType.LIVE, AceWindowsCarLocation.TRACK),
@@ -545,6 +641,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                     ?.remainingPercent,
             )
             assertEquals(aceWindowsSupportedCardKeys, viewModel.uiState.first().enabledCardKeys)
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -554,6 +651,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
@@ -568,6 +666,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     @Test
     fun `保存済み順序の非対応カードを除外して不足するACEカードを補完する`() =
         runTest {
+            every { gapRepository.gapStream() } returns emptyFlow()
             every { fuelRepository.fuelStream() } returns emptyFlow()
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
@@ -590,6 +689,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             persisted.update { defaultDebugStateCardOrder.reversed().map { it.name } }
             testScheduler.runCurrent()
             assertEquals(defaultDebugStateCardOrder.reversed(), viewModel.uiState.first().cardOrder)
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -599,6 +699,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
@@ -613,6 +714,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     @Test
     fun `moveCardは即座に順序を反映して保存し保存前の通知でも巻き戻らない`() =
         runTest {
+            every { gapRepository.gapStream() } returns emptyFlow()
             every { fuelRepository.fuelStream() } returns emptyFlow()
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
@@ -633,6 +735,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             persisted.update { defaultDebugStateCardOrder.reversed().map { it.name } }
             testScheduler.runCurrent()
             assertEquals(expected, viewModel.uiState.first().cardOrder)
+            verify(exactly = 1) { gapRepository.gapStream() }
             verify(exactly = 1) { fuelRepository.fuelStream() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
@@ -643,6 +746,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             coVerify(exactly = 1) { cardOrderRepository.saveCardOrder(expected.map { it.name }) }
             confirmVerified(
+                gapRepository,
                 fuelRepository,
                 flagRepository,
                 statusRepository,
