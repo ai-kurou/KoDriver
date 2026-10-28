@@ -31,6 +31,8 @@ class AceWindowsMapperTest {
         const val OFF_SESSION_STATE_CURRENT_LAP = 2548
         const val OFF_CAR_COORDINATES = 3124
         const val CAR_COORDINATES_STRIDE = 12
+        const val OFF_GAP_AHEAD = 3844
+        const val OFF_GAP_BEHIND = 3848
         const val OFF_ACTIVE_CARS = 3852
         const val OFF_CAR_IDS = 3940
         const val CAR_ID_STRIDE = 16
@@ -91,6 +93,15 @@ class AceWindowsMapperTest {
         ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
             it.putInt(OFF_BEST_LAPTIME_MS, bestLapTimeMs)
             it.putInt(OFF_SESSION_STATE_CURRENT_LAP, currentLap)
+        }
+
+    private fun gapBuffer(
+        gapAheadSeconds: Float,
+        gapBehindSeconds: Float,
+    ): ByteBuffer =
+        ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
+            it.putFloat(OFF_GAP_AHEAD, gapAheadSeconds)
+            it.putFloat(OFF_GAP_BEHIND, gapBehindSeconds)
         }
 
     private fun flagBuffer(flagRawValue: Int): ByteBuffer =
@@ -179,6 +190,30 @@ class AceWindowsMapperTest {
         val result = AceWindowsMapper.mapBestLapTime(bestLapTimeBuffer(0))
 
         assertEquals(0, result.bestLapTimeMs)
+    }
+
+    @Test
+    fun `gap_ahead と gap_behind の正負の秒数をそのまま取得する`() {
+        val result = AceWindowsMapper.mapGap(gapBuffer(1.25f, -2.5f))
+
+        assertEquals(1.25f, result.gapAheadSeconds)
+        assertEquals(-2.5f, result.gapBehindSeconds)
+    }
+
+    @Test
+    fun `gap_ahead が負で gap_behind が正の場合も符号を保持する`() {
+        val result = AceWindowsMapper.mapGap(gapBuffer(-3.75f, 4.5f))
+
+        assertEquals(-3.75f, result.gapAheadSeconds)
+        assertEquals(4.5f, result.gapBehindSeconds)
+    }
+
+    @Test
+    fun `前車と後車のギャップが0のとき0を返す`() {
+        val result = AceWindowsMapper.mapGap(gapBuffer(0f, 0f))
+
+        assertEquals(0f, result.gapAheadSeconds)
+        assertEquals(0f, result.gapBehindSeconds)
     }
 
     @Test
