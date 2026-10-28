@@ -42,6 +42,19 @@ class LowVolumeWarningViewModelTest {
     }
 
     @Test
+    fun `購読前は警告があっても初期状態を返す`() =
+        runTest(dispatcher) {
+            val warnings = MutableStateFlow<LowVolumeWarning?>(LowVolumeWarning(deviceVolume = 20, soundVolume = null))
+            every { observeWarning() } returns warnings
+            val viewModel = LowVolumeWarningViewModel(observeWarning)
+
+            assertEquals(LowVolumeWarningUiState(), viewModel.uiState.first())
+            assertEquals(0, warnings.subscriptionCount.value)
+            verify(exactly = 1) { observeWarning() }
+            confirmVerified(observeWarning)
+        }
+
+    @Test
     fun `警告なしを非表示状態にする`() =
         runTest(dispatcher) {
             every { observeWarning() } returns MutableStateFlow(null)
