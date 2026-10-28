@@ -416,7 +416,12 @@ private fun TelemetryLogListItem(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant.applySkippedAlpha(log.narrationOutcome),
                 )
                 Box {
-                    IconButton(onClick = { menuExpanded = true }) {
+                    IconButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            menuExpanded = true
+                        },
+                    ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = stringResource(Res.string.telemetry_log_more_button),

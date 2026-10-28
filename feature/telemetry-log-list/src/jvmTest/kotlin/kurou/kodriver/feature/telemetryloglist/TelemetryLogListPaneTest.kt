@@ -42,22 +42,39 @@ class TelemetryLogListPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `メニューボタンを押すと触覚を一度だけ発火してメニューを開く`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        showPaneWithMenuCallbacks()
+
+        rule.onNodeWithContentDescription("その他の操作").performClick()
+
+        rule.onNodeWithText("フィードバック送信").assertIsDisplayed()
+        rule.onNodeWithText("削除").assertIsDisplayed()
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 0) { onLogClick(1L) }
+        verify(exactly = 0) { onFeedbackClick(1L) }
+        verify(exactly = 0) { onDeleteClick(1L) }
+        confirmVerified(haptic, onLogClick, onFeedbackClick, onDeleteClick)
+    }
+
+    @Test
     fun `メニューからフィードバックを選ぶと触覚の後にコールバックを一度だけ呼ぶ`() {
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         every { onFeedbackClick(1L) } returns Unit
         showPaneWithMenuCallbacks()
 
         rule.onNodeWithContentDescription("その他の操作").performClick()
-        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         verify(exactly = 0) { onFeedbackClick(1L) }
 
         rule.onNodeWithText("フィードバック送信").performClick()
 
-        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         verify(exactly = 1) { onFeedbackClick(1L) }
         verify(exactly = 0) { onDeleteClick(1L) }
         verify(exactly = 0) { onLogClick(1L) }
         verifyOrder {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
             haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
             onFeedbackClick(1L)
         }
@@ -71,16 +88,17 @@ class TelemetryLogListPaneTest {
         showPaneWithMenuCallbacks()
 
         rule.onNodeWithContentDescription("その他の操作").performClick()
-        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         verify(exactly = 0) { onDeleteClick(1L) }
 
         rule.onNodeWithText("削除").performClick()
 
-        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         verify(exactly = 1) { onDeleteClick(1L) }
         verify(exactly = 0) { onFeedbackClick(1L) }
         verify(exactly = 0) { onLogClick(1L) }
         verifyOrder {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
             haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
             onDeleteClick(1L)
         }
