@@ -8,7 +8,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.TextToSpeechVoice
-import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.usecase.GetAvailableVoicesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
@@ -37,23 +35,17 @@ internal class OtherVoiceDetailViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<OtherVoiceDetailUiState> =
-        combine(
-            refreshTrigger.flatMapLatest {
-                flow {
-                    emit(OtherVoiceDetailUiState())
-                    emit(OtherVoiceDetailUiState(voices = loadVoices(), isLoading = false))
-                }
-            },
-            observeVoice(),
-            previewingVoiceId,
-        ) { state, voiceId, previewingId ->
-            state.copy(
-                selectedVoiceId = voiceId,
-                previewingVoiceId = previewingId,
-                savedVoiceMissing =
-                    !state.isLoading && voiceId != VOICE_ID_UNSPECIFIED && state.voices.none { it.id == voiceId },
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVoiceDetailUiState())
+        OtherVoiceDetailFlow(
+            loadState =
+                refreshTrigger.flatMapLatest {
+                    flow {
+                        emit(OtherVoiceDetailUiState())
+                        emit(OtherVoiceDetailUiState(voices = loadVoices(), isLoading = false))
+                    }
+                },
+            savedVoiceId = observeVoice(),
+            previewingVoiceId = previewingVoiceId,
+        ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVoiceDetailUiState())
 
     /** 取得に失敗しても取得完了（空の一覧）として扱い、「再読み込み」から再試行できるようにする。 */
     private suspend fun loadVoices(): List<TextToSpeechVoice> =

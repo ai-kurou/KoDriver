@@ -115,19 +115,6 @@ class OtherVoiceDetailViewModelTest {
         }
 
     @Test
-    fun `システム既定の場合は空の一覧でも保存済み不在にしない`() =
-        runTest {
-            every { voicePreferencesRepository.voiceId() } returns MutableStateFlow(VOICE_ID_UNSPECIFIED)
-            coEvery { voiceListRepository.availableVoices() } returns emptyList()
-            val state = createViewModel().uiState.first { !it.isLoading }
-
-            assertEquals(OtherVoiceDetailUiState(isLoading = false), state)
-            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
-            coVerify(exactly = 1) { voiceListRepository.availableVoices() }
-            confirmVerified(voicePreferencesRepository, voiceListRepository)
-        }
-
-    @Test
     fun `音声選択は即時保存し設定監視から選択を更新する`() =
         runTest {
             val saved = MutableStateFlow(VOICE_ID_UNSPECIFIED)

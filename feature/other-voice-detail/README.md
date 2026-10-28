@@ -16,3 +16,9 @@ Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を
 <!-- MODULE-GRAPH-END -->
 
 システム既定の音声は日本語の音声一覧・件数から除外する。除外した音声のIDが保存済みの場合は保存値を保持し、既定カードを選択表示する。既定音声だけが利用できる場合は、追加の日本語音声がない旨を表示する。
+
+## ファイル責務
+
+- `OtherVoiceDetailUiState.kt`: 音声選択画面の表示状態。
+- `OtherVoiceDetailFlow.kt`: ロード状態・保存済み音声ID・試聴中IDから表示状態を合成する cold Flow。
+- `OtherVoiceDetailViewModel.kt`: 音声一覧の取得・再読み込みと例外処理、試聴・保存の副作用、`stateIn` による状態の共有。
