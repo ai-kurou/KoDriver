@@ -10,6 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.version_mismatch_app_version
@@ -27,6 +29,7 @@ internal fun VersionMismatchBottomSheetContent(
     appVersion: String,
     onDismiss: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     val windowsIsNewer = parseVersion(windowsKoDriverVersion) > parseVersion(appVersion)
 
     Column(
@@ -66,7 +69,10 @@ internal fun VersionMismatchBottomSheetContent(
         )
         Spacer(modifier = Modifier.height(AppSpacing.extraLarge))
         Button(
-            onClick = onDismiss,
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                onDismiss()
+            },
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(stringResource(Res.string.version_mismatch_close))
