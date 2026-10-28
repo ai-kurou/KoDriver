@@ -29,6 +29,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class OtherVoiceSpeedDetailPaneTest {
+    private val onSpeedChanged: (Float) -> Unit = mockk()
+    private val onPreviewClicked: (String) -> Unit = mockk()
+    private val haptic: HapticFeedback = mockk()
+
     @get:Rule
     val rule = createComposeRule()
 
@@ -88,8 +92,6 @@ class OtherVoiceSpeedDetailPaneTest {
 
     @Test
     fun `速度スライダー操作を完了すると変更後の速度を通知する`() {
-        val onSpeedChanged: (Float) -> Unit = mockk()
-        val haptic: HapticFeedback = mockk()
         every { onSpeedChanged(2.0f) } returns Unit
         rule.setContent {
             CompositionLocalProvider(LocalHapticFeedback provides haptic) {
@@ -118,7 +120,6 @@ class OtherVoiceSpeedDetailPaneTest {
     @Test
     fun `速度スライダーのドラッグは振動せず完了時だけ速度を通知する`() {
         val changedSpeeds = mutableListOf<Float>()
-        val haptic: HapticFeedback = mockk()
         rule.setContent {
             CompositionLocalProvider(LocalHapticFeedback provides haptic) {
                 KoDriverTheme {
@@ -155,8 +156,6 @@ class OtherVoiceSpeedDetailPaneTest {
 
     @Test
     fun `リセット操作はデフォルト速度を通知する`() {
-        val onSpeedChanged: (Float) -> Unit = mockk()
-        val haptic: HapticFeedback = mockk()
         every { onSpeedChanged(1.0f) } returns Unit
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
@@ -190,8 +189,6 @@ class OtherVoiceSpeedDetailPaneTest {
 
     @Test
     fun `試聴ボタンを押すと試聴用の文言を通知する`() {
-        val onPreviewClicked: (String) -> Unit = mockk()
-        val haptic: HapticFeedback = mockk()
         every { onPreviewClicked("これは読み上げ速度の試聴です。") } returns Unit
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
@@ -214,8 +211,6 @@ class OtherVoiceSpeedDetailPaneTest {
 
     @Test
     fun `試聴中は停止ボタンを表示して停止操作と振動を通知する`() {
-        val onPreviewClicked: (String) -> Unit = mockk()
-        val haptic: HapticFeedback = mockk()
         every { onPreviewClicked("これは読み上げ速度の試聴です。") } returns Unit
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
