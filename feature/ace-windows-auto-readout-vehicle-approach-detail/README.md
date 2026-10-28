@@ -8,6 +8,8 @@ ACEの車両接近の閾値・接近開始時の有効状態・自由文言を�
 空白・TTS利用不可・音量0以下では開始音も本文も再生しない。TTS利用不可時は入力を無効にして案内する。
 WAVへのフォールバックは行わない。
 
+UI 状態の合成は `AceWindowsAutoReadoutVehicleApproachDetailFlow` が cold Flow として担う。共有・初期値・`viewModelScope` での実行は ViewModel が管理する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
