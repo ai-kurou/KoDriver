@@ -5,6 +5,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
@@ -20,7 +21,7 @@ import kotlin.math.sqrt
 /**
  * Assetto Corsa EVO の Graphics 共有メモリ (`Local\acevo_pmf_graphics`, `SPageFileGraphicEvo`) の
  * ByteBuffer を AceWindowsFuelData / AceWindowsFlagData / AceWindowsStatusData /
- * AceWindowsVehicleApproachData に変換する。
+ * AceWindowsVehicleApproachData / AceWindowsGapData に変換する。
  *
  * `SPageFileGraphicEvo` は `char[33]` / `bool` を含むため固定オフセットが文書化されておらず
  * (docs/ace-windows-telemetry.md 参照)、_pack_=4 のアライメント規則 (4バイト境界に整列、
@@ -89,7 +90,7 @@ import kotlin.math.sqrt
  *   [+3020] driver_name, driver_surname, car_model (char[33] x3)
  *   [+3119] is_in_pit_box, is_in_pit_lane, is_valid_lap (bool x3)
  *   [+3124] car_coordinates (float[60][3], 720バイト) ← VehicleApproach 取得対象、+2バイトパディング後
- *   [+3844] gap_ahead, gap_behind (float x2)
+ *   [+3844/+3848] gap_ahead, gap_behind (float x2, 秒) ← Gap 取得対象
  *   [+3852] active_cars (uint8) ← VehicleApproach 取得対象
  *   [+3940] car_ids (uint64[60][2], 960バイト) ← VehicleApproach 取得対象、+3バイトパディング後
  */
@@ -109,6 +110,8 @@ internal object AceWindowsMapper {
     private const val OFF_SESSION_STATE_CURRENT_LAP = 72
     private const val OFF_CAR_COORDINATES = 3124
     private const val CAR_COORDINATES_STRIDE = 12
+    private const val OFF_GAP_AHEAD = 3844
+    private const val OFF_GAP_BEHIND = 3848
     private const val OFF_ACTIVE_CARS = 3852
     private const val OFF_CAR_IDS = 3940
     private const val CAR_ID_STRIDE = 16
@@ -144,6 +147,12 @@ internal object AceWindowsMapper {
         AceWindowsBestLapTimeData(
             bestLapTimeMs = buffer.getInt(OFF_BEST_LAPTIME_MS),
             currentLap = buffer.getInt(OFF_SESSION_STATE + OFF_SESSION_STATE_CURRENT_LAP),
+        )
+
+    fun mapGap(buffer: ByteBuffer): AceWindowsGapData =
+        AceWindowsGapData(
+            gapAheadSeconds = buffer.getFloat(OFF_GAP_AHEAD),
+            gapBehindSeconds = buffer.getFloat(OFF_GAP_BEHIND),
         )
 
     fun mapFlag(buffer: ByteBuffer): AceWindowsFlagData =

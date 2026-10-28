@@ -8,6 +8,7 @@ import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMem
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsBestLapTimeRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFlagRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFuelRepositoryImpl
+import kurou.kodriver.core.acewindowsdata.repository.AceWindowsGapRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsRemainingFuelLapsRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsStatusRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsTyreCarcassTemperatureRepositoryImpl
@@ -15,6 +16,7 @@ import kurou.kodriver.core.acewindowsdata.repository.AceWindowsVehicleApproachRe
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
@@ -22,6 +24,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -64,6 +67,9 @@ val aceWindowsDataModule =
             } else {
                 NoOpAceWindowsBestLapTimeRepository()
             }
+        }
+        single<AceWindowsGapRepository> {
+            if (isWindows) AceWindowsGapRepositoryImpl(source = get()) else NoOpAceWindowsGapRepository()
         }
         single<AceWindowsTyreCarcassTemperatureRepository> {
             if (isWindows) {
@@ -109,4 +115,8 @@ private class NoOpAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreCar
 
 private class NoOpAceWindowsVehicleApproachRepository : AceWindowsVehicleApproachRepository {
     override fun vehicleApproachStream(): Flow<AceWindowsVehicleApproachData> = emptyFlow()
+}
+
+private class NoOpAceWindowsGapRepository : AceWindowsGapRepository {
+    override fun gapStream(): Flow<AceWindowsGapData> = emptyFlow()
 }

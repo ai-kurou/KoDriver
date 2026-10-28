@@ -1,5 +1,7 @@
 # ace-windows-auto-readout-my-best-lap-detail
 
+UI 状態の合成は `AceWindowsAutoReadoutMyBestLapDetailFlow` が cold Flow として担う。共有・初期値・`viewModelScope` での実行は ViewModel が管理する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

@@ -14,6 +14,9 @@ GT7 PS5 専用のデバッグ状態画面。シミュレーター、車両クラ
 
 - `Gt7Ps5DebugStateDetailPane.kt`: ViewModel を取得する Pane とinternal な PaneContent。画面幅に合わせて1〜3列に切り替える。
 - `Gt7Ps5DebugStateDetailViewModel.kt` / `Gt7Ps5DebugStateDetailUiState.kt`: GT7 状態、受信済みカード、カード順序を管理する。シミュレーターカードは常に GT7 を表示し、有効にする。
+
+  UI 状態の合成は `Gt7Ps5DebugStateDetailFlow` が cold Flow として担う。各段階の共有・初期値・`viewModelScope` での実行は ViewModel が管理する。
+
 - `Gt7Ps5DebugStateSource.kt` / `Gt7Ps5DebugState.kt`: GT7 のテレメトリと車両クラスの UseCase 購読、状態の集約、受信済みカードの通知。
 - `Gt7Ps5DebugStateCards.kt` / `DebugState*Card.kt`: GT7 専用のカード表示。フレーム、未取得表示、温度・ラップタイム・燃料の整形ヘルパーも同梱する。
 - `Gt7Ps5DebugStateDetailModule.kt` / `Gt7Ps5DebugStateModule.kt`: ViewModel と UseCase の Koin 定義。利用側が必要な Repository を登録する。

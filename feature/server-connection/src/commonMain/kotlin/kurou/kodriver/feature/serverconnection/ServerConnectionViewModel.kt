@@ -5,13 +5,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.usecase.KoDriverServerConnectionStatus
 import kurou.kodriver.domain.usecase.ObserveKoDriverServerConnectionUseCase
 
 /**
@@ -37,24 +34,12 @@ class ServerConnectionViewModel(
                 replay = 1,
             )
 
-    private val baseUiStateFlow =
-        connectionStateFlow
-            .map { state ->
-                ServerConnectionUiState(
-                    connectionStatus = state.connectionStatus.toUiStatus(),
-                    requiresKoDriverServer = state.requiresKoDriverServer,
-                    selectedSimulator = state.selectedSimulator,
-                    serverVersion = state.serverVersion,
-                )
-            }
-
     val uiState: StateFlow<ServerConnectionUiState> =
-        combine(
-            baseUiStateFlow,
-            showVersionMismatchBottomSheetFlow,
-        ) { base, showBottomSheet ->
-            base.copy(showVersionMismatchBottomSheet = showBottomSheet, appVersion = appVersion)
-        }.stateIn(
+        ServerConnectionFlow(
+            connectionState = connectionStateFlow,
+            showVersionMismatchBottomSheet = showVersionMismatchBottomSheetFlow,
+            appVersion = appVersion,
+        ).uiState.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = ServerConnectionUiState(),
@@ -64,11 +49,3 @@ class ServerConnectionViewModel(
         showVersionMismatchBottomSheetFlow.update { false }
     }
 }
-
-private fun KoDriverServerConnectionStatus.toUiStatus(): ServerConnectionStatus =
-    when (this) {
-        KoDriverServerConnectionStatus.NOT_CONFIGURED -> ServerConnectionStatus.NOT_CONFIGURED
-        KoDriverServerConnectionStatus.CHECKING -> ServerConnectionStatus.CHECKING
-        KoDriverServerConnectionStatus.CONNECTED -> ServerConnectionStatus.CONNECTED
-        KoDriverServerConnectionStatus.DISCONNECTED -> ServerConnectionStatus.DISCONNECTED
-    }

@@ -7,7 +7,8 @@ GT7 PS5 の燃料残量アナウンス詳細設定を提供する feature モジ
 ## Responsibilities
 
 - `Gt7Ps5AutoReadoutRemainingFuelDetailPane` で説明、文言入力・リセット・試聴、残量閾値スライダーを表示する
-- `Gt7Ps5AutoReadoutRemainingFuelDetailViewModel` で閾値・文言・有効状態の購読と保存、TTS可否の取得と試聴を扱う
+- `Gt7Ps5AutoReadoutRemainingFuelDetailFlow` で閾値・有効状態・文言・TTS可否の入力FlowをUiStateへ合成する（cold Flow）
+- `Gt7Ps5AutoReadoutRemainingFuelDetailViewModel` で入力Flowの取得、`stateIn`による共有・初期値の管理、設定の保存、TTS可否の取得と試聴を扱う
 - 試聴は現在の閾値で `{percent}` を置換し、空白文言・TTS利用不可・音量0以下では本文も開始音も抑止する
 - 閾値のデフォルト値は `GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT` を参照する
 

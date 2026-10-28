@@ -14,6 +14,7 @@ import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
@@ -21,6 +22,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -367,6 +369,11 @@ class DesktopKoinModuleGraphTest {
                         single<AceWindowsBestLapTimeRepository> {
                             object : AceWindowsBestLapTimeRepository {
                                 override fun bestLapTimeStream() = emptyFlow<AceWindowsBestLapTimeData>()
+                            }
+                        }
+                        single<AceWindowsGapRepository> {
+                            object : AceWindowsGapRepository {
+                                override fun gapStream() = emptyFlow<AceWindowsGapData>()
                             }
                         }
                         single<AceWindowsRemainingFuelLapsRepository> {
