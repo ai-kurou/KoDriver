@@ -2,10 +2,14 @@ package kurou.kodriver.feature.lmuwindowsautoreadout.brakeweardetail
 
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
@@ -28,6 +32,10 @@ import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kurou.kodriver.buildlogic.screenshottest.assertEditableTextEquals
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -43,6 +51,8 @@ private const val DEFAULT_TEXT = LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 class LmuWindowsAutoReadoutBrakeWearDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    private val haptic: HapticFeedback = mockk()
 
     @Test
     fun `文言の中間のカーソル位置にpercentを挿入して保存通知する`() {
@@ -498,6 +508,7 @@ class LmuWindowsAutoReadoutBrakeWearDetailPaneTest {
 
     @Test
     fun `全6クラスの画像タイルの選択を通知して選択状態を更新する`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         val vehicleClasses =
             listOf(
                 LmuWindowsVehicleClassData.Hypercar to "Hypercar",
@@ -510,22 +521,24 @@ class LmuWindowsAutoReadoutBrakeWearDetailPaneTest {
         val selections = mutableListOf<LmuWindowsVehicleClassData>()
         var selectedClass by mutableStateOf<LmuWindowsVehicleClassData>(LmuWindowsVehicleClassData.Hypercar)
         rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutBrakeWearDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutBrakeWearDetailUiState(
-                            selectedVehicleClass = selectedClass,
-                            vehicleClassLowThresholdPercent =
-                                vehicleClasses.associate { (vehicleClass, _) ->
-                                    vehicleClass to 12
-                                },
-                        ),
-                    onVehicleClassSelected = {
-                        selections += it
-                        selectedClass = it
-                    },
-                    modifier = Modifier.requiredWidth(360.dp),
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    LmuWindowsAutoReadoutBrakeWearDetailPaneContent(
+                        uiState =
+                            LmuWindowsAutoReadoutBrakeWearDetailUiState(
+                                selectedVehicleClass = selectedClass,
+                                vehicleClassLowThresholdPercent =
+                                    vehicleClasses.associate { (vehicleClass, _) ->
+                                        vehicleClass to 12
+                                    },
+                            ),
+                        onVehicleClassSelected = {
+                            selections += it
+                            selectedClass = it
+                        },
+                        modifier = Modifier.requiredWidth(360.dp),
+                    )
+                }
             }
         }
         vehicleClasses.forEach { (_, accessibleName) ->
@@ -538,10 +551,13 @@ class LmuWindowsAutoReadoutBrakeWearDetailPaneTest {
                 .assertIsSelected()
         }
         assertEquals(vehicleClasses.map { it.first }, selections)
+        verify(exactly = 6) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
     fun `警告OFFでは全6クラスの画像タイルを無効にして選択を通知しない`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         val selected = mutableListOf<LmuWindowsVehicleClassData>()
         val vehicleClasses =
             listOf(
@@ -553,19 +569,21 @@ class LmuWindowsAutoReadoutBrakeWearDetailPaneTest {
                 LmuWindowsVehicleClassData.Gt3 to "LMGT3",
             )
         rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutBrakeWearDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutBrakeWearDetailUiState(
-                            enabled = false,
-                            vehicleClassLowThresholdPercent =
-                                vehicleClasses.associate { (vehicleClass, _) ->
-                                    vehicleClass to 12
-                                },
-                        ),
-                    onVehicleClassSelected = { selected += it },
-                    modifier = Modifier.requiredWidth(360.dp),
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    LmuWindowsAutoReadoutBrakeWearDetailPaneContent(
+                        uiState =
+                            LmuWindowsAutoReadoutBrakeWearDetailUiState(
+                                enabled = false,
+                                vehicleClassLowThresholdPercent =
+                                    vehicleClasses.associate { (vehicleClass, _) ->
+                                        vehicleClass to 12
+                                    },
+                            ),
+                        onVehicleClassSelected = { selected += it },
+                        modifier = Modifier.requiredWidth(360.dp),
+                    )
+                }
             }
         }
         vehicleClasses.forEach { (_, accessibleName) ->
@@ -574,9 +592,10 @@ class LmuWindowsAutoReadoutBrakeWearDetailPaneTest {
                 .performScrollTo()
                 .assertIsDisplayed()
                 .assertIsNotEnabled()
-                .performClick()
         }
         assertEquals(emptyList(), selected)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     private fun setResetTestContent(

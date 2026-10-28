@@ -29,6 +29,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -143,6 +145,7 @@ internal fun LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
     onVehicleClassHighThresholdReset: (LmuWindowsVehicleClassData) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
     Column(
         modifier =
             modifier
@@ -243,7 +246,10 @@ internal fun LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
                                     celsius = celsius,
                                     selected = uiState.selectedVehicleClass == vehicleClass,
                                     enabled = uiState.overheatWarningEnabled,
-                                    onClick = { onVehicleClassSelected(vehicleClass) },
+                                    onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                        onVehicleClassSelected(vehicleClass)
+                                    },
                                     modifier = Modifier.width(VEHICLE_CLASS_OPTION_WIDTH),
                                 )
                             }
@@ -345,7 +351,10 @@ internal fun LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
                             val selected = phase in uiState.lowWarningPhases
                             FilterChip(
                                 selected = selected,
-                                onClick = { onLowWarningPhaseToggled(phase) },
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                    onLowWarningPhaseToggled(phase)
+                                },
                                 label = { Text(text = label) },
                                 leadingIcon =
                                     if (selected) {

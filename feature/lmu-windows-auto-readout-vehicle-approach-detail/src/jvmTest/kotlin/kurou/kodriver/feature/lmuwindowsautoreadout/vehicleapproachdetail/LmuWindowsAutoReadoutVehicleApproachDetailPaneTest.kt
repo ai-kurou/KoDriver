@@ -3,7 +3,11 @@ package kurou.kodriver.feature.lmuwindowsautoreadout.vehicleapproachdetail
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
@@ -21,6 +25,10 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import org.junit.Rule
 import org.junit.Test
@@ -40,6 +48,8 @@ class LmuWindowsAutoReadoutVehicleApproachDetailPaneTest {
 
     @get:Rule
     val rule = createComposeRule()
+
+    private val haptic: HapticFeedback = mockk()
 
     @Test
     fun `開始と継続の左右文言グループに余白を確保する`() {
@@ -161,19 +171,24 @@ class LmuWindowsAutoReadoutVehicleApproachDetailPaneTest {
 
     @Test
     fun `1周目の読み上げスキップスイッチをタップするとonSkipFirstLapChangedが呼ばれる`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         var changedEnabled: Boolean? = null
         rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
-                LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
-                    uiState = LmuWindowsAutoReadoutVehicleApproachDetailUiState(skipFirstLap = true),
-                    onSkipFirstLapChanged = { changedEnabled = it },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                MaterialTheme(colorScheme = lightColorScheme()) {
+                    LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
+                        uiState = LmuWindowsAutoReadoutVehicleApproachDetailUiState(skipFirstLap = true),
+                        onSkipFirstLapChanged = { changedEnabled = it },
+                    )
+                }
             }
         }
 
         rule.onNode(hasContentDescription("フォーメーションラップ・1周目スキップ")).performClick()
 
         assertEquals(false, changedEnabled)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
