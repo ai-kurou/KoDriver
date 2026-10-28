@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,12 +24,10 @@ class OtherOverlayTextColorDetailViewModel internal constructor(
     private val pendingOverlayTextColor = MutableStateFlow<Long?>(null)
 
     internal val uiState =
-        combine(observeOverlayTextColor(), pendingOverlayTextColor) { observed, pending ->
-            OtherOverlayTextColorDetailUiState(
-                selectedOverlayTextColor = observed,
-                pendingOverlayTextColor = pending ?: observed,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherOverlayTextColorDetailUiState())
+        OtherOverlayTextColorDetailFlow(
+            observedOverlayTextColor = observeOverlayTextColor(),
+            pendingOverlayTextColor = pendingOverlayTextColor,
+        ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherOverlayTextColorDetailUiState())
 
     internal fun onPendingOverlayTextColorSelected(overlayTextColor: Long) {
         selectionRequest++
