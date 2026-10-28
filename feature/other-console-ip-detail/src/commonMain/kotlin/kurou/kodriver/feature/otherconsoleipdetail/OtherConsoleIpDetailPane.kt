@@ -128,6 +128,10 @@ fun OtherConsoleIpDetailPaneContent(
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onOpenSimHub()
     }
+    val onSaveWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onSave()
+    }
     val onSaveConfirmedByKeyboard: () -> Unit = {
         if (uiState.isInputValid && uiState.inputAddress.isNotEmpty()) {
             onSave()
@@ -261,7 +265,7 @@ fun OtherConsoleIpDetailPaneContent(
             }
             Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             Button(
-                onClick = onSave,
+                onClick = onSaveWithHaptic,
                 enabled = uiState.isInputValid && uiState.inputAddress.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth(),
             ) {

@@ -1,7 +1,12 @@
 package kurou.kodriver.feature.otherconsoleipdetail
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -10,6 +15,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
+import io.mockk.confirmVerified
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -17,6 +25,8 @@ import kotlin.test.assertEquals
 class OtherConsoleIpDetailPaneContentTest {
     @get:Rule
     val rule = createComposeRule()
+
+    private val haptic: HapticFeedback = mockk(relaxUnitFun = true)
 
     private data class ContentParams(
         val uiState: OtherConsoleIpDetailUiState =
@@ -34,15 +44,17 @@ class OtherConsoleIpDetailPaneContentTest {
 
     private fun setContent(params: ContentParams = ContentParams()) {
         rule.setContent {
-            OtherConsoleIpDetailPaneContent(
-                uiState = params.uiState,
-                onPortSelected = params.onPortSelected,
-                onSave = params.onSave,
-                onDismiss = params.onDismiss,
-                onBack = params.onBack,
-                onOpenGuide = params.onOpenGuide,
-                onOpenSimHub = params.onOpenSimHub,
-            )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherConsoleIpDetailPaneContent(
+                    uiState = params.uiState,
+                    onPortSelected = params.onPortSelected,
+                    onSave = params.onSave,
+                    onDismiss = params.onDismiss,
+                    onBack = params.onBack,
+                    onOpenGuide = params.onOpenGuide,
+                    onOpenSimHub = params.onOpenSimHub,
+                )
+            }
         }
     }
 
@@ -61,13 +73,56 @@ class OtherConsoleIpDetailPaneContentTest {
     }
 
     @Test
-    fun `保存ボタンをクリックするとonSaveが呼ばれる`() {
+    fun `保存ボタンをクリックすると触覚の後にonSaveが呼ばれる`() {
         var saveCount = 0
-        setContent(ContentParams(onSave = { saveCount++ }))
+        setContent(
+            ContentParams(
+                onSave = {
+                    verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+                    saveCount++
+                },
+            ),
+        )
 
         rule.onNodeWithText("保存").performClick()
 
         assertEquals(1, saveCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `空入力では保存ボタンを押してもコールバックも触覚も発生しない`() {
+        var saveCount = 0
+        setContent(
+            ContentParams(
+                uiState = OtherConsoleIpDetailUiState(inputAddress = "", isInputValid = true),
+                onSave = { saveCount++ },
+            ),
+        )
+
+        rule.onNodeWithText("保存").assertIsNotEnabled().performClick()
+
+        assertEquals(0, saveCount)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `不正な入力では保存ボタンを押してもコールバックも触覚も発生しない`() {
+        var saveCount = 0
+        setContent(
+            ContentParams(
+                uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
+                onSave = { saveCount++ },
+            ),
+        )
+
+        rule.onNodeWithText("保存").assertIsNotEnabled().performClick()
+
+        assertEquals(0, saveCount)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
@@ -176,6 +231,8 @@ class OtherConsoleIpDetailPaneContentTest {
         rule.onNodeWithText("IPアドレス").performImeAction()
 
         assertEquals(1, saveCount)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
