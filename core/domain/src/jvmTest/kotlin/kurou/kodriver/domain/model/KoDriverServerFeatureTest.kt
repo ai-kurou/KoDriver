@@ -46,5 +46,9 @@ class KoDriverServerFeatureTest {
             "/ws/lmu_windows/car_gap",
             KoDriverServerFeature.CAR_GAP.webSocketPath(Simulator.LmuWindows),
         )
+        assertEquals(
+            "/ws/lmu_windows/class_car_gap",
+            KoDriverServerFeature.CLASS_CAR_GAP.webSocketPath(Simulator.LmuWindows),
+        )
     }
 }

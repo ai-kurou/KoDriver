@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsClassCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
@@ -40,6 +41,7 @@ class LmuWindowsServerUseCasesTest {
     private val lmuWindowsBrakeWearRepository: LmuWindowsBrakeWearRepository = mockk()
     private val lmuWindowsTyreDetachedRepository: LmuWindowsTyreDetachedRepository = mockk()
     private val lmuWindowsCarGapRepository: LmuWindowsCarGapRepository = mockk()
+    private val lmuWindowsClassCarGapRepository: LmuWindowsClassCarGapRepository = mockk()
 
     @Test
     fun `KoinのRepositoryから全UseCaseを組み立てる`() {
@@ -56,6 +58,7 @@ class LmuWindowsServerUseCasesTest {
         every { lmuWindowsBrakeWearRepository.brakeWearStream() } returns emptyFlow()
         every { lmuWindowsTyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
         every { lmuWindowsCarGapRepository.carGapStream() } returns emptyFlow()
+        every { lmuWindowsClassCarGapRepository.classCarGapStream() } returns emptyFlow()
         val koin =
             startKoin {
                 modules(
@@ -75,6 +78,7 @@ class LmuWindowsServerUseCasesTest {
                         single<LmuWindowsBrakeWearRepository> { lmuWindowsBrakeWearRepository }
                         single<LmuWindowsTyreDetachedRepository> { lmuWindowsTyreDetachedRepository }
                         single<LmuWindowsCarGapRepository> { lmuWindowsCarGapRepository }
+                        single<LmuWindowsClassCarGapRepository> { lmuWindowsClassCarGapRepository }
                     },
                 )
             }.koin
@@ -93,6 +97,7 @@ class LmuWindowsServerUseCasesTest {
             useCases.observeLmuWindowsBrakeWear()
             useCases.observeLmuWindowsTyreDetached()
             useCases.observeLmuWindowsCarGap()
+            useCases.observeLmuWindowsClassCarGap()
             verify(exactly = 1) { lmuWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { lmuWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { lmuWindowsVehicleDamageRepository.vehicleDamageStream() }
@@ -106,6 +111,7 @@ class LmuWindowsServerUseCasesTest {
             verify(exactly = 1) { lmuWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { lmuWindowsTyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { lmuWindowsCarGapRepository.carGapStream() }
+            verify(exactly = 1) { lmuWindowsClassCarGapRepository.classCarGapStream() }
             confirmVerified(
                 lmuWindowsFlagRepository,
                 lmuWindowsVehicleApproachRepository,
@@ -120,6 +126,7 @@ class LmuWindowsServerUseCasesTest {
                 lmuWindowsBrakeWearRepository,
                 lmuWindowsTyreDetachedRepository,
                 lmuWindowsCarGapRepository,
+                lmuWindowsClassCarGapRepository,
             )
         } finally {
             stopKoin()
@@ -143,5 +150,6 @@ class LmuWindowsServerUseCasesTest {
             assertEquals(emptyList(), useCases.observeLmuWindowsBrakeWear().toList())
             assertEquals(emptyList(), useCases.observeLmuWindowsTyreDetached().toList())
             assertEquals(emptyList(), useCases.observeLmuWindowsCarGap().toList())
+            assertEquals(emptyList(), useCases.observeLmuWindowsClassCarGap().toList())
         }
 }

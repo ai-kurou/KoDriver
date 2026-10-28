@@ -46,6 +46,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproach
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
@@ -74,6 +75,7 @@ import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsClassCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
@@ -87,6 +89,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyReposi
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsCarGapUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsClassCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -167,6 +170,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -255,6 +260,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -341,6 +348,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -442,6 +451,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -540,6 +551,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -634,6 +647,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -734,6 +749,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -832,6 +849,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -931,6 +950,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -1032,6 +1053,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -1131,6 +1154,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -1230,6 +1255,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -1333,6 +1360,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -1432,6 +1461,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -1535,6 +1566,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -1634,6 +1667,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -1732,6 +1767,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -1828,6 +1865,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -1928,6 +1967,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -2024,6 +2065,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -2125,6 +2168,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(repository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -2222,6 +2267,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(repository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -2268,6 +2315,212 @@ class ApplicationTest {
                     assertEquals(CAR_GAP_JSON_1, first)
                     assertEquals(CAR_GAP_JSON_1, second)
                     assertEquals(CAR_GAP_JSON_2, third)
+                }
+        }
+
+    @Test
+    fun `同クラス前後車両との時間差をJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeLmuWindowsClassCarGapRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        lmuWindows =
+                            LmuWindowsServerUseCases(
+                                observeLmuWindowsRaceFlags =
+                                    ObserveLmuWindowsRaceFlagsUseCase(
+                                        FakeLmuWindowsFlagRepository(),
+                                    ),
+                                observeLmuWindowsVehicleApproach =
+                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                        EmptyLmuWindowsVehicleApproachRepository,
+                                    ),
+                                observeLmuWindowsVehicleDamage =
+                                    ObserveLmuWindowsVehicleDamageUseCase(
+                                        EmptyLmuWindowsVehicleDamageRepository,
+                                    ),
+                                observeLmuWindowsTyreCarcassTemperature =
+                                    ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeLmuWindowsBrakeTemperature =
+                                    ObserveLmuWindowsBrakeTemperatureUseCase(
+                                        EmptyLmuWindowsBrakeTemperatureRepository,
+                                    ),
+                                observeLmuWindowsVehicleClass =
+                                    ObserveLmuWindowsVehicleClassUseCase(
+                                        EmptyLmuWindowsVehicleClassRepository,
+                                    ),
+                                observeLmuWindowsTyreWear =
+                                    ObserveLmuWindowsTyreWearUseCase(
+                                        EmptyLmuWindowsTyreWearRepository,
+                                    ),
+                                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                                observeLmuWindowsVirtualEnergy =
+                                    ObserveLmuWindowsVirtualEnergyUseCase(EmptyLmuWindowsVirtualEnergyRepository),
+                                observeLmuWindowsPitStatus =
+                                    ObserveLmuWindowsPitStatusUseCase(
+                                        EmptyLmuWindowsPitStatusRepository,
+                                    ),
+                                observeLmuWindowsBrakeWear =
+                                    ObserveLmuWindowsBrakeWearUseCase(EmptyLmuWindowsBrakeWearRepository),
+                                observeLmuWindowsTyreDetached =
+                                    ObserveLmuWindowsTyreDetachedUseCase(
+                                        EmptyLmuWindowsTyreDetachedRepository,
+                                    ),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(repository),
+                                observeLmuWindowsCarGap =
+                                    ObserveLmuWindowsCarGapUseCase(
+                                        EmptyLmuWindowsCarGapRepository,
+                                    ),
+                            ),
+                        aceWindows =
+                            AceWindowsServerUseCases(
+                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                                observeAceWindowsStatus =
+                                    ObserveAceWindowsStatusUseCase(
+                                        EmptyAceWindowsStatusRepository,
+                                    ),
+                                observeAceWindowsTyreCarcassTemperature =
+                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeAceWindowsVehicleApproach =
+                                    ObserveAceWindowsVehicleApproachUseCase(
+                                        EmptyAceWindowsVehicleApproachRepository,
+                                    ),
+                                observeAceWindowsBestLapTime =
+                                    ObserveAceWindowsBestLapTimeUseCase(
+                                        EmptyAceWindowsBestLapTimeRepository,
+                                    ),
+                                observeAceWindowsRemainingFuelLaps =
+                                    ObserveAceWindowsRemainingFuelLapsUseCase(
+                                        EmptyAceWindowsRemainingFuelLapsRepository,
+                                    ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/lmu_windows/class_car_gap") {
+                    repository.emit(classCarGapData1)
+
+                    val message =
+                        withTimeout(1_000) {
+                            (incoming.receive() as Frame.Text).readText()
+                        }
+                    assertEquals(CLASS_CAR_GAP_JSON_1, message)
+                }
+        }
+
+    @Test
+    fun `同クラス前後車両との時間差は同一値も継続して送信される`() =
+        testApplication {
+            val repository = FakeLmuWindowsClassCarGapRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        lmuWindows =
+                            LmuWindowsServerUseCases(
+                                observeLmuWindowsRaceFlags =
+                                    ObserveLmuWindowsRaceFlagsUseCase(
+                                        FakeLmuWindowsFlagRepository(),
+                                    ),
+                                observeLmuWindowsVehicleApproach =
+                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                        EmptyLmuWindowsVehicleApproachRepository,
+                                    ),
+                                observeLmuWindowsVehicleDamage =
+                                    ObserveLmuWindowsVehicleDamageUseCase(
+                                        EmptyLmuWindowsVehicleDamageRepository,
+                                    ),
+                                observeLmuWindowsTyreCarcassTemperature =
+                                    ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeLmuWindowsBrakeTemperature =
+                                    ObserveLmuWindowsBrakeTemperatureUseCase(
+                                        EmptyLmuWindowsBrakeTemperatureRepository,
+                                    ),
+                                observeLmuWindowsVehicleClass =
+                                    ObserveLmuWindowsVehicleClassUseCase(
+                                        EmptyLmuWindowsVehicleClassRepository,
+                                    ),
+                                observeLmuWindowsTyreWear =
+                                    ObserveLmuWindowsTyreWearUseCase(
+                                        EmptyLmuWindowsTyreWearRepository,
+                                    ),
+                                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                                observeLmuWindowsVirtualEnergy =
+                                    ObserveLmuWindowsVirtualEnergyUseCase(EmptyLmuWindowsVirtualEnergyRepository),
+                                observeLmuWindowsPitStatus =
+                                    ObserveLmuWindowsPitStatusUseCase(
+                                        EmptyLmuWindowsPitStatusRepository,
+                                    ),
+                                observeLmuWindowsBrakeWear =
+                                    ObserveLmuWindowsBrakeWearUseCase(EmptyLmuWindowsBrakeWearRepository),
+                                observeLmuWindowsTyreDetached =
+                                    ObserveLmuWindowsTyreDetachedUseCase(
+                                        EmptyLmuWindowsTyreDetachedRepository,
+                                    ),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(repository),
+                                observeLmuWindowsCarGap =
+                                    ObserveLmuWindowsCarGapUseCase(
+                                        EmptyLmuWindowsCarGapRepository,
+                                    ),
+                            ),
+                        aceWindows =
+                            AceWindowsServerUseCases(
+                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                                observeAceWindowsStatus =
+                                    ObserveAceWindowsStatusUseCase(
+                                        EmptyAceWindowsStatusRepository,
+                                    ),
+                                observeAceWindowsTyreCarcassTemperature =
+                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeAceWindowsVehicleApproach =
+                                    ObserveAceWindowsVehicleApproachUseCase(
+                                        EmptyAceWindowsVehicleApproachRepository,
+                                    ),
+                                observeAceWindowsBestLapTime =
+                                    ObserveAceWindowsBestLapTimeUseCase(
+                                        EmptyAceWindowsBestLapTimeRepository,
+                                    ),
+                                observeAceWindowsRemainingFuelLaps =
+                                    ObserveAceWindowsRemainingFuelLapsUseCase(
+                                        EmptyAceWindowsRemainingFuelLapsRepository,
+                                    ),
+                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/lmu_windows/class_car_gap") {
+                    repository.emit(classCarGapData1)
+                    repository.emit(classCarGapData1)
+                    repository.emit(classCarGapData2)
+
+                    val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val third = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+                    assertEquals(CLASS_CAR_GAP_JSON_1, first)
+                    assertEquals(CLASS_CAR_GAP_JSON_1, second)
+                    assertEquals(CLASS_CAR_GAP_JSON_2, third)
                 }
         }
 
@@ -2325,6 +2578,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -2424,6 +2679,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -2527,6 +2784,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -2626,6 +2885,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -2727,6 +2988,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -2823,6 +3086,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -2921,6 +3186,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3015,6 +3282,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3109,6 +3378,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3209,6 +3480,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3306,6 +3579,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3402,6 +3677,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3500,6 +3777,8 @@ class ApplicationTest {
                                 observeLmuWindowsTyreDetached = ObserveLmuWindowsTyreDetachedUseCase(repository),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3596,6 +3875,8 @@ class ApplicationTest {
                                 observeLmuWindowsTyreDetached = ObserveLmuWindowsTyreDetachedUseCase(repository),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3695,6 +3976,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsTyreDetachedUseCase(EmptyLmuWindowsTyreDetachedRepository),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3796,6 +4079,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsTyreDetachedUseCase(EmptyLmuWindowsTyreDetachedRepository),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3899,6 +4184,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -3994,6 +4281,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -4092,6 +4381,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -4191,6 +4482,8 @@ class ApplicationTest {
                                     ),
                                 observeLmuWindowsCarGap =
                                     ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
                             AceWindowsServerUseCases(
@@ -4273,6 +4566,7 @@ class ApplicationTest {
                         single<LmuWindowsBrakeWearRepository> { EmptyLmuWindowsBrakeWearRepository }
                         single<LmuWindowsTyreDetachedRepository> { EmptyLmuWindowsTyreDetachedRepository }
                         single<LmuWindowsCarGapRepository> { EmptyLmuWindowsCarGapRepository }
+                        single<LmuWindowsClassCarGapRepository> { EmptyLmuWindowsClassCarGapRepository }
                     },
                 )
             }.koin
@@ -4891,6 +5185,26 @@ private const val CAR_GAP_JSON_1 =
 private const val CAR_GAP_JSON_2 =
     """{"timeGapCarAheadSeconds":2.0,"timeGapCarBehindSeconds":3.0,""" +
         """"timeGapPlaceAheadSeconds":4.0,"timeGapPlaceBehindSeconds":5.0}"""
+
+private object EmptyLmuWindowsClassCarGapRepository : LmuWindowsClassCarGapRepository {
+    override fun classCarGapStream(): Flow<LmuWindowsClassCarGapData> = emptyFlow()
+}
+
+private class FakeLmuWindowsClassCarGapRepository : LmuWindowsClassCarGapRepository {
+    private val channel = Channel<LmuWindowsClassCarGapData>(capacity = Channel.UNLIMITED)
+
+    override fun classCarGapStream(): Flow<LmuWindowsClassCarGapData> = channel.receiveAsFlow()
+
+    fun emit(data: LmuWindowsClassCarGapData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private val classCarGapData1 = LmuWindowsClassCarGapData(1.25, 2.5)
+private val classCarGapData2 = LmuWindowsClassCarGapData(null, 3.0)
+
+private const val CLASS_CAR_GAP_JSON_1 = """{"gapAheadSeconds":1.25,"gapBehindSeconds":2.5}"""
+private const val CLASS_CAR_GAP_JSON_2 = """{"gapAheadSeconds":null,"gapBehindSeconds":3.0}"""
 
 private object EmptyAceWindowsGapRepository : AceWindowsGapRepository {
     override fun gapStream(): Flow<AceWindowsGapData> = emptyFlow()
