@@ -57,6 +57,13 @@ GT7の全自由文言イベントで、空文字・空白だけの本文は読�
 空文字と `SKIPPED` をテレメトリログに保存する。同じ入力の後続イベントと次回以降の収集は継続する。
 `CancellationException` は再スローし、キャンセル後の読み上げ・ログ保存は行わない。
 
+## Flow の合成と購読の管理
+
+`Gt7Ps5NarratorFlow` は選択中のシミュレーターに応じた有効状態・読み上げ順序の切り替え、
+一覧と詳細の有効状態の合成、GT7 テレメトリの選択、手動要求とホットキー要求の合流を担う cold Flow。
+ViewModel は `viewModelScope`・`stateIn`・`shareIn` と各設定の既定値を管理し、
+判定時の設定取得、状態更新、最新テレメトリの破棄、イベント処理を引き続き担当する。
+
 ## デバッグ読み上げ要求
 
 ViewModel の独立した Job が `ObserveDebugReadoutRequestUseCase` を購読し、自分のシミュレーター宛ての要求だけを EventProcessor の `processDebugReadout` に渡す。テレメトリ未受信でも処理し、項目の有効スイッチと determine 系の判定は通さない。
