@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
@@ -78,21 +77,17 @@ internal class OtherVolumeDetailViewModel(
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    private val deviceVolume: Flow<Int> =
+        merge(deviceVolumeRefreshTrigger.map { }, deviceVolumePollingTicker)
+            .mapLatest { deviceVolumeUseCases.getDeviceVolume() }
+
     val uiState: StateFlow<OtherVolumeDetailUiState> =
-        combine(
-            soundVolumeUseCases.observeSoundVolume(),
-            merge(deviceVolumeRefreshTrigger.map { }, deviceVolumePollingTicker)
-                .mapLatest { deviceVolumeUseCases.getDeviceVolume() },
-            isPreviewing,
-            lowVolumeWarningEnabledUseCases.observeLowVolumeWarningEnabled(),
-        ) { volume, deviceVolume, previewing, warningEnabled ->
-            OtherVolumeDetailUiState(
-                volume = volume,
-                deviceVolume = deviceVolume,
-                isPreviewing = previewing,
-                lowVolumeWarningEnabled = warningEnabled,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVolumeDetailUiState())
+        OtherVolumeDetailFlow(
+            soundVolume = soundVolumeUseCases.observeSoundVolume(),
+            deviceVolume = deviceVolume,
+            isPreviewing = isPreviewing,
+            lowVolumeWarningEnabled = lowVolumeWarningEnabledUseCases.observeLowVolumeWarningEnabled(),
+        ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVolumeDetailUiState())
 
     @Suppress("UnusedPrivateProperty")
     private val deviceVolumeWriterJob =
