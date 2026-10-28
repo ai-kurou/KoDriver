@@ -225,7 +225,6 @@ internal fun ManualReadoutListPaneContent(
                     showSimHubGuideLink = simulatorId != Simulator.Gt7Ps5.id,
                     playButtonLayoutEnabled = uiState.playButtonLayoutEnabled,
                     onTogglePlayButtonLayout = {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         editMode = false
                         onTogglePlayButtonLayout()
                     },
@@ -834,13 +833,23 @@ private fun ManualReadoutLayoutSegment(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     Box(
         modifier =
             Modifier
                 .size(width = 36.dp, height = 32.dp)
                 .clip(CircleShape)
                 .background(if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
-                .selectable(selected = selected, role = Role.RadioButton, onClick = { if (!selected) onClick() }),
+                .selectable(
+                    selected = selected,
+                    role = Role.RadioButton,
+                    onClick = {
+                        if (!selected) {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            onClick()
+                        }
+                    },
+                ),
         contentAlignment = Alignment.Center,
     ) {
         Icon(

@@ -29,6 +29,7 @@ class ManualReadoutListPaneHapticTest {
 
     private val state = mutableStateOf(ManualReadoutListUiState(playButtonLayoutEnabled = false))
     private var additions = 0
+    private var layoutToggles = 0
     private val selections = mutableListOf<String>()
     private val readRequests = mutableListOf<String>()
 
@@ -43,6 +44,7 @@ class ManualReadoutListPaneHapticTest {
                         onAddSet = { additions++ },
                         onReadSet = { readRequests.add(it) },
                         onTogglePlayButtonLayout = {
+                            layoutToggles++
                             state.value =
                                 state.value.copy(playButtonLayoutEnabled = !state.value.playButtonLayoutEnabled)
                         },
@@ -139,10 +141,19 @@ class ManualReadoutListPaneHapticTest {
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         showPane()
         rule.onNodeWithContentDescription("標準表示").performClick()
-        rule.onNodeWithContentDescription("再生ボタン表示").performClick()
-        rule.onNodeWithContentDescription("再生ボタン表示").performClick()
-        rule.onNodeWithContentDescription("標準表示").performClick()
+        assertEquals(0, layoutToggles)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
 
+        rule.onNodeWithContentDescription("再生ボタン表示").performClick()
+        assertEquals(1, layoutToggles)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+
+        rule.onNodeWithContentDescription("再生ボタン表示").performClick()
+        assertEquals(1, layoutToggles)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+
+        rule.onNodeWithContentDescription("標準表示").performClick()
+        assertEquals(2, layoutToggles)
         verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(haptic)
     }
