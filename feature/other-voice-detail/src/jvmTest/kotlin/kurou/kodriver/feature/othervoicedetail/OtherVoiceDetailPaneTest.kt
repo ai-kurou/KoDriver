@@ -193,7 +193,16 @@ class OtherVoiceDetailPaneTest {
 
     @Test
     fun `取得中は読み込み中の文言を表示し空の案内と再読み込みを表示しない`() {
-        rule.setContent { MaterialTheme { OtherVoiceDetailPaneContent(OtherVoiceDetailUiState()) } }
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                MaterialTheme {
+                    OtherVoiceDetailPaneContent(
+                        uiState = OtherVoiceDetailUiState(),
+                        onRetryClicked = onRetryClicked,
+                    )
+                }
+            }
+        }
 
         rule.onNodeWithText("読み込み中…").assertExists()
         rule.onNode(hasContentDescription("システム既定を試聴")).assertDoesNotExist()
@@ -202,17 +211,43 @@ class OtherVoiceDetailPaneTest {
         rule
             .onNodeWithText("日本語の音声が見つかりません。端末の設定で日本語の音声を追加してください。")
             .assertDoesNotExist()
+        verify(exactly = 0) { onRetryClicked() }
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onRetryClicked, haptic)
+    }
+
+    @Test
+    fun `音声表示中は再読み込みを表示せず触覚と再読み込みを通知しない`() {
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                MaterialTheme {
+                    OtherVoiceDetailPaneContent(
+                        uiState = OtherVoiceDetailUiState(voices = listOf(voice), isLoading = false),
+                        onRetryClicked = onRetryClicked,
+                    )
+                }
+            }
+        }
+
+        rule.onNodeWithText("音声A").assertExists()
+        rule.onNodeWithText("再読み込み").assertDoesNotExist()
+        verify(exactly = 0) { onRetryClicked() }
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onRetryClicked, haptic)
     }
 
     @Test
     fun `空の一覧は案内と再読み込みを表示しクリックを通知する`() {
         every { onRetryClicked() } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
-            MaterialTheme {
-                OtherVoiceDetailPaneContent(
-                    uiState = OtherVoiceDetailUiState(isLoading = false),
-                    onRetryClicked = onRetryClicked,
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                MaterialTheme {
+                    OtherVoiceDetailPaneContent(
+                        uiState = OtherVoiceDetailUiState(isLoading = false),
+                        onRetryClicked = onRetryClicked,
+                    )
+                }
             }
         }
 
@@ -222,7 +257,8 @@ class OtherVoiceDetailPaneTest {
             .assertExists()
         rule.onNodeWithText("再読み込み").performClick()
         verify(exactly = 1) { onRetryClicked() }
-        confirmVerified(onRetryClicked)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onRetryClicked, haptic)
     }
 
     @Test
