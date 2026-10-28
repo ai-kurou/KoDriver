@@ -435,6 +435,7 @@ private fun ManualReadoutSetPlayButton(
                             if (!selected) haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                             onSetClick()
                         } else if (canReadSet) {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                             onReadSet()
                             requestCount++
                         }
@@ -651,6 +652,7 @@ private fun ManualReadoutSetRow(
             }
             FilledIconButton(
                 onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     onReadSet()
                     requestCount++
                 },

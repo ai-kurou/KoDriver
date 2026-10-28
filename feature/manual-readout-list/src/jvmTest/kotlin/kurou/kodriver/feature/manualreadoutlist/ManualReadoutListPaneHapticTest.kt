@@ -30,6 +30,7 @@ class ManualReadoutListPaneHapticTest {
     private val state = mutableStateOf(ManualReadoutListUiState(playButtonLayoutEnabled = false))
     private var additions = 0
     private val selections = mutableListOf<String>()
+    private val readRequests = mutableListOf<String>()
 
     private fun showPane() {
         rule.setContent {
@@ -40,7 +41,7 @@ class ManualReadoutListPaneHapticTest {
                         simulatorId = "lmu_windows",
                         simulatorName = "LMU",
                         onAddSet = { additions++ },
-                        onReadSet = {},
+                        onReadSet = { readRequests.add(it) },
                         onTogglePlayButtonLayout = {
                             state.value =
                                 state.value.copy(playButtonLayoutEnabled = !state.value.playButtonLayoutEnabled)
@@ -54,6 +55,70 @@ class ManualReadoutListPaneHapticTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun `標準カードの再生は1回だけ触覚を返し選択しない`() {
+        assertPlaybackHaptic(playButtonLayoutEnabled = false)
+    }
+
+    @Test
+    fun `再生タイルの再生は1回だけ触覚を返し選択しない`() {
+        assertPlaybackHaptic(playButtonLayoutEnabled = true)
+    }
+
+    private fun assertPlaybackHaptic(playButtonLayoutEnabled: Boolean) {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        state.value =
+            state.value.copy(
+                playButtonLayoutEnabled = playButtonLayoutEnabled,
+                canReadSets = true,
+                sets = listOf(ManualReadoutSet("first", itemKeys = listOf("SESSION"))),
+            )
+        showPane()
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
+
+        assertEquals(listOf("first"), readRequests)
+        assertEquals(emptyList<String>(), selections)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `再生不可の標準カードと再生タイルは触覚を返さない`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        state.value =
+            state.value.copy(
+                canReadSets = false,
+                sets = listOf(ManualReadoutSet("first", itemKeys = listOf("SESSION"))),
+            )
+        showPane()
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
+        rule.runOnIdle { state.value = state.value.copy(playButtonLayoutEnabled = true) }
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
+
+        assertEquals(emptyList<String>(), readRequests)
+        assertEquals(emptyList<String>(), selections)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `項目なしの再生タイルは触覚を返さない`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        state.value =
+            state.value.copy(
+                playButtonLayoutEnabled = true,
+                canReadSets = true,
+                sets = listOf(ManualReadoutSet("first")),
+            )
+        showPane()
+        rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
+
+        assertEquals(emptyList<String>(), readRequests)
+        assertEquals(emptyList<String>(), selections)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
@@ -98,6 +163,7 @@ class ManualReadoutListPaneHapticTest {
         rule.onNodeWithText("セットA").performSemanticsAction(SemanticsActions.OnLongClick)
 
         assertEquals(listOf("first", "first", "second", "first"), selections)
+        assertEquals(emptyList<String>(), readRequests)
         verify(exactly = 3) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(haptic)
     }
