@@ -1,9 +1,13 @@
 package kurou.kodriver.feature.otherandroidaudiousagedetail
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
@@ -16,6 +20,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import io.mockk.confirmVerified
+import io.mockk.mockk
+import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.AndroidAudioUsage
 import org.junit.Rule
@@ -25,6 +32,8 @@ import kotlin.test.assertEquals
 class OtherAndroidAudioUsageDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    private val haptic: HapticFeedback = mockk(relaxUnitFun = true)
 
     @Test
     fun `タイトルと説明を表示し戻る操作を通知する`() {
@@ -135,23 +144,37 @@ class OtherAndroidAudioUsageDetailPaneTest {
     }
 
     @Test
-    fun `音量ボタンを表示してそれぞれの操作を通知する`() {
+    fun `音量ボタンはハプティックの後にそれぞれの操作を通知する`() {
         var volumeCount = 0
         var soundCount = 0
         rule.setContent {
-            KoDriverTheme {
-                OtherAndroidAudioUsageDetailPaneContent(
-                    uiState = OtherAndroidAudioUsageDetailUiState(),
-                    onOpenVolumePanel = { volumeCount++ },
-                    onOpenSoundSettings = { soundCount++ },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherAndroidAudioUsageDetailPaneContent(
+                        uiState = OtherAndroidAudioUsageDetailUiState(),
+                        onOpenVolumePanel = {
+                            verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+                            volumeCount++
+                        },
+                        onOpenSoundSettings = {
+                            verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+                            soundCount++
+                        },
+                    )
+                }
             }
         }
         rule.onNodeWithText("音量を調整する").performScrollTo().assertIsDisplayed()
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         rule.onNodeWithText("音量パネルを開く").performScrollTo().performClick()
+        assertEquals(1, volumeCount)
+        assertEquals(0, soundCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         rule.onNodeWithText("サウンド設定を開く").performScrollTo().performClick()
         assertEquals(1, volumeCount)
         assertEquals(1, soundCount)
+        verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
