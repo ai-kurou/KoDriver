@@ -8,6 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.tts_continue
 import kurou.kodriver.app.shared.generated.resources.tts_engine_action
@@ -29,6 +31,7 @@ internal fun TtsUnavailableDialog(
     onPrimaryClick: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     val (title, body, action) =
         when (reason) {
             TtsUnavailableGuidance.EngineMissing -> {
@@ -54,7 +57,17 @@ internal fun TtsUnavailableDialog(
                 }
             }
         },
-        confirmButton = { Button(onClick = onPrimaryClick) { Text(stringResource(action)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.tts_continue)) } },
+        confirmButton = {
+            Button(onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                onPrimaryClick()
+            }) { Text(stringResource(action)) }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                onDismiss()
+            }) { Text(stringResource(Res.string.tts_continue)) }
+        },
     )
 }

@@ -1,5 +1,9 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -11,11 +15,13 @@ import io.mockk.verify
 import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class TtsUnavailableDialogTest {
     @get:Rule
     val rule = createComposeRule()
 
+    private val haptic: HapticFeedback = mockk()
     private val installEngine: () -> Unit = mockk()
     private val openLanguageSettings: () -> Unit = mockk()
     private val openWindowsSettings: () -> Unit = mockk()
@@ -23,6 +29,7 @@ class TtsUnavailableDialogTest {
     @Test
     fun `エンジン不足の文言とインストール操作を表示し操作後も残る`() {
         every { installEngine() } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         show(TtsUnavailableGuidance.EngineMissing)
         rule.onNodeWithText("音声読み上げを利用できません").assertIsDisplayed()
         rule
@@ -34,12 +41,14 @@ class TtsUnavailableDialogTest {
         verify(exactly = 1) { installEngine() }
         verify(exactly = 0) { openLanguageSettings() }
         verify(exactly = 0) { openWindowsSettings() }
-        confirmVerified(installEngine, openLanguageSettings, openWindowsSettings)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(installEngine, openLanguageSettings, openWindowsSettings, haptic)
     }
 
     @Test
     fun `言語データ不足の文言と設定操作を表示し操作後も残る`() {
         every { openLanguageSettings() } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         show(TtsUnavailableGuidance.LanguageDataMissing)
         rule.onNodeWithText("日本語の音声データがありません").assertIsDisplayed()
         rule
@@ -51,12 +60,14 @@ class TtsUnavailableDialogTest {
         verify(exactly = 0) { installEngine() }
         verify(exactly = 1) { openLanguageSettings() }
         verify(exactly = 0) { openWindowsSettings() }
-        confirmVerified(installEngine, openLanguageSettings, openWindowsSettings)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(installEngine, openLanguageSettings, openWindowsSettings, haptic)
     }
 
     @Test
     fun `Windows音声不足の文言と再起動案内と設定操作を表示し操作後も残る`() {
         every { openWindowsSettings() } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         show(TtsUnavailableGuidance.WindowsSpeechUnavailable)
         rule.onNodeWithText("Windowsで日本語音声を利用できません").assertIsDisplayed()
         rule
@@ -69,22 +80,44 @@ class TtsUnavailableDialogTest {
         verify(exactly = 0) { installEngine() }
         verify(exactly = 0) { openLanguageSettings() }
         verify(exactly = 1) { openWindowsSettings() }
-        confirmVerified(installEngine, openLanguageSettings, openWindowsSettings)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(installEngine, openLanguageSettings, openWindowsSettings, haptic)
     }
 
-    private fun show(reason: TtsUnavailableGuidance) {
+    @Test
+    fun `このまま使うを押すとハプティックフィードバックと閉じる操作を実行する`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        var dismissCount = 0
+        show(TtsUnavailableGuidance.EngineMissing, onDismiss = { dismissCount++ })
+
+        rule.onNodeWithText("このまま使う").performClick()
+
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 0) { installEngine() }
+        verify(exactly = 0) { openLanguageSettings() }
+        verify(exactly = 0) { openWindowsSettings() }
+        confirmVerified(haptic, installEngine, openLanguageSettings, openWindowsSettings)
+        assertEquals(1, dismissCount)
+    }
+
+    private fun show(
+        reason: TtsUnavailableGuidance,
+        onDismiss: () -> Unit = {},
+    ) {
         rule.setContent {
-            AppTheme {
-                TtsUnavailableDialog(
-                    reason = reason,
-                    onPrimaryClick =
-                        when (reason) {
-                            TtsUnavailableGuidance.EngineMissing -> installEngine
-                            TtsUnavailableGuidance.LanguageDataMissing -> openLanguageSettings
-                            TtsUnavailableGuidance.WindowsSpeechUnavailable -> openWindowsSettings
-                        },
-                    onDismiss = {},
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                AppTheme {
+                    TtsUnavailableDialog(
+                        reason = reason,
+                        onPrimaryClick =
+                            when (reason) {
+                                TtsUnavailableGuidance.EngineMissing -> installEngine
+                                TtsUnavailableGuidance.LanguageDataMissing -> openLanguageSettings
+                                TtsUnavailableGuidance.WindowsSpeechUnavailable -> openWindowsSettings
+                            },
+                        onDismiss = onDismiss,
+                    )
+                }
             }
         }
     }
