@@ -20,12 +20,43 @@ class ServerConnectionFlowTest {
     @Test
     fun `すべての接続状態を表示用ステータスに変換する`() =
         runTest {
+            data class ExpectedState(
+                val status: ServerConnectionStatus,
+                val isConnected: Boolean,
+                val isConnectionChecked: Boolean,
+                val isIpConfigured: Boolean,
+            )
+
             val statuses =
                 listOf(
-                    KoDriverServerConnectionStatus.NOT_CONFIGURED to ServerConnectionStatus.NOT_CONFIGURED,
-                    KoDriverServerConnectionStatus.CHECKING to ServerConnectionStatus.CHECKING,
-                    KoDriverServerConnectionStatus.CONNECTED to ServerConnectionStatus.CONNECTED,
-                    KoDriverServerConnectionStatus.DISCONNECTED to ServerConnectionStatus.DISCONNECTED,
+                    KoDriverServerConnectionStatus.NOT_CONFIGURED to
+                        ExpectedState(
+                            status = ServerConnectionStatus.NOT_CONFIGURED,
+                            isConnected = false,
+                            isConnectionChecked = false,
+                            isIpConfigured = false,
+                        ),
+                    KoDriverServerConnectionStatus.CHECKING to
+                        ExpectedState(
+                            status = ServerConnectionStatus.CHECKING,
+                            isConnected = false,
+                            isConnectionChecked = false,
+                            isIpConfigured = true,
+                        ),
+                    KoDriverServerConnectionStatus.CONNECTED to
+                        ExpectedState(
+                            status = ServerConnectionStatus.CONNECTED,
+                            isConnected = true,
+                            isConnectionChecked = true,
+                            isIpConfigured = true,
+                        ),
+                    KoDriverServerConnectionStatus.DISCONNECTED to
+                        ExpectedState(
+                            status = ServerConnectionStatus.DISCONNECTED,
+                            isConnected = false,
+                            isConnectionChecked = true,
+                            isIpConfigured = true,
+                        ),
                 )
             for ((status, expected) in statuses) {
                 val flow =
@@ -35,7 +66,15 @@ class ServerConnectionFlowTest {
                         appVersion = "1.0.0",
                     )
 
-                assertEquals(expected, flow.uiState.first().connectionStatus)
+                val state = flow.uiState.first()
+                assertEquals(expected.status, state.connectionStatus, "status=$status")
+                assertEquals(expected.isConnected, state.isConnected, "status=$status の isConnected")
+                assertEquals(
+                    expected.isConnectionChecked,
+                    state.isConnectionChecked,
+                    "status=$status の isConnectionChecked",
+                )
+                assertEquals(expected.isIpConfigured, state.isIpConfigured, "status=$status の isIpConfigured")
             }
         }
 
