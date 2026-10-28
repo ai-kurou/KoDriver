@@ -4,6 +4,8 @@
 
 `ObserveVoiceSpeedUseCase` で保存済みの速度を監視し、`SaveVoiceSpeedUseCase` で保存する。試聴は`SpeakTextUseCase`と`ObserveSoundVolumeUseCase`を使う。KoinモジュールはこれらのUseCaseを提供し、`:core:data`の`VoiceSpeedPreferencesRepository`・`VoicePitchPreferencesRepository`・`VoicePreferencesRepository`・`SoundVolumePreferencesRepository`と、`TextToSpeechRepository`を消費する。設定はDataStoreに永続化される。
 
+`OtherVoiceSpeedDetailFlow` は保存済みの速度と試聴中の状態を表示状態へ合成する cold Flow を担当する。ViewModel は `stateIn` による状態の共有、保存時の丸めと永続化、保存・試聴ジョブ、試聴リクエストの世代管理、ライフサイクルに応じた停止、エラー・キャンセル処理を担当する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
