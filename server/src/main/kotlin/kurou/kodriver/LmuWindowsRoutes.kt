@@ -48,4 +48,7 @@ internal fun Route.lmuWindowsRoutes(useCases: KoDriverServerUseCases) {
     telemetryWebSocket(KoDriverServerFeature.CAR_GAP, Simulator.LmuWindows, distinct = false) {
         useCases.lmuWindows.observeLmuWindowsCarGap()
     }
+    telemetryWebSocket(KoDriverServerFeature.CLASS_CAR_GAP, Simulator.LmuWindows, distinct = false) {
+        useCases.lmuWindows.observeLmuWindowsClassCarGap()
+    }
 }

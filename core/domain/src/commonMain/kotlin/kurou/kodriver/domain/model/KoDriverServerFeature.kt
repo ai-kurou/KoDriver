@@ -18,6 +18,7 @@ enum class KoDriverServerFeature(
     PIT_STATUS(pathSegment = "pit_status"),
     TYRE_DETACHED(pathSegment = "tyre_detached"),
     CAR_GAP(pathSegment = "car_gap"),
+    CLASS_CAR_GAP(pathSegment = "class_car_gap"),
     REMAINING_FUEL_LAPS(pathSegment = "remaining_fuel_laps"),
     ;
 

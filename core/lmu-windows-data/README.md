@@ -45,7 +45,9 @@ server は `/ws/lmu_windows/car_gap` で同一値も継続配信する。Android
 
 `LmuWindowsClassCarGapRepositoryImpl` は Scoring のみを使用し、`mVehicleClass` が自車と完全一致する、自車以外かつ `mInGarageStall` が false の車両を対象とする。TinyPedal の `get_vehicles_info` と同じく、他車と自車の `mTimeIntoLap` の差を自車の `mEstimatedLapTime` で周回補正し、前方・後方それぞれの最小秒差を `LmuWindowsClassCarGapData` で返す。同位置なら両方 0。周回遅れ・周回先行の車両も、順位ではなくコース上の位置関係で前後の対象に含む。
 
-自車が Scoring に存在しなければ配信しない。推定ラップタイムが非有限または 0 以下の場合、あるいは対象車両がない場合は両方 null。非有限の時間差は対象から除外する。非 Windows では空 Flow を返す。既存の Telemetry 生値版 `LmuWindowsCarGapRepositoryImpl` とは独立した domain / data の実装であり、server・Android WebSocket・UI への接続は含まない。
+自車が Scoring に存在しなければ配信しない。推定ラップタイムが非有限または 0 以下の場合、あるいは対象車両がない場合は両方 null。非有限の時間差は対象から除外する。非 Windows では空 Flow を返す。既存の Telemetry 生値版 `LmuWindowsCarGapRepositoryImpl` とは独立した実装であり、UI への接続は含まない。
+
+server は `/ws/lmu_windows/class_car_gap` で同一値も継続配信する。Android は `WebSocketLmuWindowsClassCarGapRepository` で受信し、`LmuWindowsClassCarGapData` として復元する。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
