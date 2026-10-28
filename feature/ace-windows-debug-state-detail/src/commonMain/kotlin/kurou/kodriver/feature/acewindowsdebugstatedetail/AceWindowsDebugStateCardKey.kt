@@ -8,4 +8,5 @@ enum class AceWindowsDebugStateCardKey {
     BEST_LAP,
     TYRE_CARCASS_TEMPERATURE,
     FUEL_CONSUMPTION,
+    CAR_GAP,
 }

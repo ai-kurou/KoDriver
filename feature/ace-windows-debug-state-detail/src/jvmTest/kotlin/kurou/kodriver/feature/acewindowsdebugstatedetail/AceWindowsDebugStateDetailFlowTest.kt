@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.model.ACE_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
@@ -46,9 +47,19 @@ class AceWindowsDebugStateDetailFlowTest {
             assertEquals(AceWindowsDebugStateDetailUiState(), states.last())
 
             val order = defaultDebugStateCardOrder.reversed()
-            val aceState = AceWindowsDebugState(flag = AceWindowsFlagData(AceWindowsFlagType.GREEN_FLAG))
+            val aceState =
+                AceWindowsDebugState(
+                    flag = AceWindowsFlagData(AceWindowsFlagType.GREEN_FLAG),
+                    gap = AceWindowsGapData(1.26f, -2.34f),
+                )
             cardOrder.update { order }
-            received.update { setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.FLAG_INFO) }
+            received.update {
+                setOf(
+                    AceWindowsDebugStateCardKey.SIMULATOR,
+                    AceWindowsDebugStateCardKey.FLAG_INFO,
+                    AceWindowsDebugStateCardKey.CAR_GAP,
+                )
+            }
             aceWindows.update { aceState }
             selected.update { ACE_WINDOWS_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().last() }
             text.update { "テスト読み上げ" }

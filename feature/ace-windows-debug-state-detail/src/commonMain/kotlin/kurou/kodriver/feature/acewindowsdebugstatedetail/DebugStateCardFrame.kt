@@ -39,6 +39,7 @@ private val debugStateCardSymbols =
         AceWindowsDebugStateCardKey.BEST_LAP to "🏆",
         AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to "◎",
         AceWindowsDebugStateCardKey.FUEL_CONSUMPTION to "⛽",
+        AceWindowsDebugStateCardKey.CAR_GAP to "↕",
     )
 
 internal fun debugStateCardSymbol(cardKey: AceWindowsDebugStateCardKey): String =

@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_best_lap_title
+import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_car_gap_title
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_flag_info_title
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_fuel_consumption_title
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_side_by_side_title
@@ -147,6 +148,7 @@ private val debugStateCardTitles: Map<AceWindowsDebugStateCardKey, StringResourc
         AceWindowsDebugStateCardKey.FLAG_INFO to Res.string.debug_state_flag_info_title,
         AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to Res.string.debug_state_side_by_side_title,
         AceWindowsDebugStateCardKey.BEST_LAP to Res.string.debug_state_best_lap_title,
+        AceWindowsDebugStateCardKey.CAR_GAP to Res.string.debug_state_car_gap_title,
         AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to Res.string.debug_state_tyre_carcass_temperature_title,
         AceWindowsDebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
     )
@@ -164,6 +166,7 @@ private val debugStateCardContents:
                 SideBySideVehiclesContent(uiState.aceWindows.vehicleApproach)
             },
         AceWindowsDebugStateCardKey.BEST_LAP to { uiState -> BestLapContent(uiState.aceWindows.bestLapTime) },
+        AceWindowsDebugStateCardKey.CAR_GAP to { uiState -> CarGapContent(uiState.aceWindows.gap) },
         AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to
             { uiState ->
                 TyreCarcassTemperatureContent(uiState.aceWindows.tyreCarcassTemperature)
