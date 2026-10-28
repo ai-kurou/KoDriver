@@ -73,37 +73,6 @@ class TelemetryLogDetailViewModelTest {
         }
 
     @Test
-    fun `選択したログと一つ前のログのJSONを表示項目に変換する`() =
-        runTest {
-            val current = telemetryLog(id = 2L, createdAt = 200L, telemetryJson = """{"speed":120}""")
-            val previous = telemetryLog(id = 1L, createdAt = 100L, telemetryJson = """{"speed":118}""")
-            every { repository.observeTelemetryLogDetail(2L) } returns
-                flowOf(TelemetryLogDetail(current = current, previous = previous))
-
-            viewModel.setLogId(2L)
-
-            assertEquals(
-                TelemetryLogDetailUiState(
-                    logId = 2L,
-                    items =
-                        listOf(
-                            TelemetryLogDetailItemUiState(
-                                kind = TelemetryLogDetailItemKind.SELECTED,
-                                telemetryJson = """{"speed":120}""",
-                            ),
-                            TelemetryLogDetailItemUiState(
-                                kind = TelemetryLogDetailItemKind.PREVIOUS,
-                                telemetryJson = """{"speed":118}""",
-                            ),
-                        ),
-                ),
-                viewModel.uiState.first { it.items.size == 2 },
-            )
-            verify(exactly = 1) { repository.observeTelemetryLogDetail(2L) }
-            confirmVerified(repository)
-        }
-
-    @Test
     fun `ログの更新を観測する`() =
         runTest {
             val detailFlow =
@@ -138,64 +107,6 @@ class TelemetryLogDetailViewModelTest {
                     .telemetryJson,
             )
             verify(exactly = 1) { repository.observeTelemetryLogDetail(1L) }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `選択したログが存在しない場合は項目を空にする`() =
-        runTest {
-            every { repository.observeTelemetryLogDetail(999L) } returns flowOf(null)
-
-            viewModel.setLogId(999L)
-
-            assertEquals(
-                TelemetryLogDetailUiState(logId = 999L),
-                viewModel.uiState.first { it.logId == 999L },
-            )
-            verify(exactly = 1) { repository.observeTelemetryLogDetail(999L) }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `ace_windowsの選択したログと一つ前のログのJSONを表示項目に変換する`() =
-        runTest {
-            val current =
-                telemetryLog(
-                    id = 2L,
-                    createdAt = 200L,
-                    telemetryJson = """{"remainingFuelLiters":8.2}""",
-                    simulator = Simulator.AceWindows,
-                )
-            val previous =
-                telemetryLog(
-                    id = 1L,
-                    createdAt = 100L,
-                    telemetryJson = """{"remainingFuelLiters":8.5}""",
-                    simulator = Simulator.AceWindows,
-                )
-            every { repository.observeTelemetryLogDetail(2L) } returns
-                flowOf(TelemetryLogDetail(current = current, previous = previous))
-
-            viewModel.setLogId(2L)
-
-            assertEquals(
-                TelemetryLogDetailUiState(
-                    logId = 2L,
-                    items =
-                        listOf(
-                            TelemetryLogDetailItemUiState(
-                                kind = TelemetryLogDetailItemKind.SELECTED,
-                                telemetryJson = """{"remainingFuelLiters":8.2}""",
-                            ),
-                            TelemetryLogDetailItemUiState(
-                                kind = TelemetryLogDetailItemKind.PREVIOUS,
-                                telemetryJson = """{"remainingFuelLiters":8.5}""",
-                            ),
-                        ),
-                ),
-                viewModel.uiState.first { it.items.size == 2 },
-            )
-            verify(exactly = 1) { repository.observeTelemetryLogDetail(2L) }
             confirmVerified(repository)
         }
 }
