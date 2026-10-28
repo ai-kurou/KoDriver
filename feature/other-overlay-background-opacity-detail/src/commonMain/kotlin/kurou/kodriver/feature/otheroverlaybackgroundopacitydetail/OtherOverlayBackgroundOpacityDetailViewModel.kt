@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
@@ -20,8 +19,9 @@ internal class OtherOverlayBackgroundOpacityDetailViewModel(
     private var selectionRequest = 0
 
     val uiState: StateFlow<OtherOverlayBackgroundOpacityDetailUiState> =
-        observeOverlayBackgroundOpacity()
-            .map { opacity -> OtherOverlayBackgroundOpacityDetailUiState(opacity = opacity) }
+        OtherOverlayBackgroundOpacityDetailFlow(
+            observedOverlayBackgroundOpacity = observeOverlayBackgroundOpacity(),
+        ).uiState
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5_000),
