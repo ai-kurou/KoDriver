@@ -7,7 +7,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -30,9 +29,10 @@ internal class OtherVoicePitchDetailViewModel(
     private var previewRequest = 0
 
     val uiState: StateFlow<OtherVoicePitchDetailUiState> =
-        combine(observeVoicePitch(), isPreviewing) { pitch, previewing ->
-            OtherVoicePitchDetailUiState(pitch = pitch, isPreviewing = previewing)
-        }.stateIn(
+        OtherVoicePitchDetailFlow(
+            pitch = observeVoicePitch(),
+            isPreviewing = isPreviewing,
+        ).uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             OtherVoicePitchDetailUiState(),
