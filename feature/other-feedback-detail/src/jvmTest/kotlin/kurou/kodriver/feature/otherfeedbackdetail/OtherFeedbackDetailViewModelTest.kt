@@ -14,9 +14,11 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -368,6 +370,28 @@ class OtherFeedbackDetailViewModelTest {
 
             assertEquals(log, viewModel.uiState.first { it.attachedTelemetryLog != null }.attachedTelemetryLog)
             verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(1L) }
+            confirmVerified(telemetryLogRepository)
+            collectionJob.cancel()
+        }
+
+    @Test
+    fun `ログ詳細の現在ログを添付し詳細がなくなれば添付なしになる`() =
+        runTest {
+            val current = telemetryLog(id = 2L)
+            val detail =
+                MutableStateFlow<TelemetryLogDetail?>(
+                    TelemetryLogDetail(current = current, previous = telemetryLog(id = 1L)),
+                )
+            every { telemetryLogRepository.observeTelemetryLogDetail(2L) } returns detail
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+            viewModel.setTelemetryLogId(2L)
+
+            assertEquals(current, viewModel.uiState.first { it.attachedTelemetryLog != null }.attachedTelemetryLog)
+            detail.update { null }
+            assertNull(viewModel.uiState.first { it.attachedTelemetryLog == null }.attachedTelemetryLog)
+            verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(2L) }
             confirmVerified(telemetryLogRepository)
             collectionJob.cancel()
         }
