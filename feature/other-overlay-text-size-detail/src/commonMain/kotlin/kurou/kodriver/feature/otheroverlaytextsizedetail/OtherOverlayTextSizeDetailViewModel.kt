@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,12 +27,10 @@ class OtherOverlayTextSizeDetailViewModel internal constructor(
     private val pendingOverlayTextSize = MutableStateFlow<OverlayTextSize?>(null)
 
     internal val uiState =
-        combine(observeOverlayTextSize(), pendingOverlayTextSize) { observed, pending ->
-            OtherOverlayTextSizeDetailUiState(
-                selectedOverlayTextSize = observed,
-                pendingOverlayTextSize = pending ?: observed,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherOverlayTextSizeDetailUiState())
+        OtherOverlayTextSizeDetailFlow(
+            observedOverlayTextSize = observeOverlayTextSize(),
+            pendingOverlayTextSize = pendingOverlayTextSize,
+        ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherOverlayTextSizeDetailUiState())
 
     internal fun onPendingOverlayTextSizeSelected(overlayTextSize: OverlayTextSize) {
         selectionRequest++

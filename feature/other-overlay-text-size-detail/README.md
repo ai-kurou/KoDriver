@@ -24,6 +24,12 @@ OKで初めて保存し、保存完了後にプレビューを解除する。キ
 確定した選択が保存中の間は解除せず、保存完了（失敗を含む）までプレビューを維持する。
 保存中に選び直された場合は、ダイアログ破棄時に未保存のプレビューと選択を解除する。
 
+`OtherOverlayTextSizeDetailFlow` は、`ObserveOverlayTextSizeUseCase` の適用中のサイズと
+ViewModel が保持する未保存の選択値を合成する cold Flow。`selectedOverlayTextSize` は適用中のサイズ、
+`pendingOverlayTextSize` は未保存の選択値があればその値、なければ適用中のサイズを返す。
+ViewModel は `stateIn` による状態共有、未保存の選択値の管理、プレビュー・保存・解除、
+ライフサイクル、エラー・キャンセル処理、保存中の選び直しや離脱との競合制御を担当する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
