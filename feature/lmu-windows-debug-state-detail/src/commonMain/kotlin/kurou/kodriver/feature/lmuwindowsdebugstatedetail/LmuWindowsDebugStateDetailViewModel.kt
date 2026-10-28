@@ -46,7 +46,6 @@ internal class LmuWindowsDebugStateDetailViewModel(
             ReadoutHotkeyUiState(key, registration, check)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ReadoutHotkeyUiState())
 
-    private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
     private val saveCardOrder = cardOrderUseCases::saveKeys
     private val _receivedCardKeys = MutableStateFlow(setOf(LmuWindowsDebugStateCardKey.SIMULATOR))
 
@@ -62,12 +61,11 @@ internal class LmuWindowsDebugStateDetailViewModel(
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
     private val _localCardOrder = MutableStateFlow<List<LmuWindowsDebugStateCardKey>?>(null)
     private val _cardOrder: StateFlow<List<LmuWindowsDebugStateCardKey>> =
-        combine(
-            cardOrderUseCases.observeKeys(),
-            _localCardOrder,
-        ) { persisted, local ->
-            local ?: resolveCardOrder(persistedOrder = persisted, defaultOrder = defaultDebugStateCardOrder)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
+        LmuWindowsDebugStateCardOrderFlow(
+            persistedOrder = cardOrderUseCases.observeKeys(),
+            localOrder = _localCardOrder,
+            resolveCardOrder = cardOrderUseCases.resolveCardOrder,
+        ).order.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
 
     private val detailFlow =
         LmuWindowsDebugStateDetailFlow(
