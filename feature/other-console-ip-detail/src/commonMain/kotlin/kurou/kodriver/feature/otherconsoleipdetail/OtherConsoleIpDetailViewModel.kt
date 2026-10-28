@@ -6,7 +6,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -23,13 +22,6 @@ internal class OtherConsoleIpDetailViewModel(
     observeGt7Ps5UdpPort: ObserveGt7Ps5UdpPortUseCase,
     private val saveGt7Ps5UdpPort: SaveGt7Ps5UdpPortUseCase,
 ) : ViewModel() {
-    private data class MutableState(
-        val userInput: String? = null,
-        val saveFailed: Boolean = false,
-        val isSaved: Boolean = false,
-        val userSelectedPort: Int? = null,
-    )
-
     private val savedAddress: StateFlow<String> =
         observeConsoleAddress()
             .map { it ?: "" }
@@ -39,23 +31,18 @@ internal class OtherConsoleIpDetailViewModel(
         observeGt7Ps5UdpPort()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GT7_PS5_UDP_PORT_DEFAULT)
 
-    private val _mutable: MutableStateFlow<MutableState> = MutableStateFlow(MutableState())
+    private val _mutable: MutableStateFlow<OtherConsoleIpDetailMutableState> =
+        MutableStateFlow(OtherConsoleIpDetailMutableState())
+
+    private val detailFlow =
+        OtherConsoleIpDetailFlow(
+            savedAddress = savedAddress,
+            savedPort = savedPort,
+            mutableState = _mutable,
+        )
 
     val uiState: StateFlow<OtherConsoleIpDetailUiState> =
-        combine(
-            savedAddress,
-            savedPort,
-            _mutable,
-        ) { saved, port, m ->
-            val current = m.userInput ?: saved
-            OtherConsoleIpDetailUiState(
-                inputAddress = current,
-                isInputValid = current.isEmpty() || isValidIp(current),
-                saveFailed = m.saveFailed,
-                isSaved = m.isSaved,
-                selectedPort = m.userSelectedPort ?: port,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherConsoleIpDetailUiState())
+        detailFlow.uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), detailFlow.initialUiState)
 
     fun onAddressChanged(address: String) {
         _mutable.update { it.copy(userInput = address) }
@@ -67,7 +54,7 @@ internal class OtherConsoleIpDetailViewModel(
 
     fun onSave() {
         val address = _mutable.value.userInput ?: savedAddress.value
-        if (!isValidIp(address)) return
+        if (!isValidConsoleIpAddress(address)) return
         val port = _mutable.value.userSelectedPort ?: savedPort.value
         viewModelScope.launch {
             try {
@@ -84,12 +71,13 @@ internal class OtherConsoleIpDetailViewModel(
     }
 
     fun onDismiss() {
-        _mutable.update { MutableState() }
-    }
-
-    private fun isValidIp(ip: String): Boolean {
-        val parts = ip.split(".")
-        if (parts.size != 4) return false
-        return parts.all { part -> part.toIntOrNull()?.let { it in 0..255 } == true }
+        _mutable.update { OtherConsoleIpDetailMutableState() }
     }
 }
+
+internal data class OtherConsoleIpDetailMutableState(
+    val userInput: String? = null,
+    val saveFailed: Boolean = false,
+    val isSaved: Boolean = false,
+    val userSelectedPort: Int? = null,
+)
