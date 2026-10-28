@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,12 +20,10 @@ internal class OtherReadoutStartSoundDetailViewModel(
     private val pendingType = MutableStateFlow<ReadoutStartSoundType?>(null)
 
     val uiState =
-        combine(observeReadoutStartSoundType(), pendingType) { saved, pending ->
-            OtherReadoutStartSoundDetailUiState(
-                selectedType = saved,
-                pendingType = pending ?: saved,
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherReadoutStartSoundDetailUiState())
+        OtherReadoutStartSoundDetailFlow(
+            savedType = observeReadoutStartSoundType(),
+            pendingType = pendingType,
+        ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherReadoutStartSoundDetailUiState())
 
     fun onPendingTypeSelected(type: ReadoutStartSoundType) {
         pendingType.update { type }
