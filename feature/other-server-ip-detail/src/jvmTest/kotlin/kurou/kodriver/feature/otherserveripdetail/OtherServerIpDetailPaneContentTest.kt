@@ -1,14 +1,23 @@
 package kurou.kodriver.feature.otherserveripdetail
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
+import io.mockk.confirmVerified
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -17,8 +26,11 @@ class OtherServerIpDetailPaneContentTest {
     @get:Rule
     val rule = createComposeRule()
 
+    private val haptic: HapticFeedback = mockk(relaxUnitFun = true)
+
     private fun setContent(
         uiState: OtherServerIpDetailUiState = OtherServerIpDetailUiState(inputIp = "192.168.1.1", isInputValid = true),
+        onIpChanged: (String) -> Unit = {},
         onSave: () -> Unit = {},
         onSaveAnyway: () -> Unit = {},
         onDismiss: () -> Unit = {},
@@ -26,25 +38,35 @@ class OtherServerIpDetailPaneContentTest {
         onBack: () -> Unit = {},
     ) {
         rule.setContent {
-            OtherServerIpDetailPaneContent(
-                uiState = uiState,
-                onSave = onSave,
-                onSaveAnyway = onSaveAnyway,
-                onDismiss = onDismiss,
-                onOpenGuide = onOpenGuide,
-                onBack = onBack,
-            )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherServerIpDetailPaneContent(
+                    uiState = uiState,
+                    onIpChanged = onIpChanged,
+                    onSave = onSave,
+                    onSaveAnyway = onSaveAnyway,
+                    onDismiss = onDismiss,
+                    onOpenGuide = onOpenGuide,
+                    onBack = onBack,
+                )
+            }
         }
     }
 
     @Test
     fun `保存ボタンをクリックするとonSaveが呼ばれる`() {
         var saveCount = 0
-        setContent(onSave = { saveCount++ })
+        setContent(
+            onSave = {
+                verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+                saveCount++
+            },
+        )
 
         rule.onNodeWithText("保存").performClick()
 
         assertEquals(1, saveCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
@@ -57,12 +79,17 @@ class OtherServerIpDetailPaneContentTest {
                     isInputValid = true,
                     connectivityWarning = true,
                 ),
-            onSaveAnyway = { saveAnywayCount++ },
+            onSaveAnyway = {
+                verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+                saveAnywayCount++
+            },
         )
 
         rule.onNodeWithText("このまま保存").performClick()
 
         assertEquals(1, saveAnywayCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
@@ -116,11 +143,18 @@ class OtherServerIpDetailPaneContentTest {
     @Test
     fun `入力欄でEnterキーを押すとonSaveが呼ばれる`() {
         var saveCount = 0
-        setContent(onSave = { saveCount++ })
+        setContent(
+            onSave = {
+                verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+                saveCount++
+            },
+        )
 
         rule.onNodeWithText("IPアドレス").performImeAction()
 
         assertEquals(1, saveCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
@@ -133,12 +167,17 @@ class OtherServerIpDetailPaneContentTest {
                     isInputValid = true,
                     connectivityWarning = true,
                 ),
-            onSaveAnyway = { saveAnywayCount++ },
+            onSaveAnyway = {
+                verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+                saveAnywayCount++
+            },
         )
 
         rule.onNodeWithText("IPアドレス").performImeAction()
 
         assertEquals(1, saveAnywayCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
@@ -152,6 +191,71 @@ class OtherServerIpDetailPaneContentTest {
         rule.onNodeWithText("IPアドレス").performImeAction()
 
         assertEquals(0, saveCount)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `空入力では保存ボタンとIME保存でコールバックも触覚も発生しない`() {
+        var saveCount = 0
+        setContent(
+            uiState = OtherServerIpDetailUiState(inputIp = ""),
+            onSave = { saveCount++ },
+        )
+
+        rule.onNodeWithText("保存").assertIsNotEnabled()
+        rule.onNodeWithText("IPアドレス").performImeAction()
+
+        assertEquals(0, saveCount)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `不正な入力では保存ボタンとIME保存でコールバックも触覚も発生しない`() {
+        var saveCount = 0
+        setContent(
+            uiState = OtherServerIpDetailUiState(inputIp = "invalid", isInputValid = false),
+            onSave = { saveCount++ },
+        )
+
+        rule.onNodeWithText("保存").assertIsNotEnabled()
+        rule.onNodeWithText("IPアドレス").performImeAction()
+
+        assertEquals(0, saveCount)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `接続確認中では保存ボタンとIME保存でコールバックも触覚も発生しない`() {
+        var saveCount = 0
+        setContent(
+            uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.1", isCheckingConnectivity = true),
+            onSave = { saveCount++ },
+        )
+
+        rule.onNodeWithText("保存").assertIsNotEnabled()
+        rule.onNodeWithText("IPアドレス").performImeAction()
+
+        assertEquals(0, saveCount)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `通常の文字入力では触覚が発生しない`() {
+        val inputs = mutableListOf<String>()
+        setContent(
+            uiState = OtherServerIpDetailUiState(inputIp = ""),
+            onIpChanged = { inputs.add(it) },
+        )
+
+        rule.onNodeWithText("IPアドレス").performTextInput("192.168.1.2")
+
+        assertEquals(listOf("192.168.1.2"), inputs)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
