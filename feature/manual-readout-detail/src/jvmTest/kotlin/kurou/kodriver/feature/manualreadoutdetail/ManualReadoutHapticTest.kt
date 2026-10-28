@@ -11,6 +11,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -28,6 +29,7 @@ import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
@@ -128,6 +130,32 @@ class ManualReadoutHapticTest {
         rule.onNodeWithText("別の入力欄").performClick()
         rule.onNodeWithTag("manual_readout_set_name_input").assertDoesNotExist()
         assertEquals(listOf("名前"), saved)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `プレースホルダー挿入時だけ触覚を通知する`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value
+        val text = mutableStateOf("")
+        rule.setContent {
+            HapticContent {
+                ManualReadoutItemTextField(
+                    text = text.value,
+                    defaultText = "既定",
+                    onTextChanged = { text.value = it },
+                    itemKey = key,
+                    simulatorId = Simulator.LmuWindows.id,
+                )
+            }
+        }
+
+        rule.onNode(hasSetTextAction()).performTextReplacement("燃料 ")
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        rule.onNodeWithText("{percent}を挿入").performClick()
+
+        rule.runOnIdle { assertEquals("燃料 {percent}", text.value) }
         verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(haptic)
     }
