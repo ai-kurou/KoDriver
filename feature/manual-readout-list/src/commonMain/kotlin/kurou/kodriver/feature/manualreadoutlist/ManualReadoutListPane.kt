@@ -198,10 +198,12 @@ internal fun ManualReadoutListPaneContent(
     listState: LazyListState = rememberLazyListState(),
     gridState: LazyGridState = rememberLazyGridState(),
 ) {
+    val haptic = LocalHapticFeedback.current
     var editMode by remember { mutableStateOf(false) }
     var additionBaseline by remember(simulatorId) { mutableStateOf<Set<String>?>(null) }
     val enteredSetIds = remember(simulatorId) { mutableSetOf<String>() }
     val addSet = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         additionBaseline = uiState.sets.map { it.id }.toSet()
         onAddSet()
     }
@@ -223,6 +225,7 @@ internal fun ManualReadoutListPaneContent(
                     showSimHubGuideLink = simulatorId != Simulator.Gt7Ps5.id,
                     playButtonLayoutEnabled = uiState.playButtonLayoutEnabled,
                     onTogglePlayButtonLayout = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         editMode = false
                         onTogglePlayButtonLayout()
                     },
@@ -266,6 +269,7 @@ internal fun ManualReadoutListPaneContent(
                                     title = set.name.ifBlank { manualReadoutSetTitle(simulatorId, setNumber) },
                                     setNumber = setNumber,
                                     editMode = editMode,
+                                    selected = uiState.selectedSetId == set.id,
                                     canReadSet = uiState.canReadSets && set.itemKeys.isNotEmpty(),
                                     showHotkeyChip = showHotkeyChip,
                                     onReadSet = { onReadSet(set.id) },
@@ -406,6 +410,7 @@ private fun ManualReadoutSetPlayButton(
     title: String,
     setNumber: Int,
     editMode: Boolean,
+    selected: Boolean,
     canReadSet: Boolean,
     showHotkeyChip: Boolean,
     onReadSet: () -> Unit,
@@ -427,6 +432,7 @@ private fun ManualReadoutSetPlayButton(
                 .combinedClickable(
                     onClick = {
                         if (editMode) {
+                            if (!selected) haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                             onSetClick()
                         } else if (canReadSet) {
                             onReadSet()
