@@ -20,6 +20,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -148,6 +150,7 @@ internal fun LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
     onSustainedLeftTextPreviewClicked: (String) -> Unit = {},
     onSustainedRightTextPreviewClicked: (String) -> Unit = {},
 ) {
+    val haptic = LocalHapticFeedback.current
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
     val lateralLabel = stringResource(Res.string.vehicle_approach_lateral_label)
     val sustainedDurationLabel = stringResource(Res.string.vehicle_approach_sustained_duration_label)
@@ -215,7 +218,10 @@ internal fun LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
                 stringResource(Res.string.vehicle_approach_skip_first_lap_switch_content_description)
             Switch(
                 checked = uiState.skipFirstLap,
-                onCheckedChange = onSkipFirstLapChanged,
+                onCheckedChange = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onSkipFirstLapChanged(it)
+                },
                 modifier = Modifier.semantics { contentDescription = skipFirstLapSwitchDescription },
             )
         }

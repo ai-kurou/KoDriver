@@ -1,10 +1,14 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.braketemperaturedetail
 
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
@@ -26,6 +30,10 @@ import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kurou.kodriver.buildlogic.screenshottest.assertEditableTextEquals
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -41,6 +49,8 @@ private const val DEFAULT_TEXT = LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFA
 class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    private val haptic: HapticFeedback = mockk()
 
     @Test
     fun `文言の中間のカーソル位置にcelsiusを挿入して保存通知する`() {
@@ -444,6 +454,7 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
 
     @Test
     fun `画像タイルの選択結果を反映し警告OFFでは選択を通知しない`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         var uiState by mutableStateOf(
             LmuWindowsAutoReadoutBrakeTemperatureDetailUiState(
                 vehicleClassHighThresholdCelsius =
@@ -455,14 +466,16 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
         )
         val selections = mutableListOf<LmuWindowsVehicleClassData>()
         rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
-                    uiState = uiState,
-                    onVehicleClassSelected = {
-                        selections += it
-                        uiState = uiState.copy(selectedVehicleClass = it)
-                    },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    LmuWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
+                        uiState = uiState,
+                        onVehicleClassSelected = {
+                            selections += it
+                            uiState = uiState.copy(selectedVehicleClass = it)
+                        },
+                    )
+                }
             }
         }
 
@@ -482,6 +495,8 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
             .assertIsNotEnabled()
             .assertIsSelected()
         assertEquals(listOf<LmuWindowsVehicleClassData>(LmuWindowsVehicleClassData.Gt3), selections)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     private fun setResetTestContent(

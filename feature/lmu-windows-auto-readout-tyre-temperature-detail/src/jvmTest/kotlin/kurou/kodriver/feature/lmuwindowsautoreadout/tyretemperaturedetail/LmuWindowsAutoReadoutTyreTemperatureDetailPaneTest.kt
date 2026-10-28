@@ -1,10 +1,14 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail
 
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
@@ -28,12 +32,17 @@ import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import org.junit.Rule
@@ -45,6 +54,80 @@ import kotlin.test.assertTrue
 class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    private val haptic: HapticFeedback = mockk()
+
+    @Test
+    fun `過熱警告OFFでは車両クラスの選択も触覚も通知しない`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        val selections = mutableListOf<LmuWindowsVehicleClassData>()
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
+                        uiState =
+                            LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
+                                overheatWarningEnabled = false,
+                                vehicleClassHighThresholdCelsius = mapOf(LmuWindowsVehicleClassData.Gt3 to 95),
+                            ),
+                        onVehicleClassSelected = { selections += it },
+                    )
+                }
+            }
+        }
+
+        rule.onNodeWithContentDescription("LMGT3、95°C").performScrollTo().assertIsNotEnabled()
+
+        assertEquals(emptyList(), selections)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `低温警告の各フェーズを選択解除するたびに一度触覚を通知する`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        val phases =
+            listOf(
+                SessionPhase.GARAGE to "ガレージ",
+                SessionPhase.WARM_UP to "ウォームアップラップ",
+                SessionPhase.GRID_WALK to "グリッドウォーク",
+                SessionPhase.FORMATION to "フォーメーションラップ",
+            )
+        var selectedPhases by mutableStateOf(emptySet<SessionPhase>())
+        val toggles = mutableListOf<SessionPhase>()
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
+                        uiState = LmuWindowsAutoReadoutTyreTemperatureDetailUiState(lowWarningPhases = selectedPhases),
+                        onLowWarningPhaseToggled = { phase ->
+                            toggles += phase
+                            selectedPhases =
+                                if (phase in selectedPhases) {
+                                    selectedPhases - phase
+                                } else {
+                                    selectedPhases + phase
+                                }
+                        },
+                    )
+                }
+            }
+        }
+
+        phases.forEach { (_, label) ->
+            rule
+                .onNodeWithText(label)
+                .performScrollTo()
+                .assertIsNotSelected()
+                .performClick()
+                .assertIsSelected()
+            rule.onNodeWithText(label).performClick().assertIsNotSelected()
+        }
+
+        assertEquals(phases.flatMap { (phase, _) -> listOf(phase, phase) }, toggles)
+        verify(exactly = 8) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
 
     @Test
     fun `過熱文言の中間のカーソル位置にcelsiusを挿入して保存通知する`() {
@@ -337,26 +420,31 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
 
     @Test
     fun `対象クラスのチップをクリックするとonVehicleClassSelectedにそのクラスが渡される`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         var selectedVehicleClass: LmuWindowsVehicleClassData? = null
         rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
-                            vehicleClassHighThresholdCelsius =
-                                mapOf(
-                                    LmuWindowsVehicleClassData.Hypercar to 90,
-                                    LmuWindowsVehicleClassData.Gt3 to 95,
-                                ),
-                        ),
-                    onVehicleClassSelected = { selectedVehicleClass = it },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
+                        uiState =
+                            LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
+                                vehicleClassHighThresholdCelsius =
+                                    mapOf(
+                                        LmuWindowsVehicleClassData.Hypercar to 90,
+                                        LmuWindowsVehicleClassData.Gt3 to 95,
+                                    ),
+                            ),
+                        onVehicleClassSelected = { selectedVehicleClass = it },
+                    )
+                }
             }
         }
 
         rule.onNodeWithContentDescription("LMGT3、95°C").performScrollTo().performClick()
 
         assertEquals(LmuWindowsVehicleClassData.Gt3, selectedVehicleClass)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
