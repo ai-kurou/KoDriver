@@ -52,17 +52,26 @@ class OtherServerIpDetailDiscoveryContentTest {
 
     @Test
     fun `検出中は検出ボタンが無効になっている`() {
+        var showCount = 0
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
-            OtherServerIpDetailPaneContent(
-                uiState =
-                    OtherServerIpDetailUiState(
-                        inputIp = "192.168.1.1",
-                        discoveredServers = emptyList(),
-                    ),
-            )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherServerIpDetailPaneContent(
+                    uiState =
+                        OtherServerIpDetailUiState(
+                            inputIp = "192.168.1.1",
+                            discoveredServers = emptyList(),
+                        ),
+                    onShowDiscoveredServers = { showCount++ },
+                )
+            }
         }
 
         rule.onNodeWithText("Windows版KoDriverを検出中…").assertIsNotEnabled()
+
+        assertEquals(0, showCount)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
@@ -132,21 +141,29 @@ class OtherServerIpDetailDiscoveryContentTest {
     fun `見つかったWindows版KoDriverを選択ボタンをクリックするとonShowDiscoveredServersが呼ばれる`() {
         val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
         var showCount = 0
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
-            OtherServerIpDetailPaneContent(
-                uiState =
-                    OtherServerIpDetailUiState(
-                        inputIp = "192.168.1.1",
-                        discoveredServers = listOf(server),
-                        isDiscoveryDialogVisible = false,
-                    ),
-                onShowDiscoveredServers = { showCount++ },
-            )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherServerIpDetailPaneContent(
+                    uiState =
+                        OtherServerIpDetailUiState(
+                            inputIp = "192.168.1.1",
+                            discoveredServers = listOf(server),
+                            isDiscoveryDialogVisible = false,
+                        ),
+                    onShowDiscoveredServers = {
+                        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+                        showCount++
+                    },
+                )
+            }
         }
 
         rule.onNodeWithText("見つかったWindows版KoDriverを選択").performClick()
 
         assertEquals(1, showCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test

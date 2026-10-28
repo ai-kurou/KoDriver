@@ -132,11 +132,23 @@ fun OtherServerIpDetailPaneContent(
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onOpenGuide()
     }
+    val onSaveWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onSave()
+    }
+    val onSaveAnywayWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onSaveAnyway()
+    }
+    val onShowDiscoveredServersWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onShowDiscoveredServers()
+    }
     val onSaveConfirmedByKeyboard: () -> Unit = {
         if (uiState.connectivityWarning) {
-            onSaveAnyway()
+            onSaveAnywayWithHaptic()
         } else if (uiState.isInputValid && uiState.inputIp.isNotEmpty() && !uiState.isCheckingConnectivity) {
-            onSave()
+            onSaveWithHaptic()
         }
     }
     val currentOnDismiss by rememberUpdatedState(onDismiss)
@@ -245,7 +257,7 @@ fun OtherServerIpDetailPaneContent(
             }
             Spacer(modifier = Modifier.height(KoDriverSpacing.small))
             OutlinedButton(
-                onClick = onShowDiscoveredServers,
+                onClick = onShowDiscoveredServersWithHaptic,
                 enabled = uiState.discoveredServers.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -278,12 +290,12 @@ fun OtherServerIpDetailPaneContent(
                 transitionSpec = { fadeIn() togetherWith fadeOut() },
             ) { connectivityWarning ->
                 if (connectivityWarning) {
-                    Button(onClick = onSaveAnyway, modifier = Modifier.fillMaxWidth()) {
+                    Button(onClick = onSaveAnywayWithHaptic, modifier = Modifier.fillMaxWidth()) {
                         Text(stringResource(Res.string.server_ip_save_anyway))
                     }
                 } else {
                     Button(
-                        onClick = onSave,
+                        onClick = onSaveWithHaptic,
                         enabled =
                             uiState.isInputValid && uiState.inputIp.isNotEmpty() && !uiState.isCheckingConnectivity,
                         modifier = Modifier.fillMaxWidth(),
