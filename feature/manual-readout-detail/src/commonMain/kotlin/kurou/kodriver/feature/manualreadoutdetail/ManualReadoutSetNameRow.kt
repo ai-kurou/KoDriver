@@ -26,6 +26,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_NAME_MAX_LENGTH
@@ -43,12 +45,14 @@ internal fun ManualReadoutSetNameRow(
     number: Int,
     onNameChanged: (String) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     var editing by remember { mutableStateOf(false) }
     var input by remember { mutableStateOf(name) }
     var hadFocus by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val defaultName = stringResource(Res.string.manual_readout_set_title, number)
     val startEditing = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         input = name
         hadFocus = false
         editing = true
@@ -57,6 +61,12 @@ internal fun ManualReadoutSetNameRow(
         if (editing) {
             editing = false
             onNameChanged(input)
+        }
+    }
+    val confirmEditing = {
+        if (editing) {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            finishEditing()
         }
     }
     if (editing) {
@@ -81,10 +91,10 @@ internal fun ManualReadoutSetNameRow(
                 }
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { finishEditing() }),
+            keyboardActions = KeyboardActions(onDone = { confirmEditing() }),
             trailingIcon = {
                 IconButton(
-                    onClick = finishEditing,
+                    onClick = confirmEditing,
                     modifier = Modifier.focusProperties { canFocus = false },
                 ) {
                     Icon(
