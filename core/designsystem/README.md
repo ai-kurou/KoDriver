@@ -84,6 +84,8 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 `KoDriverDestructiveConfirmDialog` は、error 色の確認ボタンとキャンセルボタンを持つ共通ダイアログ。`title`・`body`・`confirmLabel`・`dismissLabel` は呼び出し側で `stringResource` を解決して渡す。本文への名前の埋め込みも呼び出し側で行い、feature の文字列リソースを designsystem に持ち込まない。
 
+確認ボタンは `ContextClick` ハプティックを1回発生させてから `onConfirm` を呼ぶ。キャンセルと閉じる要求ではハプティックを発生させない。
+
 `onConfirm` は確認ボタン、`onDismiss` はキャンセルボタンとダイアログの閉じる要求を通知する。表示状態と削除・リセット処理は呼び出し側で管理する。
 
 ## ヒント行・ヘルプシート行
