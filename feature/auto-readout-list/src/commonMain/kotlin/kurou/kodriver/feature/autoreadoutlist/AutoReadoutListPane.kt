@@ -492,7 +492,7 @@ private fun AutoReadoutListItemCard(
                             indication = null,
                             interactionSource = itemInteractionSource,
                         ) {
-                            onItemClick(item)
+                            openDetail()
                         },
             )
         }
