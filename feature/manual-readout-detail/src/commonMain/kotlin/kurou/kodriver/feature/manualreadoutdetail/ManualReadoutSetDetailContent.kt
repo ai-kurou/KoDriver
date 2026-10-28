@@ -405,6 +405,7 @@ internal fun ManualReadoutItemTextField(
     itemKey: String,
     simulatorId: String,
 ) {
+    val haptic = LocalHapticFeedback.current
     val isLapTime = isManualReadoutLapTimeItem(itemKey)
     val isLaps = isManualReadoutLapsItem(itemKey)
     val isTemperature = isManualReadoutTemperatureItem(itemKey)
@@ -440,6 +441,7 @@ internal fun ManualReadoutItemTextField(
         ) {
             AssistChip(
                 onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     insertState.insert(insertPlaceholder(simulatorId, itemKey))
                 },
                 label = {
