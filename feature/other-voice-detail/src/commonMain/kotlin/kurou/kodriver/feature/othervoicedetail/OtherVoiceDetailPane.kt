@@ -112,6 +112,7 @@ fun OtherVoiceDetailPaneContent(
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
 ) {
+    val haptic = LocalHapticFeedback.current
     val previewSample = stringResource(Res.string.voice_preview_sample)
     val voices = uiState.voices.filterNot { it.isDefault }
     val selectedId =
@@ -178,7 +179,10 @@ fun OtherVoiceDetailPaneContent(
                                     },
                                 ),
                         )
-                        TextButton(onClick = onRetryClicked) {
+                        TextButton(onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            onRetryClicked()
+                        }) {
                             Text(stringResource(Res.string.voice_retry))
                         }
                     }
