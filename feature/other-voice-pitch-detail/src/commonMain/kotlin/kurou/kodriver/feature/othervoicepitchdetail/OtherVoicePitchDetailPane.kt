@@ -17,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneDescription
@@ -75,6 +77,7 @@ fun OtherVoicePitchDetailPaneContent(
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
     val pitchLabel = stringResource(Res.string.voice_pitch_label)
     val previewSample = stringResource(Res.string.voice_pitch_preview_sample)
 
@@ -105,7 +108,10 @@ fun OtherVoicePitchDetailPaneContent(
                 resetContentDescription = stringResource(Res.string.voice_pitch_reset),
             )
             FilledTonalButton(
-                onClick = { onPreviewClicked(previewSample) },
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onPreviewClicked(previewSample)
+                },
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
             ) {
                 Icon(

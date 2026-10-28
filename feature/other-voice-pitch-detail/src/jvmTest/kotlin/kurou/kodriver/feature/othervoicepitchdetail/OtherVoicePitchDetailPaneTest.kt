@@ -1,6 +1,10 @@
 package kurou.kodriver.feature.othervoicepitchdetail
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
@@ -15,12 +19,19 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class OtherVoicePitchDetailPaneTest {
+    private val onPreviewClicked: (String) -> Unit = mockk()
+    private val haptic: HapticFeedback = mockk()
+
     @get:Rule
     val rule = createComposeRule()
 
@@ -136,32 +147,45 @@ class OtherVoicePitchDetailPaneTest {
 
     @Test
     fun `試聴ボタンを押すと試聴用の文言を通知する`() {
-        var previewText: String? = null
+        every { onPreviewClicked("これは声の高さの試聴です。") } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
-            KoDriverTheme {
-                OtherVoicePitchDetailPaneContent(
-                    uiState = OtherVoicePitchDetailUiState(),
-                    onPreviewClicked = { previewText = it },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherVoicePitchDetailPaneContent(
+                        uiState = OtherVoicePitchDetailUiState(),
+                        onPreviewClicked = onPreviewClicked,
+                    )
+                }
             }
         }
 
         rule.onNodeWithText("試聴").performClick()
 
-        assertEquals("これは声の高さの試聴です。", previewText)
+        verify(exactly = 1) { onPreviewClicked("これは声の高さの試聴です。") }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onPreviewClicked, haptic)
     }
 
     @Test
-    fun `試聴中は停止ボタンを表示する`() {
+    fun `試聴中は停止ボタンを表示して停止操作と振動を通知する`() {
+        every { onPreviewClicked("これは声の高さの試聴です。") } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
-            KoDriverTheme {
-                OtherVoicePitchDetailPaneContent(
-                    uiState = OtherVoicePitchDetailUiState(isPreviewing = true),
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherVoicePitchDetailPaneContent(
+                        uiState = OtherVoicePitchDetailUiState(isPreviewing = true),
+                        onPreviewClicked = onPreviewClicked,
+                    )
+                }
             }
         }
 
-        rule.onNodeWithText("試聴を停止").assertIsDisplayed()
+        rule.onNodeWithText("試聴を停止").assertIsDisplayed().performClick()
         rule.onNodeWithText("試聴").assertDoesNotExist()
+        verify(exactly = 1) { onPreviewClicked("これは声の高さの試聴です。") }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onPreviewClicked, haptic)
     }
 }
