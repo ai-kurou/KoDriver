@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -56,48 +55,20 @@ class OtherListViewModel(
         )
 
     val uiState: StateFlow<OtherListUiState> =
-        combine(
-            _uiState,
-            overlaySettingsFlow.uiState,
-            deviceSettingsFlow.uiState,
-            speechSettingsFlow.uiState,
-            connectionFlow.uiState,
-        ) { state, overlaySettings, deviceSettings, speechSettings, connection ->
-            state.copy(
-                overlayVisible = overlaySettings.overlayVisible,
-                overlayTextSize = overlaySettings.overlayTextSize,
-                overlayTextColor = overlaySettings.overlayTextColor,
-                overlayBackgroundOpacity = overlaySettings.overlayBackgroundOpacity,
-                keepScreenOn = deviceSettings.keepScreenOn,
-                dynamicColorEnabled = deviceSettings.dynamicColorEnabled,
-                hapticFeedbackEnabled = deviceSettings.hapticFeedbackEnabled,
-                themeMode = deviceSettings.themeMode,
-                voiceId = speechSettings.voiceId,
-                voiceSpeed = speechSettings.voiceSpeed,
-                voicePitch = speechSettings.voicePitch,
-                androidAudioUsage = speechSettings.androidAudioUsage,
-                readoutStartSoundType = speechSettings.readoutStartSoundType,
-                soundVolume = speechSettings.soundVolume,
-                serverIp = connection.serverIp,
-                consoleAddress = connection.consoleAddress,
-                consolePort = connection.consolePort,
-            )
-        }.combine(deviceVolumeFlow.volume) { state, deviceVolume ->
-            state.copy(deviceVolume = deviceVolume)
-        }.combine(ttsAvailabilityFlow.uiState) { state, ttsAvailability ->
-            state.copy(
-                items = ttsAvailabilityFlow.applyGuidance(state.items),
-                ttsUnavailableGuidance = ttsAvailability.ttsUnavailableGuidance,
-            )
-        }.combine(resetFlow.uiState) { state, reset ->
-            state.copy(reset = reset)
-        }.combine(autoReadoutSettingsResetFlow.uiState) { state, reset ->
-            state.copy(autoReadoutSettingsReset = reset)
-        }.combine(startupRegistrationFlow.uiState) { state, startupRegistration ->
-            state.copy(startupEnabled = startupRegistration.startupEnabled)
-        }.combine(appUpdateFlow.uiState) { state, appUpdate ->
-            state.copy(hasAppUpdate = appUpdate.hasAppUpdate)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
+        OtherListFlow(
+            baseState = _uiState,
+            overlaySettings = overlaySettingsFlow.uiState,
+            deviceSettings = deviceSettingsFlow.uiState,
+            speechSettings = speechSettingsFlow.uiState,
+            connection = connectionFlow.uiState,
+            deviceVolume = deviceVolumeFlow.volume,
+            ttsAvailability = ttsAvailabilityFlow.uiState,
+            applyGuidance = ttsAvailabilityFlow::applyGuidance,
+            reset = resetFlow.uiState,
+            autoReadoutSettingsReset = autoReadoutSettingsResetFlow.uiState,
+            startupRegistration = startupRegistrationFlow.uiState,
+            appUpdate = appUpdateFlow.uiState,
+        ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun onResetClick() {
         resetFlow.onResetClick()
