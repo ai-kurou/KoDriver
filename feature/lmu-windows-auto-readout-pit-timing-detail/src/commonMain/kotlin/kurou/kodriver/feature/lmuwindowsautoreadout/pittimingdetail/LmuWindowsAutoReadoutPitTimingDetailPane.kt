@@ -23,6 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
@@ -337,6 +339,7 @@ private fun PitTimingReadoutFields(
     onPreviewClick: (String) -> Unit,
     onImminentPreviewClick: (String) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
     val insertState = rememberTextInsertState()
@@ -380,6 +383,7 @@ private fun PitTimingReadoutFields(
             ) {
                 AssistChip(
                     onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         insertState.insert(LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER)
                     },
                     label = { Text(stringResource(Res.string.pit_timing_laps_insert)) },
