@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsBrakeTemperatureRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsCarGapRepositoryImpl
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsClassCarGapRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsFlagRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsPitStatusRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
@@ -19,6 +20,7 @@ import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleDamageRepo
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVirtualEnergyRepositoryImpl
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
@@ -31,6 +33,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsClassCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
@@ -104,6 +107,9 @@ val lmuWindowsDataModule =
         single<LmuWindowsVehicleClassRepository> {
             if (isWindows) LmuWindowsVehicleClassRepositoryImpl(source = get()) else NoOpVehicleClassRepository()
         }
+        single<LmuWindowsClassCarGapRepository> {
+            if (isWindows) LmuWindowsClassCarGapRepositoryImpl(source = get()) else NoOpClassCarGapRepository()
+        }
         single<LmuWindowsCarGapRepository> {
             if (isWindows) LmuWindowsCarGapRepositoryImpl(source = get()) else NoOpCarGapRepository()
         }
@@ -162,4 +168,8 @@ private class NoOpVehicleClassRepository : LmuWindowsVehicleClassRepository {
 
 private class NoOpCarGapRepository : LmuWindowsCarGapRepository {
     override fun carGapStream(): Flow<LmuWindowsCarGapData> = emptyFlow()
+}
+
+private class NoOpClassCarGapRepository : LmuWindowsClassCarGapRepository {
+    override fun classCarGapStream(): Flow<LmuWindowsClassCarGapData> = emptyFlow()
 }
