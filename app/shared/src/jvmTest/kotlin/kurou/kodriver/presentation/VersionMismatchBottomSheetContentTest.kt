@@ -45,13 +45,26 @@ class VersionMismatchBottomSheetContentTest {
         confirmVerified(haptic, onDismiss)
     }
 
-    private fun show() {
+    @Test
+    fun `ハプティック設定が無効の場合は閉じる操作で振動しない`() {
+        every { onDismiss() } returns Unit
+        show(hapticFeedbackEnabled = false)
+
+        rule.onNodeWithText("閉じる").performClick()
+
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 1) { onDismiss() }
+        confirmVerified(haptic, onDismiss)
+    }
+
+    private fun show(hapticFeedbackEnabled: Boolean = true) {
         rule.setContent {
             CompositionLocalProvider(LocalHapticFeedback provides haptic) {
                 AppTheme {
                     VersionMismatchBottomSheetContent(
                         windowsKoDriverVersion = "2.0.0",
                         appVersion = "1.0.0",
+                        hapticFeedbackEnabled = hapticFeedbackEnabled,
                         onDismiss = onDismiss,
                     )
                 }

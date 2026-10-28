@@ -27,9 +27,10 @@ import org.jetbrains.compose.resources.stringResource
 internal fun VersionMismatchBottomSheetContent(
     windowsKoDriverVersion: String,
     appVersion: String,
+    hapticFeedbackEnabled: Boolean,
     onDismiss: () -> Unit,
 ) {
-    val haptic = LocalHapticFeedback.current
+    val haptic = if (hapticFeedbackEnabled) LocalHapticFeedback.current else NoOpHapticFeedback
     val windowsIsNewer = parseVersion(windowsKoDriverVersion) > parseVersion(appVersion)
 
     Column(

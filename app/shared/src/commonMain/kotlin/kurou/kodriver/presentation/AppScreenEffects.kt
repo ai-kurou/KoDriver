@@ -77,11 +77,11 @@ internal fun AppStartupEffects(
 }
 
 @Composable
-internal fun AppNarratorEffects() {
+internal fun AppNarratorEffects(hapticFeedbackEnabled: Boolean) {
     LmuWindowsNarratorEffect()
     Gt7Ps5NarratorEffect()
     AceWindowsNarratorEffect()
-    VersionMismatchBottomSheetEffect()
+    VersionMismatchBottomSheetEffect(hapticFeedbackEnabled)
 }
 
 /** 起動時と設定画面から復帰したときにTTSの利用可否を再確認する。 */

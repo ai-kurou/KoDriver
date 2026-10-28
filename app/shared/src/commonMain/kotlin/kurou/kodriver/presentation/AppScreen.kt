@@ -547,7 +547,7 @@ fun AppScreen(
         requestScrollToTop = { autoReadoutListScrollToTopRequest++ },
     )
 
-    AppNarratorEffects()
+    AppNarratorEffects(hapticFeedbackEnabled = uiState.hapticFeedbackEnabled)
 
     AppTtsAvailabilityEffect(otherListViewModel::checkTextToSpeechAvailability)
     val uriHandler = LocalUriHandler.current
