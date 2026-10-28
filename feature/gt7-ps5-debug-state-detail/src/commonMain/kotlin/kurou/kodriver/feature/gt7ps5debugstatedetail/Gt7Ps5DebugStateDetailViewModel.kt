@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,7 +25,6 @@ internal class Gt7Ps5DebugStateDetailViewModel(
         )
     private val _debugReadoutText = MutableStateFlow("")
 
-    private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
     private val saveCardOrder = cardOrderUseCases::saveKeys
     private val _receivedCardKeys = MutableStateFlow(setOf(Gt7Ps5DebugStateCardKey.SIMULATOR))
 
@@ -40,12 +38,11 @@ internal class Gt7Ps5DebugStateDetailViewModel(
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
     private val _localCardOrder = MutableStateFlow<List<Gt7Ps5DebugStateCardKey>?>(null)
     private val _cardOrder: StateFlow<List<Gt7Ps5DebugStateCardKey>> =
-        combine(
-            cardOrderUseCases.observeKeys(),
-            _localCardOrder,
-        ) { persisted, local ->
-            local ?: resolveCardOrder(persistedOrder = persisted, defaultOrder = defaultDebugStateCardOrder)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
+        Gt7Ps5DebugStateCardOrderFlow(
+            persistedOrder = cardOrderUseCases.observeKeys(),
+            localOrder = _localCardOrder,
+            resolveCardOrder = cardOrderUseCases.resolveCardOrder,
+        ).order.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
 
     private val debugStateDetailFlow =
         Gt7Ps5DebugStateDetailFlow(
