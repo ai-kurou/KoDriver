@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -44,7 +43,6 @@ internal class AceWindowsDebugStateDetailViewModel(
         )
     private val _debugReadoutText = MutableStateFlow("")
 
-    private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
     private val saveCardOrder = cardOrderUseCases::saveKeys
     private val _receivedCardKeys = MutableStateFlow(setOf(AceWindowsDebugStateCardKey.SIMULATOR))
 
@@ -58,12 +56,11 @@ internal class AceWindowsDebugStateDetailViewModel(
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
     private val _localCardOrder = MutableStateFlow<List<AceWindowsDebugStateCardKey>?>(null)
     private val _cardOrder: StateFlow<List<AceWindowsDebugStateCardKey>> =
-        combine(
-            cardOrderUseCases.observeKeys(),
-            _localCardOrder,
-        ) { persisted, local ->
-            local ?: resolveCardOrder(persistedOrder = persisted, defaultOrder = defaultDebugStateCardOrder)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
+        AceWindowsDebugStateCardOrderFlow(
+            persistedOrder = cardOrderUseCases.observeKeys(),
+            localOrder = _localCardOrder,
+            resolveCardOrder = cardOrderUseCases.resolveCardOrder,
+        ).cardOrder.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
 
     private val detailFlow =
         AceWindowsDebugStateDetailFlow(
