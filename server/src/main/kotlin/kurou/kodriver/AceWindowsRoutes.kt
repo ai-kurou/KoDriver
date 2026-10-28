@@ -26,4 +26,7 @@ internal fun Route.aceWindowsRoutes(useCases: KoDriverServerUseCases) {
     telemetryWebSocket(KoDriverServerFeature.REMAINING_FUEL_LAPS, Simulator.AceWindows, distinct = false) {
         useCases.aceWindows.observeAceWindowsRemainingFuelLaps()
     }
+    telemetryWebSocket(KoDriverServerFeature.CAR_GAP, Simulator.AceWindows, distinct = false) {
+        useCases.aceWindows.observeAceWindowsGap()
+    }
 }
