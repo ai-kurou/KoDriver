@@ -6,7 +6,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -37,15 +36,6 @@ internal class LmuWindowsDebugStateDetailViewModel(
     private val _debugReadoutText = MutableStateFlow("")
     private val _hotkeyCheckState = MutableStateFlow(HotkeyCheckState.Idle)
     private var hotkeyCheckJob: Job? = null
-    private val _hotkey =
-        combine(
-            hotkeyUseCases.observeVirtualKeyCode(),
-            hotkeyUseCases.observeRegistrationState(),
-            _hotkeyCheckState,
-        ) { key, registration, check ->
-            ReadoutHotkeyUiState(key, registration, check)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ReadoutHotkeyUiState())
-
     private val saveCardOrder = cardOrderUseCases::saveKeys
     private val _receivedCardKeys = MutableStateFlow(setOf(LmuWindowsDebugStateCardKey.SIMULATOR))
 
@@ -74,8 +64,15 @@ internal class LmuWindowsDebugStateDetailViewModel(
             lmuWindows = lmuWindowsSource.state,
             selectedReadoutItemKey = _selectedReadoutItemKey,
             debugReadoutText = _debugReadoutText,
-            hotkey = _hotkey,
+            hotkeyInputs =
+                LmuWindowsDebugStateHotkeyInputs(
+                    virtualKeyCode = hotkeyUseCases.observeVirtualKeyCode(),
+                    registrationState = hotkeyUseCases.observeRegistrationState(),
+                    checkState = _hotkeyCheckState,
+                ),
         )
+    private val _hotkey: StateFlow<ReadoutHotkeyUiState> =
+        detailFlow.hotkey.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ReadoutHotkeyUiState())
     private val _header: StateFlow<LmuWindowsDebugStateDetailUiState> =
         detailFlow.header.stateIn(
             viewModelScope,
@@ -89,7 +86,7 @@ internal class LmuWindowsDebugStateDetailViewModel(
             LmuWindowsDebugStateDetailUiState(),
         )
     val uiState: StateFlow<LmuWindowsDebugStateDetailUiState> =
-        detailFlow.uiState(_detailState).stateIn(
+        detailFlow.uiState(_detailState, _hotkey).stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsDebugStateDetailUiState(),

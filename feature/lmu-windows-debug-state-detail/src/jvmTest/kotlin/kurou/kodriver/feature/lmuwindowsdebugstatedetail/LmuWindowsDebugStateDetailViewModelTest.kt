@@ -201,9 +201,19 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { tyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
+            assertEquals(ReadoutHotkeyUiState(), viewModel.uiState.value.readoutHotkey)
+            assertEquals(0, hotkeyRepository.key.subscriptionCount.value)
+            assertEquals(0, hotkeyRepository.registration.subscriptionCount.value)
             val collection =
                 backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect { } }
             try {
+                assertEquals(1, hotkeyRepository.key.subscriptionCount.value)
+                assertEquals(1, hotkeyRepository.registration.subscriptionCount.value)
+                val secondCollection =
+                    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect { } }
+                assertEquals(1, hotkeyRepository.key.subscriptionCount.value)
+                assertEquals(1, hotkeyRepository.registration.subscriptionCount.value)
+                secondCollection.cancel()
                 assertEquals(
                     0x70,
                     viewModel.uiState
@@ -280,6 +290,30 @@ class LmuWindowsDebugStateDetailViewModelTest {
                         .first()
                         .readoutHotkey.virtualKeyCode,
                 )
+                collection.cancel()
+                testScheduler.advanceTimeBy(4_999)
+                testScheduler.runCurrent()
+                assertEquals(1, hotkeyRepository.key.subscriptionCount.value)
+                assertEquals(1, hotkeyRepository.registration.subscriptionCount.value)
+                testScheduler.advanceTimeBy(5_002)
+                testScheduler.runCurrent()
+                assertEquals(0, hotkeyRepository.key.subscriptionCount.value)
+                assertEquals(0, hotkeyRepository.registration.subscriptionCount.value)
+
+                hotkeyRepository.key.update { 0x42 }
+                hotkeyRepository.registration.update { HotkeyRegistrationState.Unsupported }
+                val resumedCollection =
+                    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect { } }
+                try {
+                    assertEquals(
+                        ReadoutHotkeyUiState(0x42, HotkeyRegistrationState.Unsupported, HotkeyCheckState.Idle),
+                        viewModel.uiState.first().readoutHotkey,
+                    )
+                    assertEquals(1, hotkeyRepository.key.subscriptionCount.value)
+                    assertEquals(1, hotkeyRepository.registration.subscriptionCount.value)
+                } finally {
+                    resumedCollection.cancel()
+                }
             } finally {
                 collection.cancel()
                 viewModel.viewModelScope.cancel()

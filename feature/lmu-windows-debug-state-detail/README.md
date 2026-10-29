@@ -15,7 +15,7 @@ LMU Windows 専用のデバッグ状態画面。テレメトリ、レース状�
 - `LmuWindowsDebugStateDetailPane.kt`: ViewModel を取得する Pane と、状態・操作を受け取る公開 PaneContent。画面幅に合わせて1〜3列に切り替える。
 - `LmuWindowsDebugStateDetailViewModel.kt` / `LmuWindowsDebugStateDetailUiState.kt`: LMU 状態、受信済みカード、カード順序を管理する。シミュレーターカードは常に LMU を表示し、有効にする。
 
-  UI 状態の合成は `LmuWindowsDebugStateDetailFlow` が cold Flow として担う。各段階の共有・初期値・`viewModelScope` での実行は ViewModel が管理する。
+  UI 状態の合成は、キーコード・登録状態・動作確認状態からのホットキー表示状態の合成も含め、`LmuWindowsDebugStateDetailFlow` が cold Flow として担う。各段階の共有・初期値・`viewModelScope` での実行は ViewModel が管理する。
 
 - `DebugStateCardOrderUseCases.kt`: カード順序の Observe / Resolve / Save UseCase を束ねる `DebugStateCardOrderUseCases`。
 - `LmuWindowsDebugStateSource.kt` / `LmuWindowsDebugState.kt`: LMU の UseCase 購読、状態の集約、受信済みカードの通知。

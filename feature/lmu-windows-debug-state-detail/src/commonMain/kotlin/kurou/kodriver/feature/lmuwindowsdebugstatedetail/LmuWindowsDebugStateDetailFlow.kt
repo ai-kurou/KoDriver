@@ -2,7 +2,14 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ReadoutItemKey
+
+internal data class LmuWindowsDebugStateHotkeyInputs(
+    val virtualKeyCode: Flow<Int>,
+    val registrationState: Flow<HotkeyRegistrationState>,
+    val checkState: Flow<HotkeyCheckState>,
+)
 
 /** UI 状態の合成だけを担う cold Flow。各段階の共有・初期値は ViewModel が管理する。 */
 internal class LmuWindowsDebugStateDetailFlow(
@@ -11,8 +18,17 @@ internal class LmuWindowsDebugStateDetailFlow(
     private val lmuWindows: Flow<LmuWindowsDebugState>,
     private val selectedReadoutItemKey: Flow<ReadoutItemKey>,
     private val debugReadoutText: Flow<String>,
-    private val hotkey: Flow<ReadoutHotkeyUiState>,
+    hotkeyInputs: LmuWindowsDebugStateHotkeyInputs,
 ) {
+    val hotkey: Flow<ReadoutHotkeyUiState> =
+        combine(
+            hotkeyInputs.virtualKeyCode,
+            hotkeyInputs.registrationState,
+            hotkeyInputs.checkState,
+        ) { key, registration, check ->
+            ReadoutHotkeyUiState(key, registration, check)
+        }
+
     val header: Flow<LmuWindowsDebugStateDetailUiState> =
         combine(cardOrder, receivedCardKeys) { order, received ->
             LmuWindowsDebugStateDetailUiState(
@@ -26,7 +42,10 @@ internal class LmuWindowsDebugStateDetailFlow(
             state.copy(lmuWindows = lmu, selectedReadoutItemKey = key, debugReadoutText = text)
         }
 
-    fun uiState(detail: Flow<LmuWindowsDebugStateDetailUiState>): Flow<LmuWindowsDebugStateDetailUiState> =
+    fun uiState(
+        detail: Flow<LmuWindowsDebugStateDetailUiState>,
+        hotkey: Flow<ReadoutHotkeyUiState>,
+    ): Flow<LmuWindowsDebugStateDetailUiState> =
         combine(detail, hotkey) { state, hotkeyState ->
             state.copy(readoutHotkey = hotkeyState)
         }
