@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -72,270 +73,150 @@ class LmuWindowsAutoReadoutVehicleDamageDetailPaneTest {
     }
 
     @Test
-    fun `オーバーヒートスイッチを切り替えられる`() {
-        var enabled: Boolean? = null
+    fun `3イベントのスイッチを切り替えられる`() {
+        val overheatEnabled = mutableListOf<Boolean>()
+        val partDetachedEnabled = mutableListOf<Boolean>()
+        val tyreDetachedEnabled = mutableListOf<Boolean>()
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
                     uiState = LmuWindowsAutoReadoutVehicleDamageDetailUiState(),
-                    onOverheatEnabledChanged = { enabled = it },
+                    onOverheatEnabledChanged = { overheatEnabled += it },
+                    onPartDetachedEnabledChanged = { partDetachedEnabled += it },
+                    onTyreDetachedEnabledChanged = { tyreDetachedEnabled += it },
                 )
             }
         }
         rule.onAllNodes(hasText("オーバーヒート") and !hasSetTextAction())[0].performScrollTo().performClick()
-        assertEquals(false, enabled)
+        rule
+            .onAllNodes(hasText("部品脱落（ホイール除く）") and !hasSetTextAction())[0]
+            .performScrollTo()
+            .performClick()
+        rule.onAllNodes(hasText("タイヤ脱落") and !hasSetTextAction())[0].performScrollTo().performClick()
+        assertEquals(listOf(false), overheatEnabled)
+        assertEquals(listOf(false), partDetachedEnabled)
+        assertEquals(listOf(false), tyreDetachedEnabled)
     }
 
     @Test
-    fun `オーバーヒートはスイッチOFFでも文言を編集し上限まで切り詰めた文言を試聴する`() {
-        val changed = mutableListOf<String>()
-        val previews = mutableListOf<String>()
+    fun `スイッチOFFでも3イベントの文言を上限まで切り詰めて試聴する`() {
+        val overheatChanged = mutableListOf<String>()
+        val overheatPreviews = mutableListOf<String>()
+        val partDetachedChanged = mutableListOf<String>()
+        val partDetachedPreviews = mutableListOf<String>()
+        val tyreDetachedChanged = mutableListOf<String>()
+        val tyreDetachedPreviews = mutableListOf<String>()
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
                     uiState =
                         LmuWindowsAutoReadoutVehicleDamageDetailUiState(
                             overheatEnabled = false,
+                            partDetachedEnabled = false,
+                            tyreDetachedEnabled = false,
                             isTextToSpeechAvailable = true,
                         ),
-                    onOverheatReadoutTextChanged = { changed += it },
-                    onOverheatReadoutTextPreviewClicked = { previews += it },
+                    onOverheatReadoutTextChanged = { overheatChanged += it },
+                    onOverheatReadoutTextPreviewClicked = { overheatPreviews += it },
+                    onPartDetachedReadoutTextChanged = { partDetachedChanged += it },
+                    onPartDetachedReadoutTextPreviewClicked = { partDetachedPreviews += it },
+                    onTyreDetachedReadoutTextChanged = { tyreDetachedChanged += it },
+                    onTyreDetachedReadoutTextPreviewClicked = { tyreDetachedPreviews += it },
                 )
             }
         }
-        rule
-            .onAllNodes(hasSetTextAction())[0]
-            .performScrollTo()
-            .assertIsEnabled()
-            .performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
-        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performClick()
-        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
-        assertEquals(changed, previews)
+        val expectedText = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+        repeat(3) { index ->
+            rule
+                .onAllNodes(hasSetTextAction())[index]
+                .performScrollTo()
+                .assertIsEnabled()
+                .performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
+            rule.onAllNodesWithContentDescription("入力した文言を再生")[index].performClick()
+        }
+        assertEquals(listOf(expectedText), overheatChanged)
+        assertEquals(overheatChanged, overheatPreviews)
+        assertEquals(listOf(expectedText), partDetachedChanged)
+        assertEquals(partDetachedChanged, partDetachedPreviews)
+        assertEquals(listOf(expectedText), tyreDetachedChanged)
+        assertEquals(tyreDetachedChanged, tyreDetachedPreviews)
     }
 
     @Test
-    fun `オーバーヒート文言をデフォルトに戻せる`() {
-        val changed = mutableListOf<String>()
+    fun `3イベントの文言をデフォルトに戻せる`() {
+        val overheatChanged = mutableListOf<String>()
+        val partDetachedChanged = mutableListOf<String>()
+        val tyreDetachedChanged = mutableListOf<String>()
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
                     uiState =
                         LmuWindowsAutoReadoutVehicleDamageDetailUiState(
                             overheatReadoutText = "カスタム",
+                            partDetachedReadoutText = "カスタム",
+                            tyreDetachedReadoutText = "カスタム",
                             isTextToSpeechAvailable = true,
                         ),
-                    onOverheatReadoutTextChanged = { changed += it },
+                    onOverheatReadoutTextChanged = { overheatChanged += it },
+                    onPartDetachedReadoutTextChanged = { partDetachedChanged += it },
+                    onTyreDetachedReadoutTextChanged = { tyreDetachedChanged += it },
                 )
             }
         }
-        rule
-            .onAllNodesWithContentDescription("デフォルトに戻す")[0]
-            .performScrollTo()
-            .assertIsEnabled()
-            .performClick()
-        assertEquals(listOf("オーバーヒート"), changed)
-        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled()
+        repeat(3) { index ->
+            rule
+                .onAllNodesWithContentDescription("デフォルトに戻す")[index]
+                .performScrollTo()
+                .assertIsEnabled()
+                .performClick()
+            rule.onAllNodesWithContentDescription("デフォルトに戻す")[index].assertIsNotEnabled()
+        }
+        assertEquals(listOf("オーバーヒート"), overheatChanged)
+        assertEquals(listOf("部品脱落"), partDetachedChanged)
+        assertEquals(listOf("タイヤ脱落"), tyreDetachedChanged)
     }
 
     @Test
-    fun `オーバーヒートは古い保存値を無視し正規化済みの保存値で待機を解除する`() {
-        var savedText by mutableStateOf("オーバーヒート")
+    fun `3イベントとも古い保存値を無視し正規化済みの保存値で待機を解除する`() {
+        var overheatSavedText by mutableStateOf("オーバーヒート")
+        var partDetachedSavedText by mutableStateOf("部品脱落")
+        var tyreDetachedSavedText by mutableStateOf("タイヤ脱落")
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
                     uiState =
                         LmuWindowsAutoReadoutVehicleDamageDetailUiState(
-                            overheatReadoutText = savedText,
+                            overheatReadoutText = overheatSavedText,
+                            partDetachedReadoutText = partDetachedSavedText,
+                            tyreDetachedReadoutText = tyreDetachedSavedText,
                             isTextToSpeechAvailable = true,
                         ),
                 )
             }
         }
         rule.onAllNodes(hasSetTextAction())[0].performScrollTo().performTextReplacement(" あい ")
-        rule.runOnIdle { savedText = "あ" }
-        rule.onNode(hasSetTextAction() and hasText(" あい ")).assertExists()
-        rule.runOnIdle { savedText = "あい" }
+        rule.runOnIdle { overheatSavedText = "あ" }
+        rule.onAllNodes(hasSetTextAction())[0].assert(hasText(" あい "))
+        rule.runOnIdle { overheatSavedText = "あい" }
         rule.waitForIdle()
-        rule.runOnIdle { savedText = "外部更新" }
-        rule.onNode(hasSetTextAction() and hasText("外部更新")).assertExists()
-    }
+        rule.runOnIdle { overheatSavedText = "外部更新" }
+        rule.onAllNodes(hasSetTextAction())[0].assert(hasText("外部更新"))
 
-    @Test
-    fun `部品脱落スイッチを切り替えられる`() {
-        var enabled: Boolean? = null
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
-                    uiState = LmuWindowsAutoReadoutVehicleDamageDetailUiState(),
-                    onPartDetachedEnabledChanged = { enabled = it },
-                )
-            }
-        }
-        rule.onAllNodes(hasText("部品脱落（ホイール除く）") and !hasSetTextAction())[0].performScrollTo().performClick()
-        assertEquals(false, enabled)
-    }
-
-    @Test
-    fun `部品脱落はスイッチOFFでも文言を編集し上限まで切り詰めた文言を試聴する`() {
-        val changed = mutableListOf<String>()
-        val previews = mutableListOf<String>()
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutVehicleDamageDetailUiState(
-                            partDetachedEnabled = false,
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onPartDetachedReadoutTextChanged = { changed += it },
-                    onPartDetachedReadoutTextPreviewClicked = { previews += it },
-                )
-            }
-        }
-        rule
-            .onAllNodes(hasSetTextAction())[1]
-            .performScrollTo()
-            .assertIsEnabled()
-            .performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
-        rule.onAllNodesWithContentDescription("入力した文言を再生")[1].performClick()
-        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
-        assertEquals(changed, previews)
-    }
-
-    @Test
-    fun `部品脱落文言をデフォルトに戻せる`() {
-        val changed = mutableListOf<String>()
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutVehicleDamageDetailUiState(
-                            partDetachedReadoutText = "カスタム",
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onPartDetachedReadoutTextChanged = { changed += it },
-                )
-            }
-        }
-        rule
-            .onAllNodesWithContentDescription("デフォルトに戻す")[1]
-            .performScrollTo()
-            .assertIsEnabled()
-            .performClick()
-        assertEquals(listOf("部品脱落"), changed)
-        rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].assertIsNotEnabled()
-    }
-
-    @Test
-    fun `部品脱落は古い保存値を無視し正規化済みの保存値で待機を解除する`() {
-        var savedText by mutableStateOf("部品脱落")
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutVehicleDamageDetailUiState(
-                            partDetachedReadoutText = savedText,
-                            isTextToSpeechAvailable = true,
-                        ),
-                )
-            }
-        }
         rule.onAllNodes(hasSetTextAction())[1].performScrollTo().performTextReplacement(" あい ")
-        rule.runOnIdle { savedText = "あ" }
-        rule.onNode(hasSetTextAction() and hasText(" あい ")).assertExists()
-        rule.runOnIdle { savedText = "あい" }
+        rule.runOnIdle { partDetachedSavedText = "あ" }
+        rule.onAllNodes(hasSetTextAction())[1].assert(hasText(" あい "))
+        rule.runOnIdle { partDetachedSavedText = "あい" }
         rule.waitForIdle()
-        rule.runOnIdle { savedText = "外部更新" }
-        rule.onNode(hasSetTextAction() and hasText("外部更新")).assertExists()
-    }
+        rule.runOnIdle { partDetachedSavedText = "外部更新" }
+        rule.onAllNodes(hasSetTextAction())[1].assert(hasText("外部更新"))
 
-    @Test
-    fun `タイヤ脱落スイッチを切り替えられる`() {
-        var enabled: Boolean? = null
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
-                    uiState = LmuWindowsAutoReadoutVehicleDamageDetailUiState(),
-                    onTyreDetachedEnabledChanged = { enabled = it },
-                )
-            }
-        }
-        rule.onAllNodes(hasText("タイヤ脱落") and !hasSetTextAction())[0].performScrollTo().performClick()
-        assertEquals(false, enabled)
-    }
-
-    @Test
-    fun `タイヤ脱落はスイッチOFFでも文言を編集し上限まで切り詰めた文言を試聴する`() {
-        val changed = mutableListOf<String>()
-        val previews = mutableListOf<String>()
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutVehicleDamageDetailUiState(
-                            tyreDetachedEnabled = false,
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onTyreDetachedReadoutTextChanged = { changed += it },
-                    onTyreDetachedReadoutTextPreviewClicked = { previews += it },
-                )
-            }
-        }
-        rule
-            .onAllNodes(hasSetTextAction())[2]
-            .performScrollTo()
-            .assertIsEnabled()
-            .performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
-        rule.onAllNodesWithContentDescription("入力した文言を再生")[2].performClick()
-        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
-        assertEquals(changed, previews)
-    }
-
-    @Test
-    fun `タイヤ脱落文言をデフォルトに戻せる`() {
-        val changed = mutableListOf<String>()
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutVehicleDamageDetailUiState(
-                            tyreDetachedReadoutText = "カスタム",
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onTyreDetachedReadoutTextChanged = { changed += it },
-                )
-            }
-        }
-        rule
-            .onAllNodesWithContentDescription("デフォルトに戻す")[2]
-            .performScrollTo()
-            .assertIsEnabled()
-            .performClick()
-        assertEquals(listOf("タイヤ脱落"), changed)
-        rule.onAllNodesWithContentDescription("デフォルトに戻す")[2].assertIsNotEnabled()
-    }
-
-    @Test
-    fun `タイヤ脱落は古い保存値を無視し正規化済みの保存値で待機を解除する`() {
-        var savedText by mutableStateOf("タイヤ脱落")
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutVehicleDamageDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutVehicleDamageDetailUiState(
-                            tyreDetachedReadoutText = savedText,
-                            isTextToSpeechAvailable = true,
-                        ),
-                )
-            }
-        }
         rule.onAllNodes(hasSetTextAction())[2].performScrollTo().performTextReplacement(" あい ")
-        rule.runOnIdle { savedText = "あ" }
-        rule.onNode(hasSetTextAction() and hasText(" あい ")).assertExists()
-        rule.runOnIdle { savedText = "あい" }
+        rule.runOnIdle { tyreDetachedSavedText = "あ" }
+        rule.onAllNodes(hasSetTextAction())[2].assert(hasText(" あい "))
+        rule.runOnIdle { tyreDetachedSavedText = "あい" }
         rule.waitForIdle()
-        rule.runOnIdle { savedText = "外部更新" }
-        rule.onNode(hasSetTextAction() and hasText("外部更新")).assertExists()
+        rule.runOnIdle { tyreDetachedSavedText = "外部更新" }
+        rule.onAllNodes(hasSetTextAction())[2].assert(hasText("外部更新"))
     }
 
     @Test
