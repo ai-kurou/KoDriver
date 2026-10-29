@@ -6,12 +6,16 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.HingeInfo
 import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -29,6 +33,10 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -42,6 +50,8 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class AutoReadoutContentTest {
+    private val haptic: HapticFeedback = mockk()
+
     init {
         registerAllReadoutItemKeys()
     }
@@ -593,6 +603,7 @@ class AutoReadoutContentTest {
 
     @Test
     fun `リストを下にスクロールすると先頭へ戻るボタンを表示して先頭へ戻れる`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         val scrollToTopText = "先頭へ"
         val priorityHintLabelText = "読み上げ優先度"
         var lastItemText by mutableStateOf("")
@@ -614,20 +625,22 @@ class AutoReadoutContentTest {
 
         rule.setContent {
             lastItemText = autoReadoutItemDisplayName(LmuWindowsReadoutItemKey.MyBestLap.Root)
-            Box(modifier = Modifier.height(240.dp)) {
-                AutoReadoutListPane(
-                    uiState =
-                        AutoReadoutListUiState(
-                            selectedSimulator = Simulator.LmuWindows,
-                            items = items,
-                            autoReadoutEnabledStates = items.associateWith { true },
-                        ),
-                    onMove = { _, _ -> },
-                    onReadoutEnabledChanged = { _, _ -> },
-                    onQueueEnabledChanged = { _, _ -> },
-                    onStartSoundEnabledChanged = { _, _ -> },
-                    onItemClick = {},
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                Box(modifier = Modifier.height(240.dp)) {
+                    AutoReadoutListPane(
+                        uiState =
+                            AutoReadoutListUiState(
+                                selectedSimulator = Simulator.LmuWindows,
+                                items = items,
+                                autoReadoutEnabledStates = items.associateWith { true },
+                            ),
+                        onMove = { _, _ -> },
+                        onReadoutEnabledChanged = { _, _ -> },
+                        onQueueEnabledChanged = { _, _ -> },
+                        onStartSoundEnabledChanged = { _, _ -> },
+                        onItemClick = {},
+                    )
+                }
             }
         }
 
@@ -637,6 +650,9 @@ class AutoReadoutContentTest {
         rule.waitUntil {
             rule.onAllNodes(hasText(priorityHintLabelText)).fetchSemanticsNodes().isNotEmpty()
         }
+
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
