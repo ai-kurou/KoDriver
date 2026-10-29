@@ -132,6 +132,89 @@ class LmuWindowsClassCarGapMapperTest {
         )
     }
 
+    @Test
+    fun `総合順位からクラス内のトップと中間と最後尾を求める`() {
+        for ((place, position) in listOf(1 to 1, 3 to 2, 255 to 3)) {
+            val buffer = buffer()
+            buffer.put(2192 + 199, place.toByte())
+            vehicle(buffer, 1, 25.0, place = 2)
+            vehicle(buffer, 2, 110.0, place = 200)
+
+            assertEquals(
+                LmuWindowsClassCarGapData(5.0, 10.0, classPosition = position, classVehicleCount = 3),
+                LmuWindowsClassCarGapMapper.readClassCarGap(buffer, 2192),
+            )
+        }
+    }
+
+    @Test
+    fun `順位と台数は別クラスとガレージ内の他車を数えずガレージ内の自車を含む`() {
+        val buffer = buffer()
+        buffer.put(2192 + 199, 5)
+        buffer.put(2192 + 507, 1)
+        vehicle(buffer, 1, 25.0, place = 3)
+        vehicle(buffer, 2, 21.0, "GT", place = 1)
+        vehicle(buffer, 3, 22.0, garage = true, place = 2)
+        vehicle(buffer, 4, 110.0, place = 6)
+
+        assertEquals(
+            LmuWindowsClassCarGapData(5.0, 10.0, classPosition = 2, classVehicleCount = 3),
+            LmuWindowsClassCarGapMapper.readClassCarGap(buffer, 2192),
+        )
+    }
+
+    @Test
+    fun `自車の総合順位が未設定なら順位と台数はnullでギャップは維持する`() {
+        val buffer = buffer()
+        vehicle(buffer, 1, 25.0, place = 1)
+
+        assertEquals(
+            LmuWindowsClassCarGapData(5.0, 95.0, classPosition = null, classVehicleCount = null),
+            LmuWindowsClassCarGapMapper.readClassCarGap(buffer, 2192),
+        )
+    }
+
+    @Test
+    fun `同クラスの他車の総合順位が未設定なら順位はnullで台数は維持する`() {
+        val buffer = buffer()
+        buffer.put(2192 + 199, 1)
+        vehicle(buffer, 1, 25.0, place = 0)
+
+        assertEquals(
+            LmuWindowsClassCarGapData(5.0, 95.0, classPosition = null, classVehicleCount = 2),
+            LmuWindowsClassCarGapMapper.readClassCarGap(buffer, 2192),
+        )
+    }
+
+    @Test
+    fun `ギャップを算出できなくても同クラスが自車のみなら順位と台数は1`() {
+        val buffer = buffer()
+        buffer.put(2192 + 199, 1)
+        buffer.putDouble(2192 + 472, 0.0)
+
+        assertEquals(
+            LmuWindowsClassCarGapData(null, null, classPosition = 1, classVehicleCount = 1),
+            LmuWindowsClassCarGapMapper.readClassCarGap(buffer, 2192),
+        )
+    }
+
+    @Test
+    fun `順位の走査台数もゼロから104に制限する`() {
+        val buffer = buffer()
+        buffer.put(2192 + 199, 2)
+        vehicle(buffer, 103, 25.0, place = 1)
+        buffer.putInt(1632 + 104, Int.MAX_VALUE)
+        assertEquals(
+            LmuWindowsClassCarGapData(5.0, 95.0, classPosition = 2, classVehicleCount = 2),
+            LmuWindowsClassCarGapMapper.readClassCarGap(buffer, 2192),
+        )
+        buffer.putInt(1632 + 104, -1)
+        assertEquals(
+            LmuWindowsClassCarGapData(null, null, classPosition = 1, classVehicleCount = 1),
+            LmuWindowsClassCarGapMapper.readClassCarGap(buffer, 2192),
+        )
+    }
+
     private fun buffer(): ByteBuffer {
         val buffer = ByteBuffer.allocate(2192 + 584 * 104).order(ByteOrder.LITTLE_ENDIAN)
         buffer.putInt(1632 + 104, 5)
@@ -147,9 +230,11 @@ class LmuWindowsClassCarGapMapperTest {
         vehicleClass: String = "Hypercar",
         garage: Boolean = false,
         player: Boolean = false,
+        place: Int = 0,
     ) {
         val base = 2192 + index * 584
         buffer.putDouble(base + 464, time)
+        buffer.put(base + 199, place.toByte())
         buffer.put(base + 196, if (player) 1.toByte() else 0.toByte())
         buffer.put(base + 507, if (garage) 1.toByte() else 0.toByte())
         vehicleClass.toByteArray(Charsets.US_ASCII).forEachIndexed { offset, byte ->

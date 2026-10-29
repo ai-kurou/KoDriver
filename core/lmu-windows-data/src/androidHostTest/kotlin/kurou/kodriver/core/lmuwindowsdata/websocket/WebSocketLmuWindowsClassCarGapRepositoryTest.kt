@@ -79,7 +79,7 @@ class WebSocketLmuWindowsClassCarGapRepositoryTest {
 
             val result = buildRepository().classCarGapStream().first()
 
-            assertEquals(LmuWindowsClassCarGapData(1.25, 2.5), result)
+            assertEquals(LmuWindowsClassCarGapData(1.25, 2.5, classPosition = 2, classVehicleCount = 3), result)
             assertEquals("/ws/lmu_windows/class_car_gap", server.takeRequest().path)
         }
 
@@ -129,7 +129,7 @@ class WebSocketLmuWindowsClassCarGapRepositoryTest {
             val result = buildRepository().classCarGapStream().first()
 
             assertNotNull(result)
-            assertEquals(LmuWindowsClassCarGapData(1.25, 2.5), result)
+            assertEquals(LmuWindowsClassCarGapData(1.25, 2.5, classPosition = 2, classVehicleCount = 3), result)
         }
 
     @Test
@@ -185,7 +185,7 @@ class WebSocketLmuWindowsClassCarGapRepositoryTest {
 
             val result = buildRepository(retryDelayMs = 0L).classCarGapStream().first()
 
-            assertEquals(LmuWindowsClassCarGapData(1.25, 2.5), result)
+            assertEquals(LmuWindowsClassCarGapData(1.25, 2.5, classPosition = 2, classVehicleCount = 3), result)
         }
 }
 
@@ -210,6 +210,8 @@ private val CLASS_CAR_GAP_JSON =
     {
         "gapAheadSeconds": 1.25,
         "gapBehindSeconds": 2.5,
+        "classPosition": 2,
+        "classVehicleCount": 3,
         "unknownField": true
     }
     """.trimIndent()
