@@ -28,7 +28,7 @@ class LmuWindowsCarGapRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリから4種類の車両時間差を読み取る`() =
+    fun `Scoringの自車がなければ全体ギャップはnullで生値を返す`() =
         runBlocking {
             val reader =
                 FakeCarGapMemoryReader(
@@ -42,6 +42,30 @@ class LmuWindowsCarGapRepositoryImplTest {
             assertEquals(2.5, result.timeGapCarBehindSeconds)
             assertEquals(3.75, result.timeGapPlaceAheadSeconds)
             assertEquals(4.5, result.timeGapPlaceBehindSeconds)
+            assertEquals(null, result.overallGapAheadSeconds)
+            assertEquals(null, result.overallGapBehindSeconds)
+        }
+
+    @Test
+    fun `Telemetryとは別のScoring自車スロットから全体ギャップを計算する`() =
+        runBlocking {
+            val buffer = buildCarGapBuffer()
+            buffer.putInt(1632 + 104, 2)
+            val playerBase = 2192 + 584
+            buffer.put(playerBase + 196, 1.toByte())
+            buffer.putDouble(playerBase + 464, 20.0)
+            buffer.putDouble(playerBase + 472, 100.0)
+            buffer.putDouble(2192 + 464, 25.0)
+            val repo = LmuWindowsCarGapRepositoryImpl(source = makeSource(FakeCarGapMemoryReader(buffer)))
+
+            val result = repo.carGapStream().first()
+
+            assertEquals(1.25, result.timeGapCarAheadSeconds)
+            assertEquals(2.5, result.timeGapCarBehindSeconds)
+            assertEquals(3.75, result.timeGapPlaceAheadSeconds)
+            assertEquals(4.5, result.timeGapPlaceBehindSeconds)
+            assertEquals(5.0, result.overallGapAheadSeconds)
+            assertEquals(95.0, result.overallGapBehindSeconds)
         }
 
     @Test
@@ -61,6 +85,8 @@ class LmuWindowsCarGapRepositoryImplTest {
             assertEquals(2.5, result.timeGapCarBehindSeconds)
             assertEquals(3.75, result.timeGapPlaceAheadSeconds)
             assertEquals(4.5, result.timeGapPlaceBehindSeconds)
+            assertEquals(null, result.overallGapAheadSeconds)
+            assertEquals(null, result.overallGapBehindSeconds)
         }
 
     @Test

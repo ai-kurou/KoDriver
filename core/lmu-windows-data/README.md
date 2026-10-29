@@ -38,14 +38,15 @@ Virtual Energy を使うのは Hypercar（`Hyper`）と GT3（`GT3`）のみで�
 ## 車両との時間差
 
 `LmuWindowsCarGapRepositoryImpl` はプレイヤー車両の Telemetry +780〜+792 から4種類の時間差を秒単位で読み取る。プレイヤー車両が無効なら配信せず、非 Windows では空 Flow を返す。
-共有メモリの生の値を保持し、車両不在時の値の意味（0か負値か）は実機未確認のため解釈しない。
+全体ギャップ `overallGapAheadSeconds` / `overallGapBehindSeconds` は Scoring の位置関係から自前計算する。同クラス版と共通の計算処理で、クラスを問わず自車以外・ガレージ外の車両を対象に、ラップ内時間差を自車の推定ラップタイムで周回補正して前後それぞれの最小値を取る。対象車両なし・推定ラップタイム無効時は null。Scoring の自車が見つからない場合も全体2項目を null とし、Telemetry の生値は配信する。
+既存4項目は実機確認の参考用に生 float を保持し、車両不在時の値の意味（0か負値か）は実機未確認のため解釈しない。
 server は `/ws/lmu_windows/car_gap` で同一値も継続配信する。Android は `WebSocketLmuWindowsCarGapRepository` で受信し、`LmuWindowsCarGapData` として復元する。
 
 ### 同クラス前後車両との時間ギャップ
 
 `LmuWindowsClassCarGapRepositoryImpl` は Scoring のみを使用し、`mVehicleClass` が自車と完全一致する、自車以外かつ `mInGarageStall` が false の車両を対象とする。TinyPedal の `get_vehicles_info` と同じく、他車と自車の `mTimeIntoLap` の差を自車の `mEstimatedLapTime` で周回補正し、前方・後方それぞれの最小秒差を `LmuWindowsClassCarGapData` で返す。同位置なら両方 0。周回遅れ・周回先行の車両も、順位ではなくコース上の位置関係で前後の対象に含む。
 
-自車が Scoring に存在しなければ配信しない。推定ラップタイムが非有限または 0 以下の場合、あるいは対象車両がない場合は両方 null。非有限の時間差は対象から除外する。非 Windows では空 Flow を返す。既存の Telemetry 生値版 `LmuWindowsCarGapRepositoryImpl` とは独立した実装であり、UI への接続は含まない。
+自車が Scoring に存在しなければ配信しない。推定ラップタイムが非有限または 0 以下の場合、あるいは対象車両がない場合は両方 null。非有限の時間差は対象から除外する。非 Windows では空 Flow を返す。全体ギャップとは対象のクラス条件のみ異なり、計算処理を共有する。
 
 server は `/ws/lmu_windows/class_car_gap` で同一値も継続配信する。Android は `WebSocketLmuWindowsClassCarGapRepository` で受信し、`LmuWindowsClassCarGapData` として復元する。
 

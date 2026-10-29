@@ -23,7 +23,7 @@ LMU（Le Mans Ultimate）固有のドメイン層（モデル・Repository イ�
 ## 車両との時間差
 
 `LmuWindowsCarGapData`・`LmuWindowsCarGapRepository`・`ObserveLmuWindowsCarGapUseCase` は、前方・後方車両および前順位・後順位車両との時間差（秒）を扱う。
-共有メモリの生の値を保持し、車両不在時の値の意味（0か負値か）は実機未確認のため解釈しない。
+`overallGapAheadSeconds` / `overallGapBehindSeconds` はクラスを問わない全体の前後車両との秒差で、Scoring の位置関係から自前計算する。対象車両なし・推定ラップタイム無効・Scoring 自車未取得時は null。既存4項目は実機確認の参考用に Telemetry の生 float を保持し、車両不在時の値の意味は解釈しない。新フィールドの既定値は null で、旧 JSON も復元できる。同クラスギャップの対象車両なしを null とする仕様は維持する。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

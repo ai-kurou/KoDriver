@@ -242,7 +242,7 @@ class LmuWindowsDebugStateDetailPaneScreenshotTest {
                                         enabledCardKeys = setOf(LmuWindowsDebugStateCardKey.CAR_GAP),
                                         lmuWindows =
                                             LmuWindowsDebugState(
-                                                carGap = LmuWindowsCarGapData(1.0, -2.3, 0.0, 4.5),
+                                                carGap = LmuWindowsCarGapData(1.0, -2.3, 0.0, 4.5, 1.2, null),
                                             ),
                                     ),
                                 canNavigateBack = true,

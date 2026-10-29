@@ -105,12 +105,12 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
                 )
             }
             rule.onNodeWithText("同クラスの前車との差 1.5 秒").assertIsDisplayed()
-            rule.onNodeWithText("同クラスの後車との差 -- 秒").assertIsDisplayed()
+            rule.onNodeWithText("同クラスの後車との差 なし 秒").assertIsDisplayed()
 
             state.update {
                 it.copy(lmuWindows = LmuWindowsDebugState(classCarGap = LmuWindowsClassCarGapData(null, -2.3)))
             }
-            rule.onNodeWithText("同クラスの前車との差 -- 秒").assertIsDisplayed()
+            rule.onNodeWithText("同クラスの前車との差 なし 秒").assertIsDisplayed()
             rule.onNodeWithText("同クラスの後車との差 -2.3 秒").assertIsDisplayed()
             confirmVerified(viewModel)
         } finally {

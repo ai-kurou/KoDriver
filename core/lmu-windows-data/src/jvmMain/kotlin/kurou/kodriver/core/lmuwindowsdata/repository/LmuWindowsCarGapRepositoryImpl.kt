@@ -19,6 +19,7 @@ internal class LmuWindowsCarGapRepositoryImpl(
 
     private fun readCarGap(buffer: ByteBuffer): LmuWindowsCarGapData? {
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null
-        return LmuWindowsCarGapMapper.readCarGap(buffer, vehicleBase)
+        val scoringBase = LmuWindowsMapper.findPlayerVehicleScoringBase(buffer)
+        return LmuWindowsCarGapMapper.readCarGap(buffer, vehicleBase, scoringBase)
     }
 }

@@ -5176,15 +5176,17 @@ private class FakeLmuWindowsCarGapRepository : LmuWindowsCarGapRepository {
     }
 }
 
-private val carGapData1 = LmuWindowsCarGapData(1.25, -2.5, 0.0, 4.75)
+private val carGapData1 = LmuWindowsCarGapData(1.25, -2.5, 0.0, 4.75, 1.5, 8.25)
 private val carGapData2 = LmuWindowsCarGapData(2.0, 3.0, 4.0, 5.0)
 
 private const val CAR_GAP_JSON_1 =
     """{"timeGapCarAheadSeconds":1.25,"timeGapCarBehindSeconds":-2.5,""" +
-        """"timeGapPlaceAheadSeconds":0.0,"timeGapPlaceBehindSeconds":4.75}"""
+        """"timeGapPlaceAheadSeconds":0.0,"timeGapPlaceBehindSeconds":4.75,""" +
+        """"overallGapAheadSeconds":1.5,"overallGapBehindSeconds":8.25}"""
 private const val CAR_GAP_JSON_2 =
     """{"timeGapCarAheadSeconds":2.0,"timeGapCarBehindSeconds":3.0,""" +
-        """"timeGapPlaceAheadSeconds":4.0,"timeGapPlaceBehindSeconds":5.0}"""
+        """"timeGapPlaceAheadSeconds":4.0,"timeGapPlaceBehindSeconds":5.0,""" +
+        """"overallGapAheadSeconds":null,"overallGapBehindSeconds":null}"""
 
 private object EmptyLmuWindowsClassCarGapRepository : LmuWindowsClassCarGapRepository {
     override fun classCarGapStream(): Flow<LmuWindowsClassCarGapData> = emptyFlow()
