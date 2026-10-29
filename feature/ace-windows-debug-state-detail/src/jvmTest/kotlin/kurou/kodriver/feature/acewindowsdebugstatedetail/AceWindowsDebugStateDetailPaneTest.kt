@@ -39,7 +39,7 @@ class AceWindowsDebugStateDetailPaneTest {
         val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
         rule.onNodeWithTag("debug_readout_request_card").assertIsDisplayed()
         grid.performScrollToIndex(state.cardOrder.size)
-        rule.onNodeWithText("前後車両との時間差").assertIsDisplayed()
+        rule.onNodeWithText("総合順位と前後車両との時間差").assertIsDisplayed()
         rule.onNodeWithTag("debug_readout_request_card").assertDoesNotExist()
         grid.performScrollToIndex(0)
         rule.onNodeWithTag("debug_readout_request_card").assertIsDisplayed()
