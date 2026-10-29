@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
+import kotlinx.serialization.builtins.serializer
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -38,7 +39,30 @@ class WebSocketJsonTest {
                 incoming.close()
             }
 
-            session.sendJsonMessages(messages)
+            session.sendJsonMessages(messages, String.serializer())
+
+            assertTrue(messageFlowCancelled)
+        }
+
+    @Test
+    fun `クライアントからのフレームを読み捨てたうえでincomingが閉じると送信中のFlowをキャンセルする`() =
+        runTest {
+            val incoming = Channel<Frame>()
+            every { session.incoming } returns incoming
+            every { session.closeReason } returns CompletableDeferred()
+            coEvery { session.send(any()) } returns Unit
+
+            var messageFlowCancelled = false
+            val messages = cancellableFlow { messageFlowCancelled = true }
+
+            // クライアントから制御フレームが届いても送信側は継続し、その後のクローズで終了する。
+            launch {
+                // ランデブーチャネルのため、send は受信側が読み捨てるまで中断する。
+                incoming.send(Frame.Ping(ByteArray(0)))
+                incoming.close()
+            }
+
+            session.sendJsonMessages(messages, String.serializer())
 
             assertTrue(messageFlowCancelled)
         }
@@ -61,7 +85,7 @@ class WebSocketJsonTest {
                 closeReason.complete(CloseReason(CloseReason.Codes.NORMAL, ""))
             }
 
-            session.sendJsonMessages(messages)
+            session.sendJsonMessages(messages, String.serializer())
 
             assertTrue(messageFlowCancelled)
         }
