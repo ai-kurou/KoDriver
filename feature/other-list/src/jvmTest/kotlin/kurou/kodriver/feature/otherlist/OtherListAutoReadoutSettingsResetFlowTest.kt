@@ -4,23 +4,20 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.usecase.ResetAutoReadoutSettingsUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
-import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
-class OtherListAutoReadoutSettingsResetFlowTest {
+class OtherListAutoReadoutSettingsResetFlowTest : OtherListResetFlowTestContract() {
     private val repository: AutoReadoutSettingsResetter = mockk()
     private val secondResetter: AutoReadoutSettingsResetter = mockk()
 
@@ -81,55 +78,27 @@ class OtherListAutoReadoutSettingsResetFlowTest {
             confirmVerified(repository)
         }
 
-    @Test
-    fun `通常例外を失敗結果にして再実行時に前回の結果を消す`() =
-        runTest {
-            coEvery { repository.resetToDefault() } throws IllegalStateException("失敗")
-            val resetFlow = OtherListAutoReadoutSettingsResetFlow(ResetAutoReadoutSettingsUseCase(listOf(repository)))
-            resetFlow.onResetClick()
-            resetFlow.onResetConfirm()
-            assertEquals(OtherListResetUiState(resetSucceeded = false), resetFlow.uiState.value)
-            val completion = CompletableDeferred<Unit>()
-            coEvery { repository.resetToDefault() } coAnswers { completion.await() }
-            resetFlow.onResetClick()
-            val job = launch(start = CoroutineStart.UNDISPATCHED) { resetFlow.onResetConfirm() }
-            assertNull(resetFlow.uiState.value.resetSucceeded)
-            completion.complete(Unit)
-            job.join()
-            assertEquals(OtherListResetUiState(resetSucceeded = true), resetFlow.uiState.value)
-            coVerify(exactly = 2) {
-                repository.resetToDefault()
-            }
-            confirmVerified(repository)
-        }
+    private val resetFlow = OtherListAutoReadoutSettingsResetFlow(ResetAutoReadoutSettingsUseCase(listOf(repository)))
 
-    @Test
-    fun `CancellationExceptionをそのまま伝播して実行中状態を解除する`() =
-        runTest {
-            val cancellation = CancellationException("cancelled")
-            coEvery { repository.resetToDefault() } throws cancellation
-            val resetFlow = OtherListAutoReadoutSettingsResetFlow(ResetAutoReadoutSettingsUseCase(listOf(repository)))
-            resetFlow.onResetClick()
-            val thrown = assertFailsWith<CancellationException> { resetFlow.onResetConfirm() }
-            assertSame(cancellation, thrown)
-            assertEquals(OtherListResetUiState(), resetFlow.uiState.value)
-            coVerify(exactly = 1) { repository.resetToDefault() }
-            confirmVerified(repository)
-        }
+    override val uiState: StateFlow<OtherListResetUiState> = resetFlow.uiState
 
-    @Test
-    fun `呼び出し元のキャンセルでも実行中状態を解除して結果を通知しない`() =
-        runTest {
-            val completion = CompletableDeferred<Unit>()
-            coEvery { repository.resetToDefault() } coAnswers { completion.await() }
-            val resetFlow = OtherListAutoReadoutSettingsResetFlow(ResetAutoReadoutSettingsUseCase(listOf(repository)))
-            resetFlow.onResetClick()
-            val job = launch(start = CoroutineStart.UNDISPATCHED) { resetFlow.onResetConfirm() }
-            assertTrue(resetFlow.uiState.value.isResetting)
-            job.cancelAndJoin()
-            assertTrue(job.isCancelled)
-            assertEquals(OtherListResetUiState(), resetFlow.uiState.value)
-            coVerify(exactly = 1) { repository.resetToDefault() }
-            confirmVerified(repository)
-        }
+    override fun onResetClick() = resetFlow.onResetClick()
+
+    override suspend fun onResetConfirm() = resetFlow.onResetConfirm()
+
+    override fun stubFailure(exception: Exception) {
+        coEvery { repository.resetToDefault() } throws exception
+    }
+
+    override fun stubAwait(completion: CompletableDeferred<Unit>) {
+        coEvery { repository.resetToDefault() } coAnswers { completion.await() }
+    }
+
+    override fun verifyCalls(
+        firstCalls: Int,
+        remainingCalls: Int,
+    ) {
+        coVerify(exactly = firstCalls) { repository.resetToDefault() }
+        confirmVerified(repository)
+    }
 }
