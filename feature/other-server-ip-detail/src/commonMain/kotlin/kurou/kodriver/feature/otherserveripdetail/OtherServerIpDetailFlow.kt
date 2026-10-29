@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.combine
 
 /** 保存済みIP、操作状態、検出結果から画面状態を合成する冷たい Flow。 */
 internal class OtherServerIpDetailFlow(
-    savedIp: Flow<String>,
+    savedIp: Flow<String?>,
     mutableState: Flow<OtherServerIpDetailMutableState>,
     discoveredServers: Flow<List<DiscoveredServer>>,
     validateServerIpAddress: ValidateServerIpAddressUseCase,
@@ -18,7 +18,7 @@ internal class OtherServerIpDetailFlow(
             mutableState,
             discoveredServers,
         ) { saved, m, discovered ->
-            val current = m.userInput ?: saved
+            val current = m.userInput ?: saved ?: ""
             OtherServerIpDetailUiState(
                 inputIp = current,
                 isInputValid = current.isEmpty() || validateServerIpAddress(current),

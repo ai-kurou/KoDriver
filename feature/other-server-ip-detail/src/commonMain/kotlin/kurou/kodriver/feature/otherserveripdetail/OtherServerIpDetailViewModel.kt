@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,9 +16,8 @@ internal class OtherServerIpDetailViewModel(
     private val saveServerIpWithConnectivityCheck: SaveServerIpWithConnectivityCheckUseCase,
     private val windowsServerDiscovery: WindowsServerDiscovery,
 ) : ViewModel() {
-    private val savedIp: StateFlow<String> =
+    private val savedIp: StateFlow<String?> =
         observeServerIp()
-            .map { it ?: "" }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
 
     // pane が画面に表示されている間だけ購読され、mDNS 検出が開始・停止する
@@ -68,7 +66,7 @@ internal class OtherServerIpDetailViewModel(
 
     fun onSave() {
         if (_mutable.value.isCheckingConnectivity) return
-        val ip = _mutable.value.userInput ?: savedIp.value
+        val ip = _mutable.value.userInput ?: savedIp.value ?: ""
         viewModelScope.launch {
             _mutable.update { it.copy(isCheckingConnectivity = true, connectivityWarning = false) }
             val result = saveServerIpWithConnectivityCheck(ip)
@@ -78,7 +76,7 @@ internal class OtherServerIpDetailViewModel(
     }
 
     fun onSaveAnyway() {
-        val ip = _mutable.value.userInput ?: savedIp.value
+        val ip = _mutable.value.userInput ?: savedIp.value ?: ""
         viewModelScope.launch {
             applySaveResult(saveServerIpWithConnectivityCheck(ip, checkConnectivity = false))
         }

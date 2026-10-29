@@ -10,7 +10,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class OtherServerIpDetailFlowTest {
-    private val savedIp = MutableStateFlow("192.168.1.1")
+    private val savedIp = MutableStateFlow<String?>("192.168.1.1")
     private val mutableState = MutableStateFlow(OtherServerIpDetailMutableState())
     private val discoveredServers = MutableStateFlow<List<DiscoveredServer>>(emptyList())
     private val serverA = DiscoveredServer("DESKTOP-A", "192.168.1.10")
@@ -35,6 +35,31 @@ class OtherServerIpDetailFlowTest {
             assertEquals(OtherServerIpDetailUiState(), flow.uiState.first())
             savedIp.update { "10.0.0.1" }
             assertEquals("10.0.0.1", flow.uiState.first().inputIp)
+        }
+
+    @Test
+    fun `保存済みIPがnullなら空文字として表示し保存済みIPの変化も反映する`() =
+        runTest {
+            savedIp.update { null }
+            val flow = createFlow()
+
+            assertEquals(OtherServerIpDetailUiState(), flow.uiState.first())
+            savedIp.update { "10.0.0.1" }
+            assertEquals(OtherServerIpDetailUiState(inputIp = "10.0.0.1"), flow.uiState.first())
+            savedIp.update { null }
+            assertEquals(OtherServerIpDetailUiState(), flow.uiState.first())
+        }
+
+    @Test
+    fun `保存済みIPがnullでも入力を優先しリセットすると空文字へ戻る`() =
+        runTest {
+            savedIp.update { null }
+            val flow = createFlow()
+            mutableState.update { it.copy(userInput = "10.0.0.1") }
+
+            assertEquals(OtherServerIpDetailUiState(inputIp = "10.0.0.1"), flow.uiState.first())
+            mutableState.update { OtherServerIpDetailMutableState() }
+            assertEquals(OtherServerIpDetailUiState(), flow.uiState.first())
         }
 
     @Test
