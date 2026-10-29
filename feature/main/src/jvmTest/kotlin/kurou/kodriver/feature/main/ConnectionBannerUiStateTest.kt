@@ -7,36 +7,21 @@ import kotlin.test.assertTrue
 
 class ConnectionBannerUiStateTest {
     @Test
-    fun `isGt7Ps5_Gt7Ps5のときtrue`() {
-        val state = ConnectionBannerVmUiState(selectedSimulator = Simulator.Gt7Ps5)
-        assertTrue(state.isGt7Ps5)
-    }
-
-    @Test
-    fun `isGt7Ps5_Gt7Ps5以外のときfalse`() {
-        for (simulator in listOf(
-            Simulator.LmuWindows,
-            Simulator.AceWindows,
-        )) {
+    fun `全シミュレーターで各判定プロパティの期待値を返す`() {
+        for (simulator in listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows)) {
             val state = ConnectionBannerVmUiState(selectedSimulator = simulator)
-            assertFalse(state.isGt7Ps5, "simulator=$simulator のとき isGt7Ps5 は false であるべき")
-        }
-    }
 
-    @Test
-    fun `isAceWindows_AceWindowsのときtrue`() {
-        val state = ConnectionBannerVmUiState(selectedSimulator = Simulator.AceWindows)
-        assertTrue(state.isAceWindows)
-    }
+            if (simulator == Simulator.Gt7Ps5) {
+                assertTrue(state.isGt7Ps5)
+            } else {
+                assertFalse(state.isGt7Ps5, "simulator=$simulator のとき isGt7Ps5 は false であるべき")
+            }
 
-    @Test
-    fun `isAceWindows_AceWindows以外のときfalse`() {
-        for (simulator in listOf(
-            Simulator.LmuWindows,
-            Simulator.Gt7Ps5,
-        )) {
-            val state = ConnectionBannerVmUiState(selectedSimulator = simulator)
-            assertFalse(state.isAceWindows, "simulator=$simulator のとき isAceWindows は false であるべき")
+            if (simulator == Simulator.AceWindows) {
+                assertTrue(state.isAceWindows)
+            } else {
+                assertFalse(state.isAceWindows, "simulator=$simulator のとき isAceWindows は false であるべき")
+            }
         }
     }
 }
