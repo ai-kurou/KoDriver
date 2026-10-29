@@ -6,17 +6,9 @@ import kotlin.test.assertTrue
 
 class LowVolumeWarningUiStateTest {
     @Test
-    fun `音量警告がない場合は非表示`() {
-        assertFalse(LowVolumeWarningUiState().isVisible)
-    }
-
-    @Test
-    fun `端末音量警告がある場合は表示`() {
+    fun `端末音量またはKoDriver音量がある場合だけ表示`() {
         assertTrue(LowVolumeWarningUiState(deviceVolume = 20).isVisible)
-    }
-
-    @Test
-    fun `KoDriver音量警告がある場合は表示`() {
         assertTrue(LowVolumeWarningUiState(soundVolume = 20).isVisible)
+        assertFalse(LowVolumeWarningUiState().isVisible)
     }
 }
