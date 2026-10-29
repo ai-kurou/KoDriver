@@ -14,6 +14,7 @@ import kurou.kodriver.core.windowshotkeydata.GlobalHotkey
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkeyEvent
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkeySource
 import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
@@ -77,14 +78,19 @@ class ManualReadoutHotkeyRepositoryImplTest {
             testScheduler.runCurrent()
             assertEquals(listOf(0x41, 0x42, 0x43), source.requested)
             assertEquals(listOf(0x41), source.released)
+            val defaultModifiers = MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT.value
+            val changedModifiers = ManualReadoutHotkeyModifiers.entries.first { it.value != defaultModifiers }
             lmuSets.update {
-                listOf(
-                    first.copy(hotkeyVirtualKeyCode = 0x43, hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_SHIFT),
-                )
+                listOf(first.copy(hotkeyVirtualKeyCode = 0x43, hotkeyModifiers = changedModifiers))
             }
             testScheduler.runCurrent()
             assertEquals(
-                listOf(GlobalHotkey(3, 0x41), GlobalHotkey(3, 0x42), GlobalHotkey(3, 0x43), GlobalHotkey(6, 0x43)),
+                listOf(
+                    GlobalHotkey(defaultModifiers, 0x41),
+                    GlobalHotkey(defaultModifiers, 0x42),
+                    GlobalHotkey(defaultModifiers, 0x43),
+                    GlobalHotkey(changedModifiers.value, 0x43),
+                ),
                 source.hotkeys,
             )
             assertEquals(listOf(0x41, 0x43), source.released)
