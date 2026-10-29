@@ -8,6 +8,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_class_car_gap_ahead
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_class_car_gap_behind
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_class_car_gap_position
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -17,6 +18,15 @@ internal fun ClassCarGapContent(classCarGap: LmuWindowsClassCarGapData?) {
         return
     }
     Column {
+        Text(
+            text =
+                stringResource(
+                    Res.string.debug_state_class_car_gap_position,
+                    formatClassPosition(classCarGap.classPosition),
+                    formatClassPosition(classCarGap.classVehicleCount),
+                ),
+            style = koDriverNumericTextStyle(),
+        )
         Text(
             text =
                 stringResource(

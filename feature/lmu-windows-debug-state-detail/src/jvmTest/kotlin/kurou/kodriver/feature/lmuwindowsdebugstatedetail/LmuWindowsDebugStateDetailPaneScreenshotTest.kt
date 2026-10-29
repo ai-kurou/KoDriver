@@ -256,7 +256,7 @@ class LmuWindowsDebugStateDetailPaneScreenshotTest {
         }
 
     @Test
-    fun `同クラス前後車両との時間差カードに片側の欠損を表示する`() =
+    fun `同クラス内順位と前後車両との時間差カードに片側の欠損を表示する`() =
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
@@ -269,7 +269,13 @@ class LmuWindowsDebugStateDetailPaneScreenshotTest {
                                         enabledCardKeys = setOf(LmuWindowsDebugStateCardKey.CLASS_CAR_GAP),
                                         lmuWindows =
                                             LmuWindowsDebugState(
-                                                classCarGap = LmuWindowsClassCarGapData(1.0, null),
+                                                classCarGap =
+                                                    LmuWindowsClassCarGapData(
+                                                        1.0,
+                                                        null,
+                                                        classPosition = 3,
+                                                        classVehicleCount = 20,
+                                                    ),
                                             ),
                                     ),
                                 canNavigateBack = true,

@@ -109,7 +109,8 @@
     <string name="debug_state_car_gap_car_behind">後車との差 %1$s 秒</string>
     <string name="debug_state_car_gap_place_ahead">順位上の前車との差 %1$s 秒</string>
     <string name="debug_state_car_gap_place_behind">順位上の後車との差 %1$s 秒</string>
-    <string name="debug_state_class_car_gap_title">同クラス前後車両との時間差</string>
+    <string name="debug_state_class_car_gap_position">クラス内順位 %1$s / %2$s（ガレージ内の他車を除く）</string>
+    <string name="debug_state_class_car_gap_title">同クラス内順位と前後車両との時間差</string>
     <string name="debug_state_class_car_gap_ahead">同クラスの前車との差 %1$s 秒</string>
     <string name="debug_state_class_car_gap_behind">同クラスの後車との差 %1$s 秒</string>
 </resources>

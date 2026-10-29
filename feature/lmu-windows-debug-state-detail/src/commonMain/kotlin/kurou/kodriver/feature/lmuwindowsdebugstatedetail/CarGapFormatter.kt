@@ -7,3 +7,6 @@ internal fun formatCarGapSeconds(seconds: Double?): String =
         !seconds.isFinite() -> "--"
         else -> formatOneDecimal(seconds)
     }
+
+/** クラス内順位・車両数を整形し、算出不可の null は欠損表示にする。 */
+internal fun formatClassPosition(value: Int?): String = value?.toString() ?: "--"
