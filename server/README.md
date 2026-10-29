@@ -10,6 +10,7 @@ WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパター�
 
 | パス | データソース（UseCase） | 送信型 |
 | --- | --- | --- |
+| `/ws/lmu_windows/telemetry` | `ObserveLmuWindowsUseCase`（共有メモリの `LmuWindowsRepository`） | `LmuWindowsTelemetryData` 全体（同一値も継続配信） |
 | `/ws/lmu_windows/flags` | `ObserveLmuWindowsRaceFlagsUseCase`（`LmuWindowsFlagRepository`） | `LmuWindowsRaceFlagsData` |
 | `/ws/lmu_windows/vehicle_approach` | `ObserveLmuWindowsVehicleApproachUseCase`（`LmuWindowsVehicleApproachRepository`） | `LmuWindowsVehicleApproachData` |
 | `/ws/lmu_windows/damage` | `ObserveLmuWindowsVehicleDamageUseCase`（`LmuWindowsVehicleDamageRepository`） | `LmuWindowsVehicleDamageData` |
@@ -25,6 +26,8 @@ WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパター�
 | `/ws/lmu_windows/tyre_detached` | `ObserveLmuWindowsTyreDetachedUseCase`（`LmuWindowsTyreDetachedRepository`） | `LmuWindowsTyreDetachedData` |
 | `/ws/lmu_windows/car_gap` | `ObserveLmuWindowsCarGapUseCase`（`LmuWindowsCarGapRepository`） | `LmuWindowsCarGapData`（同一値も継続配信） |
 | `/ws/lmu_windows/class_car_gap` | `ObserveLmuWindowsClassCarGapUseCase`（`LmuWindowsClassCarGapRepository`） | `LmuWindowsClassCarGapData`（同クラスの前後秒差と `classPosition` / `classVehicleCount`。順位・台数は算出不可時 null。同一値も継続配信） |
+
+Android の `WebSocketLmuWindowsRepository` は `/ws/lmu_windows/telemetry` から全フィールドを復元する。燃料の `receivedAtMs` は通信に含めず Android の受信時刻を設定し、5秒間受信がなければ燃料を失効させる。既存の個別エンドポイントも継続して提供する。
 
 ### ACE（`/ws/ace_windows/...`）
 

@@ -6,6 +6,9 @@ import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
 
 internal fun Route.lmuWindowsRoutes(useCases: KoDriverServerUseCases) {
+    telemetryWebSocket(KoDriverServerFeature.TELEMETRY, Simulator.LmuWindows, distinct = false) {
+        useCases.lmuWindows.observeLmuWindows()
+    }
     telemetryWebSocket(KoDriverServerFeature.FLAGS, Simulator.LmuWindows) {
         useCases.lmuWindows.observeLmuWindowsRaceFlags()
     }

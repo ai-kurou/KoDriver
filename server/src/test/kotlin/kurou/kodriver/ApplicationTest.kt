@@ -3367,6 +3367,38 @@ class ApplicationTest {
     }
 
     @Test
+    fun `全テレメトリをJSONで送信し同一値も継続配信する`() =
+        testApplication {
+            val repository = FakeLmuWindowsRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        lmuWindows =
+                            emptyLmuWindowsServerUseCases().copy(
+                                observeLmuWindows = ObserveLmuWindowsUseCase(repository),
+                            ),
+                        aceWindows = emptyAceWindowsServerUseCases(),
+                    ),
+                )
+            }
+            client.config { install(WebSockets) }.webSocket("/ws/lmu_windows/telemetry") {
+                val telemetry =
+                    timingTelemetryData1.copy(
+                        timestampMs = 123456L,
+                        engine = LmuWindowsEngineData(rpm = 6500.0, maxRpm = 9000.0, gear = 4),
+                        inputs = LmuWindowsInputsData(throttle = 0.8, brake = 0.2, clutch = 0.1, steering = -0.3),
+                        fuel = LmuWindowsFuelData(LmuWindowsFuelUnit(42.0), LmuWindowsFuelUnit(100.0)),
+                        vehicle = LmuWindowsVehicleData(1.0, 2.0, 50.0, 100.0, 200.0, 300.0),
+                    )
+                repeat(2) {
+                    repository.emit(telemetry)
+                    val message = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    assertEquals(telemetry, serverJson.decodeFromString<LmuWindowsTelemetryData>(message))
+                }
+            }
+        }
+
+    @Test
     fun `燃料情報をJSONでWebSocketへ送信し同一値も継続して送信する`() =
         testApplication {
             val repository = FakeLmuWindowsRepository()

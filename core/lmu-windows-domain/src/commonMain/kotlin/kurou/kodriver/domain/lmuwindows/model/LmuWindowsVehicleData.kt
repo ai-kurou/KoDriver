@@ -1,7 +1,9 @@
 package kurou.kodriver.domain.lmuwindows.model
 
+import kotlinx.serialization.Serializable
 import kotlin.math.sqrt
 
+@Serializable
 data class LmuWindowsVehicleData(
     val localVelocityX: Double,
     val localVelocityY: Double,

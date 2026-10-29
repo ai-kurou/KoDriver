@@ -3,6 +3,7 @@ package kurou.kodriver.domain.model
 enum class KoDriverServerFeature(
     private val pathSegment: String,
 ) {
+    TELEMETRY(pathSegment = "telemetry"),
     FLAGS(pathSegment = "flags"),
     VEHICLE_APPROACH(pathSegment = "vehicle_approach"),
     DAMAGE(pathSegment = "damage"),
