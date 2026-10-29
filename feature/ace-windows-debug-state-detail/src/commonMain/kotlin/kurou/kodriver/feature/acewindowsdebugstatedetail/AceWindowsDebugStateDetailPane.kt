@@ -166,7 +166,9 @@ private val debugStateCardContents:
                 SideBySideVehiclesContent(uiState.aceWindows.vehicleApproach)
             },
         AceWindowsDebugStateCardKey.BEST_LAP to { uiState -> BestLapContent(uiState.aceWindows.bestLapTime) },
-        AceWindowsDebugStateCardKey.CAR_GAP to { uiState -> CarGapContent(uiState.aceWindows.gap) },
+        AceWindowsDebugStateCardKey.CAR_GAP to { uiState ->
+            CarGapContent(uiState.aceWindows.gap, uiState.aceWindows.overallPosition)
+        },
         AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to
             { uiState ->
                 TyreCarcassTemperatureContent(uiState.aceWindows.tyreCarcassTemperature)

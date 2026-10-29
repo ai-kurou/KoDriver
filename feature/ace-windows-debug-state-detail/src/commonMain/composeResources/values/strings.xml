@@ -38,7 +38,8 @@
     <string name="debug_state_vehicle_location_ace_status_replay">Replay（リプレイ中）</string>
     <string name="debug_state_vehicle_location_ace_status_live">Live（走行中）</string>
     <string name="debug_state_vehicle_location_ace_status_pause">Pause（ポーズ中）</string>
-    <string name="debug_state_car_gap_title">前後車両との時間差</string>
+    <string name="debug_state_car_gap_title">総合順位と前後車両との時間差</string>
+    <string name="debug_state_car_gap_overall_position">総合順位 %1$s / %2$s</string>
     <string name="debug_state_car_gap_car_ahead">前車との差 %1$s 秒</string>
     <string name="debug_state_car_gap_car_behind">後車との差 %1$s 秒</string>
     <string name="debug_state_car_gap_early_access_note">ACEは早期アクセス版のため、この時間差は動作しません（常に 0.0 秒と表示されます）。</string>

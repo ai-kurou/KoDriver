@@ -18,6 +18,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeReposito
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsOverallPositionRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -26,6 +27,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseC
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsOverallPositionUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
@@ -49,6 +51,7 @@ class AceWindowsDebugStateDetailModuleTest {
     private val aceWindowsBestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
     private val aceWindowsFlagRepository: AceWindowsFlagRepository = mockk()
     private val aceWindowsFuelRepository: AceWindowsFuelRepository = mockk()
+    private val aceWindowsOverallPositionRepository: AceWindowsOverallPositionRepository = mockk()
     private val aceWindowsGapRepository: AceWindowsGapRepository = mockk()
     private val aceWindowsRemainingFuelLapsRepository: AceWindowsRemainingFuelLapsRepository = mockk()
     private val aceWindowsStatusRepository: AceWindowsStatusRepository = mockk()
@@ -73,6 +76,7 @@ class AceWindowsDebugStateDetailModuleTest {
         every { aceWindowsFlagRepository.flagStream() } returns emptyFlow()
         every { aceWindowsFuelRepository.fuelStream() } returns emptyFlow()
         every { aceWindowsGapRepository.gapStream() } returns emptyFlow()
+        every { aceWindowsOverallPositionRepository.overallPositionStream() } returns emptyFlow()
         every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
         every { aceWindowsStatusRepository.statusStream() } returns emptyFlow()
         every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
@@ -88,6 +92,7 @@ class AceWindowsDebugStateDetailModuleTest {
                         single<AceWindowsFlagRepository> { aceWindowsFlagRepository }
                         single<AceWindowsFuelRepository> { aceWindowsFuelRepository }
                         single<AceWindowsGapRepository> { aceWindowsGapRepository }
+                        single<AceWindowsOverallPositionRepository> { aceWindowsOverallPositionRepository }
                         single<AceWindowsRemainingFuelLapsRepository> { aceWindowsRemainingFuelLapsRepository }
                         single<AceWindowsStatusRepository> { aceWindowsStatusRepository }
                         single<AceWindowsTyreCarcassTemperatureRepository> {
@@ -106,6 +111,7 @@ class AceWindowsDebugStateDetailModuleTest {
             assertNotNull(koin.get<AceWindowsDebugStateUseCases>())
             assertNotNull(koin.get<ObserveAceWindowsFuelUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsGapUseCase>())
+            assertNotNull(koin.get<ObserveAceWindowsOverallPositionUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsFlagUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsStatusUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsTyreCarcassTemperatureUseCase>())

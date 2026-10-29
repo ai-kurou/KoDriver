@@ -10,6 +10,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
+import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
@@ -18,6 +19,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseC
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsOverallPositionUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
@@ -32,6 +34,7 @@ internal data class AceWindowsDebugStateUseCases(
     val observeBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
     val observeRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsUseCase,
     val observeGap: ObserveAceWindowsGapUseCase,
+    val observeOverallPosition: ObserveAceWindowsOverallPositionUseCase,
 )
 
 internal class AceWindowsDebugStateSource(
@@ -95,6 +98,13 @@ internal class AceWindowsDebugStateSource(
                 markCardsReceived(setOf(AceWindowsDebugStateCardKey.CAR_GAP))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
+    private val overallPosition: StateFlow<AceWindowsOverallPositionData?> =
+        useCases
+            .observeOverallPosition()
+            .onEach {
+                markCardsReceived(setOf(AceWindowsDebugStateCardKey.CAR_GAP))
+            }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
+
     private val base: StateFlow<AceWindowsDebugState> =
         combine(
             fuel,
@@ -118,9 +128,11 @@ internal class AceWindowsDebugStateSource(
             vehicleApproach,
             tyreCarcassTemperature,
             gap,
-        ) { base, vehicleApproach, tyreCarcassTemperature, gap ->
+            overallPosition,
+        ) { base, vehicleApproach, tyreCarcassTemperature, gap, overallPosition ->
             base.copy(
                 gap = gap,
+                overallPosition = overallPosition,
                 vehicleApproach = vehicleApproach,
                 tyreCarcassTemperature = tyreCarcassTemperature,
             )
