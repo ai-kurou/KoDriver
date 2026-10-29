@@ -1,6 +1,6 @@
 # lmu-windows-debug-state-detail
 
-LMU Windows 専用のデバッグ状態画面。テレメトリ、レース状態、タイヤ・ブレーキ、燃料、バーチャルエネルギー、並走時間、前後車両との時間差（全クラス）、同クラス前後車両との時間差などを21枚のカードで表示し、ドラッグしたカード順序を保存する。
+LMU Windows 専用のデバッグ状態画面。テレメトリ、レース状態、タイヤ・ブレーキ、燃料、バーチャルエネルギー、並走時間、前後車両との時間差（全クラス）、同クラス内順位と前後車両との時間差などを21枚のカードで表示し、ドラッグしたカード順序を保存する。
 自己完結モジュールとして、表示ヘルパーもこのモジュール内に保持する。
 「その他」タブのバージョンを5回タップすると、選択中のシミュレーターに対応するペインを表示する。
 
@@ -23,7 +23,7 @@ LMU Windows 専用のデバッグ状態画面。テレメトリ、レース状�
 - `LmuWindowsDebugStateCards.kt` / `DebugState*Card.kt`: LMU 専用のカード表示。フレーム、未取得表示、温度・摩耗・ラップタイム等の整形ヘルパーも同梱する。
 - `LmuWindowsDebugStateDetailModule.kt` / `LmuWindowsDebugStateModule.kt`: ViewModel と UseCase の Koin 定義。利用側が必要な Repository を登録する。
 - `DebugStateCarGapCard.kt` / `CarGapFormatter.kt`: Scoring の位置関係から自前計算した全体の前後ギャップ2行と、実機確認の参考用の Telemetry 生 float 4行を秒で小数1桁表示する。符号・ゼロを保持し、車両なし（null）は `なし`、NaN・Infinity は `--`、データ未取得は `未取得` にする。
-- `DebugStateClassCarGapCard.kt` (`CLASS_CAR_GAP`): 同クラス内の位置関係で周回補正した前後ギャップ。周回遅れ・周回先行も含む。対象車両なし・推定ラップタイム無効時の null は `なし`、非有限値は `--` を表示する。
+- `DebugStateClassCarGapCard.kt` (`CLASS_CAR_GAP`): 先頭行にクラス内順位と同クラスの車両数を表示し、それぞれ null の場合は `--` を表示する。同クラス内の位置関係で周回補正した前後ギャップ。周回遅れ・周回先行も含む。対象車両なし・推定ラップタイム無効時の null は `なし`、非有限値は `--` を表示する。
 
 ## カード順序と未取得表示
 

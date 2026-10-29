@@ -95,7 +95,7 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
                     )
                 }
             }
-            rule.onNodeWithText("同クラス前後車両との時間差").assertIsDisplayed()
+            rule.onNodeWithText("同クラス内順位と前後車両との時間差").assertIsDisplayed()
             rule.onNodeWithText("未取得").assertIsDisplayed()
 
             state.update {
