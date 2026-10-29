@@ -48,7 +48,7 @@ server は `/ws/lmu_windows/car_gap` で同一値も継続配信する。Android
 
 自車が Scoring に存在しなければ配信しない。推定ラップタイムが非有限または 0 以下の場合、あるいは対象車両がない場合は両方 null。非有限の時間差は対象から除外する。非 Windows では空 Flow を返す。全体ギャップとは対象のクラス条件のみ異なり、計算処理を共有する。
 
-クラス内順位も同じモデルの `classPosition` / `classVehicleCount` で返す。`VehicleScoringInfo.mPlace`（オフセット +199、unsigned byte）は 1 始まりの総合順位。`ScoringInfo.mNumVehicles`（Scoring 先頭 +104）を 0〜104 に制限して全車両を走査し、クラス名が自車と完全一致するガレージ外の車両に、自車を含めた台数を求める。自車はガレージ内でも含める。クラス内順位は「1 + 自車より `mPlace` が小さい該当他車の数」とする。自車の `mPlace` が 0（未設定）の場合は順位・台数とも null。ギャップ計算の可否には依存しない。`classPosition == 1` でトップ、両項目が非 null かつ `classPosition == classVehicleCount` で最後尾と判定できる。
+クラス内順位も同じモデルの `classPosition` / `classVehicleCount` で返す。`VehicleScoringInfo.mPlace`（オフセット +199、unsigned byte）は 1 始まりの総合順位。`ScoringInfo.mNumVehicles`（Scoring 先頭 +104）を 0〜104 に制限して全車両を走査し、クラス名が自車と完全一致するガレージ外の車両に、自車を含めた台数を求める。自車はガレージ内でも含める。クラス内順位は「1 + 自車より `mPlace` が小さい該当他車の数」とする。自車の `mPlace` が 0（未設定）の場合は順位・台数とも null。対象の他車に `mPlace` が 0 の車両がある場合は順位のみ null（台数は維持）。ギャップ計算の可否には依存しない。`classPosition == 1` でトップ、両項目が非 null かつ `classPosition == classVehicleCount` で最後尾と判定できる。
 
 server は `/ws/lmu_windows/class_car_gap` で同一値も継続配信する。Android は `WebSocketLmuWindowsClassCarGapRepository` で受信し、`LmuWindowsClassCarGapData` として復元する。
 

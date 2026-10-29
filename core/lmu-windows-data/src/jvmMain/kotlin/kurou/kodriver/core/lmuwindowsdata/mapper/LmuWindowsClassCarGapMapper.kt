@@ -20,6 +20,7 @@ internal object LmuWindowsClassCarGapMapper {
 
         var classPosition = 1
         var classVehicleCount = 1
+        var placeUnknown = false
         for (otherBase in LmuWindowsScoringCarGapMapper.vehicleScoringBases(buffer)) {
             if (
                 otherBase == vehicleBase ||
@@ -30,12 +31,12 @@ internal object LmuWindowsClassCarGapMapper {
             }
             classVehicleCount++
             val otherPlace = buffer.get(otherBase + LmuWindowsMapper.OFF_SCORING_PLACE).toInt() and 0xFF
-            if (otherPlace < playerPlace) classPosition++
+            if (otherPlace == 0) placeUnknown = true else if (otherPlace < playerPlace) classPosition++
         }
         return LmuWindowsClassCarGapData(
             gapAheadSeconds = gap.gapAheadSeconds,
             gapBehindSeconds = gap.gapBehindSeconds,
-            classPosition = classPosition,
+            classPosition = if (placeUnknown) null else classPosition,
             classVehicleCount = classVehicleCount,
         )
     }

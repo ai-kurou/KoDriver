@@ -175,6 +175,18 @@ class LmuWindowsClassCarGapMapperTest {
     }
 
     @Test
+    fun `同クラスの他車の総合順位が未設定なら順位はnullで台数は維持する`() {
+        val buffer = buffer()
+        buffer.put(2192 + 199, 1)
+        vehicle(buffer, 1, 25.0, place = 0)
+
+        assertEquals(
+            LmuWindowsClassCarGapData(5.0, 95.0, classPosition = null, classVehicleCount = 2),
+            LmuWindowsClassCarGapMapper.readClassCarGap(buffer, 2192),
+        )
+    }
+
+    @Test
     fun `ギャップを算出できなくても同クラスが自車のみなら順位と台数は1`() {
         val buffer = buffer()
         buffer.put(2192 + 199, 1)
