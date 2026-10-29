@@ -16,21 +16,21 @@ class DebugStateClassCarGapCardTest {
     fun `クラス内順位と車両数を表示する`() {
         showClassCarGapCard(LmuWindowsClassCarGapData(1.0, 2.0, classPosition = 3, classVehicleCount = 20))
 
-        rule.onNodeWithText("クラス内順位 3 / 20").assertIsDisplayed()
+        rule.onNodeWithText("クラス内順位 3 / 20（ガレージ内の他車を除く）").assertIsDisplayed()
     }
 
     @Test
     fun `クラス内順位がnullの場合は欠損表示にする`() {
         showClassCarGapCard(LmuWindowsClassCarGapData(1.0, 2.0, classPosition = null, classVehicleCount = 20))
 
-        rule.onNodeWithText("クラス内順位 -- / 20").assertIsDisplayed()
+        rule.onNodeWithText("クラス内順位 -- / 20（ガレージ内の他車を除く）").assertIsDisplayed()
     }
 
     @Test
     fun `クラス内車両数がnullの場合は欠損表示にする`() {
         showClassCarGapCard(LmuWindowsClassCarGapData(1.0, 2.0, classPosition = 3, classVehicleCount = null))
 
-        rule.onNodeWithText("クラス内順位 3 / --").assertIsDisplayed()
+        rule.onNodeWithText("クラス内順位 3 / --（ガレージ内の他車を除く）").assertIsDisplayed()
     }
 
     @Test
@@ -68,7 +68,7 @@ class DebugStateClassCarGapCardTest {
         showClassCarGapCard(LmuWindowsClassCarGapData(null, null))
 
         rule.onNodeWithText("同クラス内順位と前後車両との時間差").assertIsDisplayed()
-        rule.onNodeWithText("クラス内順位 -- / --").assertIsDisplayed()
+        rule.onNodeWithText("クラス内順位 -- / --（ガレージ内の他車を除く）").assertIsDisplayed()
         rule.onNodeWithText("同クラスの前車との差 なし 秒").assertIsDisplayed()
         rule.onNodeWithText("同クラスの後車との差 なし 秒").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertDoesNotExist()
