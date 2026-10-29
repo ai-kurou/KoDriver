@@ -28,6 +28,7 @@ internal class WebSocketLmuWindowsRepository(
     private val port: Int = DEFAULT_PORT,
     private val retryDelayMs: Long = DEFAULT_RETRY_DELAY_MS,
     private val client: HttpClient = createWebSocketHttpClient(),
+    private val currentTimeMs: () -> Long = System::currentTimeMillis,
 ) : LmuWindowsRepository {
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -47,7 +48,7 @@ internal class WebSocketLmuWindowsRepository(
                             retryDelayMs = retryDelayMs,
                             decode = {
                                 val telemetry = json.decodeFromString<LmuWindowsTelemetryData>(it)
-                                telemetry.copy(fuel = telemetry.fuel.copy(receivedAtMs = System.currentTimeMillis()))
+                                telemetry.copy(fuel = telemetry.fuel.copy(receivedAtMs = currentTimeMs()))
                             },
                         ).transformLatest { telemetry ->
                             emit(telemetry)

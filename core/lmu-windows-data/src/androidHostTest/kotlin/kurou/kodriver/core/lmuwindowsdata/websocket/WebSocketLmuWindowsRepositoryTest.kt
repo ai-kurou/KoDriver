@@ -32,7 +32,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class WebSocketLmuWindowsRepositoryTest {
     private lateinit var server: MockWebServer
@@ -67,12 +66,15 @@ class WebSocketLmuWindowsRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 3_000L) =
-        WebSocketLmuWindowsRepository(
-            serverIpRepository = fakeIpRepository,
-            port = server.port,
-            retryDelayMs = retryDelayMs,
-        )
+    private fun buildRepository(
+        retryDelayMs: Long = 3_000L,
+        currentTimeMs: () -> Long = System::currentTimeMillis,
+    ) = WebSocketLmuWindowsRepository(
+        serverIpRepository = fakeIpRepository,
+        port = server.port,
+        retryDelayMs = retryDelayMs,
+        currentTimeMs = currentTimeMs,
+    )
 
     @Test
     fun `ipがnullのときtelemetryStreamは何もemitしない`() =
@@ -102,7 +104,7 @@ class WebSocketLmuWindowsRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().telemetryStream().first()
+            val result = buildRepository(currentTimeMs = { 1234L }).telemetryStream().first()
 
             assertEquals(60_000L, result.timing.bestLapTimeMs)
             assertEquals(2, result.timing.currentLap)
@@ -110,7 +112,7 @@ class WebSocketLmuWindowsRepositoryTest {
                 Json { ignoreUnknownKeys = true }.decodeFromString<LmuWindowsTelemetryData>(TELEMETRY_JSON)
             assertEquals(expected.copy(fuel = result.fuel), result)
             assertEquals(expected.fuel.copy(receivedAtMs = result.fuel.receivedAtMs), result.fuel)
-            assertTrue(result.fuel.receivedAtMs!! > 1L)
+            assertEquals(1234L, result.fuel.receivedAtMs)
             assertEquals("/ws/lmu_windows/telemetry", server.takeRequest(1, TimeUnit.SECONDS)?.path)
         }
 
@@ -230,6 +232,7 @@ class WebSocketLmuWindowsRepositoryTest {
     fun `受信が止まると燃料が失効し再受信で回復する`() =
         runTest {
             val sockets = Channel<WebSocket>(Channel.UNLIMITED)
+            var currentTimeMs = 1_000L
             telemetryResponses.add(
                 MockResponse().withWebSocketUpgrade(
                     object : WebSocketListener() {
@@ -247,7 +250,9 @@ class WebSocketLmuWindowsRepositoryTest {
             val results = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
             val job =
                 launch(Dispatchers.IO) {
-                    buildRepository().telemetryStream().collect { results.send(it) }
+                    buildRepository(currentTimeMs = { currentTimeMs++ })
+                        .telemetryStream()
+                        .collect { results.send(it) }
                 }
             try {
                 withContext(Dispatchers.IO) {
@@ -255,8 +260,7 @@ class WebSocketLmuWindowsRepositoryTest {
                         val socket = sockets.receive()
                         socket.send(TELEMETRY_JSON)
                         val received = results.receive()
-                        val receivedAt = received.fuel.receivedAtMs
-                        assertTrue(receivedAt != null)
+                        assertEquals(1_000L, received.fuel.receivedAtMs)
                         val expired = results.receive()
                         assertEquals(0.0, expired.fuel.capacityLiters.value)
                         assertNull(expired.fuel.receivedAtMs)
@@ -264,7 +268,7 @@ class WebSocketLmuWindowsRepositoryTest {
                         socket.send(TELEMETRY_JSON)
                         val restored = results.receive()
                         assertEquals(100.0, restored.fuel.capacityLiters.value)
-                        assertTrue(restored.fuel.receivedAtMs!! > receivedAt)
+                        assertEquals(1_001L, restored.fuel.receivedAtMs)
                     }
                 }
             } finally {
