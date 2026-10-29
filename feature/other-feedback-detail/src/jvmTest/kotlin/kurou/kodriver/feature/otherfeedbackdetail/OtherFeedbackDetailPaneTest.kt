@@ -15,6 +15,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.click
@@ -54,20 +55,23 @@ class OtherFeedbackDetailPaneTest {
         var name by mutableStateOf("")
         var email by mutableStateOf("")
         var sendCount = 0
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
-            MaterialTheme {
-                OtherFeedbackDetailPaneContent(
-                    uiState =
-                        OtherFeedbackDetailUiState(
-                            message = message,
-                            name = name,
-                            email = email,
-                        ),
-                    onMessageChanged = { message = it },
-                    onNameChanged = { name = it },
-                    onEmailChanged = { email = it },
-                    onSend = { sendCount++ },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                MaterialTheme {
+                    OtherFeedbackDetailPaneContent(
+                        uiState =
+                            OtherFeedbackDetailUiState(
+                                message = message,
+                                name = name,
+                                email = email,
+                            ),
+                        onMessageChanged = { message = it },
+                        onNameChanged = { name = it },
+                        onEmailChanged = { email = it },
+                        onSend = { sendCount++ },
+                    )
+                }
             }
         }
 
@@ -81,6 +85,30 @@ class OtherFeedbackDetailPaneTest {
         assertEquals("Kurou", name)
         assertEquals("user@example.com", email)
         assertEquals(1, sendCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `無効な送信ボタンでは送信も触覚も発生しない`() {
+        var sendCount = 0
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                MaterialTheme {
+                    OtherFeedbackDetailPaneContent(
+                        uiState = OtherFeedbackDetailUiState(),
+                        onSend = { sendCount++ },
+                    )
+                }
+            }
+        }
+
+        rule.onNodeWithText("送信").assertIsNotEnabled().performClick()
+
+        assertEquals(0, sendCount)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test

@@ -137,6 +137,11 @@ fun OtherFeedbackDetailPaneContent(
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onSendWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onSend()
+    }
     DetailPaneScaffold(
         title = stringResource(Res.string.feedback_title),
         canNavigateBack = canNavigateBack,
@@ -291,7 +296,7 @@ fun OtherFeedbackDetailPaneContent(
             Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             FeedbackStatus(uiState)
             Button(
-                onClick = onSend,
+                onClick = onSendWithHaptic,
                 enabled = uiState.canSend,
                 modifier = Modifier.fillMaxWidth(),
             ) {
