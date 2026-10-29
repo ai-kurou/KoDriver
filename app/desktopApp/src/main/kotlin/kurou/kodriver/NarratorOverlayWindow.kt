@@ -75,6 +75,8 @@ private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
  *   [NarratorOverlayWindowHost] が行う）。`window.location` を直接書き換えるドラッグ移動も、
  *   [SwingWindow] が AWT の `componentMoved` / `componentResized` を [WindowState] へ反映するため、
  *   [WindowState] を監視するだけで移動・リサイズの両方を拾える。
+ * - 閉じ要求を無視すると Windows のシャットダウンを妨げるため、閉じ要求は [exitApplication] でアプリ全体を
+ *   終了する（Alt+F4 でも同様に終了する）。
  * - 常時最前面の詳細な制御（フォーカス連動等）は別PRで対応する。
  * - `alwaysOnTop = true` により通常のウィンドウより手前には表示されるが、排他的フルスクリーンで
  *   起動したゲームには他の常駐オーバーレイツールと同様に表示されないため、LMU 側をボーダーレス
@@ -119,7 +121,7 @@ fun ApplicationScope.NarratorOverlayWindow(
             }
     }
     SwingWindow(
-        onCloseRequest = {},
+        onCloseRequest = ::exitApplication,
         state = windowState,
         title = "KoDriver Narrator Overlay",
         decoration = WindowDecoration.Undecorated(),
