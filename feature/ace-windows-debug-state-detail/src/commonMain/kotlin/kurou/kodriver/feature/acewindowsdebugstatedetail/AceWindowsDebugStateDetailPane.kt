@@ -1,9 +1,9 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -95,51 +95,56 @@ internal fun AceWindowsDebugStateDetailPaneContent(
             val gridState = rememberLazyGridState()
             val reorderableState =
                 rememberReorderableLazyGridState(gridState) { from, to ->
-                    onMoveCard(from.index, to.index)
+                    if (from.index >= FIXED_ITEM_COUNT && to.index >= FIXED_ITEM_COUNT) {
+                        onMoveCard(from.index - FIXED_ITEM_COUNT, to.index - FIXED_ITEM_COUNT)
+                    }
                 }
-            Column {
-                DebugReadoutRequestCard(
-                    readoutItemKeyValues =
-                        ACE_WINDOWS_READOUT_ITEM_KEYS
-                            .filterIsInstance<ReadoutItemKey.TopLevel>()
-                            .map { it.value },
-                    selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
-                    text = uiState.debugReadoutText,
-                    onReadoutItemSelected = onReadoutItemSelected,
-                    onTextChange = onDebugReadoutTextChange,
-                    onReadout = onRequestReadout,
-                    modifier = Modifier.padding(KoDriverSpacing.small),
-                )
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(columns),
-                    state = gridState,
-                    modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
-                ) {
-                    items(uiState.cardOrder, key = { it.name }) { cardKey ->
-                        ReorderableItem(reorderableState, key = cardKey.name) {
-                            DebugStateCard(
-                                cardKey = cardKey,
-                                uiState = uiState,
-                                enabled = cardKey in uiState.enabledCardKeys,
-                                titles = debugStateCardTitles,
-                                contents = debugStateCardContents,
-                                frame = { title, cardModifier, content ->
-                                    DebugStateCardFrame(
-                                        cardKey = cardKey,
-                                        title = title,
-                                        modifier = cardModifier,
-                                        content = content,
-                                    )
-                                },
-                                modifier = Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle(),
-                            )
-                        }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(columns),
+                state = gridState,
+                modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
+            ) {
+                item(key = DEBUG_READOUT_REQUEST_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
+                    DebugReadoutRequestCard(
+                        readoutItemKeyValues =
+                            ACE_WINDOWS_READOUT_ITEM_KEYS
+                                .filterIsInstance<ReadoutItemKey.TopLevel>()
+                                .map { it.value },
+                        selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
+                        text = uiState.debugReadoutText,
+                        onReadoutItemSelected = onReadoutItemSelected,
+                        onTextChange = onDebugReadoutTextChange,
+                        onReadout = onRequestReadout,
+                        modifier = Modifier.padding(KoDriverSpacing.small),
+                    )
+                }
+                items(uiState.cardOrder, key = { it.name }) { cardKey ->
+                    ReorderableItem(reorderableState, key = cardKey.name) {
+                        DebugStateCard(
+                            cardKey = cardKey,
+                            uiState = uiState,
+                            enabled = cardKey in uiState.enabledCardKeys,
+                            titles = debugStateCardTitles,
+                            contents = debugStateCardContents,
+                            frame = { title, cardModifier, content ->
+                                DebugStateCardFrame(
+                                    cardKey = cardKey,
+                                    title = title,
+                                    modifier = cardModifier,
+                                    content = content,
+                                )
+                            },
+                            modifier = Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle(),
+                        )
                     }
                 }
             }
         }
     }
 }
+
+private const val DEBUG_READOUT_REQUEST_ITEM_KEY = "debugReadoutRequest"
+private const val FIXED_ITEM_COUNT = 1
 
 private val debugStateCardTitles: Map<AceWindowsDebugStateCardKey, StringResource> =
     mapOf(

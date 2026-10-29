@@ -17,6 +17,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import org.junit.Rule
@@ -27,6 +28,29 @@ import kotlin.test.assertTrue
 class Gt7Ps5DebugStateDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `読み上げカードは他のカードと一緒にスクロールする`() {
+        val state = Gt7Ps5DebugStateDetailUiState()
+        rule.setContent {
+            MaterialTheme {
+                Gt7Ps5DebugStateDetailPaneContent(
+                    uiState = state,
+                    canNavigateBack = false,
+                    onBack = {},
+                    modifier = Modifier.requiredSize(360.dp, 320.dp),
+                )
+            }
+        }
+
+        val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
+        rule.onNodeWithTag("debug_readout_request_card").assertIsDisplayed()
+        grid.performScrollToIndex(state.cardOrder.size)
+        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithTag("debug_readout_request_card").assertDoesNotExist()
+        grid.performScrollToIndex(0)
+        rule.onNodeWithTag("debug_readout_request_card").assertIsDisplayed()
+    }
 
     @Test
     fun `タイトルを表示して戻る操作を通知する`() {
@@ -80,7 +104,11 @@ class Gt7Ps5DebugStateDetailPaneTest {
         rule.onAllNodesWithText("未取得").assertCountEquals(5)
         listOf("選択中のシミュレーター", "車両クラス", "現在のラップ", "自己ベストラップ", "タイヤ表面温度", "燃料消費")
             .forEach {
-                rule.onNode(hasText(it) and hasAnyAncestor(hasTestTag(DEBUG_STATE_GRID_TEST_TAG))).assertIsDisplayed()
+                rule
+                    .onNode(
+                        hasText(it) and hasAnyAncestor(hasTestTag(DEBUG_STATE_GRID_TEST_TAG)) and
+                            !hasAnyAncestor(hasTestTag("debug_readout_request_card")),
+                    ).assertIsDisplayed()
             }
     }
 
@@ -138,6 +166,7 @@ class Gt7Ps5DebugStateDetailPaneTest {
             }
         }
         val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
+        grid.performScrollToIndex(1)
         val origin = grid.fetchSemanticsNode().boundsInRoot.topLeft
         val from =
             rule

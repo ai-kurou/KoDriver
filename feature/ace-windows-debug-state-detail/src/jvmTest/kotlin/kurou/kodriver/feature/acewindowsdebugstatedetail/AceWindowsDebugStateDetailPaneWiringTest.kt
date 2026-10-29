@@ -4,12 +4,16 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
@@ -108,6 +112,7 @@ class AceWindowsDebugStateDetailPaneWiringTest {
             rule.onNodeWithText("Track（コース上）").assertIsDisplayed()
 
             val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
+            grid.performScrollToIndex(1)
             val gridTopLeft = grid.fetchSemanticsNode().boundsInRoot.topLeft
             val from =
                 rule
@@ -212,7 +217,7 @@ class AceWindowsDebugStateDetailPaneWiringTest {
     }
 
     @Test
-    fun `固定カードはグリッドの上にあり項目選択と入力と送信をViewModelへ通知する`() {
+    fun `読み上げ要求カードはグリッド内にあり項目選択と入力と送信をViewModelへ通知する`() {
         val keys = ReadoutItemKey.topLevelEntriesOf(Simulator.AceWindows)
         val state = MutableStateFlow(AceWindowsDebugStateDetailUiState())
         excludeRecords { viewModel.uiState }
@@ -237,7 +242,11 @@ class AceWindowsDebugStateDetailPaneWiringTest {
             }
             val card = rule.onNodeWithTag("debug_readout_request_card").fetchSemanticsNode().boundsInRoot
             val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).fetchSemanticsNode().boundsInRoot
-            assertEquals(true, card.bottom <= grid.top)
+            assertEquals(true, card.top >= grid.top && card.bottom <= grid.bottom)
+            rule
+                .onNodeWithTag(
+                    "debug_readout_request_card",
+                ).assert(hasAnyAncestor(hasTestTag(DEBUG_STATE_GRID_TEST_TAG)))
             rule.onNodeWithTag("debug_readout_request_item").performClick()
             rule.onNodeWithTag("debug_readout_item_${keys.last().value}").performClick()
             rule.onNodeWithTag("debug_readout_request_text").performTextReplacement("入力 {laps}")
