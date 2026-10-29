@@ -138,6 +138,10 @@ fun OtherFeedbackDetailPaneContent(
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
+    val onOpenSentryWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onOpenSentry()
+    }
     val onSendWithHaptic: () -> Unit = {
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onSend()
@@ -170,7 +174,7 @@ fun OtherFeedbackDetailPaneContent(
                                                 textDecoration = TextDecoration.Underline,
                                             ),
                                     ),
-                                linkInteractionListener = { onOpenSentry() },
+                                linkInteractionListener = { onOpenSentryWithHaptic() },
                             ),
                         ) {
                             append(stringResource(Res.string.feedback_description_sentry_link))

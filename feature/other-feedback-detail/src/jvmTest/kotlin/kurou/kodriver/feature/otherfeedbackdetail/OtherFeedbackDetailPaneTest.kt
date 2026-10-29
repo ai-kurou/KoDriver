@@ -48,6 +48,7 @@ class OtherFeedbackDetailPaneTest {
     val rule = createComposeRule()
 
     private val haptic: HapticFeedback = mockk()
+    private val onOpenSentry: () -> Unit = mockk()
 
     @Test
     fun `本文を入力して送信できる`() {
@@ -294,14 +295,17 @@ class OtherFeedbackDetailPaneTest {
     }
 
     @Test
-    fun `SentryのリンクをタップするとonOpenSentryが呼ばれる`() {
-        var openSentryCount = 0
+    fun `SentryのリンクをタップするとContextClickとonOpenSentryが一度呼ばれる`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        every { onOpenSentry() } returns Unit
         rule.setContent {
-            MaterialTheme {
-                OtherFeedbackDetailPaneContent(
-                    uiState = OtherFeedbackDetailUiState(),
-                    onOpenSentry = { openSentryCount++ },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                MaterialTheme {
+                    OtherFeedbackDetailPaneContent(
+                        uiState = OtherFeedbackDetailUiState(),
+                        onOpenSentry = onOpenSentry,
+                    )
+                }
             }
         }
 
@@ -320,7 +324,9 @@ class OtherFeedbackDetailPaneTest {
         val sentryBoundingBox = textLayoutResults.first().getBoundingBox(sentryStart)
         node.performTouchInput { click(sentryBoundingBox.center) }
 
-        assertEquals(1, openSentryCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 1) { onOpenSentry() }
+        confirmVerified(haptic, onOpenSentry)
     }
 
     @Test
