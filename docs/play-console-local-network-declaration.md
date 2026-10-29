@@ -1,6 +1,6 @@
 # Google Play ローカルネットワーク権限の申告メモ
 
-`ACCESS_LOCAL_NETWORK` は Android 17（API 37）以降をターゲットとするアプリで Google Play のポリシー対象になる（発効予定: 2027-08-25。[ポリシー](https://support.google.com/googleplay/android-developer/answer/16909972?hl=ja)）。KoDriver は `targetSdk = 37` のため、Play Console での申告が必要になる。
+`ACCESS_LOCAL_NETWORK` は Android 17（API 37）以降をターゲットとするアプリで Google Play のポリシー対象になる（発効予定: 2027-08-25。[プレビュー](https://support.google.com/googleplay/android-developer/answer/16909972)、[2026-10-29 のポリシー発表](https://support.google.com/googleplay/android-developer/answer/18100766)）。KoDriver は `targetSdk = 37` のため、Play Console での申告が必要になる。
 
 ## アプリ側の対応状況
 
@@ -25,5 +25,5 @@ KoDriver の Android 版は、同じ LAN 内の次の機器と通信してレー
 
 ## 提出時の確認事項
 
-- 提出期限（2027-08-25）前に Play Console で申告する。
+- 提出期限（2027-08-25）前に Play Console で申告する。発効日はプレビューの記載で、ポリシー発表ページには権限単位の発効日がないため、最新の記載を再確認する。
 - 通信先・用途が上記から変わった場合は、この文面を更新する。
