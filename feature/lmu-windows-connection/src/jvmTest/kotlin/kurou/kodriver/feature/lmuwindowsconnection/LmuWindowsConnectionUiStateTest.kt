@@ -6,37 +6,17 @@ import kotlin.test.assertTrue
 
 class LmuWindowsConnectionUiStateTest {
     @Test
-    fun `isConnected_CONNECTEDのときtrue`() {
-        val state = LmuWindowsConnectionUiState(connectionStatus = LmuWindowsConnectionStatus.CONNECTED)
-        assertTrue(state.isConnected)
-    }
+    fun `各接続状態の接続判定と確認済み判定`() {
+        val connected = LmuWindowsConnectionUiState(connectionStatus = LmuWindowsConnectionStatus.CONNECTED)
+        assertTrue(connected.isConnected)
+        assertTrue(connected.isConnectionChecked)
 
-    @Test
-    fun `isConnected_CONNECTED以外のときfalse`() {
-        for (status in listOf(
-            LmuWindowsConnectionStatus.UNCHECKED,
-            LmuWindowsConnectionStatus.DISCONNECTED,
-        )) {
-            val state = LmuWindowsConnectionUiState(connectionStatus = status)
-            assertFalse(state.isConnected, "status=$status のとき isConnected は false であるべき")
-        }
-    }
+        val unchecked = LmuWindowsConnectionUiState(connectionStatus = LmuWindowsConnectionStatus.UNCHECKED)
+        assertFalse(unchecked.isConnected, "status=${unchecked.connectionStatus} のとき isConnected は false であるべき")
+        assertFalse(unchecked.isConnectionChecked)
 
-    @Test
-    fun `isConnectionChecked_CONNECTEDのときtrue`() {
-        val state = LmuWindowsConnectionUiState(connectionStatus = LmuWindowsConnectionStatus.CONNECTED)
-        assertTrue(state.isConnectionChecked)
-    }
-
-    @Test
-    fun `isConnectionChecked_DISCONNECTEDのときtrue`() {
-        val state = LmuWindowsConnectionUiState(connectionStatus = LmuWindowsConnectionStatus.DISCONNECTED)
-        assertTrue(state.isConnectionChecked)
-    }
-
-    @Test
-    fun `isConnectionChecked_UNCHECKEDのときfalse`() {
-        val state = LmuWindowsConnectionUiState(connectionStatus = LmuWindowsConnectionStatus.UNCHECKED)
-        assertFalse(state.isConnectionChecked)
+        val disconnected = LmuWindowsConnectionUiState(connectionStatus = LmuWindowsConnectionStatus.DISCONNECTED)
+        assertFalse(disconnected.isConnected, "status=${disconnected.connectionStatus} のとき isConnected は false であるべき")
+        assertTrue(disconnected.isConnectionChecked)
     }
 }
