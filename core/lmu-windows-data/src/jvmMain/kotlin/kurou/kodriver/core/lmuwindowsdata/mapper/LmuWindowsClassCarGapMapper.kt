@@ -31,7 +31,10 @@ internal object LmuWindowsClassCarGapMapper {
             }
             classVehicleCount++
             val otherPlace = buffer.get(otherBase + LmuWindowsMapper.OFF_SCORING_PLACE).toInt() and 0xFF
-            if (otherPlace == 0) placeUnknown = true else if (otherPlace < playerPlace) classPosition++
+            when {
+                otherPlace == 0 -> placeUnknown = true
+                otherPlace < playerPlace -> classPosition++
+            }
         }
         return LmuWindowsClassCarGapData(
             gapAheadSeconds = gap.gapAheadSeconds,
