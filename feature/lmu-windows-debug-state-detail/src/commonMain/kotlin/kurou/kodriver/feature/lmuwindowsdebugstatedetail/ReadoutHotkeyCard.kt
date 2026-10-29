@@ -13,10 +13,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -42,6 +44,7 @@ internal fun ReadoutHotkeyCard(
     onCheck: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
     var focused by remember { mutableStateOf(false) }
     DetailPaneCard(
         title = stringResource(Res.string.readout_hotkey_title),
@@ -94,7 +97,10 @@ internal fun ReadoutHotkeyCard(
                     }
                 }
                 Button(
-                    onClick = onCheck,
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onCheck()
+                    },
                     enabled =
                         state.registrationState == HotkeyRegistrationState.Registered &&
                             state.checkState != HotkeyCheckState.Waiting,
