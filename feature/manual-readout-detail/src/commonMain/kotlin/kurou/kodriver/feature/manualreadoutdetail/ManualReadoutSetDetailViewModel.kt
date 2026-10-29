@@ -92,6 +92,10 @@ internal class ManualReadoutSetDetailViewModel(
                     LmuWindowsReadoutItemKey.PitTiming.Root
                 } else if (it == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value) {
                     LmuWindowsReadoutItemKey.RemainingFuel.Root
+                } else if (it == LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value ||
+                    it == LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+                ) {
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root
                 } else {
                     ReadoutItemKey.fromValue(it)
                 }

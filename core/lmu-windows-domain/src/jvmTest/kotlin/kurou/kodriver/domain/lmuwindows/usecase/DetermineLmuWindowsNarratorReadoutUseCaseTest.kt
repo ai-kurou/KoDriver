@@ -29,6 +29,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PE
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearWheelRemaining
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
@@ -394,6 +395,116 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             assertEquals(firstKey, decision.events.single().readoutItemKey)
             assertEquals(text, decision.events.single().narratedText)
         }
+    }
+
+    @Test
+    fun `手動クラス内ギャップは前方車と後方車の秒差をVehicleApproachのRootで読む`() {
+        val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
+        val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+        val root = LmuWindowsReadoutItemKey.VehicleApproach.Root
+        val state = LmuWindowsNarratorState()
+        val gap =
+            LmuWindowsClassCarGapData(
+                gapAheadSeconds = 1.26,
+                gapBehindSeconds = 3.04,
+                classPosition = 2,
+                classVehicleCount = 5,
+            )
+        val aheadItem = LmuWindowsManualReadoutItem(ahead, "前{seconds}秒 {unknown}", null, classCarGap = gap)
+        val behindItem = LmuWindowsManualReadoutItem(behind, "後{seconds}秒", null, classCarGap = gap)
+        listOf(
+            Triple(listOf(aheadItem), root, "前1.3秒 {unknown}"),
+            Triple(listOf(behindItem), root, "後3.0秒"),
+            Triple(listOf(aheadItem, behindItem), root, "前1.3秒 {unknown}、後3.0秒"),
+            Triple(listOf(behindItem, aheadItem), root, "後3.0秒、前1.3秒 {unknown}"),
+            Triple(listOf(aheadItem.copy(classCarGap = gap.copy(gapAheadSeconds = 0.0))), root, "前0.0秒 {unknown}"),
+            Triple(listOf(aheadItem.copy(textTemplate = "")), root, ""),
+        ).forEach { (items, firstKey, text) ->
+            val decision = manualUseCase.determineManualReadout(state, items)
+            assertEquals(state, decision.state)
+            assertEquals(firstKey, decision.events.single().readoutItemKey)
+            assertEquals(text, decision.events.single().narratedText)
+        }
+    }
+
+    @Test
+    fun `手動クラス内ギャップはトップと最後尾で固定文言を読みデータありとして扱う`() {
+        val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
+        val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+        val state = LmuWindowsNarratorState()
+        val top = LmuWindowsClassCarGapData(null, 2.0, classPosition = 1, classVehicleCount = 4)
+        val last = LmuWindowsClassCarGapData(2.0, null, classPosition = 4, classVehicleCount = 4)
+        val alone = LmuWindowsClassCarGapData(null, null, classPosition = 1, classVehicleCount = 1)
+        val unknownPosition = LmuWindowsClassCarGapData(null, null, classPosition = null, classVehicleCount = 4)
+        val unknownCount = LmuWindowsClassCarGapData(null, null, classPosition = 4, classVehicleCount = null)
+        listOf(
+            LmuWindowsManualReadoutItem(ahead, "前{seconds}", null, classCarGap = top) to "クラス内トップです",
+            LmuWindowsManualReadoutItem(behind, "後{seconds}", null, classCarGap = last) to "クラス内最後尾です",
+            LmuWindowsManualReadoutItem(ahead, "前{seconds}", null, classCarGap = alone) to "クラス内トップです",
+            LmuWindowsManualReadoutItem(behind, "後{seconds}", null, classCarGap = alone) to "クラス内最後尾です",
+            LmuWindowsManualReadoutItem(ahead, " ", null, classCarGap = top) to "",
+            LmuWindowsManualReadoutItem(behind, "", null, classCarGap = last) to "",
+            LmuWindowsManualReadoutItem(ahead, "前{seconds}", null, classCarGap = last) to "前2.0",
+            LmuWindowsManualReadoutItem(behind, "後{seconds}", null, classCarGap = top) to "後2.0",
+            LmuWindowsManualReadoutItem(behind, "後{seconds}", null, classCarGap = unknownCount) to
+                "クラス内後方車とのギャップはデータがありません",
+            LmuWindowsManualReadoutItem(behind, "後{seconds}", null, classCarGap = unknownPosition) to
+                "クラス内後方車とのギャップはデータがありません",
+        ).forEach { (item, text) ->
+            val decision = manualUseCase.determineManualReadout(state, listOf(item))
+            val expected =
+                if (text.endsWith("はデータがありません")) "データがありません" else text
+            assertEquals(expected, decision.events.single().narratedText)
+        }
+        val topItem = LmuWindowsManualReadoutItem(ahead, "前{seconds}", null, classCarGap = top)
+        val noData = LmuWindowsManualReadoutItem(behind, "後{seconds}", null, classCarGap = null)
+        assertEquals(
+            "クラス内トップです、クラス内後方車とのギャップはデータがありません",
+            manualUseCase
+                .determineManualReadout(state, listOf(topItem, noData))
+                .events
+                .single()
+                .narratedText,
+        )
+    }
+
+    @Test
+    fun `手動クラス内ギャップは欠損や不正な秒差をデータ無しとして扱う`() {
+        val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
+        val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+        val state = LmuWindowsNarratorState()
+        val tyre = LmuWindowsManualReadoutItem(LmuWindowsReadoutItemKey.TyreWear.Root.value, "タイヤ{percent}%", 0.8)
+        val valid = LmuWindowsClassCarGapData(1.0, 1.0, classPosition = 2, classVehicleCount = 3)
+        listOf(
+            null,
+            valid.copy(gapAheadSeconds = null, gapBehindSeconds = null),
+            valid.copy(gapAheadSeconds = -0.1, gapBehindSeconds = -0.1),
+            valid.copy(gapAheadSeconds = Double.NaN, gapBehindSeconds = Double.NaN),
+            valid.copy(gapAheadSeconds = Double.POSITIVE_INFINITY, gapBehindSeconds = Double.POSITIVE_INFINITY),
+            valid.copy(gapAheadSeconds = Double.NEGATIVE_INFINITY, gapBehindSeconds = Double.NEGATIVE_INFINITY),
+        ).forEach { data ->
+            listOf(ahead to "クラス内前方車とのギャップ", behind to "クラス内後方車とのギャップ").forEach { (key, name) ->
+                val item = LmuWindowsManualReadoutItem(key, "差{seconds}", null, classCarGap = data)
+                val single = manualUseCase.determineManualReadout(state, listOf(item))
+                assertEquals("データがありません", single.events.single().narratedText)
+                assertEquals(LmuWindowsReadoutItemKey.VehicleApproach.Root, single.events.single().readoutItemKey)
+                val combined = manualUseCase.determineManualReadout(state, listOf(item, tyre))
+                assertEquals("${name}はデータがありません、タイヤ80%", combined.events.single().narratedText)
+            }
+        }
+        val allNoData =
+            listOf(
+                LmuWindowsManualReadoutItem(ahead, "差{seconds}", null),
+                LmuWindowsManualReadoutItem(behind, "差{seconds}", null),
+            )
+        assertEquals(
+            "データがありません",
+            manualUseCase
+                .determineManualReadout(state, allNoData)
+                .events
+                .single()
+                .narratedText,
+        )
     }
 
     @Test

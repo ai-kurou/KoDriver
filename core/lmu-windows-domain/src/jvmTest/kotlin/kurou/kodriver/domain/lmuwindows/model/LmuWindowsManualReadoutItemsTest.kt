@@ -19,7 +19,7 @@ class LmuWindowsManualReadoutItemsTest {
     fun `定義はキー順に名前と既定文言を持ち未知キーは空文字`() {
         val definitions = lmuWindowsManualReadoutItemDefinitions
         assertEquals(definitions.keys.toList(), lmuWindowsManualReadoutItemKeys())
-        assertEquals(10, definitions.size)
+        assertEquals(12, definitions.size)
         assertEquals(
             listOf(
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
@@ -33,7 +33,13 @@ class LmuWindowsManualReadoutItemsTest {
         val laps = definitions.getValue(LmuWindowsReadoutItemKey.RemainingFuel.Laps.value)
         assertEquals("燃料の残り周回数", laps.name)
         assertEquals(LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT, laps.textDefault)
-        assertEquals(laps.key, definitions.keys.last())
+        val ahead = definitions.getValue(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value)
+        assertEquals("クラス内前方車とのギャップ", ahead.name)
+        assertEquals("クラス内の前の車との差は{seconds}秒", ahead.textDefault)
+        val behind = definitions.getValue(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value)
+        assertEquals("クラス内後方車とのギャップ", behind.name)
+        assertEquals("クラス内の後ろの車との差は{seconds}秒", behind.textDefault)
+        assertEquals(listOf(laps.key, ahead.key, behind.key), definitions.keys.toList().takeLast(3))
         val fuel = definitions.getValue(LmuWindowsReadoutItemKey.RemainingFuel.Root.value)
         assertEquals("燃料残量", fuel.name)
         assertEquals("燃料は残り{percent}パーセント", fuel.textDefault)

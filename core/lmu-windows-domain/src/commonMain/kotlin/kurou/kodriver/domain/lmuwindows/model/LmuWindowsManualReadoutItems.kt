@@ -57,6 +57,16 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
             "燃料の残り周回数",
             LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT,
         ),
+        manualReadoutItemDefinitionOf(
+            LmuWindowsReadoutItemKey.ClassCarGap.Ahead,
+            "クラス内前方車とのギャップ",
+            LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT,
+        ),
+        manualReadoutItemDefinitionOf(
+            LmuWindowsReadoutItemKey.ClassCarGap.Behind,
+            "クラス内後方車とのギャップ",
+            LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_BEHIND_TEXT_DEFAULT,
+        ),
     )
 
 fun lmuWindowsManualReadoutItemKeys(): List<String> = lmuWindowsManualReadoutItemDefinitions.keys.toList()

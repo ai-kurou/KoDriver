@@ -77,8 +77,10 @@ class ManualReadoutSetDetailPaneTest {
                     "ブレーキ残量",
                     "ブレーキ温度",
                     "ラップ",
-                    "1",
+                    "3",
                     "自己ベストラップ",
+                    "クラス内前方車とのギャップ",
+                    "クラス内後方車とのギャップ",
                 ),
         )
     }
@@ -520,6 +522,92 @@ class ManualReadoutSetDetailPaneTest {
                 listOf(
                     key to "",
                     key to "{laps}",
+                    key to "あと{percent}",
+                    key to defaultText,
+                    key to "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH),
+                ),
+                saved,
+            )
+        }
+    }
+
+    @Test
+    fun `クラス内ギャップを追加すると既定文言とプレビューを表示する`() {
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value),
+                ),
+            )
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
+                    onDelete = {},
+                )
+            }
+        }
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("クラス内前方車とのギャップ").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("クラス内の前の車との差は1.5秒")
+    }
+
+    @Test
+    fun `クラス内ギャップの文言欄は秒数の挿入と警告とリセットと文字数上限を扱う`() {
+        val key = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+        val defaultText = lmuWindowsManualReadoutItemTextDefault(key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.LmuWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
+        val saved = mutableListOf<Pair<String, String>>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
+                    onRemoveItem = { state.value = state.value.copy(selectedItemKeys = emptyList()) },
+                    onDelete = {},
+                    showHotkey = false,
+                    onItemTextChanged = { itemKey, text ->
+                        saved.add(itemKey to text)
+                        state.value = state.value.copy(itemTexts = state.value.itemTexts + (itemKey to text.trim()))
+                    },
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).assertDoesNotExist()
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("クラス内後方車とのギャップ").performClick()
+        rule.onNodeWithText(defaultText).assertExists()
+        rule
+            .onNodeWithText("{seconds}は同じクラスの前後の車との差（秒、小数1桁）に置き換わります。クラス内トップ・最後尾では固定の文言を読み上げます。")
+            .assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("")
+        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
+        rule.onNodeWithText("{seconds}を挿入").performClick()
+        rule.onNodeWithText("{seconds}").assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("あと{percent}")
+        rule.onNodeWithText("未対応のプレースホルダー: {percent}（そのまま読み上げます）").assertExists()
+        rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
+        rule.onNodeWithText(defaultText).assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
+        rule.onNodeWithText("{seconds}を挿入").performClick()
+        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithContentDescription("クラス内後方車とのギャップを削除").performClick()
+        rule.onNode(hasSetTextAction()).assertDoesNotExist()
+        rule.runOnIdle {
+            assertEquals(
+                listOf(
+                    key to "",
+                    key to "{seconds}",
                     key to "あと{percent}",
                     key to defaultText,
                     key to "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH),
@@ -1102,6 +1190,8 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("バーチャルエネルギーの残り周回数").assertExists()
         rule.onNodeWithText("タイヤ摩耗の残り周回数").assertExists()
         rule.onNodeWithText("燃料の残り周回数").assertExists()
+        rule.onNodeWithText("クラス内前方車とのギャップ").assertExists()
+        rule.onNodeWithText("クラス内後方車とのギャップ").assertExists()
         rule.onNodeWithText("ブレーキ残量").assertExists()
         rule.onNodeWithText("ブレーキ温度").assertExists()
         rule.onNodeWithText("タイヤ温度").assertExists()

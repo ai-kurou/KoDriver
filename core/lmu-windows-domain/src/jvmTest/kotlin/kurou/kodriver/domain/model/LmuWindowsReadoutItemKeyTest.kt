@@ -15,7 +15,7 @@ class LmuWindowsReadoutItemKeyTest {
 
     @Test
     fun `LMU keys retain legacy order and every key round trips`() {
-        assertEquals(32, LMU_WINDOWS_READOUT_ITEM_KEYS.size)
+        assertEquals(34, LMU_WINDOWS_READOUT_ITEM_KEYS.size)
         val fuel = LmuWindowsReadoutItemKey.PitTiming.Fuel
         assertEquals("lmu_windows_auto_pit_timing_fuel", fuel.value)
         assertEquals(
@@ -26,8 +26,19 @@ class LmuWindowsReadoutItemKeyTest {
         assertEquals("lmu_windows_auto_remaining_fuel_laps", laps.value)
         val topLevelValues = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).map { it.value }
         assertEquals(false, topLevelValues.contains(laps.value))
+        assertEquals("lmu_windows_auto_class_car_gap_ahead", LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value)
+        assertEquals("lmu_windows_auto_class_car_gap_behind", LmuWindowsReadoutItemKey.ClassCarGap.Behind.value)
+        assertEquals(false, topLevelValues.contains(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value))
+        assertEquals(false, topLevelValues.contains(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value))
         assertEquals(LmuWindowsReadoutItemKey.VehicleApproach.Root, LMU_WINDOWS_READOUT_ITEM_KEYS.first())
-        assertEquals(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled, LMU_WINDOWS_READOUT_ITEM_KEYS.last())
+        assertEquals(
+            listOf(
+                LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
+                LmuWindowsReadoutItemKey.ClassCarGap.Ahead,
+                LmuWindowsReadoutItemKey.ClassCarGap.Behind,
+            ),
+            LMU_WINDOWS_READOUT_ITEM_KEYS.takeLast(3),
+        )
         assertEquals(
             LMU_WINDOWS_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>(),
             ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows),

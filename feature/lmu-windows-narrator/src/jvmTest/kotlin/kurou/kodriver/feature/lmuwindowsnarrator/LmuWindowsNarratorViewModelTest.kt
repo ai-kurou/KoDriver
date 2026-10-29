@@ -59,6 +59,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PE
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
@@ -87,6 +88,7 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeTempera
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsClassCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingPreferencesRepository
@@ -120,6 +122,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVirtualEnergy
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsPitTimingTrackingState
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsClassCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFuelUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
@@ -270,6 +273,8 @@ class LmuWindowsNarratorViewModelTest {
 
     private val brakeWearRepository: LmuWindowsBrakeWearRepository = mockk(relaxUnitFun = true)
 
+    private val classCarGapRepository: LmuWindowsClassCarGapRepository = mockk(relaxUnitFun = true)
+
     private val vehicleClassBrakeWearPreferencesRepository:
         LmuWindowsVehicleClassBrakeWearPreferencesRepository = mockk(relaxUnitFun = true)
 
@@ -319,6 +324,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreWearChannel: Channel<LmuWindowsTyreWearData>,
         brakeTemperatureChannel: Channel<LmuWindowsBrakeTemperatureData>,
         brakeWearChannel: Channel<LmuWindowsBrakeWearData?>,
+        classCarGapChannel: Channel<LmuWindowsClassCarGapData>,
         remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData>,
         enabledOverrides: Map<ReadoutItemKey, Boolean>,
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean>,
@@ -402,6 +408,7 @@ class LmuWindowsNarratorViewModelTest {
                 },
             )
         every { brakeWearRepository.brakeWearStream() } returns brakeWearChannel.receiveAsFlow()
+        every { classCarGapRepository.classCarGapStream() } returns classCarGapChannel.receiveAsFlow()
         every { vehicleClassBrakeWearPreferencesRepository.observeLowThresholdPercent() } returns
             MutableStateFlow(
                 lmuWindowsAllVehicleClasses.associateWith {
@@ -436,6 +443,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreWearChannel: Channel<LmuWindowsTyreWearData> = Channel(Channel.UNLIMITED),
         brakeTemperatureChannel: Channel<LmuWindowsBrakeTemperatureData> = Channel(Channel.UNLIMITED),
         brakeWearChannel: Channel<LmuWindowsBrakeWearData?> = Channel(Channel.UNLIMITED),
+        classCarGapChannel: Channel<LmuWindowsClassCarGapData> = Channel(Channel.UNLIMITED),
         remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData> = Channel(Channel.UNLIMITED),
         hotkeyChannel: Channel<Unit> = Channel(Channel.UNLIMITED),
         manualRequestChannel: Channel<ManualReadoutRequest> = Channel(Channel.UNLIMITED),
@@ -489,6 +497,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreWearChannel = tyreWearChannel,
             brakeTemperatureChannel = brakeTemperatureChannel,
             brakeWearChannel = brakeWearChannel,
+            classCarGapChannel = classCarGapChannel,
             remainingVirtualEnergyChannel = remainingVirtualEnergyChannel,
             enabledOverrides = enabledOverrides,
             flagEnabledOverrides = flagEnabledOverrides,
@@ -635,6 +644,7 @@ class LmuWindowsNarratorViewModelTest {
                     ObserveLmuWindowsFuelUseCase(lmuWindowsRepository),
                     ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase(remainingFuelPreferencesRepository),
                 ),
+            classCarGapUseCases = ClassCarGapUseCases(ObserveLmuWindowsClassCarGapUseCase(classCarGapRepository)),
             pitTimingUseCases =
                 PitTimingUseCases(
                     observeVirtualEnergyLapsThreshold =
@@ -853,6 +863,81 @@ class LmuWindowsNarratorViewModelTest {
             energy.send(remainingVirtualEnergy(remainingRatio = 0.5))
             assertEquals(
                 listOf("バーチャルエネルギーは残り約2周", "エネルギー切れのため2周以内にピットイン"),
+                spoken.map { it.narratedText },
+            )
+        }
+
+    @Test
+    fun `手動クラス内ギャップは未受信と5秒超をデータ無しにし鮮度内は自動スイッチに関係なく読む`() =
+        runTest(testDispatcher) {
+            val gaps = Channel<LmuWindowsClassCarGapData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
+            val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+            val root = LmuWindowsReadoutItemKey.VehicleApproach.Root
+            var time = 0L
+            createViewModel(
+                classCarGapChannel = gaps,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("gap", listOf(ahead, behind))),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(root to false),
+                queueEnabledOverrides = mapOf(root to false),
+                currentTimeMs = { time },
+            )
+            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "gap")
+            requests.send(request)
+            gaps.send(
+                LmuWindowsClassCarGapData(
+                    gapAheadSeconds = 1.26,
+                    gapBehindSeconds = 3.04,
+                    classPosition = 2,
+                    classVehicleCount = 5,
+                ),
+            )
+            requests.send(request)
+            time = 5_000L
+            requests.send(request)
+            time = 5_001L
+            requests.send(request)
+            assertEquals(
+                listOf(
+                    "データがありません",
+                    "クラス内の前の車との差は1.3秒、クラス内の後ろの車との差は3.0秒",
+                    "クラス内の前の車との差は1.3秒、クラス内の後ろの車との差は3.0秒",
+                    "データがありません",
+                ),
+                spoken.map { it.narratedText },
+            )
+            assertEquals(List(4) { root }, spoken.map { it.readoutItemKey })
+        }
+
+    @Test
+    fun `手動クラス内ギャップはトップと最後尾の固定文言を読みシミュレーター切り替えで古い値を破棄する`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            val gaps = Channel<LmuWindowsClassCarGapData>(Channel.UNLIMITED)
+            val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
+            val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+            createViewModel(
+                classCarGapChannel = gaps,
+                manualRequestChannel = requests,
+                manualSets = listOf(ManualReadoutSet("gap", listOf(ahead, behind))),
+                selectedSimulatorFlow = selected,
+                ttsEngine = mockTts(spoken),
+            )
+            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "gap")
+            gaps.send(LmuWindowsClassCarGapData(null, null, classPosition = 1, classVehicleCount = 1))
+            requests.send(request)
+            selected.update { Simulator.Gt7Ps5 }
+            requests.send(request)
+            selected.update { Simulator.LmuWindows }
+            requests.send(request)
+            assertEquals(
+                listOf("クラス内トップです、クラス内最後尾です", "データがありません"),
                 spoken.map { it.narratedText },
             )
         }

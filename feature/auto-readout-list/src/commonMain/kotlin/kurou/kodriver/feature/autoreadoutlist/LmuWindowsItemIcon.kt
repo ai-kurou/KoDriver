@@ -26,4 +26,5 @@ internal fun lmuWindowsItemIcon(itemId: LmuWindowsReadoutItemKey): ImageVector =
         is LmuWindowsReadoutItemKey.BrakeTemperature -> Icons.Filled.DeviceThermostat
         is LmuWindowsReadoutItemKey.BrakeWear -> Icons.Filled.Speed
         is LmuWindowsReadoutItemKey.MyBestLap -> Icons.Filled.Timer
+        is LmuWindowsReadoutItemKey.ClassCarGap -> Icons.Filled.DirectionsCar
     }

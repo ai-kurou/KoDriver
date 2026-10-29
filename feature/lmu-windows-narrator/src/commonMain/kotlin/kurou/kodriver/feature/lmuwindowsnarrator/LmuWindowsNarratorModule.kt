@@ -21,6 +21,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatur
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsClassCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFuelUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
@@ -103,7 +104,7 @@ import org.koin.dsl.module
  * 提供: LmuWindowsNarratorViewModel、LmuWindowsNarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
  *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases / TyreDetachedUseCases /
  *   SimulatorUseCases / ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases /
- *   RemainingVirtualEnergyUseCases / PitTimingUseCases / LmuWindowsReadoutTextUseCases）、
+ *   RemainingVirtualEnergyUseCases / PitTimingUseCases / ClassCarGapUseCases / LmuWindowsReadoutTextUseCases）、
  *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
  *   各フラッグ・車両接近・VE残量警告・タイヤ過熱警告・VEピットタイミング・自己ベストの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
@@ -124,6 +125,7 @@ val lmuWindowsNarratorModule: Module =
         // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
         viewModel {
             LmuWindowsNarratorViewModel(
+                get(),
                 get(),
                 get(),
                 get(),
@@ -170,6 +172,7 @@ val lmuWindowsNarratorModule: Module =
         }
         factory { RemainingFuelUseCases(ObserveLmuWindowsFuelUseCase(get()), get()) }
         factory { PitTimingUseCases(get(), get(), get(), get()) }
+        factory { ClassCarGapUseCases(ObserveLmuWindowsClassCarGapUseCase(get())) }
         factory {
             LmuWindowsNarratorEventProcessor(
                 get(named(Simulator.LmuWindows.id)),

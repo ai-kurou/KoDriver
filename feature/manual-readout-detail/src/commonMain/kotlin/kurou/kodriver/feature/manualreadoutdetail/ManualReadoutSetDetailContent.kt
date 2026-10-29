@@ -51,11 +51,13 @@ import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5RemainingFuelLapsRead
 import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5RemainingFuelReadoutPlaceholders
 import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5TyreTemperatureReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders
+import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsClassCarGapReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsMyBestLapReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsPitTimingReadoutPlaceholders
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingFuelReadoutPlaceholders
@@ -71,6 +73,8 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_celsius_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_celsius_insert
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_class_car_gap_hint
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_class_car_gap_insert
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_body
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete_confirm
@@ -312,6 +316,16 @@ internal val manualReadoutPlaceholderDefinitions =
                 LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
                 ::findUnknownLmuWindowsPitTimingReadoutPlaceholders,
             ),
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value) to
+            ManualReadoutPlaceholderDefinition(
+                LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER,
+                ::findUnknownLmuWindowsClassCarGapReadoutPlaceholders,
+            ),
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.ClassCarGap.Behind.value) to
+            ManualReadoutPlaceholderDefinition(
+                LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER,
+                ::findUnknownLmuWindowsClassCarGapReadoutPlaceholders,
+            ),
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.MyBestLap.Root.value) to
             ManualReadoutPlaceholderDefinition(
                 LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER,
@@ -382,6 +396,10 @@ private fun lapsHintResource(itemKey: String): StringResource =
         Res.string.manual_readout_laps_hint
     }
 
+private fun isManualReadoutClassCarGapItem(itemKey: String): Boolean =
+    itemKey == LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value ||
+        itemKey == LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+
 private fun isManualReadoutLapTimeItem(itemKey: String): Boolean =
     itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
         itemKey == Gt7Ps5ReadoutItemKey.MyBestLap.Root.value ||
@@ -406,6 +424,7 @@ internal fun ManualReadoutItemTextField(
     simulatorId: String,
 ) {
     val haptic = LocalHapticFeedback.current
+    val isClassCarGap = isManualReadoutClassCarGapItem(itemKey)
     val isLapTime = isManualReadoutLapTimeItem(itemKey)
     val isLaps = isManualReadoutLapsItem(itemKey)
     val isTemperature = isManualReadoutTemperatureItem(itemKey)
@@ -447,7 +466,9 @@ internal fun ManualReadoutItemTextField(
                 label = {
                     Text(
                         stringResource(
-                            if (isLapTime) {
+                            if (isClassCarGap) {
+                                Res.string.manual_readout_class_car_gap_insert
+                            } else if (isLapTime) {
                                 Res.string.manual_readout_laptime_insert
                             } else if (isLaps) {
                                 Res.string.manual_readout_laps_insert
@@ -465,7 +486,9 @@ internal fun ManualReadoutItemTextField(
             Text(
                 text =
                     stringResource(
-                        if (isLapTime) {
+                        if (isClassCarGap) {
+                            Res.string.manual_readout_class_car_gap_hint
+                        } else if (isLapTime) {
                             Res.string.manual_readout_laptime_hint
                         } else if (isLaps) {
                             lapsHintResource(itemKey)

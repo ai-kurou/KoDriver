@@ -22,6 +22,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTA
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
@@ -49,6 +50,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsPitTimingTrackingState
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsClassCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFuelUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
@@ -174,6 +176,10 @@ internal data class PitTimingUseCases(
     val observeEnabledStates: ObserveLmuWindowsPitTimingEnabledStatesUseCase,
 )
 
+internal data class ClassCarGapUseCases(
+    val observeClassCarGap: ObserveLmuWindowsClassCarGapUseCase,
+)
+
 internal data class NarratorUseCases(
     val myBestLapReadout: DetermineLmuWindowsMyBestLapReadoutUseCase,
     val vehicleReadout: DetermineLmuWindowsVehicleReadoutUseCase,
@@ -206,6 +212,7 @@ internal class LmuWindowsNarratorViewModel(
     remainingVirtualEnergyUseCases: RemainingVirtualEnergyUseCases,
     remainingFuelUseCases: RemainingFuelUseCases,
     pitTimingUseCases: PitTimingUseCases,
+    classCarGapUseCases: ClassCarGapUseCases,
     private val eventProcessor: LmuWindowsNarratorEventProcessor,
     private val narratorUseCases: NarratorUseCases,
     observeDebugReadoutRequest: ObserveDebugReadoutRequestUseCase,
@@ -637,6 +644,8 @@ internal class LmuWindowsNarratorViewModel(
     // replay なしの共有 Flow を再購読せず、共有前に最新値と受信時刻を保持する。切り替え時は破棄する。
     private var latestFuel: LmuWindowsRemainingFuelData? = null
     private var latestFuelReceivedAtMs: Long = 0L
+    private var latestClassCarGap: LmuWindowsClassCarGapData? = null
+    private var latestClassCarGapReceivedAtMs: Long = 0L
     private var latestVirtualEnergy: LmuWindowsVirtualEnergyData? = null
     private var latestVirtualEnergyReceivedAtMs: Long = 0L
 
@@ -662,6 +671,8 @@ internal class LmuWindowsNarratorViewModel(
         latestBrakeWearReceivedAtMs = 0L
         latestFuel = null
         latestFuelReceivedAtMs = 0L
+        latestClassCarGap = null
+        latestClassCarGapReceivedAtMs = 0L
         latestVirtualEnergy = null
         latestVirtualEnergyReceivedAtMs = 0L
         // LMU の選択解除で消費量と自動警告の評価状態を破棄して別セッションへ持ち越さない。
@@ -696,6 +707,16 @@ internal class LmuWindowsNarratorViewModel(
                 remainingFuelUseCases.observeFuel().onEach {
                     latestFuel = it
                     latestFuelReceivedAtMs = it.receivedAtMs ?: currentTimeMs()
+                }
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    @Suppress("UnusedPrivateProperty")
+    private val classCarGapFlow =
+        narratorFlow
+            .telemetry {
+                classCarGapUseCases.observeClassCarGap().onEach {
+                    latestClassCarGap = it
+                    latestClassCarGapReceivedAtMs = currentTimeMs()
                 }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
@@ -872,6 +893,10 @@ internal class LmuWindowsNarratorViewModel(
             latestFuel?.takeIf {
                 observedAtMs - latestFuelReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
             }
+        val classCarGap =
+            latestClassCarGap?.takeIf {
+                observedAtMs - latestClassCarGapReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+            }
         val tyreWear =
             latestTyreWear?.takeIf {
                 observedAtMs - latestTyreWearReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
@@ -910,6 +935,8 @@ internal class LmuWindowsNarratorViewModel(
                     ratio,
                     celsius,
                     lapTimeMs = bestLapTimeMs.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value },
+                    classCarGap =
+                        classCarGap.takeIf { isManualClassCarGapKey(key) },
                     remainingLaps =
                         manualRemainingLaps(
                             key = key,
@@ -933,6 +960,10 @@ internal class LmuWindowsNarratorViewModel(
         )
     }
 
+    private fun isManualClassCarGapKey(key: String): Boolean =
+        key == LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value ||
+            key == LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+
     private fun manualReadoutRatio(
         key: String,
         brakeWear: LmuWindowsBrakeWearRemainingData?,
@@ -945,6 +976,7 @@ internal class LmuWindowsNarratorViewModel(
                 key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value ||
                 key == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value ||
                 key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
+                isManualClassCarGapKey(key) ||
                 isLmuWindowsManualReadoutTemperatureItem(key) -> {
                 null
             }
