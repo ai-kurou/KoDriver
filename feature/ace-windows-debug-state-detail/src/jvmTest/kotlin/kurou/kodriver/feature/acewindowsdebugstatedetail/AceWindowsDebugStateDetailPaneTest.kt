@@ -8,8 +8,10 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
@@ -19,6 +21,29 @@ import kotlin.test.assertTrue
 class AceWindowsDebugStateDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `読み上げカードは他のカードと一緒にスクロールする`() {
+        val state = AceWindowsDebugStateDetailUiState()
+        rule.setContent {
+            MaterialTheme {
+                AceWindowsDebugStateDetailPaneContent(
+                    uiState = state,
+                    canNavigateBack = false,
+                    onBack = {},
+                    modifier = Modifier.requiredSize(360.dp, 320.dp),
+                )
+            }
+        }
+
+        val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
+        rule.onNodeWithTag("debug_readout_request_card").assertIsDisplayed()
+        grid.performScrollToIndex(state.cardOrder.size)
+        rule.onNodeWithText("前後車両との時間差").assertIsDisplayed()
+        rule.onNodeWithTag("debug_readout_request_card").assertDoesNotExist()
+        grid.performScrollToIndex(0)
+        rule.onNodeWithTag("debug_readout_request_card").assertIsDisplayed()
+    }
 
     @Test
     fun `タイトルを表示して戻る操作を通知する`() {
