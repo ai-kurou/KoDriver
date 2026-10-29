@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
@@ -117,19 +115,10 @@ internal class AceWindowsAutoReadoutFlagDetailViewModel(
             speakText,
         )
 
-    private val flagTexts: Flow<Map<FlagReadoutItem, String>> =
-        combine(
-            FlagReadoutItem.entries.map { item ->
-                settingsUseCases.readoutTexts.observe(item).map { item to it }
-            },
-        ) {
-            it.toMap()
-        }
-
     val uiState: StateFlow<AceWindowsAutoReadoutFlagDetailUiState> =
         AceWindowsAutoReadoutFlagDetailFlow(
             enabledStates = settingsUseCases.observeFlagEnabledStates(),
-            flagTexts = flagTexts,
+            flagTextFlows = FlagReadoutItem.entries.associateWith { settingsUseCases.readoutTexts.observe(it) },
             isTextToSpeechAvailable = preview.textToSpeechAvailable,
         ).uiState.stateIn(
             viewModelScope,
