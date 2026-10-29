@@ -3,13 +3,9 @@ package kurou.kodriver.feature.otherfeedbackdetail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,23 +18,16 @@ import kurou.kodriver.domain.usecase.SendFeedbackUseCase
 internal class OtherFeedbackDetailViewModel(
     private val sendFeedback: SendFeedbackUseCase,
     private val canSendFeedback: CanSendFeedbackUseCase,
-    private val observeTelemetryLogDetail: ObserveTelemetryLogDetailUseCase,
+    observeTelemetryLogDetail: ObserveTelemetryLogDetailUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(OtherFeedbackDetailUiState())
     private val _telemetryLogId = MutableStateFlow<Long?>(null)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val detailFlow =
         OtherFeedbackDetailFlow(
             mutableState = _uiState,
-            attachedTelemetryLog =
-                _telemetryLogId.flatMapLatest { id ->
-                    if (id == null) {
-                        flowOf(null)
-                    } else {
-                        observeTelemetryLogDetail(id).map { it?.current }
-                    }
-                },
+            telemetryLogId = _telemetryLogId,
+            observeTelemetryLogDetail = observeTelemetryLogDetail,
             canSendFeedback = canSendFeedback(),
         )
 
@@ -46,7 +35,7 @@ internal class OtherFeedbackDetailViewModel(
         detailFlow.uiState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            detailFlow.initialUiState,
+            OtherFeedbackDetailUiState(),
         )
 
     fun setTelemetryLogId(id: Long?) {
