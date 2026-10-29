@@ -13,10 +13,12 @@ class DebugStateCarGapCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `前後車両と順位上の前後車両との差を生値のまま表示する`() {
-        showCarGapCard(LmuWindowsCarGapData(1.0, -2.34, 0.0, 4.56))
+    fun `全体ギャップと参考用の生値を表示する`() {
+        showCarGapCard(LmuWindowsCarGapData(1.0, -2.34, 0.0, 4.56, 1.26, 9.84))
 
         rule.onNodeWithText("前後車両との時間差（全クラス）").assertIsDisplayed()
+        rule.onNodeWithText("全体の前車との差 1.3 秒").assertIsDisplayed()
+        rule.onNodeWithText("全体の後車との差 9.8 秒").assertIsDisplayed()
         rule.onNodeWithText("前車との差 1.0 秒").assertIsDisplayed()
         rule.onNodeWithText("後車との差 -2.3 秒").assertIsDisplayed()
         rule.onNodeWithText("順位上の前車との差 0.0 秒").assertIsDisplayed()
@@ -31,6 +33,14 @@ class DebugStateCarGapCardTest {
         rule.onNodeWithText("後車との差 -- 秒").assertIsDisplayed()
         rule.onNodeWithText("順位上の前車との差 -- 秒").assertIsDisplayed()
         rule.onNodeWithText("順位上の後車との差 1.0 秒").assertIsDisplayed()
+    }
+
+    @Test
+    fun `全体ギャップの車両なしと非有限値を区別する`() {
+        showCarGapCard(LmuWindowsCarGapData(1.0, 2.0, 3.0, 4.0, null, Double.NaN))
+
+        rule.onNodeWithText("全体の前車との差 なし 秒").assertIsDisplayed()
+        rule.onNodeWithText("全体の後車との差 -- 秒").assertIsDisplayed()
     }
 
     @Test

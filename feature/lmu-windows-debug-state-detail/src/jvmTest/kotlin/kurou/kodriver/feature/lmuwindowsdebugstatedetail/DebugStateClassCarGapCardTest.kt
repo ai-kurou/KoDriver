@@ -23,22 +23,22 @@ class DebugStateClassCarGapCardTest {
     }
 
     @Test
-    fun `前車がない場合は欠損表示にする`() {
+    fun `前車がない場合は車両なし表示にする`() {
         showClassCarGapCard(LmuWindowsClassCarGapData(null, 0.0))
 
         rule.onNodeWithText("同クラス前後車両との時間差").assertIsDisplayed()
-        rule.onNodeWithText("同クラスの前車との差 -- 秒").assertIsDisplayed()
+        rule.onNodeWithText("同クラスの前車との差 なし 秒").assertIsDisplayed()
         rule.onNodeWithText("同クラスの後車との差 0.0 秒").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertDoesNotExist()
     }
 
     @Test
-    fun `後車がない場合は欠損表示にする`() {
+    fun `後車がない場合は車両なし表示にする`() {
         showClassCarGapCard(LmuWindowsClassCarGapData(-0.0, null))
 
         rule.onNodeWithText("同クラス前後車両との時間差").assertIsDisplayed()
         rule.onNodeWithText("同クラスの前車との差 -0.0 秒").assertIsDisplayed()
-        rule.onNodeWithText("同クラスの後車との差 -- 秒").assertIsDisplayed()
+        rule.onNodeWithText("同クラスの後車との差 なし 秒").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertDoesNotExist()
     }
 
@@ -47,8 +47,8 @@ class DebugStateClassCarGapCardTest {
         showClassCarGapCard(LmuWindowsClassCarGapData(null, null))
 
         rule.onNodeWithText("同クラス前後車両との時間差").assertIsDisplayed()
-        rule.onNodeWithText("同クラスの前車との差 -- 秒").assertIsDisplayed()
-        rule.onNodeWithText("同クラスの後車との差 -- 秒").assertIsDisplayed()
+        rule.onNodeWithText("同クラスの前車との差 なし 秒").assertIsDisplayed()
+        rule.onNodeWithText("同クラスの後車との差 なし 秒").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertDoesNotExist()
     }
 

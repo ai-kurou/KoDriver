@@ -21,7 +21,7 @@ class CarGapFormatterTest {
     }
 
     @Test
-    fun `nullは非有限値と同じ欠損表示にする`() {
-        assertEquals("--", formatCarGapSeconds(null))
+    fun `nullは車両なしを表示する`() {
+        assertEquals("なし", formatCarGapSeconds(null))
     }
 }

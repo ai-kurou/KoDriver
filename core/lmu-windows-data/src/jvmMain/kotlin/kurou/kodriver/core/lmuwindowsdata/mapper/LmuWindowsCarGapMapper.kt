@@ -10,15 +10,20 @@ internal object LmuWindowsCarGapMapper {
     private const val OFF_TIME_GAP_PLACE_AHEAD = 788
     private const val OFF_TIME_GAP_PLACE_BEHIND = 792
 
-    /** 共有メモリの生の値のまま返す。車両不在時の値の意味は実機未確認のため解釈しない。 */
+    /** Telemetry の参考用生値と、Scoring から算出した全体ギャップを返す。 */
     internal fun readCarGap(
         buffer: ByteBuffer,
         vehicleBase: Int,
-    ): LmuWindowsCarGapData =
-        LmuWindowsCarGapData(
+        scoringBase: Int? = null,
+    ): LmuWindowsCarGapData {
+        val gap = scoringBase?.let { LmuWindowsScoringCarGapMapper.readCarGap(buffer, it) { true } }
+        return LmuWindowsCarGapData(
             timeGapCarAheadSeconds = buffer.getFloat(vehicleBase + OFF_TIME_GAP_CAR_AHEAD).toDouble(),
             timeGapCarBehindSeconds = buffer.getFloat(vehicleBase + OFF_TIME_GAP_CAR_BEHIND).toDouble(),
             timeGapPlaceAheadSeconds = buffer.getFloat(vehicleBase + OFF_TIME_GAP_PLACE_AHEAD).toDouble(),
             timeGapPlaceBehindSeconds = buffer.getFloat(vehicleBase + OFF_TIME_GAP_PLACE_BEHIND).toDouble(),
+            overallGapAheadSeconds = gap?.gapAheadSeconds,
+            overallGapBehindSeconds = gap?.gapBehindSeconds,
         )
+    }
 }
