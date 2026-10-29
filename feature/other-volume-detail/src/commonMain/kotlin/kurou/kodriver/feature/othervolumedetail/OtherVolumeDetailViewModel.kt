@@ -3,20 +3,13 @@ package kurou.kodriver.feature.othervolumedetail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -66,25 +59,11 @@ internal class OtherVolumeDetailViewModel(
     // 前回と同じ値の再要求も処理され、OS側で変更された音量を再設定できる。
     private val deviceVolumeRequest = Channel<Int>(Channel.CONFLATED)
 
-    // ハードウェアボタンやOSの音量UIなど、KoDriver外から端末のマスター音量が変更された場合にも
-    // detailPane表示中はスライダーへ反映されるよう、一定間隔で再取得する。
-    private val deviceVolumePollingTicker: Flow<Unit> =
-        flow {
-            while (true) {
-                delay(DEVICE_VOLUME_POLLING_INTERVAL_MS)
-                emit(Unit)
-            }
-        }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val deviceVolume: Flow<Int> =
-        merge(deviceVolumeRefreshTrigger.map { }, deviceVolumePollingTicker)
-            .mapLatest { deviceVolumeUseCases.getDeviceVolume() }
-
     val uiState: StateFlow<OtherVolumeDetailUiState> =
         OtherVolumeDetailFlow(
             soundVolume = soundVolumeUseCases.observeSoundVolume(),
-            deviceVolume = deviceVolume,
+            deviceVolumeRefreshTrigger = deviceVolumeRefreshTrigger,
+            getDeviceVolume = { deviceVolumeUseCases.getDeviceVolume() },
             isPreviewing = isPreviewing,
             lowVolumeWarningEnabled = lowVolumeWarningEnabledUseCases.observeLowVolumeWarningEnabled(),
         ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVolumeDetailUiState())
@@ -152,7 +131,6 @@ internal class OtherVolumeDetailViewModel(
     }
 
     private companion object {
-        const val DEVICE_VOLUME_POLLING_INTERVAL_MS = 500L
         const val PREVIEW_LAP_TIME_MS = 83_456L
     }
 }
