@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 class OtherConsoleIpDetailFlowTest {
-    private val savedAddress = MutableStateFlow("192.168.1.1")
+    private val savedAddress = MutableStateFlow<String?>("192.168.1.1")
     private val savedPort = MutableStateFlow(33740)
     private val mutableState = MutableStateFlow(OtherConsoleIpDetailMutableState())
 
@@ -32,6 +32,23 @@ class OtherConsoleIpDetailFlowTest {
             assertEquals("10.0.0.1", flow.uiState.first().inputAddress)
             savedAddress.update { "invalid" }
             assertFalse(flow.uiState.first().isInputValid)
+        }
+
+    @Test
+    fun `保存済みIPがnullなら空文字へフォールバックする`() =
+        runTest {
+            savedAddress.update { null }
+            val flow = createFlow()
+
+            assertEquals(OtherConsoleIpDetailUiState(), flow.uiState.first())
+            mutableState.update { it.copy(userInput = "10.0.0.1") }
+            assertEquals(OtherConsoleIpDetailUiState(inputAddress = "10.0.0.1"), flow.uiState.first())
+            mutableState.update { it.copy(userInput = null) }
+            assertEquals(OtherConsoleIpDetailUiState(), flow.uiState.first())
+            savedAddress.update { "192.168.1.2" }
+            assertEquals(OtherConsoleIpDetailUiState(inputAddress = "192.168.1.2"), flow.uiState.first())
+            savedAddress.update { null }
+            assertEquals(OtherConsoleIpDetailUiState(), flow.uiState.first())
         }
 
     @Test
