@@ -6,12 +6,9 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
@@ -24,9 +21,7 @@ import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class OtherListOverlaySettingsFlowTest {
     private val visibleRepository: OverlayVisiblePreferencesRepository = mockk()
     private val textSizeRepository: OverlayTextSizePreferencesRepository = mockk()
@@ -46,22 +41,16 @@ class OtherListOverlaySettingsFlowTest {
             every { backgroundOpacityRepository.observeOverlayBackgroundOpacity() } returns backgroundOpacity
             val flow = createFlow()
 
-            assertEquals(OtherListOverlaySettingsUiState(), flow.uiState.first())
-            val updatedState =
-                async(UnconfinedTestDispatcher(testScheduler)) {
-                    flow.uiState.first {
-                        it == OtherListOverlaySettingsUiState(false, OverlayTextSize.LARGE, 0xFF123456L, 75)
-                    }
-                }
-            visible.update { false }
-            textSize.update { OverlayTextSize.LARGE }
-            textColor.update { 0xFF123456L }
-            backgroundOpacity.update { 75 }
-
-            assertEquals(
-                OtherListOverlaySettingsUiState(false, OverlayTextSize.LARGE, 0xFF123456L, 75),
-                updatedState.await(),
-            )
+            assertSettingsStateUpdates(
+                uiState = flow.uiState,
+                initialState = OtherListOverlaySettingsUiState(),
+                updatedState = OtherListOverlaySettingsUiState(false, OverlayTextSize.LARGE, 0xFF123456L, 75),
+            ) {
+                visible.update { false }
+                textSize.update { OverlayTextSize.LARGE }
+                textColor.update { 0xFF123456L }
+                backgroundOpacity.update { 75 }
+            }
             verify(exactly = 1) { visibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { textSizeRepository.observeOverlayTextSize() }
             verify(exactly = 1) { textColorRepository.observeOverlayTextColor() }

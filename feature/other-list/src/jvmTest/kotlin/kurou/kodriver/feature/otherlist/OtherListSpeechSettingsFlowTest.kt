@@ -4,12 +4,8 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
@@ -31,9 +27,7 @@ import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class OtherListSpeechSettingsFlowTest {
     private val voiceRepository: VoicePreferencesRepository = mockk()
     private val voiceSpeedRepository: VoiceSpeedPreferencesRepository = mockk()
@@ -59,43 +53,26 @@ class OtherListSpeechSettingsFlowTest {
             every { soundVolumeRepository.volume() } returns volume
             val flow = createFlow()
 
-            assertEquals(
-                OtherListSpeechSettingsUiState(),
-                flow.uiState.first(),
-            )
-            val updatedState =
-                async(UnconfinedTestDispatcher(testScheduler)) {
-                    flow.uiState.first {
-                        it ==
-                            OtherListSpeechSettingsUiState(
-                                "voice-id",
-                                1.5f,
-                                0.8f,
-                                AndroidAudioUsage.COMMUNICATION,
-                                ReadoutStartSoundType.ELECTRONIC_NOISE,
-                                42,
-                            )
-                    }
-                }
-
-            voice.update { "voice-id" }
-            speed.update { 1.5f }
-            pitch.update { 0.8f }
-            usage.update { AndroidAudioUsage.COMMUNICATION }
-            startSound.update { ReadoutStartSoundType.ELECTRONIC_NOISE }
-            volume.update { 42 }
-
-            assertEquals(
-                OtherListSpeechSettingsUiState(
-                    "voice-id",
-                    1.5f,
-                    0.8f,
-                    AndroidAudioUsage.COMMUNICATION,
-                    ReadoutStartSoundType.ELECTRONIC_NOISE,
-                    42,
-                ),
-                updatedState.await(),
-            )
+            assertSettingsStateUpdates(
+                uiState = flow.uiState,
+                initialState = OtherListSpeechSettingsUiState(),
+                updatedState =
+                    OtherListSpeechSettingsUiState(
+                        "voice-id",
+                        1.5f,
+                        0.8f,
+                        AndroidAudioUsage.COMMUNICATION,
+                        ReadoutStartSoundType.ELECTRONIC_NOISE,
+                        42,
+                    ),
+            ) {
+                voice.update { "voice-id" }
+                speed.update { 1.5f }
+                pitch.update { 0.8f }
+                usage.update { AndroidAudioUsage.COMMUNICATION }
+                startSound.update { ReadoutStartSoundType.ELECTRONIC_NOISE }
+                volume.update { 42 }
+            }
             verify(exactly = 1) { voiceRepository.voiceId() }
             verify(exactly = 1) { voiceSpeedRepository.voiceSpeed() }
             verify(exactly = 1) { voicePitchRepository.voicePitch() }

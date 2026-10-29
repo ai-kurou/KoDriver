@@ -6,11 +6,8 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.THEME_MODE_DEFAULT
 import kurou.kodriver.domain.model.ThemeMode
@@ -26,9 +23,7 @@ import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class OtherListDeviceSettingsFlowTest {
     private val keepScreenOnRepository: KeepScreenOnEnabledRepository = mockk()
     private val dynamicColorRepository: DynamicColorEnabledRepository = mockk()
@@ -48,26 +43,16 @@ class OtherListDeviceSettingsFlowTest {
             every { themeRepository.observeThemeMode() } returns themeMode
             val flow = createFlow()
 
-            assertEquals(
-                OtherListDeviceSettingsUiState(false, false, false, THEME_MODE_DEFAULT),
-                flow.uiState.first(),
-            )
-            val updatedState =
-                async(UnconfinedTestDispatcher(testScheduler)) {
-                    flow.uiState.first {
-                        it == OtherListDeviceSettingsUiState(true, true, true, ThemeMode.DARK)
-                    }
-                }
-
-            keepScreenOn.value = true
-            dynamicColor.value = true
-            hapticFeedback.value = true
-            themeMode.value = ThemeMode.DARK
-
-            assertEquals(
-                OtherListDeviceSettingsUiState(true, true, true, ThemeMode.DARK),
-                updatedState.await(),
-            )
+            assertSettingsStateUpdates(
+                uiState = flow.uiState,
+                initialState = OtherListDeviceSettingsUiState(false, false, false, THEME_MODE_DEFAULT),
+                updatedState = OtherListDeviceSettingsUiState(true, true, true, ThemeMode.DARK),
+            ) {
+                keepScreenOn.update { true }
+                dynamicColor.update { true }
+                hapticFeedback.update { true }
+                themeMode.update { ThemeMode.DARK }
+            }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackRepository.hapticFeedbackEnabled() }
