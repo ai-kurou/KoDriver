@@ -42,11 +42,13 @@ Virtual Energy を使うのは Hypercar（`Hyper`）と GT3（`GT3`）のみで�
 既存4項目は実機確認の参考用に生 float を保持し、車両不在時の値の意味（0か負値か）は実機未確認のため解釈しない。
 server は `/ws/lmu_windows/car_gap` で同一値も継続配信する。Android は `WebSocketLmuWindowsCarGapRepository` で受信し、`LmuWindowsCarGapData` として復元する。
 
-### 同クラス前後車両との時間ギャップ
+### 同クラス前後車両との時間ギャップとクラス内順位
 
 `LmuWindowsClassCarGapRepositoryImpl` は Scoring のみを使用し、`mVehicleClass` が自車と完全一致する、自車以外かつ `mInGarageStall` が false の車両を対象とする。TinyPedal の `get_vehicles_info` と同じく、他車と自車の `mTimeIntoLap` の差を自車の `mEstimatedLapTime` で周回補正し、前方・後方それぞれの最小秒差を `LmuWindowsClassCarGapData` で返す。同位置なら両方 0。周回遅れ・周回先行の車両も、順位ではなくコース上の位置関係で前後の対象に含む。
 
 自車が Scoring に存在しなければ配信しない。推定ラップタイムが非有限または 0 以下の場合、あるいは対象車両がない場合は両方 null。非有限の時間差は対象から除外する。非 Windows では空 Flow を返す。全体ギャップとは対象のクラス条件のみ異なり、計算処理を共有する。
+
+クラス内順位も同じモデルの `classPosition` / `classVehicleCount` で返す。`VehicleScoringInfo.mPlace`（オフセット +199、unsigned byte）は 1 始まりの総合順位。`ScoringInfo.mNumVehicles`（Scoring 先頭 +104）を 0〜104 に制限して全車両を走査し、クラス名が自車と完全一致するガレージ外の車両に、自車を含めた台数を求める。自車はガレージ内でも含める。クラス内順位は「1 + 自車より `mPlace` が小さい該当他車の数」とする。自車の `mPlace` が 0（未設定）の場合は順位・台数とも null。ギャップ計算の可否には依存しない。`classPosition == 1` でトップ、両項目が非 null かつ `classPosition == classVehicleCount` で最後尾と判定できる。
 
 server は `/ws/lmu_windows/class_car_gap` で同一値も継続配信する。Android は `WebSocketLmuWindowsClassCarGapRepository` で受信し、`LmuWindowsClassCarGapData` として復元する。
 

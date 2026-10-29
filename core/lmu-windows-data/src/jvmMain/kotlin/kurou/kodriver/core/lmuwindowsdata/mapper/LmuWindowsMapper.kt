@@ -98,6 +98,7 @@ internal object LmuWindowsMapper {
     private const val OFF_SCORING_BEST_LAP_TIME = 144
     private const val OFF_SCORING_LAST_LAP_TIME = 168
     internal const val OFF_SCORING_IS_PLAYER = 196
+    internal const val OFF_SCORING_PLACE = 199
     private const val OFF_SCORING_VEHICLE_CLASS = 200
     private const val VEHICLE_CLASS_LENGTH = 32
     private const val OFF_SCORING_LAP_START_ET = 256

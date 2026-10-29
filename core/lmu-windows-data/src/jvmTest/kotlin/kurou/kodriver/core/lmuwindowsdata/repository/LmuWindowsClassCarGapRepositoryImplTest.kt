@@ -37,6 +37,8 @@ class LmuWindowsClassCarGapRepositoryImplTest {
 
             assertEquals(5.0, result.gapAheadSeconds)
             assertEquals(95.0, result.gapBehindSeconds)
+            assertEquals(2, result.classPosition)
+            assertEquals(2, result.classVehicleCount)
         }
 
     @Test
@@ -59,6 +61,8 @@ class LmuWindowsClassCarGapRepositoryImplTest {
         buffer.putInt(1632 + 104, 2)
         val playerBase = 2192 + 584
         buffer.put(playerBase + 196, 1)
+        buffer.put(playerBase + 199, 2)
+        buffer.put(2192 + 199, 1)
         buffer.putDouble(playerBase + 464, 20.0)
         buffer.putDouble(playerBase + 472, 100.0)
         buffer.putDouble(2192 + 464, 25.0)

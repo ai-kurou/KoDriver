@@ -19,7 +19,7 @@ class ObserveLmuWindowsClassCarGapUseCaseTest {
     @Test
     fun `invoke はリポジトリの classCarGapStream を返す`() =
         runTest {
-            val expected = LmuWindowsClassCarGapData(0.5, 0.5)
+            val expected = LmuWindowsClassCarGapData(0.5, 0.5, classPosition = 2, classVehicleCount = 3)
             every { repo.classCarGapStream() } returns flowOf(expected)
             val useCase = ObserveLmuWindowsClassCarGapUseCase(repo)
 
@@ -46,9 +46,9 @@ class ObserveLmuWindowsClassCarGapUseCaseTest {
     @Test
     fun `複数のデータを順番通りに流す`() =
         runTest {
-            val data1 = LmuWindowsClassCarGapData(0.8, 0.8)
-            val data2 = LmuWindowsClassCarGapData(0.5, 0.5)
-            val data3 = LmuWindowsClassCarGapData(0.2, 0.2)
+            val data1 = LmuWindowsClassCarGapData(0.8, 0.8, classPosition = 3, classVehicleCount = 3)
+            val data2 = LmuWindowsClassCarGapData(0.5, 0.5, classPosition = 2, classVehicleCount = 3)
+            val data3 = LmuWindowsClassCarGapData(0.2, 0.2, classPosition = 1, classVehicleCount = 3)
             every { repo.classCarGapStream() } returns flowOf(data1, data2, data3)
             val useCase = ObserveLmuWindowsClassCarGapUseCase(repo)
 

@@ -5202,11 +5202,13 @@ private class FakeLmuWindowsClassCarGapRepository : LmuWindowsClassCarGapReposit
     }
 }
 
-private val classCarGapData1 = LmuWindowsClassCarGapData(1.25, 2.5)
-private val classCarGapData2 = LmuWindowsClassCarGapData(null, 3.0)
+private val classCarGapData1 = LmuWindowsClassCarGapData(1.25, 2.5, classPosition = 2, classVehicleCount = 3)
+private val classCarGapData2 = LmuWindowsClassCarGapData(null, 3.0, classPosition = 1, classVehicleCount = 4)
 
-private const val CLASS_CAR_GAP_JSON_1 = """{"gapAheadSeconds":1.25,"gapBehindSeconds":2.5}"""
-private const val CLASS_CAR_GAP_JSON_2 = """{"gapAheadSeconds":null,"gapBehindSeconds":3.0}"""
+private const val CLASS_CAR_GAP_JSON_1 =
+    """{"gapAheadSeconds":1.25,"gapBehindSeconds":2.5,"classPosition":2,"classVehicleCount":3}"""
+private const val CLASS_CAR_GAP_JSON_2 =
+    """{"gapAheadSeconds":null,"gapBehindSeconds":3.0,"classPosition":1,"classVehicleCount":4}"""
 
 private object EmptyAceWindowsGapRepository : AceWindowsGapRepository {
     override fun gapStream(): Flow<AceWindowsGapData> = emptyFlow()

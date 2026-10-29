@@ -24,7 +24,7 @@ WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパター�
 | `/ws/lmu_windows/pit_status` | `ObserveLmuWindowsPitStatusUseCase`（`LmuWindowsPitStatusRepository`） | `LmuWindowsPitStatusData` |
 | `/ws/lmu_windows/tyre_detached` | `ObserveLmuWindowsTyreDetachedUseCase`（`LmuWindowsTyreDetachedRepository`） | `LmuWindowsTyreDetachedData` |
 | `/ws/lmu_windows/car_gap` | `ObserveLmuWindowsCarGapUseCase`（`LmuWindowsCarGapRepository`） | `LmuWindowsCarGapData`（同一値も継続配信） |
-| `/ws/lmu_windows/class_car_gap` | `ObserveLmuWindowsClassCarGapUseCase`（`LmuWindowsClassCarGapRepository`） | `LmuWindowsClassCarGapData`（同一値も継続配信） |
+| `/ws/lmu_windows/class_car_gap` | `ObserveLmuWindowsClassCarGapUseCase`（`LmuWindowsClassCarGapRepository`） | `LmuWindowsClassCarGapData`（同クラスの前後秒差と `classPosition` / `classVehicleCount`。順位・台数は算出不可時 null。同一値も継続配信） |
 
 ### ACE（`/ws/ace_windows/...`）
 
