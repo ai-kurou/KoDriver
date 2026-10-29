@@ -16,6 +16,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
@@ -52,6 +53,7 @@ class AceWindowsDebugStateDetailPaneScreenshotTest {
             aceWindows =
                 AceWindowsDebugState(
                     gap = AceWindowsGapData(1.26f, -2.34f),
+                    overallPosition = AceWindowsOverallPositionData(3, 20),
                     fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
                     flag = AceWindowsFlagData(flag = AceWindowsFlagType.YELLOW_FLAG),
                     status = AceWindowsStatusData(AceWindowsStatusType.LIVE, AceWindowsCarLocation.TRACK),

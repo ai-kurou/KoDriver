@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
+import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.domain.model.ACE_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
@@ -51,6 +52,7 @@ class AceWindowsDebugStateDetailFlowTest {
                 AceWindowsDebugState(
                     flag = AceWindowsFlagData(AceWindowsFlagType.GREEN_FLAG),
                     gap = AceWindowsGapData(1.26f, -2.34f),
+                    overallPosition = AceWindowsOverallPositionData(3, 20),
                 )
             cardOrder.update { order }
             received.update {

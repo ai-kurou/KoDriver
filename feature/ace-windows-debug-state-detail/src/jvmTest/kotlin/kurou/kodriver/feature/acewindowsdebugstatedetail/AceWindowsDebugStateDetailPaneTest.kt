@@ -77,7 +77,7 @@ class AceWindowsDebugStateDetailPaneTest {
             "自己ベストラップ",
             "タイヤカーカス温度",
             "燃料消費",
-            "前後車両との時間差",
+            "総合順位と前後車両との時間差",
         ).forEach { title ->
             rule.onNodeWithText(title).assertIsDisplayed()
         }

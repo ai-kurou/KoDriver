@@ -19,4 +19,13 @@ class CarGapFormatterTest {
         assertEquals("--", formatCarGapSeconds(Float.POSITIVE_INFINITY))
         assertEquals("--", formatCarGapSeconds(Float.NEGATIVE_INFINITY))
     }
+
+    @Test
+    fun `総合順位と総台数は正の値だけ数値で表示する`() {
+        assertEquals("1", formatOverallPosition(1))
+        assertEquals("20", formatOverallPosition(20))
+        assertEquals("--", formatOverallPosition(0))
+        assertEquals("--", formatOverallPosition(-1))
+        assertEquals("--", formatOverallPosition(null))
+    }
 }

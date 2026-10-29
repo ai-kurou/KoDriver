@@ -28,6 +28,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
+import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -193,14 +194,19 @@ class AceWindowsDebugStateDetailPaneWiringTest {
                     AceWindowsDebugStateDetailPane(false, onBack)
                 }
             }
-            rule.onNodeWithText("前後車両との時間差").assertIsDisplayed()
+            rule.onNodeWithText("総合順位と前後車両との時間差").assertIsDisplayed()
             rule.onNodeWithText("未取得").assertIsDisplayed()
             state.update {
                 it.copy(
-                    aceWindows = AceWindowsDebugState(gap = AceWindowsGapData(1.26f, -2.34f)),
+                    aceWindows =
+                        AceWindowsDebugState(
+                            gap = AceWindowsGapData(1.26f, -2.34f),
+                            overallPosition = AceWindowsOverallPositionData(3, 20),
+                        ),
                     enabledCardKeys = setOf(AceWindowsDebugStateCardKey.CAR_GAP),
                 )
             }
+            rule.onNodeWithText("総合順位 3 / 20").assertIsDisplayed()
             rule.onNodeWithText("前車との差 1.3 秒").assertIsDisplayed()
             rule.onNodeWithText("後車との差 -2.3 秒").assertIsDisplayed()
 
