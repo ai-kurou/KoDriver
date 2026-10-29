@@ -7,6 +7,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
@@ -21,7 +22,7 @@ import kotlin.math.sqrt
 /**
  * Assetto Corsa EVO の Graphics 共有メモリ (`Local\acevo_pmf_graphics`, `SPageFileGraphicEvo`) の
  * ByteBuffer を AceWindowsFuelData / AceWindowsFlagData / AceWindowsStatusData /
- * AceWindowsVehicleApproachData / AceWindowsGapData に変換する。
+ * AceWindowsVehicleApproachData / AceWindowsGapData / AceWindowsOverallPositionData に変換する。
  *
  * `SPageFileGraphicEvo` は `char[33]` / `bool` を含むため固定オフセットが文書化されておらず
  * (docs/ace-windows-telemetry.md 参照)、_pack_=4 のアライメント規則 (4バイト境界に整列、
@@ -65,8 +66,8 @@ import kotlin.math.sqrt
  *           electronics, electronics_min_limit, electronics_max_limit,
  *           electronics_is_modifiable (各128バイト x7 = 896バイト)
  *   [+2384] total_lap_count (int32)
- *   [+2388] current_pos (uint32)
- *   [+2392] total_drivers (uint32)
+ *   [+2388] current_pos (uint32) ← OverallPosition 取得対象
+ *   [+2392] total_drivers (uint32) ← OverallPosition 取得対象
  *   [+2396] last_laptime_ms (int32)
  *   [+2400] best_laptime_ms (int32)
  *   [+2404] flag (int32, ACEVO_FLAG_TYPE、自車提示) ← Flag 取得対象
@@ -104,6 +105,8 @@ internal object AceWindowsMapper {
     private const val OFF_TYRE_TEMPERATURE_C = 12
     private const val OFF_CAR_LOCATION = 1388
     private const val OFF_LAPS_POSSIBLE_WITH_FUEL = 1464
+    private const val OFF_CURRENT_POS = 2388
+    private const val OFF_TOTAL_DRIVERS = 2392
     private const val OFF_BEST_LAPTIME_MS = 2400
     private const val OFF_FLAG = 2404
     private const val OFF_SESSION_STATE = 2476
@@ -147,6 +150,16 @@ internal object AceWindowsMapper {
         AceWindowsBestLapTimeData(
             bestLapTimeMs = buffer.getInt(OFF_BEST_LAPTIME_MS),
             currentLap = buffer.getInt(OFF_SESSION_STATE + OFF_SESSION_STATE_CURRENT_LAP),
+        )
+
+    /**
+     * 総合順位（1 始まり）・総台数を取得する。0 は未確定値としてそのまま保持する。
+     * uint32 のうち Int の範囲を超える値（getInt では負値）は未確定の 0 に補正する。
+     */
+    fun mapOverallPosition(buffer: ByteBuffer): AceWindowsOverallPositionData =
+        AceWindowsOverallPositionData(
+            position = buffer.getInt(OFF_CURRENT_POS).coerceAtLeast(0),
+            totalDrivers = buffer.getInt(OFF_TOTAL_DRIVERS).coerceAtLeast(0),
         )
 
     fun mapGap(buffer: ByteBuffer): AceWindowsGapData =

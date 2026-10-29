@@ -6,6 +6,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
+import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
@@ -14,6 +15,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeReposito
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsOverallPositionRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -22,6 +24,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseC
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsOverallPositionUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
@@ -38,6 +41,7 @@ data class AceWindowsServerUseCases(
     val observeAceWindowsBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
     val observeAceWindowsRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsUseCase,
     val observeAceWindowsGap: ObserveAceWindowsGapUseCase,
+    val observeAceWindowsOverallPosition: ObserveAceWindowsOverallPositionUseCase,
 )
 
 internal fun aceWindowsServerUseCasesFrom(koin: Koin): AceWindowsServerUseCases =
@@ -62,6 +66,10 @@ internal fun aceWindowsServerUseCasesFrom(koin: Koin): AceWindowsServerUseCases 
                 koin.get<AceWindowsRemainingFuelLapsRepository>(),
             ),
         observeAceWindowsGap = ObserveAceWindowsGapUseCase(koin.get<AceWindowsGapRepository>()),
+        observeAceWindowsOverallPosition =
+            ObserveAceWindowsOverallPositionUseCase(
+                koin.get<AceWindowsOverallPositionRepository>(),
+            ),
     )
 
 internal fun emptyAceWindowsServerUseCases(): AceWindowsServerUseCases =
@@ -86,6 +94,10 @@ internal fun emptyAceWindowsServerUseCases(): AceWindowsServerUseCases =
                 EmptyAceWindowsRemainingFuelLapsRepository,
             ),
         observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
+        observeAceWindowsOverallPosition =
+            ObserveAceWindowsOverallPositionUseCase(
+                EmptyAceWindowsOverallPositionRepository,
+            ),
     )
 
 private object EmptyAceWindowsFuelRepository : AceWindowsFuelRepository {
@@ -120,4 +132,8 @@ private object EmptyAceWindowsRemainingFuelLapsRepository : AceWindowsRemainingF
 
 private object EmptyAceWindowsGapRepository : AceWindowsGapRepository {
     override fun gapStream(): Flow<AceWindowsGapData> = emptyFlow()
+}
+
+private object EmptyAceWindowsOverallPositionRepository : AceWindowsOverallPositionRepository {
+    override fun overallPositionStream(): Flow<AceWindowsOverallPositionData> = emptyFlow()
 }

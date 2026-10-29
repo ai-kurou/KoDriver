@@ -29,4 +29,7 @@ internal fun Route.aceWindowsRoutes(useCases: KoDriverServerUseCases) {
     telemetryWebSocket(KoDriverServerFeature.CAR_GAP, Simulator.AceWindows, distinct = false) {
         useCases.aceWindows.observeAceWindowsGap()
     }
+    telemetryWebSocket(KoDriverServerFeature.OVERALL_POSITION, Simulator.AceWindows, distinct = false) {
+        useCases.aceWindows.observeAceWindowsOverallPosition()
+    }
 }

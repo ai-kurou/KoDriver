@@ -4,6 +4,7 @@ package kurou.kodriver.core.acewindowsdata.mapper
 
 import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
+import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
@@ -37,6 +38,40 @@ class AceWindowsMapperTest {
         const val OFF_CAR_IDS = 3940
         const val CAR_ID_STRIDE = 16
         const val BUFFER_SIZE = 8_192
+    }
+
+    @Test
+    fun `総合順位と総台数を正しいオフセットから取得し未確定の0も保持する`() {
+        listOf(2 to 20, 0 to 0, Int.MAX_VALUE to Int.MAX_VALUE).forEach { (position, totalDrivers) ->
+            val buffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)
+            buffer.putInt(2388, position)
+            buffer.putInt(2392, totalDrivers)
+            buffer.putInt(2384, 99)
+            buffer.putInt(2396, 100)
+
+            assertEquals(
+                AceWindowsOverallPositionData(position, totalDrivers),
+                AceWindowsMapper.mapOverallPosition(buffer),
+            )
+        }
+    }
+
+    @Test
+    fun `Intの範囲を超えるuint32は項目ごとに0へ補正する`() {
+        listOf(
+            Triple(-1, 20, AceWindowsOverallPositionData(0, 20)),
+            Triple(2, Int.MIN_VALUE, AceWindowsOverallPositionData(2, 0)),
+            Triple(Int.MIN_VALUE, -1, AceWindowsOverallPositionData(0, 0)),
+        ).forEach { (position, totalDrivers, expected) ->
+            val buffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)
+            buffer.putInt(2388, position)
+            buffer.putInt(2392, totalDrivers)
+
+            assertEquals(
+                expected,
+                AceWindowsMapper.mapOverallPosition(buffer),
+            )
+        }
     }
 
     private data class CarEntry(

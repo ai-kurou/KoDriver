@@ -9,6 +9,7 @@ import kurou.kodriver.core.acewindowsdata.repository.AceWindowsBestLapTimeReposi
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFlagRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFuelRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsGapRepositoryImpl
+import kurou.kodriver.core.acewindowsdata.repository.AceWindowsOverallPositionRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsRemainingFuelLapsRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsStatusRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsTyreCarcassTemperatureRepositoryImpl
@@ -17,6 +18,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
+import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
@@ -25,6 +27,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeReposito
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsOverallPositionRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -70,6 +73,13 @@ val aceWindowsDataModule =
         }
         single<AceWindowsGapRepository> {
             if (isWindows) AceWindowsGapRepositoryImpl(source = get()) else NoOpAceWindowsGapRepository()
+        }
+        single<AceWindowsOverallPositionRepository> {
+            if (isWindows) {
+                AceWindowsOverallPositionRepositoryImpl(source = get())
+            } else {
+                NoOpAceWindowsOverallPositionRepository()
+            }
         }
         single<AceWindowsTyreCarcassTemperatureRepository> {
             if (isWindows) {
@@ -119,4 +129,8 @@ private class NoOpAceWindowsVehicleApproachRepository : AceWindowsVehicleApproac
 
 private class NoOpAceWindowsGapRepository : AceWindowsGapRepository {
     override fun gapStream(): Flow<AceWindowsGapData> = emptyFlow()
+}
+
+private class NoOpAceWindowsOverallPositionRepository : AceWindowsOverallPositionRepository {
+    override fun overallPositionStream(): Flow<AceWindowsOverallPositionData> = emptyFlow()
 }
