@@ -47,6 +47,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class OtherVolumeDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -465,5 +466,43 @@ class OtherVolumeDetailViewModelTest {
             verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
             confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
             job.cancel()
+        }
+
+    @Test
+    fun `UI購読前は取得せず購読解除の猶予後に停止し再購読で取得する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
+            var reads = 0
+            coEvery { deviceVolumeRepository.getVolume() } answers {
+                reads++
+                60
+            }
+            val viewModel = createViewModel()
+            advanceTimeBy(1_000)
+            runCurrent()
+            assertEquals(0, reads)
+
+            val subscription = viewModel.uiState.launchIn(backgroundScope)
+            runCurrent()
+            assertEquals(1, reads)
+            subscription.cancel()
+            runCurrent()
+            advanceTimeBy(5_001)
+            runCurrent()
+            val readsAfterStop = reads
+            assertTrue(readsAfterStop > 1)
+            advanceTimeBy(1_000)
+            runCurrent()
+            assertEquals(readsAfterStop, reads)
+
+            val resumed = viewModel.uiState.launchIn(backgroundScope)
+            runCurrent()
+            assertEquals(readsAfterStop + 1, reads)
+            resumed.cancel()
+            verify(exactly = 1) { soundVolumeRepository.volume() }
+            verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            coVerify(exactly = readsAfterStop + 1) { deviceVolumeRepository.getVolume() }
+            confirmVerified(soundVolumeRepository, warningEnabledRepository, deviceVolumeRepository)
         }
 }
