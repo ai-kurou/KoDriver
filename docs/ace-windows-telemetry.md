@@ -293,8 +293,8 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 | 型 | フィールド | 単位 |
 |---|---|---|
 | int32 | `total_lap_count` | セッション総ラップ数 |
-| uint32 | `current_pos` | 順位（1ベース） |
-| uint32 | `total_drivers` | 参加台数 |
+| uint32 | `current_pos` | 総合順位（1ベース、+2388、OverallPosition 取得対象） |
+| uint32 | `total_drivers` | 総台数（+2392、OverallPosition 取得対象） |
 | int32 | `last_laptime_ms` | ms（未完了時は -1/0） |
 | int32 | `best_laptime_ms` | ms |
 | int32 | `flag` | enum（`ACEVO_FLAG_TYPE`、自車提示） |
@@ -393,7 +393,7 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 | 3864 / 3928 / 3932 / 3936 | `assists_state`(64 B) / `max_fuel` / `max_turbo_boost` / `use_single_compound` |
 | 3940 | `car_ids`（960 B、末尾。合計 4,900 B） |
 
-`:core:ace-windows-data` の `AceWindowsMapper` はこの実測値と一致するオフセット定数（`OFF_CAR_LOCATION = 1388`、`OFF_LAPS_POSSIBLE_WITH_FUEL = 1464`（宣言順からの算出値。実機未確認）、`OFF_CAR_COORDINATES = 3124`、`OFF_CAR_IDS = 3940` 等）をハードコードしている。前車・後車とのギャップも `OFF_GAP_AHEAD = 3844` / `OFF_GAP_BEHIND = 3848` から秒単位の生値として取得する。
+`:core:ace-windows-data` の `AceWindowsMapper` はこの実測値と一致するオフセット定数（`OFF_CAR_LOCATION = 1388`、`OFF_LAPS_POSSIBLE_WITH_FUEL = 1464`（宣言順からの算出値。実機未確認）、`OFF_CAR_COORDINATES = 3124`、`OFF_CAR_IDS = 3940` 等）をハードコードしている。総合順位・総台数は `OFF_CURRENT_POS = 2388` / `OFF_TOTAL_DRIVERS = 2392` の uint32 を取得する。0 は未確定値として保持し、Int の範囲を超える値は 0 に補正する。`/ws/ace_windows/overall_position` で同一値も継続配信し、Android でも同じモデルを受信する。前車・後車とのギャップも `OFF_GAP_AHEAD = 3844` / `OFF_GAP_BEHIND = 3848` から秒単位の生値として取得する。
 
 ---
 

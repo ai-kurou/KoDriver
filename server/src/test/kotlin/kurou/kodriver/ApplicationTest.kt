@@ -22,6 +22,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
@@ -31,6 +32,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeReposito
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsOverallPositionRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -39,6 +41,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseC
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsOverallPositionUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
@@ -174,31 +177,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -264,31 +243,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -352,31 +307,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -455,31 +386,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -555,31 +462,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -651,31 +534,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -753,31 +612,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -853,31 +688,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -954,31 +765,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -1057,31 +844,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -1158,30 +921,11 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsTyreCarcassTemperature =
                                     ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                         repository,
                                     ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -1259,31 +1003,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -1364,31 +1084,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -1465,31 +1161,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -1570,31 +1242,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -1671,31 +1319,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -1771,31 +1395,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -1869,31 +1469,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -1971,31 +1547,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -2069,31 +1621,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -2172,31 +1700,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -2271,31 +1775,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -2376,31 +1856,7 @@ class ApplicationTest {
                                     ),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -2477,31 +1933,7 @@ class ApplicationTest {
                                     ),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -2582,30 +2014,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2683,30 +2093,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2788,30 +2176,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(repository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2889,30 +2255,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(repository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -2992,27 +2336,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(repository),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3090,27 +2415,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(repository),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3190,27 +2496,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsVehicleApproach = ObserveAceWindowsVehicleApproachUseCase(repository),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3286,27 +2573,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsBestLapTime = ObserveAceWindowsBestLapTimeUseCase(repository),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3382,30 +2650,11 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsRemainingFuelLaps =
                                     ObserveAceWindowsRemainingFuelLapsUseCase(
                                         repository,
                                     ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
                             ),
                     ),
                 )
@@ -3484,29 +2733,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
+                            emptyAceWindowsServerUseCases().copy(
                                 observeAceWindowsGap = ObserveAceWindowsGapUseCase(repository),
                             ),
                     ),
@@ -3525,6 +2752,86 @@ class ApplicationTest {
 
                     assertEquals(ACE_GAP_JSON, message)
                     assertEquals(ACE_GAP_JSON, repeatedMessage)
+                }
+        }
+
+    @Test
+    fun `ACEの総合順位・総台数をJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeAceWindowsOverallPositionRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        lmuWindows =
+                            LmuWindowsServerUseCases(
+                                observeLmuWindowsRaceFlags =
+                                    ObserveLmuWindowsRaceFlagsUseCase(
+                                        FakeLmuWindowsFlagRepository(),
+                                    ),
+                                observeLmuWindowsVehicleApproach =
+                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                        EmptyLmuWindowsVehicleApproachRepository,
+                                    ),
+                                observeLmuWindowsVehicleDamage =
+                                    ObserveLmuWindowsVehicleDamageUseCase(
+                                        EmptyLmuWindowsVehicleDamageRepository,
+                                    ),
+                                observeLmuWindowsTyreCarcassTemperature =
+                                    ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeLmuWindowsBrakeTemperature =
+                                    ObserveLmuWindowsBrakeTemperatureUseCase(
+                                        EmptyLmuWindowsBrakeTemperatureRepository,
+                                    ),
+                                observeLmuWindowsVehicleClass =
+                                    ObserveLmuWindowsVehicleClassUseCase(
+                                        EmptyLmuWindowsVehicleClassRepository,
+                                    ),
+                                observeLmuWindowsTyreWear =
+                                    ObserveLmuWindowsTyreWearUseCase(
+                                        EmptyLmuWindowsTyreWearRepository,
+                                    ),
+                                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                                observeLmuWindowsVirtualEnergy =
+                                    ObserveLmuWindowsVirtualEnergyUseCase(
+                                        EmptyLmuWindowsVirtualEnergyRepository,
+                                    ),
+                                observeLmuWindowsPitStatus =
+                                    ObserveLmuWindowsPitStatusUseCase(
+                                        EmptyLmuWindowsPitStatusRepository,
+                                    ),
+                                observeLmuWindowsBrakeWear =
+                                    ObserveLmuWindowsBrakeWearUseCase(EmptyLmuWindowsBrakeWearRepository),
+                                observeLmuWindowsTyreDetached =
+                                    ObserveLmuWindowsTyreDetachedUseCase(
+                                        EmptyLmuWindowsTyreDetachedRepository,
+                                    ),
+                                observeLmuWindowsCarGap =
+                                    ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
+                            ),
+                        aceWindows =
+                            emptyAceWindowsServerUseCases().copy(
+                                observeAceWindowsOverallPosition = ObserveAceWindowsOverallPositionUseCase(repository),
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/ace_windows/overall_position") {
+                    repository.emit(aceOverallPositionData)
+                    repository.emit(aceOverallPositionData)
+
+                    val message = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val repeatedMessage = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+                    assertEquals(ACE_OVERALL_POSITION_JSON, message)
+                    assertEquals(ACE_OVERALL_POSITION_JSON, repeatedMessage)
                 }
         }
 
@@ -3583,31 +2890,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -3681,31 +2964,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -3781,31 +3040,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -3879,31 +3114,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -3980,31 +3191,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -4083,31 +3270,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -4188,31 +3351,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 port = port,
                 host = "127.0.0.1",
@@ -4285,31 +3424,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -4385,31 +3500,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -4486,31 +3577,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
                             ),
                         aceWindows =
-                            AceWindowsServerUseCases(
-                                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                                observeAceWindowsStatus =
-                                    ObserveAceWindowsStatusUseCase(
-                                        EmptyAceWindowsStatusRepository,
-                                    ),
-                                observeAceWindowsTyreCarcassTemperature =
-                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                        EmptyAceWindowsTyreCarcassTemperatureRepository,
-                                    ),
-                                observeAceWindowsVehicleApproach =
-                                    ObserveAceWindowsVehicleApproachUseCase(
-                                        EmptyAceWindowsVehicleApproachRepository,
-                                    ),
-                                observeAceWindowsBestLapTime =
-                                    ObserveAceWindowsBestLapTimeUseCase(
-                                        EmptyAceWindowsBestLapTimeRepository,
-                                    ),
-                                observeAceWindowsRemainingFuelLaps =
-                                    ObserveAceWindowsRemainingFuelLapsUseCase(
-                                        EmptyAceWindowsRemainingFuelLapsRepository,
-                                    ),
-                                observeAceWindowsGap = ObserveAceWindowsGapUseCase(EmptyAceWindowsGapRepository),
-                            ),
+                            emptyAceWindowsServerUseCases(),
                     ),
                 )
             }
@@ -4559,6 +3626,7 @@ class ApplicationTest {
                         single<AceWindowsVehicleApproachRepository> { EmptyAceWindowsVehicleApproachRepository }
                         single<AceWindowsBestLapTimeRepository> { EmptyAceWindowsBestLapTimeRepository }
                         single<AceWindowsGapRepository> { EmptyAceWindowsGapRepository }
+                        single<AceWindowsOverallPositionRepository> { EmptyAceWindowsOverallPositionRepository }
                         single<AceWindowsRemainingFuelLapsRepository> {
                             EmptyAceWindowsRemainingFuelLapsRepository
                         }
@@ -5214,6 +4282,10 @@ private object EmptyAceWindowsGapRepository : AceWindowsGapRepository {
     override fun gapStream(): Flow<AceWindowsGapData> = emptyFlow()
 }
 
+private object EmptyAceWindowsOverallPositionRepository : AceWindowsOverallPositionRepository {
+    override fun overallPositionStream(): Flow<AceWindowsOverallPositionData> = emptyFlow()
+}
+
 private class FakeAceWindowsGapRepository : AceWindowsGapRepository {
     private val channel = Channel<AceWindowsGapData>(capacity = Channel.UNLIMITED)
 
@@ -5227,3 +4299,17 @@ private class FakeAceWindowsGapRepository : AceWindowsGapRepository {
 private val aceGapData = AceWindowsGapData(gapAheadSeconds = -1.5f, gapBehindSeconds = 2.25f)
 
 private const val ACE_GAP_JSON = """{"gapAheadSeconds":-1.5,"gapBehindSeconds":2.25}"""
+
+private class FakeAceWindowsOverallPositionRepository : AceWindowsOverallPositionRepository {
+    private val channel = Channel<AceWindowsOverallPositionData>(capacity = Channel.UNLIMITED)
+
+    override fun overallPositionStream(): Flow<AceWindowsOverallPositionData> = channel.receiveAsFlow()
+
+    fun emit(data: AceWindowsOverallPositionData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private val aceOverallPositionData = AceWindowsOverallPositionData(position = 2, totalDrivers = 20)
+
+private const val ACE_OVERALL_POSITION_JSON = """{"position":2,"totalDrivers":20}"""

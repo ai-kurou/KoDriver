@@ -12,6 +12,7 @@ import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsBestLapTi
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsFlagRepository
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsFuelRepository
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsGapRepository
+import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsOverallPositionRepository
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsStatusRepository
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsTyreCarcassTemperatureRepository
@@ -23,6 +24,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsOverallPositionRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
@@ -78,6 +80,9 @@ fun androidAceWindowsDataModule(context: Context): Module =
         }
         single<AceWindowsGapRepository> {
             WebSocketAceWindowsGapRepository(serverIpRepository = get(), client = get())
+        }
+        single<AceWindowsOverallPositionRepository> {
+            WebSocketAceWindowsOverallPositionRepository(serverIpRepository = get(), client = get())
         }
         single<AceWindowsRemainingFuelPreferencesRepository> {
             createAceWindowsRemainingFuelPreferencesRepository(context.filesDir.absolutePath)
