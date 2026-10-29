@@ -2,6 +2,7 @@ package kurou.kodriver.domain.lmuwindows.model
 
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kotlin.test.BeforeTest
@@ -63,5 +64,12 @@ class LmuWindowsManualReadoutItemsTest {
         assertEquals(4, item.remainingLaps)
         assertTrue(isLmuWindowsManualReadoutTemperatureItem(LmuWindowsReadoutItemKey.TyreTemperature.Root.value))
         assertEquals(false, isLmuWindowsManualReadoutTemperatureItem("unknown"))
+    }
+
+    @Test
+    fun `クラス内ギャップ項目だけをクラス内ギャップ項目と判定する`() {
+        assertTrue(isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value))
+        assertTrue(isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value))
+        assertEquals(false, isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.MyBestLap.Root.value))
     }
 }

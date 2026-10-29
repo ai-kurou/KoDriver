@@ -17,3 +17,8 @@ data class LmuWindowsManualReadoutItem(
 fun isLmuWindowsManualReadoutTemperatureItem(itemKey: String): Boolean =
     itemKey == LmuWindowsReadoutItemKey.BrakeTemperature.Root.value ||
         itemKey == LmuWindowsReadoutItemKey.TyreTemperature.Root.value
+
+/** クラス内前後車とのギャップを使う手動読み上げ項目かを判定する。 */
+fun isLmuWindowsManualReadoutClassCarGapItem(itemKey: String): Boolean =
+    itemKey == LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value ||
+        itemKey == LmuWindowsReadoutItemKey.ClassCarGap.Behind.value

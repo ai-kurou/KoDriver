@@ -27,6 +27,7 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemName
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
+import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kotlin.math.roundToInt
 
@@ -98,7 +99,7 @@ class DetermineLmuWindowsManualReadoutUseCase {
                 (item.lapTimeMs ?: 0L) <= 0
             }
 
-            isManualClassCarGapItem(item.key) -> {
+            isLmuWindowsManualReadoutClassCarGapItem(item.key) -> {
                 manualClassCarGapText(item) == null
             }
 
@@ -161,7 +162,7 @@ class DetermineLmuWindowsManualReadoutUseCase {
 
     private fun isManualLapBasedItem(key: String): Boolean =
         isManualRemainingLapsItem(key) ||
-            isManualClassCarGapItem(key) ||
+            isLmuWindowsManualReadoutClassCarGapItem(key) ||
             key == LmuWindowsReadoutItemKey.MyBestLap.Root.value
 
     /** エネルギー・タイヤ摩耗・燃料の残り周回数、クラス内ギャップ、自己ベストラップの文。データ無しは null。 */
@@ -171,7 +172,7 @@ class DetermineLmuWindowsManualReadoutUseCase {
                 manualRemainingLapsText(item)
             }
 
-            isManualClassCarGapItem(item.key) -> {
+            isLmuWindowsManualReadoutClassCarGapItem(item.key) -> {
                 manualClassCarGapText(item)
             }
 
@@ -179,10 +180,6 @@ class DetermineLmuWindowsManualReadoutUseCase {
                 item.lapTimeMs?.takeIf { it > 0 }?.let { formatLmuWindowsMyBestLapReadoutText(item.textTemplate, it) }
             }
         }
-
-    private fun isManualClassCarGapItem(key: String): Boolean =
-        key == LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value ||
-            key == LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
 
     /** クラス内前後車とのギャップの文。トップ・最後尾は固定文言（空欄テンプレートは空文字）。データ無しは null。 */
     private fun manualClassCarGapText(item: LmuWindowsManualReadoutItem): String? {

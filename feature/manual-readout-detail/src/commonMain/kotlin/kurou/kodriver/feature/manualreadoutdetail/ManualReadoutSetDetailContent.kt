@@ -68,6 +68,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
@@ -396,10 +397,6 @@ private fun lapsHintResource(itemKey: String): StringResource =
         Res.string.manual_readout_laps_hint
     }
 
-private fun isManualReadoutClassCarGapItem(itemKey: String): Boolean =
-    itemKey == LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value ||
-        itemKey == LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
-
 private fun isManualReadoutLapTimeItem(itemKey: String): Boolean =
     itemKey == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
         itemKey == Gt7Ps5ReadoutItemKey.MyBestLap.Root.value ||
@@ -424,7 +421,7 @@ internal fun ManualReadoutItemTextField(
     simulatorId: String,
 ) {
     val haptic = LocalHapticFeedback.current
-    val isClassCarGap = isManualReadoutClassCarGapItem(itemKey)
+    val isClassCarGap = isLmuWindowsManualReadoutClassCarGapItem(itemKey)
     val isLapTime = isManualReadoutLapTimeItem(itemKey)
     val isLaps = isManualReadoutLapsItem(itemKey)
     val isTemperature = isManualReadoutTemperatureItem(itemKey)

@@ -87,6 +87,7 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
@@ -936,7 +937,7 @@ internal class LmuWindowsNarratorViewModel(
                     celsius,
                     lapTimeMs = bestLapTimeMs.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value },
                     classCarGap =
-                        classCarGap.takeIf { isManualClassCarGapKey(key) },
+                        classCarGap.takeIf { isLmuWindowsManualReadoutClassCarGapItem(key) },
                     remainingLaps =
                         manualRemainingLaps(
                             key = key,
@@ -960,10 +961,6 @@ internal class LmuWindowsNarratorViewModel(
         )
     }
 
-    private fun isManualClassCarGapKey(key: String): Boolean =
-        key == LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value ||
-            key == LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
-
     private fun manualReadoutRatio(
         key: String,
         brakeWear: LmuWindowsBrakeWearRemainingData?,
@@ -976,7 +973,7 @@ internal class LmuWindowsNarratorViewModel(
                 key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value ||
                 key == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value ||
                 key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
-                isManualClassCarGapKey(key) ||
+                isLmuWindowsManualReadoutClassCarGapItem(key) ||
                 isLmuWindowsManualReadoutTemperatureItem(key) -> {
                 null
             }
