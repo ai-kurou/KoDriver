@@ -207,7 +207,7 @@ private fun androidDataModuleAppSettings(context: Context) =
         single<HapticFeedbackAvailabilityRepository> {
             AndroidHapticFeedbackAvailabilityRepository(context)
         }
-        // ACCESS_LOCAL_NETWORK 権限（Android 16+）が許可されているか（設定画面でのバッジ表示に使用）
+        // ACCESS_LOCAL_NETWORK 権限（Android 17+で必要。未満は常に許可済み扱い）が許可されているか（設定画面でのバッジ表示に使用）
         single<AccessLocalNetworkPermissionRepository> {
             AndroidAccessLocalNetworkPermissionRepository(context)
         }
