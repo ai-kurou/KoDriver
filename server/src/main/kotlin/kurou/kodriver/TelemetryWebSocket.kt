@@ -8,6 +8,8 @@ import io.ktor.websocket.CloseReason
 import io.ktor.websocket.close
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.serializer
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
 
@@ -29,7 +31,21 @@ internal inline fun <reified T> Route.telemetryWebSocket(
     feature: KoDriverServerFeature,
     simulator: Simulator,
     distinct: Boolean = true,
-    crossinline flow: () -> Flow<T>,
+    noinline flow: () -> Flow<T>,
+) {
+    telemetryWebSocketRoute(feature, simulator, distinct, serializer<T>(), flow)
+}
+
+/**
+ * [telemetryWebSocket] の本体。`inline` にすると呼び出し元ごとに分岐がコピーされ、Kover の分岐カバレッジが
+ * コピーごとに集計されてしまうため、分岐ロジックはこの非 inline 関数に集約する。
+ */
+internal fun <T> Route.telemetryWebSocketRoute(
+    feature: KoDriverServerFeature,
+    simulator: Simulator,
+    distinct: Boolean,
+    serializer: KSerializer<T>,
+    flow: () -> Flow<T>,
 ) {
     webSocket(feature.webSocketPath(simulator)) {
         if (call.request.header(HttpHeaders.Origin) != null) {
@@ -38,6 +54,6 @@ internal inline fun <reified T> Route.telemetryWebSocket(
         }
         flow()
             .let { if (distinct) it.distinctUntilChanged() else it }
-            .let { sendJsonMessages(it) }
+            .let { sendJsonMessages(it, serializer) }
     }
 }
