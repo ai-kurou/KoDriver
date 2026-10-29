@@ -2,7 +2,11 @@ package kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail
 
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
@@ -36,19 +40,29 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `文言の中間のカーソル位置にlapsを挿入して保存通知する`() {
+    fun `文言の中間にlapsを挿入して保存通知しContextClickを一度通知する`() {
         val changed = mutableListOf<String>()
+        val feedback = mutableListOf<HapticFeedbackType>()
+        val haptic =
+            object : HapticFeedback {
+                override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+                    feedback += hapticFeedbackType
+                }
+            }
         rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutPitTimingDetailPaneContent(
-                    uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
-                    onVirtualEnergyTextChanged = { changed += it },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                        uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                        onVirtualEnergyTextChanged = { changed += it },
+                    )
+                }
             }
         }
         val text = "前半後半"
         rule.onAllNodes(hasSetTextAction())[0].performScrollTo().performTextReplacement(text)
         rule.onAllNodes(hasSetTextAction())[0].performScrollTo().performTextInputSelection(TextRange(2))
+        rule.runOnIdle { assertEquals(emptyList(), feedback) }
         rule
             .onAllNodesWithText("{laps}を挿入")[0]
             .performScrollTo()
@@ -56,6 +70,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             .performClick()
         rule.waitForIdle()
         assertEquals(listOf(text, "前半{laps}後半"), changed)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), feedback)
     }
 
     @Test
