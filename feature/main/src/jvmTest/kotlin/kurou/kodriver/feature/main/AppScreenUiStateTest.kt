@@ -6,20 +6,18 @@ import kotlin.test.assertEquals
 
 class AppScreenUiStateTest {
     @Test
-    fun `selectedSimulatorId_LmuWindowsのときlmu_windows`() {
-        val state = AppScreenUiState(selectedSimulator = Simulator.LmuWindows)
-        assertEquals(Simulator.LmuWindows.id, state.selectedSimulatorId)
-    }
-
-    @Test
-    fun `selectedSimulatorId_Gt7Ps5のときgt7_ps5`() {
-        val state = AppScreenUiState(selectedSimulator = Simulator.Gt7Ps5)
-        assertEquals(Simulator.Gt7Ps5.id, state.selectedSimulatorId)
-    }
-
-    @Test
-    fun `selectedSimulatorId_AceWindowsのときace_windows`() {
-        val state = AppScreenUiState(selectedSimulator = Simulator.AceWindows)
-        assertEquals(Simulator.AceWindows.id, state.selectedSimulatorId)
+    fun `選択中シミュレーターのIDを返す`() {
+        assertEquals(
+            Simulator.LmuWindows.id,
+            AppScreenUiState(selectedSimulator = Simulator.LmuWindows).selectedSimulatorId,
+        )
+        assertEquals(
+            Simulator.Gt7Ps5.id,
+            AppScreenUiState(selectedSimulator = Simulator.Gt7Ps5).selectedSimulatorId,
+        )
+        assertEquals(
+            Simulator.AceWindows.id,
+            AppScreenUiState(selectedSimulator = Simulator.AceWindows).selectedSimulatorId,
+        )
     }
 }
