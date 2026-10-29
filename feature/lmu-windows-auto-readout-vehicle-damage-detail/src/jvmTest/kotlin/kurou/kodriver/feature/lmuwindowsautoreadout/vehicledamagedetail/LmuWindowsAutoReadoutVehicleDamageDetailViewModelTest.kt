@@ -136,114 +136,37 @@ class LmuWindowsAutoReadoutVehicleDamageDetailViewModelTest {
         }
 
     @Test
-    fun `オーバーヒートスイッチを保存する`() =
+    fun `3イベントのスイッチ状態を保存する`() =
         runTest {
             stubSettings()
             coEvery { repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, false) } answers {
-                enabledStates.update { mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Overheat to false) }
+                enabledStates.update { it + (LmuWindowsReadoutItemKey.VehicleDamage.Overheat to false) }
+            }
+            coEvery {
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached, false)
+            } answers {
+                enabledStates.update { it + (LmuWindowsReadoutItemKey.VehicleDamage.PartDetached to false) }
+            }
+            coEvery {
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached, false)
+            } answers {
+                enabledStates.update { it + (LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to false) }
             }
             val viewModel = createViewModel()
             viewModel.onOverheatEnabledChanged(false)
-            assertEquals(false, viewModel.uiState.first().overheatEnabled)
+            viewModel.onPartDetachedEnabledChanged(false)
+            viewModel.onTyreDetachedEnabledChanged(false)
+            val uiState = viewModel.uiState.first()
+            assertEquals(false, uiState.overheatEnabled)
+            assertEquals(false, uiState.partDetachedEnabled)
+            assertEquals(false, uiState.tyreDetachedEnabled)
             verifySettings()
             coVerify(exactly = 1) {
                 repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, false)
             }
-            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.VehicleDamage.Root) }
-            confirmVerified(repository, checkAvailable, stopSpeech)
-        }
-
-    @Test
-    fun `オーバーヒート文言は正規化して保存し反映する`() =
-        runTest {
-            stubSettings()
-            coEvery { repository.saveOverheatReadoutText("自由文言") } answers { overheatText.update { "自由文言" } }
-            val viewModel = createViewModel()
-            viewModel.onOverheatReadoutTextChanged(" 自由文言 ")
-            assertEquals("自由文言", viewModel.uiState.first().overheatReadoutText)
-            verifySettings()
-            coVerify(exactly = 1) { repository.saveOverheatReadoutText("自由文言") }
-            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.VehicleDamage.Root) }
-            confirmVerified(repository, checkAvailable, stopSpeech)
-        }
-
-    @Test
-    fun `オーバーヒート試聴はスイッチOFFでも入力中の文言を解決済みイベントで再生する`() =
-        runTest {
-            stubSettings()
-            enabledStates.update { mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Overheat to false) }
-            every { observeVolume() } returns MutableStateFlow(40)
-            every { playSpeechEvent(LmuWindowsOverheating(resolvedText = "編集中")) } returns Unit
-            val viewModel = createViewModel()
-            viewModel.onOverheatReadoutTextPreviewClicked("編集中")
-            verifySettings()
-            verify(exactly = 1) { observeVolume() }
-            verify(exactly = 1) { playSpeechEvent(LmuWindowsOverheating(resolvedText = "編集中")) }
-            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.VehicleDamage.Root) }
-            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
-        }
-
-    @Test
-    fun `部品脱落スイッチを保存する`() =
-        runTest {
-            stubSettings()
-            coEvery { repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached, false) } answers
-                {
-                    enabledStates.update { mapOf(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached to false) }
-                }
-            val viewModel = createViewModel()
-            viewModel.onPartDetachedEnabledChanged(false)
-            assertEquals(false, viewModel.uiState.first().partDetachedEnabled)
-            verifySettings()
             coVerify(exactly = 1) {
                 repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached, false)
             }
-            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.VehicleDamage.Root) }
-            confirmVerified(repository, checkAvailable, stopSpeech)
-        }
-
-    @Test
-    fun `部品脱落文言は正規化して保存し反映する`() =
-        runTest {
-            stubSettings()
-            coEvery { repository.savePartDetachedReadoutText("自由文言") } answers { partDetachedText.update { "自由文言" } }
-            val viewModel = createViewModel()
-            viewModel.onPartDetachedReadoutTextChanged(" 自由文言 ")
-            assertEquals("自由文言", viewModel.uiState.first().partDetachedReadoutText)
-            verifySettings()
-            coVerify(exactly = 1) { repository.savePartDetachedReadoutText("自由文言") }
-            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.VehicleDamage.Root) }
-            confirmVerified(repository, checkAvailable, stopSpeech)
-        }
-
-    @Test
-    fun `部品脱落試聴はスイッチOFFでも入力中の文言を解決済みイベントで再生する`() =
-        runTest {
-            stubSettings()
-            enabledStates.update { mapOf(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached to false) }
-            every { observeVolume() } returns MutableStateFlow(40)
-            every { playSpeechEvent(LmuWindowsPartDetached(resolvedText = "編集中")) } returns Unit
-            val viewModel = createViewModel()
-            viewModel.onPartDetachedReadoutTextPreviewClicked("編集中")
-            verifySettings()
-            verify(exactly = 1) { observeVolume() }
-            verify(exactly = 1) { playSpeechEvent(LmuWindowsPartDetached(resolvedText = "編集中")) }
-            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.VehicleDamage.Root) }
-            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
-        }
-
-    @Test
-    fun `タイヤ脱落スイッチを保存する`() =
-        runTest {
-            stubSettings()
-            coEvery { repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached, false) } answers
-                {
-                    enabledStates.update { mapOf(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to false) }
-                }
-            val viewModel = createViewModel()
-            viewModel.onTyreDetachedEnabledChanged(false)
-            assertEquals(false, viewModel.uiState.first().tyreDetachedEnabled)
-            verifySettings()
             coVerify(exactly = 1) {
                 repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached, false)
             }
@@ -252,30 +175,53 @@ class LmuWindowsAutoReadoutVehicleDamageDetailViewModelTest {
         }
 
     @Test
-    fun `タイヤ脱落文言は正規化して保存し反映する`() =
+    fun `3イベントの文言を正規化して保存し反映する`() =
         runTest {
             stubSettings()
+            coEvery { repository.saveOverheatReadoutText("自由文言") } answers { overheatText.update { "自由文言" } }
+            coEvery { repository.savePartDetachedReadoutText("自由文言") } answers {
+                partDetachedText.update { "自由文言" }
+            }
             coEvery { repository.saveTyreDetachedReadoutText("自由文言") } answers { tyreDetachedText.update { "自由文言" } }
             val viewModel = createViewModel()
+            viewModel.onOverheatReadoutTextChanged(" 自由文言 ")
+            viewModel.onPartDetachedReadoutTextChanged(" 自由文言 ")
             viewModel.onTyreDetachedReadoutTextChanged(" 自由文言 ")
-            assertEquals("自由文言", viewModel.uiState.first().tyreDetachedReadoutText)
+            val uiState = viewModel.uiState.first()
+            assertEquals("自由文言", uiState.overheatReadoutText)
+            assertEquals("自由文言", uiState.partDetachedReadoutText)
+            assertEquals("自由文言", uiState.tyreDetachedReadoutText)
             verifySettings()
+            coVerify(exactly = 1) { repository.saveOverheatReadoutText("自由文言") }
+            coVerify(exactly = 1) { repository.savePartDetachedReadoutText("自由文言") }
             coVerify(exactly = 1) { repository.saveTyreDetachedReadoutText("自由文言") }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.VehicleDamage.Root) }
             confirmVerified(repository, checkAvailable, stopSpeech)
         }
 
     @Test
-    fun `タイヤ脱落試聴はスイッチOFFでも入力中の文言を解決済みイベントで再生する`() =
+    fun `スイッチOFFでも3イベントの入力中文言を解決済みイベントで試聴する`() =
         runTest {
             stubSettings()
-            enabledStates.update { mapOf(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to false) }
+            enabledStates.update {
+                mapOf(
+                    LmuWindowsReadoutItemKey.VehicleDamage.Overheat to false,
+                    LmuWindowsReadoutItemKey.VehicleDamage.PartDetached to false,
+                    LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to false,
+                )
+            }
             every { observeVolume() } returns MutableStateFlow(40)
+            every { playSpeechEvent(LmuWindowsOverheating(resolvedText = "編集中")) } returns Unit
+            every { playSpeechEvent(LmuWindowsPartDetached(resolvedText = "編集中")) } returns Unit
             every { playSpeechEvent(LmuWindowsTyreDetached(resolvedText = "編集中")) } returns Unit
             val viewModel = createViewModel()
+            viewModel.onOverheatReadoutTextPreviewClicked("編集中")
+            viewModel.onPartDetachedReadoutTextPreviewClicked("編集中")
             viewModel.onTyreDetachedReadoutTextPreviewClicked("編集中")
             verifySettings()
-            verify(exactly = 1) { observeVolume() }
+            verify(exactly = 3) { observeVolume() }
+            verify(exactly = 1) { playSpeechEvent(LmuWindowsOverheating(resolvedText = "編集中")) }
+            verify(exactly = 1) { playSpeechEvent(LmuWindowsPartDetached(resolvedText = "編集中")) }
             verify(exactly = 1) { playSpeechEvent(LmuWindowsTyreDetached(resolvedText = "編集中")) }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.VehicleDamage.Root) }
             confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
