@@ -1,16 +1,29 @@
 package kurou.kodriver.feature.otherfeedbackdetail
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kurou.kodriver.domain.model.TelemetryLog
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 
-/** フォーム状態、添付ログ、送信可否から画面状態を合成する冷たい Flow。 */
+/** 添付ログIDからログを取得し、フォーム状態・送信可否と合わせて画面状態を合成する冷たい Flow。 */
 internal class OtherFeedbackDetailFlow(
     mutableState: Flow<OtherFeedbackDetailUiState>,
-    attachedTelemetryLog: Flow<TelemetryLog?>,
+    telemetryLogId: Flow<Long?>,
+    observeTelemetryLogDetail: ObserveTelemetryLogDetailUseCase,
     canSendFeedback: Flow<Boolean>,
 ) {
-    val initialUiState = OtherFeedbackDetailUiState()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val attachedTelemetryLog =
+        telemetryLogId.flatMapLatest { id ->
+            if (id == null) {
+                flowOf(null)
+            } else {
+                observeTelemetryLogDetail(id).map { it?.current }
+            }
+        }
 
     val uiState: Flow<OtherFeedbackDetailUiState> =
         combine(mutableState, attachedTelemetryLog, canSendFeedback) { state, log, canSend ->
