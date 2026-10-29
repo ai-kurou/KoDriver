@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.combine
 
 /** 保存済みIPとUDPポート、操作状態から画面状態を合成する冷たい Flow。 */
 internal class OtherConsoleIpDetailFlow(
-    savedAddress: Flow<String>,
+    savedAddress: Flow<String?>,
     savedPort: Flow<Int>,
     mutableState: Flow<OtherConsoleIpDetailMutableState>,
 ) {
@@ -17,7 +17,7 @@ internal class OtherConsoleIpDetailFlow(
             savedPort,
             mutableState,
         ) { saved, port, m ->
-            val current = m.userInput ?: saved
+            val current = m.userInput ?: saved ?: ""
             OtherConsoleIpDetailUiState(
                 inputAddress = current,
                 isInputValid = current.isEmpty() || isValidConsoleIpAddress(current),

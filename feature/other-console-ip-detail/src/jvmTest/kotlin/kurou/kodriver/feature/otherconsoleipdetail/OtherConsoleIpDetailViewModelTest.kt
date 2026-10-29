@@ -63,6 +63,19 @@ class OtherConsoleIpDetailViewModelTest {
         }
 
     @Test
+    fun `保存済みアドレスがnullなら空入力を表示して保存しない`() =
+        runTest {
+            addressRepository = FakeConsoleAddressPreferencesRepository(initial = null)
+            viewModel = buildViewModel()
+
+            assertEquals(OtherConsoleIpDetailUiState(), viewModel.uiState.first())
+            viewModel.onSave()
+
+            assertEquals(null, addressRepository.consoleAddress().first())
+            assertEquals(OtherConsoleIpDetailUiState(), viewModel.uiState.first())
+        }
+
+    @Test
     fun `保存済みポート33741が初期値として表示される`() =
         runTest {
             portRepository = FakeGt7Ps5UdpPortPreferencesRepository(initial = 33741)

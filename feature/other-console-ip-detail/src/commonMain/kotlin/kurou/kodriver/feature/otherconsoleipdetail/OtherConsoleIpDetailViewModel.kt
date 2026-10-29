@@ -6,7 +6,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,9 +21,8 @@ internal class OtherConsoleIpDetailViewModel(
     observeGt7Ps5UdpPort: ObserveGt7Ps5UdpPortUseCase,
     private val saveGt7Ps5UdpPort: SaveGt7Ps5UdpPortUseCase,
 ) : ViewModel() {
-    private val savedAddress: StateFlow<String> =
+    private val savedAddress: StateFlow<String?> =
         observeConsoleAddress()
-            .map { it ?: "" }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
 
     private val savedPort: StateFlow<Int> =
@@ -53,7 +51,7 @@ internal class OtherConsoleIpDetailViewModel(
     }
 
     fun onSave() {
-        val address = _mutable.value.userInput ?: savedAddress.value
+        val address = _mutable.value.userInput ?: savedAddress.value ?: ""
         if (!isValidConsoleIpAddress(address)) return
         val port = _mutable.value.userSelectedPort ?: savedPort.value
         viewModelScope.launch {
