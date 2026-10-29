@@ -233,31 +233,36 @@ class OtherFeedbackDetailPaneTest {
     @Test
     fun `添付を解除するボタンをタップするとonDetachTelemetryLogが呼ばれる`() {
         var detachCount = 0
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
-            MaterialTheme {
-                OtherFeedbackDetailPaneContent(
-                    uiState =
-                        OtherFeedbackDetailUiState(
-                            attachedTelemetryLog =
-                                TelemetryLog(
-                                    id = 42L,
-                                    createdAt = 0L,
-                                    simulator = Simulator.LmuWindows,
-                                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
-                                    narratedText = "イエローフラッグ",
-                                    narrationOutcome = NarrationOutcome.INTERRUPTED,
-                                    narrationSource = NarrationSource.AUTO,
-                                    telemetryJson = "",
-                                ),
-                        ),
-                    onDetachTelemetryLog = { detachCount++ },
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                MaterialTheme {
+                    OtherFeedbackDetailPaneContent(
+                        uiState =
+                            OtherFeedbackDetailUiState(
+                                attachedTelemetryLog =
+                                    TelemetryLog(
+                                        id = 42L,
+                                        createdAt = 0L,
+                                        simulator = Simulator.LmuWindows,
+                                        readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
+                                        narratedText = "イエローフラッグ",
+                                        narrationOutcome = NarrationOutcome.INTERRUPTED,
+                                        narrationSource = NarrationSource.AUTO,
+                                        telemetryJson = "",
+                                    ),
+                            ),
+                        onDetachTelemetryLog = { detachCount++ },
+                    )
+                }
             }
         }
 
         rule.onNode(hasContentDescription("添付を解除")).performClick()
 
         assertEquals(1, detachCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test

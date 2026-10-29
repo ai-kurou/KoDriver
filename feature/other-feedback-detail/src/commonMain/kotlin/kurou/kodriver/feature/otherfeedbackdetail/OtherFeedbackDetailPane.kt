@@ -342,6 +342,7 @@ private fun AttachedTelemetryLogChip(
     telemetryLog: TelemetryLog,
     onDetach: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     InputChip(
         selected = false,
         onClick = {},
@@ -350,7 +351,10 @@ private fun AttachedTelemetryLogChip(
         },
         trailingIcon = {
             IconButton(
-                onClick = onDetach,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onDetach()
+                },
                 modifier = Modifier.size(InputChipDefaults.IconSize),
             ) {
                 Icon(
