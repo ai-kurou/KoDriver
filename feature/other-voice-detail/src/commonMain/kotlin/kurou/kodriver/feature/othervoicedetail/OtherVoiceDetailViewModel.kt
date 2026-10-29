@@ -3,14 +3,11 @@ package kurou.kodriver.feature.othervoicedetail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,16 +30,10 @@ internal class OtherVoiceDetailViewModel(
     private var previewRequest = 0
     private val refreshTrigger = MutableStateFlow(0)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<OtherVoiceDetailUiState> =
         OtherVoiceDetailFlow(
-            loadState =
-                refreshTrigger.flatMapLatest {
-                    flow {
-                        emit(OtherVoiceDetailUiState())
-                        emit(OtherVoiceDetailUiState(voices = loadVoices(), isLoading = false))
-                    }
-                },
+            refreshTrigger = refreshTrigger,
+            loadVoices = ::loadVoices,
             savedVoiceId = observeVoice(),
             previewingVoiceId = previewingVoiceId,
         ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVoiceDetailUiState())

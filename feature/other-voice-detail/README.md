@@ -20,5 +20,5 @@ Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を
 ## ファイル責務
 
 - `OtherVoiceDetailUiState.kt`: 音声選択画面の表示状態。
-- `OtherVoiceDetailFlow.kt`: ロード状態・保存済み音声ID・試聴中IDから表示状態を合成する cold Flow。
-- `OtherVoiceDetailViewModel.kt`: 音声一覧の取得・再読み込みと例外処理、試聴・保存の副作用、`stateIn` による状態の共有。
+- `OtherVoiceDetailFlow.kt`: 購読・再読み込みごとにLoading状態を通知して音声一覧を取得し、保存済み音声ID・試聴中IDから表示状態を合成する cold Flow。
+- `OtherVoiceDetailViewModel.kt`: 再読み込みトリガーの管理、音声一覧取得の例外処理とFlowへのcallback提供、試聴・保存の副作用、`stateIn` による状態の共有。
