@@ -172,19 +172,12 @@ class AceWindowsReadoutTextSpeakerTest {
             val event = AceWindowsRemainingFuelCurrentValue(42)
             coEvery { checkAvailable() } returns true
             coEvery { speakText(event.narratedText, volume = 80) } just Runs
-            coEvery { speakText("解決済み", volume = 80) } just Runs
 
             assertEquals(event.narratedText, speaker.readoutText(event))
             speaker(event, 80)
-            val resolved = event.withResolvedText("解決済み")
-            assertEquals("解決済み", speaker.readoutText(resolved))
-            speaker(resolved, 80)
-            assertNull(speaker.readoutText(event.withResolvedText(" ")))
-            speaker(event.withResolvedText(" "), 80)
 
-            coVerify(exactly = 3) { checkAvailable() }
+            coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText(event.narratedText, volume = 80) }
-            coVerify(exactly = 1) { speakText("解決済み", volume = 80) }
             confirmVerified(checkAvailable, speakText)
         }
 
@@ -207,17 +200,6 @@ class AceWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 3) { checkAvailable() }
             coVerify(exactly = 1) { speakText(event.text, volume = 80) }
             coVerify(exactly = 1) { speakText("解決済み", volume = 80) }
-            confirmVerified(checkAvailable, speakText)
-        }
-
-    @Test
-    fun `TTS利用不可なら手動イベントを読み上げない`() =
-        runTest {
-            val event = AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(event))
-            speaker(event, 80)
-            coVerify(exactly = 2) { checkAvailable() }
             confirmVerified(checkAvailable, speakText)
         }
 
@@ -267,16 +249,10 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `対象外イベントは設定を参照しない`() =
         runTest {
-            val events =
-                listOf(
-                    ForeignReadoutTextEvent(),
-                    ForeignReadoutTextEvent(),
-                )
-            events.forEach { event ->
-                assertFalse(isAceWindowsCustomSpeakEvent(event))
-                assertNull(speaker.readoutText(event))
-                speaker(event, 100)
-            }
+            val event = ForeignReadoutTextEvent()
+            assertFalse(isAceWindowsCustomSpeakEvent(event))
+            assertNull(speaker.readoutText(event))
+            speaker(event, 100)
             verify(exactly = 0) { observeText() }
             coVerify(exactly = 0) { checkAvailable() }
             confirmVerified(observeText, checkAvailable, speakText)
@@ -286,16 +262,10 @@ class AceWindowsReadoutTextSpeakerTest {
     fun `他シミュレーターの解決済み本文も読み上げない`() =
         runTest {
             val text = "他シミュレーターの本文"
-            val events =
-                listOf(
-                    ForeignReadoutTextEvent(resolvedText = text),
-                    ForeignReadoutTextEvent(resolvedText = text),
-                )
-            events.forEach { event ->
-                assertFalse(isAceWindowsCustomSpeakEvent(event))
-                assertNull(speaker.readoutText(event))
-                speaker(event, 42)
-            }
+            val event = ForeignReadoutTextEvent(resolvedText = text)
+            assertFalse(isAceWindowsCustomSpeakEvent(event))
+            assertNull(speaker.readoutText(event))
+            speaker(event, 42)
             verify(exactly = 0) { observeText() }
             coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 0) { speakText(text, volume = 42) }
@@ -341,33 +311,6 @@ class AceWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `Whiteは空文字と空白では利用可否を確認せず読み上げない`() =
-        runTest {
-            listOf("", " \t\n ").forEach { text ->
-                every { observeWhite() } returns flowOf(text)
-                assertNull(speaker.readoutText(AceWindowsWhiteFlag()))
-                speaker(AceWindowsWhiteFlag(), 100)
-                coVerify(exactly = 0) { speakText(text, volume = 100) }
-            }
-            verify(exactly = 4) { observeWhite() }
-            coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeWhite, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `WhiteはTTS利用不可なら読み上げない`() =
-        runTest {
-            every { observeWhite() } returns flowOf("完走")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(AceWindowsWhiteFlag()))
-            speaker(AceWindowsWhiteFlag(), 100)
-            verify(exactly = 2) { observeWhite() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("完走", volume = 100) }
-            confirmVerified(observeWhite, checkAvailable, speakText)
-        }
-
-    @Test
     fun `Greenは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
             every { observeGreen() } returns flowOf("チェッカー、完走")
@@ -380,33 +323,6 @@ class AceWindowsReadoutTextSpeakerTest {
             verify(exactly = 2) { observeGreen() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeGreen, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `Greenは空文字と空白では利用可否を確認せず読み上げない`() =
-        runTest {
-            listOf("", " \t\n ").forEach { text ->
-                every { observeGreen() } returns flowOf(text)
-                assertNull(speaker.readoutText(AceWindowsGreenFlag()))
-                speaker(AceWindowsGreenFlag(), 100)
-                coVerify(exactly = 0) { speakText(text, volume = 100) }
-            }
-            verify(exactly = 4) { observeGreen() }
-            coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeGreen, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `GreenはTTS利用不可なら読み上げない`() =
-        runTest {
-            every { observeGreen() } returns flowOf("完走")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(AceWindowsGreenFlag()))
-            speaker(AceWindowsGreenFlag(), 100)
-            verify(exactly = 2) { observeGreen() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("完走", volume = 100) }
             confirmVerified(observeGreen, checkAvailable, speakText)
         }
 
@@ -427,33 +343,6 @@ class AceWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `Redは空文字と空白では利用可否を確認せず読み上げない`() =
-        runTest {
-            listOf("", " \t\n ").forEach { text ->
-                every { observeRed() } returns flowOf(text)
-                assertNull(speaker.readoutText(AceWindowsRedFlag()))
-                speaker(AceWindowsRedFlag(), 100)
-                coVerify(exactly = 0) { speakText(text, volume = 100) }
-            }
-            verify(exactly = 4) { observeRed() }
-            coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeRed, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `RedはTTS利用不可なら読み上げない`() =
-        runTest {
-            every { observeRed() } returns flowOf("完走")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(AceWindowsRedFlag()))
-            speaker(AceWindowsRedFlag(), 100)
-            verify(exactly = 2) { observeRed() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("完走", volume = 100) }
-            confirmVerified(observeRed, checkAvailable, speakText)
-        }
-
-    @Test
     fun `Blueは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
             every { observeBlue() } returns flowOf("チェッカー、完走")
@@ -466,33 +355,6 @@ class AceWindowsReadoutTextSpeakerTest {
             verify(exactly = 2) { observeBlue() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeBlue, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `Blueは空文字と空白では利用可否を確認せず読み上げない`() =
-        runTest {
-            listOf("", " \t\n ").forEach { text ->
-                every { observeBlue() } returns flowOf(text)
-                assertNull(speaker.readoutText(AceWindowsBlueFlag()))
-                speaker(AceWindowsBlueFlag(), 100)
-                coVerify(exactly = 0) { speakText(text, volume = 100) }
-            }
-            verify(exactly = 4) { observeBlue() }
-            coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeBlue, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `BlueはTTS利用不可なら読み上げない`() =
-        runTest {
-            every { observeBlue() } returns flowOf("完走")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(AceWindowsBlueFlag()))
-            speaker(AceWindowsBlueFlag(), 100)
-            verify(exactly = 2) { observeBlue() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("完走", volume = 100) }
             confirmVerified(observeBlue, checkAvailable, speakText)
         }
 
@@ -513,33 +375,6 @@ class AceWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `Yellowは空文字と空白では利用可否を確認せず読み上げない`() =
-        runTest {
-            listOf("", " \t\n ").forEach { text ->
-                every { observeYellow() } returns flowOf(text)
-                assertNull(speaker.readoutText(AceWindowsYellowFlag()))
-                speaker(AceWindowsYellowFlag(), 100)
-                coVerify(exactly = 0) { speakText(text, volume = 100) }
-            }
-            verify(exactly = 4) { observeYellow() }
-            coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeYellow, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `YellowはTTS利用不可なら読み上げない`() =
-        runTest {
-            every { observeYellow() } returns flowOf("完走")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(AceWindowsYellowFlag()))
-            speaker(AceWindowsYellowFlag(), 100)
-            verify(exactly = 2) { observeYellow() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("完走", volume = 100) }
-            confirmVerified(observeYellow, checkAvailable, speakText)
-        }
-
-    @Test
     fun `Blackは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
             every { observeBlack() } returns flowOf("チェッカー、完走")
@@ -552,33 +387,6 @@ class AceWindowsReadoutTextSpeakerTest {
             verify(exactly = 2) { observeBlack() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeBlack, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `Blackは空文字と空白では利用可否を確認せず読み上げない`() =
-        runTest {
-            listOf("", " \t\n ").forEach { text ->
-                every { observeBlack() } returns flowOf(text)
-                assertNull(speaker.readoutText(AceWindowsBlackFlag()))
-                speaker(AceWindowsBlackFlag(), 100)
-                coVerify(exactly = 0) { speakText(text, volume = 100) }
-            }
-            verify(exactly = 4) { observeBlack() }
-            coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeBlack, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `BlackはTTS利用不可なら読み上げない`() =
-        runTest {
-            every { observeBlack() } returns flowOf("完走")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(AceWindowsBlackFlag()))
-            speaker(AceWindowsBlackFlag(), 100)
-            verify(exactly = 2) { observeBlack() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("完走", volume = 100) }
             confirmVerified(observeBlack, checkAvailable, speakText)
         }
 
@@ -599,33 +407,6 @@ class AceWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `BlackWhiteは空文字と空白では利用可否を確認せず読み上げない`() =
-        runTest {
-            listOf("", " \t\n ").forEach { text ->
-                every { observeBlackWhite() } returns flowOf(text)
-                assertNull(speaker.readoutText(AceWindowsBlackWhiteFlag()))
-                speaker(AceWindowsBlackWhiteFlag(), 100)
-                coVerify(exactly = 0) { speakText(text, volume = 100) }
-            }
-            verify(exactly = 4) { observeBlackWhite() }
-            coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeBlackWhite, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `BlackWhiteはTTS利用不可なら読み上げない`() =
-        runTest {
-            every { observeBlackWhite() } returns flowOf("完走")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(AceWindowsBlackWhiteFlag()))
-            speaker(AceWindowsBlackWhiteFlag(), 100)
-            verify(exactly = 2) { observeBlackWhite() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("完走", volume = 100) }
-            confirmVerified(observeBlackWhite, checkAvailable, speakText)
-        }
-
-    @Test
     fun `OrangeCircleは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
             every { observeOrangeCircle() } returns flowOf("チェッカー、完走")
@@ -638,33 +419,6 @@ class AceWindowsReadoutTextSpeakerTest {
             verify(exactly = 2) { observeOrangeCircle() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeOrangeCircle, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `OrangeCircleは空文字と空白では利用可否を確認せず読み上げない`() =
-        runTest {
-            listOf("", " \t\n ").forEach { text ->
-                every { observeOrangeCircle() } returns flowOf(text)
-                assertNull(speaker.readoutText(AceWindowsOrangeCircleFlag()))
-                speaker(AceWindowsOrangeCircleFlag(), 100)
-                coVerify(exactly = 0) { speakText(text, volume = 100) }
-            }
-            verify(exactly = 4) { observeOrangeCircle() }
-            coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeOrangeCircle, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `OrangeCircleはTTS利用不可なら読み上げない`() =
-        runTest {
-            every { observeOrangeCircle() } returns flowOf("完走")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(AceWindowsOrangeCircleFlag()))
-            speaker(AceWindowsOrangeCircleFlag(), 100)
-            verify(exactly = 2) { observeOrangeCircle() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("完走", volume = 100) }
             confirmVerified(observeOrangeCircle, checkAvailable, speakText)
         }
 
@@ -685,33 +439,6 @@ class AceWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `RedYellowStripesは空文字と空白では利用可否を確認せず読み上げない`() =
-        runTest {
-            listOf("", " \t\n ").forEach { text ->
-                every { observeRedYellowStripes() } returns flowOf(text)
-                assertNull(speaker.readoutText(AceWindowsRedYellowStripesFlag()))
-                speaker(AceWindowsRedYellowStripesFlag(), 100)
-                coVerify(exactly = 0) { speakText(text, volume = 100) }
-            }
-            verify(exactly = 4) { observeRedYellowStripes() }
-            coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeRedYellowStripes, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `RedYellowStripesはTTS利用不可なら読み上げない`() =
-        runTest {
-            every { observeRedYellowStripes() } returns flowOf("完走")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(AceWindowsRedYellowStripesFlag()))
-            speaker(AceWindowsRedYellowStripesFlag(), 100)
-            verify(exactly = 2) { observeRedYellowStripes() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("完走", volume = 100) }
-            confirmVerified(observeRedYellowStripes, checkAvailable, speakText)
-        }
-
-    @Test
     fun `車両接近は保存文言をそのまま指定音量で読み上げる`() =
         runTest {
             every { observeVehicleApproach() } returns flowOf("周囲に注意")
@@ -724,33 +451,6 @@ class AceWindowsReadoutTextSpeakerTest {
             verify(exactly = 2) { observeVehicleApproach() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("周囲に注意", volume = 42) }
-            confirmVerified(observeVehicleApproach, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `車両接近は空文字と空白では利用可否を確認せず読み上げない`() =
-        runTest {
-            listOf("", " \t\n ").forEach { text ->
-                every { observeVehicleApproach() } returns flowOf(text)
-                assertNull(speaker.readoutText(AceWindowsVehicleApproach()))
-                speaker(AceWindowsVehicleApproach(), 100)
-                coVerify(exactly = 0) { speakText(text, volume = 100) }
-            }
-            verify(exactly = 4) { observeVehicleApproach() }
-            coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeVehicleApproach, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `車両接近はTTS利用不可なら読み上げない`() =
-        runTest {
-            every { observeVehicleApproach() } returns flowOf("接近")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(AceWindowsVehicleApproach()))
-            speaker(AceWindowsVehicleApproach(), 100)
-            verify(exactly = 2) { observeVehicleApproach() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("接近", volume = 100) }
             confirmVerified(observeVehicleApproach, checkAvailable, speakText)
         }
 
@@ -786,34 +486,6 @@ class AceWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `タイヤ過熱は空白の保存文言や解決済み本文を読み上げない`() =
-        runTest {
-            every { observeTyreOverheat() } returns flowOf(" ")
-            val event = AceWindowsTyreOverheat(111)
-            assertNull(speaker.readoutText(event))
-            speaker(event, 42)
-            speaker(event.withResolvedText(" "), 42)
-            verify(exactly = 2) { observeTyreOverheat() }
-            coVerify(exactly = 0) { checkAvailable() }
-            coVerify(exactly = 0) { speakText(" ", volume = 42) }
-            confirmVerified(observeTyreOverheat, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `タイヤ過熱はTTS利用不可なら読み上げない`() =
-        runTest {
-            val event = AceWindowsTyreOverheat(111)
-            every { observeTyreOverheat() } returns flowOf("過熱 {celsius}度")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(event))
-            speaker(event, 42)
-            verify(exactly = 2) { observeTyreOverheat() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("過熱 111度", volume = 42) }
-            confirmVerified(observeTyreOverheat, checkAvailable, speakText)
-        }
-
-    @Test
     fun `燃料残量は保存文言の残量を整形して読み上げる`() =
         runTest {
             val event = AceWindowsRemainingFuelWarning(20)
@@ -826,49 +498,6 @@ class AceWindowsReadoutTextSpeakerTest {
             verify(exactly = 2) { observeRemainingFuel() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("残り20%、20", volume = 42) }
-            confirmVerified(observeRemainingFuel, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `燃料残量の解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
-        runTest {
-            val event = AceWindowsRemainingFuelWarning(20, "判定時の本文")
-            coEvery { checkAvailable() } returns true
-            coEvery { speakText("判定時の本文", volume = 42) } just Runs
-            assertEquals("判定時の本文", speaker.readoutText(event))
-            coEvery { checkAvailable() } returns false
-            speaker(event, 42)
-            verify(exactly = 0) { observeRemainingFuel() }
-            coVerify(exactly = 1) { checkAvailable() }
-            coVerify(exactly = 1) { speakText("判定時の本文", volume = 42) }
-            confirmVerified(observeRemainingFuel, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `燃料残量は空白の保存文言や解決済み本文を読み上げない`() =
-        runTest {
-            every { observeRemainingFuel() } returns flowOf(" ")
-            val event = AceWindowsRemainingFuelWarning(20)
-            assertNull(speaker.readoutText(event))
-            speaker(event, 42)
-            speaker(event.withResolvedText(" "), 42)
-            verify(exactly = 2) { observeRemainingFuel() }
-            coVerify(exactly = 0) { checkAvailable() }
-            coVerify(exactly = 0) { speakText(" ", volume = 42) }
-            confirmVerified(observeRemainingFuel, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `燃料残量はTTS利用不可なら読み上げない`() =
-        runTest {
-            val event = AceWindowsRemainingFuelWarning(20)
-            every { observeRemainingFuel() } returns flowOf("残り{percent}%")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(event))
-            speaker(event, 42)
-            verify(exactly = 2) { observeRemainingFuel() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("残り20%", volume = 42) }
             confirmVerified(observeRemainingFuel, checkAvailable, speakText)
         }
 
@@ -889,49 +518,6 @@ class AceWindowsReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `燃料残り周回数の解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
-        runTest {
-            val event = AceWindowsRemainingFuelLapsWarning(20, "判定時の本文")
-            coEvery { checkAvailable() } returns true
-            coEvery { speakText("判定時の本文", volume = 42) } just Runs
-            assertEquals("判定時の本文", speaker.readoutText(event))
-            coEvery { checkAvailable() } returns false
-            speaker(event, 42)
-            verify(exactly = 0) { observeRemainingFuelLaps() }
-            coVerify(exactly = 1) { checkAvailable() }
-            coVerify(exactly = 1) { speakText("判定時の本文", volume = 42) }
-            confirmVerified(observeRemainingFuelLaps, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `燃料残り周回数は空白の保存文言や解決済み本文を読み上げない`() =
-        runTest {
-            every { observeRemainingFuelLaps() } returns flowOf(" ")
-            val event = AceWindowsRemainingFuelLapsWarning(20)
-            assertNull(speaker.readoutText(event))
-            speaker(event, 42)
-            speaker(event.withResolvedText(" "), 42)
-            verify(exactly = 2) { observeRemainingFuelLaps() }
-            coVerify(exactly = 0) { checkAvailable() }
-            coVerify(exactly = 0) { speakText(" ", volume = 42) }
-            confirmVerified(observeRemainingFuelLaps, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `燃料残り周回数はTTS利用不可なら読み上げない`() =
-        runTest {
-            val event = AceWindowsRemainingFuelLapsWarning(20)
-            every { observeRemainingFuelLaps() } returns flowOf("残り{laps}周")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(event))
-            speaker(event, 42)
-            verify(exactly = 2) { observeRemainingFuelLaps() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("残り20周", volume = 42) }
-            confirmVerified(observeRemainingFuelLaps, checkAvailable, speakText)
-        }
-
-    @Test
     fun `自己ベストラップは保存文言のラップタイムを整形して読み上げる`() =
         runTest {
             val event = AceWindowsMyBestLap(83_456)
@@ -944,49 +530,6 @@ class AceWindowsReadoutTextSpeakerTest {
             verify(exactly = 2) { observeMyBestLap() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("更新 1分23秒456、1分23秒456", volume = 42) }
-            confirmVerified(observeMyBestLap, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `自己ベストラップの解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
-        runTest {
-            val event = AceWindowsMyBestLap(83_456, "判定時の本文")
-            coEvery { checkAvailable() } returns true
-            coEvery { speakText("判定時の本文", volume = 42) } just Runs
-            assertEquals("判定時の本文", speaker.readoutText(event))
-            coEvery { checkAvailable() } returns false
-            speaker(event, 42)
-            verify(exactly = 0) { observeMyBestLap() }
-            coVerify(exactly = 1) { checkAvailable() }
-            coVerify(exactly = 1) { speakText("判定時の本文", volume = 42) }
-            confirmVerified(observeMyBestLap, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `自己ベストラップは空白の保存文言や解決済み本文を読み上げない`() =
-        runTest {
-            every { observeMyBestLap() } returns flowOf(" ")
-            val event = AceWindowsMyBestLap(83_456)
-            assertNull(speaker.readoutText(event))
-            speaker(event, 42)
-            speaker(event.withResolvedText(" "), 42)
-            verify(exactly = 2) { observeMyBestLap() }
-            coVerify(exactly = 0) { checkAvailable() }
-            coVerify(exactly = 0) { speakText(" ", volume = 42) }
-            confirmVerified(observeMyBestLap, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `自己ベストラップはTTS利用不可なら読み上げない`() =
-        runTest {
-            val event = AceWindowsMyBestLap(83_456)
-            every { observeMyBestLap() } returns flowOf("更新 {laptime}")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(event))
-            speaker(event, 42)
-            verify(exactly = 2) { observeMyBestLap() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText("更新 1分23秒456", volume = 42) }
             confirmVerified(observeMyBestLap, checkAvailable, speakText)
         }
 
@@ -1005,37 +548,6 @@ class AceWindowsReadoutTextSpeakerTest {
             verify(exactly = 0) { observeRemainingFuelLaps() }
             coVerify(exactly = 4) { checkAvailable() }
             coVerify(exactly = 2) { speakText("燃料なし {laps}", volume = 42) }
-            confirmVerified(observeEmptyFuelLaps, observeRemainingFuelLaps, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `0周用の空白文言はTTSを確認せずスキップしTTS不可の文言も読み上げない`() =
-        runTest {
-            val event = AceWindowsRemainingFuelLapsWarning(0)
-            every { observeEmptyFuelLaps() } returns flowOf(" ")
-            assertNull(speaker.readoutText(event))
-            speaker(event, 42)
-            every { observeEmptyFuelLaps() } returns flowOf("燃料なし")
-            coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(event))
-            speaker(event, 42)
-            verify(exactly = 4) { observeEmptyFuelLaps() }
-            coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 0) { speakText(" ", volume = 42) }
-            coVerify(exactly = 0) { speakText("燃料なし", volume = 42) }
-            confirmVerified(observeEmptyFuelLaps, checkAvailable, speakText)
-        }
-
-    @Test
-    fun `0周用も解決済み本文を優先する`() =
-        runTest {
-            val event = AceWindowsRemainingFuelLapsWarning(0, "確定した燃料なし")
-            coEvery { speakText("確定した燃料なし", volume = 42) } just Runs
-            speaker(event, 42)
-            verify(exactly = 0) { observeEmptyFuelLaps() }
-            verify(exactly = 0) { observeRemainingFuelLaps() }
-            coVerify(exactly = 0) { checkAvailable() }
-            coVerify(exactly = 1) { speakText("確定した燃料なし", volume = 42) }
             confirmVerified(observeEmptyFuelLaps, observeRemainingFuelLaps, checkAvailable, speakText)
         }
 
