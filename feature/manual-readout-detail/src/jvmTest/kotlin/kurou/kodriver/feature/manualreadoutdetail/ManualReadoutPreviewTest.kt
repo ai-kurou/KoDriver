@@ -8,6 +8,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class ManualReadoutPreviewTest {
@@ -15,10 +16,10 @@ class ManualReadoutPreviewTest {
     fun `各シミュレーターの全項目にプレースホルダー挿入と未知検出定義があり未知キーは空になる`() {
         Simulator.entries.forEach { simulator ->
             manualReadoutItemKeys(simulator.id).forEach { key ->
-                val definition = manualReadoutPlaceholderDefinitions.getValue(simulator.id to key)
-                assertEquals(true, previewFormatters.containsKey(simulator.id to key))
-                assertEquals(definition.insertText, insertPlaceholder(simulator.id, key))
-                assertEquals(emptyList(), unknownPlaceholders(simulator.id, key, definition.insertText))
+                val definition = requireNotNull(manualReadoutItemDefinition(simulator.id, key))
+                assertTrue(definition.placeholder.isNotEmpty())
+                assertEquals(definition.placeholder, insertPlaceholder(simulator.id, key))
+                assertEquals(emptyList(), unknownPlaceholders(simulator.id, key, definition.placeholder))
             }
         }
         assertEquals("", insertPlaceholder("unknown", "unknown"))

@@ -8,12 +8,23 @@ import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class LmuWindowsManualReadoutItemsTest {
     @BeforeTest
     fun `ReadoutItemKeyを登録する`() {
         registerLmuWindowsReadoutItemKeys()
+    }
+
+    @Test
+    fun `全項目はプレースホルダーを持ち既定文言に含まれプレビューで置換される`() {
+        lmuWindowsManualReadoutItemDefinitions.values.forEach { definition ->
+            assertTrue(definition.placeholder.isNotEmpty())
+            assertEquals(emptyList(), definition.findUnknownPlaceholders(definition.placeholder))
+            assertTrue(definition.textDefault.contains(definition.placeholder))
+            assertFalse(definition.previewFormatter(definition.textDefault).contains(definition.placeholder))
+        }
     }
 
     @Test
