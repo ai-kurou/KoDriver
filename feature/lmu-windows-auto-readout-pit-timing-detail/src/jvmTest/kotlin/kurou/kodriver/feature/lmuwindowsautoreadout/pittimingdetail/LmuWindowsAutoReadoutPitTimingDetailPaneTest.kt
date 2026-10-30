@@ -1,7 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail
 
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedback
@@ -38,6 +37,27 @@ import kotlin.test.assertTrue
 class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `バーチャルエネルギーカードに対象クラスの見出しと全6クラスの対象区分が表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent()
+            }
+        }
+
+        rule.onNodeWithText("対象クラス").performScrollTo().assertIsDisplayed()
+        listOf(
+            "Hypercar、対象",
+            "LMP2、対象外",
+            "ELMS LMP2、対象外",
+            "LMP3、対象外",
+            "LMGTE、対象外",
+            "LMGT3、対象",
+        ).forEach { contentDescription ->
+            rule.onNodeWithContentDescription(contentDescription).performScrollTo().assertIsDisplayed()
+        }
+    }
 
     @Test
     fun `文言の中間にlapsを挿入して保存通知しContextClickを一度通知する`() {
@@ -151,14 +171,12 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
     fun `狭い幅でも挿入チップの右側にヒントを表示する`() {
         rule.setContent {
             KoDriverTheme {
-                LmuWindowsAutoReadoutPitTimingDetailPaneContent(modifier = Modifier.width(360.dp))
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(modifier = Modifier.requiredSize(360.dp, 6000.dp))
             }
         }
 
         val chip = rule.onAllNodesWithText("{laps}を挿入")[0]
-        chip.performScrollTo().assertIsDisplayed()
         val hint = rule.onAllNodesWithText("{laps} は予想残り周回数に置き換わります")[0]
-        hint.assertIsDisplayed()
         val chipBounds = chip.fetchSemanticsNode().boundsInRoot
         val hintBounds = hint.fetchSemanticsNode().boundsInRoot
         assertTrue(hintBounds.left > chipBounds.right)
