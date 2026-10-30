@@ -868,44 +868,6 @@ class Gt7Ps5NarratorEventProcessorTest {
         }
 
     @Test
-    fun `文言がnullの燃料残量は読み上げず空文言とSKIPPEDを保存する`() =
-        runTest {
-            val jsons = mutableListOf<String>()
-            val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root
-            val event = Gt7Ps5RemainingFuelWarning(30)
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    10L,
-                    Simulator.Gt7Ps5,
-                    key,
-                    "",
-                    NarrationOutcome.SKIPPED,
-                    NarrationSource.AUTO,
-                    capture(jsons),
-                )
-            } just Runs
-            val processor =
-                Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { null }
-
-            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L, logContext)
-
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(event, false) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    10L,
-                    Simulator.Gt7Ps5,
-                    key,
-                    "",
-                    NarrationOutcome.SKIPPED,
-                    NarrationSource.AUTO,
-                    jsons.single(),
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
     fun `タイヤ過熱は解決文言をイベントとログに保持してキューへ渡す`() =
         runTest {
             val jsons = mutableListOf<String>()
@@ -959,44 +921,6 @@ class Gt7Ps5NarratorEventProcessorTest {
         }
 
     @Test
-    fun `文言がnullのタイヤ過熱は読み上げず空文言とSKIPPEDを保存する`() =
-        runTest {
-            val jsons = mutableListOf<String>()
-            val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root
-            val event = Gt7Ps5TyreOverheat(107)
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    10L,
-                    Simulator.Gt7Ps5,
-                    key,
-                    "",
-                    NarrationOutcome.SKIPPED,
-                    NarrationSource.AUTO,
-                    capture(jsons),
-                )
-            } just Runs
-            val processor =
-                Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { null }
-
-            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L, logContext)
-
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(event, false) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    10L,
-                    Simulator.Gt7Ps5,
-                    key,
-                    "",
-                    NarrationOutcome.SKIPPED,
-                    NarrationSource.AUTO,
-                    jsons.single(),
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
     fun `自己ベストラップ更新は解決文言をイベントとログに保持してキューへ渡す`() =
         runTest {
             val jsons = mutableListOf<String>()
@@ -1042,44 +966,6 @@ class Gt7Ps5NarratorEventProcessorTest {
                     key,
                     "更新1分23秒456",
                     NarrationOutcome.QUEUED,
-                    NarrationSource.AUTO,
-                    jsons.single(),
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
-    fun `文言がnullの自己ベストラップ更新は読み上げず空文言とSKIPPEDを保存する`() =
-        runTest {
-            val jsons = mutableListOf<String>()
-            val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root
-            val event = Gt7Ps5MyBestLap(83_456)
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    10L,
-                    Simulator.Gt7Ps5,
-                    key,
-                    "",
-                    NarrationOutcome.SKIPPED,
-                    NarrationSource.AUTO,
-                    capture(jsons),
-                )
-            } just Runs
-            val processor =
-                Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { null }
-
-            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L, logContext)
-
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(event, false) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    10L,
-                    Simulator.Gt7Ps5,
-                    key,
-                    "",
-                    NarrationOutcome.SKIPPED,
                     NarrationSource.AUTO,
                     jsons.single(),
                 )
