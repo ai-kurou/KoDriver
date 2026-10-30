@@ -8,7 +8,7 @@ class LmuWindowsClassCarGapReadoutTextTest {
     fun `既定文言は秒数を小数1桁で展開する`() {
         assertEquals("クラス内前方{seconds}秒", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT)
         assertEquals("クラス内後方{seconds}秒", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_BEHIND_TEXT_DEFAULT)
-        assertEquals("クラス内トップです", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT)
+        assertEquals("クラス内先頭です", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT)
         assertEquals("クラス内最後尾です", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT)
         assertEquals(
             "クラス内前方1.5秒",

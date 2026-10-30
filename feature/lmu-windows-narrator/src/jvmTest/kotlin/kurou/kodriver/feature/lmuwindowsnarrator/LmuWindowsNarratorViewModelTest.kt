@@ -937,7 +937,7 @@ class LmuWindowsNarratorViewModelTest {
             selected.update { Simulator.LmuWindows }
             requests.send(request)
             assertEquals(
-                listOf("クラス内トップです、クラス内最後尾です", "データがありません"),
+                listOf("クラス内先頭です、クラス内最後尾です", "データがありません"),
                 spoken.map { it.narratedText },
             )
         }

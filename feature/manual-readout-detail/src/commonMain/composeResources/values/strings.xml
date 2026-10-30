@@ -71,5 +71,5 @@
     <string name="manual_readout_class_car_gap_ahead">クラス内前方車とのギャップ</string>
     <string name="manual_readout_class_car_gap_behind">クラス内後方車とのギャップ</string>
     <string name="manual_readout_class_car_gap_insert">{seconds}を挿入</string>
-    <string name="manual_readout_class_car_gap_hint">{seconds}は同じクラスの前後の車との差（秒、小数1桁）に置き換わります。クラス内トップ・最後尾では固定の文言を読み上げます。</string>
+    <string name="manual_readout_class_car_gap_hint">{seconds}は同じクラスの前後の車との差（秒、小数1桁）に置き換わります。クラス内先頭・最後尾では固定の文言を読み上げます。</string>
 </resources>

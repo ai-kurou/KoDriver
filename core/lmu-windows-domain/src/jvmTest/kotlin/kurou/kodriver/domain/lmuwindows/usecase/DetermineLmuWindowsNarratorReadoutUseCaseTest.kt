@@ -438,9 +438,9 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val unknownPosition = LmuWindowsClassCarGapData(null, null, classPosition = null, classVehicleCount = 4)
         val unknownCount = LmuWindowsClassCarGapData(null, null, classPosition = 4, classVehicleCount = null)
         listOf(
-            LmuWindowsManualReadoutItem(ahead, "前{seconds}", null, classCarGap = top) to "クラス内トップです",
+            LmuWindowsManualReadoutItem(ahead, "前{seconds}", null, classCarGap = top) to "クラス内先頭です",
             LmuWindowsManualReadoutItem(behind, "後{seconds}", null, classCarGap = last) to "クラス内最後尾です",
-            LmuWindowsManualReadoutItem(ahead, "前{seconds}", null, classCarGap = alone) to "クラス内トップです",
+            LmuWindowsManualReadoutItem(ahead, "前{seconds}", null, classCarGap = alone) to "クラス内先頭です",
             LmuWindowsManualReadoutItem(behind, "後{seconds}", null, classCarGap = alone) to "クラス内最後尾です",
             LmuWindowsManualReadoutItem(ahead, " ", null, classCarGap = top) to "",
             LmuWindowsManualReadoutItem(behind, "", null, classCarGap = last) to "",
@@ -459,7 +459,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val topItem = LmuWindowsManualReadoutItem(ahead, "前{seconds}", null, classCarGap = top)
         val noData = LmuWindowsManualReadoutItem(behind, "後{seconds}", null, classCarGap = null)
         assertEquals(
-            "クラス内トップです、クラス内後方車とのギャップはデータがありません",
+            "クラス内先頭です、クラス内後方車とのギャップはデータがありません",
             manualUseCase
                 .determineManualReadout(state, listOf(topItem, noData))
                 .events
