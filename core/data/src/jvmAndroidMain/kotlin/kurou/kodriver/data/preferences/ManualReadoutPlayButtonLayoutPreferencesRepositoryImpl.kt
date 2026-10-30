@@ -7,6 +7,10 @@ import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPref
 internal class ManualReadoutPlayButtonLayoutPreferencesRepositoryImpl(
     private val dataStore: DataStore<ManualReadoutPlayButtonLayoutPreferences>,
 ) : ManualReadoutPlayButtonLayoutEnabledPreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { ManualReadoutPlayButtonLayoutPreferences() }
+    }
+
     override fun observeManualReadoutPlayButtonLayoutEnabled(): Flow<Boolean> = dataStore.observeProperty { it.enabled }
 
     override suspend fun saveManualReadoutPlayButtonLayoutEnabled(enabled: Boolean) {

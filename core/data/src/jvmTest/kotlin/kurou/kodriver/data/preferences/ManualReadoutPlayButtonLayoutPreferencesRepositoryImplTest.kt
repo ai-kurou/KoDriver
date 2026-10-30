@@ -37,4 +37,14 @@ class ManualReadoutPlayButtonLayoutPreferencesRepositoryImplTest {
             repository.saveManualReadoutPlayButtonLayoutEnabled(true)
             assertTrue(repository.observeManualReadoutPlayButtonLayoutEnabled().first())
         }
+
+    @Test
+    fun `resetToDefaultで既定値へ戻す`() =
+        runTest {
+            repository.saveManualReadoutPlayButtonLayoutEnabled(true)
+
+            repository.resetToDefault()
+
+            assertFalse(repository.observeManualReadoutPlayButtonLayoutEnabled().first())
+        }
 }

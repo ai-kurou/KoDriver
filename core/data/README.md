@@ -6,6 +6,8 @@
 
 `CoreAutoReadoutSettingsResetter` は自動読み上げの有効状態・順序、キュー、開始音の有効状態を端末ローカルで既定値に戻します。開始音種別・音量・手動読み上げなどの設定は対象外で、Desktop / Android の Koin モジュールに `AutoReadoutSettingsResetter` として登録します。
 
+`CoreManualReadoutSettingsResetter` は LMU / ACE / GT7 の手動読み上げセット一覧（セット内のホットキーを含む）を空にし、手動読み上げ一覧の再生ボタン表示設定を既定値に戻します。`ReadoutHotkeyPreferencesRepository`（LMUデバッグ用）は対象外で、Desktop / Android の Koin モジュールに `ManualReadoutSettingsResetter` として登録します。
+
 ## Koin モジュール
 
 Android は `androidDataModule(context)`、Desktop は `desktopDataModule(directory)` が共通の Repository を登録する。
