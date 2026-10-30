@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

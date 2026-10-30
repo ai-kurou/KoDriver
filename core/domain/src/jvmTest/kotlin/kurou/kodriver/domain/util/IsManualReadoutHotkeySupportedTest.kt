@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.manualreadoutdetail
+package kurou.kodriver.domain.util
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

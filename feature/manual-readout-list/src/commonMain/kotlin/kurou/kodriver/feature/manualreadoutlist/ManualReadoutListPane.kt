@@ -106,6 +106,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.PlayingEqualizer
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_edit_mode_disable
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_edit_mode_enable

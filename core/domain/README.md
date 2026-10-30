@@ -10,6 +10,8 @@
 GT7・ACE・LMU はすべて移動済み。
 `:core:domain` は共通 `ReadoutItemKey` インターフェースと `ReadoutItemKeyRegistry` を提供する。シミュレーター別の sealed key、キー一覧 `*ReadoutItemKeys.kt`、および `*ReadoutDefaults.kt` は各 simulator domain に置く。キーを追加する際は、そのモジュールの `*ReadoutItemKeys.kt` にも登録する。`SpeechEvent` はシミュレーター別ドメインモジュールで実装し、手動読み上げ項目定義は各シミュレーターのドメインモジュール、simulatorId 集約は `:feature:manual-readout-detail` に置く。
 
+`kurou.kodriver.domain.util` の `isManualReadoutHotkeySupported()`（expect/actual）は手動読み上げのホットキー対応判定で、Windows デスクトップのみ true を返す。`:feature:manual-readout-list` と `:feature:manual-readout-detail` が共用する。
+
 ## オーバーレイ文字サイズのプレビュー
 
 `PreviewOverlayTextSizeUseCase` は `OverlayTextSizePreferencesRepository.setPreviewOverlayTextSize` に
