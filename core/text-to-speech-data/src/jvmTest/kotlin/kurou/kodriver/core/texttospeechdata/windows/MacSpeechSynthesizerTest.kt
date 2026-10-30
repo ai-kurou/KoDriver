@@ -34,12 +34,14 @@ class MacSpeechSynthesizerTest {
         process
     }, captureException = failures::add)
 
-    private fun speakSynthesizer(startFailure: IOException? = null) =
-        MacSpeechSynthesizer(isMac = true, startProcess = {
-            startFailure?.let { f -> throw f }
-            builders.add(it)
-            FakeSayProcess().also(processes::add)
-        }, captureException = failures::add)
+    private fun speakSynthesizer(
+        startFailure: IOException? = null,
+        exitCodes: List<Int> = emptyList(),
+    ) = MacSpeechSynthesizer(isMac = true, startProcess = {
+        startFailure?.let { f -> throw f }
+        builders.add(it)
+        FakeSayProcess(exitCodes.getOrElse(processes.size) { 0 }).also(processes::add)
+    }, captureException = failures::add)
 
     private fun MacSpeechSynthesizer.say(
         text: String = "text",
@@ -65,11 +67,13 @@ class MacSpeechSynthesizerTest {
     }
 
     @Test
-    fun `macでなければ何もしない`() {
+    fun `macでない場合と音量0では何もしない`() {
         val synthesizer = MacSpeechSynthesizer(isMac = false, startProcess = { error("起動しない") })
         assertFalse(synthesizer.isAvailable())
         assertEquals(emptyList(), synthesizer.listVoices())
         synthesizer.say()
+        speakSynthesizer().speak("text", false, 0, "", 1f, 1f)
+        assertTrue(builders.isEmpty())
     }
 
     @Test
@@ -113,20 +117,30 @@ class MacSpeechSynthesizerTest {
     }
 
     @Test
-    fun `音量が0なら発話しない`() {
-        val synthesizer = speakSynthesizer()
-        synthesizer.speak("text", false, 0, "", 1f, 1f)
-        assertTrue(builders.isEmpty())
+    fun `指定音声で失敗したらKyokoで読み直す`() {
+        val synthesizer = speakSynthesizer(exitCodes = listOf(1))
+        val worker = thread { synthesizer.say(voiceId = "Eddy (日本語（日本）)") }
+        assertTrue(waitForProcess(0))
+        processes[0].finish()
+        assertTrue(waitForProcess(1))
+        assertEquals("Eddy (日本語（日本）)", builders[0].command()[2])
+        assertEquals("Kyoko", builders[1].command()[2])
+        processes[1].finish()
+        worker.join(5000)
+        assertTrue(failures.isEmpty())
     }
 
     @Test
-    fun `音声IDを指定する`() {
-        val synthesizer = speakSynthesizer()
-        val worker = thread { synthesizer.say(voiceId = "Eddy (日本語（日本）)") }
+    fun `Kyokoでも失敗したら報告する`() {
+        val synthesizer = speakSynthesizer(exitCodes = listOf(1, 1))
+        val worker = thread { synthesizer.say(voiceId = "Missing") }
         assertTrue(waitForProcess(0))
-        assertEquals("Eddy (日本語（日本）)", builders.single().command()[2])
         processes[0].finish()
+        assertTrue(waitForProcess(1))
+        processes[1].finish()
         worker.join(5000)
+        assertEquals(2, builders.size)
+        assertEquals("sayが失敗しました（終了コード: 1）", failures.single().message)
     }
 
     @Test

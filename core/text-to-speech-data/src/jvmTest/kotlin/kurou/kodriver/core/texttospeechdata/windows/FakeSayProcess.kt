@@ -6,7 +6,9 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 /** [finish] または [destroy] が呼ばれるまで [waitFor] がブロックする読み上げプロセス。 */
-internal class FakeSayProcess : Process() {
+internal class FakeSayProcess(
+    private val exitCode: Int = 0,
+) : Process() {
     private val finished = CountDownLatch(1)
     private val waiting = CountDownLatch(1)
 
@@ -26,13 +28,17 @@ internal class FakeSayProcess : Process() {
     override fun waitFor(): Int {
         waiting.countDown()
         finished.await()
-        return 0
+        return exitValue()
     }
 
-    override fun exitValue(): Int = 0
+    override fun exitValue(): Int = if (destroyed) DESTROYED_EXIT_CODE else exitCode
 
     override fun destroy() {
         destroyed = true
         finished.countDown()
+    }
+
+    private companion object {
+        const val DESTROYED_EXIT_CODE = 143
     }
 }

@@ -74,17 +74,28 @@ internal class MacSpeechSynthesizer(
     ) {
         if (!isMac || volume <= 0) return
         val token = synchronized(lock) { ++requestToken }
-        val command =
-            listOf(
-                SAY,
-                "-v",
-                voiceId.ifEmpty { MAC_DEFAULT_VOICE },
-                "-r",
-                (BASE_WORDS_PER_MINUTE * speed).roundToInt().toString(),
-                "--",
-                text,
-            )
-        val process = launch(token, command, queue) ?: return
+        // 指定音声が未導入などで失敗した場合は、日本語の既定音声で読み直す。
+        val voices = listOf(voiceId.ifEmpty { MAC_DEFAULT_VOICE }, MAC_DEFAULT_VOICE).distinct()
+        voices.forEachIndexed { index, voice ->
+            val command = sayCommand(voice, speed, text)
+            val process = launch(token, command, queue && index == 0) ?: return
+            val exitCode = await(process)
+            // 後続の呼び出しに打ち切られた場合は、失敗として扱わない。
+            if (exitCode == 0 || !isLatest(token)) return
+            if (index == voices.lastIndex) captureException(IllegalStateException("sayが失敗しました（終了コード: $exitCode）"))
+        }
+    }
+
+    private fun sayCommand(
+        voice: String,
+        speed: Float,
+        text: String,
+    ) = listOf(SAY, "-v", voice, "-r", (BASE_WORDS_PER_MINUTE * speed).roundToInt().toString(), "--", text)
+
+    private fun isLatest(token: Long) = synchronized(lock) { token == requestToken }
+
+    /** [process] の終了を待って終了コードを返す。割り込まれたら [process] を終了して例外を再送出する。 */
+    private fun await(process: Process): Int =
         try {
             process.waitFor()
         } catch (e: InterruptedException) {
@@ -95,7 +106,6 @@ internal class MacSpeechSynthesizer(
         } finally {
             synchronized(lock) { if (current === process) current = null }
         }
-    }
 
     /** 開始できたら起動したプロセスを返す。追い越された場合、または起動に失敗した場合は `null`。 */
     private fun launch(
