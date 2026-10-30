@@ -100,7 +100,7 @@ import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableColumn
 
 /** カテゴリ・名称は画面内の表示用メタデータとして管理する。 */
-private data class ManualReadoutItemPresentation(
+internal data class ManualReadoutItemPresentation(
     val name: StringResource,
 )
 
@@ -125,7 +125,7 @@ private fun ManualReadoutItemCategory.label(): StringResource =
 private fun manualReadoutItemCategory(itemKey: String): ManualReadoutItemCategory? =
     manualReadoutItemDefinitions.values.firstNotNullOfOrNull { it[itemKey]?.category }
 
-private val itemPresentations =
+internal val itemPresentations =
     mapOf(
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to
             ManualReadoutItemPresentation(
