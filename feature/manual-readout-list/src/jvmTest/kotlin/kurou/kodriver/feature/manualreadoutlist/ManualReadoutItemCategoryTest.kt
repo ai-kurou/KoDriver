@@ -3,6 +3,7 @@ package kurou.kodriver.feature.manualreadoutlist
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

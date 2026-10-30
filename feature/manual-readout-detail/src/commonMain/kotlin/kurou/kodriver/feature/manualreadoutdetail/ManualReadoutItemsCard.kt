@@ -47,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
@@ -77,6 +78,7 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
+import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_add_item
@@ -118,116 +120,108 @@ import sh.calvin.reorderable.ReorderableColumn
 /** カテゴリ・名称は画面内の表示用メタデータとして管理する。 */
 private data class ManualReadoutItemPresentation(
     val name: StringResource,
-    val category: StringResource,
 )
 
-private val categoryIcons =
-    mapOf(
-        Res.string.manual_readout_category_virtual_energy to Icons.Default.Bolt,
-        Res.string.manual_readout_category_fuel to Icons.Default.LocalGasStation,
-        Res.string.manual_readout_category_tyre to Icons.Default.DonutLarge,
-        Res.string.manual_readout_category_brake to Icons.Default.Speed,
-        Res.string.manual_readout_category_lap to Icons.Default.Timer,
-    )
+private fun ManualReadoutItemCategory.icon(): ImageVector =
+    when (this) {
+        ManualReadoutItemCategory.VIRTUAL_ENERGY -> Icons.Default.Bolt
+        ManualReadoutItemCategory.FUEL -> Icons.Default.LocalGasStation
+        ManualReadoutItemCategory.TYRE -> Icons.Default.DonutLarge
+        ManualReadoutItemCategory.BRAKE -> Icons.Default.Speed
+        ManualReadoutItemCategory.LAP -> Icons.Default.Timer
+    }
+
+private fun ManualReadoutItemCategory.label(): StringResource =
+    when (this) {
+        ManualReadoutItemCategory.VIRTUAL_ENERGY -> Res.string.manual_readout_category_virtual_energy
+        ManualReadoutItemCategory.FUEL -> Res.string.manual_readout_category_fuel
+        ManualReadoutItemCategory.TYRE -> Res.string.manual_readout_category_tyre
+        ManualReadoutItemCategory.BRAKE -> Res.string.manual_readout_category_brake
+        ManualReadoutItemCategory.LAP -> Res.string.manual_readout_category_lap
+    }
+
+private fun manualReadoutItemCategory(itemKey: String): ManualReadoutItemCategory? =
+    manualReadoutItemDefinitions.values.firstNotNullOfOrNull { it[itemKey]?.category }
 
 private val itemPresentations =
     mapOf(
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_virtual_energy_laps,
-                Res.string.manual_readout_category_virtual_energy,
             ),
         LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_fuel_laps,
-                Res.string.manual_readout_category_fuel,
             ),
         LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_class_car_gap_ahead,
-                Res.string.manual_readout_category_lap,
             ),
         LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_class_car_gap_behind,
-                Res.string.manual_readout_category_lap,
             ),
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_tyre_wear_laps,
-                Res.string.manual_readout_category_tyre,
             ),
         LmuWindowsReadoutItemKey.MyBestLap.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_my_best_lap,
-                Res.string.manual_readout_category_lap,
             ),
         AceWindowsReadoutItemKey.MyBestLap.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_my_best_lap,
-                Res.string.manual_readout_category_lap,
             ),
         LmuWindowsReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel,
-                Res.string.manual_readout_category_fuel,
             ),
         AceWindowsReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel,
-                Res.string.manual_readout_category_fuel,
             ),
         AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel_laps,
-                Res.string.manual_readout_category_fuel,
             ),
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel,
-                Res.string.manual_readout_category_fuel,
             ),
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_remaining_fuel_laps,
-                Res.string.manual_readout_category_fuel,
             ),
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_energy,
-                Res.string.manual_readout_category_virtual_energy,
             ),
         Gt7Ps5ReadoutItemKey.MyBestLap.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_my_best_lap,
-                Res.string.manual_readout_category_lap,
             ),
         AceWindowsReadoutItemKey.TyreTemperature.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_tyre_temperature,
-                Res.string.manual_readout_category_tyre,
             ),
         Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_tyre_temperature,
-                Res.string.manual_readout_category_tyre,
             ),
         LmuWindowsReadoutItemKey.TyreWear.Root.value to
-            ManualReadoutItemPresentation(Res.string.manual_readout_tyre_wear, Res.string.manual_readout_category_tyre),
+            ManualReadoutItemPresentation(Res.string.manual_readout_tyre_wear),
         LmuWindowsReadoutItemKey.BrakeWear.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_brake_wear,
-                Res.string.manual_readout_category_brake,
             ),
         LmuWindowsReadoutItemKey.BrakeTemperature.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_brake_temperature,
-                Res.string.manual_readout_category_brake,
             ),
         LmuWindowsReadoutItemKey.TyreTemperature.Root.value to
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_tyre_temperature,
-                Res.string.manual_readout_category_tyre,
             ),
     )
 
@@ -511,8 +505,11 @@ internal fun ManualReadoutItemPickerSheetContent(
         ManualReadoutPickerHeader(selectedCount)
         val categories =
             itemKeys
-                .mapNotNull { key -> itemPresentations[key]?.let { key to it } }
-                .groupBy { it.second.category }
+                .mapNotNull { key ->
+                    itemPresentations[key]?.let { presentation ->
+                        manualReadoutItemCategory(key)?.let { it to (key to presentation) }
+                    }
+                }.groupBy({ it.first }, { it.second })
         categories.forEach { (category, items) ->
             Column(
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
@@ -524,14 +521,14 @@ internal fun ManualReadoutItemPickerSheetContent(
                 ) {
                     Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceVariant) {
                         Icon(
-                            categoryIcons.getValue(category),
+                            category.icon(),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(KoDriverSpacing.small),
                         )
                     }
                     Text(
-                        stringResource(category),
+                        stringResource(category.label()),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1f),

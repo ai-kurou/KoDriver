@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.gt7ps5.model
 
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.domain.model.ManualReadoutItemDefinition
 import kurou.kodriver.domain.model.manualReadoutItemDefinitionMapOf
 import kurou.kodriver.domain.model.manualReadoutItemDefinitionOf
@@ -9,21 +10,25 @@ val gt7Ps5ManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition>
     manualReadoutItemDefinitionMapOf(
         manualReadoutItemDefinitionOf(
             Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
+            ManualReadoutItemCategory.FUEL,
             "残り燃料",
             GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT,
         ),
         manualReadoutItemDefinitionOf(
             Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
+            ManualReadoutItemCategory.FUEL,
             "残り燃料の周回数",
             GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT,
         ),
         manualReadoutItemDefinitionOf(
             Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
+            ManualReadoutItemCategory.TYRE,
             "タイヤ温度",
             GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT,
         ),
         manualReadoutItemDefinitionOf(
             Gt7Ps5ReadoutItemKey.MyBestLap.Root,
+            ManualReadoutItemCategory.LAP,
             "自己ベストラップ",
             GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT,
         ),
