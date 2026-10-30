@@ -587,9 +587,11 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("クラス内後方車とのギャップ").performClick()
         rule.onNodeWithText(defaultText).assertExists()
-        rule
-            .onNodeWithText("{seconds}は同じクラスの前後の車との差（秒、小数1桁）に置き換わります。クラス内先頭・最後尾では固定の文言を読み上げます。")
-            .assertExists()
+        val classCarGapHint =
+            "{seconds}は同じクラスの前後の車との差（秒、小数1桁）に置き換わります。" +
+                "前に車がいないときは「クラス内先頭です」、" +
+                "後ろに車がいないときは「クラス内最後尾です」と読み上げます。"
+        rule.onNodeWithText(classCarGapHint).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("")
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
         rule.onNodeWithText("{seconds}を挿入").performClick()
