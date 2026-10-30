@@ -15,7 +15,7 @@ class MacVoiceListParserTest {
                 "壊れた行\n"
         assertEquals(
             listOf(
-                TextToSpeechVoice("Kyoko", "Kyoko", "ja-JP", false),
+                TextToSpeechVoice("Kyoko", "Kyoko", "ja-JP", true),
                 TextToSpeechVoice("Eddy (日本語（日本）)", "Eddy (日本語（日本）)", "ja-JP", false),
             ),
             parseMacVoiceList(output),

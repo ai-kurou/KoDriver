@@ -52,7 +52,7 @@ class MacSpeechSynthesizerTest {
     fun `音声一覧を取得して利用可能と判定する`() {
         val process = FakeSpeechCommandProcess()
         val synthesizer = voiceSynthesizer(process)
-        assertEquals(listOf(TextToSpeechVoice("Kyoko", "Kyoko", "ja-JP", false)), synthesizer.listVoices())
+        assertEquals(listOf(TextToSpeechVoice("Kyoko", "Kyoko", "ja-JP", true)), synthesizer.listVoices())
         assertEquals(listOf("say", "-v", "?"), builders.single().command())
         assertFalse(Files.exists(requireNotNull(output)))
         assertEquals(listOf("wait:15", "destroy"), process.calls)
@@ -110,6 +110,13 @@ class MacSpeechSynthesizerTest {
         processes[0].finish()
         worker.join(5000)
         assertFalse(worker.isAlive)
+    }
+
+    @Test
+    fun `音量が0なら発話しない`() {
+        val synthesizer = speakSynthesizer()
+        synthesizer.speak("text", false, 0, "", 1f, 1f)
+        assertTrue(builders.isEmpty())
     }
 
     @Test

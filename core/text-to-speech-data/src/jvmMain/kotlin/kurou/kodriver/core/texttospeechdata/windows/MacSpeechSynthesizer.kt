@@ -12,7 +12,7 @@ import kotlin.math.roundToInt
  * macの`say`コマンドを使う [WindowsSpeechSynthesizer] の実装（macOSでの動作確認用）。
  *
  * 読み上げは`say -v <音声> -r <wpm> -- <テキスト>`を1発話ごとに起動し、プロセスの終了（読み上げ完了）までブロックする。
- * `volume`と`pitch`はmacでは非対応のため無視する。`speed`は標準175wpmに掛けて`-r`へ渡す。
+ * `volume`は0のとき発話しないことだけに使い、`pitch`はmacでは非対応のため無視する。`speed`は標準175wpmに掛けて`-r`へ渡す。
  * `queue = false` では再生中のプロセスを打ち切ってから開始し、`queue = true` では再生中のプロセスの終了を
  * [lock] の外で待ってから開始する（[SapiSpeechSynthesizer] と同様、待機中に別の呼び出しに追い越されたら再生しない）。
  * スレッド割り込み（コルーチンのキャンセル）時は自分のプロセスを終了して例外を再送出する。
@@ -63,7 +63,7 @@ internal class MacSpeechSynthesizer(
         }
     }
 
-    /** [volume] と [pitch] はmacの`say`では指定できないため無視する。 */
+    /** macの`say`では音量と声の高さを指定できないため、[volume] は0のとき発話しないことだけに使い、[pitch] は無視する。 */
     override fun speak(
         text: String,
         queue: Boolean,
@@ -72,13 +72,13 @@ internal class MacSpeechSynthesizer(
         speed: Float,
         pitch: Float,
     ) {
-        if (!isMac) return
+        if (!isMac || volume <= 0) return
         val token = synchronized(lock) { ++requestToken }
         val command =
             listOf(
                 SAY,
                 "-v",
-                voiceId.ifEmpty { DEFAULT_VOICE },
+                voiceId.ifEmpty { MAC_DEFAULT_VOICE },
                 "-r",
                 (BASE_WORDS_PER_MINUTE * speed).roundToInt().toString(),
                 "--",
@@ -106,7 +106,11 @@ internal class MacSpeechSynthesizer(
                 synchronized(lock) {
                     if (token != requestToken) return null
                     val playing = current
-                    if (!queue) playing?.destroy()
+                    if (!queue && playing != null) {
+                        playing.destroy()
+                        // 打ち切った発話の音声が新しい発話と重ならないよう、終了を待つ。
+                        playing.waitFor(DESTROY_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    }
                     if (queue && playing != null) {
                         playing
                     } else {
@@ -124,7 +128,6 @@ internal class MacSpeechSynthesizer(
 
     private companion object {
         const val SAY = "say"
-        const val DEFAULT_VOICE = "Kyoko"
         const val BASE_WORDS_PER_MINUTE = 175
         const val LIST_VOICES_TIMEOUT_SECONDS = 15L
         const val DESTROY_WAIT_TIMEOUT_SECONDS = 5L
