@@ -42,6 +42,7 @@ import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
+import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_celsius_hint

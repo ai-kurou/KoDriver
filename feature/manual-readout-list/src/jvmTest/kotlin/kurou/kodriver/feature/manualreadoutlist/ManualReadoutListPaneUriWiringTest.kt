@@ -20,6 +20,7 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
