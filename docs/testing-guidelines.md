@@ -26,8 +26,8 @@
   - `840.dp x 640.dp`: `AutoReadoutContent`/`OtherContent`/`TelemetryLogContent` など、ナビゲーション用 chrome（NavigationRail 等）を含まない feature の `XxxContent` 単体をキャプチャする場合。2ペイン部分の表示確認に幅を丸ごと使う。
   - `720.dp x 640.dp`: `AppScreenContent` など、NavigationRail を含むアプリ全体の画面をキャプチャする場合。ボックス内に NavigationRail 自体の幅も含まれるため、2ペイン部分に使える幅は `840.dp` より狭くなる。
 - `AppScreenContent` の `NavigationSuiteType.NavigationBar`（スマホ縦画面・1ペイン）をキャプチャする場合: `360.dp x 640.dp`
-- ダイアログ・ボトムシート表示用のホスト: `480.dp x 320.dp`
-  - ただしスクロールする内容（`verticalScroll`）を撮るボトムシート内容ホストは、内容全体が収まる高さにし、最後の要素が `assertIsDisplayed` で表示されることを検証する（例: ヘルプ・項目追加シートは `480.dp x 1080.dp`）。
+- ダイアログ表示用のホスト: `480.dp x 320.dp`
+- ボトムシート内容のホスト: アプリ内で全て `480.dp x 1080.dp` に統一する（Android のホストテストは `w480dp-h1080dp`）。スクロールする内容（`verticalScroll`）を撮るシートは、最後の要素が `assertIsDisplayed` で表示されることを検証し、内容が1080dpに収まらなくなったら切れを検知できるようにする。
 - デスクトップ Splash・オーバーレイなど独立したウィンドウ: 既存の専用サイズ
 - 上記いずれにも該当しない、Pane を構成する個々のコンポーネント（`DetailPaneCard`・`ThresholdSlider` 等）単体をキャプチャする場合: 幅は `360.dp` を基準に、高さはコンポーネントの内容に応じて過不足のないサイズにする
 

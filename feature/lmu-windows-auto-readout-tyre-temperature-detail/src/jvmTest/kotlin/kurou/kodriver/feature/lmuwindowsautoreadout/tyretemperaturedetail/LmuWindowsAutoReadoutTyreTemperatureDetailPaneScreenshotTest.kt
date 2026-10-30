@@ -74,7 +74,7 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                        Box(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             TyreTemperatureThresholdHelpSheetContent()
                         }
                     }
@@ -89,7 +89,7 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                        Box(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             TyreTemperatureLowWarningPhasesHelpSheetContent()
                         }
                     }

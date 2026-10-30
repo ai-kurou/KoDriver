@@ -31,7 +31,7 @@ class VersionMismatchBottomSheetScreenshotTest {
         setContent {
             AppTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(width = 480.dp, height = 320.dp)) {
+                    Box(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                         VersionMismatchBottomSheetContent(
                             windowsKoDriverVersion = windowsKoDriverVersion,
                             appVersion = appVersion,
