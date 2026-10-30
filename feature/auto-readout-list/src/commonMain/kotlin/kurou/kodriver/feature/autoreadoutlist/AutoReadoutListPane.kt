@@ -18,9 +18,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -363,17 +366,13 @@ private fun AutoReadoutListItemCard(
                             size = Size(KoDriverSpacing.extraSmall.toPx(), size.height),
                         )
                     }.indication(itemInteractionSource, ripple())
-                    .padding(
-                        start = KoDriverSpacing.small,
-                        end = KoDriverSpacing.large,
-                        top = KoDriverSpacing.medium,
-                        bottom = KoDriverSpacing.medium,
-                    ),
+                    .padding(start = KoDriverSpacing.small, end = KoDriverSpacing.large)
+                    .height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
             Column(
-                modifier = Modifier.widthIn(min = 32.dp),
+                modifier = Modifier.widthIn(min = 32.dp).padding(vertical = KoDriverSpacing.medium),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleLarge) {
@@ -391,7 +390,7 @@ private fun AutoReadoutListItemCard(
                 )
             }
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).padding(vertical = KoDriverSpacing.medium),
                 verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
             ) {
                 Row(
@@ -481,12 +480,11 @@ private fun AutoReadoutListItemCard(
                     }
                 }
             }
-            Icon(
-                imageVector = Icons.Outlined.ChevronRight,
-                contentDescription = null,
+            Box(
                 modifier =
                     Modifier
-                        .size(width = 24.dp, height = 48.dp)
+                        .fillMaxHeight()
+                        .width(24.dp)
                         .testTag("autoReadoutListChevronTouchTarget:${item.value}")
                         .clickable(
                             indication = null,
@@ -494,7 +492,13 @@ private fun AutoReadoutListItemCard(
                         ) {
                             openDetail()
                         },
-            )
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.ChevronRight,
+                    contentDescription = null,
+                )
+            }
         }
     }
 }
