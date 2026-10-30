@@ -52,6 +52,7 @@ import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesReposi
 import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
+import kurou.kodriver.domain.repository.ManualReadoutSettingsResetter
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
@@ -90,6 +91,14 @@ fun desktopDataModule(directory: String): Module =
                 readoutStartSoundEnabledPreferencesRepository = get(),
             )
         } bind AutoReadoutSettingsResetter::class
+        single {
+            CoreManualReadoutSettingsResetter(
+                lmuWindowsManualReadoutSetPreferencesRepository = get(named(Simulator.LmuWindows.id)),
+                aceWindowsManualReadoutSetPreferencesRepository = get(named(Simulator.AceWindows.id)),
+                gt7Ps5ManualReadoutSetPreferencesRepository = get(named(Simulator.Gt7Ps5.id)),
+                manualReadoutPlayButtonLayoutEnabledPreferencesRepository = get(),
+            )
+        } bind ManualReadoutSettingsResetter::class
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<ReadoutHotkeyPreferencesRepository> {

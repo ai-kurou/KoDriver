@@ -239,4 +239,6 @@ private class FakeManualReadoutSetPreferencesRepository : ManualReadoutSetPrefer
     override suspend fun deleteSet(id: String) = Unit
 
     override suspend fun saveSets(sets: List<ManualReadoutSet>) = Unit
+
+    override suspend fun resetToDefault() = Unit
 }

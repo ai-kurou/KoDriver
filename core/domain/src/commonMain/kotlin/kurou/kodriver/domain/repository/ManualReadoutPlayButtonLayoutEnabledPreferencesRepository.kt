@@ -6,4 +6,6 @@ interface ManualReadoutPlayButtonLayoutEnabledPreferencesRepository {
     fun observeManualReadoutPlayButtonLayoutEnabled(): Flow<Boolean>
 
     suspend fun saveManualReadoutPlayButtonLayoutEnabled(enabled: Boolean)
+
+    suspend fun resetToDefault()
 }

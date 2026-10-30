@@ -275,4 +275,14 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
                 repository.observeSets().first(),
             )
         }
+
+    @Test
+    fun `resetToDefaultでセット一覧を空にする`() =
+        runTest {
+            repository.saveSets(listOf(ManualReadoutSet("set-1"), ManualReadoutSet("set-2")))
+
+            repository.resetToDefault()
+
+            assertTrue(repository.observeSets().first().isEmpty())
+        }
 }

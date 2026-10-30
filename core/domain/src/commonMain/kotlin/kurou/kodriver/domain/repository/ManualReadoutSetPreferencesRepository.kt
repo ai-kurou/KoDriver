@@ -13,4 +13,6 @@ interface ManualReadoutSetPreferencesRepository {
     suspend fun deleteSet(id: String)
 
     suspend fun saveSets(sets: List<ManualReadoutSet>)
+
+    suspend fun resetToDefault()
 }
