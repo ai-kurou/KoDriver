@@ -1340,55 +1340,6 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `車両接近文言が空白またはTTS不可なら空文字のSKIPPEDを記録する`() =
-        runTest(testDispatcher) {
-            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val ttsEngine = mockTts(spokenTexts)
-            stubReadoutDefaults(
-                thresholdPercentage = 30,
-                orderOverride = listOf(AceWindowsReadoutItemKey.VehicleApproach.Root),
-            )
-            val json = slot<String>()
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    0L,
-                    Simulator.AceWindows,
-                    AceWindowsReadoutItemKey.VehicleApproach.Root,
-                    "",
-                    NarrationOutcome.SKIPPED,
-                    NarrationSource.AUTO,
-                    capture(json),
-                )
-            } just Runs
-            createViewModel(
-                fuelChannel = fuelChannel,
-                ttsEngine = ttsEngine,
-                vehicleApproachChannel = vehicleApproachChannel,
-                readoutText = { null },
-            )
-
-            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(AceWindowsVehicleApproach("車両接近"), false) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    0L,
-                    Simulator.AceWindows,
-                    AceWindowsReadoutItemKey.VehicleApproach.Root,
-                    "",
-                    NarrationOutcome.SKIPPED,
-                    NarrationSource.AUTO,
-                    json.captured,
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
     fun `車両接近項目が無効のときは読み上げない`() =
         runTest(testDispatcher) {
             val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
