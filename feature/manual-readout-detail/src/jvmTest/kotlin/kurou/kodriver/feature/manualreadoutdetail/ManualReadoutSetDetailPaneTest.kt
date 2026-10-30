@@ -552,7 +552,7 @@ class ManualReadoutSetDetailPaneTest {
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("クラス内前方車とのギャップ").performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("クラス内の前の車との差は1.5秒")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("クラス内前方1.5秒")
     }
 
     @Test

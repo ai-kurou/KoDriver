@@ -126,7 +126,7 @@ class ManualReadoutPreviewTest {
         val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
         val state =
             ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(ahead))
-        assertEquals("クラス内の前の車との差は1.5秒", manualReadoutPreview(state))
+        assertEquals("クラス内前方1.5秒", manualReadoutPreview(state))
         assertEquals(
             "後ろ1.5 {unknown}",
             manualReadoutPreview(
@@ -135,7 +135,7 @@ class ManualReadoutPreviewTest {
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(ahead to ""))))
         assertEquals(
-            "クラス内の前の車との差は1.5秒、クラス内の後ろの車との差は1.5秒",
+            "クラス内前方1.5秒、クラス内後方1.5秒",
             manualReadoutPreview(state.copy(selectedItemKeys = listOf(ahead, behind))),
         )
     }

@@ -6,12 +6,12 @@ import kotlin.test.assertEquals
 class LmuWindowsClassCarGapReadoutTextTest {
     @Test
     fun `既定文言は秒数を小数1桁で展開する`() {
-        assertEquals("クラス内の前の車との差は{seconds}秒", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT)
-        assertEquals("クラス内の後ろの車との差は{seconds}秒", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_BEHIND_TEXT_DEFAULT)
+        assertEquals("クラス内前方{seconds}秒", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT)
+        assertEquals("クラス内後方{seconds}秒", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_BEHIND_TEXT_DEFAULT)
         assertEquals("クラス内トップです", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT)
         assertEquals("クラス内最後尾です", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT)
         assertEquals(
-            "クラス内の前の車との差は1.5秒",
+            "クラス内前方1.5秒",
             formatLmuWindowsClassCarGapReadoutText(LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT, 1.5),
         )
         assertEquals(
