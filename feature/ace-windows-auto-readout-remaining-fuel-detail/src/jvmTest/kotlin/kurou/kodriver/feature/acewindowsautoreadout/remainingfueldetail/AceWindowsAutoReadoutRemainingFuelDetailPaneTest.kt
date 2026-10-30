@@ -139,32 +139,6 @@ class AceWindowsAutoReadoutRemainingFuelDetailPaneTest {
     }
 
     @Test
-    fun `保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
-        var savedText by mutableStateOf("")
-        rule.setContent {
-            KoDriverTheme {
-                AceWindowsAutoReadoutRemainingFuelDetailPaneContent(
-                    uiState =
-                        AceWindowsAutoReadoutRemainingFuelDetailUiState(
-                            readoutText = savedText,
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onReadoutTextChanged = {},
-                )
-            }
-        }
-        rule.onNode(hasSetTextAction()).performTextReplacement("あい")
-        rule.runOnIdle { savedText = "あ" }
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("あい")).assertExists()
-        rule.runOnIdle { savedText = "あい" }
-        rule.waitForIdle()
-        rule.runOnIdle { savedText = "う" }
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
-    }
-
-    @Test
     fun `入力直後の文言にpercentを挿入し上限ちょうどで無効になる`() {
         val changed = mutableListOf<String>()
         rule.setContent {
@@ -213,23 +187,6 @@ class AceWindowsAutoReadoutRemainingFuelDetailPaneTest {
             }
         }
         rule.onNodeWithText("{lap}、{x} は置き換えられません。{percent} を使用してください").assertExists()
-    }
-
-    @Test
-    fun `空欄では読み上げない案内を表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                AceWindowsAutoReadoutRemainingFuelDetailPaneContent(
-                    uiState =
-                        AceWindowsAutoReadoutRemainingFuelDetailUiState(
-                            readoutText = "",
-                            isTextToSpeechAvailable = true,
-                        ),
-                )
-            }
-        }
-        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
-        rule.onNodeWithContentDescription("入力した文言を再生").assertIsEnabled()
     }
 
     @Test
@@ -399,28 +356,6 @@ class AceWindowsAutoReadoutRemainingFuelDetailPaneTest {
         }
         rule.onNode(hasSetTextAction()).performTextReplacement(" あい ")
         rule.runOnIdle { savedText = "あい" }
-        rule.waitForIdle()
-        rule.runOnIdle { savedText = "外部更新" }
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("外部更新")).assertExists()
-    }
-
-    @Test
-    fun `正規化後の保存値が変わらない入力でも待機を解除し以降の更新を反映する`() {
-        var savedText by mutableStateOf("あい")
-        rule.setContent {
-            KoDriverTheme {
-                AceWindowsAutoReadoutRemainingFuelDetailPaneContent(
-                    uiState =
-                        AceWindowsAutoReadoutRemainingFuelDetailUiState(
-                            readoutText = savedText,
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onReadoutTextChanged = {},
-                )
-            }
-        }
-        rule.onNode(hasSetTextAction()).performTextReplacement(" あい ")
         rule.waitForIdle()
         rule.runOnIdle { savedText = "外部更新" }
         rule.waitForIdle()

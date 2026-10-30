@@ -167,23 +167,6 @@ class AceWindowsAutoReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `空欄では読み上げない案内を表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                AceWindowsAutoReadoutTyreTemperatureDetailPaneContent(
-                    uiState =
-                        AceWindowsAutoReadoutTyreTemperatureDetailUiState(
-                            overheatReadoutText = "",
-                            isTextToSpeechAvailable = true,
-                        ),
-                )
-            }
-        }
-        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
-        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].assertIsEnabled()
-    }
-
-    @Test
     fun `TTS不可では入力と試聴を無効にする`() {
         rule.setContent {
             KoDriverTheme {

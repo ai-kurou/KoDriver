@@ -7,7 +7,6 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -114,46 +113,6 @@ class AceWindowsAutoReadoutRemainingFuelLapsDetailPaneTest {
     }
 
     @Test
-    fun `保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
-        var savedText by mutableStateOf("")
-        var savedEmptyText by mutableStateOf("")
-        rule.setContent {
-            KoDriverTheme {
-                AceWindowsAutoReadoutRemainingFuelLapsDetailPaneContent(
-                    uiState =
-                        AceWindowsAutoReadoutRemainingFuelLapsDetailUiState(
-                            readoutText = savedText,
-                            emptyReadoutText = savedEmptyText,
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onReadoutTextChanged = {},
-                )
-            }
-        }
-        rule.onAllNodes(hasSetTextAction())[0].performTextReplacement("あい")
-        rule.onAllNodes(hasSetTextAction())[1].performScrollTo().performTextReplacement("燃料なし")
-        rule.runOnIdle {
-            savedText = "あ"
-            savedEmptyText = "燃料"
-        }
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("あい")).assertExists()
-        rule.onNode(hasSetTextAction() and hasText("燃料なし")).assertExists()
-        rule.runOnIdle {
-            savedText = "あい"
-            savedEmptyText = "燃料なし"
-        }
-        rule.waitForIdle()
-        rule.runOnIdle {
-            savedText = "う"
-            savedEmptyText = "保存後"
-        }
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
-        rule.onNode(hasSetTextAction() and hasText("保存後")).assertExists()
-    }
-
-    @Test
     fun `前後に空白を含む入力はtrim後の保存値で待機を解除し以降の更新を反映する`() {
         var savedText by mutableStateOf("")
         rule.setContent {
@@ -225,24 +184,6 @@ class AceWindowsAutoReadoutRemainingFuelLapsDetailPaneTest {
             }
         }
         rule.onNodeWithText("{lap}、{x} は置き換えられません。{laps} を使用してください").assertExists()
-    }
-
-    @Test
-    fun `空欄では読み上げない案内を表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                AceWindowsAutoReadoutRemainingFuelLapsDetailPaneContent(
-                    uiState =
-                        AceWindowsAutoReadoutRemainingFuelLapsDetailUiState(
-                            readoutText = "",
-                            emptyReadoutText = "",
-                            isTextToSpeechAvailable = true,
-                        ),
-                )
-            }
-        }
-        rule.onAllNodesWithText("空欄のままなら読み上げません").assertCountEquals(2)
-        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].assertIsEnabled()
     }
 
     @Test

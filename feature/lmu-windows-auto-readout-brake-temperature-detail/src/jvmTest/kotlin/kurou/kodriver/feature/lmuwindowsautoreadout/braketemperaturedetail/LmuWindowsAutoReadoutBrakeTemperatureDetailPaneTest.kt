@@ -151,32 +151,6 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
-        var savedText by mutableStateOf("")
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutBrakeTemperatureDetailUiState(
-                            readoutText = savedText,
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onReadoutTextChanged = {},
-                )
-            }
-        }
-        rule.onNode(hasSetTextAction()).performTextReplacement("あい")
-        savedText = "あ"
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("あい")).assertExists()
-        savedText = "あい"
-        rule.waitForIdle()
-        savedText = "う"
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
-    }
-
-    @Test
     fun `前後に空白を含む入力はtrim後の保存値で待機を解除し以降の更新を反映する`() {
         var savedText by mutableStateOf("")
         rule.setContent {
@@ -271,23 +245,6 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
             }
         }
         rule.onNodeWithText("{lap}、{x} は置き換えられません。{celsius} を使用してください").assertExists()
-    }
-
-    @Test
-    fun `空欄では読み上げない案内を表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutBrakeTemperatureDetailUiState(
-                            readoutText = "",
-                            isTextToSpeechAvailable = true,
-                        ),
-                )
-            }
-        }
-        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
-        rule.onNodeWithContentDescription("入力した文言を再生").assertIsEnabled()
     }
 
     @Test

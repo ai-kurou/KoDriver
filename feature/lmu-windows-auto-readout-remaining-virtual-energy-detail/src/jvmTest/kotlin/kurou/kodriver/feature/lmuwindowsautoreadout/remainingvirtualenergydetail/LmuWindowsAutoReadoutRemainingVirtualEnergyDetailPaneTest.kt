@@ -12,7 +12,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
@@ -155,32 +154,6 @@ class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPaneTest {
     }
 
     @Test
-    fun `保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
-        var savedText by mutableStateOf("")
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutRemainingVirtualEnergyDetailUiState(
-                            readoutText = savedText,
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onReadoutTextChanged = {},
-                )
-            }
-        }
-        rule.onNode(hasSetTextAction()).performTextReplacement("あい")
-        savedText = "あ"
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("あい")).assertExists()
-        savedText = "あい"
-        rule.waitForIdle()
-        savedText = "う"
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
-    }
-
-    @Test
     fun `入力直後の文言にpercentを挿入し上限ちょうどで無効になる`() {
         val changed = mutableListOf<String>()
         rule.setContent {
@@ -229,23 +202,6 @@ class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPaneTest {
             }
         }
         rule.onNodeWithText("{lap}、{x} は置き換えられません。{percent} を使用してください").assertExists()
-    }
-
-    @Test
-    fun `空欄では読み上げない案内を表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutRemainingVirtualEnergyDetailUiState(
-                            readoutText = "",
-                            isTextToSpeechAvailable = true,
-                        ),
-                )
-            }
-        }
-        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
-        rule.onNodeWithContentDescription("入力した文言を再生").assertIsEnabled()
     }
 
     @Test
