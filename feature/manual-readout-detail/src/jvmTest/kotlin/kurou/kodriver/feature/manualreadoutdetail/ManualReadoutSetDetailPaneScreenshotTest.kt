@@ -61,7 +61,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                             ManualReadoutItemPickerSheetContent(
                                 itemKeys = gt7Ps5ManualReadoutItemKeys(),
                                 selectedCount = 0,
@@ -71,6 +71,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                     }
                 }
             }
+            onNodeWithText("タイヤ温度").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
@@ -80,7 +81,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             ManualReadoutItemPickerSheetContent(
                                 itemKeys = lmuWindowsManualReadoutItemKeys(),
                                 selectedCount = 0,
@@ -90,6 +91,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                     }
                 }
             }
+            onNodeWithText("クラス内後方車とのギャップ").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
@@ -198,7 +200,7 @@ class ManualReadoutSetDetailPaneAceScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                             ManualReadoutItemPickerSheetContent(
                                 itemKeys = aceWindowsManualReadoutItemKeys(),
                                 selectedCount = 0,
@@ -208,6 +210,7 @@ class ManualReadoutSetDetailPaneAceScreenshotTest {
                     }
                 }
             }
+            onNodeWithText("タイヤ温度").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 }

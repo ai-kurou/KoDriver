@@ -14,7 +14,7 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [36], qualifiers = "w480dp-h640dp")
+@Config(sdk = [36], qualifiers = "w480dp-h800dp")
 class ManualReadoutHintSheetContentScreenshotTest {
     @Test
     fun `Android版ではホットキーの説明を表示しない`() {
