@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
@@ -15,12 +16,14 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -197,6 +200,39 @@ class AutoReadoutListPaneTest {
             ).performClick()
 
         assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, clicked.single())
+    }
+
+    @Test
+    fun `シェブロンの上パディング領域をタップするとonItemClickが呼ばれる`() {
+        val item = LmuWindowsReadoutItemKey.VehicleApproach.Root
+        val clicked = mutableListOf<ReadoutItemKey>()
+        rule.setContent {
+            KoDriverTheme {
+                AutoReadoutListPane(
+                    uiState =
+                        AutoReadoutListUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(item),
+                            autoReadoutEnabledStates = mapOf(item to true),
+                        ),
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
+                    onItemClick = { clicked += it },
+                )
+            }
+        }
+
+        val chevronTag = "autoReadoutListChevronTouchTarget:${item.value}"
+        val chevronNode = rule.onNodeWithTag(chevronTag).fetchSemanticsNode()
+        val itemNameNode = rule.onNodeWithContentDescription("車両接近").fetchSemanticsNode()
+        // シェブロンの上端と項目行の上端の間（上パディング領域）の中点をタップする
+        val paddingTapY = (itemNameNode.positionInRoot.y - chevronNode.positionInRoot.y) / 2f
+
+        rule.onNodeWithTag(chevronTag).performTouchInput { click(Offset(width / 2f, paddingTapY)) }
+
+        assertEquals(item, clicked.single())
     }
 
     @Test
