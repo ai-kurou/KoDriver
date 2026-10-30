@@ -28,6 +28,7 @@ import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.ManualReadoutSettingsResetter
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
@@ -66,6 +67,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.ResetAutoReadoutSettingsUseCase
+import kurou.kodriver.domain.usecase.ResetManualReadoutSettingsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
@@ -82,6 +84,7 @@ import kotlin.test.BeforeTest
 @Suppress("LargeClass")
 abstract class OtherListViewModelTestFixture {
     protected val autoReadoutSettingsResetter: AutoReadoutSettingsResetter = mockk()
+    protected val manualReadoutSettingsResetter: ManualReadoutSettingsResetter = mockk()
 
     protected val telemetryLogRepository: TelemetryLogRepository = mockk()
 
@@ -229,6 +232,10 @@ abstract class OtherListViewModelTestFixture {
             autoReadoutSettingsResetFlow =
                 OtherListAutoReadoutSettingsResetFlow(
                     ResetAutoReadoutSettingsUseCase(listOf(autoReadoutSettingsResetter)),
+                ),
+            manualReadoutSettingsResetFlow =
+                OtherListManualReadoutSettingsResetFlow(
+                    ResetManualReadoutSettingsUseCase(listOf(manualReadoutSettingsResetter)),
                 ),
             appVersionInfo =
                 OtherListAppVersionInfo(

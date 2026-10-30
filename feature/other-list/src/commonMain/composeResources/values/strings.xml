@@ -75,4 +75,11 @@
     <string name="auto_readout_settings_reset_cancel_button">キャンセル</string>
     <string name="auto_readout_settings_reset_success">自動タブの設定を初期化しました</string>
     <string name="auto_readout_settings_reset_failure">自動タブの設定の初期化に失敗しました</string>
+    <string name="manual_readout_settings_reset_item">手動タブの設定を初期化</string>
+    <string name="manual_readout_settings_reset_confirm_title">手動タブの設定を初期化</string>
+    <string name="manual_readout_settings_reset_confirm_body">手動タブのすべてのシミュレーター（LMU・ACE・GT7）の設定を初期化し、デフォルトに戻します。読み上げセット（項目の有効/無効、並び順、ホットキーなど）と再生ボタンのレイアウト設定が対象です。この操作は元に戻せません。</string>
+    <string name="manual_readout_settings_reset_confirm_button">初期化</string>
+    <string name="manual_readout_settings_reset_cancel_button">キャンセル</string>
+    <string name="manual_readout_settings_reset_success">手動タブの設定を初期化しました</string>
+    <string name="manual_readout_settings_reset_failure">手動タブの設定の初期化に失敗しました</string>
 </resources>

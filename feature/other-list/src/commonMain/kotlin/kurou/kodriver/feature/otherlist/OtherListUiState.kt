@@ -28,6 +28,7 @@ data class OtherListUiState(
     val items: List<OtherListItemType> = buildOtherListItems(),
     val reset: OtherListResetUiState = OtherListResetUiState(),
     val autoReadoutSettingsReset: OtherListResetUiState = OtherListResetUiState(),
+    val manualReadoutSettingsReset: OtherListResetUiState = OtherListResetUiState(),
     val selectedItem: OtherListItemType? = null,
     val selectedFeedbackTelemetryLogId: Long? = null,
     // selectFeedbackItem のたびに増分する。同じログIDを再選択した場合でも

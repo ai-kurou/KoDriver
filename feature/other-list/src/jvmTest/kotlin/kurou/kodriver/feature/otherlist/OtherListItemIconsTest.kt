@@ -39,6 +39,7 @@ class OtherListItemIconsTest {
                 OtherListItemType.ConsoleIp to Icons.Outlined.SportsEsports,
                 OtherListItemType.DeleteAllLogs to Icons.Outlined.DeleteSweep,
                 OtherListItemType.ResetAutoReadoutSettings to Icons.Outlined.RestartAlt,
+                OtherListItemType.ResetManualReadoutSettings to Icons.Outlined.RestartAlt,
                 OtherListItemType.GitHubRepository to Icons.Outlined.Star,
                 OtherListItemType.ReleasePage to Icons.Outlined.NewReleases,
                 OtherListItemType.Feedback to Icons.Outlined.Feedback,

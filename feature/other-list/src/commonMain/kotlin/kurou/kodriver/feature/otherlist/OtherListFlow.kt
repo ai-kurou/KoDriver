@@ -16,6 +16,7 @@ class OtherListFlow(
     applyGuidance: (List<OtherListItemType>) -> List<OtherListItemType>,
     reset: Flow<OtherListResetUiState>,
     autoReadoutSettingsReset: Flow<OtherListResetUiState>,
+    manualReadoutSettingsReset: Flow<OtherListResetUiState>,
     startupRegistration: Flow<OtherListStartupRegistrationUiState>,
     appUpdate: Flow<OtherListAppUpdateUiState>,
 ) {
@@ -57,6 +58,8 @@ class OtherListFlow(
             state.copy(reset = reset)
         }.combine(autoReadoutSettingsReset) { state, reset ->
             state.copy(autoReadoutSettingsReset = reset)
+        }.combine(manualReadoutSettingsReset) { state, reset ->
+            state.copy(manualReadoutSettingsReset = reset)
         }.combine(startupRegistration) { state, startupRegistration ->
             state.copy(startupEnabled = startupRegistration.startupEnabled)
         }.combine(appUpdate) { state, appUpdate ->

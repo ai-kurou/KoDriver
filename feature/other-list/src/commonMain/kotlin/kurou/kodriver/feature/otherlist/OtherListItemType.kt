@@ -99,12 +99,16 @@ sealed interface OtherListItemType {
         override val id: String = "startup"
     }
 
-    data object DeleteAllLogs : OtherListItemType {
-        override val id: String = "delete_all_logs"
-    }
-
     data object ResetAutoReadoutSettings : OtherListItemType {
         override val id: String = "reset_auto_readout_settings"
+    }
+
+    data object ResetManualReadoutSettings : OtherListItemType {
+        override val id: String = "reset_manual_readout_settings"
+    }
+
+    data object DeleteAllLogs : OtherListItemType {
+        override val id: String = "delete_all_logs"
     }
 
     data object GitHubRepository : OtherListItemType {
@@ -128,7 +132,7 @@ sealed interface OtherListItemType {
     }
 
     companion object {
-        /** 永続化・ナビゲーション互換のため、既存の宣言順を維持する。 */
+        /** 一覧の表示順を決める宣言順。永続化されるのは [id] であり、順序ではない。 */
         val entries: List<OtherListItemType> by lazy {
             listOf(
                 AccessLocalNetworkPermission,
@@ -152,8 +156,9 @@ sealed interface OtherListItemType {
                 DynamicColor,
                 HapticFeedback,
                 Startup,
-                DeleteAllLogs,
                 ResetAutoReadoutSettings,
+                ResetManualReadoutSettings,
+                DeleteAllLogs,
                 GitHubRepository,
                 ReleasePage,
                 Feedback,

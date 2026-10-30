@@ -35,6 +35,7 @@ class OtherListFlowTest {
     private val deviceVolume = MutableStateFlow(0)
     private val reset = MutableStateFlow(OtherListResetUiState())
     private val autoReadoutSettingsReset = MutableStateFlow(OtherListResetUiState())
+    private val manualReadoutSettingsReset = MutableStateFlow(OtherListResetUiState())
     private val startupRegistration = MutableStateFlow(OtherListStartupRegistrationUiState())
     private val appUpdate = MutableStateFlow(OtherListAppUpdateUiState())
     private var activeCollections = 0
@@ -73,6 +74,7 @@ class OtherListFlowTest {
                     consolePort = 33741,
                     reset = OtherListResetUiState(showResetConfirmDialog = true),
                     autoReadoutSettingsReset = OtherListResetUiState(resetSucceeded = false),
+                    manualReadoutSettingsReset = OtherListResetUiState(showResetConfirmDialog = true),
                     startupEnabled = true,
                     hasAppUpdate = true,
                 )
@@ -124,6 +126,7 @@ class OtherListFlowTest {
             deviceVolume.update { expected.deviceVolume }
             reset.update { expected.reset }
             autoReadoutSettingsReset.update { expected.autoReadoutSettingsReset }
+            manualReadoutSettingsReset.update { expected.manualReadoutSettingsReset }
             startupRegistration.update { OtherListStartupRegistrationUiState(true) }
             appUpdate.update { OtherListAppUpdateUiState(true) }
 
@@ -198,6 +201,7 @@ class OtherListFlowTest {
             applyGuidance = tts::applyGuidance,
             reset = reset,
             autoReadoutSettingsReset = autoReadoutSettingsReset,
+            manualReadoutSettingsReset = manualReadoutSettingsReset,
             startupRegistration = startupRegistration,
             appUpdate = appUpdate,
         )

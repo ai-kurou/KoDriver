@@ -31,17 +31,31 @@ import androidx.compose.ui.graphics.vector.ImageVector
 internal fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
     when (itemType) {
         OtherListItemType.AccessLocalNetworkPermission -> Icons.Outlined.Wifi
+
         OtherListItemType.ServerIp -> Icons.Outlined.Computer
+
         OtherListItemType.ConsoleIp -> Icons.Outlined.SportsEsports
+
         is OtherListItemType.ReadoutSettings -> otherReadoutSettingsItemLeadingIconVector(itemType)
+
         is OtherListItemType.OverlaySettings -> otherOverlaySettingsItemLeadingIconVector(itemType)
+
         is OtherListItemType.AppSettings -> otherAppSettingsItemLeadingIconVector(itemType)
+
         OtherListItemType.DeleteAllLogs -> Icons.Outlined.DeleteSweep
-        OtherListItemType.ResetAutoReadoutSettings -> Icons.Outlined.RestartAlt
+
+        OtherListItemType.ResetAutoReadoutSettings,
+        OtherListItemType.ResetManualReadoutSettings,
+        -> Icons.Outlined.RestartAlt
+
         OtherListItemType.GitHubRepository -> Icons.Outlined.Star
+
         OtherListItemType.ReleasePage -> Icons.Outlined.NewReleases
+
         OtherListItemType.Feedback -> Icons.Outlined.Feedback
+
         OtherListItemType.License -> Icons.Outlined.Description
+
         OtherListItemType.DebugState -> Icons.Outlined.Code
     }
 

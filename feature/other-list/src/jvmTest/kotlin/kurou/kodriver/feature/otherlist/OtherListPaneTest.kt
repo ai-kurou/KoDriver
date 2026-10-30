@@ -99,6 +99,35 @@ class OtherListPaneTest {
     }
 
     @Test
+    fun `手動タブの設定を初期化をタップするとコールバックと触覚反応が発生する`() {
+        val haptic = FakeHapticFeedback()
+        val callbacks = mutableListOf<String>()
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherListPane(
+                    uiState = OtherListUiState(items = listOf(OtherListItemType.ResetManualReadoutSettings)),
+                    onItemClick = { callbacks += it.id },
+                    onOverlayVisibleChange = { callbacks += "overlay" },
+                    onKeepScreenOnChange = { callbacks += "screen" },
+                    onDynamicColorEnabledChange = { callbacks += "color" },
+                    onHapticFeedbackEnabledChange = { callbacks += "haptic" },
+                    onStartupEnabledChange = { callbacks += "startup" },
+                )
+            }
+        }
+
+        rule.onNodeWithText("データ・ログ").assertIsDisplayed()
+        rule
+            .onNodeWithText("手動タブの設定を初期化")
+            .assertIsDisplayed()
+            .assertIsNotSelected()
+            .performClick()
+        rule.onNodeWithText("手動タブの設定を初期化").assertIsNotSelected()
+        assertEquals(listOf(OtherListItemType.ResetManualReadoutSettings.id), callbacks)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
+    }
+
+    @Test
     fun `音声の用途をタップすると項目クリックコールバックを呼ぶ`() {
         var clickedItem: OtherListItemType? = null
         rule.setContent {
@@ -640,8 +669,9 @@ class OtherListPaneTest {
                                 OtherListItemType.ConsoleIp,
                                 OtherListItemType.Volume,
                                 OtherListItemType.Theme,
-                                OtherListItemType.DeleteAllLogs,
                                 OtherListItemType.ResetAutoReadoutSettings,
+                                OtherListItemType.ResetManualReadoutSettings,
+                                OtherListItemType.DeleteAllLogs,
                                 OtherListItemType.License,
                             ),
                     ),
