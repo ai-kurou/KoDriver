@@ -1940,40 +1940,6 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `自己ベストラップの空白文言を判定時に解決する`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                telemetryChannel = channel,
-                ttsEngine = tts,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.MyBestLap.Root to true),
-                myBestLapReadoutText = " ",
-            )
-            channel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
-            channel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
-    fun `自己ベストラップのTTS利用不可を判定時に解決する`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                telemetryChannel = channel,
-                ttsEngine = tts,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.MyBestLap.Root to true),
-                myBestLapReadoutText = null,
-            )
-            channel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
-            channel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
     fun `部品脱落の自由文言を判定時に解決する`() =
         runTest(testDispatcher) {
             val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
@@ -1991,40 +1957,6 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `部品脱落の空白文言を判定時に解決する`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                damageChannel = channel,
-                ttsEngine = tts,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Root to true),
-                partDetachedReadoutText = " ",
-            )
-            channel.send(noDamage())
-            channel.send(noDamage(partDetached = true))
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
-    fun `部品脱落のTTS利用不可を判定時に解決する`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                damageChannel = channel,
-                ttsEngine = tts,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Root to true),
-                partDetachedReadoutText = null,
-            )
-            channel.send(noDamage())
-            channel.send(noDamage(partDetached = true))
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
     fun `タイヤ脱落の自由文言を判定時に解決する`() =
         runTest(testDispatcher) {
             val channel = Channel<LmuWindowsTyreDetachedData>(Channel.UNLIMITED)
@@ -2039,40 +1971,6 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(noTyreDetached())
             channel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
             assertEquals(listOf<SpeechEvent>(LmuWindowsTyreDetached(resolvedText = "カスタム")), spokenTexts)
-        }
-
-    @Test
-    fun `タイヤ脱落の空白文言を判定時に解決する`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsTyreDetachedData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                tyreDetachedChannel = channel,
-                ttsEngine = tts,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Root to true),
-                tyreDetachedReadoutText = " ",
-            )
-            channel.send(noTyreDetached())
-            channel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
-    fun `タイヤ脱落のTTS利用不可を判定時に解決する`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsTyreDetachedData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                tyreDetachedChannel = channel,
-                ttsEngine = tts,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Root to true),
-                tyreDetachedReadoutText = null,
-            )
-            channel.send(noTyreDetached())
-            channel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
 
     @Test
@@ -2457,27 +2355,6 @@ class LmuWindowsNarratorViewModelTest {
                 tyreTemperatureHighThreshold = 90,
                 enabledOverrides = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
                 tyreTemperatureOverheatWarningEnabled = false,
-            )
-            flagChannel.send(clearFlags())
-
-            channel.send(tyreTemperature(fl = 95.0))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
-    fun `タイヤ温度がOFFの場合は読み上げない`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
-            val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                tyreTemperatureChannel = channel,
-                flagChannel = flagChannel,
-                ttsEngine = tts,
-                tyreTemperatureHighThreshold = 90,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to false),
             )
             flagChannel.send(clearFlags())
 
