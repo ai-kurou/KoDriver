@@ -19,7 +19,11 @@ class OtherListItemTypeTest {
             otherListSections,
         )
         assertEquals(
-            listOf(OtherListItemType.DeleteAllLogs, OtherListItemType.ResetAutoReadoutSettings),
+            listOf(
+                OtherListItemType.ResetAutoReadoutSettings,
+                OtherListItemType.ResetManualReadoutSettings,
+                OtherListItemType.DeleteAllLogs,
+            ),
             OtherListItemType.entries.filter { it.section() == OtherListSection.DataLog },
         )
     }
@@ -30,6 +34,11 @@ class OtherListItemTypeTest {
         assertEquals(
             OtherListItemType.ResetAutoReadoutSettings,
             OtherListItemType.fromId("reset_auto_readout_settings"),
+        )
+        assertEquals("reset_manual_readout_settings", OtherListItemType.ResetManualReadoutSettings.id)
+        assertEquals(
+            OtherListItemType.ResetManualReadoutSettings,
+            OtherListItemType.fromId("reset_manual_readout_settings"),
         )
         assertEquals("delete_all_logs", OtherListItemType.DeleteAllLogs.id)
         assertEquals(OtherListItemType.DeleteAllLogs, OtherListItemType.fromId("delete_all_logs"))
@@ -60,8 +69,8 @@ class OtherListItemTypeTest {
     }
 
     @Test
-    fun `entriesは全28項目を宣言順で返す`() {
-        assertEquals(28, OtherListItemType.entries.size)
+    fun `entriesは全29項目を宣言順で返す`() {
+        assertEquals(29, OtherListItemType.entries.size)
         assertEquals(
             listOf(
                 OtherListItemType.AccessLocalNetworkPermission,
@@ -85,8 +94,9 @@ class OtherListItemTypeTest {
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.Startup,
-                OtherListItemType.DeleteAllLogs,
                 OtherListItemType.ResetAutoReadoutSettings,
+                OtherListItemType.ResetManualReadoutSettings,
+                OtherListItemType.DeleteAllLogs,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
@@ -118,8 +128,9 @@ class OtherListItemTypeTest {
                 "dynamic_color",
                 "haptic_feedback",
                 "startup",
-                "delete_all_logs",
                 "reset_auto_readout_settings",
+                "reset_manual_readout_settings",
+                "delete_all_logs",
                 "github_repository",
                 "release_page",
                 "feedback",

@@ -338,6 +338,7 @@ internal fun OtherListItem(
                 OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.DeleteAllLogs,
                 OtherListItemType.ResetAutoReadoutSettings,
+                OtherListItemType.ResetManualReadoutSettings,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
@@ -389,6 +390,7 @@ private fun handleOtherListItemClick(
     when (item) {
         OtherListItemType.DeleteAllLogs,
         OtherListItemType.ResetAutoReadoutSettings,
+        OtherListItemType.ResetManualReadoutSettings,
         -> {
             onItemClick(item)
         }

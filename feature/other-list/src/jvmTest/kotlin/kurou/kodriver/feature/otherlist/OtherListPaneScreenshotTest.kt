@@ -52,8 +52,9 @@ class OtherListPaneScreenshotTest {
                                         items =
                                             listOf(
                                                 OtherListItemType.Startup,
-                                                OtherListItemType.DeleteAllLogs,
                                                 OtherListItemType.ResetAutoReadoutSettings,
+                                                OtherListItemType.ResetManualReadoutSettings,
+                                                OtherListItemType.DeleteAllLogs,
                                                 OtherListItemType.GitHubRepository,
                                             ),
                                     ),

@@ -39,6 +39,7 @@ class OtherListViewModel(
     private val deviceVolumeFlow: OtherListDeviceVolumeFlow,
     private val resetFlow: OtherListResetFlow,
     private val autoReadoutSettingsResetFlow: OtherListAutoReadoutSettingsResetFlow,
+    private val manualReadoutSettingsResetFlow: OtherListManualReadoutSettingsResetFlow,
 ) : ViewModel() {
     private val hapticFeedbackAvailable = checkHapticFeedbackAvailable()
     private val _uiState =
@@ -66,6 +67,7 @@ class OtherListViewModel(
             applyGuidance = ttsAvailabilityFlow::applyGuidance,
             reset = resetFlow.uiState,
             autoReadoutSettingsReset = autoReadoutSettingsResetFlow.uiState,
+            manualReadoutSettingsReset = manualReadoutSettingsResetFlow.uiState,
             startupRegistration = startupRegistrationFlow.uiState,
             appUpdate = appUpdateFlow.uiState,
         ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
@@ -102,6 +104,22 @@ class OtherListViewModel(
         autoReadoutSettingsResetFlow.consumeResetResult()
     }
 
+    fun onManualReadoutSettingsResetClick() {
+        manualReadoutSettingsResetFlow.onResetClick()
+    }
+
+    fun onManualReadoutSettingsResetDismiss() {
+        manualReadoutSettingsResetFlow.onResetDismiss()
+    }
+
+    fun onManualReadoutSettingsResetConfirm() {
+        viewModelScope.launch { manualReadoutSettingsResetFlow.onResetConfirm() }
+    }
+
+    fun consumeManualReadoutSettingsResetResult() {
+        manualReadoutSettingsResetFlow.consumeResetResult()
+    }
+
     fun checkUpdate() {
         viewModelScope.launch { appUpdateFlow.checkUpdate() }
     }
@@ -131,6 +149,7 @@ class OtherListViewModel(
         if (
             itemType == OtherListItemType.DeleteAllLogs ||
             itemType == OtherListItemType.ResetAutoReadoutSettings ||
+            itemType == OtherListItemType.ResetManualReadoutSettings ||
             itemType == OtherListItemType.GitHubRepository ||
             itemType == OtherListItemType.ReleasePage ||
             itemType == OtherListItemType.AccessLocalNetworkPermission
@@ -148,7 +167,8 @@ class OtherListViewModel(
     fun selectItem(itemType: OtherListItemType) {
         if (
             itemType == OtherListItemType.DeleteAllLogs ||
-            itemType == OtherListItemType.ResetAutoReadoutSettings
+            itemType == OtherListItemType.ResetAutoReadoutSettings ||
+            itemType == OtherListItemType.ResetManualReadoutSettings
         ) {
             return
         }

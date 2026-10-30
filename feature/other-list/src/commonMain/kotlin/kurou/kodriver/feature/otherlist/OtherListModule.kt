@@ -21,6 +21,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.ResetAutoReadoutSettingsUseCase
+import kurou.kodriver.domain.usecase.ResetManualReadoutSettingsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
@@ -59,6 +60,7 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
+                get(),
             )
         }
 
@@ -77,6 +79,8 @@ val otherListModule =
         factory { OtherListResetFlow(get()) }
         factory { OtherListAutoReadoutSettingsResetFlow(get()) }
         factory { ResetAutoReadoutSettingsUseCase(getAll()) }
+        factory { OtherListManualReadoutSettingsResetFlow(get()) }
+        factory { ResetManualReadoutSettingsUseCase(getAll()) }
         factory { OtherListStartupRegistrationFlow(get()) }
         factory { OtherListDeviceSettingsFlow(get(), get(), get(), get(), get(), get(), get()) }
         factory { OtherListSpeechSettingsFlow(get(), get(), get(), get(), get(), get()) }

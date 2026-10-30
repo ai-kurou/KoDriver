@@ -51,6 +51,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_voice_pitch
 import kurou.kodriver.feature.otherlist.generated.resources.item_voice_speed
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
+import kurou.kodriver.feature.otherlist.generated.resources.manual_readout_settings_reset_item
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_connection_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_data_log
@@ -112,6 +113,7 @@ internal fun OtherListItemType.section(): OtherListSection =
 
         OtherListItemType.DeleteAllLogs,
         OtherListItemType.ResetAutoReadoutSettings,
+        OtherListItemType.ResetManualReadoutSettings,
         -> OtherListSection.DataLog
 
         OtherListItemType.GitHubRepository,
@@ -121,6 +123,14 @@ internal fun OtherListItemType.section(): OtherListSection =
         -> OtherListSection.Information
 
         OtherListItemType.DebugState -> OtherListSection.Information
+    }
+
+@Composable
+private fun otherReadoutSettingsResetItemDisplayName(itemType: OtherListItemType): String =
+    if (itemType == OtherListItemType.ResetManualReadoutSettings) {
+        stringResource(Res.string.manual_readout_settings_reset_item)
+    } else {
+        stringResource(Res.string.auto_readout_settings_reset_item)
     }
 
 @Composable
@@ -146,8 +156,10 @@ internal fun otherItemDisplayName(itemType: OtherListItemType): String =
             otherOverlaySettingsItemDisplayName(itemType)
         }
 
-        OtherListItemType.ResetAutoReadoutSettings -> {
-            stringResource(Res.string.auto_readout_settings_reset_item)
+        OtherListItemType.ResetAutoReadoutSettings,
+        OtherListItemType.ResetManualReadoutSettings,
+        -> {
+            otherReadoutSettingsResetItemDisplayName(itemType)
         }
 
         OtherListItemType.DeleteAllLogs -> {
@@ -301,6 +313,7 @@ internal fun OtherListItemTrailingIcon(
 
         OtherListItemType.DeleteAllLogs,
         OtherListItemType.ResetAutoReadoutSettings,
+        OtherListItemType.ResetManualReadoutSettings,
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
