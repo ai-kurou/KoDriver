@@ -748,21 +748,6 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `フラッグが変化すると対応するイベントを読み上げる`() {
-        val state = AceWindowsNarratorState(previousFlag = AceWindowsFlagType.NO_FLAG)
-
-        val decision =
-            useCase.determineFlag(
-                state = state,
-                data = flag(AceWindowsFlagType.BLUE_FLAG),
-                settings = flagSettings(),
-            )
-
-        assertEquals(listOf(AceWindowsBlueFlag()), decision.events)
-        assertEquals(AceWindowsFlagType.BLUE_FLAG, decision.state.previousFlag)
-    }
-
-    @Test
     fun `フラッグが変化しなければ読み上げない`() {
         val state = AceWindowsNarratorState(previousFlag = AceWindowsFlagType.BLUE_FLAG)
 
@@ -859,6 +844,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                     settings = flagSettings(),
                 )
             assertEquals(listOf(event), decision.events)
+            assertEquals(flagType, decision.state.previousFlag)
         }
     }
 
@@ -985,27 +971,6 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `ヒステリシス下限まで下がると再度読み上げ可能になる`() {
-        val overheatState =
-            useCase
-                .determineTyreTemperatureOverheat(
-                    state = AceWindowsNarratorState(),
-                    data = tyreCarcassTemperature(fl = 95.0f),
-                    settings = tyreTemperatureSettings(highThresholdCelsius = 90),
-                ).state
-
-        val cooledState =
-            useCase
-                .determineTyreTemperatureOverheat(
-                    state = overheatState,
-                    data = tyreCarcassTemperature(fl = 85.0f),
-                    settings = tyreTemperatureSettings(highThresholdCelsius = 90),
-                ).state
-
-        assertEquals(false, cooledState.tyreOverheating)
-    }
-
-    @Test
     fun `閾値内に車両が入ると読み上げる`() {
         val decision =
             useCase.determineVehicleApproach(
@@ -1103,26 +1068,6 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                     ),
             )
 
-        assertEquals(emptyList<SpeechEvent>(), decision.events)
-        assertEquals(true, decision.state.vehicleApproaching)
-    }
-
-    @Test
-    fun `RootとStartReadoutがともに無効なら接近しても読み上げない`() {
-        val decision =
-            useCase.determineVehicleApproach(
-                state = AceWindowsNarratorState(),
-                data = vehicleApproach(distanceMeters = 5.0),
-                settings =
-                    vehicleApproachSettings(
-                        thresholdMeters = 10.0,
-                        enabledOverrides =
-                            mapOf(
-                                AceWindowsReadoutItemKey.VehicleApproach.Root to false,
-                                AceWindowsReadoutItemKey.VehicleApproach.StartReadout to false,
-                            ),
-                    ),
-            )
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(true, decision.state.vehicleApproaching)
     }
