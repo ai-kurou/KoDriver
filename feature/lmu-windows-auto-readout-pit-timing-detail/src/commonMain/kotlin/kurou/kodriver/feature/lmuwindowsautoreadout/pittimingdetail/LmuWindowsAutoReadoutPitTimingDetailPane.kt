@@ -92,12 +92,12 @@ import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.re
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_laps_help_icon_content_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_laps_subtitle
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_title
+import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_vehicle_class_not_target
+import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_vehicle_class_target
+import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_vehicle_class_target_subtitle
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_help_icon_content_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_subtitle
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_title
-import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_vehicle_class_not_target
-import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_vehicle_class_target
-import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_vehicle_class_target_subtitle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -196,9 +196,9 @@ internal fun LmuWindowsAutoReadoutPitTimingDetailPaneContent(
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneSubtitle(
-                        text = stringResource(Res.string.pit_timing_virtual_energy_vehicle_class_target_subtitle),
+                        text = stringResource(Res.string.pit_timing_vehicle_class_target_subtitle),
                     )
-                    VirtualEnergyTargetVehicleClasses()
+                    VehicleClassTargets(LmuWindowsEnergySource.VirtualEnergy)
                     HorizontalDivider(
                         modifier =
                             Modifier.padding(
@@ -312,6 +312,17 @@ internal fun LmuWindowsAutoReadoutPitTimingDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
+                    DetailPaneSubtitle(
+                        text = stringResource(Res.string.pit_timing_vehicle_class_target_subtitle),
+                    )
+                    VehicleClassTargets(LmuWindowsEnergySource.Fuel)
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(
+                                horizontal = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.small,
+                            ),
+                    )
                     PitTimingReadoutFields(
                         text = uiState.fuelText,
                         defaultText = LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT,
@@ -362,7 +373,7 @@ internal fun LmuWindowsAutoReadoutPitTimingDetailPaneContent(
 }
 
 @Composable
-private fun VirtualEnergyTargetVehicleClasses() {
+private fun VehicleClassTargets(targetSource: LmuWindowsEnergySource) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
@@ -380,7 +391,8 @@ private fun VirtualEnergyTargetVehicleClasses() {
             Triple(LmuWindowsVehicleClassData.Gte, DesignSystemRes.drawable.class_lmgte, "LMGTE"),
             Triple(LmuWindowsVehicleClassData.Gt3, DesignSystemRes.drawable.class_lmgt3, "LMGT3"),
         ).forEach { (vehicleClass, image, accessibleName) ->
-            VirtualEnergyVehicleClassOption(
+            VehicleClassOption(
+                targetSource = targetSource,
                 image = image,
                 accessibleName = accessibleName,
                 vehicleClass = vehicleClass,
@@ -391,19 +403,20 @@ private fun VirtualEnergyTargetVehicleClasses() {
 }
 
 @Composable
-private fun VirtualEnergyVehicleClassOption(
+private fun VehicleClassOption(
+    targetSource: LmuWindowsEnergySource,
     image: org.jetbrains.compose.resources.DrawableResource,
     accessibleName: String,
     vehicleClass: LmuWindowsVehicleClassData,
     modifier: Modifier = Modifier,
 ) {
-    val isTarget = lmuWindowsVehicleClassEnergySource(vehicleClass) == LmuWindowsEnergySource.VirtualEnergy
+    val isTarget = lmuWindowsVehicleClassEnergySource(vehicleClass) == targetSource
     val targetLabel =
         stringResource(
             if (isTarget) {
-                Res.string.pit_timing_virtual_energy_vehicle_class_target
+                Res.string.pit_timing_vehicle_class_target
             } else {
-                Res.string.pit_timing_virtual_energy_vehicle_class_not_target
+                Res.string.pit_timing_vehicle_class_not_target
             },
         )
     val colors = MaterialTheme.colorScheme

@@ -39,23 +39,24 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `バーチャルエネルギーカードに対象クラスの見出しと全6クラスの対象区分が表示される`() {
+    fun `バーチャルエネルギーと燃料の両カードに対象クラスの見出しと全6クラスの対象区分が表示される`() {
         rule.setContent {
             KoDriverTheme {
-                LmuWindowsAutoReadoutPitTimingDetailPaneContent()
+                LmuWindowsAutoReadoutPitTimingDetailPaneContent(modifier = Modifier.requiredSize(360.dp, 6000.dp))
             }
         }
 
-        rule.onNodeWithText("対象クラス").performScrollTo().assertIsDisplayed()
+        assertEquals(2, rule.onAllNodesWithText("対象クラス").fetchSemanticsNodes().size)
         listOf(
-            "Hypercar、対象",
-            "LMP2、対象外",
-            "ELMS LMP2、対象外",
-            "LMP3、対象外",
-            "LMGTE、対象外",
-            "LMGT3、対象",
-        ).forEach { contentDescription ->
-            rule.onNodeWithContentDescription(contentDescription).performScrollTo().assertIsDisplayed()
+            "Hypercar、対象" to "Hypercar、対象外",
+            "LMP2、対象外" to "LMP2、対象",
+            "ELMS LMP2、対象外" to "ELMS LMP2、対象",
+            "LMP3、対象外" to "LMP3、対象",
+            "LMGTE、対象外" to "LMGTE、対象",
+            "LMGT3、対象" to "LMGT3、対象外",
+        ).forEach { (virtualEnergy, fuel) ->
+            rule.onNodeWithContentDescription(virtualEnergy).assertExists()
+            rule.onNodeWithContentDescription(fuel).assertExists()
         }
     }
 
