@@ -1,21 +1,21 @@
 package kurou.kodriver.core.texttospeechdata.repository
 
-import kurou.kodriver.core.texttospeechdata.windows.WindowsSpeechSynthesizer
+import kurou.kodriver.core.texttospeechdata.windows.SpeechSynthesizer
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 /**
  * @param blockUntilInterrupted `true` の場合、[speak] は割り込み（[Thread.interrupt]）が来るまで
- *   ブロックし続ける。[WindowsTextToSpeechRepository.speak] がコルーチンのキャンセル時に
+ *   ブロックし続ける。[DesktopTextToSpeechRepository.speak] がコルーチンのキャンセル時に
  *   実際にブロック中のスレッドへ割り込みを送る（`runInterruptible`）ことを検証するために使う。
  */
-class FakeWindowsSpeechSynthesizer(
+class FakeSpeechSynthesizer(
     private val available: Boolean = true,
     private val blockUntilInterrupted: Boolean = false,
     var voices: List<TextToSpeechVoice> = emptyList(),
     private val listVoicesRelease: CountDownLatch? = null,
-) : WindowsSpeechSynthesizer {
+) : SpeechSynthesizer {
     val spokenTexts = mutableListOf<Pair<String, Boolean>>()
     val spokenVolumes = mutableListOf<Int>()
     val spokenPitches = mutableListOf<Float>()

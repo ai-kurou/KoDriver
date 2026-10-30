@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 /**
- * macの`say`コマンドを使う [WindowsSpeechSynthesizer] の実装（macOSでの動作確認用）。
+ * macの`say`コマンドを使う [SpeechSynthesizer] の実装（macOSでの動作確認用）。
  *
  * 読み上げは`say -v <音声> -r <wpm> -- <テキスト>`を1発話ごとに起動し、プロセスの終了（読み上げ完了）までブロックする。
  * `volume`は0のとき発話しないことだけに使い、`pitch`はmacでは非対応のため無視する。`speed`は標準175wpmに掛けて`-r`へ渡す。
@@ -21,7 +21,7 @@ internal class MacSpeechSynthesizer(
     private val isMac: Boolean = System.getProperty("os.name").lowercase().startsWith("mac"),
     private val startProcess: (ProcessBuilder) -> Process = ProcessBuilder::start,
     private val captureException: (Throwable) -> Unit = Sentry::captureException,
-) : WindowsSpeechSynthesizer {
+) : SpeechSynthesizer {
     private val lock = Any()
     private var current: Process? = null
     private var requestToken = 0L

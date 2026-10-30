@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Windows標準の音声合成（SAPI）をPowerShellの`System.Speech.Synthesis.SpeechSynthesizer`経由で
- * 呼び出す [WindowsSpeechSynthesizer] の実装。
+ * 呼び出す [SpeechSynthesizer] の実装。
  *
  * JVMには音声合成の標準APIが無く、SAPIのCOMインターフェースをJNAで直接叩くには
  * 型ライブラリのバインディングが必要になるため、PowerShellプロセスを1つ常駐させて使い回す。
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
  * `SpeechSynthesizer`の生成が毎回かかって発話が遅れるため、これらは最初の1回（[warmUp] または最初の [speak]）
  * だけにして、以降は標準入力へ要求行を送るだけにする（[ResidentSpeechSession]、[buildResidentSpeakScript]）。
  * [speak] は読み上げの完了（応答行の受信）まで [CompletableFuture.get] でブロックする。
- * 呼び出し元（[WindowsTextToSpeechRepository]）は `runInterruptible` でこの呼び出しを包んでおり、
+ * 呼び出し元（[DesktopTextToSpeechRepository]）は `runInterruptible` でこの呼び出しを包んでおり、
  * コルーチンのキャンセルはスレッド割り込み → [InterruptedException] としてここへ伝わるため、
  * その際は読み上げの打ち切り要求を送ってから例外を再送出する。
  * 常駐プロセスが終了した場合は、次の [speak] で起動し直す。アプリ終了時は標準入力が閉じられて常駐プロセスも終了する。
@@ -38,7 +38,7 @@ internal class SapiSpeechSynthesizer(
     private val startProcess: (ProcessBuilder) -> Process = ProcessBuilder::start,
     private val captureException: (Throwable) -> Unit = Sentry::captureException,
     private val awaitCompletion: (CompletableFuture<Unit>) -> Unit = { it.get() },
-) : WindowsSpeechSynthesizer {
+) : SpeechSynthesizer {
     private val lock = Any()
     private var session: ResidentSpeechSession? = null
     private var requestToken = 0L
