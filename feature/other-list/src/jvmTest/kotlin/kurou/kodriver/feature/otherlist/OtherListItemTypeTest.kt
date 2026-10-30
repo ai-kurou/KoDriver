@@ -69,8 +69,7 @@ class OtherListItemTypeTest {
     }
 
     @Test
-    fun `entriesは全29項目を宣言順で返す`() {
-        assertEquals(29, OtherListItemType.entries.size)
+    fun `entriesは宣言順で返す`() {
         assertEquals(
             listOf(
                 OtherListItemType.AccessLocalNetworkPermission,
@@ -105,8 +104,13 @@ class OtherListItemTypeTest {
             ),
             OtherListItemType.entries,
         )
-        assertEquals(
-            listOf(
+    }
+
+    @Test
+    fun `リリース済みのidは永続化の後方互換のため全て維持される`() {
+        // 永続化された id の後方互換契約。項目の追加では変更不要で、既存 id の変更・削除でだけ失敗する。
+        val releasedIds =
+            setOf(
                 "access_local_network_permission",
                 "server_ip",
                 "console_ip",
@@ -136,9 +140,9 @@ class OtherListItemTypeTest {
                 "feedback",
                 "license",
                 "debug_state",
-            ),
-            OtherListItemType.entries.map { it.id },
-        )
+            )
+
+        assertEquals(emptySet(), releasedIds - OtherListItemType.entries.map { it.id }.toSet())
     }
 
     @Test
