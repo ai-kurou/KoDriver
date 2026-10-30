@@ -15,6 +15,10 @@ OS標準の音声合成（TTS）で任意のテキストを読み上げるReposi
   Windowsでは`isAvailable()`が、有効な日本語（`ja-JP`）音声がSAPIに1つ以上あるかをPowerShellで判定する（外部プロセスの
   起動を伴うため、利用できると判明した後は結果を保持する）。利用できない場合、`unavailableReason()`は
   `WindowsSpeechUnavailable`を返し、その他タブにWindowsの音声設定への案内が表示される。非Windowsでは`null`を返す。
+- jvmMain（macOS）: 動作確認用に、macの`say`コマンドを1発話ごとに起動する`MacSpeechSynthesizer`を使う
+  （`say -v <音声> -r <wpm> -- <テキスト>`、速度は175wpm基準）。音量（`volume`）と声の高さ（`pitch`）はmacでは非対応で無視する。
+  音声一覧は`say -v ?`の出力から日本語（`ja_JP`）のみを`parseMacVoiceList`で解析する。`textToSpeechDataModule`が
+  OSに応じて`MacSpeechSynthesizer` / `SapiSpeechSynthesizer`を1つ選び、読み上げと音声一覧の両Repositoryへ渡す。
 - androidMain: `android.speech.tts.TextToSpeech`を使う`AndroidTextToSpeechRepository`。`TextToSpeech`の初期化は
   非同期（`OnInitListener`）で完了するため、最初の読み上げ要求時に初期化の完了を待ち合わせる。初期化失敗時・
   読み上げ言語（既定は日本語）が利用できない場合はエンジンを破棄し、以降の読み上げを行わない。
