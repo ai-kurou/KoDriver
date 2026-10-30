@@ -62,39 +62,39 @@ internal class Gt7Ps5ReadoutTextSpeaker(
             }
         }
 
-    /** GT7イベント型の追加時は、網羅的な when により未対応をコンパイルエラーにする。 */
+    /**
+     * GT7イベント型の追加時は、網羅的な when により未対応をコンパイルエラーにする。
+     * 解決済み文言があればそれを優先し、設定を読み直さない。
+     */
     private suspend fun gt7EventText(event: Gt7Ps5SpeechEvent): ReadoutText {
+        val resolved = event.resolvedText
         val text =
-            when (event) {
+            resolved ?: when (event) {
                 is Gt7Ps5RemainingFuelLapsCurrentValue -> event.narratedText
                 is Gt7Ps5TyreTemperatureCurrentValue -> event.narratedText
                 is Gt7Ps5RemainingFuelCurrentValue -> event.narratedText
-                is Gt7Ps5ManualReadoutText -> event.resolvedText ?: event.text
-                is Gt7Ps5RemainingFuelWarning -> remainingFuelText(event)
-                is Gt7Ps5RemainingFuelLapsWarning -> remainingFuelLapsText(event)
-                is Gt7Ps5MyBestLap -> myBestLapText(event)
-                is Gt7Ps5TyreOverheat -> tyreOverheatText(event)
+                is Gt7Ps5ManualReadoutText -> event.text
+                is Gt7Ps5RemainingFuelWarning -> remainingFuelText(event.percent)
+                is Gt7Ps5RemainingFuelLapsWarning -> remainingFuelLapsText(event.laps)
+                is Gt7Ps5MyBestLap -> myBestLapText(event.lapTimeMs)
+                is Gt7Ps5TyreOverheat -> tyreOverheatText(event.celsius)
             }
-        return ReadoutText(text, event.resolvedText != null)
+        return ReadoutText(text, resolved != null)
     }
 
-    private suspend fun remainingFuelText(event: Gt7Ps5RemainingFuelWarning): String =
-        event.resolvedText
-            ?: formatGt7Ps5RemainingFuelReadoutText(readoutTexts.remainingFuel().first(), event.percent)
+    private suspend fun remainingFuelText(percent: Int): String =
+        formatGt7Ps5RemainingFuelReadoutText(readoutTexts.remainingFuel().first(), percent)
 
-    private suspend fun remainingFuelLapsText(event: Gt7Ps5RemainingFuelLapsWarning): String =
-        event.resolvedText
-            ?: if (event.laps <= 0) {
-                readoutTexts.remainingFuelLapsEmpty().first()
-            } else {
-                formatGt7Ps5RemainingFuelLapsReadoutText(readoutTexts.remainingFuelLaps().first(), event.laps)
-            }
+    private suspend fun remainingFuelLapsText(laps: Int): String =
+        if (laps <= 0) {
+            readoutTexts.remainingFuelLapsEmpty().first()
+        } else {
+            formatGt7Ps5RemainingFuelLapsReadoutText(readoutTexts.remainingFuelLaps().first(), laps)
+        }
 
-    private suspend fun tyreOverheatText(event: Gt7Ps5TyreOverheat): String =
-        event.resolvedText
-            ?: formatGt7Ps5TyreTemperatureReadoutText(readoutTexts.tyreOverheat().first(), event.celsius)
+    private suspend fun myBestLapText(lapTimeMs: Int): String =
+        formatGt7Ps5MyBestLapReadoutText(readoutTexts.myBestLap().first(), lapTimeMs)
 
-    private suspend fun myBestLapText(event: Gt7Ps5MyBestLap): String =
-        event.resolvedText
-            ?: formatGt7Ps5MyBestLapReadoutText(readoutTexts.myBestLap().first(), event.lapTimeMs)
+    private suspend fun tyreOverheatText(celsius: Int): String =
+        formatGt7Ps5TyreTemperatureReadoutText(readoutTexts.tyreOverheat().first(), celsius)
 }

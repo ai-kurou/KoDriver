@@ -260,18 +260,30 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `解決済み文言を優先し設定を読み直さない`() =
+    fun `全イベント種別で解決済み文言を優先し設定を読み直さない`() =
         runTest {
             coEvery { speakText("確定した文言{laps}", volume = 80) } just Runs
+            coEvery { speakText("確定した文言{percent}", volume = 80) } just Runs
+            coEvery { speakText("確定した文言{celsius}", volume = 80) } just Runs
+            coEvery { speakText("確定した文言{laptime}", volume = 80) } just Runs
 
             listOf(3, 0).forEach { laps ->
                 speaker(Gt7Ps5RemainingFuelLapsWarning(laps, "確定した文言{laps}"), 80)
             }
+            speaker(Gt7Ps5RemainingFuelWarning(30, "確定した文言{percent}"), 80)
+            speaker(Gt7Ps5TyreOverheat(30, "確定した文言{celsius}"), 80)
+            speaker(Gt7Ps5MyBestLap(83_005, "確定した文言{laptime}"), 80)
 
             verify(exactly = 0) { observeText() }
             verify(exactly = 0) { observeEmptyText() }
+            verify(exactly = 0) { observeFuelText() }
+            verify(exactly = 0) { observeTyreText() }
+            verify(exactly = 0) { observeMyBestLapText() }
             coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 2) { speakText("確定した文言{laps}", volume = 80) }
+            coVerify(exactly = 1) { speakText("確定した文言{percent}", volume = 80) }
+            coVerify(exactly = 1) { speakText("確定した文言{celsius}", volume = 80) }
+            coVerify(exactly = 1) { speakText("確定した文言{laptime}", volume = 80) }
             confirmVerified(
                 observeText,
                 observeEmptyText,
@@ -382,27 +394,6 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `燃料残量も解決済み文言を優先し設定を読み直さない`() =
-        runTest {
-            coEvery { speakText("確定した文言{percent}", volume = 80) } just Runs
-
-            speaker(Gt7Ps5RemainingFuelWarning(30, "確定した文言{percent}"), 80)
-
-            verify(exactly = 0) { observeFuelText() }
-            coVerify(exactly = 0) { checkAvailable() }
-            coVerify(exactly = 1) { speakText("確定した文言{percent}", volume = 80) }
-            confirmVerified(
-                observeText,
-                observeEmptyText,
-                observeFuelText,
-                observeTyreText,
-                observeMyBestLapText,
-                checkAvailable,
-                speakText,
-            )
-        }
-
-    @Test
     fun `タイヤ過熱の保存文言を整数で置換して読み上げる`() =
         runTest {
             every { observeTyreText() } returns flowOf("温度{celsius}度・{celsius}{wheel}")
@@ -427,27 +418,6 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `タイヤ過熱も解決済み文言を優先し設定を読み直さない`() =
-        runTest {
-            coEvery { speakText("確定した文言{celsius}", volume = 80) } just Runs
-
-            speaker(Gt7Ps5TyreOverheat(30, "確定した文言{celsius}"), 80)
-
-            verify(exactly = 0) { observeTyreText() }
-            coVerify(exactly = 0) { checkAvailable() }
-            coVerify(exactly = 1) { speakText("確定した文言{celsius}", volume = 80) }
-            confirmVerified(
-                observeText,
-                observeEmptyText,
-                observeFuelText,
-                observeTyreText,
-                observeMyBestLapText,
-                checkAvailable,
-                speakText,
-            )
-        }
-
-    @Test
     fun `自己ベストラップ更新の保存文言を日本語のタイムに置換して読み上げる`() =
         runTest {
             every { observeMyBestLapText() } returns flowOf("更新{laptime}・{laptime}{wheel}")
@@ -460,27 +430,6 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 2) { observeMyBestLapText() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("更新1分23秒005・1分23秒005{wheel}", volume = 42) }
-            confirmVerified(
-                observeText,
-                observeEmptyText,
-                observeFuelText,
-                observeTyreText,
-                observeMyBestLapText,
-                checkAvailable,
-                speakText,
-            )
-        }
-
-    @Test
-    fun `自己ベストラップ更新も解決済み文言を優先し設定を読み直さない`() =
-        runTest {
-            coEvery { speakText("確定した文言{laptime}", volume = 80) } just Runs
-
-            speaker(Gt7Ps5MyBestLap(83_005, "確定した文言{laptime}"), 80)
-
-            verify(exactly = 0) { observeMyBestLapText() }
-            coVerify(exactly = 0) { checkAvailable() }
-            coVerify(exactly = 1) { speakText("確定した文言{laptime}", volume = 80) }
             confirmVerified(
                 observeText,
                 observeEmptyText,
