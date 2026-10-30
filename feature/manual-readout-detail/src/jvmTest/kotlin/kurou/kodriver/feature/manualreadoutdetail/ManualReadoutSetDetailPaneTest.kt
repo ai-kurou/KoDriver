@@ -53,7 +53,7 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `LMUの追加候補はカテゴリ見出しの下に項目を順番に表示する`() {
-        assertPickerCategories(
+        rule.assertPickerCategories(
             itemKeys = lmuWindowsManualReadoutItemKeys(),
             expectedTexts =
                 listOf(
@@ -87,7 +87,7 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `ACEの追加候補はカテゴリ見出しの下に項目を順番に表示する`() {
-        assertPickerCategories(
+        rule.assertPickerCategories(
             itemKeys = aceWindowsManualReadoutItemKeys(),
             expectedTexts =
                 listOf(
@@ -109,7 +109,7 @@ class ManualReadoutSetDetailPaneTest {
 
     @Test
     fun `GT7の追加候補はカテゴリ見出しの下に項目を順番に表示する`() {
-        assertPickerCategories(
+        rule.assertPickerCategories(
             itemKeys = gt7Ps5ManualReadoutItemKeys(),
             expectedTexts =
                 listOf(
@@ -170,23 +170,6 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("読み上げる項目を選択").assertExists()
         rule.onNodeWithText("あと1項目追加できます").assertExists()
-    }
-
-    private fun assertPickerCategories(
-        itemKeys: List<String>,
-        expectedTexts: List<String>,
-    ) {
-        rule.setContent {
-            KoDriverTheme {
-                ManualReadoutItemPickerSheet(itemKeys, 0, {}, {})
-            }
-        }
-        val texts =
-            rule
-                .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
-                .fetchSemanticsNodes()
-                .flatMap { node -> node.config[SemanticsProperties.Text].map { it.text } }
-        assertEquals(expectedTexts, texts)
     }
 
     @Test
