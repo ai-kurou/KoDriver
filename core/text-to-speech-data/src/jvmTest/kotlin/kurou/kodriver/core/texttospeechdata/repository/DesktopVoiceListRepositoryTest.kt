@@ -13,15 +13,15 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WindowsVoiceListRepositoryTest {
+class DesktopVoiceListRepositoryTest {
     private val voices = listOf(TextToSpeechVoice("SAPI Name", "日本語音声", "ja-JP"))
 
     @Test
     fun `音声の追加と削除と既定の変更を毎回IOスレッドで取得する`() =
         runTest {
             val callerThread = Thread.currentThread()
-            val synthesizer = FakeWindowsSpeechSynthesizer(voices = voices)
-            val repository = WindowsVoiceListRepository(synthesizer)
+            val synthesizer = FakeSpeechSynthesizer(voices = voices)
+            val repository = DesktopVoiceListRepository(synthesizer)
 
             assertEquals(voices, repository.availableVoices())
             val added = TextToSpeechVoice("added", "追加音声", "ja-JP", isDefault = true)
@@ -38,8 +38,8 @@ class WindowsVoiceListRepositoryTest {
     @Test
     fun `空の一覧でも次回に再取得する`() =
         runTest {
-            val synthesizer = FakeWindowsSpeechSynthesizer()
-            val repository = WindowsVoiceListRepository(synthesizer)
+            val synthesizer = FakeSpeechSynthesizer()
+            val repository = DesktopVoiceListRepository(synthesizer)
 
             assertEquals(emptyList(), repository.availableVoices())
             assertEquals(emptyList(), repository.availableVoices())
@@ -53,8 +53,8 @@ class WindowsVoiceListRepositoryTest {
     fun `対象言語の音声がない場合も一覧をそのまま返し毎回再取得する`() =
         runTest {
             val english = listOf(TextToSpeechVoice("Zira", "English voice", "en-US"))
-            val synthesizer = FakeWindowsSpeechSynthesizer(voices = english)
-            val repository = WindowsVoiceListRepository(synthesizer)
+            val synthesizer = FakeSpeechSynthesizer(voices = english)
+            val repository = DesktopVoiceListRepository(synthesizer)
 
             assertEquals(english, repository.availableVoices())
             synthesizer.voices = english + voices
@@ -68,8 +68,8 @@ class WindowsVoiceListRepositoryTest {
     fun `同時の呼び出しは一覧取得を排他的に行う`() =
         runTest {
             val release = CountDownLatch(1)
-            val synthesizer = FakeWindowsSpeechSynthesizer(voices = voices, listVoicesRelease = release)
-            val repository = WindowsVoiceListRepository(synthesizer)
+            val synthesizer = FakeSpeechSynthesizer(voices = voices, listVoicesRelease = release)
+            val repository = DesktopVoiceListRepository(synthesizer)
             val first = async { repository.availableVoices() }
             runCurrent()
             try {

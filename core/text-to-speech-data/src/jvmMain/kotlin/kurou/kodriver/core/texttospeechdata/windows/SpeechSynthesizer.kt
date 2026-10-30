@@ -3,12 +3,12 @@ package kurou.kodriver.core.texttospeechdata.windows
 import kurou.kodriver.domain.model.TextToSpeechVoice
 
 /**
- * Windowsの音声合成エンジンへテキストを渡して読み上げさせる。
+ * Windows（SAPI）・macOS（`say`）の音声合成エンジンへテキストを渡して読み上げさせる。
  *
  * 実装（[SapiSpeechSynthesizer]）はWindows専用のプロセス（PowerShell + System.Speech）を
  * 常駐させるため、テストではFakeへ差し替える。
  */
-interface WindowsSpeechSynthesizer {
+interface SpeechSynthesizer {
     /** 実行環境がWindowsで、音声合成を利用できるかどうか。 */
     fun isAvailable(): Boolean
 

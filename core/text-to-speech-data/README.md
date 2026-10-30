@@ -4,8 +4,8 @@ OS標準の音声合成（TTS）で任意のテキストを読み上げるReposi
 開始音のWAVを再生する`:core:narrator`とは別に、ラップタイムのような動的な自由文言の本文を
 読み上げる手段を提供します。
 
-- jvmMain: PowerShellの`System.Speech.Synthesis.SpeechSynthesizer`経由でWindows標準の音声合成（SAPI）を呼び出す
-  `WindowsTextToSpeechRepository`。JVMには音声合成の標準APIが無く、SAPIのCOMインターフェースをJNAで直接扱うには
+- jvmMain: Windowsでは PowerShellの`System.Speech.Synthesis.SpeechSynthesizer`経由でWindows標準の音声合成（SAPI）を、macOSでは`say`コマンドを呼び出す
+  `DesktopTextToSpeechRepository`。JVMには音声合成の標準APIが無く、SAPIのCOMインターフェースをJNAで直接扱うには
   型ライブラリのバインディングが必要になるため、PowerShellプロセスを1つ常駐させて`SpeechSynthesizer`を使い回す
   （`SapiSpeechSynthesizer`、`ResidentSpeechSession`）。読み上げごとにプロセスを起動するとPowerShellと.NETの起動・
   `System.Speech`のロードが毎回かかって発話が遅れるため。標準入力へ`SPEAK <音量> <Rate> <Pitch半音> <音声IDのBase64> <テキストのBase64>`の
@@ -51,7 +51,7 @@ SSMLの`prosody pitch`で反映し、テキストはXMLエスケープします�
 1.0（0半音）は従来の`SpeakAsync`、それ以外は`SpeakSsmlAsync`を使います。
 常駐スクリプトと要求行の生成は純粋関数`buildResidentSpeakScript` / `buildSpeakRequest`として切り出してテストします。
 
-Windows専用の`WindowsVoiceListRepository`は、有効なSAPI音声のID（`VoiceInfo.Name`）、表示名
+Windows（SAPI）・macOS（`say`）の`DesktopVoiceListRepository`は、有効な音声のID（`VoiceInfo.Name`）、表示名
 （`VoiceInfo.Description`）、言語を取得します。取得はIOスレッド上で排他し、一覧はキャッシュせず毎回取得します。
 詳細画面の再読み込みで、音声の追加・削除や日本語の既定音声の変更を反映します。
 非Windows・失敗・15秒のタイムアウト・音声未導入の場合は空の一覧を返します。
