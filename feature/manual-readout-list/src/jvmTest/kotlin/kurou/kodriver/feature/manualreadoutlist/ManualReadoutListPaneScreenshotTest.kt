@@ -13,7 +13,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
@@ -215,13 +214,13 @@ class ManualReadoutListPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             ManualReadoutHintSheetContent(showHotkeyHint = true)
                         }
                     }
                 }
             }
-            onNodeWithText("ステアリングのボタンから実行する方法を見る").performScrollTo().assertIsDisplayed()
+            onNodeWithText("ステアリングのボタンから実行する方法を見る").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
@@ -231,13 +230,14 @@ class ManualReadoutListPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             ManualReadoutHintSheetContent(showHotkeyHint = true, showSimHubGuideLink = false)
                         }
                     }
                 }
             }
             onNodeWithText("ステアリングのボタンから実行する方法を見る").assertDoesNotExist()
+            onNodeWithText("選んだ修飾キーと数字または英字キーの組み合わせで、セットを読み上げられます。").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
@@ -247,12 +247,13 @@ class ManualReadoutListPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             ManualReadoutHintSheetContent(showHotkeyHint = false)
                         }
                     }
                 }
             }
+            onNodeWithText("標準表示では、セットを長押しすると、確認してから削除できます。再生ボタン表示では、編集画面から削除します。").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 

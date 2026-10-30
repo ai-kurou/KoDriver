@@ -27,6 +27,7 @@
   - `720.dp x 640.dp`: `AppScreenContent` など、NavigationRail を含むアプリ全体の画面をキャプチャする場合。ボックス内に NavigationRail 自体の幅も含まれるため、2ペイン部分に使える幅は `840.dp` より狭くなる。
 - `AppScreenContent` の `NavigationSuiteType.NavigationBar`（スマホ縦画面・1ペイン）をキャプチャする場合: `360.dp x 640.dp`
 - ダイアログ・ボトムシート表示用のホスト: `480.dp x 320.dp`
+  - ただしスクロールする内容（`verticalScroll`）を撮るボトムシート内容ホストは、内容全体が収まる高さにし、最後の要素が `assertIsDisplayed` で表示されることを検証する（例: ヘルプ・項目追加シートは `480.dp x 1080.dp`）。
 - デスクトップ Splash・オーバーレイなど独立したウィンドウ: 既存の専用サイズ
 - 上記いずれにも該当しない、Pane を構成する個々のコンポーネント（`DetailPaneCard`・`ThresholdSlider` 等）単体をキャプチャする場合: 幅は `360.dp` を基準に、高さはコンポーネントの内容に応じて過不足のないサイズにする
 
