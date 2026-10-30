@@ -225,7 +225,7 @@ class AutoReadoutListPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             PriorityHintSheetContent()
                         }
                     }

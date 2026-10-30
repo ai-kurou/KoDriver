@@ -61,7 +61,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             ManualReadoutItemPickerSheetContent(
                                 itemKeys = gt7Ps5ManualReadoutItemKeys(),
                                 selectedCount = 0,
@@ -200,7 +200,7 @@ class ManualReadoutSetDetailPaneAceScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             ManualReadoutItemPickerSheetContent(
                                 itemKeys = aceWindowsManualReadoutItemKeys(),
                                 selectedCount = 0,

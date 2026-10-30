@@ -19,7 +19,7 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [36], qualifiers = "w480dp-h800dp")
+@Config(sdk = [36], qualifiers = "w480dp-h1080dp")
 class ManualReadoutHintSheetContentScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
