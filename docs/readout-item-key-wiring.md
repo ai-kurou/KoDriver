@@ -18,6 +18,24 @@
 
 新しい `ReadoutItemKey` を読み上げ判定ロジックに追加する場合は、対応する読み上げ判定 UseCase のテストに「その項目を無効にした場合は読み上げられない」ケースを必ず追加すること。
 
+### 自動読み上げの項目表（ACE Windows）
+
+| 項目 | listPane キー | detailPane キー | Narrator の判定 | 既定文言（定数名） | 補足 |
+| --- | --- | --- | --- | --- | --- |
+| フラッグ（全10種） | `Flag.Root` | 種別ごとの `Flag.WhiteFlag` 等（`Flag.OrangeCircleFlag`・`Flag.RedYellowStripesFlag` を含む10種） | 種別キーと `Flag.Root` の有効状態 | 種別ごとの `ACE_WINDOWS_*_FLAG_READOUT_TEXT_DEFAULT`（例: `ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT`） | 保存文言をOS標準TTSのみで読み上げ（WAVなし）。開始音・優先度・キュー・試聴は `Flag.Root` |
+| 車両接近 | `VehicleApproach.Root` | `VehicleApproach.StartReadout` | `Root` と `StartReadout` の有効状態 | `ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT`（「車両接近」） | 固定文言でプレースホルダーなし。開始音・優先度・キュー・試聴は `Root` |
+| タイヤ過熱 | `TyreTemperature.Root` | `TyreTemperature.OverheatWarning` | 過熱・解除判定と `Root` / `OverheatWarning` の有効判定 | `ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT`（「タイヤ過熱 {celsius}度」） | `{celsius}` は判定時の全輪最大カーカス温度を四捨五入。保存は `AceWindowsTyreTemperaturePreferences` のフィールド3（`overheatReadoutText`） |
+| 残り燃料 | `RemainingFuel.Root` | `RemainingFuel.DetailEnabled` | 閾値判定と `Root` / `DetailEnabled` の有効判定 | `ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | `{percent}` は判定時の実残量。閾値は `ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT`。保存は `AceWindowsRemainingFuelPreferences` のフィールド2（`readoutText`） |
+| 残り燃料の周回数 | `RemainingFuelLaps.Root` | `RemainingFuelLaps.DetailEnabled` | 閾値判定と有効判定は従来どおり | `ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料残り1周未満」） | 閾値は `ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT`。保存は `AceWindowsRemainingFuelLapsPreferences` のフィールド2・3。旧データは閾値を維持して既定文言を使用 |
+| 自己ベストラップ | `MyBestLap.Root` | `MyBestLap.DetailEnabled` | 更新判定と `Root` / `DetailEnabled` の有効判定 | `ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT`（「自己ベストラップ更新 {laptime}」） | `{laptime}` は「1分23秒456」形式。保存は共有 `MyBestLapPreferences` の `aceWindowsReadoutText`（ProtoNumber 4） |
+
+ACE の補足（各項目の動作詳細は下の段落を参照）:
+
+- 全項目で判定時に解決した本文を `resolvedText` に保持し、キュー待機中に設定が変わっても発話とログを一致させる。空白文言・TTS利用不可では本文も開始音も要求せず、ログに `narratedText` 空文字と `narrationOutcome=SKIPPED` を記録する。WAVへのフォールバックは行わない。
+- 車両接近の保存先は `ace_windows_auto_vehicle_approach_preferences.pb` のフィールド5（`readoutText`）。プレースホルダーはない。
+- 試聴は空白・TTS利用不可・音量0以下では再生しない。
+
+
 ACEの全10フラッグ（Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCircle・RedYellowStripes）は保存した自由文言をOS標準TTSのみで読み上げ、WAVは使用しない。既定文言はドメイン定数を参照し、OrangeCircleは「オレンジボールフラッグ、車両に不具合があります」、RedYellowStripesは「レッド・イエローストライプフラッグ、路面が滑りやすいです」。保存先は `ace_windows_auto_flag_readout_text_preferences.pb`。既存の `ace_windows_auto_flag_preferences.pb`（enabledStates）は変更せず、詳細の個別キー（`AceWindowsReadoutItemKey.Flag.WhiteFlag` 等）と一覧の `Flag.Root` の有効状態を従来どおり判定する。空白文言またはTTS利用不可の場合は本文と開始音を要求せず、ログに `narratedText` 空文字と `narrationOutcome=SKIPPED` を記録する。全10種の `SpeechEvent.readoutItemKey` は `Flag.Root` のため、開始音・優先度・キュー・詳細画面のTTS試聴の開始音も `Flag.Root` を参照する。試聴は空白・TTS利用不可・音量0以下では再生しない。WAVフォールバックは行わない。
 判定時に解決した本文を `resolvedText` に保持し、キュー待機中に設定が変わっても発話とログを一致させる。
 
@@ -32,13 +50,42 @@ ACE燃料残り周回数警告は保存した自由文言をOS標準TTSで読み
 
 ACE自己ベストラップ更新は保存した自由文言をOS標準TTSで読み上げる。保存先は共有 `MyBestLapPreferences` のACE専用 `@ProtoNumber(4) aceWindowsReadoutText`、既定文言は「自己ベストラップ更新 {laptime}」。`{laptime}` は更新後の `bestLapTimeMs`（Int）を「1分23秒456」形式に置換し、1分未満では分を省略、ミリ秒は3桁固定、60分以上も分で表す。更新判定と `MyBestLap.Root` / `DetailEnabled` の有効判定は従来どおりで、開始音・優先度・キューは `AceWindowsReadoutItemKey.MyBestLap.Root` を使う。Processorで確定した文言を `AceWindowsMyBestLap` の `resolvedText` に保持し、キュー待機中の設定変更後も発話とログを一致させる。空白文言・TTS利用不可・文言解決失敗では本文も開始音も要求せず、空文字と `SKIPPED` をログに保存する。詳細画面で文言編集・`{laptime}` 挿入・未知プレースホルダー警告・リセット・サンプルタイム83456msでの試聴を提供する。旧口調設定（`voiceType`）は読み取らず、既存ユーザーは既定文言になる。WAVへのフォールバックは行わない。
 
+### 自動読み上げの項目表（LMU Windows）
+
+| 項目 | listPane キー | detailPane キー | Narrator の判定 | 既定文言（定数名） | 補足 |
+| --- | --- | --- | --- | --- | --- |
+| 車両接近 | `VehicleApproach.Root` | `VehicleApproach.StartReadout` / `VehicleApproach.Sustained` | 両詳細と `Root` の有効状態 | 開始時 左 `LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT`（「カーレフト」）・右 `..._START_RIGHT_...`（「カーライト」）。継続時 左 `..._SUSTAINED_LEFT_...`（「キープライト」）・右 `..._SUSTAINED_RIGHT_...`（「キープレフト」） | 開始音・優先度・キュー・試聴は `Root`。開始時・継続時とも `Root` をイベントキーに持つ |
+| バーチャルエネルギー残量 | `RemainingVirtualEnergy.Root` | `RemainingVirtualEnergy.WarningReadout` | `Root` と `WarningReadout` の有効判定（VEクラスのみ） | `LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT`（「バーチャルエネルギー残量{percent}%以下」） | `{percent}` は設定閾値に置換。閾値は `LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT`（30） |
+| 燃料残量 | `RemainingFuel.Root` | `RemainingFuel.WarningReadout` | `Root` と `WarningReadout` の有効判定（燃料クラスのみ） | `LMU_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | `{percent}` は設定閾値に置換。閾値は `LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT`（30） |
+| バーチャルエネルギー残量（現在値） | `RemainingVirtualEnergy.Root` | `RemainingVirtualEnergy.WarningReadout` | 現在値イベントも同じ2スイッチで判定 | `LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT`（「バーチャルエネルギー残量は{percent}パーセント」） | 実残量を四捨五入した整数%を `{percent}` に入れる。閾値警告用の自由文言は参照しない |
+| タイヤ摩耗（残存率） | `TyreWear.Root` | `TyreWear.WarningReadout` | `Root` と `WarningReadout` の有効判定 | `LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT`（「タイヤ残存率{percent}%以下」） | `{percent}` は設定閾値に置換。閾値は `LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT`（30） |
+| ブレーキ摩耗（残量） | `BrakeWear.Root` | `BrakeWear.WarningReadout` | `Root` と `WarningReadout` の有効判定。いずれかの輪が閾値以下で1回（全輪が閾値超で再武装） | `LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT`（「ブレーキ残量{percent}%以下」） | 閾値は車両クラス別の `LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_*_DEFAULT`（各20）。`{percent}` は閾値に置換 |
+| ブレーキ過熱（温度） | `BrakeTemperature.Root` | `BrakeTemperature.WarningReadout` | `Root` と `WarningReadout` の有効判定 | `LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT`（「ブレーキ温度{celsius}℃以上」） | 閾値は車両クラス別の `LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_*_DEFAULT`。`{celsius}` は閾値に置換 |
+| タイヤ過熱 | `TyreTemperature.Root` | `TyreTemperature.OverheatWarning` | 過熱・解除判定と `Root` / `OverheatWarning` の有効判定 | `LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT`（「タイヤ過熱 {celsius}度」） | `{celsius}` は判定時の全輪最高カーカス温度 |
+| タイヤ低温 | `TyreTemperature.Root` | `TyreTemperature.LowWarning` | 低温判定と `Root` / `LowWarning` の有効判定 | `LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT`（「タイヤ低温 {celsius}度」） | `{celsius}` は判定時の全輪最高温度 |
+| 車両故障（オーバーヒート） | `VehicleDamage.Root` | `VehicleDamage.Overheat` | `Root` と `Overheat` の有効判定 | `LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT`（「オーバーヒート」） | 固定文言。開始音・優先度・キュー・試聴は `Root` |
+| 車両故障（部品脱落） | `VehicleDamage.Root` | `VehicleDamage.PartDetached` | `Root` と `PartDetached` の有効判定 | `LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT`（「部品脱落」） | 固定文言。開始音・優先度・キュー・試聴は `Root` |
+| 車両故障（タイヤ脱落） | `VehicleDamage.Root` | `VehicleDamage.TyreDetached` | `Root` と `TyreDetached` の有効判定 | `LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT`（「タイヤ脱落」） | 固定文言。開始音・優先度・キュー・試聴は `Root` |
+| ピットタイミング（バーチャルエネルギー） | `PitTiming.Root` | `PitTiming.VirtualEnergy` | `Root` と `VirtualEnergy` の有効判定（VEクラスのみ発火） | `LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT`（「エネルギー切れのため{laps}周以内にピットイン」）。切迫時は `LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT`（「エネルギー切れのため必ずピットイン」） | 閾値は `LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT`（3） |
+| ピットタイミング（タイヤ摩耗） | `PitTiming.Root` | `PitTiming.TyreWear` | `Root` と `TyreWear` の有効判定 | `LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT`（「タイヤ摩耗のため{laps}周以内にピットイン」）。切迫時は `LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT`（「タイヤ摩耗のため必ずピットイン」） | 閾値は `LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT`（3） |
+| ピットタイミング（燃料） | `PitTiming.Root` | `PitTiming.Fuel` | `Root` と `Fuel` の有効判定（燃料クラスのみ発火） | `LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。切迫時は `LMU_WINDOWS_PIT_TIMING_FUEL_IMMINENT_READOUT_TEXT_DEFAULT`（「燃料残り1周未満」） | 閾値は `LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT`（3）。`ObserveLmuWindowsPitTimingEnabledStatesUseCase` の既定は有効 |
+| 自己ベストラップ | `MyBestLap.Root` | `MyBestLap.DetailEnabled` | 更新判定と `Root` / `DetailEnabled` の有効判定 | `LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT`（「自己ベストラップ更新 {laptime}」） | `{laptime}` は「1分23秒456」形式 |
+| フラッグ（4種） | `Flag.Root` | `Flag.BlueFlag` / `Flag.SectorYellowFlag` / `Flag.FullCourseYellow` / `Flag.RedFlag` | 種別キーと `Flag.Root` の有効状態 | `LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT`（「ブルーフラッグ」）・`LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT`（「イエローフラッグ」）・`LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT`（「フルコースイエロー」）・`LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT`（「レッドフラッグ」） | 自由文言TTSのみ。WAVは使わない |
+
+LMU の補足（各項目の動作詳細は下の段落を参照）:
+
+- 車両故障の文言は1つずつのグローバル文言で、保存先は `LmuWindowsVehicleDamagePreferences`。保存時は `trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)`（30文字）で正規化する。
+- 車両クラス別の閾値（ブレーキ・ピットタイミング等）と `{percent}` / `{celsius}` の置換値の扱いは表の補足と下の段落を参照する。
+- 空白文言・TTS利用不可では本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。収録WAVへのフォールバックは行わない。
+
+
 LMU車両接近では、詳細ペインの `StartReadout` / `Sustained` と一覧の `Root` の有効状態を既存どおり判定する。開始時・継続時の自由文言TTSはともに `VehicleApproach.Root` をイベントキーに持つため、開始音・優先度・キュー設定も `Root` を参照する。開始時・継続時の文言が空白またはTTS利用不可の場合は本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。
 
 LMUバーチャルエネルギー残量警告では、一覧の `RemainingVirtualEnergy.Root` と詳細の `WarningReadout` の有効状態を判定する。警告イベントは設定した残量閾値を持ち、自由文言の `{percent}` をその閾値（%）に置換する。実際の残量は置換値に使用しない。文言が空白またはTTS利用不可の場合は本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。開始音・優先度・キュー設定は `RemainingVirtualEnergy.Root` を参照する。詳細画面の試聴も現在の閾値に置換し、同じキーの開始音とOS標準TTSを使用する。残量警告の収録WAVは使用せず、WAVへはフォールバックしない。
 
 LMU燃料残量警告は、一覧の `RemainingFuel.Root` と詳細の `WarningReadout` がともに有効な燃料クラスでのみ判定する。燃料クラスでは `{percent}` を閾値（%）に置換してOS標準TTSで読み上げ、`RemainingFuel.Root` の開始音・優先度・キューを使う。バーチャルエネルギークラスではVE警告のみを判定し、燃料警告は発生しない。逆に燃料クラスではVE警告を判定しない。警告は閾値を下回った瞬間に一度だけ発生し、閾値を上回ると再武装する。
 
-LMUバーチャルエネルギー残量の現在値読み上げも既存の `RemainingVirtualEnergy.Root` と `WarningReadout` の有効状態を判定する。新しいキーや保存設定は追加しない。現在値イベントは実残量を四捨五入した整数%を持ち、固定文言「バーチャルエネルギー残量は{N}パーセント」を使う。閾値警告用の自由文言は参照せず、閾値・警告済み状態も変更しない。開始音・優先度・キュー設定は警告と同じ `RemainingVirtualEnergy.Root` を参照する。
+LMUバーチャルエネルギー残量の現在値読み上げも既存の `RemainingVirtualEnergy.Root` と `WarningReadout` の有効状態を判定する。新しいキーや保存設定は追加しない。現在値イベントは実残量を四捨五入した整数%を持ち、既定文言 `LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT`（「バーチャルエネルギー残量は{percent}パーセント」）を使う。閾値警告用の自由文言は参照せず、閾値・警告済み状態も変更しない。開始音・優先度・キュー設定は警告と同じ `RemainingVirtualEnergy.Root` を参照する。
 
 LMUタイヤ摩耗警告では、一覧の `TyreWear.Root` と詳細の `WarningReadout` の有効状態を判定する。警告イベントは設定した残存率閾値を持ち、自由文言の `{percent}` をその閾値（%）に置換する。実際の残存率は置換値に使用しない。文言が空白またはTTS利用不可の場合は本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。開始音・優先度・キュー設定は `TyreWear.Root` を参照する。詳細画面の試聴も現在の閾値と編集中の文言を解決したイベントを再生し、同じキーの開始音とOS標準TTSを使用する。摩耗警告の収録WAVは使用せず、WAVへはフォールバックしない。
 
