@@ -24,4 +24,11 @@ class ManualReadoutItemDefinitionsTest {
         assertEquals("", manualReadoutItemName("unknown", "unknown"))
         assertEquals("", manualReadoutItemTextDefault("unknown", "unknown"))
     }
+
+    @Test
+    fun `項目表示定義のキーは全simulatorの項目定義のキーと過不足なく一致する`() {
+        val definitionKeys = manualReadoutItemDefinitions.values.flatMap { it.keys }
+        assertEquals(definitionKeys.size, definitionKeys.toSet().size)
+        assertEquals(definitionKeys.toSet(), itemPresentations.keys)
+    }
 }

@@ -1,40 +1,28 @@
 package kurou.kodriver.feature.manualreadoutlist
 
-import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
-import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinitions
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemDefinitions
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class ManualReadoutItemCategoryTest {
     @Test
-    fun `detailの全20項目を対応するカテゴリに分類する`() {
-        val expected =
-            mapOf(
-                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to ManualReadoutItemCategory.VIRTUAL_ENERGY,
-                LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to ManualReadoutItemCategory.FUEL,
-                LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to ManualReadoutItemCategory.TYRE,
-                LmuWindowsReadoutItemKey.MyBestLap.Root.value to ManualReadoutItemCategory.LAP,
-                AceWindowsReadoutItemKey.MyBestLap.Root.value to ManualReadoutItemCategory.LAP,
-                LmuWindowsReadoutItemKey.RemainingFuel.Root.value to ManualReadoutItemCategory.FUEL,
-                AceWindowsReadoutItemKey.RemainingFuel.Root.value to ManualReadoutItemCategory.FUEL,
-                AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value to ManualReadoutItemCategory.FUEL,
-                Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value to ManualReadoutItemCategory.FUEL,
-                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value to ManualReadoutItemCategory.FUEL,
-                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to ManualReadoutItemCategory.VIRTUAL_ENERGY,
-                Gt7Ps5ReadoutItemKey.MyBestLap.Root.value to ManualReadoutItemCategory.LAP,
-                AceWindowsReadoutItemKey.TyreTemperature.Root.value to ManualReadoutItemCategory.TYRE,
-                Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value to ManualReadoutItemCategory.TYRE,
-                LmuWindowsReadoutItemKey.TyreWear.Root.value to ManualReadoutItemCategory.TYRE,
-                LmuWindowsReadoutItemKey.BrakeWear.Root.value to ManualReadoutItemCategory.BRAKE,
-                LmuWindowsReadoutItemKey.BrakeTemperature.Root.value to ManualReadoutItemCategory.BRAKE,
-                LmuWindowsReadoutItemKey.TyreTemperature.Root.value to ManualReadoutItemCategory.TYRE,
-                LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to ManualReadoutItemCategory.LAP,
-                LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to ManualReadoutItemCategory.LAP,
-            )
-        expected.forEach { (key, category) -> assertEquals(category, manualReadoutItemCategory(key), key) }
+    fun `全simulatorの手動読み上げ項目定義を定義のカテゴリに分類する`() {
+        val definitions =
+            lmuWindowsManualReadoutItemDefinitions.values +
+                aceWindowsManualReadoutItemDefinitions.values +
+                gt7Ps5ManualReadoutItemDefinitions.values
+        assertTrue(definitions.isNotEmpty())
+        definitions.forEach { definition ->
+            assertNotNull(manualReadoutItemCategory(definition.key), definition.key)
+            assertEquals(definition.category, manualReadoutItemCategory(definition.key), definition.key)
+        }
     }
 
     @Test
