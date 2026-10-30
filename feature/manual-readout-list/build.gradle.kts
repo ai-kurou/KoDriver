@@ -35,6 +35,9 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.testJunit)
                 implementation(libs.junit)
+                implementation(libs.compose.uiTest)
+                implementation(libs.compose.uiTestJunit4)
+                implementation(libs.androidx.activity.compose)
                 implementation(libs.roborazzi.compose)
                 implementation(libs.robolectric)
                 implementation(libs.roborazzi.core)

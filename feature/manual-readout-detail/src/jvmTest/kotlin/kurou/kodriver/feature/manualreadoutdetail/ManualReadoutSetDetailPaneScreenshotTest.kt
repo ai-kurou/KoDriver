@@ -71,7 +71,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                     }
                 }
             }
-            onNodeWithText("タイヤ温度").assertIsDisplayed()
+            onNodeWithText("自己ベストラップ").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
