@@ -53,12 +53,14 @@ import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
 import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.WheelIndex
@@ -535,6 +537,36 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             assertEquals(firstKey, decision.events.single().readoutItemKey)
             assertEquals(text, decision.events.single().narratedText)
         }
+    }
+
+    @Test
+    fun `手動判定の先頭キーは全対応キーを既存のイベントキーへ対応付け空リストは仮想エネルギーのRootを使う`() {
+        val state = LmuWindowsNarratorState()
+        val expected: Map<String, LmuWindowsReadoutItemKey> =
+            mapOf(
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to LmuWindowsReadoutItemKey.PitTiming.Root,
+                LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to LmuWindowsReadoutItemKey.PitTiming.Root,
+                LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                LmuWindowsReadoutItemKey.RemainingFuel.Root.value to LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.TyreWear.Root.value to LmuWindowsReadoutItemKey.TyreWear.Root,
+                LmuWindowsReadoutItemKey.BrakeWear.Root.value to LmuWindowsReadoutItemKey.BrakeWear.Root,
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root.value to LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                LmuWindowsReadoutItemKey.MyBestLap.Root.value to LmuWindowsReadoutItemKey.MyBestLap.Root,
+                LmuWindowsReadoutItemKey.TyreTemperature.Root.value to LmuWindowsReadoutItemKey.TyreTemperature.Root,
+            )
+        assertEquals(lmuWindowsManualReadoutItemKeys().toSet(), expected.keys)
+        expected.forEach { (key, eventKey) ->
+            val item = LmuWindowsManualReadoutItem(key, "", null)
+            val decision = manualUseCase.determineManualReadout(state, listOf(item))
+            assertEquals(eventKey, decision.events.single().readoutItemKey)
+        }
+        val empty = manualUseCase.determineManualReadout(state, emptyList())
+        assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, empty.events.single().readoutItemKey)
+        assertEquals(MANUAL_READOUT_NO_ITEMS_TEXT, empty.events.single().narratedText)
     }
 
     @Test
