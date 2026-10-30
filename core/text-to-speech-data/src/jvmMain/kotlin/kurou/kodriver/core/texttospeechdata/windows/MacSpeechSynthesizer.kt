@@ -89,6 +89,8 @@ internal class MacSpeechSynthesizer(
             process.waitFor()
         } catch (e: InterruptedException) {
             process.destroy()
+            // 終了前に次の発話が始まって音声が重ならないよう、終了を待ってから current を解除する。
+            process.waitFor(DESTROY_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             throw e
         } finally {
             synchronized(lock) { if (current === process) current = null }
