@@ -68,4 +68,8 @@
     <string name="manual_readout_tyre_wear_laps">タイヤ摩耗の残り周回数</string>
     <string name="manual_readout_fuel_laps">燃料の残り周回数</string>
     <string name="manual_readout_fuel_laps_hint">{laps}は残り燃料で走れる周回数に置き換わります。</string>
+    <string name="manual_readout_class_car_gap_ahead">クラス内前方車とのギャップ</string>
+    <string name="manual_readout_class_car_gap_behind">クラス内後方車とのギャップ</string>
+    <string name="manual_readout_class_car_gap_insert">{seconds}を挿入</string>
+    <string name="manual_readout_class_car_gap_hint">{seconds}は同じクラスの前後の車との差（秒、小数1桁）に置き換わります。クラス内トップ・最後尾では固定の文言を読み上げます。</string>
 </resources>

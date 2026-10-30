@@ -9,7 +9,7 @@ import kotlin.test.assertNull
 
 class ManualReadoutItemCategoryTest {
     @Test
-    fun `detailの全18項目を対応するカテゴリに分類する`() {
+    fun `detailの全20項目を対応するカテゴリに分類する`() {
         val expected =
             mapOf(
                 LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to ManualReadoutItemCategory.VIRTUAL_ENERGY,
@@ -30,6 +30,8 @@ class ManualReadoutItemCategoryTest {
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value to ManualReadoutItemCategory.BRAKE,
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root.value to ManualReadoutItemCategory.BRAKE,
                 LmuWindowsReadoutItemKey.TyreTemperature.Root.value to ManualReadoutItemCategory.TYRE,
+                LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to ManualReadoutItemCategory.LAP,
+                LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to ManualReadoutItemCategory.LAP,
             )
         expected.forEach { (key, category) -> assertEquals(category, manualReadoutItemCategory(key), key) }
     }

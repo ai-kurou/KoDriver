@@ -121,6 +121,26 @@ class ManualReadoutPreviewTest {
     }
 
     @Test
+    fun `クラス内ギャップはサンプル秒数に置換し空欄を除いて保存順に連結する`() {
+        val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
+        val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+        val state =
+            ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(ahead))
+        assertEquals("クラス内前方1.5秒", manualReadoutPreview(state))
+        assertEquals(
+            "後ろ1.5 {unknown}",
+            manualReadoutPreview(
+                state.copy(selectedItemKeys = listOf(behind), itemTexts = mapOf(behind to "後ろ{seconds} {unknown}")),
+            ),
+        )
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(ahead to ""))))
+        assertEquals(
+            "クラス内前方1.5秒、クラス内後方1.5秒",
+            manualReadoutPreview(state.copy(selectedItemKeys = listOf(ahead, behind))),
+        )
+    }
+
+    @Test
     fun `自己ベストはサンプルラップタイムに置換し空欄を除いて保存順に連結する`() {
         val key = LmuWindowsReadoutItemKey.MyBestLap.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))

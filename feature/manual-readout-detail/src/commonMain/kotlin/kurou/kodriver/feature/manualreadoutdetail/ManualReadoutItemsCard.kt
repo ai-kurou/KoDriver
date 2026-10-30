@@ -66,6 +66,7 @@ import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsClassCarGapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingFuelReadoutText
@@ -86,6 +87,8 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_lap
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_tyre
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_virtual_energy
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_class_car_gap_ahead
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_class_car_gap_behind
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_drag_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_empty_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_energy
@@ -138,6 +141,16 @@ private val itemPresentations =
             ManualReadoutItemPresentation(
                 Res.string.manual_readout_fuel_laps,
                 Res.string.manual_readout_category_fuel,
+            ),
+        LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_class_car_gap_ahead,
+                Res.string.manual_readout_category_lap,
+            ),
+        LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to
+            ManualReadoutItemPresentation(
+                Res.string.manual_readout_class_car_gap_behind,
+                Res.string.manual_readout_category_lap,
             ),
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to
             ManualReadoutItemPresentation(
@@ -219,6 +232,7 @@ private val itemPresentations =
     )
 
 private const val PREVIEW_PIT_TIMING_LAPS = 3
+private const val PREVIEW_CLASS_CAR_GAP_SECONDS = 1.5
 private const val PREVIEW_BEST_LAP_TIME_MS = 83_456L
 private const val PREVIEW_TYRE_TEMPERATURE_CELSIUS = 90
 private const val PREVIEW_BRAKE_TEMPERATURE_CELSIUS = 500
@@ -236,6 +250,10 @@ internal val previewFormatters: Map<Pair<String, String>, (String) -> String> =
             { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) to
             { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value) to
+            { formatLmuWindowsClassCarGapReadoutText(it, PREVIEW_CLASS_CAR_GAP_SECONDS) },
+        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.ClassCarGap.Behind.value) to
+            { formatLmuWindowsClassCarGapReadoutText(it, PREVIEW_CLASS_CAR_GAP_SECONDS) },
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.MyBestLap.Root.value) to
             { formatLmuWindowsMyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS) },
         (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingFuel.Root.value) to

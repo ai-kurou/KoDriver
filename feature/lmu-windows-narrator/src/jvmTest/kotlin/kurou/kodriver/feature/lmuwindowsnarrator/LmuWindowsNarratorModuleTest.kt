@@ -7,6 +7,8 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsClassCarGapRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsFuelReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelReadoutTextUseCase
@@ -86,6 +88,29 @@ class LmuWindowsNarratorModuleTest {
                 verify(exactly = 1) { requestRepository.observeRequests() }
                 verify(exactly = 1) { manualHotkeyRepository.pressStream() }
                 confirmVerified(requestRepository, setRepository, manualHotkeyRepository)
+            } finally {
+                application.close()
+            }
+        }
+
+    @Test
+    fun `クラス内ギャップのUseCase群はRepositoryのストリームを解決する`() =
+        runTest {
+            val gap = LmuWindowsClassCarGapData(1.0, 2.0, classPosition = 2, classVehicleCount = 3)
+            val classCarGapRepository: LmuWindowsClassCarGapRepository = mockk()
+            every { classCarGapRepository.classCarGapStream() } returns flowOf(gap)
+            val application =
+                koinApplication {
+                    modules(
+                        lmuWindowsNarratorModule,
+                        module { single<LmuWindowsClassCarGapRepository> { classCarGapRepository } },
+                    )
+                }
+            try {
+                val useCases = application.koin.get<ClassCarGapUseCases>()
+                assertEquals(listOf(gap), useCases.observeClassCarGap().toList())
+                verify(exactly = 1) { classCarGapRepository.classCarGapStream() }
+                confirmVerified(classCarGapRepository)
             } finally {
                 application.close()
             }

@@ -205,6 +205,43 @@ class ManualReadoutSetDetailViewModelTest {
         }
 
     @Test
+    fun `LMUのクラス内ギャップは項目追加と編集文言をセットへ保存する`() =
+        runTest(dispatcher) {
+            val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
+            val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+            val original = ManualReadoutSet("target")
+            val added = original.copy(itemKeys = listOf(ahead))
+            val addedBoth = added.copy(itemKeys = listOf(ahead, behind))
+            val edited = addedBoth.copy(itemTexts = mapOf(behind to "後ろ{seconds}"))
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(added) } answers { sets.update { listOf(added) } }
+            coEvery { repository.updateSet(addedBoth) } answers { sets.update { listOf(addedBoth) } }
+            coEvery { repository.updateSet(edited) } answers { sets.update { listOf(edited) } }
+            val vm = viewModel(Simulator.LmuWindows.id)
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                assertEquals(
+                    lmuWindowsManualReadoutItemKeys(),
+                    vm.uiState.first { !it.isLoading }.availableItemKeys,
+                )
+                vm.addItem(ahead)
+                vm.addItem(behind)
+                assertEquals(listOf(ahead, behind), vm.uiState.first().selectedItemKeys)
+                vm.updateItemText(behind, "後ろ{seconds}")
+                assertEquals(edited.itemTexts, vm.uiState.first().itemTexts)
+                verify(exactly = 4) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(added) }
+                coVerify(exactly = 1) { repository.updateSet(addedBoth) }
+                coVerify(exactly = 1) { repository.updateSet(edited) }
+                confirmVerified(repository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
     fun `LMUの自己ベストは項目追加と編集文言をセットへ保存する`() =
         runTest(dispatcher) {
             val key = LmuWindowsReadoutItemKey.MyBestLap.Root.value
@@ -1049,6 +1086,37 @@ class ManualReadoutSetDetailViewModelTest {
                 collection.cancel()
                 vm.viewModelScope.cancel()
             }
+        }
+
+    @Test
+    fun `クラス内ギャップのプレビューは近接車両のRootの開始音と置換済み本文を現在の音量で再生する`() =
+        runTest(dispatcher) {
+            listOf(
+                LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value,
+                LmuWindowsReadoutItemKey.ClassCarGap.Behind.value,
+            ).forEach { key ->
+                every { repository.observeSets() } returns
+                    MutableStateFlow(
+                        listOf(ManualReadoutSet("target", listOf(key), mapOf(key to "差{seconds}"))),
+                    )
+                every { observeVolume() } returns MutableStateFlow(60)
+                coEvery { playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) } returns Unit
+                coEvery { speakText("差1.5", volume = 60) } returns Unit
+                val vm = viewModel(available = true)
+                val collection =
+                    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
+                try {
+                    assertTrue(vm.uiState.first { !it.isLoading }.isTextToSpeechAvailable)
+                    vm.onPreviewClicked()
+                } finally {
+                    collection.cancel()
+                    vm.viewModelScope.cancel()
+                }
+            }
+            coVerify(exactly = 2) { playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) }
+            coVerify(exactly = 2) { speakText("差1.5", volume = 60) }
+            verify(exactly = 2) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
         }
 
     @Test

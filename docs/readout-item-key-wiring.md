@@ -98,7 +98,7 @@ Android と非 Windows ではホットキー押下を通知しない。
 セット詳細は同じ Repository の登録状態を観測し、競合・失敗時の再試行もセット識別子付きで委譲する。
 Android は非対応実装を使い、キー未割り当て・非対応時は登録状態を表示しない。
 
-手動 LMU セットは `RemainingVirtualEnergy.Root.value`・`RemainingFuel.Root.value`・`TyreWear.Root.value`・`BrakeWear.Root.value`・`BrakeTemperature.Root.value`・`TyreTemperature.Root.value`・`MyBestLap.Root.value`・`PitTiming.VirtualEnergy.value`・`PitTiming.TyreWear.value`・`RemainingFuel.Laps.value` に対応する。保存した項目順に文を「、」で連結した1イベントとして読み、自動スイッチを無視し、先頭の対応項目の Root を `readoutItemKey` にしてそのキュー設定を true に上書きする。文言はセットの `itemTexts`（未保存なら手動専用の既定文言）を使う。比率から整数%への四捨五入は `determineManualReadout` に集約し、既存の `PERCENTAGE_SCALE` を使う。タイヤ摩耗の `{percent}` は4輪の最小残存率から求めた整数で、既定文言は「タイヤ摩耗残り{percent}%」。未受信・受信から5秒超・空の wheels は「<項目名>はデータがありません」を連結する。全項目がデータ無しなら、1項目の場合も含め「データがありません」のみを読む。項目名は domain の `manualReadoutItemName` で解決する。いずれの対応項目もない場合のみ項目なし文言を読む。自動警告の設定・状態と従来ホットキーの挙動は変えない。
+手動 LMU セットは `RemainingVirtualEnergy.Root.value`・`RemainingFuel.Root.value`・`TyreWear.Root.value`・`BrakeWear.Root.value`・`BrakeTemperature.Root.value`・`TyreTemperature.Root.value`・`MyBestLap.Root.value`・`PitTiming.VirtualEnergy.value`・`PitTiming.TyreWear.value`・`RemainingFuel.Laps.value`・`ClassCarGap.Ahead.value`・`ClassCarGap.Behind.value` に対応する。保存した項目順に文を「、」で連結した1イベントとして読み、自動スイッチを無視し、先頭の対応項目の Root を `readoutItemKey` にしてそのキュー設定を true に上書きする。文言はセットの `itemTexts`（未保存なら手動専用の既定文言）を使う。比率から整数%への四捨五入は `determineManualReadout` に集約し、既存の `PERCENTAGE_SCALE` を使う。タイヤ摩耗の `{percent}` は4輪の最小残存率から求めた整数で、既定文言は「タイヤ摩耗残り{percent}%」。未受信・受信から5秒超・空の wheels は「<項目名>はデータがありません」を連結する。全項目がデータ無しなら、1項目の場合も含め「データがありません」のみを読む。項目名は domain の `manualReadoutItemName` で解決する。いずれの対応項目もない場合のみ項目なし文言を読む。自動警告の設定・状態と従来ホットキーの挙動は変えない。
 
 LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingFuel.Root` を使う。受信から5秒以内の `remainingPercent` を比率（0〜1）に変換し、手動判定で四捨五入した整数％を、既定文言 `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）へ埋める。未受信・鮮度切れは「燃料残量はデータがありません」を連結し、全項目がデータ無しなら「データがありません」のみを読む。先頭が燃料残量なら開始音・優先度・ログのキーは `RemainingFuel.Root`。自動燃料警告の `remainingFuelWarned` は変更しない。
 
@@ -217,3 +217,13 @@ VE・タイヤ・燃料の候補の最小周回数を選び、共通の `PitTimi
 給油周を消費量の推定から除外し、給油で警告履歴を再武装、周回巻き戻りで追跡・評価履歴を初期化する。
 通常の既定文言は「燃料は残り約{laps}周」、0周以下は「燃料残り1周未満」。保存文言の解決・開始音・優先度・キュー・ログは
 既存の `PitTiming.Root` の流儀を使い、ログに燃料スナップショットと判定状態を含める。
+
+手動の「クラス内前方車／後方車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value`（`lmu_windows_auto_class_car_gap_ahead`）・`ClassCarGap.Behind.value`（`lmu_windows_auto_class_car_gap_behind`）に対応する。
+TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料の残り周回数の後）に並ぶ。
+`ObserveLmuWindowsClassCarGapUseCase` の最新値（`LmuWindowsClassCarGapData`）を `latestClassCarGap` / `latestClassCarGapReceivedAtMs` に保持し、受信から5秒（`CURRENT_VALUE_MAX_AGE_MS`）以内のものだけを項目へ渡す。未受信・鮮度切れはデータ無しとする。
+周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定し、固定文言
+`LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内トップです」）・`LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）を読む（データありとして扱う。空欄テンプレートなら空文字）。
+それ以外は null・非有限・負値の秒差をデータ無しとし、0以上の有限値を `formatLmuWindowsClassCarGapReadoutText` で小数1桁に丸めて `{seconds}`（`LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER`）を置換する。
+既定文言は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT`（「クラス内前方{seconds}秒」）・`..._BEHIND_TEXT_DEFAULT`（「クラス内後方{seconds}秒」）。
+複数項目ではデータ無しの項目に「<項目名>はデータがありません」を連結し、全項目がデータ無しなら「データがありません」のみを読む。
+先頭項目なら開始音・優先度・ログ・キューに `VehicleApproach.Root` を使う。編集画面は既存の「ラップ」カテゴリに配置し、`{seconds}` を挿入・検証に使う。

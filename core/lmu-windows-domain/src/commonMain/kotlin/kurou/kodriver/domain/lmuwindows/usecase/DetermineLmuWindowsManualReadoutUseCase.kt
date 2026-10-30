@@ -3,6 +3,8 @@ package kurou.kodriver.domain.lmuwindows.usecase
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
@@ -13,6 +15,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
+import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsClassCarGapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingFuelReadoutText
@@ -24,6 +27,7 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemName
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
+import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kotlin.math.roundToInt
 
@@ -45,6 +49,10 @@ class DetermineLmuWindowsManualReadoutUseCase {
                 LmuWindowsReadoutItemKey.RemainingFuel.Laps.value,
                 LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
                 -> LmuWindowsReadoutItemKey.RemainingFuel.Root
+
+                LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value,
+                LmuWindowsReadoutItemKey.ClassCarGap.Behind.value,
+                -> LmuWindowsReadoutItemKey.VehicleApproach.Root
 
                 LmuWindowsReadoutItemKey.TyreWear.Root.value -> LmuWindowsReadoutItemKey.TyreWear.Root
 
@@ -89,6 +97,10 @@ class DetermineLmuWindowsManualReadoutUseCase {
 
             item.key == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
                 (item.lapTimeMs ?: 0L) <= 0
+            }
+
+            isLmuWindowsManualReadoutClassCarGapItem(item.key) -> {
+                manualClassCarGapText(item) == null
             }
 
             isLmuWindowsManualReadoutTemperatureItem(item.key) -> {
@@ -149,15 +161,48 @@ class DetermineLmuWindowsManualReadoutUseCase {
         }
 
     private fun isManualLapBasedItem(key: String): Boolean =
-        isManualRemainingLapsItem(key) || key == LmuWindowsReadoutItemKey.MyBestLap.Root.value
+        isManualRemainingLapsItem(key) ||
+            isLmuWindowsManualReadoutClassCarGapItem(key) ||
+            key == LmuWindowsReadoutItemKey.MyBestLap.Root.value
 
-    /** エネルギー・タイヤ摩耗・燃料の残り周回数と自己ベストラップの文。データ無しは null。 */
+    /** エネルギー・タイヤ摩耗・燃料の残り周回数、クラス内ギャップ、自己ベストラップの文。データ無しは null。 */
     private fun manualLapBasedText(item: LmuWindowsManualReadoutItem): String? =
-        if (isManualRemainingLapsItem(item.key)) {
-            manualRemainingLapsText(item)
-        } else {
-            item.lapTimeMs?.takeIf { it > 0 }?.let { formatLmuWindowsMyBestLapReadoutText(item.textTemplate, it) }
+        when {
+            isManualRemainingLapsItem(item.key) -> {
+                manualRemainingLapsText(item)
+            }
+
+            isLmuWindowsManualReadoutClassCarGapItem(item.key) -> {
+                manualClassCarGapText(item)
+            }
+
+            else -> {
+                item.lapTimeMs?.takeIf { it > 0 }?.let { formatLmuWindowsMyBestLapReadoutText(item.textTemplate, it) }
+            }
         }
+
+    /** クラス内前後車とのギャップの文。トップ・最後尾は固定文言（空欄テンプレートは空文字）。データ無しは null。 */
+    private fun manualClassCarGapText(item: LmuWindowsManualReadoutItem): String? {
+        val data = item.classCarGap ?: return null
+        val isAhead = item.key == LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
+        val isEdge =
+            if (isAhead) {
+                data.classPosition == 1
+            } else {
+                data.classPosition != null && data.classPosition == data.classVehicleCount
+            }
+        if (isEdge) {
+            if (item.textTemplate.isBlank()) return ""
+            return if (isAhead) {
+                LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT
+            } else {
+                LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT
+            }
+        }
+        val seconds = (if (isAhead) data.gapAheadSeconds else data.gapBehindSeconds) ?: return null
+        if (!seconds.isFinite() || seconds < 0.0) return null
+        return formatLmuWindowsClassCarGapReadoutText(item.textTemplate, seconds)
+    }
 
     private fun manualReadoutItemText(item: LmuWindowsManualReadoutItem): String {
         val noDataText =

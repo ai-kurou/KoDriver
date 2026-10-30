@@ -39,6 +39,8 @@ val LMU_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
         LmuWindowsReadoutItemKey.BrakeWear.WarningReadout,
         LmuWindowsReadoutItemKey.MyBestLap.Root,
         LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
+        LmuWindowsReadoutItemKey.ClassCarGap.Ahead,
+        LmuWindowsReadoutItemKey.ClassCarGap.Behind,
     )
 
 val lmuWindowsReadoutSpec: SimulatorReadoutSpec

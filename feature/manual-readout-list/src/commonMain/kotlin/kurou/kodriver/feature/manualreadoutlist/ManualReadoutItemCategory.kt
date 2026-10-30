@@ -20,6 +20,8 @@ private val manualReadoutItemCategories =
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to ManualReadoutItemCategory.TYRE,
         LmuWindowsReadoutItemKey.MyBestLap.Root.value to ManualReadoutItemCategory.LAP,
         AceWindowsReadoutItemKey.MyBestLap.Root.value to ManualReadoutItemCategory.LAP,
+        LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to ManualReadoutItemCategory.LAP,
+        LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to ManualReadoutItemCategory.LAP,
         LmuWindowsReadoutItemKey.RemainingFuel.Root.value to ManualReadoutItemCategory.FUEL,
         AceWindowsReadoutItemKey.RemainingFuel.Root.value to ManualReadoutItemCategory.FUEL,
         AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value to ManualReadoutItemCategory.FUEL,

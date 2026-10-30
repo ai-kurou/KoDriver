@@ -16,6 +16,7 @@ import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isManualReadoutHotkeyVirtualKeyCode
 import kurou.kodriver.domain.model.takeManualReadoutSetName
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
@@ -92,6 +93,8 @@ internal class ManualReadoutSetDetailViewModel(
                     LmuWindowsReadoutItemKey.PitTiming.Root
                 } else if (it == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value) {
                     LmuWindowsReadoutItemKey.RemainingFuel.Root
+                } else if (isLmuWindowsManualReadoutClassCarGapItem(it)) {
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root
                 } else {
                     ReadoutItemKey.fromValue(it)
                 }
