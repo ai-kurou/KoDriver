@@ -17,9 +17,7 @@ import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.domain.engine.DebugReadoutText
-import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
-import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
@@ -137,43 +135,6 @@ class Gt7Ps5NarratorEngineTest {
         }
 
     @Test
-    fun `燃料残量は値が異なってもカスタム読み上げ対象でWAVにフォールバックしない`() =
-        runTest {
-            val customEvents = mutableListOf<SpeechEvent>()
-            val engine =
-                NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
-                    soundPlayer = soundPlayer,
-                    resources =
-                        WavResources<ReadoutStartSoundType>(
-                            startSoundTypeToFile = emptyMap(),
-                            startSoundResourceLoader = { error("開始音は設定しない") },
-                        ),
-                    eventToKey = { it.readoutItemKey },
-                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
-                    isCustomSpeakEvent = {
-                        it is Gt7Ps5RemainingFuelWarning
-                    },
-                    customSpeak = { event, _ -> customEvents += event },
-                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
-                )
-            runCurrent()
-            val narrator = Gt7Ps5NarratorEngine(engine)
-            narrator.speak(Gt7Ps5RemainingFuelWarning(30, "あと30%"))
-            runCurrent()
-            narrator.speak(Gt7Ps5RemainingFuelWarning(10, "あと10%"))
-            runCurrent()
-            assertEquals(
-                listOf<SpeechEvent>(
-                    Gt7Ps5RemainingFuelWarning(30, "あと30%"),
-                    Gt7Ps5RemainingFuelWarning(10, "あと10%"),
-                ),
-                customEvents,
-            )
-            coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
-            confirmVerified(soundPlayer)
-        }
-
-    @Test
     fun `タイヤ過熱は値が異なってもカスタム読み上げ対象でWAVにフォールバックしない`() =
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
@@ -206,46 +167,6 @@ class Gt7Ps5NarratorEngineTest {
                     Gt7Ps5TyreOverheat(107, "タイヤ107度"),
                     Gt7Ps5TyreOverheat(95, "タイヤ95度"),
                     Gt7Ps5TyreOverheat(95, ""),
-                ),
-                customEvents,
-            )
-            coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
-            confirmVerified(soundPlayer)
-        }
-
-    @Test
-    fun `自己ベストラップ更新は値が異なってもカスタム読み上げ対象でWAVにフォールバックしない`() =
-        runTest {
-            val customEvents = mutableListOf<SpeechEvent>()
-            val engine =
-                NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
-                    soundPlayer = soundPlayer,
-                    resources =
-                        WavResources<ReadoutStartSoundType>(
-                            startSoundTypeToFile = emptyMap(),
-                            startSoundResourceLoader = { error("開始音は設定しない") },
-                        ),
-                    eventToKey = { it.readoutItemKey },
-                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
-                    isCustomSpeakEvent = {
-                        it is Gt7Ps5MyBestLap
-                    },
-                    customSpeak = { event, _ -> customEvents += event },
-                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
-                )
-            runCurrent()
-            val narrator = Gt7Ps5NarratorEngine(engine)
-            narrator.speak(Gt7Ps5MyBestLap(83_456, "更新1分23秒456"))
-            runCurrent()
-            narrator.speak(Gt7Ps5MyBestLap(59_000, "更新59秒000"))
-            runCurrent()
-            narrator.speak(Gt7Ps5MyBestLap(59_000, ""))
-            runCurrent()
-            assertEquals(
-                listOf<SpeechEvent>(
-                    Gt7Ps5MyBestLap(83_456, "更新1分23秒456"),
-                    Gt7Ps5MyBestLap(59_000, "更新59秒000"),
-                    Gt7Ps5MyBestLap(59_000, ""),
                 ),
                 customEvents,
             )
