@@ -23,7 +23,7 @@
     <string name="pit_timing_text_reset_to_default">デフォルトに戻す</string>
     <string name="pit_timing_text_selected_icon">この文言を読み上げます</string>
     <string name="pit_timing_text_unknown_placeholders">%1$s は置き換えられません。{laps} を使用してください</string>
-    <string name="pit_timing_virtual_energy_vehicle_class_target_subtitle">対象クラス</string>
-    <string name="pit_timing_virtual_energy_vehicle_class_target">対象</string>
-    <string name="pit_timing_virtual_energy_vehicle_class_not_target">対象外</string>
+    <string name="pit_timing_vehicle_class_target_subtitle">対象クラス</string>
+    <string name="pit_timing_vehicle_class_target">対象</string>
+    <string name="pit_timing_vehicle_class_not_target">対象外</string>
 </resources>
