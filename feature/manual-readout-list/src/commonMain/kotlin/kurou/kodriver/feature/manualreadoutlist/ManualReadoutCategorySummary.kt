@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.runtime.Immutable
+import kurou.kodriver.domain.model.ManualReadoutItemCategory
 
 /** Compose が安定と判断できるよう、カテゴリ別件数の一覧を包む。 */
 @Immutable
