@@ -34,34 +34,6 @@ import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
-import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
-import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER
-import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
-import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
-import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsMyBestLapReadoutPlaceholders
-import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsRemainingFuelLapsReadoutPlaceholders
-import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsRemainingFuelReadoutPlaceholders
-import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsTyreTemperatureReadoutPlaceholders
-import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER
-import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
-import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER
-import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
-import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5MyBestLapReadoutPlaceholders
-import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders
-import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5RemainingFuelReadoutPlaceholders
-import kurou.kodriver.domain.gt7ps5.model.findUnknownGt7Ps5TyreTemperatureReadoutPlaceholders
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
-import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders
-import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsClassCarGapReadoutPlaceholders
-import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsMyBestLapReadoutPlaceholders
-import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsPitTimingReadoutPlaceholders
-import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingFuelReadoutPlaceholders
-import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -255,125 +227,11 @@ internal fun ManualReadoutSetDeleteConfirmDialog(
     )
 }
 
-internal data class ManualReadoutPlaceholderDefinition(
-    val insertText: String,
-    val findUnknown: (String) -> List<String>,
-)
-
-internal val manualReadoutPlaceholderDefinitions =
-    mapOf(
-        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.RemainingFuel.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER,
-                ::findUnknownAceWindowsRemainingFuelReadoutPlaceholders,
-            ),
-        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER,
-                ::findUnknownAceWindowsRemainingFuelLapsReadoutPlaceholders,
-            ),
-        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.MyBestLap.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER,
-                ::findUnknownAceWindowsMyBestLapReadoutPlaceholders,
-            ),
-        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.TyreTemperature.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER,
-                ::findUnknownAceWindowsTyreTemperatureReadoutPlaceholders,
-            ),
-        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER,
-                ::findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders,
-            ),
-        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER,
-                ::findUnknownGt7Ps5RemainingFuelReadoutPlaceholders,
-            ),
-        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.MyBestLap.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER,
-                ::findUnknownGt7Ps5MyBestLapReadoutPlaceholders,
-            ),
-        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER,
-                ::findUnknownGt7Ps5TyreTemperatureReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
-                ::findUnknownLmuWindowsPitTimingReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingFuel.Laps.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
-                ::findUnknownLmuWindowsPitTimingReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
-                ::findUnknownLmuWindowsPitTimingReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER,
-                ::findUnknownLmuWindowsClassCarGapReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.ClassCarGap.Behind.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER,
-                ::findUnknownLmuWindowsClassCarGapReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.MyBestLap.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER,
-                ::findUnknownLmuWindowsMyBestLapReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingFuel.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER,
-                ::findUnknownLmuWindowsRemainingFuelReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER,
-                ::findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.TyreWear.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER,
-                ::findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.BrakeWear.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER,
-                ::findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.TyreTemperature.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER,
-                ::findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders,
-            ),
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) to
-            ManualReadoutPlaceholderDefinition(
-                LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER,
-                ::findUnknownLmuWindowsBrakeTemperatureReadoutPlaceholders,
-            ),
-    )
-
-private fun manualReadoutPlaceholderDefinition(
-    simulatorId: String,
-    itemKey: String,
-): ManualReadoutPlaceholderDefinition? = manualReadoutPlaceholderDefinitions[simulatorId to itemKey]
-
 internal fun unknownPlaceholders(
     simulatorId: String,
     itemKey: String,
     text: String,
-): List<String> = manualReadoutPlaceholderDefinition(simulatorId, itemKey)?.findUnknown?.invoke(text).orEmpty()
+): List<String> = manualReadoutItemDefinition(simulatorId, itemKey)?.findUnknownPlaceholders?.invoke(text).orEmpty()
 
 private fun isLmuWindowsManualReadoutLapsItem(itemKey: String): Boolean =
     itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
@@ -383,7 +241,7 @@ private fun isLmuWindowsManualReadoutLapsItem(itemKey: String): Boolean =
 internal fun insertPlaceholder(
     simulatorId: String,
     itemKey: String,
-): String = manualReadoutPlaceholderDefinition(simulatorId, itemKey)?.insertText.orEmpty()
+): String = manualReadoutItemDefinition(simulatorId, itemKey)?.placeholder.orEmpty()
 
 /** 選択中の項目の文言を編集し、入力ごとに保存する。 */
 private fun lapsHintResource(itemKey: String): StringResource =

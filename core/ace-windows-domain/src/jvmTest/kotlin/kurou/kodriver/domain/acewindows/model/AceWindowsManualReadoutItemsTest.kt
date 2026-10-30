@@ -3,9 +3,20 @@ package kurou.kodriver.domain.acewindows.model
 import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AceWindowsManualReadoutItemsTest {
+    @Test
+    fun `全項目はプレースホルダーを持ち既定文言に含まれプレビューで置換される`() {
+        aceWindowsManualReadoutItemDefinitions.values.forEach { definition ->
+            assertTrue(definition.placeholder.isNotEmpty())
+            assertEquals(emptyList(), definition.findUnknownPlaceholders(definition.placeholder))
+            assertTrue(definition.textDefault.contains(definition.placeholder))
+            assertFalse(definition.previewFormatter(definition.textDefault).contains(definition.placeholder))
+        }
+    }
+
     @Test
     fun `定義はキー順に名前と既定文言を持ち未知キーは空文字`() {
         val definitions = aceWindowsManualReadoutItemDefinitions

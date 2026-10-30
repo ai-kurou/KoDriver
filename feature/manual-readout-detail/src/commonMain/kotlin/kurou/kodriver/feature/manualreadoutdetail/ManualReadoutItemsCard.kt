@@ -57,29 +57,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
-import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
-import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
-import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
-import kurou.kodriver.domain.acewindows.model.formatAceWindowsTyreTemperatureReadoutText
-import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
-import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
-import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
-import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsClassCarGapReadoutText
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingFuelReadoutText
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_add_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_brake_temperature
@@ -225,68 +207,12 @@ private val itemPresentations =
             ),
     )
 
-private const val PREVIEW_PIT_TIMING_LAPS = 3
-private const val PREVIEW_CLASS_CAR_GAP_SECONDS = 1.5
-private const val PREVIEW_BEST_LAP_TIME_MS = 83_456L
-private const val PREVIEW_TYRE_TEMPERATURE_CELSIUS = 90
-private const val PREVIEW_BRAKE_TEMPERATURE_CELSIUS = 500
-private const val PREVIEW_BRAKE_WEAR_PERCENT = 50
-private const val PREVIEW_TYRE_WEAR_PERCENT = 50
-private const val PREVIEW_ENERGY_PERCENT = 50
-private const val PREVIEW_REMAINING_FUEL_LAPS = 3
-private const val PREVIEW_ACE_REMAINING_FUEL_LAPS = 5
-
-internal val previewFormatters: Map<Pair<String, String>, (String) -> String> =
-    mapOf(
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) to
-            { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingFuel.Laps.value) to
-            { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) to
-            { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value) to
-            { formatLmuWindowsClassCarGapReadoutText(it, PREVIEW_CLASS_CAR_GAP_SECONDS) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.ClassCarGap.Behind.value) to
-            { formatLmuWindowsClassCarGapReadoutText(it, PREVIEW_CLASS_CAR_GAP_SECONDS) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.MyBestLap.Root.value) to
-            { formatLmuWindowsMyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingFuel.Root.value) to
-            { formatLmuWindowsRemainingFuelReadoutText(it, PREVIEW_ENERGY_PERCENT) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value) to
-            { formatLmuWindowsRemainingVirtualEnergyReadoutText(it, PREVIEW_ENERGY_PERCENT) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.BrakeTemperature.Root.value) to
-            { formatLmuWindowsBrakeTemperatureReadoutText(it, PREVIEW_BRAKE_TEMPERATURE_CELSIUS) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.TyreTemperature.Root.value) to
-            { formatLmuWindowsTyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.BrakeWear.Root.value) to
-            { formatLmuWindowsBrakeWearReadoutText(it, PREVIEW_BRAKE_WEAR_PERCENT) },
-        (Simulator.LmuWindows.id to LmuWindowsReadoutItemKey.TyreWear.Root.value) to
-            { formatLmuWindowsTyreWearReadoutText(it, PREVIEW_TYRE_WEAR_PERCENT) },
-        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.RemainingFuel.Root.value) to
-            { formatAceWindowsRemainingFuelReadoutText(it, PREVIEW_ENERGY_PERCENT) },
-        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value) to
-            { formatAceWindowsRemainingFuelLapsReadoutText(it, PREVIEW_ACE_REMAINING_FUEL_LAPS) },
-        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.MyBestLap.Root.value) to
-            { formatAceWindowsMyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS.toInt()) },
-        (Simulator.AceWindows.id to AceWindowsReadoutItemKey.TyreTemperature.Root.value) to
-            { formatAceWindowsTyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS) },
-        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value) to
-            { formatGt7Ps5RemainingFuelReadoutText(it, PREVIEW_ENERGY_PERCENT) },
-        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value) to
-            { formatGt7Ps5RemainingFuelLapsReadoutText(it, PREVIEW_REMAINING_FUEL_LAPS) },
-        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.MyBestLap.Root.value) to
-            { formatGt7Ps5MyBestLapReadoutText(it, PREVIEW_BEST_LAP_TIME_MS.toInt()) },
-        (Simulator.Gt7Ps5.id to Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value) to
-            { formatGt7Ps5TyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS) },
-    )
-
 internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): String =
     uiState.selectedItemKeys
         .mapNotNull { itemKey ->
             val text = uiState.itemTexts[itemKey] ?: manualReadoutItemText(uiState, itemKey)
             text.takeIf { it.isNotBlank() }?.let {
-                val formatter = previewFormatters[uiState.simulatorId to itemKey]
-                formatter?.invoke(it) ?: it
+                manualReadoutItemDefinition(uiState.simulatorId, itemKey)?.previewFormatter?.invoke(it) ?: it
             }
         }.joinToString("、")
 
