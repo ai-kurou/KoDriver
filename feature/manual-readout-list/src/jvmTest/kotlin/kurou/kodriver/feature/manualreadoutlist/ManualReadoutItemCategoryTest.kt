@@ -3,6 +3,8 @@ package kurou.kodriver.feature.manualreadoutlist
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinitions
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemDefinitions
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import org.junit.Test
@@ -23,6 +25,19 @@ class ManualReadoutItemCategoryTest {
             assertNotNull(manualReadoutItemCategory(definition.key), definition.key)
             assertEquals(definition.category, manualReadoutItemCategory(definition.key), definition.key)
         }
+    }
+
+    @Test
+    fun `代表項目は定義とは独立した期待カテゴリに分類する`() {
+        val expected =
+            mapOf(
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to ManualReadoutItemCategory.VIRTUAL_ENERGY,
+                LmuWindowsReadoutItemKey.RemainingFuel.Root.value to ManualReadoutItemCategory.FUEL,
+                AceWindowsReadoutItemKey.TyreTemperature.Root.value to ManualReadoutItemCategory.TYRE,
+                LmuWindowsReadoutItemKey.BrakeWear.Root.value to ManualReadoutItemCategory.BRAKE,
+                Gt7Ps5ReadoutItemKey.MyBestLap.Root.value to ManualReadoutItemCategory.LAP,
+            )
+        expected.forEach { (key, category) -> assertEquals(category, manualReadoutItemCategory(key), key) }
     }
 
     @Test
