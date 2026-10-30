@@ -588,7 +588,7 @@ class ManualReadoutSetDetailPaneTest {
         rule.onNodeWithText("クラス内後方車とのギャップ").performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule
-            .onNodeWithText("{seconds}は同じクラスの前後の車との差（秒、小数1桁）に置き換わります。クラス内トップ・最後尾では固定の文言を読み上げます。")
+            .onNodeWithText("{seconds}は同じクラスの前後の車との差（秒、小数1桁）に置き換わります。クラス内先頭・最後尾では固定の文言を読み上げます。")
             .assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("")
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()

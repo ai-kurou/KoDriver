@@ -12,7 +12,7 @@ data class LmuWindowsClassCarGapData(
     val gapAheadSeconds: Double?,
     /** 後方の最も近い同クラス車両との秒差。対象車両なし・推定ラップタイム無効時は null。 */
     val gapBehindSeconds: Double?,
-    /** 自車のクラス内順位（1始まり）。算出不可は null。classPosition == 1 でクラス内トップ。 */
+    /** 自車のクラス内順位（1始まり）。算出不可は null。classPosition == 1 でクラス内先頭。 */
     val classPosition: Int? = null,
     /** 自車を含む同クラスの車両数。算出不可は null。classPosition == classVehicleCount で最後尾（両方が非 null の場合）。 */
     val classVehicleCount: Int? = null,
