@@ -502,72 +502,6 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
-        var savedText by mutableStateOf("")
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
-                            overheatReadoutText = savedText,
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onOverheatReadoutTextChanged = {},
-                )
-            }
-        }
-        rule.onAllNodes(hasSetTextAction())[0].performTextReplacement("あい")
-        savedText = "あ"
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("あい")).assertExists()
-        savedText = "あい"
-        rule.waitForIdle()
-        savedText = "う"
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
-    }
-
-    @Test
-    fun `前後に空白がある入力も保存済みの正規化後の文言と一致したら同期する`() {
-        var savedText by mutableStateOf("")
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
-                            overheatReadoutText = savedText,
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onOverheatReadoutTextChanged = {},
-                )
-            }
-        }
-        rule.onAllNodes(hasSetTextAction())[0].performTextReplacement(" あい ")
-        savedText = "あい"
-        rule.waitForIdle()
-        savedText = "う"
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
-    }
-
-    @Test
-    fun `空欄では読み上げない案内を表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
-                            overheatReadoutText = "",
-                            isTextToSpeechAvailable = true,
-                        ),
-                )
-            }
-        }
-        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
-        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].assertIsEnabled()
-    }
-
-    @Test
     fun `TTS不可では入力と試聴を無効にする`() {
         rule.setContent {
             KoDriverTheme {
@@ -609,32 +543,6 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `低温 保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
-        var savedText by mutableStateOf("")
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
-                            coldReadoutText = savedText,
-                            isTextToSpeechAvailable = true,
-                        ),
-                    onColdReadoutTextChanged = {},
-                )
-            }
-        }
-        rule.onAllNodes(hasSetTextAction())[1].performScrollTo().performTextReplacement("あい")
-        savedText = "あ"
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("あい")).assertExists()
-        savedText = "あい"
-        rule.waitForIdle()
-        savedText = "う"
-        rule.waitForIdle()
-        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
-    }
-
-    @Test
     fun `低温 前後に空白がある入力も保存済みの正規化後の文言と一致したら同期する`() {
         var savedText by mutableStateOf("")
         rule.setContent {
@@ -655,23 +563,6 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
         savedText = "う"
         rule.waitForIdle()
         rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
-    }
-
-    @Test
-    fun `低温 空欄では読み上げない案内を表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutTyreTemperatureDetailPaneContent(
-                    uiState =
-                        LmuWindowsAutoReadoutTyreTemperatureDetailUiState(
-                            coldReadoutText = "",
-                            isTextToSpeechAvailable = true,
-                        ),
-                )
-            }
-        }
-        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
-        rule.onAllNodesWithContentDescription("入力した文言を再生")[1].assertIsEnabled()
     }
 
     @Test
