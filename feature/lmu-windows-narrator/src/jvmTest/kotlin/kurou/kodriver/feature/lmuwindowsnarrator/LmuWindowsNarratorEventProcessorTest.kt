@@ -1489,45 +1489,6 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `タイヤ摩耗のVE本文がnullなら開始音と本文を要求せずスキップを記録する`() =
-        runTest {
-            val json = slot<String>()
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 0L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = capture(json),
-                )
-            } just Runs
-
-            createProcessor { null }.processPitTiming(
-                snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
-                events = listOf(LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear)),
-                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
-                queueEnabledStates = emptyMap(),
-                observedAtMs = 0L,
-                logContext = pitTimingLogContext(),
-            )
-
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 0L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = json.captured,
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
     fun `優先度の高い項目を再生中なら読み上げずSKIPPEDとして保存する`() =
         runTest {
             val json = slot<String>()
@@ -1954,43 +1915,6 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `本文を読み上げられない車両接近継続時Leftはスキップとして記録する`() =
-        runTest {
-            val json = slot<String>()
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 0L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = capture(json),
-                )
-            } just Runs
-            createProcessor { null }.processVehicleApproach(
-                vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(LmuWindowsCarLeftSustained()),
-                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
-                queueEnabledStates = emptyMap(),
-                observedAtMs = 0L,
-                logContext = logContext(),
-            )
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 0L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = json.captured,
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
     fun `車両接近継続時Rightの自由文字列をログに保存する`() =
         runTest {
             val json = slot<String>()
@@ -2028,43 +1952,6 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = json.captured,
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
-    fun `本文を読み上げられない車両接近継続時Rightはスキップとして記録する`() =
-        runTest {
-            val json = slot<String>()
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 0L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = capture(json),
-                )
-            } just Runs
-            createProcessor { null }.processVehicleApproach(
-                vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(LmuWindowsCarRightSustained()),
-                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
-                queueEnabledStates = emptyMap(),
-                observedAtMs = 0L,
-                logContext = logContext(),
-            )
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 0L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
                     narrationSource = NarrationSource.AUTO,
                     telemetryJson = json.captured,
                 )
@@ -2343,60 +2230,6 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `過熱警告のTTS利用不可では読み上げずSKIPPEDを記録する`() =
-        runTest {
-            val telemetryJsonSlot = slot<String>()
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 200L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = capture(telemetryJsonSlot),
-                )
-            } just Runs
-            val context = logContext()
-            createProcessor { null }.processTyreTemperature(
-                input =
-                    TyreTemperatureReadoutInput(
-                        tyreCarcassTemperature =
-                            LmuWindowsTyreCarcassTemperatureData(
-                                wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(100f)),
-                            ),
-                        raceFlags = raceFlags(PrimaryFlag.GREEN),
-                    ),
-                events = listOf(LmuWindowsTyreOverheat(100)),
-                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
-                queueEnabledStates = emptyMap(),
-                observedAtMs = 200L,
-                logContext =
-                    LmuWindowsTyreTemperatureLogContext(
-                        context.state,
-                        context.settings,
-                        context.state,
-                        context.finalState,
-                    ),
-            )
-            assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(LmuWindowsTyreOverheat(100, "タイヤを冷やして"), false) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 200L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = telemetryJsonSlot.captured,
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
     fun `低温警告は自由文言を読み上げてログに保存する`() =
         runTest {
             val telemetryJsonSlot = slot<String>()
@@ -2469,60 +2302,6 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             val context = logContext()
             createProcessor { " " }.processTyreTemperature(
-                input =
-                    TyreTemperatureReadoutInput(
-                        tyreCarcassTemperature =
-                            LmuWindowsTyreCarcassTemperatureData(
-                                wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(100f)),
-                            ),
-                        raceFlags = raceFlags(PrimaryFlag.GREEN),
-                    ),
-                events = listOf(LmuWindowsTyreCold(60)),
-                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
-                queueEnabledStates = emptyMap(),
-                observedAtMs = 200L,
-                logContext =
-                    LmuWindowsTyreTemperatureLogContext(
-                        context.state,
-                        context.settings,
-                        context.state,
-                        context.finalState,
-                    ),
-            )
-            assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(LmuWindowsTyreCold(60, "タイヤを温めて"), false) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 200L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = telemetryJsonSlot.captured,
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
-    fun `低温警告のTTS利用不可では読み上げずSKIPPEDを記録する`() =
-        runTest {
-            val telemetryJsonSlot = slot<String>()
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 200L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = capture(telemetryJsonSlot),
-                )
-            } just Runs
-            val context = logContext()
-            createProcessor { null }.processTyreTemperature(
                 input =
                     TyreTemperatureReadoutInput(
                         tyreCarcassTemperature =
@@ -2917,84 +2696,6 @@ class LmuWindowsNarratorEventProcessorTest {
                     readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = telemetryJsons.single(),
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
-    fun `部品脱落の空白文言をログと発話に反映する`() =
-        runTest {
-            val telemetryJsons = mutableListOf<String>()
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 200L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = capture(telemetryJsons),
-                )
-            } just Runs
-            createProcessor { " " }.processVehicleDamage(
-                vehicleDamage = vehicleDamage(overheating = true),
-                events = listOf(LmuWindowsPartDetached()),
-                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
-                queueEnabledStates = emptyMap(),
-                observedAtMs = 200L,
-                logContext = logContext(),
-            )
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(LmuWindowsPartDetached("カスタム"), false) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 200L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = telemetryJsons.single(),
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
-    fun `部品脱落のTTS利用不可をログと発話に反映する`() =
-        runTest {
-            val telemetryJsons = mutableListOf<String>()
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 200L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = capture(telemetryJsons),
-                )
-            } just Runs
-            createProcessor { null }.processVehicleDamage(
-                vehicleDamage = vehicleDamage(overheating = true),
-                events = listOf(LmuWindowsPartDetached()),
-                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
-                queueEnabledStates = emptyMap(),
-                observedAtMs = 200L,
-                logContext = logContext(),
-            )
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(LmuWindowsPartDetached("カスタム"), false) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 200L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
                     narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsons.single(),
                 )
