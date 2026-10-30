@@ -1,5 +1,22 @@
 # GitHub Actions ワークフロー詳細
 
+## ワークフロー一覧
+
+| ワークフロー | トリガー | 役割 | 権限・呼び出し関係 |
+| --- | --- | --- | --- |
+| `on-pull-request.yml` | PR の作成・更新時 | detekt・ktlint・ユニットテスト（`unit-test` はスクリーンショットテストを除外） | 同一 PR の新しいコミットで古い CI をキャンセル |
+| `record-golden-images.yml` | `workflow_dispatch`、または PR に `record-golden-images` ラベル | Desktop・Android のゴールデン画像を記録しコミット | 記録できたモジュール分の画像は失敗があってもアップロード・コミット |
+| `on-main-merge.yml` | main へのマージ | ktlint・スクリーンショット verify・Dokka の API ドキュメント生成と GitHub Pages デプロイ | `dokka-pages` は `github-pages` environment を使用。`docs/api/` はコミットしない |
+| `_build-android-release.yml` | `workflow_call` 専用 | 署名付き Android APK のビルド | `build-apps.yml`・`release-apps.yml` から呼び出し。単体実行不可 |
+| `_build-windows-msi.yml` | `workflow_call` 専用 | Windows MSI のビルドと `appVersion` の出力 | `build-apps.yml`・`release-apps.yml` から呼び出し。単体実行不可 |
+| `build-apps.yml` | `workflow_dispatch` | Android APK と Windows MSI を並列にビルド | `_build-android-release.yml`・`_build-windows-msi.yml` を呼び出し |
+| `release-apps.yml` | 手動リリース | E2E → バージョンバンプ → baseline profile 再生成 → MSI/APK ビルド → リリース作成 | `_e2e-android-maestro.yml`・`_build-android-release.yml`・`_build-windows-msi.yml` を呼び出し。`generate-baseline-profile` は `contents: read`、`commit-baseline-profile` は `contents: write` |
+| `_e2e-android-maestro.yml` | `release-apps.yml` から呼び出し、または `ref` 指定の手動実行 | Maestro によるボトムナビ（自動・手動・ログ・その他）の E2E | `_build-android-release.yml` を呼び出し |
+| `nightly-todo.yml` | 毎日 JST 午前5時ごろ、`workflow_dispatch` | Claude Code CLI による調査と Issue 起票 | `GITHUB_TOKEN`（`issues: write`）、`CLAUDE_CODE_OAUTH_TOKEN` で認証。許可 Bash は限定 |
+| 夜間実装バッチ（`scripts/nightly-implement-local.sh`） | ユーザーのローカル Mac で launchd が定期実行 | 夜間実装 | GitHub Actions ではない。旧 `nightly-implement.yml` は 2026-09-01 に削除 |
+
+## 各ワークフローの詳細
+
 - `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行（`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行）。同一 PR に新しいコミットが追加された場合は、実行中の古い CI をキャンセルする。`unit-test` ジョブは、`gradle.properties` のローカル向け `org.gradle.workers.max=2` を CI（4 vCPU）では `-Dorg.gradle.workers.max=4` で上書きして実行する。`-PexcludeScreenshotTests=true` でスクリーンショットテストを除外するため、Codecov のカバレッジにはスクリーンショットテストで通る分が含まれない。`desktop-screenshot-test-verify` / `android-screenshot-test-verify`（`_screenshot-test-verify.yml` を呼び出す）は、まず verify を実行し、失敗した場合のみ golden 画像を再記録してコミット・プッシュしたうえでジョブを失敗させる。verify / record の `./gradlew` には `-Dorg.gradle.workers.max=4` を付け、`gradle.properties` の `workers.max=2`（ローカルのメモリ節約用）を CI（4 vCPU）では上書きする（`record-golden-images.yml` と `on-main-merge.yml` のスクリーンショット verify も同様）
 - `record-golden-images.yml`: スクリーンショットテストのゴールデン画像を手動で記録するワークフロー。`workflow_dispatch` での手動実行、または PR に `record-golden-images` ラベルを付けたときに起動し、Desktop（`recordRoborazziJvmTests`）と Android（`recordRoborazziAndroidHostTests`）の画像を記録する。記録に失敗したモジュールがあっても、記録できたモジュール分の画像はアップロード・コミットする
 - `on-main-merge.yml`: main へのマージ時に実行。`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行する。`dokka-pages` ジョブは Dokka（`./gradlew :dokkaGenerate`）で API ドキュメントを生成し、GitHub Pages（`github-pages` environment）へ自動デプロイする。ドキュメント本体（`docs/api/`）はコミットせず、CI 実行のたびに再生成する

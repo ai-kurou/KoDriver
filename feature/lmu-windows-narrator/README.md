@@ -4,6 +4,32 @@ LMUの4種類のフラッグ本文と車両接近開始時・継続時の左右�
 空白文言またはTTS利用不可時は本文を読み上げず、収録WAVへのフォールバックは行わない。
 開始音は既存の設定に従う。
 
+## 警告・読み上げ文言の一覧
+
+| 警告 | 一覧 / 詳細キー | 既定文言（定数名） | プレースホルダー | 閾値（定数名） | 判定条件 |
+| --- | --- | --- | --- | --- | --- |
+| フラッグ（4種） | `Flag.Root` / `Flag.BlueFlag` ほか | `LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT`（「ブルーフラッグ」）ほか3種 | なし | なし | 種別の有効状態 |
+| 車両接近 開始時（左右） | `VehicleApproach.Root` / `StartReadout` | `LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT`（「カーレフト」）、`..._START_RIGHT_...`（「カーライト」） | なし | `LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT`（5.0m）、`..._LATERAL_THRESHOLD_METERS_DEFAULT`（5.0m）、`..._LATERAL_MINIMUM_METERS_DEFAULT`（1.0m）、`..._SKIP_FIRST_LAP_DEFAULT`（true） | 接近判定の距離条件 |
+| 車両接近 継続時（左右） | `VehicleApproach.Root` / `Sustained` | `LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT`（「キープライト」）、`..._SUSTAINED_RIGHT_...`（「キープレフト」） | なし | `LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT`（7秒） | 左側車両は左文言、右側車両は右文言 |
+| バーチャルエネルギー残量 | `RemainingVirtualEnergy.Root` / `WarningReadout` | `LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT`（「バーチャルエネルギー残量{percent}%以下」） | `{percent}`（判定時の設定閾値に置換） | `LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT`（30） | VEクラスのみ判定 |
+| 燃料残量 | `RemainingFuel.Root` / `WarningReadout` | `LMU_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | `{percent}`（判定時の設定閾値に置換） | `LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT`（30） | 燃料クラスのみ判定 |
+| タイヤ摩耗 | `TyreWear.Root` / `WarningReadout` | `LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT`（「タイヤ残存率{percent}%以下」） | `{percent}`（設定閾値に置換） | `LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT`（30） | 残存率が閾値以下 |
+| ブレーキ摩耗 | `BrakeWear.Root` / `WarningReadout` | `LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT`（「ブレーキ残量{percent}%以下」） | `{percent}`（判定時の車両クラス閾値に置換） | `LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_*_DEFAULT`（各20） | いずれかの輪が閾値以下で1回。全輪が閾値超で再武装 |
+| ブレーキ過熱 | `BrakeTemperature.Root` / `WarningReadout` | `LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT`（「ブレーキ温度{celsius}℃以上」） | `{celsius}`（判定時の車両クラス閾値に置換） | `LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_*_DEFAULT`（クラス別） | 全クラス共通の文言 |
+| タイヤ過熱 | `TyreTemperature.Root` / `OverheatWarning` | `LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT`（「タイヤ過熱 {celsius}度」） | `{celsius}`（判定時の全輪最高カーカス温度を四捨五入） | 保存済みの高温閾値 | 過熱・解除判定は従来どおり |
+| タイヤ低温 | `TyreTemperature.Root` / `LowWarning` | `LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT`（「タイヤ低温 {celsius}度」） | `{celsius}`（判定時の全輪最高温度） | 試聴は60℃固定 | 低温判定は従来どおり |
+| 車両故障 オーバーヒート | `VehicleDamage.Root` / `Overheat` | `LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT`（「オーバーヒート」） | なし | なし | `Root` と `Overheat` の有効状態 |
+| 車両故障 部品脱落 | `VehicleDamage.Root` / `PartDetached` | `LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT`（「部品脱落」） | なし | なし | `Root` と `PartDetached` の有効状態 |
+| 車両故障 タイヤ脱落 | `VehicleDamage.Root` / `TyreDetached` | `LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT`（「タイヤ脱落」） | なし | なし | `Root` と `TyreDetached` の有効状態 |
+| ピットタイミング（バーチャルエネルギー） | `PitTiming.Root` / `VirtualEnergy` | `LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT`（「エネルギー切れのため{laps}周以内にピットイン」）、切迫時 `..._IMMINENT_...`（「エネルギー切れのため必ずピットイン」） | `{laps}`（残り1周以上のとき） | `LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT`（3） | VEクラスのみ発火。0周以下は切迫時文言 |
+| ピットタイミング（タイヤ摩耗） | `PitTiming.Root` / `TyreWear` | `LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT`（「タイヤ摩耗のため{laps}周以内にピットイン」）、切迫時 `..._TYRE_WEAR_IMMINENT_...`（「タイヤ摩耗のため必ずピットイン」） | `{laps}`（残り1周以上のとき） | `LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT`（3） | 0周以下は切迫時文言 |
+| ピットタイミング（燃料） | `PitTiming.Root` / `Fuel` | `LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、切迫時 `..._FUEL_IMMINENT_...`（「燃料残り1周未満」） | `{laps}`（残り1周以上のとき） | `LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT`（3、設定範囲1〜5周） | 燃料クラスのみ発火。0周以下は切迫時文言 |
+| 自己ベストラップ更新 | `MyBestLap.Root` / `DetailEnabled` | `LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT`（「自己ベストラップ更新 {laptime}」） | `{laptime}`（「1分23秒456」形式） | なし | 更新判定は従来どおり |
+
+- 上表の文言はすべて自由文字列をOS標準TTSで読み上げる。空白文言またはTTS利用不可では本文も開始音も要求せず、ログに空文字と `SKIPPED` を記録する。収録WAVは使わない。
+- 文言の保存は各 Preferences に従い、上限は `READOUT_CUSTOM_TEXT_MAX_LENGTH`（30文字）で正規化する。
+
+
 LMU車両故障のオーバーヒート・部品脱落・タイヤ脱落は、各1つのグローバルな自由文言をOS標準TTSで読み上げる。既定文言は「オーバーヒート」「部品脱落」「タイヤ脱落」。文言は既存の `LmuWindowsVehicleDamagePreferences` に保存し、保存時は `trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)` で正規化する。判定時に解決した本文をイベントの `resolvedText` に保持し、キュー待機中の設定変更でもログと発話を一致させる。空白文言・TTS利用不可時は本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。一覧の `VehicleDamage.Root` と詳細の `Overheat` / `PartDetached` / `TyreDetached` のスイッチ配線は維持し、開始音・優先度・キューと試聴は `VehicleDamage.Root` を参照する。旧オーバーヒート音声タイプは廃止し、3種類の警告は収録WAVへフォールバックしない。
 
 Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を提供し、`:core:data`の`VoiceSpeedPreferencesRepository`・`VoicePitchPreferencesRepository`を消費する。
