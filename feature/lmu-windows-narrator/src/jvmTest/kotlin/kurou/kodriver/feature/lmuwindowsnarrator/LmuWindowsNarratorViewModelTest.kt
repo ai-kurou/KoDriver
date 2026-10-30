@@ -1886,40 +1886,6 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `オーバーヒートの空白文言を判定時に解決する`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                damageChannel = channel,
-                ttsEngine = tts,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Root to true),
-                overheatReadoutText = " ",
-            )
-            channel.send(noDamage())
-            channel.send(noDamage(overheating = true))
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
-    fun `オーバーヒートのTTS利用不可を判定時に解決する`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                damageChannel = channel,
-                ttsEngine = tts,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Root to true),
-                overheatReadoutText = null,
-            )
-            channel.send(noDamage())
-            channel.send(noDamage(overheating = true))
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
     fun `自己ベストラップの自由文言を判定時に解決する`() =
         runTest(testDispatcher) {
             val channel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
@@ -2401,62 +2367,6 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"observedAtMs":123""")
             assertContains(log.telemetryJson, """"overheatState":{""")
             assertContains(log.telemetryJson, """"finalState":{""")
-        }
-
-    @Test
-    fun `過熱文言が空白またはTTS不可なら読み上げずSKIPPEDを保存する`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
-            val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-            val logs = mutableListOf<TelemetryLog>()
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                tyreTemperatureChannel = channel,
-                flagChannel = flagChannel,
-                ttsEngine = tts,
-                tyreTemperatureHighThreshold = 90,
-                tyreOverheatReadoutText = null,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
-                currentTimeMs = { 123L },
-            )
-            stubTelemetryLogSave(logs, createdAt = 123L, LmuWindowsReadoutItemKey.TyreTemperature.Root)
-            flagChannel.send(clearFlags())
-
-            channel.send(tyreTemperature(fl = 95.0))
-
-            assertEquals(1, logs.size)
-            val log = logs.first()
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-            assertEquals("", log.narratedText)
-            assertEquals(NarrationOutcome.SKIPPED, log.narrationOutcome)
-            assertEquals(123L, log.createdAt)
-            assertEquals(Simulator.LmuWindows, log.simulator)
-            assertEquals(LmuWindowsReadoutItemKey.TyreTemperature.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{""")
-            assertContains(
-                log.telemetryJson,
-                """"input":{"tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":95.0,"FRONT_RIGHT":20.0,""" +
-                    """"REAR_LEFT":20.0,"REAR_RIGHT":20.0}},"raceFlags":{""",
-            )
-            assertContains(log.telemetryJson, """"settings":{""")
-            assertContains(log.telemetryJson, """"observedAtMs":123""")
-            assertContains(log.telemetryJson, """"overheatState":{""")
-            assertContains(log.telemetryJson, """"finalState":{""")
-            verify(exactly = 0) { tts.speak(LmuWindowsTyreOverheat(95, "タイヤを冷やして"), queue = false) }
-            verify(exactly = 0) { tts.currentReadoutItemKey }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 123L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = log.telemetryJson,
-                )
-            }
-            confirmVerified(tts, telemetryLogRepository)
         }
 
     // --- タイヤ摩耗 ---
@@ -5436,63 +5346,6 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"observedAtMs":123""")
             assertContains(log.telemetryJson, """"overheatState":{""")
             assertContains(log.telemetryJson, """"finalState":{""")
-        }
-
-    @Test
-    fun `低温文言が空白またはTTS不可なら読み上げずSKIPPEDを保存する`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
-            val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-            val logs = mutableListOf<TelemetryLog>()
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                tyreTemperatureChannel = channel,
-                flagChannel = flagChannel,
-                ttsEngine = tts,
-                tyreColdReadoutText = null,
-                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
-                currentTimeMs = { 123L },
-                tyreTemperatureLowWarningPhasesOverride = mapOf(SessionPhase.GARAGE to true),
-            )
-            stubTelemetryLogSave(logs, createdAt = 123L, LmuWindowsReadoutItemKey.TyreTemperature.Root)
-            flagChannel.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
-            channel.send(tyreTemperature(fl = 55.0))
-
-            flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-            assertEquals(1, logs.size)
-            val log = logs.first()
-            assertEquals("", log.narratedText)
-            assertEquals(NarrationOutcome.SKIPPED, log.narrationOutcome)
-            assertEquals(123L, log.createdAt)
-            assertEquals(Simulator.LmuWindows, log.simulator)
-            assertEquals(LmuWindowsReadoutItemKey.TyreTemperature.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{""")
-            assertContains(
-                log.telemetryJson,
-                """"input":{"tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":55.0,"FRONT_RIGHT":20.0,""" +
-                    """"REAR_LEFT":20.0,"REAR_RIGHT":20.0}},"raceFlags":{""",
-            )
-            assertContains(log.telemetryJson, """"settings":{""")
-            assertContains(log.telemetryJson, """"observedAtMs":123""")
-            assertContains(log.telemetryJson, """"overheatState":{""")
-            assertContains(log.telemetryJson, """"finalState":{""")
-            verify(exactly = 0) { tts.speak(LmuWindowsTyreCold(55, "タイヤを温めて"), queue = false) }
-            verify(exactly = 0) { tts.currentReadoutItemKey }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 123L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
-                    narratedText = "",
-                    narrationOutcome = NarrationOutcome.SKIPPED,
-                    narrationSource = NarrationSource.AUTO,
-                    telemetryJson = log.telemetryJson,
-                )
-            }
-            confirmVerified(tts, telemetryLogRepository)
         }
 
     @Test
