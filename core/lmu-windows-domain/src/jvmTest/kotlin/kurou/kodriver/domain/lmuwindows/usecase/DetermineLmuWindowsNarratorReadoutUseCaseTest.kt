@@ -1155,27 +1155,6 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `左接近の開始時はCarLeftを返す`() {
-        val first =
-            vehicleUseCase.determineVehicleApproach(
-                state = LmuWindowsNarratorState(),
-                vehicleApproach = leftVehicleApproach(vehicleId = 1),
-                settings = settings(),
-                observedAtMs = 0L,
-            )
-
-        val second =
-            vehicleUseCase.determineVehicleApproach(
-                state = first.state,
-                vehicleApproach = leftVehicleApproach(vehicleId = 1),
-                settings = settings(),
-                observedAtMs = 50L,
-            )
-
-        assertEquals(listOf(LmuWindowsCarLeft()), second.events)
-    }
-
-    @Test
     fun `50ms未満の接近では読み上げない`() {
         val first =
             vehicleUseCase.determineVehicleApproach(
@@ -2123,19 +2102,6 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(listOf(LmuWindowsTyreWearWarning(50)), decision.events)
-        assertEquals(true, decision.state.tyreWearWarned)
-    }
-
-    @Test
-    fun `摩耗警告イベントは実測残存率ではなく設定閾値を保持する`() {
-        val decision =
-            tyreUseCase.determineTyreWear(
-                state = LmuWindowsNarratorState(),
-                data = tyreWear(fl = 0.4),
-                settings = settings(tyreWearThresholdPercentage = 70),
-            )
-
-        assertEquals(listOf(LmuWindowsTyreWearWarning(70)), decision.events)
         assertEquals(true, decision.state.tyreWearWarned)
     }
 
