@@ -17,7 +17,6 @@ import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
-import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemKeys
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemName
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
@@ -90,14 +89,13 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         state: Gt7Ps5NarratorState,
         items: List<Gt7Ps5ManualReadoutItem>,
     ): Gt7Ps5NarratorReadoutDecision {
-        val supportedKeys = gt7Ps5ManualReadoutItemKeys()
-        val supportedItems = items.filter { it.key in supportedKeys }.take(MANUAL_READOUT_SET_ITEM_MAX)
+        val supportedEvents = items.mapNotNull { manualCurrentValue(it) }.take(MANUAL_READOUT_SET_ITEM_MAX)
         val text =
-            if (supportedItems.isEmpty()) {
+            if (supportedEvents.isEmpty()) {
                 MANUAL_READOUT_NO_ITEMS_TEXT
             } else {
-                supportedItems
-                    .map { item -> manualCurrentValue(item).let { it.resolvedText ?: it.narratedText } }
+                supportedEvents
+                    .map { event -> event.resolvedText ?: event.narratedText }
                     .filter { it.isNotBlank() }
                     .joinToString("、")
             }
@@ -108,10 +106,18 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         )
     }
 
-    private fun manualCurrentValue(item: Gt7Ps5ManualReadoutItem): ReadoutTextEvent {
+    /** 手動読み上げの対応外キーは null を返し、セットの件数や読み上げ文言に含めない。 */
+    private fun manualCurrentValue(item: Gt7Ps5ManualReadoutItem): ReadoutTextEvent? {
         val value = item.value ?: 0
         val event =
             when (item.key) {
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
+                    Gt7Ps5RemainingFuelCurrentValue(
+                        value,
+                        formatGt7Ps5RemainingFuelReadoutText(item.textTemplate, value),
+                    )
+                }
+
                 Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
                     Gt7Ps5TyreTemperatureCurrentValue(
                         value,
@@ -134,10 +140,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 }
 
                 else -> {
-                    Gt7Ps5RemainingFuelCurrentValue(
-                        value,
-                        formatGt7Ps5RemainingFuelReadoutText(item.textTemplate, value),
-                    )
+                    return null
                 }
             }
         return when {
