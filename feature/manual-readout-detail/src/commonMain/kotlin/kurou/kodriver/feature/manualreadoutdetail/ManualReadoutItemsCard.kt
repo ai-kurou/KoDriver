@@ -106,7 +106,7 @@ internal fun ManualReadoutItemsCard(
                     key(itemKey) {
                         ReorderableItem {
                             Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
-                                val name = itemPresentations[itemKey]?.let { stringResource(it.name) } ?: itemKey
+                                val name = manualReadoutItemName(uiState.simulatorId, itemKey).ifEmpty { itemKey }
                                 val moveActions =
                                     manualReadoutMoveActions(index, uiState.selectedItemKeys.size, onMoveItem)
                                 Row(

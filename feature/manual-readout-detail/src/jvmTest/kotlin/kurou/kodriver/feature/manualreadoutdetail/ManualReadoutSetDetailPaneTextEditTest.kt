@@ -457,7 +457,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("残り燃料").performScrollTo().performClick()
+        rule.onNodeWithText("燃料残量").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
         rule.onNodeWithText("{percent} は現在の残量（%）に置き換わります").assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("残り{percent}%")

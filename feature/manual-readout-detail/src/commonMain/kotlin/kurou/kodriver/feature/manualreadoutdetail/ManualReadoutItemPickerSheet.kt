@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
+import kurou.kodriver.domain.model.ManualReadoutItemDefinition
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_brake
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_fuel
@@ -70,8 +71,8 @@ private fun ManualReadoutItemCategory.label(): StringResource =
         ManualReadoutItemCategory.LAP -> Res.string.manual_readout_category_lap
     }
 
-private fun manualReadoutItemCategory(itemKey: String): ManualReadoutItemCategory? =
-    manualReadoutItemDefinitions.values.firstNotNullOfOrNull { it[itemKey]?.category }
+private fun manualReadoutItemDefinition(itemKey: String): ManualReadoutItemDefinition? =
+    manualReadoutItemDefinitions.values.firstNotNullOfOrNull { it[itemKey] }
 
 // 追加候補は1セット3件上限の項目一覧のため、ImmutableList化のコストに見合わない。
 @OptIn(ExperimentalMaterial3Api::class)
@@ -111,9 +112,7 @@ internal fun ManualReadoutItemPickerSheetContent(
         val categories =
             itemKeys
                 .mapNotNull { key ->
-                    itemPresentations[key]?.let { presentation ->
-                        manualReadoutItemCategory(key)?.let { it to (key to presentation) }
-                    }
+                    manualReadoutItemDefinition(key)?.let { it.category to (key to it.name) }
                 }.groupBy({ it.first }, { it.second })
         categories.forEach { (category, items) ->
             Column(
@@ -146,10 +145,10 @@ internal fun ManualReadoutItemPickerSheetContent(
                 }
                 Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceContainerLow) {
                     Column {
-                        items.forEachIndexed { index, (key, presentation) ->
+                        items.forEachIndexed { index, (key, name) ->
                             if (index > 0) HorizontalDivider()
                             ListItem(
-                                headlineContent = { Text(stringResource(presentation.name)) },
+                                headlineContent = { Text(name) },
                                 modifier =
                                     Modifier.clickable {
                                         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
