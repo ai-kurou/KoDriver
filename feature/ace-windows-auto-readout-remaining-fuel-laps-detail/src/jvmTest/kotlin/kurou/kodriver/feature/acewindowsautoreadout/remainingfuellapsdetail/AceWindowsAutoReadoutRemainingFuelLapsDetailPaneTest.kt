@@ -181,6 +181,23 @@ class AceWindowsAutoReadoutRemainingFuelLapsDetailPaneTest {
         assertEquals(listOf("燃料なし{x}"), previews)
     }
 
+    @Test
+    fun `TTS不可では燃料なし用の欄の入力と試聴とリセットを無効にする`() {
+        rule.setContent {
+            KoDriverTheme {
+                AceWindowsAutoReadoutRemainingFuelLapsDetailPaneContent(
+                    uiState =
+                        AceWindowsAutoReadoutRemainingFuelLapsDetailUiState(
+                            emptyReadoutText = "編集済み燃料なし文言",
+                        ),
+                )
+            }
+        }
+        rule.onNodeWithText("編集済み燃料なし文言").assertIsNotEnabled()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[1].assertIsNotEnabled()
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].assertIsNotEnabled()
+    }
+
     private fun setResetTestContent(
         changes: MutableList<String>,
         initialState: AceWindowsAutoReadoutRemainingFuelLapsDetailUiState =
