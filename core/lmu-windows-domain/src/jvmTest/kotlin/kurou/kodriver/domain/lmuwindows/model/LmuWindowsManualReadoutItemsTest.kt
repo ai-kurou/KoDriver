@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.lmuwindows.model
 
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
+import kurou.kodriver.domain.model.LmuWindowsManualReadoutValue
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
@@ -8,7 +9,6 @@ import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -69,11 +69,8 @@ class LmuWindowsManualReadoutItemsTest {
 
     @Test
     fun `手動読み上げ値と温度判定を保持する`() {
-        val item = LmuWindowsManualReadoutItem("key", "text", 0.5, 90f, 123L, 4)
-        assertEquals(0.5, item.ratio)
-        assertEquals(90f, item.celsius)
-        assertEquals(123L, item.lapTimeMs)
-        assertEquals(4, item.remainingLaps)
+        val item = LmuWindowsManualReadoutItem("key", "text", LmuWindowsManualReadoutValue.Ratio(0.5))
+        assertEquals(LmuWindowsManualReadoutValue.Ratio(0.5), item.value)
         assertTrue(isLmuWindowsManualReadoutTemperatureItem(LmuWindowsReadoutItemKey.TyreTemperature.Root.value))
         assertEquals(false, isLmuWindowsManualReadoutTemperatureItem("unknown"))
     }
@@ -105,12 +102,7 @@ class LmuWindowsManualReadoutItemsTest {
             ).mapKeys { it.key.value }
         assertEquals(expected.keys, lmuWindowsManualReadoutItemKeys().toSet())
         expected.forEach { (itemKey, eventKey) ->
-            assertEquals(eventKey, lmuWindowsManualReadoutEventKey(itemKey))
+            assertEquals(eventKey, lmuWindowsManualReadoutItemDefinitions.getValue(itemKey).eventKey)
         }
-    }
-
-    @Test
-    fun `未登録の項目キーは例外になる`() {
-        assertFailsWith<NoSuchElementException> { lmuWindowsManualReadoutEventKey("unknown") }
     }
 }

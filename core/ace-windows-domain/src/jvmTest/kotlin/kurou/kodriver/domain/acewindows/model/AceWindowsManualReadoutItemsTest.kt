@@ -38,4 +38,11 @@ class AceWindowsManualReadoutItemsTest {
         assertEquals(42, item.value)
         assertEquals(null, AceWindowsManualReadoutItem("key", "text", null).value)
     }
+
+    @Test
+    fun `全項目の開始音キーは項目キー自身`() {
+        aceWindowsManualReadoutItemDefinitions.values.forEach { definition ->
+            assertEquals(definition.key, definition.eventKey.value)
+        }
+    }
 }

@@ -88,6 +88,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
             LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
             ::findUnknownLmuWindowsPitTimingReadoutPlaceholders,
             { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
+            LmuWindowsReadoutItemKey.PitTiming.Root,
         ),
         manualReadoutItemDefinitionOf(
             LmuWindowsReadoutItemKey.PitTiming.TyreWear,
@@ -97,6 +98,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
             LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
             ::findUnknownLmuWindowsPitTimingReadoutPlaceholders,
             { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
+            LmuWindowsReadoutItemKey.PitTiming.Root,
         ),
         manualReadoutItemDefinitionOf(
             LmuWindowsReadoutItemKey.RemainingFuel.Laps,
@@ -106,6 +108,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
             LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
             ::findUnknownLmuWindowsPitTimingReadoutPlaceholders,
             { formatLmuWindowsPitTimingReadoutText(it, PREVIEW_PIT_TIMING_LAPS) },
+            LmuWindowsReadoutItemKey.RemainingFuel.Root,
         ),
         manualReadoutItemDefinitionOf(
             LmuWindowsReadoutItemKey.ClassCarGap.Ahead,
@@ -115,6 +118,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
             LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER,
             ::findUnknownLmuWindowsClassCarGapReadoutPlaceholders,
             { formatLmuWindowsClassCarGapReadoutText(it, PREVIEW_CLASS_CAR_GAP_SECONDS) },
+            LmuWindowsReadoutItemKey.VehicleApproach.Root,
         ),
         manualReadoutItemDefinitionOf(
             LmuWindowsReadoutItemKey.ClassCarGap.Behind,
@@ -124,6 +128,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
             LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER,
             ::findUnknownLmuWindowsClassCarGapReadoutPlaceholders,
             { formatLmuWindowsClassCarGapReadoutText(it, PREVIEW_CLASS_CAR_GAP_SECONDS) },
+            LmuWindowsReadoutItemKey.VehicleApproach.Root,
         ),
     )
 
@@ -134,28 +139,3 @@ fun lmuWindowsManualReadoutItemName(itemKey: String): String =
 
 fun lmuWindowsManualReadoutItemTextDefault(itemKey: String): String =
     lmuWindowsManualReadoutItemDefinitions[itemKey]?.textDefault.orEmpty()
-
-/**
- * 先頭項目キーから手動読み上げの event キーを決める対応表。未登録のキーは [getValue] で例外にし、
- * 項目を追加した際に開始音・優先度が黙って別項目へフォールバックしないようにする。
- */
-private val manualReadoutEventKeys: Map<String, LmuWindowsReadoutItemKey> =
-    mapOf(
-        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
-            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
-        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to LmuWindowsReadoutItemKey.PitTiming.Root,
-        LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to LmuWindowsReadoutItemKey.PitTiming.Root,
-        LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to LmuWindowsReadoutItemKey.RemainingFuel.Root,
-        LmuWindowsReadoutItemKey.RemainingFuel.Root.value to LmuWindowsReadoutItemKey.RemainingFuel.Root,
-        LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to LmuWindowsReadoutItemKey.VehicleApproach.Root,
-        LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to LmuWindowsReadoutItemKey.VehicleApproach.Root,
-        LmuWindowsReadoutItemKey.TyreWear.Root.value to LmuWindowsReadoutItemKey.TyreWear.Root,
-        LmuWindowsReadoutItemKey.BrakeWear.Root.value to LmuWindowsReadoutItemKey.BrakeWear.Root,
-        LmuWindowsReadoutItemKey.BrakeTemperature.Root.value to LmuWindowsReadoutItemKey.BrakeTemperature.Root,
-        LmuWindowsReadoutItemKey.MyBestLap.Root.value to LmuWindowsReadoutItemKey.MyBestLap.Root,
-        LmuWindowsReadoutItemKey.TyreTemperature.Root.value to LmuWindowsReadoutItemKey.TyreTemperature.Root,
-    )
-
-/** 項目キーから開始音・優先度に使う event キーを返す。未登録のキーは例外になる。 */
-fun lmuWindowsManualReadoutEventKey(itemKey: String): LmuWindowsReadoutItemKey =
-    manualReadoutEventKeys.getValue(itemKey)

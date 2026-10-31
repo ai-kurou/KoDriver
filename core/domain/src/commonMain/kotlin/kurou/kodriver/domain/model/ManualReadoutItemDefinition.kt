@@ -13,7 +13,8 @@ enum class ManualReadoutItemCategory {
  * 手動読み上げ項目をシミュレーターとキーごとに定義する。
  *
  * [placeholder] は編集画面で挿入するプレースホルダー文字列、[findUnknownPlaceholders] は文言中の未知プレースホルダーを検出する関数、
- * [previewFormatter] はプレビュー用に文言へサンプル値を埋め込む関数。
+ * [previewFormatter] はプレビュー用に文言へサンプル値を埋め込む関数、
+ * [eventKey] は実読み上げとプレビューで開始音・優先度に使う event キー。
  */
 data class ManualReadoutItemDefinition(
     val key: String,
@@ -23,8 +24,10 @@ data class ManualReadoutItemDefinition(
     val placeholder: String,
     val findUnknownPlaceholders: (String) -> List<String>,
     val previewFormatter: (String) -> String,
+    val eventKey: ReadoutItemKey,
 )
 
+@Suppress("LongParameterList")
 fun manualReadoutItemDefinitionOf(
     key: ReadoutItemKey,
     category: ManualReadoutItemCategory,
@@ -33,6 +36,7 @@ fun manualReadoutItemDefinitionOf(
     placeholder: String,
     findUnknownPlaceholders: (String) -> List<String>,
     previewFormatter: (String) -> String,
+    eventKey: ReadoutItemKey = key,
 ): ManualReadoutItemDefinition =
     ManualReadoutItemDefinition(
         key.value,
@@ -42,6 +46,7 @@ fun manualReadoutItemDefinitionOf(
         placeholder,
         findUnknownPlaceholders,
         previewFormatter,
+        eventKey,
     )
 
 fun manualReadoutItemDefinitionMapOf(

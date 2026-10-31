@@ -82,6 +82,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.TyreTemperatureReadoutInput
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
+import kurou.kodriver.domain.model.LmuWindowsManualReadoutValue
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -930,22 +931,28 @@ internal class LmuWindowsNarratorViewModel(
                     )
                 val celsius =
                     manualReadoutCelsius(key, brakeTemperature?.wheels?.values, tyreTemperature?.wheels?.values)
+                val remainingLaps =
+                    manualRemainingLaps(
+                        key = key,
+                        hasEnergy = energy != null,
+                        hasTyreWear = tyreWear != null,
+                        hasFuel = fuel != null,
+                        pitTimingFresh = observedAtMs - latestPitTimingUpdatedAtMs <= CURRENT_VALUE_MAX_AGE_MS,
+                    )
+                val value =
+                    ratio?.let { LmuWindowsManualReadoutValue.Ratio(it) }
+                        ?: celsius?.let { LmuWindowsManualReadoutValue.Celsius(it) }
+                        ?: bestLapTimeMs
+                            ?.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value }
+                            ?.let { LmuWindowsManualReadoutValue.LapTimeMs(it) }
+                        ?: classCarGap
+                            ?.takeIf { isLmuWindowsManualReadoutClassCarGapItem(key) }
+                            ?.let { LmuWindowsManualReadoutValue.ClassCarGap(it) }
+                        ?: remainingLaps?.let { LmuWindowsManualReadoutValue.RemainingLaps(it) }
                 LmuWindowsManualReadoutItem(
                     key,
                     set.itemTexts[key] ?: lmuWindowsManualReadoutItemTextDefault(key),
-                    ratio,
-                    celsius,
-                    lapTimeMs = bestLapTimeMs.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value },
-                    classCarGap =
-                        classCarGap.takeIf { isLmuWindowsManualReadoutClassCarGapItem(key) },
-                    remainingLaps =
-                        manualRemainingLaps(
-                            key = key,
-                            hasEnergy = energy != null,
-                            hasTyreWear = tyreWear != null,
-                            hasFuel = fuel != null,
-                            pitTimingFresh = observedAtMs - latestPitTimingUpdatedAtMs <= CURRENT_VALUE_MAX_AGE_MS,
-                        ),
+                    value,
                 )
             }
         val state = narratorState
