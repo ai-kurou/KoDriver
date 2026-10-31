@@ -8,6 +8,7 @@ import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -82,5 +83,31 @@ class LmuWindowsManualReadoutItemsTest {
         assertTrue(isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value))
         assertTrue(isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value))
         assertEquals(false, isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.MyBestLap.Root.value))
+    }
+
+    @Test
+    fun `全項目キーは例外なく開始音キーに解決できる`() {
+        lmuWindowsManualReadoutItemKeys().forEach { lmuWindowsManualReadoutEventKey(it) }
+    }
+
+    @Test
+    fun `開始音キーは残り周回数系が親項目に集約されクラス内ギャップは接近に集約される`() {
+        assertEquals(
+            LmuWindowsReadoutItemKey.PitTiming.Root,
+            lmuWindowsManualReadoutEventKey(LmuWindowsReadoutItemKey.PitTiming.TyreWear.value),
+        )
+        assertEquals(
+            LmuWindowsReadoutItemKey.RemainingFuel.Root,
+            lmuWindowsManualReadoutEventKey(LmuWindowsReadoutItemKey.RemainingFuel.Laps.value),
+        )
+        assertEquals(
+            LmuWindowsReadoutItemKey.VehicleApproach.Root,
+            lmuWindowsManualReadoutEventKey(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value),
+        )
+    }
+
+    @Test
+    fun `未登録の項目キーは例外になる`() {
+        assertFailsWith<NoSuchElementException> { lmuWindowsManualReadoutEventKey("unknown") }
     }
 }
