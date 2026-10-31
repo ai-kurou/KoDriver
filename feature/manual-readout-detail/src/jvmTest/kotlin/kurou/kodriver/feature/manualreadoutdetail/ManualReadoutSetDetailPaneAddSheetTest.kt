@@ -47,7 +47,7 @@ class ManualReadoutSetDetailPaneAddSheetTest {
                     "バーチャルエネルギーの残り周回数",
                     "燃料",
                     "2",
-                    "残り燃料",
+                    "燃料残量",
                     "燃料の残り周回数",
                     "タイヤ",
                     "3",
