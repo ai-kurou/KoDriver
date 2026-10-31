@@ -36,6 +36,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproach
 import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.model.ManualReadoutValue
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -292,10 +293,21 @@ internal class AceWindowsNarratorViewModel(
             set.itemKeys.map { key ->
                 val value =
                     when (key) {
-                        AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> laps
-                        AceWindowsReadoutItemKey.MyBestLap.Root.value -> bestLapTimeMs
-                        AceWindowsReadoutItemKey.TyreTemperature.Root.value -> celsius
-                        else -> percent
+                        AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> {
+                            laps?.let { ManualReadoutValue.RemainingLaps(it) }
+                        }
+
+                        AceWindowsReadoutItemKey.MyBestLap.Root.value -> {
+                            bestLapTimeMs?.let { ManualReadoutValue.LapTimeMs(it) }
+                        }
+
+                        AceWindowsReadoutItemKey.TyreTemperature.Root.value -> {
+                            celsius?.let { ManualReadoutValue.Celsius(it) }
+                        }
+
+                        else -> {
+                            percent?.let { ManualReadoutValue.Percent(it) }
+                        }
                     }
                 AceWindowsManualReadoutItem(
                     key,

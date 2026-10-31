@@ -21,6 +21,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
+import kurou.kodriver.domain.model.ManualReadoutValue
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.joinManualReadoutTexts
 import kurou.kodriver.domain.model.manualReadoutNoDataText
@@ -98,9 +99,35 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         )
     }
 
+    /** 項目キーに対応する種別の値だけを取り出す。値が無い、または種別が対応しない場合は null（データなし）。 */
+    private fun manualValue(item: Gt7Ps5ManualReadoutItem): Int? =
+        when (item.key) {
+            Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
+                (item.value as? ManualReadoutValue.Percent)?.value
+            }
+
+            Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
+                (item.value as? ManualReadoutValue.Celsius)?.value
+            }
+
+            Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
+                (item.value as? ManualReadoutValue.LapTimeMs)?.value
+            }
+
+            Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
+                (item.value as? ManualReadoutValue.RemainingLaps)
+                    ?.value
+            }
+
+            else -> {
+                null
+            }
+        }
+
     /** 手動読み上げの対応外キーは null を返し、セットの件数や読み上げ文言に含めない。 */
     private fun manualCurrentValue(item: Gt7Ps5ManualReadoutItem): ReadoutTextEvent? {
-        val value = item.value ?: 0
+        val data = manualValue(item)
+        val value = data ?: 0
         val event =
             when (item.key) {
                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value -> {
@@ -140,7 +167,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 event.withResolvedText("")
             }
 
-            item.value == null -> {
+            data == null -> {
                 event.withResolvedText(manualReadoutNoDataText(gt7Ps5ManualReadoutItemName(item.key)))
             }
 

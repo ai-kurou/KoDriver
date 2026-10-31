@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.gt7ps5.model
 
 import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
+import kurou.kodriver.domain.model.ManualReadoutValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -34,8 +35,8 @@ class Gt7Ps5ManualReadoutItemsTest {
 
     @Test
     fun `手動読み上げ値を保持する`() {
-        val item = Gt7Ps5ManualReadoutItem("key", "text", 42)
-        assertEquals(42, item.value)
+        val item = Gt7Ps5ManualReadoutItem("key", "text", ManualReadoutValue.Percent(42))
+        assertEquals(ManualReadoutValue.Percent(42), item.value)
         assertEquals(null, Gt7Ps5ManualReadoutItem("key", "text", null).value)
     }
 }

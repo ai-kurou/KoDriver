@@ -24,6 +24,7 @@ import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.model.ManualReadoutValue
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -308,22 +309,30 @@ internal class Gt7Ps5NarratorViewModel(
         key: String,
         telemetry: Gt7Ps5TelemetryData,
         state: Gt7Ps5NarratorState,
-    ): Int? =
+    ): ManualReadoutValue? =
         when (key) {
             Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value -> {
-                determineGt7Ps5NarratorReadout.currentMaxTyreTemperatureCelsius(telemetry)
+                determineGt7Ps5NarratorReadout.currentMaxTyreTemperatureCelsius(telemetry)?.let {
+                    ManualReadoutValue.Celsius(it)
+                }
             }
 
             Gt7Ps5ReadoutItemKey.MyBestLap.Root.value -> {
-                determineGt7Ps5NarratorReadout.currentBestLapTimeMs(telemetry)
+                determineGt7Ps5NarratorReadout.currentBestLapTimeMs(telemetry)?.let { ManualReadoutValue.LapTimeMs(it) }
             }
 
             Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value -> {
-                determineGt7Ps5NarratorReadout.currentRemainingFuelLaps(state)
+                determineGt7Ps5NarratorReadout
+                    .currentRemainingFuelLaps(
+                        state,
+                    )?.let { ManualReadoutValue.RemainingLaps(it) }
             }
 
             else -> {
-                determineGt7Ps5NarratorReadout.currentRemainingFuelPercent(telemetry)
+                determineGt7Ps5NarratorReadout
+                    .currentRemainingFuelPercent(
+                        telemetry,
+                    )?.let { ManualReadoutValue.Percent(it) }
             }
         }
 

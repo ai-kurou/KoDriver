@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.acewindows.model
 
 import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
+import kurou.kodriver.domain.model.ManualReadoutValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -34,8 +35,8 @@ class AceWindowsManualReadoutItemsTest {
 
     @Test
     fun `手動読み上げ値を保持する`() {
-        val item = AceWindowsManualReadoutItem("key", "text", 42)
-        assertEquals(42, item.value)
+        val item = AceWindowsManualReadoutItem("key", "text", ManualReadoutValue.Percent(42))
+        assertEquals(ManualReadoutValue.Percent(42), item.value)
         assertEquals(null, AceWindowsManualReadoutItem("key", "text", null).value)
     }
 
