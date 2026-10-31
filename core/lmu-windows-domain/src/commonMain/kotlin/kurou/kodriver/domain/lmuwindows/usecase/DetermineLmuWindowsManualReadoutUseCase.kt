@@ -22,6 +22,7 @@ import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingFuelReado
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutEventKey
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemName
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
@@ -33,27 +34,6 @@ import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kotlin.math.roundToInt
 
 private const val LMU_WINDOWS_PERCENTAGE_SCALE = 100.0
-
-/**
- * 先頭項目キーから手動読み上げの event キーを決める対応表。未登録のキーは [getValue] で例外にし、
- * 項目を追加した際に開始音・優先度が黙って別項目へフォールバックしないようにする。
- */
-private val manualReadoutEventKeys: Map<String, LmuWindowsReadoutItemKey> =
-    mapOf(
-        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
-            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
-        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to LmuWindowsReadoutItemKey.PitTiming.Root,
-        LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to LmuWindowsReadoutItemKey.PitTiming.Root,
-        LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to LmuWindowsReadoutItemKey.RemainingFuel.Root,
-        LmuWindowsReadoutItemKey.RemainingFuel.Root.value to LmuWindowsReadoutItemKey.RemainingFuel.Root,
-        LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to LmuWindowsReadoutItemKey.VehicleApproach.Root,
-        LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to LmuWindowsReadoutItemKey.VehicleApproach.Root,
-        LmuWindowsReadoutItemKey.TyreWear.Root.value to LmuWindowsReadoutItemKey.TyreWear.Root,
-        LmuWindowsReadoutItemKey.BrakeWear.Root.value to LmuWindowsReadoutItemKey.BrakeWear.Root,
-        LmuWindowsReadoutItemKey.BrakeTemperature.Root.value to LmuWindowsReadoutItemKey.BrakeTemperature.Root,
-        LmuWindowsReadoutItemKey.MyBestLap.Root.value to LmuWindowsReadoutItemKey.MyBestLap.Root,
-        LmuWindowsReadoutItemKey.TyreTemperature.Root.value to LmuWindowsReadoutItemKey.TyreTemperature.Root,
-    )
 
 class DetermineLmuWindowsManualReadoutUseCase {
     /** 対応項目の現在値を保存順に連結し、警告済み状態を維持する。 */
@@ -68,7 +48,7 @@ class DetermineLmuWindowsManualReadoutUseCase {
             if (firstKey == null) {
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
             } else {
-                manualReadoutEventKeys.getValue(firstKey)
+                lmuWindowsManualReadoutEventKey(firstKey)
             }
         val text =
             when {

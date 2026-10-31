@@ -8,6 +8,7 @@ import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -82,5 +83,34 @@ class LmuWindowsManualReadoutItemsTest {
         assertTrue(isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value))
         assertTrue(isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value))
         assertEquals(false, isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.MyBestLap.Root.value))
+    }
+
+    @Test
+    fun `全項目キーは期待する開始音キーに解決される`() {
+        val expected =
+            mapOf(
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to LmuWindowsReadoutItemKey.PitTiming.Root,
+                LmuWindowsReadoutItemKey.PitTiming.TyreWear to LmuWindowsReadoutItemKey.PitTiming.Root,
+                LmuWindowsReadoutItemKey.RemainingFuel.Laps to LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                LmuWindowsReadoutItemKey.RemainingFuel.Root to LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                LmuWindowsReadoutItemKey.ClassCarGap.Ahead to LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.ClassCarGap.Behind to LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.TyreWear.Root to LmuWindowsReadoutItemKey.TyreWear.Root,
+                LmuWindowsReadoutItemKey.BrakeWear.Root to LmuWindowsReadoutItemKey.BrakeWear.Root,
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root to LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                LmuWindowsReadoutItemKey.MyBestLap.Root to LmuWindowsReadoutItemKey.MyBestLap.Root,
+                LmuWindowsReadoutItemKey.TyreTemperature.Root to LmuWindowsReadoutItemKey.TyreTemperature.Root,
+            ).mapKeys { it.key.value }
+        assertEquals(expected.keys, lmuWindowsManualReadoutItemKeys().toSet())
+        expected.forEach { (itemKey, eventKey) ->
+            assertEquals(eventKey, lmuWindowsManualReadoutEventKey(itemKey))
+        }
+    }
+
+    @Test
+    fun `未登録の項目キーは例外になる`() {
+        assertFailsWith<NoSuchElementException> { lmuWindowsManualReadoutEventKey("unknown") }
     }
 }
