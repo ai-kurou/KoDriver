@@ -6,6 +6,9 @@ const val MANUAL_READOUT_PLAY_BUTTON_LAYOUT_ENABLED_DEFAULT = false
 /** 手動読み上げの対象項目がない場合の固定文言。 */
 const val MANUAL_READOUT_NO_ITEMS_TEXT = "読み上げる項目がありません"
 
+/** 手動読み上げ項目の現在値が取得できない場合の固定文言。 */
+const val MANUAL_READOUT_NO_DATA_TEXT = "データがありません"
+
 /** 1セットに追加できる手動読み上げ項目数の上限。 */
 const val MANUAL_READOUT_SET_ITEM_MAX = 3
 

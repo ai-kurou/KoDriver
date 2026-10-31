@@ -105,6 +105,8 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 
 `ManualReadoutDefaults.kt` の `MANUAL_READOUT_SET_ITEM_MAX`（3）は、1セットに追加できる項目数の上限。詳細画面と ViewModel の追加処理で参照する。
 
+手動読み上げの文言組み立ては `ManualReadoutText.kt` に共通化している。`joinManualReadoutTexts(texts)` は項目文言を「、」で連結し（空文言は除外）、対応項目がなければ `MANUAL_READOUT_NO_ITEMS_TEXT` を返す。`manualReadoutNoDataText(itemName)` は「<項目名>は`MANUAL_READOUT_NO_DATA_TEXT`（データがありません）」を返す。各シミュレーターの `determineManualReadout` は、対応外キーを除いて `MANUAL_READOUT_SET_ITEM_MAX` 件に切り詰めた項目ごとの文言を作り、これらに渡す。
+
 `ManualReadoutSet` はセット識別子・セット名 `name`（空文字なら画面側で「セット N」を表示。上限は `MANUAL_READOUT_SET_NAME_MAX_LENGTH`）・読み上げ項目キーのリスト・項目キーごとの文言テンプレート `itemTexts` を持つ。
 文言が未保存なら `manualReadoutItemTextDefault` の既定値を使い、保存済みの空文字は読み上げない。
 LMU のバーチャルエネルギー残量・燃料残量・タイヤ摩耗・ブレーキ残量は自動側と共通の `{percent}` 置換・未知プレースホルダー検出を使う。

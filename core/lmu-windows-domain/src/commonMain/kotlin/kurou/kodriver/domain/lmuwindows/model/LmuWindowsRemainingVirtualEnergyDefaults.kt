@@ -17,6 +17,3 @@ const val LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER = "{percent}"
 /** 手動読み上げの現在のバーチャルエネルギー残量の既定文言。 */
 const val LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT =
     "バーチャルエネルギー残量は{percent}パーセント"
-
-/** 手動読み上げで値がない場合の文言。 */
-const val LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT = "データがありません"
