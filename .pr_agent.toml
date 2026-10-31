@@ -1,0 +1,3 @@
+# 自動レビューを無効化し、PRコメントの /review などで手動実行したときだけQodoがレビューする。
+[config]
+disable_auto_feedback = true

@@ -2,13 +2,13 @@
 description: 実装内容とベースブランチを指定して専用ワークツリー・ブランチで実装からPR作成まで行い、Claude CodeとCodexの両方でCI完了待ち、PR指摘の分析・妥当な指摘の自動修正（最大2回）まで続行する
 ---
 
-第一引数を「実装内容」、第二引数を「ベースブランチ」、第三引数を「CodeRabbitへのレビュー依頼有無（`true`/`false`）」、第四引数を「実装の委任先（`sol` / `astra` / `luna` / `sonnet` / `opus` / `haiku`）」として受け取り、作業用ワークツリーとブランチを作成したうえで実装に着手し、コミット・プッシュ・PR作成まで行ってください。Claude CodeとCodexのどちらから実行する場合も、PR作成後はCI完了待ち、PR指摘の分析・報告、妥当で修正可能な指摘の自動修正（最大2回）まで続行してください。自動修正ループは実行環境にかかわらず共通の安全条件に従います。CodexはCI待機・PR指摘処理を元のセッションで続け、指摘処理を別Codexセッションへ再委任しません。
+第一引数を「実装内容」、第二引数を「ベースブランチ」、第三引数を「CodeRabbit・Qodo・Greptileへのレビュー依頼有無（`true`/`false`）」、第四引数を「実装の委任先（`sol` / `astra` / `luna` / `sonnet` / `opus` / `haiku`）」として受け取り、作業用ワークツリーとブランチを作成したうえで実装に着手し、コミット・プッシュ・PR作成まで行ってください。Claude CodeとCodexのどちらから実行する場合も、PR作成後はCI完了待ち、PR指摘の分析・報告、妥当で修正可能な指摘の自動修正（最大2回）まで続行してください。自動修正ループは実行環境にかかわらず共通の安全条件に従います。CodexはCI待機・PR指摘処理を元のセッションで続け、指摘処理を別Codexセッションへ再委任しません。
 
 引数: $ARGUMENTS
 
 - 第一引数（実装内容）が空の場合は、何もせず実装内容を確認するようユーザーに促して終了する。
 - 第二引数（ベースブランチ）が空の場合は `main` をデフォルトとして扱う。
-- 第三引数（CodeRabbitへのレビュー依頼有無）は省略可能。`true` を指定した場合のみ、コミット・PR作成フェーズでCodeRabbitへの手動レビュー依頼を行う。`false` または省略時はレビュー依頼を行わない（CodeRabbitの`auto_review`はデフォルトで無効化されているため、明示的な依頼がない限りCodeRabbitはレビューを行わない）。`true`/`false` 以外の値が指定された場合は、実装を進めずユーザーに正しい値（`true` または `false`）を確認する。
+- 第三引数（CodeRabbit・Qodo・Greptileへのレビュー依頼有無）は省略可能。`true` を指定した場合のみ、コミット・PR作成フェーズでCodeRabbit・Qodo・Greptileへの手動レビュー依頼を行う。`false` または省略時はレビュー依頼を行わない（CodeRabbitの`auto_review`は`.coderabbit.yaml`で、Qodoの自動レビューは`.pr_agent.toml`の`disable_auto_feedback`で、Greptileの自動レビューは`greptile.json`の`skipReview`でそれぞれ無効化されているため、明示的な依頼がない限りいずれもレビューを行わない）。`true`/`false` 以外の値が指定された場合は、実装を進めずユーザーに正しい値（`true` または `false`）を確認する。
 - 第四引数（実装の委任先）は省略可能。`sol` / `astra` / `luna` は Claude Code と Codex のどちらから実行しても有効とする。`~/.codex/models_cache.json` の `models` のうち `visibility` が `list` で slug が `-<指定値>` で終わるものから、バージョン番号が最大のモデルID（例: `sol` → `gpt-6.1-sol`）を解決する。該当するモデルが無い場合は、実装を進めずユーザーに確認する。指定モデルのエフォート（推論の強さ）は常に `low` とする。
   - Claude Code から実行する場合は、手順6・9の委任先 `codex:codex-rescue` に `--model <解決したID> --effort low` を渡す。`sonnet` / `opus` / `haiku` を指定した場合は、手順6・7をそのモデルのClaudeサブエージェント（`Agent` の `model` にその値、`effort` に `low`）に委任する。Claudeのモデル名はエイリアスのため、バージョンはClaude Codeが割り当てるデフォルトになる。省略時はClaudeが自分で実装する。
   - Codex から実行する場合は、`sol` / `astra` / `luna` を指定したときだけ手順6を解決したモデルの別Codexセッションに委任する。実行中のセッションのモデルは切り替えない。委任先の書き込み完了を待ち、元のセッションが差分確認・手順7以降を続ける。省略時はCodexが自分で実装する。`sonnet` / `opus` / `haiku` はCodexから選択できないため、実装を進めずユーザーに `sol` / `astra` / `luna` または省略を確認する。
@@ -59,6 +59,7 @@ description: 実装内容とベースブランチを指定して専用ワーク�
      - 依頼文に含める条件: 「PRのタイトルと説明を日本語で書くこと（概要・変更内容・補足の構成）。署名や『Generated with Claude Code』・セッションURLは含めないこと。ファイルの変更・コミット・プッシュ・`gh` コマンドの実行は行わず、タイトルと本文のテキストだけを返すこと。実際に行っていない検証（未実行のテスト等）を実施済みとして書かないこと。」
      - 受け取ったドラフトは Claude が `git diff` と照らして内容の正確性（変更範囲・検証結果の記述）を確認し、必要なら修正したうえで `gh pr create` に使う。`gh pr create` の実行自体は Claude が行う。
    - **第三引数に `true` が指定されている場合のみ**、PR作成後にCodeRabbitへ手動でレビューを依頼する（`.coderabbit.yaml`の`auto_review`は無効化されているため、自動では起動しない）。PR作成直後に投稿される CodeRabbit の初回コメント本文には `- [ ] <!-- {"checkboxId":"..."} --> 🔍 Trigger review` というチェックボックスが含まれているため、そのコメントを `gh api repos/<owner>/<repo>/issues/<PR番号>/comments` で取得し、該当行のみ `- [ ]` を `- [x]` に置換した本文で `gh api -X PATCH repos/<owner>/<repo>/issues/comments/<コメントID> -f body=<書き換えた本文>` を実行してチェックを入れる（`checkboxId` はコメントごとに異なる動的な値のため、都度本文から抽出すること。該当行以外は変更しない）。第三引数が指定されていない場合はこの手順をスキップする。
+   - **第三引数に `true` が指定されている場合のみ**、CodeRabbitのチェックボックス操作に続けて、QodoとGreptileにも手動でレビューを依頼する（自動レビューは `.pr_agent.toml` と `greptile.json` で無効化されている）。それぞれ別のトップレベルコメントとして `gh pr comment <PR番号> --body '/review'`（Qodo）と `gh pr comment <PR番号> --body '@greptileai'`（Greptile）を実行する。Qodoの設定はデフォルトブランチ、Greptileの設定はPRのソースブランチから読まれる。QodoまたはGreptileがリポジトリに未導入・無料枠の対象外（Greptileはスター数などの条件）などでbotが反応しない場合は、エラー扱いにせず、反応がなかった旨をCI待機後の報告に含めて続行する。第三引数が `false` または省略の場合はこの手順をスキップする。
 
 ## CI完了待ちフェーズ
 
@@ -73,7 +74,7 @@ description: 実装内容とベースブランチを指定して専用ワーク�
 
 11. **Claude CodeまたはCodexから実行する場合**、CIが完了したら、対象PRについて以下の情報を収集する。
     - `gh pr view <番号> --json title,url,state,statusCheckRollup` で概要と CI/Bot チェックの結果。
-    - `gh api --paginate repos/<owner>/<repo>/issues/<番号>/comments` でトップレベルコメント（CodeRabbit・Sourcery・SonarQube・Codacy 等のボットコメントを含む）を全ページ取得する。
+    - `gh api --paginate repos/<owner>/<repo>/issues/<番号>/comments` でトップレベルコメント（CodeRabbit・Qodo・Greptile・Sourcery・SonarQube・Codacy 等のボットコメントを含む）を全ページ取得する。
     - `gh api --paginate repos/<owner>/<repo>/pulls/<番号>/comments` でインラインレビューコメントを全ページ取得する。
     - `gh api --paginate repos/<owner>/<repo>/pulls/<番号>/reviews` でレビュー本体（Approve/Request changes 等）を全ページ取得し、各レビューの `commit_id` を控える。収集時のPR HEADも `gh pr view <PR> --json headRefOid` で取得して控える。
     - 収集した `body` は文字数で切り詰めずに全文を読むこと。特に Sourcery は要約→ファイル別変更点→（あれば）Overall Comments/高レベルフィードバックの順で構成されることが多く、後半に本質的な指摘が来ることがある。
