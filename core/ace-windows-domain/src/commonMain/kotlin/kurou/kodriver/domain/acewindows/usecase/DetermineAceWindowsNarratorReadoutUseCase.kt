@@ -12,7 +12,6 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
-import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemName
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
@@ -110,14 +109,13 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         state: AceWindowsNarratorState,
         items: List<AceWindowsManualReadoutItem>,
     ): AceWindowsNarratorReadoutDecision {
-        val supportedKeys = aceWindowsManualReadoutItemKeys()
-        val supportedItems = items.filter { it.key in supportedKeys }.take(MANUAL_READOUT_SET_ITEM_MAX)
+        val supportedEvents = items.mapNotNull { manualCurrentValue(it) }.take(MANUAL_READOUT_SET_ITEM_MAX)
         val text =
-            if (supportedItems.isEmpty()) {
+            if (supportedEvents.isEmpty()) {
                 MANUAL_READOUT_NO_ITEMS_TEXT
             } else {
-                supportedItems
-                    .map { item -> manualCurrentValue(item).let { it.resolvedText ?: it.narratedText } }
+                supportedEvents
+                    .map { event -> event.resolvedText ?: event.narratedText }
                     .filter { it.isNotBlank() }
                     .joinToString("、")
             }
@@ -127,12 +125,14 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         )
     }
 
-    private fun manualCurrentValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent =
+    /** 手動読み上げの対応外キーは null を返し、セットの件数や読み上げ文言に含めない。 */
+    private fun manualCurrentValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent? =
         when (item.key) {
+            AceWindowsReadoutItemKey.RemainingFuel.Root.value -> manualRemainingFuelValue(item)
             AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> manualRemainingFuelLapsValue(item)
             AceWindowsReadoutItemKey.MyBestLap.Root.value -> manualMyBestLapValue(item)
             AceWindowsReadoutItemKey.TyreTemperature.Root.value -> manualTyreTemperatureValue(item)
-            else -> manualRemainingFuelValue(item)
+            else -> null
         }
 
     private fun manualTyreTemperatureValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {

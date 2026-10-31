@@ -4,11 +4,11 @@
     <string name="volume_formula">OS の音量 × ここで設定した音量（0〜100%）＝ アプリで再生される音量</string>
     <string name="volume_low_warning">50% 以下に設定すると音声が聞こえにくくなります。</string>
     <string name="volume_subtitle">アプリの音量</string>
-    <string name="volume_label">%1$d%%</string>
+    <string name="volume_label">%1$d%</string>
     <string name="volume_preview">試聴</string>
     <string name="volume_preview_stop">停止</string>
     <string name="device_volume_description">端末（OS）のマスター音量を設定します。この音量が低いと、上記のアプリ側の音量設定に関わらず読み上げが聞こえにくくなります。</string>
     <string name="device_volume_subtitle">端末のマスター音量</string>
     <string name="low_volume_warning_subtitle">音量低下の警告</string>
-    <string name="low_volume_warning_description">端末の音量が%1$d%%未満、またはアプリの音量が%2$d%%未満のとき、画面上部に警告を表示します。</string>
+    <string name="low_volume_warning_description">端末の音量が%1$d%未満、またはアプリの音量が%2$d%未満のとき、画面上部に警告を表示します。</string>
 </resources>
