@@ -1,5 +1,7 @@
 package kurou.kodriver.domain.gt7ps5.model
 
+import kurou.kodriver.domain.model.SinglePlaceholderTemplate
+
 /** 自己ベストラップ更新文言のラップタイムプレースホルダーを置換する。 */
 fun formatGt7Ps5MyBestLapReadoutText(
     template: String,
@@ -9,14 +11,9 @@ fun formatGt7Ps5MyBestLapReadoutText(
     val seconds = lapTimeMs / 1_000 % 60
     val milliseconds = (lapTimeMs % 1_000).toString().padStart(3, '0')
     val lapTime = if (minutes > 0) "${minutes}分${seconds}秒$milliseconds" else "${seconds}秒$milliseconds"
-    return template.replace(GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER, lapTime)
+    return SinglePlaceholderTemplate(GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER).format(template, lapTime)
 }
 
 /** 文言内の `{...}` のうち、`{laptime}` 以外のトークンを出現順・重複なしで返す。 */
 fun findUnknownGt7Ps5MyBestLapReadoutPlaceholders(template: String): List<String> =
-    Regex("\\{[^{}]*\\}")
-        .findAll(template)
-        .map { it.value }
-        .filter { it != GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER }
-        .distinct()
-        .toList()
+    SinglePlaceholderTemplate(GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER).findUnknown(template)
