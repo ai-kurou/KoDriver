@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -35,12 +36,16 @@ kotlin {
         }
     }
 
-    sourceSets {
-        val nonAndroidMain by creating {
-            dependsOn(commonMain.get())
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("nonAndroid") {
+                withJvm()
+            }
         }
-        jvmMain.get().dependsOn(nonAndroidMain)
+    }
 
+    sourceSets {
         jvmMain.dependencies {
             implementation(libs.compose.uiTooling)
         }

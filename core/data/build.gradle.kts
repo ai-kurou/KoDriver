@@ -1,4 +1,6 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -34,6 +36,16 @@ kotlin {
         }
     }
 
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("jvmAndroid") {
+                withJvm()
+                withCompilations { it.target.platformType == KotlinPlatformType.androidJvm }
+            }
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.gt7Ps5Domain)
@@ -45,8 +57,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }
-        val jvmAndroidMain by creating {
-            dependsOn(commonMain.get())
+        named("jvmAndroidMain") {
             dependencies {
                 implementation(libs.androidx.datastore.core)
                 implementation(libs.androidx.room.runtime)
@@ -59,13 +70,11 @@ kotlin {
             }
         }
         jvmMain {
-            dependsOn(jvmAndroidMain)
             dependencies {
                 implementation(libs.androidx.datastore.preferences)
             }
         }
         androidMain {
-            dependsOn(jvmAndroidMain)
             dependencies {
                 implementation(libs.androidx.datastore.preferences.android)
                 implementation(libs.androidx.core.ktx)

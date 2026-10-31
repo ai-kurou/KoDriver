@@ -1,4 +1,6 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -28,9 +30,18 @@ kotlin {
         }
     }
 
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("jvmAndroid") {
+                withJvm()
+                withCompilations { it.target.platformType == KotlinPlatformType.androidJvm }
+            }
+        }
+    }
+
     sourceSets {
-        val jvmAndroidMain by creating {
-            dependsOn(commonMain.get())
+        named("jvmAndroidMain") {
             dependencies {
                 implementation(projects.core.domain)
                 implementation(projects.core.lmuWindowsDomain)
@@ -47,11 +58,9 @@ kotlin {
             }
         }
         jvmMain {
-            dependsOn(jvmAndroidMain)
             dependencies { implementation(projects.core.windowsSharedMemory) }
         }
         androidMain {
-            dependsOn(jvmAndroidMain)
             dependencies {
                 implementation(project.dependencies.platform(libs.ktor.bom))
                 implementation(libs.ktor.clientCore)
