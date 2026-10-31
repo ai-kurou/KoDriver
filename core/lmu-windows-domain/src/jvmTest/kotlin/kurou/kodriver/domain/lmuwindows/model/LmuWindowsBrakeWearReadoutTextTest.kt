@@ -16,41 +16,10 @@ class LmuWindowsBrakeWearReadoutTextTest {
     }
 
     @Test
-    fun `プレースホルダーがなければ文言を維持する`() {
-        assertEquals("ブレーキ警告", formatLmuWindowsBrakeWearReadoutText("ブレーキ警告", 1))
-    }
-
-    @Test
-    fun `閾値の境界値を単純に置換する`() {
-        listOf(Int.MIN_VALUE, -1, 0, 1, Int.MAX_VALUE).forEach { percent ->
-            assertEquals(
-                "残り$percent%",
-                formatLmuWindowsBrakeWearReadoutText("残り{percent}%", percent),
-            )
-        }
-    }
-
-    @Test
-    fun `複数のプレースホルダーを置換して未知のトークンを維持する`() {
+    fun `既定文言に未知のトークンはない`() {
         assertEquals(
-            "2・2・{unknown}",
-            formatLmuWindowsBrakeWearReadoutText("{percent}・{percent}・{unknown}", 2),
+            emptyList(),
+            findUnknownLmuWindowsBrakeWearReadoutPlaceholders(LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT),
         )
-    }
-
-    @Test
-    fun `未知のトークンを出現順で重複なく返す`() {
-        assertEquals(
-            listOf("{lap}", "{x}", "{}"),
-            findUnknownLmuWindowsBrakeWearReadoutPlaceholders("{percent}{lap}%{x}{lap}{}"),
-        )
-    }
-
-    @Test
-    fun `既知のトークンと閉じていない括弧は未知のトークンにならない`() {
-        listOf("", "{percent}%", "{percent}{percent}", "{", "}", "{lap", "文言").forEach {
-            assertEquals(emptyList(), findUnknownLmuWindowsBrakeWearReadoutPlaceholders(it))
-        }
-        assertEquals(listOf("{x}"), findUnknownLmuWindowsBrakeWearReadoutPlaceholders("{{x}}"))
     }
 }

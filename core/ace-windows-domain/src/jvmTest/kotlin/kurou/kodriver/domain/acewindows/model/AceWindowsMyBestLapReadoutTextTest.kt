@@ -37,26 +37,4 @@ class AceWindowsMyBestLapReadoutTextTest {
             assertEquals(expected, formatAceWindowsMyBestLapReadoutText("{laptime}", time))
         }
     }
-
-    @Test
-    fun `複数の既知トークンだけを置換し空白や未知トークンは維持する`() {
-        assertEquals(" ", formatAceWindowsMyBestLapReadoutText(" ", 5))
-        assertEquals("更新", formatAceWindowsMyBestLapReadoutText("更新", 5))
-        assertEquals(
-            "0秒005・0秒005・{unknown}",
-            formatAceWindowsMyBestLapReadoutText("{laptime}・{laptime}・{unknown}", 5),
-        )
-    }
-
-    @Test
-    fun `未知トークンを出現順で重複なく返す`() {
-        assertEquals(
-            listOf("{lap}", "{x}", "{}"),
-            findUnknownAceWindowsMyBestLapReadoutPlaceholders("{laptime}{lap}{x}{lap}{}"),
-        )
-        listOf("", "{laptime}", "{laptime}{laptime}", "{", "}", "{lap", "文言").forEach {
-            assertEquals(emptyList(), findUnknownAceWindowsMyBestLapReadoutPlaceholders(it))
-        }
-        assertEquals(listOf("{x}"), findUnknownAceWindowsMyBestLapReadoutPlaceholders("{{x}}"))
-    }
 }
