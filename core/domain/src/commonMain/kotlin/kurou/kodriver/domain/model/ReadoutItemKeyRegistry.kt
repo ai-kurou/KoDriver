@@ -101,6 +101,9 @@ internal class ReadoutItemKeyRegistryState {
             startSoundEnabledStateDefault = startSoundEnabledStateDefault.toMap(),
             queueEnabledStateDefault = queueEnabledStateDefault.toMap(),
             defaultAutoReadoutOrder = defaultAutoReadoutOrder.toList(),
-            manualReadout = manualReadout,
+            manualReadout =
+                manualReadout?.let {
+                    ManualReadoutSimulatorSpec(it.itemDefinitions.toMap(), it.showSimHubGuideLink)
+                },
         )
 }

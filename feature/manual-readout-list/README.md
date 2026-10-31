@@ -151,3 +151,8 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
 開始音とログには既存の `RemainingFuel.Root` を使い、常にキュー末尾へ追加する。
+
+対応シミュレーターの判定（`canReadManualReadoutSets`）・項目カテゴリ・SimHub 案内の表示有無は、
+`ReadoutItemKeyRegistry` に登録された `ManualReadoutSimulatorSpec` から引く（詳細は `core/domain/README.md`）。
+新しいシミュレーターの追加は、そのドメインモジュールの `*ReadoutItemKeys.kt` へ spec を渡すだけでよく、一覧側の変更は不要。
+テストでは事前に各 `register*ReadoutItemKeys()`（`registerAllManualReadoutSimulators()`）を呼ぶ。

@@ -147,4 +147,37 @@ class ReadoutItemKeyRegistryTest {
         assertEquals(false, ReadoutItemKeyRegistry.showsManualReadoutSimHubGuideLink(Simulator.Gt7Ps5.id))
         assertEquals(true, ReadoutItemKeyRegistry.showsManualReadoutSimHubGuideLink("unknown"))
     }
+
+    @Test
+    fun `登録後に元の項目定義マップを変更してもレジストリには反映されない`() {
+        val definition =
+            ManualReadoutItemDefinition(
+                "key",
+                ManualReadoutItemCategory.FUEL,
+                "名",
+                "既定",
+                "{p}",
+                { emptyList() },
+                { it },
+            )
+        val definitions = mutableMapOf("key" to definition)
+        ReadoutItemKeyRegistry.register(
+            SimulatorReadoutSpec(
+                Simulator.LmuWindows,
+                emptyList(),
+                emptyMap(),
+                emptyMap(),
+                emptyMap(),
+                emptyList(),
+                ManualReadoutSimulatorSpec(definitions),
+            ),
+        )
+
+        definitions.clear()
+
+        assertEquals(
+            mapOf("key" to definition),
+            ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.LmuWindows.id)?.itemDefinitions,
+        )
+    }
 }
