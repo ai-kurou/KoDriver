@@ -54,6 +54,7 @@ import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemName
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
@@ -611,6 +612,28 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             ),
             decision.events,
         )
+    }
+
+    @Test
+    fun `項目キーに対応しない種別の値はデータなしとして読む`() {
+        val state = LmuWindowsNarratorState()
+        val gap = LmuWindowsClassCarGapData(1.0, 2.0)
+        val cases =
+            listOf(
+                LmuWindowsReadoutItemKey.MyBestLap.Root to Ratio(0.5),
+                LmuWindowsReadoutItemKey.TyreWear.Root to LmuWindowsManualReadoutValue.Celsius(90f),
+                LmuWindowsReadoutItemKey.TyreWear.Root to LapTimeMs(83_456L),
+                LmuWindowsReadoutItemKey.MyBestLap.Root to LapTimeMs(0L),
+                LmuWindowsReadoutItemKey.TyreWear.Root to RemainingLaps(3),
+                LmuWindowsReadoutItemKey.TyreWear.Root to ClassCarGap(gap),
+                LmuWindowsReadoutItemKey.BrakeWear.Root to ClassCarGap(gap),
+            )
+        cases.forEach { (key, value) ->
+            val decision =
+                manualUseCase.determineManualReadout(state, listOf(LmuWindowsManualReadoutItem(key.value, "x", value)))
+            val name = lmuWindowsManualReadoutItemName(key.value)
+            assertEquals("${name}はデータがありません", decision.events.single().narratedText)
+        }
     }
 
     @Test
