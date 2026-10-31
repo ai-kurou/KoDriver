@@ -14,11 +14,6 @@ kotlin {
     }
 
     sourceSets {
-        val nonAndroidMain by creating {
-            dependsOn(commonMain.get())
-        }
-        jvmMain.get().dependsOn(nonAndroidMain)
-
         commonMain.dependencies {
             implementation(libs.findLibrary("compose-runtime").get())
             implementation(libs.findLibrary("compose-components-resources").get())
