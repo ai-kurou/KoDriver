@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
@@ -21,7 +20,6 @@ import kurou.kodriver.domain.lmuwindows.model.resolveLmuWindowsVehicleClassBrake
 import kurou.kodriver.domain.lmuwindows.model.resolveLmuWindowsVehicleClassBrakeWearLowThresholdPercent
 import kurou.kodriver.domain.lmuwindows.model.resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 
@@ -95,11 +93,6 @@ internal class LmuWindowsNarratorFlow(
         raceFlags: Flow<LmuWindowsRaceFlagsData>,
     ): Flow<Pair<LmuWindowsTyreCarcassTemperatureData, LmuWindowsRaceFlagsData>> =
         combine(temperature, raceFlags) { currentTemperature, flags -> currentTemperature to flags }
-
-    fun manualReadoutRequests(
-        requests: Flow<ManualReadoutRequest>,
-        hotkeyPresses: Flow<ManualReadoutRequest>,
-    ): Flow<ManualReadoutRequest> = merge(requests, hotkeyPresses)
 
     fun pitTiming(
         telemetry: Flow<LmuWindowsTelemetryData>,

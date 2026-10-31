@@ -12,7 +12,6 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
-import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kotlin.test.Test
@@ -146,33 +145,5 @@ class Gt7Ps5NarratorFlowTest {
             job.cancel()
             runCurrent()
             assertEquals(2, completions)
-        }
-
-    @Test
-    fun `手動要求は選択や宛先で除外せず両経路の重複も保持し終了時に両購読を解除する`() =
-        runTest {
-            val requests = MutableSharedFlow<ManualReadoutRequest>()
-            val hotkeys = MutableSharedFlow<ManualReadoutRequest>()
-            val flow =
-                Gt7Ps5NarratorFlow(MutableStateFlow(Simulator.LmuWindows))
-                    .manualReadoutRequests(requests, hotkeys)
-            val received = mutableListOf<ManualReadoutRequest>()
-            assertEquals(0, requests.subscriptionCount.value)
-            assertEquals(0, hotkeys.subscriptionCount.value)
-            val job = backgroundScope.launch { flow.collect { received.add(it) } }
-            runCurrent()
-            val gt7Request = ManualReadoutRequest(Simulator.Gt7Ps5.id, "set-1")
-            val lmuRequest = ManualReadoutRequest(Simulator.LmuWindows.id, "missing")
-            requests.emit(gt7Request)
-            runCurrent()
-            hotkeys.emit(gt7Request)
-            runCurrent()
-            requests.emit(lmuRequest)
-            runCurrent()
-            assertEquals(listOf(gt7Request, gt7Request, lmuRequest), received)
-            job.cancel()
-            runCurrent()
-            assertEquals(0, requests.subscriptionCount.value)
-            assertEquals(0, hotkeys.subscriptionCount.value)
         }
 }

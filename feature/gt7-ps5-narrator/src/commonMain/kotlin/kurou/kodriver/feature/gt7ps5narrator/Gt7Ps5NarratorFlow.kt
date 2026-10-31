@@ -5,9 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.merge
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 
@@ -40,9 +38,4 @@ internal class Gt7Ps5NarratorFlow(
                 observeGt7Ps5()
             }
         }
-
-    fun manualReadoutRequests(
-        requests: Flow<ManualReadoutRequest>,
-        hotkeyPresses: Flow<ManualReadoutRequest>,
-    ): Flow<ManualReadoutRequest> = merge(requests, hotkeyPresses)
 }

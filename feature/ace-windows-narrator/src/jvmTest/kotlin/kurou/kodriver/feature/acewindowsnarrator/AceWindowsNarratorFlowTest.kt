@@ -5,14 +5,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
-import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kotlin.test.Test
@@ -155,32 +153,5 @@ class AceWindowsNarratorFlowTest {
             list.update { mapOf(key to true) }
             runCurrent()
             assertEquals(mapOf<ReadoutItemKey, Boolean>(key to true), values.last())
-        }
-
-    @Test
-    fun `手動要求は両経路の重複と別シミュレーター宛てもそのまま合流する`() =
-        runTest {
-            val requests = MutableSharedFlow<ManualReadoutRequest>()
-            val hotkeys = MutableSharedFlow<ManualReadoutRequest>()
-            val values = mutableListOf<ManualReadoutRequest>()
-            val flow = AceWindowsNarratorFlow(flowOf(Simulator.Gt7Ps5))
-            val job =
-                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                    flow.manualReadoutRequests(requests, hotkeys).collect { values += it }
-                }
-            runCurrent()
-            val ace = ManualReadoutRequest(Simulator.AceWindows.id, "ace")
-            val other = ManualReadoutRequest(Simulator.LmuWindows.id, "lmu")
-            requests.emit(ace)
-            runCurrent()
-            hotkeys.emit(ace)
-            runCurrent()
-            requests.emit(other)
-            runCurrent()
-            assertEquals(listOf(ace, ace, other), values)
-            job.cancel()
-            runCurrent()
-            assertEquals(0, requests.subscriptionCount.value)
-            assertEquals(0, hotkeys.subscriptionCount.value)
         }
 }

@@ -36,6 +36,7 @@ import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.mergeManualReadoutRequests
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -294,16 +295,15 @@ internal class Gt7Ps5NarratorViewModel(
 
     @Suppress("UnusedPrivateProperty")
     private val manualReadoutRequestJob =
-        narratorFlow
-            .manualReadoutRequests(
-                manualReadoutUseCases.observeRequests(),
-                manualReadoutUseCases.observeHotkeyPresses(),
-            ).onEach { request ->
-                if (request.simulatorId == Simulator.Gt7Ps5.id) {
-                    val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
-                    readManualReadout(set)
-                }
-            }.launchIn(viewModelScope)
+        mergeManualReadoutRequests(
+            manualReadoutUseCases.observeRequests(),
+            manualReadoutUseCases.observeHotkeyPresses(),
+        ).onEach { request ->
+            if (request.simulatorId == Simulator.Gt7Ps5.id) {
+                val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
+                readManualReadout(set)
+            }
+        }.launchIn(viewModelScope)
 
     private fun manualReadoutValue(
         key: String,
