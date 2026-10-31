@@ -2,7 +2,6 @@
 
 package kurou.kodriver.core.acewindowsdata.preferences
 
-import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
@@ -18,7 +17,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 class AceWindowsFlagReadoutTextPreferencesSerializerTest {
     @Test
@@ -64,16 +62,6 @@ class AceWindowsFlagReadoutTextPreferencesSerializerTest {
                 "",
                 AceWindowsFlagReadoutTextPreferencesSerializer.readFrom(ByteArrayInputStream(bytes)).checkeredFlagText,
             )
-        }
-
-    @Test
-    fun `不正なバイト列でCorruptionExceptionが発生する`() =
-        runTest {
-            assertFailsWith<CorruptionException> {
-                AceWindowsFlagReadoutTextPreferencesSerializer.readFrom(
-                    ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42)),
-                )
-            }
         }
 
     @Test

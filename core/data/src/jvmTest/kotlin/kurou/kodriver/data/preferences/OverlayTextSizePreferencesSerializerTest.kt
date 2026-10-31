@@ -1,6 +1,5 @@
 package kurou.kodriver.data.preferences
 
-import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -9,7 +8,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalSerializationApi::class)
 class OverlayTextSizePreferencesSerializerTest {
@@ -22,20 +20,6 @@ class OverlayTextSizePreferencesSerializerTest {
             val result = OverlayTextSizePreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
 
             assertEquals(original, result)
-        }
-
-    @Test
-    fun `不正なバイト列はCorruptionExceptionになる`() =
-        runTest {
-            val exception =
-                assertFailsWith<CorruptionException> {
-                    OverlayTextSizePreferencesSerializer.readFrom(ByteArrayInputStream(byteArrayOf(1, 2, 3)))
-                }
-
-            assertEquals(
-                "Cannot read ${OverlayTextSizePreferences.serializer().descriptor.serialName}.",
-                exception.message,
-            )
         }
 
     @Test

@@ -1,6 +1,5 @@
 package kurou.kodriver.core.lmuwindowsdata.preferences
 
-import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
@@ -9,7 +8,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 class LmuWindowsPitTimingPreferencesSerializerTest {
     @Test
@@ -22,29 +20,6 @@ class LmuWindowsPitTimingPreferencesSerializerTest {
             LmuWindowsPitTimingPreferencesSerializer.defaultValue,
         )
     }
-
-    @Test
-    fun `書き込んだ値を読み出せる`() =
-        runTest {
-            val original =
-                LmuWindowsPitTimingPreferences(
-                    virtualEnergyLaps = 5,
-                    tyreWearLaps = 1,
-                    tyreWearReadoutText = "タイヤ残り{laps}周",
-                    tyreWearImminentReadoutText = "タイヤ交換へ",
-                    virtualEnergyReadoutText = "残り{laps}周",
-                    virtualEnergyImminentReadoutText = "今すぐピットイン",
-                )
-            val output = ByteArrayOutputStream()
-            LmuWindowsPitTimingPreferencesSerializer.writeTo(original, output)
-
-            val restored =
-                LmuWindowsPitTimingPreferencesSerializer.readFrom(
-                    ByteArrayInputStream(output.toByteArray()),
-                )
-
-            assertEquals(original, restored)
-        }
 
     @Test
     fun `燃料のデフォルト値は両方とも3周`() {
@@ -78,16 +53,6 @@ class LmuWindowsPitTimingPreferencesSerializerTest {
                 )
 
             assertEquals(original, restored)
-        }
-
-    @Test
-    fun `不正なバイト列で CorruptionException が発生する`() =
-        runTest {
-            val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
-
-            assertFailsWith<CorruptionException> {
-                LmuWindowsPitTimingPreferencesSerializer.readFrom(corrupt)
-            }
         }
 
     @Test

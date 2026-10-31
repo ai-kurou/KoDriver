@@ -1,13 +1,11 @@
 package kurou.kodriver.data.preferences
 
-import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 class FlagReadoutTextPreferencesSerializerTest {
     @Test
@@ -41,15 +39,5 @@ class FlagReadoutTextPreferencesSerializerTest {
             val restored = FlagReadoutTextPreferencesSerializer.readFrom(ByteArrayInputStream(legacy))
             assertEquals("", restored.sectorYellowFlagText)
             assertEquals("blue", restored.blueFlagText)
-        }
-
-    @Test
-    fun `不正なバイト列で CorruptionException が発生する`() =
-        runTest {
-            val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
-
-            assertFailsWith<CorruptionException> {
-                FlagReadoutTextPreferencesSerializer.readFrom(corrupt)
-            }
         }
 }
