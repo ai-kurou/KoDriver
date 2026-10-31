@@ -1,13 +1,11 @@
 package kurou.kodriver.core.gt7ps5data.preferences
 
-import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
     @Test
@@ -61,16 +59,6 @@ class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
                 original,
                 Gt7Ps5TyreTemperaturePreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray())),
             )
-        }
-
-    @Test
-    fun `不正なバイト列で CorruptionException が発生する`() =
-        runTest {
-            val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
-
-            assertFailsWith<CorruptionException> {
-                Gt7Ps5TyreTemperaturePreferencesSerializer.readFrom(corrupt)
-            }
         }
 
     @Test

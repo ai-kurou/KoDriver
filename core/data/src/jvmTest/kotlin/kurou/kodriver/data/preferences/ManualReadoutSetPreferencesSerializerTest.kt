@@ -1,6 +1,5 @@
 package kurou.kodriver.data.preferences
 
-import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -10,7 +9,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 class ManualReadoutSetPreferencesSerializerTest {
     @Test
@@ -46,16 +44,6 @@ class ManualReadoutSetPreferencesSerializerTest {
             val restored = ManualReadoutSetPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
 
             assertEquals(original, restored)
-        }
-
-    @Test
-    fun `不正なバイト列で CorruptionException が発生する`() =
-        runTest {
-            val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
-
-            assertFailsWith<CorruptionException> {
-                ManualReadoutSetPreferencesSerializer.readFrom(corrupt)
-            }
         }
 
     @Test

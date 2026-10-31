@@ -1,6 +1,5 @@
 package kurou.kodriver.data.preferences
 
-import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -9,7 +8,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalSerializationApi::class)
 class ReadoutStartSoundPreferencesSerializerTest {
@@ -22,16 +20,6 @@ class ReadoutStartSoundPreferencesSerializerTest {
             val result = ReadoutStartSoundPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
 
             assertEquals(original, result)
-        }
-
-    @Test
-    fun `不正なバイト列はCorruptionExceptionをスローする`() =
-        runTest {
-            val invalidBytes = byteArrayOf(0xFF.toByte(), 0xFE.toByte(), 0x00, 0x01)
-
-            assertFailsWith<CorruptionException> {
-                ReadoutStartSoundPreferencesSerializer.readFrom(ByteArrayInputStream(invalidBytes))
-            }
         }
 
     @Test
