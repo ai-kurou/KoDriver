@@ -2,8 +2,9 @@ package kurou.kodriver.presentation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,7 +22,11 @@ actual fun VersionMismatchBottomSheetEffect(hapticFeedbackEnabled: Boolean) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     if (uiState.showVersionMismatchBottomSheet) {
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val sheetState =
+            rememberBottomSheetState(
+                initialValue = SheetValue.Hidden,
+                enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
+            )
         ModalBottomSheet(
             onDismissRequest = { viewModel.dismissVersionMismatchBottomSheet() },
             sheetState = sheetState,
