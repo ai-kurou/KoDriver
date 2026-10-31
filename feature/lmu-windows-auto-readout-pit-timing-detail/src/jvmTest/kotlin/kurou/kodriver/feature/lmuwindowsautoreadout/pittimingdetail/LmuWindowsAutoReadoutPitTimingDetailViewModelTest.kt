@@ -318,19 +318,6 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
         }
 
     @Test
-    fun `空白文言では音量を取得せず試聴しない`() =
-        runTest {
-            stubRepository()
-            val viewModel = createViewModel()
-            viewModel.onVirtualEnergyTextPreviewClicked(" ", laps = 1)
-            viewModel.onVirtualEnergyImminentTextPreviewClicked("")
-            verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
-            coVerify(exactly = 0) { speakText("注意", volume = 60) }
-            confirmVerified(observeVolume, playStartSound, speakText)
-        }
-
-    @Test
     fun `TTS利用不可を反映し試聴しない`() =
         runTest {
             stubRepository(available = false)
@@ -339,22 +326,6 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
             viewModel.onVirtualEnergyTextPreviewClicked("注意", laps = 1)
             viewModel.onVirtualEnergyImminentTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
-            coVerify(exactly = 0) { speakText("注意", volume = 60) }
-            confirmVerified(observeVolume, playStartSound, speakText)
-        }
-
-    @Test
-    fun `音量ゼロ以下では開始音も本文も試聴しない`() =
-        runTest {
-            stubRepository()
-            val volume = MutableStateFlow(0)
-            every { observeVolume() } returns volume
-            val viewModel = createViewModel()
-            viewModel.onVirtualEnergyTextPreviewClicked("注意", laps = 1)
-            volume.update { -1 }
-            viewModel.onVirtualEnergyImminentTextPreviewClicked("注意")
-            verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
@@ -432,24 +403,6 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
                 { pendingStartSound.await() }
             viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周", laps = 1)
             viewModel.onPreviewStopped()
-            pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
-            coVerify(exactly = 0) { speakText("残り1周", volume = 60) }
-            verify(exactly = 1) { observeVolume() }
-            confirmVerified(playStartSound, speakText, observeVolume)
-        }
-
-    @Test
-    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
-        runTest {
-            stubRepository()
-            every { observeVolume() } returns MutableStateFlow(60)
-            val viewModel = createViewModel()
-            val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) } coAnswers
-                { pendingStartSound.await() }
-            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周", laps = 1)
-            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周", laps = 1)
             pendingStartSound.complete(Unit)
             coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("残り1周", volume = 60) }

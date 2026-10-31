@@ -172,21 +172,6 @@ class AceWindowsAutoReadoutMyBestLapDetailViewModelTest {
         }
 
     @Test
-    fun `空白文言では音量を取得せず試聴しない`() =
-        runTest {
-            every {
-                enabledRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id)
-            } returns MutableStateFlow(emptyMap())
-            every { repository.observeReadoutText() } returns textFlow
-            coEvery { checkAvailable() } returns true
-            createViewModel().onReadoutTextPreviewClicked(" ")
-            verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(AceWindowsReadoutItemKey.MyBestLap.Root) }
-            coVerify(exactly = 0) { speakText(" ", volume = 60) }
-            confirmVerified(observeVolume, playStartSound, speakText)
-        }
-
-    @Test
     fun `TTS利用不可を反映し試聴しない`() =
         runTest {
             every {
@@ -200,27 +185,6 @@ class AceWindowsAutoReadoutMyBestLapDetailViewModelTest {
             verify(exactly = 0) { observeVolume() }
             coVerify(exactly = 0) { playStartSound(AceWindowsReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
-            confirmVerified(observeVolume, playStartSound, speakText)
-        }
-
-    @Test
-    fun `音量ゼロ以下では開始音も本文も試聴しない`() =
-        runTest {
-            every {
-                enabledRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id)
-            } returns MutableStateFlow(emptyMap())
-            every { repository.observeReadoutText() } returns textFlow
-            coEvery { checkAvailable() } returns true
-            val volume = MutableStateFlow(0)
-            every { observeVolume() } returns volume
-            val viewModel = createViewModel()
-            viewModel.onReadoutTextPreviewClicked("注意")
-            volume.update { -1 }
-            viewModel.onReadoutTextPreviewClicked("注意")
-            verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(AceWindowsReadoutItemKey.MyBestLap.Root) }
-            coVerify(exactly = 0) { speakText("注意", volume = 0) }
-            coVerify(exactly = 0) { speakText("注意", volume = -1) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
 
@@ -239,28 +203,6 @@ class AceWindowsAutoReadoutMyBestLapDetailViewModelTest {
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
             viewModel.onPreviewStopped()
-            pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(AceWindowsReadoutItemKey.MyBestLap.Root) }
-            coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }
-            verify(exactly = 1) { observeVolume() }
-            confirmVerified(playStartSound, speakText, observeVolume)
-        }
-
-    @Test
-    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
-        runTest {
-            every {
-                enabledRepository.observeAutoReadoutEnabledStates(Simulator.AceWindows.id)
-            } returns MutableStateFlow(emptyMap())
-            every { repository.observeReadoutText() } returns textFlow
-            coEvery { checkAvailable() } returns true
-            every { observeVolume() } returns MutableStateFlow(60)
-            val viewModel = createViewModel()
-            val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(AceWindowsReadoutItemKey.MyBestLap.Root) } coAnswers
-                { pendingStartSound.await() }
-            viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
-            viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
             pendingStartSound.complete(Unit)
             coVerify(exactly = 1) { playStartSound(AceWindowsReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }

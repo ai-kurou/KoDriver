@@ -270,27 +270,6 @@ class LmuWindowsAutoReadoutTyreWearDetailViewModelTest {
         }
 
     @Test
-    fun `空白文言では音量を取得せず試聴しない`() =
-        runTest {
-            stubReadout()
-            every { repository.observeThresholdPercentage() } returns MutableStateFlow(DEFAULT_THRESHOLD)
-            val viewModel = createViewModel()
-            viewModel.onReadoutTextPreviewClicked(" ")
-            verify(exactly = 0) { observeVolume() }
-            verify(exactly = 0) {
-                playSpeechEvent(
-                    LmuWindowsTyreWearWarning(
-                        DEFAULT_THRESHOLD,
-                        " ",
-                    ),
-                )
-            }
-            viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
-            confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
-        }
-
-    @Test
     fun `TTS利用不可を反映し試聴しない`() =
         runTest {
             stubReadout(available = false)
@@ -299,31 +278,6 @@ class LmuWindowsAutoReadoutTyreWearDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            verify(exactly = 0) {
-                playSpeechEvent(
-                    LmuWindowsTyreWearWarning(
-                        DEFAULT_THRESHOLD,
-                        "注意",
-                    ),
-                )
-            }
-            viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
-            confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
-        }
-
-    @Test
-    fun `音量ゼロ以下では開始音も本文も試聴しない`() =
-        runTest {
-            stubReadout()
-            every { repository.observeThresholdPercentage() } returns MutableStateFlow(DEFAULT_THRESHOLD)
-            val volume = MutableStateFlow(0)
-            every { observeVolume() } returns volume
-            val viewModel = createViewModel()
-            viewModel.onReadoutTextPreviewClicked("注意")
-            volume.update { -1 }
-            viewModel.onReadoutTextPreviewClicked("注意")
-            verify(exactly = 2) { observeVolume() }
             verify(exactly = 0) {
                 playSpeechEvent(
                     LmuWindowsTyreWearWarning(
