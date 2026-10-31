@@ -27,6 +27,7 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemName
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
+import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kotlin.math.roundToInt
@@ -60,7 +61,8 @@ class DetermineLmuWindowsManualReadoutUseCase {
         state: LmuWindowsNarratorState,
         items: List<LmuWindowsManualReadoutItem>,
     ): LmuWindowsNarratorReadoutDecision {
-        val supportedItems = items.filter { it.key in lmuWindowsManualReadoutItemKeys() }
+        val supportedItems =
+            items.filter { it.key in lmuWindowsManualReadoutItemKeys() }.take(MANUAL_READOUT_SET_ITEM_MAX)
         val firstKey = supportedItems.firstOrNull()?.key
         val key =
             if (firstKey == null) {
@@ -72,10 +74,6 @@ class DetermineLmuWindowsManualReadoutUseCase {
             when {
                 supportedItems.isEmpty() -> {
                     MANUAL_READOUT_NO_ITEMS_TEXT
-                }
-
-                supportedItems.all { isManualReadoutItemWithoutData(it) } -> {
-                    LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
                 }
 
                 else -> {
@@ -90,29 +88,6 @@ class DetermineLmuWindowsManualReadoutUseCase {
             events = listOf(LmuWindowsManualReadoutText(key, text)),
         )
     }
-
-    private fun isManualReadoutItemWithoutData(item: LmuWindowsManualReadoutItem): Boolean =
-        when {
-            isManualRemainingLapsItem(item.key) -> {
-                (item.remainingLaps ?: -1) < 0
-            }
-
-            item.key == LmuWindowsReadoutItemKey.MyBestLap.Root.value -> {
-                (item.lapTimeMs ?: 0L) <= 0
-            }
-
-            isLmuWindowsManualReadoutClassCarGapItem(item.key) -> {
-                manualClassCarGapText(item) == null
-            }
-
-            isLmuWindowsManualReadoutTemperatureItem(item.key) -> {
-                item.celsius == null
-            }
-
-            else -> {
-                item.ratio == null
-            }
-        }
 
     /** 自動判定の条件や状態を変更せず、蓄積済みのエネルギー消費量から残り周回数を読む。 */
     fun manualPitTimingVirtualEnergyRemainingLaps(state: LmuWindowsNarratorState): Int? =
