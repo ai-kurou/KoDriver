@@ -35,7 +35,6 @@ import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kotlin.test.Test
@@ -281,26 +280,6 @@ class LmuWindowsNarratorFlowTest {
             runCurrent()
             assertEquals(LmuWindowsPitTimingSnapshot(next, virtualEnergy, tyreWear, remainingFuel), values.last())
             assertEquals(3, narrator.currentLap(flowOf(next)).first())
-        }
-
-    @Test
-    fun `手動依頼は両経路の重複と他シミュレーターの依頼もそのまま流す`() =
-        runTest {
-            val requests = MutableSharedFlow<ManualReadoutRequest>()
-            val hotkeys = MutableSharedFlow<ManualReadoutRequest>()
-            val values = mutableListOf<ManualReadoutRequest>()
-            val narrator = LmuWindowsNarratorFlow(flowOf(Simulator.Gt7Ps5))
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                narrator.manualReadoutRequests(requests, hotkeys).collect(values::add)
-            }
-            runCurrent()
-            val request = ManualReadoutRequest(Simulator.LmuWindows.id, "set")
-            requests.emit(request)
-            hotkeys.emit(request)
-            val other = request.copy(simulatorId = Simulator.Gt7Ps5.id)
-            requests.emit(other)
-            runCurrent()
-            assertEquals(listOf(request, request, other), values)
         }
 }
 

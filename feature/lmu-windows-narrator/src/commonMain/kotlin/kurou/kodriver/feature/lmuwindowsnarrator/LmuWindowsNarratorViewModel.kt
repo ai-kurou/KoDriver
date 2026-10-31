@@ -99,6 +99,7 @@ import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.mergeManualReadoutRequests
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -867,22 +868,21 @@ internal class LmuWindowsNarratorViewModel(
 
     @Suppress("UnusedPrivateProperty")
     private val manualReadoutRequestJob =
-        narratorFlow
-            .manualReadoutRequests(
-                remainingVirtualEnergyUseCases.observeManualReadoutRequests(),
-                remainingVirtualEnergyUseCases.observeManualReadoutHotkeyPresses(),
-            ).onEach { request ->
-                if (request.simulatorId == Simulator.LmuWindows.id) {
-                    val set =
-                        remainingVirtualEnergyUseCases
-                            .observeManualReadoutSets()
-                            .first()
-                            .find { it.id == request.setId }
-                    if (set != null) {
-                        readManualReadout(set)
-                    }
+        mergeManualReadoutRequests(
+            remainingVirtualEnergyUseCases.observeManualReadoutRequests(),
+            remainingVirtualEnergyUseCases.observeManualReadoutHotkeyPresses(),
+        ).onEach { request ->
+            if (request.simulatorId == Simulator.LmuWindows.id) {
+                val set =
+                    remainingVirtualEnergyUseCases
+                        .observeManualReadoutSets()
+                        .first()
+                        .find { it.id == request.setId }
+                if (set != null) {
+                    readManualReadout(set)
                 }
-            }.launchIn(viewModelScope)
+            }
+        }.launchIn(viewModelScope)
 
     private suspend fun readManualReadout(set: ManualReadoutSet) {
         if (selectedSimulator.value !is Simulator.LmuWindows) return

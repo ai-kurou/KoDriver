@@ -48,6 +48,7 @@ import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.mergeManualReadoutRequests
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -262,16 +263,15 @@ internal class AceWindowsNarratorViewModel(
 
     @Suppress("UnusedPrivateProperty")
     private val manualReadoutRequestJob =
-        narratorFlow
-            .manualReadoutRequests(
-                manualReadoutUseCases.observeRequests(),
-                manualReadoutUseCases.observeHotkeyPresses(),
-            ).onEach { request ->
-                if (request.simulatorId == Simulator.AceWindows.id) {
-                    val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
-                    readManualReadout(set)
-                }
-            }.launchIn(viewModelScope)
+        mergeManualReadoutRequests(
+            manualReadoutUseCases.observeRequests(),
+            manualReadoutUseCases.observeHotkeyPresses(),
+        ).onEach { request ->
+            if (request.simulatorId == Simulator.AceWindows.id) {
+                val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
+                readManualReadout(set)
+            }
+        }.launchIn(viewModelScope)
 
     private suspend fun readManualReadout(set: ManualReadoutSet?) {
         if (set == null || selectedSimulator.value !is Simulator.AceWindows) return

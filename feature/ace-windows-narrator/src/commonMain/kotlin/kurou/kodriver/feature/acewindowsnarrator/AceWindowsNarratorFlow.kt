@@ -5,8 +5,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.merge
-import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 
@@ -44,9 +42,4 @@ internal class AceWindowsNarratorFlow(
         selectedSimulator.flatMapLatest { simulator ->
             if (simulator !is Simulator.AceWindows) emptyFlow() else observeTelemetry()
         }
-
-    fun manualReadoutRequests(
-        requests: Flow<ManualReadoutRequest>,
-        hotkeyPresses: Flow<ManualReadoutRequest>,
-    ): Flow<ManualReadoutRequest> = merge(requests, hotkeyPresses)
 }
