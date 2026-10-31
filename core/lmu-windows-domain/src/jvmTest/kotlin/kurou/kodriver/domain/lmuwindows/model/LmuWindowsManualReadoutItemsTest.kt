@@ -86,24 +86,27 @@ class LmuWindowsManualReadoutItemsTest {
     }
 
     @Test
-    fun `全項目キーは例外なく開始音キーに解決できる`() {
-        lmuWindowsManualReadoutItemKeys().forEach { lmuWindowsManualReadoutEventKey(it) }
-    }
-
-    @Test
-    fun `開始音キーは残り周回数系が親項目に集約されクラス内ギャップは接近に集約される`() {
-        assertEquals(
-            LmuWindowsReadoutItemKey.PitTiming.Root,
-            lmuWindowsManualReadoutEventKey(LmuWindowsReadoutItemKey.PitTiming.TyreWear.value),
-        )
-        assertEquals(
-            LmuWindowsReadoutItemKey.RemainingFuel.Root,
-            lmuWindowsManualReadoutEventKey(LmuWindowsReadoutItemKey.RemainingFuel.Laps.value),
-        )
-        assertEquals(
-            LmuWindowsReadoutItemKey.VehicleApproach.Root,
-            lmuWindowsManualReadoutEventKey(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value),
-        )
+    fun `全項目キーは期待する開始音キーに解決される`() {
+        val expected =
+            mapOf(
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to LmuWindowsReadoutItemKey.PitTiming.Root,
+                LmuWindowsReadoutItemKey.PitTiming.TyreWear to LmuWindowsReadoutItemKey.PitTiming.Root,
+                LmuWindowsReadoutItemKey.RemainingFuel.Laps to LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                LmuWindowsReadoutItemKey.RemainingFuel.Root to LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                LmuWindowsReadoutItemKey.ClassCarGap.Ahead to LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.ClassCarGap.Behind to LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.TyreWear.Root to LmuWindowsReadoutItemKey.TyreWear.Root,
+                LmuWindowsReadoutItemKey.BrakeWear.Root to LmuWindowsReadoutItemKey.BrakeWear.Root,
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root to LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                LmuWindowsReadoutItemKey.MyBestLap.Root to LmuWindowsReadoutItemKey.MyBestLap.Root,
+                LmuWindowsReadoutItemKey.TyreTemperature.Root to LmuWindowsReadoutItemKey.TyreTemperature.Root,
+            ).mapKeys { it.key.value }
+        assertEquals(expected.keys, lmuWindowsManualReadoutItemKeys().toSet())
+        expected.forEach { (itemKey, eventKey) ->
+            assertEquals(eventKey, lmuWindowsManualReadoutEventKey(itemKey))
+        }
     }
 
     @Test
