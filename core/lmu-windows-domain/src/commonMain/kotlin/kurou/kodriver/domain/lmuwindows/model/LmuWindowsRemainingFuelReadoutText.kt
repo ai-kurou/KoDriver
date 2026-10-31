@@ -1,14 +1,12 @@
 package kurou.kodriver.domain.lmuwindows.model
 
+import kurou.kodriver.domain.model.SinglePlaceholderTemplate
+
 fun formatLmuWindowsRemainingFuelReadoutText(
     template: String,
     percentage: Int,
-): String = template.replace(LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER, percentage.toString())
+): String =
+    SinglePlaceholderTemplate(LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER).format(template, percentage.toString())
 
 fun findUnknownLmuWindowsRemainingFuelReadoutPlaceholders(template: String): List<String> =
-    Regex("\\{[^{}]*\\}")
-        .findAll(template)
-        .map { it.value }
-        .filter { it != LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER }
-        .distinct()
-        .toList()
+    SinglePlaceholderTemplate(LMU_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER).findUnknown(template)

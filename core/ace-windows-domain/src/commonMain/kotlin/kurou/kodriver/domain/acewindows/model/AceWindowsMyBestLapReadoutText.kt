@@ -1,5 +1,7 @@
 package kurou.kodriver.domain.acewindows.model
 
+import kurou.kodriver.domain.model.SinglePlaceholderTemplate
+
 /** 自己ベストラップ更新文言のラップタイムプレースホルダーを置換する。 */
 fun formatAceWindowsMyBestLapReadoutText(
     template: String,
@@ -9,14 +11,9 @@ fun formatAceWindowsMyBestLapReadoutText(
     val seconds = lapTimeMs / 1_000 % 60
     val milliseconds = (lapTimeMs % 1_000).toString().padStart(3, '0')
     val lapTime = if (minutes > 0) "${minutes}分${seconds}秒$milliseconds" else "${seconds}秒$milliseconds"
-    return template.replace(ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER, lapTime)
+    return SinglePlaceholderTemplate(ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER).format(template, lapTime)
 }
 
 /** 文言内の `{...}` のうち、`{laptime}` 以外のトークンを出現順・重複なしで返す。 */
 fun findUnknownAceWindowsMyBestLapReadoutPlaceholders(template: String): List<String> =
-    Regex("\\{[^{}]*\\}")
-        .findAll(template)
-        .map { it.value }
-        .filter { it != ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER }
-        .distinct()
-        .toList()
+    SinglePlaceholderTemplate(ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER).findUnknown(template)

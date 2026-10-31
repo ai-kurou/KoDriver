@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.lmuwindows.model
 
+import kurou.kodriver.domain.model.SinglePlaceholderTemplate
 import kotlin.math.roundToLong
 
 private const val CLASS_CAR_GAP_DECIMAL_SCALE = 10.0
@@ -12,14 +13,9 @@ fun formatLmuWindowsClassCarGapReadoutText(
 ): String {
     val tenths = (seconds * CLASS_CAR_GAP_DECIMAL_SCALE).roundToLong()
     val formatted = "${tenths / CLASS_CAR_GAP_DECIMAL_DIVISOR}.${tenths % CLASS_CAR_GAP_DECIMAL_DIVISOR}"
-    return template.replace(LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER, formatted)
+    return SinglePlaceholderTemplate(LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER).format(template, formatted)
 }
 
 /** 文言内の `{...}` のうち、`{seconds}` 以外のトークンを出現順・重複なしで返す。 */
 fun findUnknownLmuWindowsClassCarGapReadoutPlaceholders(template: String): List<String> =
-    Regex("\\{[^{}]*\\}")
-        .findAll(template)
-        .map { it.value }
-        .filter { it != LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER }
-        .distinct()
-        .toList()
+    SinglePlaceholderTemplate(LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER).findUnknown(template)
