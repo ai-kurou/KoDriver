@@ -27,6 +27,10 @@ import kurou.kodriver.domain.model.Simulator
 import org.junit.Test
 
 class ManualReadoutSetDetailPaneScreenshotTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @Test
     fun `セット名のインライン編集`() =
         composeScreenshotTest {
@@ -180,6 +184,10 @@ class ManualReadoutSetDetailPaneScreenshotTest {
 }
 
 class ManualReadoutSetDetailPaneAceScreenshotTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @Test
     fun `ACEの残り燃料の文言`() = screenshot(aceWindowsManualReadoutItemKeys(), selected = true)
 

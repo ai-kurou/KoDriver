@@ -14,6 +14,10 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ManualReadoutItemCategoryTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @Test
     fun `全simulatorの手動読み上げ項目定義を定義のカテゴリに分類する`() {
         val definitions =

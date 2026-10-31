@@ -26,6 +26,10 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ManualReadoutListPaneUriWiringTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     private val uriHandler: UriHandler = mockk()
     private val haptic: HapticFeedback = mockk()
 

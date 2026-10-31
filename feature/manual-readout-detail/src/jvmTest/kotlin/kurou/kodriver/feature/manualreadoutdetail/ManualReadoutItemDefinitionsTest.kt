@@ -5,10 +5,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ManualReadoutItemDefinitionsTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @Test
-    fun `simulator別定義をLMU ACE GT7順に集約し未知IDを空で扱う`() {
+    fun `simulator別定義をレジストリ登録済みのSimulator順に集約し未知IDを空で扱う`() {
         assertEquals(
-            listOf(Simulator.LmuWindows.id, Simulator.AceWindows.id, Simulator.Gt7Ps5.id),
+            Simulator.entries.map { it.id },
             manualReadoutItemDefinitions.keys.toList(),
         )
         manualReadoutItemDefinitions.forEach { (simulatorId, definitions) ->

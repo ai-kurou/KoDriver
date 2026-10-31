@@ -49,7 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_add_set
@@ -129,7 +129,7 @@ internal fun ManualReadoutListPaneContent(
             Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
                 ManualReadoutHintRow(
                     setCount = uiState.sets.size,
-                    showSimHubGuideLink = simulatorId != Simulator.Gt7Ps5.id,
+                    showSimHubGuideLink = ReadoutItemKeyRegistry.showsManualReadoutSimHubGuideLink(simulatorId),
                     playButtonLayoutEnabled = uiState.playButtonLayoutEnabled,
                     onTogglePlayButtonLayout = {
                         editMode = false

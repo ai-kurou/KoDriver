@@ -36,6 +36,10 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutListModuleTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     private val requestRepository: ManualReadoutRequestRepository = mockk()
     private val layoutRepository: ManualReadoutPlayButtonLayoutEnabledPreferencesRepository = mockk()
     private val dispatcher = UnconfinedTestDispatcher()

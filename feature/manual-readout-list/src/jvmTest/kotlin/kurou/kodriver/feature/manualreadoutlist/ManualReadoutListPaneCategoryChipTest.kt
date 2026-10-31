@@ -10,6 +10,10 @@ import org.junit.Rule
 import org.junit.Test
 
 class ManualReadoutListPaneCategoryChipTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @get:Rule
     val rule = createComposeRule()
 

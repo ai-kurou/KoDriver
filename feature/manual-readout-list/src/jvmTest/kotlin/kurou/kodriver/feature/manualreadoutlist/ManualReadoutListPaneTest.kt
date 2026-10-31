@@ -37,6 +37,10 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ManualReadoutListPaneTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     private val onAddSet: () -> Unit = mockk()
     private val onReadSet: (String) -> Unit = mockk()
     private val onSetClick: (String) -> Unit = mockk()

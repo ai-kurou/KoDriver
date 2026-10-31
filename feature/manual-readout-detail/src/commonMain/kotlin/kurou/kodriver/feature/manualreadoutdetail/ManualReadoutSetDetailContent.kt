@@ -39,7 +39,7 @@ import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
@@ -87,7 +87,7 @@ fun ManualReadoutSetDetailContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     showHotkey: Boolean = isManualReadoutHotkeySupported(),
-    showSimHubGuideLink: Boolean = simulatorId != Simulator.Gt7Ps5.id,
+    showSimHubGuideLink: Boolean = ReadoutItemKeyRegistry.showsManualReadoutSimHubGuideLink(simulatorId),
 ) {
     val viewModel: ManualReadoutSetDetailViewModel =
         koinViewModel(key = "$simulatorId:$setId", parameters = { parametersOf(simulatorId, setId) })

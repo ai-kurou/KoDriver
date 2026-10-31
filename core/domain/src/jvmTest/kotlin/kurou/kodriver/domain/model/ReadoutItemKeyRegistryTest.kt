@@ -97,4 +97,54 @@ class ReadoutItemKeyRegistryTest {
     fun `registeredSpecsはSimulator順で登録済みのspecだけを返す`() {
         assertEquals(Simulator.entries, ReadoutItemKeyRegistry.registeredSpecs.map { it.simulator })
     }
+
+    @Test
+    fun `手動読み上げ対応のspecだけをSimulator順に返し案内表示の有無を引ける`() {
+        val definition =
+            ManualReadoutItemDefinition(
+                "key",
+                ManualReadoutItemCategory.FUEL,
+                "名",
+                "既定",
+                "{p}",
+                { emptyList() },
+                { it },
+            )
+        val lmu =
+            SimulatorReadoutSpec(
+                Simulator.LmuWindows,
+                emptyList(),
+                emptyMap(),
+                emptyMap(),
+                emptyMap(),
+                emptyList(),
+                ManualReadoutSimulatorSpec(mapOf("key" to definition)),
+            )
+        val gt7 =
+            SimulatorReadoutSpec(
+                Simulator.Gt7Ps5,
+                emptyList(),
+                emptyMap(),
+                emptyMap(),
+                emptyMap(),
+                emptyList(),
+                ManualReadoutSimulatorSpec(mapOf("key" to definition), showSimHubGuideLink = false),
+            )
+        ReadoutItemKeyRegistry.register(gt7)
+        ReadoutItemKeyRegistry.register(lmu)
+
+        assertEquals(
+            listOf(Simulator.LmuWindows.id, Simulator.Gt7Ps5.id),
+            ReadoutItemKeyRegistry.manualReadoutSpecs.map { it.first },
+        )
+        assertEquals(
+            mapOf("key" to definition),
+            ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.Gt7Ps5.id)?.itemDefinitions,
+        )
+        assertNull(ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.AceWindows.id))
+        assertNull(ReadoutItemKeyRegistry.manualReadoutSpecOf("unknown"))
+        assertEquals(true, ReadoutItemKeyRegistry.showsManualReadoutSimHubGuideLink(Simulator.LmuWindows.id))
+        assertEquals(false, ReadoutItemKeyRegistry.showsManualReadoutSimHubGuideLink(Simulator.Gt7Ps5.id))
+        assertEquals(true, ReadoutItemKeyRegistry.showsManualReadoutSimHubGuideLink("unknown"))
+    }
 }
