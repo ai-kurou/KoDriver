@@ -279,8 +279,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 root,
                 "バーチャルエネルギーの残り周回数はデータがありません、タイヤ80%",
             ),
-            Triple(listOf(energy.copy(remainingLaps = null)), root, "データがありません"),
-            Triple(listOf(energy.copy(remainingLaps = -1), wear.copy(ratio = null)), root, "データがありません"),
+            Triple(listOf(energy.copy(remainingLaps = null)), root, "バーチャルエネルギーの残り周回数はデータがありません"),
+            Triple(
+                listOf(energy.copy(remainingLaps = -1), wear.copy(ratio = null)),
+                root,
+                "バーチャルエネルギーの残り周回数はデータがありません、タイヤ摩耗はデータがありません",
+            ),
             Triple(listOf(energy.copy(textTemplate = "")), root, ""),
             Triple(listOf(energy.copy(textTemplate = "", remainingLaps = 0)), root, ""),
             Triple(listOf(energy, wear.copy(ratio = null)), root, "あと3周 {unknown}、タイヤ摩耗はデータがありません"),
@@ -348,8 +352,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 root,
                 "タイヤ摩耗の残り周回数はデータがありません、タイヤ80%",
             ),
-            Triple(listOf(laps.copy(remainingLaps = null)), root, "データがありません"),
-            Triple(listOf(laps.copy(remainingLaps = -1), wear.copy(ratio = null)), root, "データがありません"),
+            Triple(listOf(laps.copy(remainingLaps = null)), root, "タイヤ摩耗の残り周回数はデータがありません"),
+            Triple(
+                listOf(laps.copy(remainingLaps = -1), wear.copy(ratio = null)),
+                root,
+                "タイヤ摩耗の残り周回数はデータがありません、タイヤ摩耗はデータがありません",
+            ),
             Triple(listOf(laps.copy(textTemplate = "")), root, ""),
             Triple(listOf(laps.copy(textTemplate = "", remainingLaps = 0)), root, ""),
             Triple(listOf(laps, wear.copy(ratio = null)), root, "あと3周 {unknown}、タイヤ摩耗はデータがありません"),
@@ -385,8 +393,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 root,
                 "燃料の残り周回数はデータがありません、タイヤ80%",
             ),
-            Triple(listOf(laps.copy(remainingLaps = null)), root, "データがありません"),
-            Triple(listOf(laps.copy(remainingLaps = -1), wear.copy(ratio = null)), root, "データがありません"),
+            Triple(listOf(laps.copy(remainingLaps = null)), root, "燃料の残り周回数はデータがありません"),
+            Triple(
+                listOf(laps.copy(remainingLaps = -1), wear.copy(ratio = null)),
+                root,
+                "燃料の残り周回数はデータがありません、タイヤ摩耗はデータがありません",
+            ),
             Triple(listOf(laps.copy(textTemplate = "")), root, ""),
             Triple(listOf(laps.copy(textTemplate = "", remainingLaps = 0)), root, ""),
             Triple(listOf(laps, wear.copy(ratio = null)), root, "あと3周 {unknown}、タイヤ摩耗はデータがありません"),
@@ -454,9 +466,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 "クラス内後方車とのギャップはデータがありません",
         ).forEach { (item, text) ->
             val decision = manualUseCase.determineManualReadout(state, listOf(item))
-            val expected =
-                if (text.endsWith("はデータがありません")) "データがありません" else text
-            assertEquals(expected, decision.events.single().narratedText)
+            assertEquals(text, decision.events.single().narratedText)
         }
         val topItem = LmuWindowsManualReadoutItem(ahead, "前{seconds}", null, classCarGap = top)
         val noData = LmuWindowsManualReadoutItem(behind, "後{seconds}", null, classCarGap = null)
@@ -488,7 +498,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             listOf(ahead to "クラス内前方車とのギャップ", behind to "クラス内後方車とのギャップ").forEach { (key, name) ->
                 val item = LmuWindowsManualReadoutItem(key, "差{seconds}", null, classCarGap = data)
                 val single = manualUseCase.determineManualReadout(state, listOf(item))
-                assertEquals("データがありません", single.events.single().narratedText)
+                assertEquals("${name}はデータがありません", single.events.single().narratedText)
                 assertEquals(LmuWindowsReadoutItemKey.VehicleApproach.Root, single.events.single().readoutItemKey)
                 val combined = manualUseCase.determineManualReadout(state, listOf(item, tyre))
                 assertEquals("${name}はデータがありません、タイヤ80%", combined.events.single().narratedText)
@@ -500,7 +510,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 LmuWindowsManualReadoutItem(behind, "差{seconds}", null),
             )
         assertEquals(
-            "データがありません",
+            "クラス内前方車とのギャップはデータがありません、クラス内後方車とのギャップはデータがありません",
             manualUseCase
                 .determineManualReadout(state, allNoData)
                 .events
@@ -525,9 +535,13 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 Triple(listOf(best.copy(lapTimeMs = 0), wear), key, "自己ベストラップはデータがありません、タイヤ80%"),
                 Triple(listOf(best.copy(lapTimeMs = -1), wear), key, "自己ベストラップはデータがありません、タイヤ80%"),
                 Triple(listOf(best, wear.copy(ratio = null)), key, "自己ベストラップ 1分23秒456、タイヤ摩耗はデータがありません"),
-                Triple(listOf(best.copy(lapTimeMs = null)), key, "データがありません"),
-                Triple(listOf(best.copy(lapTimeMs = 0)), key, "データがありません"),
-                Triple(listOf(best.copy(lapTimeMs = -1), wear.copy(ratio = null)), key, "データがありません"),
+                Triple(listOf(best.copy(lapTimeMs = null)), key, "自己ベストラップはデータがありません"),
+                Triple(listOf(best.copy(lapTimeMs = 0)), key, "自己ベストラップはデータがありません"),
+                Triple(
+                    listOf(best.copy(lapTimeMs = -1), wear.copy(ratio = null)),
+                    key,
+                    "自己ベストラップはデータがありません、タイヤ摩耗はデータがありません",
+                ),
                 Triple(listOf(best.copy(textTemplate = "")), key, ""),
                 Triple(listOf(best.copy(textTemplate = "記録{laptime} {unknown}")), key, "記録1分23秒456 {unknown}"),
             )
@@ -602,7 +616,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 listOf(tyreItem, brakeItem) to "タイヤ91℃、ブレーキ501℃",
                 listOf(brakeItem, tyreItem.copy(celsius = null, ratio = 1.0)) to "ブレーキ501℃、タイヤ温度はデータがありません",
                 listOf(brakeItem.copy(celsius = null), tyreItem) to "ブレーキ温度はデータがありません、タイヤ91℃",
-                listOf(brakeItem.copy(celsius = null), tyreItem.copy(celsius = null, ratio = 1.0)) to "データがありません",
+                listOf(brakeItem.copy(celsius = null), tyreItem.copy(celsius = null, ratio = 1.0)) to
+                    "ブレーキ温度はデータがありません、タイヤ温度はデータがありません",
             )
         cases.forEach { (items, text) ->
             val decision = manualUseCase.determineManualReadout(state, items)
@@ -630,8 +645,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 Triple(listOf(tyreItem, temperature), tyre, "タイヤ80%、タイヤ温度91℃"),
                 Triple(listOf(temperature.copy(celsius = null), tyreItem), key, "タイヤ温度はデータがありません、タイヤ80%"),
                 Triple(listOf(temperature, tyreItem.copy(ratio = null)), key, "タイヤ温度91℃、タイヤ摩耗はデータがありません"),
-                Triple(listOf(temperature.copy(celsius = null)), key, "データがありません"),
-                Triple(listOf(temperature.copy(celsius = null), tyreItem.copy(ratio = null)), key, "データがありません"),
+                Triple(listOf(temperature.copy(celsius = null)), key, "タイヤ温度はデータがありません"),
+                Triple(
+                    listOf(temperature.copy(celsius = null), tyreItem.copy(ratio = null)),
+                    key,
+                    "タイヤ温度はデータがありません、タイヤ摩耗はデータがありません",
+                ),
                 Triple(listOf(temperature.copy(textTemplate = "")), key, ""),
                 Triple(listOf(temperature.copy(textTemplate = "温度{celsius}℃ {unknown}")), key, "温度91℃ {unknown}"),
             )
@@ -658,8 +677,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 Triple(listOf(tyreItem, temperature), tyre, "タイヤ80%、ブレーキ温度501℃"),
                 Triple(listOf(temperature.copy(celsius = null), tyreItem), key, "ブレーキ温度はデータがありません、タイヤ80%"),
                 Triple(listOf(temperature, tyreItem.copy(ratio = null)), key, "ブレーキ温度501℃、タイヤ摩耗はデータがありません"),
-                Triple(listOf(temperature.copy(celsius = null)), key, "データがありません"),
-                Triple(listOf(temperature.copy(celsius = null), tyreItem.copy(ratio = null)), key, "データがありません"),
+                Triple(listOf(temperature.copy(celsius = null)), key, "ブレーキ温度はデータがありません"),
+                Triple(
+                    listOf(temperature.copy(celsius = null), tyreItem.copy(ratio = null)),
+                    key,
+                    "ブレーキ温度はデータがありません、タイヤ摩耗はデータがありません",
+                ),
                 Triple(listOf(temperature.copy(textTemplate = "")), key, ""),
                 Triple(listOf(temperature.copy(textTemplate = "温度{celsius}℃ {unknown}")), key, "温度501℃ {unknown}"),
             )
@@ -723,7 +746,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 Triple(listOf(brakeItem, tyreItem), brake, "ブレーキ43%、タイヤ80%"),
                 Triple(listOf(tyreItem, brakeItem), tyre, "タイヤ80%、ブレーキ43%"),
                 Triple(listOf(brakeItem.copy(ratio = null), tyreItem), brake, "ブレーキ残量はデータがありません、タイヤ80%"),
-                Triple(listOf(brakeItem.copy(ratio = null)), brake, "データがありません"),
+                Triple(listOf(brakeItem.copy(ratio = null)), brake, "ブレーキ残量はデータがありません"),
                 Triple(listOf(brakeItem.copy(textTemplate = "")), brake, ""),
             )
         cases.forEach { (items, key, text) ->
@@ -747,8 +770,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 Triple(listOf(fuelItem, energyItem), fuel, "燃料は残り43パーセント、VE80%"),
                 Triple(listOf(energyItem, fuelItem), energy, "VE80%、燃料は残り43パーセント"),
                 Triple(listOf(fuelItem.copy(ratio = null), energyItem), fuel, "燃料残量はデータがありません、VE80%"),
-                Triple(listOf(fuelItem.copy(ratio = null)), fuel, "データがありません"),
-                Triple(listOf(fuelItem.copy(ratio = null), energyItem.copy(ratio = null)), fuel, "データがありません"),
+                Triple(listOf(fuelItem.copy(ratio = null)), fuel, "燃料残量はデータがありません"),
+                Triple(
+                    listOf(fuelItem.copy(ratio = null), energyItem.copy(ratio = null)),
+                    fuel,
+                    "燃料残量はデータがありません、バーチャルエネルギー残量はデータがありません",
+                ),
                 Triple(listOf(fuelItem.copy(textTemplate = "")), fuel, ""),
             )
         cases.forEach { (items, key, text) ->
@@ -795,8 +822,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 Triple(listOf(tyreItem, energyItem), tyre, "タイヤ80%、VE50%"),
                 Triple(listOf(energyItem.copy(ratio = null), tyreItem), energy, "バーチャルエネルギー残量はデータがありません、タイヤ80%"),
                 Triple(listOf(tyreItem.copy(ratio = null), energyItem), tyre, "タイヤ摩耗はデータがありません、VE50%"),
-                Triple(listOf(energyItem.copy(ratio = null), tyreItem.copy(ratio = null)), energy, "データがありません"),
-                Triple(listOf(tyreItem.copy(ratio = null)), tyre, "データがありません"),
+                Triple(
+                    listOf(energyItem.copy(ratio = null), tyreItem.copy(ratio = null)),
+                    energy,
+                    "バーチャルエネルギー残量はデータがありません、タイヤ摩耗はデータがありません",
+                ),
+                Triple(listOf(tyreItem.copy(ratio = null)), tyre, "タイヤ摩耗はデータがありません"),
                 Triple(emptyList(), energy, "読み上げる項目がありません"),
                 Triple(listOf(LmuWindowsManualReadoutItem("unknown", "無視", 1.0)), energy, "読み上げる項目がありません"),
                 Triple(listOf(energyItem.copy(textTemplate = "")), energy, ""),
@@ -811,6 +842,27 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             assertEquals(text, event.narratedText)
             assertEquals(event.copy(resolvedText = "解決済み"), event.withResolvedText("解決済み"))
         }
+    }
+
+    @Test
+    fun `手動セットは対応項目を先頭の上限件数までに切り詰めて開始音のキーも切り詰め後の先頭を使う`() {
+        val energy = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+        val tyre = LmuWindowsReadoutItemKey.TyreWear.Root
+        val fuel = LmuWindowsReadoutItemKey.RemainingFuel.Root
+        val brake = LmuWindowsReadoutItemKey.BrakeWear.Root
+        val state = LmuWindowsNarratorState()
+        val items =
+            listOf(
+                LmuWindowsManualReadoutItem(energy.value, "VE{percent}%", 0.5),
+                LmuWindowsManualReadoutItem("unknown", "無視", 1.0),
+                LmuWindowsManualReadoutItem(tyre.value, "タイヤ{percent}%", 0.8),
+                LmuWindowsManualReadoutItem(fuel.value, "燃料{percent}%", 0.4),
+                LmuWindowsManualReadoutItem(brake.value, "ブレーキ{percent}%", 0.3),
+            )
+
+        val decision = manualUseCase.determineManualReadout(state, items)
+
+        assertEquals(listOf(LmuWindowsManualReadoutText(energy, "VE50%、タイヤ80%、燃料40%")), decision.events)
     }
 
     @Test

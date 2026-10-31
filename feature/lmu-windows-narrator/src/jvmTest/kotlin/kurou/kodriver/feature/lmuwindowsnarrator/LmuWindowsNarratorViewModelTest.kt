@@ -819,12 +819,12 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             assertEquals(
                 listOf(
-                    "データがありません",
-                    "データがありません",
+                    "バーチャルエネルギーの残り周回数はデータがありません",
+                    "バーチャルエネルギーの残り周回数はデータがありません",
                     "バーチャルエネルギーは残り約4周",
                     "バーチャルエネルギーは残り約4周",
                     "バーチャルエネルギーは残り約4周",
-                    "データがありません",
+                    "バーチャルエネルギーの残り周回数はデータがありません",
                 ),
                 spoken.map { it.narratedText },
             )
@@ -903,10 +903,10 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             assertEquals(
                 listOf(
-                    "データがありません",
+                    "クラス内前方車とのギャップはデータがありません、クラス内後方車とのギャップはデータがありません",
                     "クラス内前方1.3秒、クラス内後方3.0秒",
                     "クラス内前方1.3秒、クラス内後方3.0秒",
-                    "データがありません",
+                    "クラス内前方車とのギャップはデータがありません、クラス内後方車とのギャップはデータがありません",
                 ),
                 spoken.map { it.narratedText },
             )
@@ -937,7 +937,7 @@ class LmuWindowsNarratorViewModelTest {
             selected.update { Simulator.LmuWindows }
             requests.send(request)
             assertEquals(
-                listOf("クラス内先頭です、クラス内最後尾です", "データがありません"),
+                listOf("クラス内先頭です、クラス内最後尾です", "クラス内前方車とのギャップはデータがありません、クラス内後方車とのギャップはデータがありません"),
                 spoken.map { it.narratedText },
             )
         }
@@ -982,12 +982,12 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             assertEquals(
                 listOf(
-                    "データがありません",
-                    "データがありません",
+                    "燃料の残り周回数はデータがありません",
+                    "燃料の残り周回数はデータがありません",
                     "燃料は残り約5周",
                     "燃料は残り約5周",
                     "燃料は残り約5周",
-                    "データがありません",
+                    "燃料の残り周回数はデータがありません",
                 ),
                 spoken.map { it.narratedText },
             )
@@ -1038,12 +1038,12 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             assertEquals(
                 listOf(
-                    "データがありません",
-                    "データがありません",
+                    "タイヤ摩耗の残り周回数はデータがありません",
+                    "タイヤ摩耗の残り周回数はデータがありません",
                     "タイヤは残り約4周",
                     "タイヤは残り約4周",
                     "タイヤは残り約4周",
-                    "データがありません",
+                    "タイヤ摩耗の残り周回数はデータがありません",
                 ),
                 spoken.map { it.narratedText },
             )
@@ -1124,7 +1124,7 @@ class LmuWindowsNarratorViewModelTest {
             time = 5_001L
             flags.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
             requests.send(request)
-            assertEquals("データがありません", spoken.last().narratedText)
+            assertEquals("タイヤ温度はデータがありません", spoken.last().narratedText)
             temperature.send(tyreTemperature(fl = 95.0))
             assertEquals("タイヤ過熱 95度", spoken.last().narratedText)
             assertEquals(6, spoken.size)
@@ -1328,11 +1328,11 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             assertEquals(
                 listOf(
-                    "データがありません",
+                    "バーチャルエネルギー残量はデータがありません、タイヤ摩耗はデータがありません",
                     "バーチャルエネルギー残量は50パーセント、タイヤ摩耗はデータがありません",
                     "バーチャルエネルギー残量は50パーセント、タイヤ摩耗残り80%",
                     "バーチャルエネルギー残量はデータがありません、タイヤ摩耗残り80%",
-                    "データがありません",
+                    "バーチャルエネルギー残量はデータがありません、タイヤ摩耗はデータがありません",
                 ),
                 spoken.map { it.narratedText },
             )
@@ -2934,7 +2934,7 @@ class LmuWindowsNarratorViewModelTest {
             debugRequests.emit(request)
             assertEquals(null, trackingFromLastLog().lastValidLapConsumption)
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "laps"))
-            assertEquals("データがありません", spoken.last().narratedText)
+            assertEquals("バーチャルエネルギーの残り周回数はデータがありません", spoken.last().narratedText)
         }
 
     @Test
@@ -2999,7 +2999,7 @@ class LmuWindowsNarratorViewModelTest {
             debugRequests.emit(request)
             assertEquals(null, trackingFromLastLog().lastValidLapConsumption)
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "laps"))
-            assertEquals("データがありません", spoken.last().narratedText)
+            assertEquals("タイヤ摩耗の残り周回数はデータがありません", spoken.last().narratedText)
         }
 
     @Test
@@ -3486,7 +3486,7 @@ class LmuWindowsNarratorViewModelTest {
     fun `未受信と鮮度切れのタブ依頼とセットホットキーはデータ無しをキューへ追加してログを保存する`() =
         runTest(testDispatcher) {
             val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
-            val expected = LmuWindowsManualReadoutText(key, "データがありません", "データがありません")
+            val expected = LmuWindowsManualReadoutText(key, "バーチャルエネルギー残量はデータがありません", "バーチャルエネルギー残量はデータがありません")
             val logs = mutableListOf<TelemetryLog>()
             stubTelemetryLogSave(logs, 5_001L, key)
             for (stale in listOf(false, true)) {
@@ -3511,7 +3511,7 @@ class LmuWindowsNarratorViewModelTest {
 
                     assertEquals(listOf<SpeechEvent>(expected), spoken)
                     val log = logs.last()
-                    assertEquals("データがありません", log.narratedText)
+                    assertEquals("バーチャルエネルギー残量はデータがありません", log.narratedText)
                     assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
                     assertContains(log.telemetryJson, "\"state\":")
                     assertContains(log.telemetryJson, "\"settings\":")
@@ -3527,7 +3527,7 @@ class LmuWindowsNarratorViewModelTest {
                     createdAt = 5_001L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = key,
-                    narratedText = "データがありません",
+                    narratedText = "バーチャルエネルギー残量はデータがありません",
                     narrationOutcome = NarrationOutcome.QUEUED,
                     narrationSource = NarrationSource.MANUAL,
                     telemetryJson = withArg { json -> assertTrue(logs.any { it.telemetryJson == json }) },
@@ -3622,7 +3622,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
             selected.update { Simulator.LmuWindows }
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
-            assertEquals(listOf("データがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("バーチャルエネルギー残量はデータがありません"), spoken.map { it.narratedText })
 
             energy.send(remainingVirtualEnergy(remainingRatio = 0.7))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
@@ -3869,7 +3869,7 @@ class LmuWindowsNarratorViewModelTest {
             fakeTime = 5_001L
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
             assertEquals(2, spoken.size)
-            assertEquals("データがありません", spoken.last().narratedText)
+            assertEquals("バーチャルエネルギー残量はデータがありません", spoken.last().narratedText)
         }
 
     @Test
@@ -3901,7 +3901,7 @@ class LmuWindowsNarratorViewModelTest {
             time = 5_001L
             requests.send(request)
             assertEquals(
-                listOf("データがありません", "燃料は残り43パーセント", "燃料は残り43パーセント", "データがありません"),
+                listOf("燃料残量はデータがありません", "燃料は残り43パーセント", "燃料は残り43パーセント", "燃料残量はデータがありません"),
                 spoken.map { it.narratedText },
             )
             assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
@@ -3936,7 +3936,7 @@ class LmuWindowsNarratorViewModelTest {
             telemetry.send(original.copy(fuel = original.fuel.copy(receivedAtMs = time)))
             requests.send(request)
             assertEquals(
-                listOf("燃料は残り43パーセント", "データがありません", "燃料は残り43パーセント"),
+                listOf("燃料は残り43パーセント", "燃料残量はデータがありません", "燃料は残り43パーセント"),
                 spoken.map { it.narratedText },
             )
         }
@@ -3981,7 +3981,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "fuel"))
             selected.update { Simulator.LmuWindows }
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "fuel"))
-            assertEquals(listOf("データがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("燃料残量はデータがありません"), spoken.map { it.narratedText })
         }
 
     @Test
@@ -4113,18 +4113,21 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             assertEquals(
                 listOf(
-                    "データがありません",
+                    "自己ベストラップはデータがありません",
                     "自己ベストラップ 1分23秒456",
-                    "データがありません",
-                    "データがありません",
-                    "データがありません",
+                    "自己ベストラップはデータがありません",
+                    "自己ベストラップはデータがありません",
+                    "自己ベストラップはデータがありません",
                     "自己ベストラップ 1分22秒345",
                 ),
                 spoken.map { it.narratedText },
             )
             assertEquals(List(6) { key }, spoken.map { it.readoutItemKey })
             verify(exactly = 4) {
-                ttsEngine.speak(LmuWindowsManualReadoutText(key, "データがありません", "データがありません"), queue = true)
+                ttsEngine.speak(
+                    LmuWindowsManualReadoutText(key, "自己ベストラップはデータがありません", "自己ベストラップはデータがありません"),
+                    queue = true,
+                )
             }
             listOf("自己ベストラップ 1分23秒456", "自己ベストラップ 1分22秒345").forEach { text ->
                 verify(exactly = 1) { ttsEngine.speak(LmuWindowsManualReadoutText(key, text, text), queue = true) }
@@ -4159,12 +4162,12 @@ class LmuWindowsNarratorViewModelTest {
             temperature.send(LmuWindowsTyreCarcassTemperatureData(emptyMap()))
             requests.send(request)
             assertEquals(
-                listOf("データがありません", "タイヤ温度91℃", "データがありません", "データがありません"),
+                listOf("タイヤ温度はデータがありません", "タイヤ温度91℃", "タイヤ温度はデータがありません", "タイヤ温度はデータがありません"),
                 spoken.map { it.narratedText },
             )
             assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
             verify(exactly = 3) {
-                ttsEngine.speak(LmuWindowsManualReadoutText(key, "データがありません", "データがありません"), queue = true)
+                ttsEngine.speak(LmuWindowsManualReadoutText(key, "タイヤ温度はデータがありません", "タイヤ温度はデータがありません"), queue = true)
             }
             verify(exactly = 1) {
                 ttsEngine.speak(LmuWindowsManualReadoutText(key, "タイヤ温度91℃", "タイヤ温度91℃"), queue = true)
@@ -4199,12 +4202,12 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(LmuWindowsBrakeTemperatureData(emptyMap()))
             requests.send(request)
             assertEquals(
-                listOf("データがありません", "ブレーキ温度501℃", "データがありません", "データがありません"),
+                listOf("ブレーキ温度はデータがありません", "ブレーキ温度501℃", "ブレーキ温度はデータがありません", "ブレーキ温度はデータがありません"),
                 spoken.map { it.narratedText },
             )
             assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
             verify(exactly = 3) {
-                ttsEngine.speak(LmuWindowsManualReadoutText(key, "データがありません", "データがありません"), queue = true)
+                ttsEngine.speak(LmuWindowsManualReadoutText(key, "ブレーキ温度はデータがありません", "ブレーキ温度はデータがありません"), queue = true)
             }
             verify(exactly = 1) {
                 ttsEngine.speak(LmuWindowsManualReadoutText(key, "ブレーキ温度501℃", "ブレーキ温度501℃"), queue = true)
@@ -4233,7 +4236,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "best"))
             selected.update { Simulator.LmuWindows }
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "best"))
-            assertEquals(listOf("データがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("自己ベストラップはデータがありません"), spoken.map { it.narratedText })
         }
 
     @Test
@@ -4257,7 +4260,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "temperature"))
             selected.update { Simulator.LmuWindows }
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "temperature"))
-            assertEquals(listOf("データがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("タイヤ温度はデータがありません"), spoken.map { it.narratedText })
         }
 
     @Test
@@ -4279,7 +4282,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             temperature.send(tyreTemperature(fl = Double.NaN, fr = Double.NaN, rl = Double.NaN, rr = Double.NaN))
             requests.send(request)
-            assertEquals(listOf("タイヤ温度80℃", "データがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("タイヤ温度80℃", "タイヤ温度はデータがありません"), spoken.map { it.narratedText })
         }
 
     @Test
@@ -4301,7 +4304,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             temperature.send(brakeTemperature(fl = Double.NaN, fr = Double.NaN, rl = Double.NaN, rr = Double.NaN))
             requests.send(request)
-            assertEquals(listOf("ブレーキ温度400℃", "データがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("ブレーキ温度400℃", "ブレーキ温度はデータがありません"), spoken.map { it.narratedText })
         }
 
     @Test
@@ -4325,7 +4328,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "brake"))
             selected.update { Simulator.LmuWindows }
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "brake"))
-            assertEquals(listOf("データがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("ブレーキ温度はデータがありません"), spoken.map { it.narratedText })
         }
 
     @Test
@@ -4358,7 +4361,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(null)
             requests.send(request)
             assertEquals(
-                listOf("データがありません", "ブレーキ残量50%", "データがありません", "データがありません", "データがありません"),
+                listOf("ブレーキ残量はデータがありません", "ブレーキ残量50%", "ブレーキ残量はデータがありません", "ブレーキ残量はデータがありません", "ブレーキ残量はデータがありません"),
                 spoken.map { it.narratedText },
             )
             assertEquals(listOf(key, key, key, key, key), spoken.map { it.readoutItemKey })
@@ -4388,7 +4391,7 @@ class LmuWindowsNarratorViewModelTest {
                 wear.send(null)
                 requests.send(request)
 
-                assertEquals(listOf("ブレーキ残量50%", "データがありません"), spoken.map { it.narratedText })
+                assertEquals(listOf("ブレーキ残量50%", "ブレーキ残量はデータがありません"), spoken.map { it.narratedText })
             } finally {
                 viewModel.viewModelScope.cancel()
             }
@@ -4415,7 +4418,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "brake"))
             selected.update { Simulator.LmuWindows }
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "brake"))
-            assertEquals(listOf("データがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("ブレーキ残量はデータがありません"), spoken.map { it.narratedText })
         }
 
     @Test
@@ -4445,7 +4448,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(LmuWindowsTyreWearData(emptyMap()))
             requests.send(request)
             assertEquals(
-                listOf("データがありません", "タイヤ摩耗残り42%", "データがありません", "データがありません"),
+                listOf("タイヤ摩耗はデータがありません", "タイヤ摩耗残り42%", "タイヤ摩耗はデータがありません", "タイヤ摩耗はデータがありません"),
                 spoken.map { it.narratedText },
             )
             assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
@@ -4472,7 +4475,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "tyre"))
             selected.update { Simulator.LmuWindows }
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "tyre"))
-            assertEquals(listOf("データがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("タイヤ摩耗はデータがありません"), spoken.map { it.narratedText })
         }
 
     @Test
