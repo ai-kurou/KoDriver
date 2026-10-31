@@ -6,7 +6,6 @@ import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT
@@ -27,10 +26,12 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemName
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
+import kurou.kodriver.domain.model.MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
+import kurou.kodriver.domain.model.joinManualReadoutTexts
+import kurou.kodriver.domain.model.manualReadoutNoDataText
 import kotlin.math.roundToInt
 
 private const val LMU_WINDOWS_PERCENTAGE_SCALE = 100.0
@@ -50,19 +51,7 @@ class DetermineLmuWindowsManualReadoutUseCase {
             } else {
                 lmuWindowsManualReadoutEventKey(firstKey)
             }
-        val text =
-            when {
-                supportedItems.isEmpty() -> {
-                    MANUAL_READOUT_NO_ITEMS_TEXT
-                }
-
-                else -> {
-                    supportedItems
-                        .map { item -> manualReadoutItemText(item) }
-                        .filter { it.isNotBlank() }
-                        .joinToString("、")
-                }
-            }
+        val text = joinManualReadoutTexts(supportedItems.map { item -> manualReadoutItemText(item) })
         return LmuWindowsNarratorReadoutDecision(
             state = state,
             events = listOf(LmuWindowsManualReadoutText(key, text)),
@@ -162,8 +151,7 @@ class DetermineLmuWindowsManualReadoutUseCase {
     }
 
     private fun manualReadoutItemText(item: LmuWindowsManualReadoutItem): String {
-        val noDataText =
-            "${lmuWindowsManualReadoutItemName(item.key)}は$LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT"
+        val noDataText = manualReadoutNoDataText(lmuWindowsManualReadoutItemName(item.key))
         if (isManualLapBasedItem(item.key)) return manualLapBasedText(item) ?: noDataText
         if (isLmuWindowsManualReadoutTemperatureItem(item.key)) {
             return item.celsius?.let {
@@ -208,7 +196,7 @@ class DetermineLmuWindowsManualReadoutUseCase {
                         data?.let { (it.remainingRatio.value * LMU_WINDOWS_PERCENTAGE_SCALE).roundToInt() } ?: 0,
                         resolvedText =
                             if (data == null) {
-                                LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
+                                MANUAL_READOUT_NO_DATA_TEXT
                             } else {
                                 textTemplate?.let {
                                     formatLmuWindowsRemainingVirtualEnergyReadoutText(
@@ -231,7 +219,7 @@ class DetermineLmuWindowsManualReadoutUseCase {
         val percentage = if (minimum == null) null else minimum.roundToInt()
         val resolvedText =
             if (percentage == null) {
-                LMU_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
+                MANUAL_READOUT_NO_DATA_TEXT
             } else if (textTemplate == null) {
                 null
             } else {

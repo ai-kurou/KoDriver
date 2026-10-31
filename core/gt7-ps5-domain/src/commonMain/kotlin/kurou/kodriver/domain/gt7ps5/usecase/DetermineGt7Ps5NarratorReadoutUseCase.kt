@@ -9,7 +9,6 @@ import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.Gt7Ps5TyreTemperatureCurrentValue
 import kurou.kodriver.domain.engine.ReadoutTextEvent
-import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
@@ -21,9 +20,10 @@ import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemName
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
-import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.joinManualReadoutTexts
+import kurou.kodriver.domain.model.manualReadoutNoDataText
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.usecase.determineHysteresisState
 import kotlin.math.roundToInt
@@ -90,15 +90,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         items: List<Gt7Ps5ManualReadoutItem>,
     ): Gt7Ps5NarratorReadoutDecision {
         val supportedEvents = items.mapNotNull { manualCurrentValue(it) }.take(MANUAL_READOUT_SET_ITEM_MAX)
-        val text =
-            if (supportedEvents.isEmpty()) {
-                MANUAL_READOUT_NO_ITEMS_TEXT
-            } else {
-                supportedEvents
-                    .map { event -> event.resolvedText ?: event.narratedText }
-                    .filter { it.isNotBlank() }
-                    .joinToString("、")
-            }
+        val text = joinManualReadoutTexts(supportedEvents.map { event -> event.resolvedText ?: event.narratedText })
         // セット全体を1イベントにまとめ、項目の構成にかかわらず開始音・ログのキーは残り燃料に統一する。
         return Gt7Ps5NarratorReadoutDecision(
             state = state,
@@ -149,9 +141,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             }
 
             item.value == null -> {
-                event.withResolvedText(
-                    "${gt7Ps5ManualReadoutItemName(item.key)}は$GT7_PS5_MANUAL_READOUT_NO_DATA_TEXT",
-                )
+                event.withResolvedText(manualReadoutNoDataText(gt7Ps5ManualReadoutItemName(item.key)))
             }
 
             else -> {

@@ -1,6 +1,5 @@
 package kurou.kodriver.domain.acewindows.usecase
 
-import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
@@ -42,9 +41,10 @@ import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.joinManualReadoutTexts
+import kurou.kodriver.domain.model.manualReadoutNoDataText
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.usecase.determineHysteresisState
 import kotlin.math.floor
@@ -111,15 +111,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         items: List<AceWindowsManualReadoutItem>,
     ): AceWindowsNarratorReadoutDecision {
         val supportedEvents = items.mapNotNull { manualCurrentValue(it) }.take(MANUAL_READOUT_SET_ITEM_MAX)
-        val text =
-            if (supportedEvents.isEmpty()) {
-                MANUAL_READOUT_NO_ITEMS_TEXT
-            } else {
-                supportedEvents
-                    .map { event -> event.resolvedText ?: event.narratedText }
-                    .filter { it.isNotBlank() }
-                    .joinToString("、")
-            }
+        val text = joinManualReadoutTexts(supportedEvents.map { event -> event.resolvedText ?: event.narratedText })
         return AceWindowsNarratorReadoutDecision(
             state = state,
             events = listOf(AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, text)),
@@ -200,9 +192,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             }
 
             item.value == null -> {
-                event.withResolvedText(
-                    "${aceWindowsManualReadoutItemName(item.key)}は$ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT",
-                )
+                event.withResolvedText(manualReadoutNoDataText(aceWindowsManualReadoutItemName(item.key)))
             }
 
             else -> {
