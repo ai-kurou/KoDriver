@@ -9,6 +9,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemName
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
@@ -31,6 +32,7 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.ManualReadoutValue
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
@@ -73,10 +75,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val key = AceWindowsReadoutItemKey.TyreTemperature.Root.value
         val state = AceWindowsNarratorState(tyreOverheating = true)
         listOf(
-            AceWindowsManualReadoutItem(key, "温度{celsius}℃ {other}", 90) to "温度90℃ {other}",
+            AceWindowsManualReadoutItem(key, "温度{celsius}℃ {other}", ManualReadoutValue.Celsius(90)) to "温度90℃ {other}",
             AceWindowsManualReadoutItem(key, "タイヤ温度{celsius}℃", null) to "タイヤ温度はデータがありません",
             AceWindowsManualReadoutItem(key, "", null) to "",
-            AceWindowsManualReadoutItem(key, "", 90) to "",
+            AceWindowsManualReadoutItem(key, "", ManualReadoutValue.Celsius(90)) to "",
         ).forEach { (item, expected) ->
             val decision = useCase.determineManualReadout(state, listOf(item))
             assertEquals(state, decision.state)
@@ -90,11 +92,11 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val state = AceWindowsNarratorState(remainingFuelWarned = true, lastRemainingFuelLaps = 2)
         val items =
             listOf(
-                AceWindowsManualReadoutItem("unknown", "非対応", 1),
-                AceWindowsManualReadoutItem(key, "あと{percent}% {unknown}", 42),
+                AceWindowsManualReadoutItem("unknown", "非対応", ManualReadoutValue.Percent(1)),
+                AceWindowsManualReadoutItem(key, "あと{percent}% {unknown}", ManualReadoutValue.Percent(42)),
                 AceWindowsManualReadoutItem(key, "  ", null),
                 AceWindowsManualReadoutItem(key, "残量", null),
-                AceWindowsManualReadoutItem(key, "上限超過", 1),
+                AceWindowsManualReadoutItem(key, "上限超過", ManualReadoutValue.Percent(1)),
             )
         val decision = useCase.determineManualReadout(state, items)
         assertTrue(state === decision.state)
@@ -114,19 +116,21 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
         val cases =
             listOf(
-                listOf(AceWindowsManualReadoutItem(key, "燃料{percent}%", 42)) to "燃料42%",
+                listOf(AceWindowsManualReadoutItem(key, "燃料{percent}%", ManualReadoutValue.Percent(42))) to "燃料42%",
                 listOf(AceWindowsManualReadoutItem(key, "燃料{percent}%", null)) to "残り燃料はデータがありません",
                 listOf(
                     AceWindowsManualReadoutItem(key, "燃料{percent}%", null),
                     AceWindowsManualReadoutItem(key, "残量{percent}%", null),
                 ) to "残り燃料はデータがありません、残り燃料はデータがありません",
                 listOf(
-                    AceWindowsManualReadoutItem(key, "", 42),
+                    AceWindowsManualReadoutItem(key, "", ManualReadoutValue.Percent(42)),
                     AceWindowsManualReadoutItem(key, "残量{percent}%", null),
                 ) to "残り燃料はデータがありません",
-                listOf(AceWindowsManualReadoutItem(key, "", 42)) to "",
+                listOf(AceWindowsManualReadoutItem(key, "", ManualReadoutValue.Percent(42))) to "",
                 listOf(AceWindowsManualReadoutItem(key, "  ", null)) to "",
-                listOf(AceWindowsManualReadoutItem("unknown", "非対応", 42)) to "読み上げる項目がありません",
+                listOf(
+                    AceWindowsManualReadoutItem("unknown", "非対応", ManualReadoutValue.Percent(42)),
+                ) to "読み上げる項目がありません",
                 emptyList<AceWindowsManualReadoutItem>() to "読み上げる項目がありません",
             )
         cases.forEach { (items, text) ->
@@ -165,14 +169,15 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val lapsKey = AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value
         val cases =
             listOf(
-                listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", 5)) to "約5周",
-                listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", 0)) to "燃料残り1周未満",
-                listOf(AceWindowsManualReadoutItem(lapsKey, "", 0)) to "",
+                listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", ManualReadoutValue.RemainingLaps(5))) to "約5周",
+                listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", ManualReadoutValue.RemainingLaps(0))) to
+                    "燃料残り1周未満",
+                listOf(AceWindowsManualReadoutItem(lapsKey, "", ManualReadoutValue.RemainingLaps(0))) to "",
                 listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", null)) to "残り燃料の周回数はデータがありません",
-                listOf(AceWindowsManualReadoutItem(lapsKey, "", 5)) to "",
+                listOf(AceWindowsManualReadoutItem(lapsKey, "", ManualReadoutValue.RemainingLaps(5))) to "",
                 listOf(
-                    AceWindowsManualReadoutItem(fuelKey, "燃料{percent}%", 42),
-                    AceWindowsManualReadoutItem(lapsKey, "約{laps}周", 5),
+                    AceWindowsManualReadoutItem(fuelKey, "燃料{percent}%", ManualReadoutValue.Percent(42)),
+                    AceWindowsManualReadoutItem(lapsKey, "約{laps}周", ManualReadoutValue.RemainingLaps(5)),
                 ) to "燃料42%、約5周",
             )
         cases.forEach { (items, text) ->
@@ -189,7 +194,8 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val key = AceWindowsReadoutItemKey.MyBestLap.Root.value
         val cases =
             listOf(
-                AceWindowsManualReadoutItem(key, "自己ベスト {laptime}", 83_456) to "自己ベスト 1分23秒456",
+                AceWindowsManualReadoutItem(key, "自己ベスト {laptime}", ManualReadoutValue.LapTimeMs(83_456)) to
+                    "自己ベスト 1分23秒456",
                 AceWindowsManualReadoutItem(key, "", null) to "",
                 AceWindowsManualReadoutItem(key, "自己ベスト {laptime}", null) to "自己ベストラップはデータがありません",
             )
@@ -1210,6 +1216,25 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                     settings = settings(thresholdPercentage = 101),
                 )
             assertEquals(listOf(AceWindowsRemainingFuelWarning(100)), decision.events)
+        }
+    }
+
+    @Test
+    fun `項目キーに対応しない種別の値はデータなしとして読む`() {
+        val state = AceWindowsNarratorState()
+        listOf(
+            AceWindowsReadoutItemKey.RemainingFuel.Root to ManualReadoutValue.Celsius(90),
+            AceWindowsReadoutItemKey.RemainingFuelLaps.Root to ManualReadoutValue.Percent(42),
+            AceWindowsReadoutItemKey.MyBestLap.Root to ManualReadoutValue.RemainingLaps(5),
+            AceWindowsReadoutItemKey.TyreTemperature.Root to ManualReadoutValue.LapTimeMs(83_456),
+        ).forEach { (key, value) ->
+            val decision =
+                useCase
+                    .determineManualReadout(state, listOf(AceWindowsManualReadoutItem(key.value, "x", value)))
+            assertEquals(
+                "${aceWindowsManualReadoutItemName(key.value)}はデータがありません",
+                decision.events.single().narratedText,
+            )
         }
     }
 }

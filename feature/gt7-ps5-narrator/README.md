@@ -101,7 +101,7 @@ GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持
 開始燃料＋総給油量－現在燃料を、完走周回数＋`CURRENT_LAP_CONSUMPTION_WEIGHT`（0.9）で割った平均消費を使い、
 現在燃料÷平均消費を整数へ切り捨てる。開始燃料・開始周回が未設定、完走周回数が0以下、消費燃料が0以下なら null。
 最終受信から5秒以内だけ推定値を使い、未受信・鮮度切れは「残り燃料の周回数はデータがありません」を読む。
-`Gt7Ps5ManualReadoutItem.value` の単位は残り燃料が％、残り燃料の周回数が周、タイヤ温度が℃。
+`Gt7Ps5ManualReadoutItem.value` は `ManualReadoutValue`（Percent・Celsius・LapTimeMs・RemainingLaps）で、残り燃料が `Percent`（％）、残り燃料の周回数が `RemainingLaps`（周）、タイヤ温度が `Celsius`（℃）、自己ベストが `LapTimeMs`（ms）。項目キーと種別が対応しない値はデータなしとして扱う。
 既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）で、
 `formatGt7Ps5RemainingFuelLapsReadoutText` で置換する。0周以下は「燃料残り1周未満」。
 テンプレートが空欄なら、0周以下やデータなしでも読まない。

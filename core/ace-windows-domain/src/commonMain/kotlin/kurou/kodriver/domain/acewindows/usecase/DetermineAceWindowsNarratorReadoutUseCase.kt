@@ -42,6 +42,7 @@ import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
+import kurou.kodriver.domain.model.ManualReadoutValue
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.joinManualReadoutTexts
 import kurou.kodriver.domain.model.manualReadoutNoDataText
@@ -129,13 +130,14 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         }
 
     private fun manualTyreTemperatureValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
-        val celsius = item.value ?: 0
+        val data = (item.value as? ManualReadoutValue.Celsius)?.value
+        val celsius = data ?: 0
         val event =
             AceWindowsTyreTemperatureCurrentValue(
                 celsius,
                 formatAceWindowsTyreTemperatureReadoutText(item.textTemplate, celsius),
             )
-        return withManualNoDataText(item, event)
+        return withManualNoDataText(item, event, data != null)
     }
 
     /** 未受信・鮮度切れ・全輪が非有限または0以下の場合はデータなしとして扱う。 */
@@ -149,27 +151,30 @@ class DetermineAceWindowsNarratorReadoutUseCase {
     }
 
     private fun manualMyBestLapValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
-        val lapTimeMs = item.value ?: 0
+        val data = (item.value as? ManualReadoutValue.LapTimeMs)?.value
+        val lapTimeMs = data ?: 0
         val event =
             AceWindowsMyBestLapCurrentValue(
                 lapTimeMs,
                 formatAceWindowsMyBestLapReadoutText(item.textTemplate, lapTimeMs),
             )
-        return withManualNoDataText(item, event)
+        return withManualNoDataText(item, event, data != null)
     }
 
     private fun manualRemainingFuelValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
-        val value = item.value ?: 0
+        val data = (item.value as? ManualReadoutValue.Percent)?.value
+        val value = data ?: 0
         val event =
             AceWindowsRemainingFuelCurrentValue(
                 value,
                 formatAceWindowsRemainingFuelReadoutText(item.textTemplate, value),
             )
-        return withManualNoDataText(item, event)
+        return withManualNoDataText(item, event, data != null)
     }
 
     private fun manualRemainingFuelLapsValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
-        val laps = item.value ?: 0
+        val data = (item.value as? ManualReadoutValue.RemainingLaps)?.value
+        val laps = data ?: 0
         val event =
             AceWindowsRemainingFuelLapsCurrentValue(
                 laps,
@@ -179,19 +184,20 @@ class DetermineAceWindowsNarratorReadoutUseCase {
                     formatAceWindowsRemainingFuelLapsReadoutText(item.textTemplate, laps)
                 },
             )
-        return withManualNoDataText(item, event)
+        return withManualNoDataText(item, event, data != null)
     }
 
     private fun withManualNoDataText(
         item: AceWindowsManualReadoutItem,
         event: ReadoutTextEvent,
+        hasData: Boolean,
     ): ReadoutTextEvent =
         when {
             item.textTemplate.isBlank() -> {
                 event.withResolvedText("")
             }
 
-            item.value == null -> {
+            !hasData -> {
                 event.withResolvedText(manualReadoutNoDataText(aceWindowsManualReadoutItemName(item.key)))
             }
 
