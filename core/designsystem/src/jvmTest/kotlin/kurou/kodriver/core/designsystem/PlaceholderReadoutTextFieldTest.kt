@@ -184,6 +184,7 @@ class PlaceholderReadoutTextFieldTest {
         setContent(maxLength = 30, savedTextProvider = { saved })
 
         rule.onNode(editableTextField).performTextReplacement("あ".repeat(31))
+        rule.onNode(editableTextField).assertEditableText("あ".repeat(30))
         rule.runOnIdle { saved = "あ".repeat(30) }
         rule.waitForIdle()
         rule.runOnIdle { saved = "外部更新" }
@@ -202,6 +203,7 @@ class PlaceholderReadoutTextFieldTest {
         rule.onNodeWithText("ラップタイムを挿入").performClick()
         rule.waitForIdle()
 
+        rule.onNode(editableTextField).assertEditableText("前半{laptime}後半")
         assertEquals(listOf("前半後半", "前半{laptime}後半"), changedTexts)
     }
 
