@@ -13,13 +13,13 @@ internal class LmuWindowsRemainingFuelPreferencesRepositoryImpl(
 
     override fun observeThresholdPercentage(): Flow<Int> = dataStore.observeProperty { it.thresholdPercentage }
 
-    override suspend fun saveThresholdPercentage(value: Int) {
-        dataStore.saveProperty(value) { prefs, item -> prefs.copy(thresholdPercentage = item) }
+    override suspend fun saveThresholdPercentage(percentage: Int) {
+        dataStore.saveProperty(percentage) { prefs, item -> prefs.copy(thresholdPercentage = item) }
     }
 
     override fun observeReadoutText(): Flow<String> = dataStore.observeProperty { it.readoutText }
 
-    override suspend fun saveReadoutText(value: String) {
-        dataStore.saveProperty(value) { prefs, item -> prefs.copy(readoutText = item) }
+    override suspend fun saveReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, item -> prefs.copy(readoutText = item) }
     }
 }
