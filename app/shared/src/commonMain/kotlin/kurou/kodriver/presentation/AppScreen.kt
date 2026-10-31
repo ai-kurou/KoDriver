@@ -448,7 +448,6 @@ internal fun DefaultOtherDetailContent(
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.WindowsSpeechUnavailable,
         -> {
-            Unit
         }
     }
 }
