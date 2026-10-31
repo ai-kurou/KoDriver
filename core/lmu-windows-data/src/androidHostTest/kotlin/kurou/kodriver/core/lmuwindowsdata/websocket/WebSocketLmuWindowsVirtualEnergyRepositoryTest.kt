@@ -40,11 +40,11 @@ class WebSocketLmuWindowsVirtualEnergyRepositoryTest {
         }
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) =
+    private fun buildRepository() =
         WebSocketLmuWindowsVirtualEnergyRepository(
             serverIpRepository = fakeIpRepository,
             port = server.port,
-            retryDelayMs = retryDelayMs,
+            retryDelayMs = 0L,
         )
 
     @Test

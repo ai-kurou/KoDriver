@@ -41,11 +41,11 @@ class WebSocketLmuWindowsCarGapRepositoryTest {
         }
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) =
+    private fun buildRepository() =
         WebSocketLmuWindowsCarGapRepository(
             serverIpRepository = fakeIpRepository,
             port = server.port,
-            retryDelayMs = retryDelayMs,
+            retryDelayMs = 0L,
         )
 
     @Test
