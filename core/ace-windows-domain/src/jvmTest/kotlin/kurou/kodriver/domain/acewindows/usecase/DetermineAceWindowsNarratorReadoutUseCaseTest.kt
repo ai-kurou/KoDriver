@@ -166,6 +166,8 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val cases =
             listOf(
                 listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", 5)) to "約5周",
+                listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", 0)) to "燃料残り1周未満",
+                listOf(AceWindowsManualReadoutItem(lapsKey, "", 0)) to "",
                 listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", null)) to "残り燃料の周回数はデータがありません",
                 listOf(AceWindowsManualReadoutItem(lapsKey, "", 5)) to "",
                 listOf(

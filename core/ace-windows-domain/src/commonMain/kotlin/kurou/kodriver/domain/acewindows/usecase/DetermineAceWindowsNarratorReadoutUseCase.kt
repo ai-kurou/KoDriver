@@ -2,6 +2,7 @@ package kurou.kodriver.domain.acewindows.usecase
 
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
@@ -180,7 +181,11 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         val event =
             AceWindowsRemainingFuelLapsCurrentValue(
                 laps,
-                formatAceWindowsRemainingFuelLapsReadoutText(item.textTemplate, laps),
+                if (laps <= 0) {
+                    ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+                } else {
+                    formatAceWindowsRemainingFuelLapsReadoutText(item.textTemplate, laps)
+                },
             )
         return withManualNoDataText(item, event)
     }
