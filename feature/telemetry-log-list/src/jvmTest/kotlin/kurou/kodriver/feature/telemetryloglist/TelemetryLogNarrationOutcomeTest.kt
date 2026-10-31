@@ -2,9 +2,9 @@ package kurou.kodriver.feature.telemetryloglist
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.PlaylistRemove
-import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -43,7 +43,7 @@ class TelemetryLogNarrationOutcomeTest {
         assertEquals(Icons.AutoMirrored.Filled.PlaylistAdd, narrationOutcomeIcon(NarrationOutcome.QUEUED))
         assertEquals(Icons.AutoMirrored.Filled.VolumeUp, narrationOutcomeIcon(NarrationOutcome.SPOKEN))
         assertEquals(Icons.Filled.PlaylistRemove, narrationOutcomeIcon(NarrationOutcome.INTERRUPTED))
-        assertEquals(Icons.Filled.VolumeOff, narrationOutcomeIcon(NarrationOutcome.SKIPPED))
+        assertEquals(Icons.AutoMirrored.Filled.VolumeOff, narrationOutcomeIcon(NarrationOutcome.SKIPPED))
     }
 
     @Test

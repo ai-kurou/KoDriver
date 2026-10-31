@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Feedback
@@ -35,7 +36,6 @@ import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlaylistRemove
 import androidx.compose.material.icons.filled.TouchApp
-import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material.icons.outlined.Inbox
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -587,7 +587,7 @@ internal fun narrationOutcomeIcon(outcome: NarrationOutcome): ImageVector =
         NarrationOutcome.QUEUED -> Icons.AutoMirrored.Filled.PlaylistAdd
         NarrationOutcome.SPOKEN -> Icons.AutoMirrored.Filled.VolumeUp
         NarrationOutcome.INTERRUPTED -> Icons.Filled.PlaylistRemove
-        NarrationOutcome.SKIPPED -> Icons.Filled.VolumeOff
+        NarrationOutcome.SKIPPED -> Icons.AutoMirrored.Filled.VolumeOff
     }
 
 private fun formatTimeOfDay(milliseconds: Long): String {
