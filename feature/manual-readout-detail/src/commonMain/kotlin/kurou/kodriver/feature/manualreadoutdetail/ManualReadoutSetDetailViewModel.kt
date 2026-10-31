@@ -87,7 +87,7 @@ internal class ManualReadoutSetDetailViewModel(
         val state = uiState.value
         val key =
             state.selectedItemKeys.firstOrNull()?.let {
-                if (simulatorId == Simulator.LmuWindows.id) {
+                if (simulatorId == Simulator.LmuWindows.id && it in availableItemKeys) {
                     lmuWindowsManualReadoutEventKey(it)
                 } else {
                     ReadoutItemKey.fromValue(it)
