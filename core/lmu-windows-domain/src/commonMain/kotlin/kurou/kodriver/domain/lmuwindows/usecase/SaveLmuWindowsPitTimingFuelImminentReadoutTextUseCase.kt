@@ -1,12 +1,12 @@
 package kurou.kodriver.domain.lmuwindows.usecase
 
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
-import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
+import kurou.kodriver.domain.model.normalizeReadoutCustomText
 
 class SaveLmuWindowsPitTimingFuelImminentReadoutTextUseCase(
     private val repository: LmuWindowsPitTimingReadoutTextPreferencesRepository,
 ) {
     suspend operator fun invoke(text: String) {
-        repository.saveFuelImminentReadoutText(text.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH))
+        repository.saveFuelImminentReadoutText(text.normalizeReadoutCustomText())
     }
 }

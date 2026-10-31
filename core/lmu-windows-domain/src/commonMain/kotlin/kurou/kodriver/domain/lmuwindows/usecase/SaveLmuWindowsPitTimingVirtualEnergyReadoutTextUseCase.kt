@@ -1,12 +1,12 @@
 package kurou.kodriver.domain.lmuwindows.usecase
 
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
-import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
+import kurou.kodriver.domain.model.normalizeReadoutCustomText
 
 class SaveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase(
     private val repository: LmuWindowsPitTimingReadoutTextPreferencesRepository,
 ) {
     suspend operator fun invoke(text: String) {
-        repository.saveVirtualEnergyReadoutText(text.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH))
+        repository.saveVirtualEnergyReadoutText(text.normalizeReadoutCustomText())
     }
 }
