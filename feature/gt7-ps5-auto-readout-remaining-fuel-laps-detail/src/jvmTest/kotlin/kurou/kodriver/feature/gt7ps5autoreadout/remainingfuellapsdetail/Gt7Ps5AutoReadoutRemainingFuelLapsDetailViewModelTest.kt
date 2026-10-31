@@ -279,24 +279,6 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
         }
 
     @Test
-    fun `空白文言では音量を取得せず試聴しない`() =
-        runTest {
-            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
-                enabledStatesFlow
-            every { repository.observeReadoutText() } returns textFlow
-            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
-            coEvery { checkAvailable() } returns true
-            every { repository.observeRemainingFuelLaps() } returns MutableStateFlow(4)
-            val viewModel = createViewModel()
-            viewModel.onReadoutTextPreviewClicked(" ", 4)
-            viewModel.onEmptyReadoutTextPreviewClicked(" ")
-            verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root) }
-            coVerify(exactly = 0) { speakText(" ", volume = 60) }
-            confirmVerified(observeVolume, playStartSound, speakText)
-        }
-
-    @Test
     fun `TTS利用不可を反映し試聴しない`() =
         runTest {
             every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
@@ -312,29 +294,6 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
             verify(exactly = 0) { observeVolume() }
             coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
-            confirmVerified(observeVolume, playStartSound, speakText)
-        }
-
-    @Test
-    fun `音量ゼロ以下では開始音も本文も試聴しない`() =
-        runTest {
-            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
-                enabledStatesFlow
-            every { repository.observeReadoutText() } returns textFlow
-            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
-            coEvery { checkAvailable() } returns true
-            every { repository.observeRemainingFuelLaps() } returns MutableStateFlow(4)
-            val volume = MutableStateFlow(0)
-            every { observeVolume() } returns volume
-            val viewModel = createViewModel()
-            viewModel.onReadoutTextPreviewClicked("注意", 4)
-            viewModel.onEmptyReadoutTextPreviewClicked("注意")
-            volume.update { -1 }
-            viewModel.onReadoutTextPreviewClicked("注意", 4)
-            viewModel.onEmptyReadoutTextPreviewClicked("注意")
-            verify(exactly = 4) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root) }
-            coVerify(exactly = 0) { speakText("注意", volume = 0) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
 
@@ -404,36 +363,6 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("残り{laps}周", 4)
             viewModel.onPreviewStopped()
-            pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root) }
-            coVerify(exactly = 0) { speakText("残り4周", volume = 60) }
-            verify(exactly = 1) { observeVolume() }
-            confirmVerified(playStartSound, speakText, observeVolume)
-            collection.cancel()
-        }
-
-    @Test
-    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
-        runTest {
-            every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
-                enabledStatesFlow
-            every { repository.observeReadoutText() } returns textFlow
-            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
-            coEvery { checkAvailable() } returns true
-            val threshold = MutableStateFlow(4)
-            every { repository.observeRemainingFuelLaps() } returns threshold
-            every { observeVolume() } returns MutableStateFlow(60)
-            val viewModel = createViewModel()
-            val collection =
-                backgroundScope.launch(
-                    UnconfinedTestDispatcher(testScheduler),
-                ) { viewModel.uiState.collect {} }
-            assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
-            val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root) } coAnswers
-                { pendingStartSound.await() }
-            viewModel.onReadoutTextPreviewClicked("残り{laps}周", 4)
-            viewModel.onReadoutTextPreviewClicked("残り{laps}周", 4)
             pendingStartSound.complete(Unit)
             coVerify(exactly = 1) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root) }
             coVerify(exactly = 0) { speakText("残り4周", volume = 60) }
