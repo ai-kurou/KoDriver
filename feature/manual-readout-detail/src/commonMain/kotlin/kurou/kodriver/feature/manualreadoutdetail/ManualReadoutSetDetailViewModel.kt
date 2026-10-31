@@ -10,12 +10,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutEventKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.isManualReadoutHotkeyVirtualKeyCode
 import kurou.kodriver.domain.model.normalizeReadoutCustomText
 import kurou.kodriver.domain.model.takeManualReadoutSetName
@@ -87,11 +85,7 @@ internal class ManualReadoutSetDetailViewModel(
         val state = uiState.value
         val key =
             state.selectedItemKeys.firstOrNull()?.let {
-                if (simulatorId == Simulator.LmuWindows.id && it in availableItemKeys) {
-                    lmuWindowsManualReadoutEventKey(it)
-                } else {
-                    ReadoutItemKey.fromValue(it)
-                }
+                manualReadoutItemDefinitions[simulatorId]?.get(it)?.eventKey ?: ReadoutItemKey.fromValue(it)
             } ?: return
         preview.onPreviewClicked(manualReadoutPreview(state), key)
     }

@@ -171,3 +171,5 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `ManualReadoutSimulatorSpec` から引く（詳細は `core/domain/README.md`）。
 新しいシミュレーターの追加は、そのドメインモジュールの `*ReadoutItemKeys.kt` へ spec を渡すだけでよく、詳細側の変更は不要。
 テストでは事前に各 `register*ReadoutItemKeys()`（`registerAllManualReadoutSimulators()`）を呼ぶ。
+
+開始音・優先度に使う event キーは `ManualReadoutItemDefinition.eventKey` を唯一の定義元とし、実読み上げとプレビュー（`onPreviewClicked`）の両方が同じ値を参照する。省略時は項目キー自身で、LMU のように複数項目が同じ event キーを共有する場合だけ定義側で指定する。

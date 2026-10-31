@@ -38,4 +38,31 @@ class ManualReadoutItemDefinitionTest {
             manualReadoutItemDefinitionMapOf(first, second),
         )
     }
+
+    @Test
+    fun `eventKeyは省略するとキー自身になり指定するとその値になる`() {
+        val default =
+            manualReadoutItemDefinitionOf(
+                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy,
+                ManualReadoutItemCategory.VIRTUAL_ENERGY,
+                "name",
+                "text",
+                "{p}",
+                { emptyList() },
+                { it },
+            )
+        val overridden =
+            manualReadoutItemDefinitionOf(
+                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy,
+                ManualReadoutItemCategory.VIRTUAL_ENERGY,
+                "name",
+                "text",
+                "{p}",
+                { emptyList() },
+                { it },
+                LmuWindowsReadoutItemKey.PitTiming.Root,
+            )
+        assertEquals(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, default.eventKey)
+        assertEquals(LmuWindowsReadoutItemKey.PitTiming.Root, overridden.eventKey)
+    }
 }

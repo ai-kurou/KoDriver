@@ -109,6 +109,7 @@ class ReadoutItemKeyRegistryTest {
                 "{p}",
                 { emptyList() },
                 { it },
+                ChildKey("key"),
             )
         val lmu =
             SimulatorReadoutSpec(
@@ -159,6 +160,7 @@ class ReadoutItemKeyRegistryTest {
                 "{p}",
                 { emptyList() },
                 { it },
+                ChildKey("key"),
             )
         val definitions = mutableMapOf("key" to definition)
         ReadoutItemKeyRegistry.register(
