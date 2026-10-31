@@ -7,6 +7,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlin.concurrent.Volatile
 
@@ -66,8 +68,9 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
 
     // playJob はキューのチェーン最後尾しか指さないため、割り込み時に再生中・待機中の
     // ジョブをまとめてキャンセルできるよう、全再生ジョブをこの親 Job にぶら下げる。
-    // 新しい再生を launch する前に、生存中の Job へ差し替える。
-    private var playbackParent: Job = SupervisorJob()
+    // 新しい再生を launch する前に、生存中のスコープへ差し替える。
+    // launch に Job を直接渡すと構造化並行性が崩れるため、Job を持つ CoroutineScope として保持する。
+    private var playbackScope: CoroutineScope = newPlaybackScope()
 
     // 再生側の待機ジョブが割り込みでキャンセルされても、過去の停止完了待ちを保持する。
     private var stopBarrier: Job = Job().apply { complete() }
@@ -79,6 +82,8 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     // キャンセル後に古いジョブが _currentKey を上書きしないよう playJob で二重確認する。
     val currentKey: KEY?
         get() = _currentKey.takeIf { playJob?.isActive == true }
+
+    private fun newPlaybackScope(): CoroutineScope = CoroutineScope(scope.coroutineContext + SupervisorJob())
 
     init {
         scope.launch { volumeFlow.collect { currentVolume = it } }
@@ -106,13 +111,13 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     ) {
         val body = playbackBody(event) ?: return
         if (queue) {
-            // stop() 直後で playbackParent がキャンセル済みのままだと、その配下へ launch した
+            // stop() 直後で playbackScope がキャンセル済みのままだと、その配下へ launch した
             // 瞬間に子ジョブごとキャンセルされてしまうため、生存中でなければ差し替える。
-            if (!playbackParent.isActive) playbackParent = SupervisorJob()
+            if (!playbackScope.isActive) playbackScope = newPlaybackScope()
             val barrier = stopBarrier
             val previousJob = playJob
             playJob =
-                scope.launch(playbackParent) {
+                playbackScope.launch {
                     barrier.join()
                     previousJob?.join()
                     play(event, body)
@@ -120,9 +125,9 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
             return
         }
         val barrier = cancelPlayback()
-        playbackParent = SupervisorJob()
+        playbackScope = newPlaybackScope()
         playJob =
-            scope.launch(playbackParent) {
+            playbackScope.launch {
                 barrier.join()
                 play(event, body)
             }
@@ -156,17 +161,17 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         cancelPlayback()
     }
 
-    // playbackParent.cancel() は SoundPlayer の停止処理を非同期にトリガーするだけで、
+    // playbackScope.cancel() は SoundPlayer の停止処理を非同期にトリガーするだけで、
     // 呼び出した時点では前の再生がまだ鳴っている。過去のバリアと今回キャンセルした親 Job の
     // 完了を順に待つバリアを返し、次の再生はそれを join() してから開始する。
-    // バリアは playbackParent 配下ではなく scope へ直接 launch するため、連続割り込みで
+    // バリアは playbackScope 配下ではなく scope へ直接 launch するため、連続割り込みで
     // 再生側の待機ジョブがキャンセルされても、過去の停止完了待ちは失われない。
     //
-    // ここでは playbackParent を新しい Job に差し替えない。stop() 後もキャンセル済みの親を
+    // ここでは playbackScope を新しい Job に差し替えない。stop() 後もキャンセル済みの親を
     // 保持し、新しい再生を実際に launch する直前に差し替える。停止処理中の親を空の親へ
     // 置き換えず、stop() を含む各呼び出しの停止完了待ちを stopBarrier に連鎖させる。
     private fun cancelPlayback(): Job {
-        val cancelled = playbackParent
+        val cancelled = playbackScope.coroutineContext.job
         cancelled.cancel()
         playJob = null
         // キャンセルされた play() は _currentKey のクリアまで進まないため、停止待ちで新しいジョブが
@@ -184,9 +189,9 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     fun previewStartSound(type: START_TYPE) {
         val sound = startSounds[type] ?: return
         val barrier = cancelPlayback()
-        playbackParent = SupervisorJob()
+        playbackScope = newPlaybackScope()
         playJob =
-            scope.launch(playbackParent) {
+            playbackScope.launch {
                 barrier.join()
                 soundPlayer.play(sound, currentVolume)
             }
@@ -202,9 +207,9 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         if (!startSoundEnabled) return
         val sound = startSounds[currentStartSoundType] ?: return
         val barrier = cancelPlayback()
-        playbackParent = SupervisorJob()
+        playbackScope = newPlaybackScope()
         val job =
-            scope.launch(playbackParent) {
+            playbackScope.launch {
                 barrier.join()
                 soundPlayer.play(sound, currentVolume)
             }

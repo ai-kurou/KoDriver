@@ -26,7 +26,7 @@
 受け取ることで、3つの narrator feature がそのまま利用できます。各 feature は `TextToSpeechEngine` を実装する薄い
 アダプタ（`LmuWindowsNarratorEngine` など）でこのエンジンをラップします。優先度の高いイベントで割り込む際の
 `stop()` → `speak()` の連続呼び出しに対しても、直前にキャンセルした再生ジョブの停止処理が完了するまで新しい再生を
-始めないよう `lastCancelledPlayback` で待ち合わせます。
+始めないよう `stopBarrier` で待ち合わせます。
 
 `NarratorEngine` の `isCustomSpeakEvent` が true のイベントは、開始音の後に `customSpeak` へ本文と音量を渡す。false のイベントは再生対象外で、イベント別のWAV本文は持たない。
 本文は`SpeakTextUseCase`を通じ、保存済み音声ID・読み上げ速度（0.5〜2.0、既定1.0）・声の高さ（0.5〜2.0、既定1.0）を使う。
