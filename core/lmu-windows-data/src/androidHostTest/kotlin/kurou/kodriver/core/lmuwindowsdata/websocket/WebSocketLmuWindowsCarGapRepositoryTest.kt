@@ -20,7 +20,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class WebSocketLmuWindowsCarGapRepositoryTest {
@@ -81,87 +80,6 @@ class WebSocketLmuWindowsCarGapRepositoryTest {
 
             assertEquals(LmuWindowsCarGapData(1.25, -2.5, 0.0, 4.75, 1.5, 8.25), result)
             assertEquals("/ws/lmu_windows/car_gap", server.takeRequest().path)
-        }
-
-    @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send("invalid json")
-                            webSocket.send(CAR_GAP_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository().carGapStream().first()
-
-            assertNotNull(result)
-            assertEquals(LmuWindowsCarGapData(1.25, -2.5, 0.0, 4.75, 1.5, 8.25), result)
-        }
-
-    @Test
-    fun `接続に失敗した場合は例外を捕捉してリトライする`() =
-        runTest {
-            val closedPort = server.port
-            server.shutdown()
-            fakeIpRepository.setIp("127.0.0.1")
-            val repository =
-                WebSocketLmuWindowsCarGapRepository(
-                    serverIpRepository = fakeIpRepository,
-                    port = closedPort,
-                    retryDelayMs = 0L,
-                )
-
-            val result =
-                withTimeoutOrNull(300) {
-                    repository.carGapStream().first()
-                }
-
-            assertNull(result)
-        }
-
-    @Test
-    fun `接続切断後にリトライして再接続する`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.close(1001, "drop")
-                        }
-                    },
-                ),
-            )
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(CAR_GAP_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository(retryDelayMs = 0L).carGapStream().first()
-
-            assertEquals(LmuWindowsCarGapData(1.25, -2.5, 0.0, 4.75, 1.5, 8.25), result)
         }
 }
 

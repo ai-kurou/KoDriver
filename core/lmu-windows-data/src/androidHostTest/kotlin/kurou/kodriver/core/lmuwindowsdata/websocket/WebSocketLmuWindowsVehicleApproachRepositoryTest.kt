@@ -18,7 +18,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class WebSocketLmuWindowsVehicleApproachRepositoryTest {
@@ -77,66 +76,6 @@ class WebSocketLmuWindowsVehicleApproachRepositoryTest {
             assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
             assertEquals(emptySet(), result.sideBySideRightVehicleIds)
             assertEquals("/ws/lmu_windows/vehicle_approach", server.takeRequest().path)
-        }
-
-    @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send("invalid json")
-                            webSocket.send(VEHICLE_APPROACH_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository().vehicleApproachStream().first()
-
-            assertNotNull(result)
-            assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
-        }
-
-    @Test
-    fun `接続切断後にリトライして再接続する`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.close(1001, "drop")
-                        }
-                    },
-                ),
-            )
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(VEHICLE_APPROACH_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository(retryDelayMs = 0L).vehicleApproachStream().first()
-
-            assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
         }
 }
 

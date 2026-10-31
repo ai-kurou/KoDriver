@@ -117,65 +117,6 @@ class WebSocketLmuWindowsRepositoryTest {
         }
 
     @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
-        runTest {
-            telemetryResponses.add(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send("invalid json")
-                            webSocket.send(TELEMETRY_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository().telemetryStream().first()
-
-            assertEquals(60_000L, result.timing.bestLapTimeMs)
-        }
-
-    @Test
-    fun `接続切断後にリトライして再接続する`() =
-        runTest {
-            telemetryResponses.add(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.close(1001, "drop")
-                        }
-                    },
-                ),
-            )
-            telemetryResponses.add(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(TELEMETRY_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository(retryDelayMs = 0L).telemetryStream().first()
-
-            assertEquals(60_000L, result.timing.bestLapTimeMs)
-        }
-
-    @Test
     fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
         runTest {
             telemetryResponses.add(

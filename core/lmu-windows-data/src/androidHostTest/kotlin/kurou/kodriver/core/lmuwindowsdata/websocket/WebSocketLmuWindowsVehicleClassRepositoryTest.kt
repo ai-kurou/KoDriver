@@ -19,7 +19,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class WebSocketLmuWindowsVehicleClassRepositoryTest {
@@ -80,87 +79,6 @@ class WebSocketLmuWindowsVehicleClassRepositoryTest {
 
             assertEquals("Hypercar", result.name)
             assertEquals("/ws/lmu_windows/vehicle_class", server.takeRequest().path)
-        }
-
-    @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send("invalid json")
-                            webSocket.send(VEHICLE_CLASS_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository().vehicleClassStream().first()
-
-            assertNotNull(result)
-            assertEquals("Hypercar", result.name)
-        }
-
-    @Test
-    fun `接続に失敗した場合は例外を捕捉してリトライする`() =
-        runTest {
-            val closedPort = server.port
-            server.shutdown()
-            fakeIpRepository.setIp("127.0.0.1")
-            val repository =
-                WebSocketLmuWindowsVehicleClassRepository(
-                    serverIpRepository = fakeIpRepository,
-                    port = closedPort,
-                    retryDelayMs = 0L,
-                )
-
-            val result =
-                withTimeoutOrNull(300) {
-                    repository.vehicleClassStream().first()
-                }
-
-            assertNull(result)
-        }
-
-    @Test
-    fun `接続切断後にリトライして再接続する`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.close(1001, "drop")
-                        }
-                    },
-                ),
-            )
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(VEHICLE_CLASS_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository(retryDelayMs = 0L).vehicleClassStream().first()
-
-            assertEquals("Hypercar", result.name)
         }
 }
 

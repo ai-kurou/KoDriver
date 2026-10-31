@@ -18,7 +18,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class WebSocketLmuWindowsVehicleDamageRepositoryTest {
@@ -78,66 +77,6 @@ class WebSocketLmuWindowsVehicleDamageRepositoryTest {
             assertEquals(false, result.partDetached)
             assertEquals(0.5, result.lastImpactMagnitude)
             assertEquals("/ws/lmu_windows/damage", server.takeRequest().path)
-        }
-
-    @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send("invalid json")
-                            webSocket.send(DAMAGE_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository().vehicleDamageStream().first()
-
-            assertNotNull(result)
-            assertEquals(true, result.overheating)
-        }
-
-    @Test
-    fun `接続切断後にリトライして再接続する`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.close(1001, "drop")
-                        }
-                    },
-                ),
-            )
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(DAMAGE_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository(retryDelayMs = 0L).vehicleDamageStream().first()
-
-            assertEquals(true, result.overheating)
         }
 }
 

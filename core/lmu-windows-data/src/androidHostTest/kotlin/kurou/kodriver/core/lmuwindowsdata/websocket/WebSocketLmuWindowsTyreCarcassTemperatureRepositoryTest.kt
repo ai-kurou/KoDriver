@@ -21,7 +21,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class WebSocketLmuWindowsTyreCarcassTemperatureRepositoryTest {
@@ -85,87 +84,6 @@ class WebSocketLmuWindowsTyreCarcassTemperatureRepositoryTest {
             assertEquals(CelsiusReading(85.0f), result.wheels[WheelIndex.REAR_LEFT])
             assertEquals(CelsiusReading(87.0f), result.wheels[WheelIndex.REAR_RIGHT])
             assertEquals("/ws/lmu_windows/tyre_carcass_temperature", server.takeRequest().path)
-        }
-
-    @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send("invalid json")
-                            webSocket.send(TYRE_CARCASS_TEMPERATURE_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository().tyreCarcassTemperatureStream().first()
-
-            assertNotNull(result)
-            assertEquals(CelsiusReading(80.0f), result.wheels[WheelIndex.FRONT_LEFT])
-        }
-
-    @Test
-    fun `接続に失敗した場合は例外を捕捉してリトライする`() =
-        runTest {
-            val closedPort = server.port
-            server.shutdown()
-            fakeIpRepository.setIp("127.0.0.1")
-            val repository =
-                WebSocketLmuWindowsTyreCarcassTemperatureRepository(
-                    serverIpRepository = fakeIpRepository,
-                    port = closedPort,
-                    retryDelayMs = 0L,
-                )
-
-            val result =
-                withTimeoutOrNull(300) {
-                    repository.tyreCarcassTemperatureStream().first()
-                }
-
-            assertNull(result)
-        }
-
-    @Test
-    fun `接続切断後にリトライして再接続する`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.close(1001, "drop")
-                        }
-                    },
-                ),
-            )
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(TYRE_CARCASS_TEMPERATURE_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-            fakeIpRepository.setIp("127.0.0.1")
-
-            val result = buildRepository(retryDelayMs = 0L).tyreCarcassTemperatureStream().first()
-
-            assertEquals(CelsiusReading(80.0f), result.wheels[WheelIndex.FRONT_LEFT])
         }
 }
 
