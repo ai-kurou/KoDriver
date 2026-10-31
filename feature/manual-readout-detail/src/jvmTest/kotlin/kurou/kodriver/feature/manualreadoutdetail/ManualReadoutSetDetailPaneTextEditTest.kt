@@ -31,6 +31,10 @@ import kotlin.test.assertEquals
 
 @Suppress("TooManyFunctions")
 class ManualReadoutSetDetailPaneTextEditTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @get:Rule
     val rule = createComposeRule()
 

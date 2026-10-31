@@ -37,6 +37,10 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ManualReadoutHapticTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @get:Rule
     val rule = createComposeRule()
 

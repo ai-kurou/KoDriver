@@ -17,6 +17,10 @@ import org.junit.Rule
 import org.junit.Test
 
 class ManualReadoutSetDetailPaneItemAddTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @get:Rule
     val rule = createComposeRule()
 

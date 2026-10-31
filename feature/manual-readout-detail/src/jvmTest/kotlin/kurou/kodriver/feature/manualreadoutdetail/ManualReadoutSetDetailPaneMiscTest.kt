@@ -19,6 +19,10 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ManualReadoutSetDetailPaneMiscTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @get:Rule
     val rule = createComposeRule()
 

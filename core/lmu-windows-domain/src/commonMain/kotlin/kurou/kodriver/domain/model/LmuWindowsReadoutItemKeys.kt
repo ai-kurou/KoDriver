@@ -4,6 +4,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_AUTO_READOUT_ENABLED_S
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsDefaultAutoReadoutOrder
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemDefinitions
 
 val LMU_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
     listOf(
@@ -52,6 +53,7 @@ val lmuWindowsReadoutSpec: SimulatorReadoutSpec
             LMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT,
             LMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT,
             lmuWindowsDefaultAutoReadoutOrder(),
+            ManualReadoutSimulatorSpec(lmuWindowsManualReadoutItemDefinitions),
         )
 
 fun registerLmuWindowsReadoutItemKeys() = ReadoutItemKeyRegistry.register(lmuWindowsReadoutSpec)

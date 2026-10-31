@@ -4,6 +4,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_AUTO_READOUT_ENABLED_S
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.acewindows.model.aceWindowsDefaultAutoReadoutOrder
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinitions
 
 val ACE_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
     listOf(
@@ -39,6 +40,7 @@ val aceWindowsReadoutSpec: SimulatorReadoutSpec
             ACE_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT,
             ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT,
             aceWindowsDefaultAutoReadoutOrder(),
+            ManualReadoutSimulatorSpec(aceWindowsManualReadoutItemDefinitions),
         )
 
 fun registerAceWindowsReadoutItemKeys() = ReadoutItemKeyRegistry.register(aceWindowsReadoutSpec)

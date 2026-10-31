@@ -12,6 +12,10 @@ import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class ManualReadoutPreviewTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @Test
     fun `各シミュレーターの全項目にプレースホルダー挿入と未知検出定義があり未知キーは空になる`() {
         Simulator.entries.forEach { simulator ->

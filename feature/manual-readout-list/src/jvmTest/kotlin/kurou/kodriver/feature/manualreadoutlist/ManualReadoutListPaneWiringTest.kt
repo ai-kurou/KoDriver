@@ -58,6 +58,10 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutListPaneWiringTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     private val rule = createComposeRule()
 
     @get:Rule

@@ -243,3 +243,10 @@ VE・タイヤ・燃料の候補の最小周回数を選び、共通の `PitTimi
 給油周を消費量の推定から除外し、給油で警告履歴を再武装、周回巻き戻りで追跡・評価履歴を初期化する。
 通常の既定文言は「燃料は残り約{laps}周」、0周以下は「燃料残り1周未満」。保存文言の解決・開始音・優先度・キュー・ログは
 既存の `PitTiming.Root` の流儀を使い、ログに燃料スナップショットと判定状態を含める。
+
+## 手動読み上げの対応シミュレーター
+
+手動読み上げに対応するシミュレーターは、`SimulatorReadoutSpec.manualReadout`（`ManualReadoutSimulatorSpec`）に項目定義（`itemDefinitions`）と SimHub 導入リンクの表示有無（`showSimHubGuideLink`）を持たせて `ReadoutItemKeyRegistry` へ登録する。
+`feature:manual-readout-list` / `feature:manual-readout-detail` は `ReadoutItemKeyRegistry.manualReadoutSpecs` / `manualReadoutSpecOf` / `showsManualReadoutSimHubGuideLink` から項目定義・読み取り可否・案内表示を引く。
+新しいシミュレーターを追加するときは、そのドメインモジュールの `*ReadoutItemKeys.kt` の spec に `ManualReadoutSimulatorSpec` を渡すだけでよい（feature 側の変更は不要）。
+feature のテストでは、レジストリが空だと項目定義を引けないため、事前に各 `register*ReadoutItemKeys()` を呼ぶ。

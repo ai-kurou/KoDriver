@@ -3,7 +3,7 @@ package kurou.kodriver.feature.manualreadoutlist
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kurou.kodriver.domain.model.ManualReadoutSet
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 
 /** 手動読み上げセット一覧と画面内状態を合成する冷たい Flow。 */
 internal class ManualReadoutListFlow(
@@ -26,7 +26,4 @@ internal class ManualReadoutListFlow(
         }
 }
 
-internal fun String.canReadManualReadoutSets(): Boolean =
-    this == Simulator.LmuWindows.id ||
-        this == Simulator.Gt7Ps5.id ||
-        this == Simulator.AceWindows.id
+internal fun String.canReadManualReadoutSets(): Boolean = ReadoutItemKeyRegistry.manualReadoutSpecOf(this) != null

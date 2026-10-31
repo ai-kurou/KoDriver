@@ -4,6 +4,7 @@ import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_AUTO_READOUT_ENABLED_STATE_DEF
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_QUEUE_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_READOUT_START_SOUND_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5DefaultAutoReadoutOrder
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
 
 val GT7_PS5_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
     listOf(
@@ -26,6 +27,7 @@ val gt7Ps5ReadoutSpec: SimulatorReadoutSpec
             GT7_PS5_READOUT_START_SOUND_ENABLED_STATE_DEFAULT,
             GT7_PS5_QUEUE_ENABLED_STATE_DEFAULT,
             gt7Ps5DefaultAutoReadoutOrder(),
+            ManualReadoutSimulatorSpec(gt7Ps5ManualReadoutItemDefinitions, showSimHubGuideLink = false),
         )
 
 fun registerGt7Ps5ReadoutItemKeys() = ReadoutItemKeyRegistry.register(gt7Ps5ReadoutSpec)

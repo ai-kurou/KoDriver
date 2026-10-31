@@ -23,6 +23,10 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Test
 
 class ManualReadoutListPaneScreenshotTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @Test
     fun `再生ボタン表示`() =
         composeScreenshotTest {

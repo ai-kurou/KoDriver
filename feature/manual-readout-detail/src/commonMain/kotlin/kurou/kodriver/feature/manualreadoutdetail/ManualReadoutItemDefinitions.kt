@@ -1,17 +1,11 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
-import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinitions
-import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
-import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemDefinitions
 import kurou.kodriver.domain.model.ManualReadoutItemDefinition
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 
-internal val manualReadoutItemDefinitions: Map<String, Map<String, ManualReadoutItemDefinition>> =
-    linkedMapOf(
-        Simulator.LmuWindows.id to lmuWindowsManualReadoutItemDefinitions,
-        Simulator.AceWindows.id to aceWindowsManualReadoutItemDefinitions,
-        Simulator.Gt7Ps5.id to gt7Ps5ManualReadoutItemDefinitions,
-    )
+/** 登録済みの手動読み上げ対応シミュレーターごとの項目定義。 */
+internal val manualReadoutItemDefinitions: Map<String, Map<String, ManualReadoutItemDefinition>>
+    get() = ReadoutItemKeyRegistry.manualReadoutSpecs.associate { (id, spec) -> id to spec.itemDefinitions }
 
 internal fun manualReadoutItemKeys(simulatorId: String): List<String> =
     manualReadoutItemDefinitions[simulatorId]?.keys.orEmpty().toList()

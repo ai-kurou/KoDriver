@@ -13,6 +13,10 @@ import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutListFlowTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     @Test
     fun `入力状態を反映し存在しない選択セットIDを除外する`() =
         runTest {

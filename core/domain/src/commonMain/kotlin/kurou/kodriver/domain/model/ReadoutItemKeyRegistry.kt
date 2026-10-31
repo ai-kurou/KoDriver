@@ -2,7 +2,17 @@ package kurou.kodriver.domain.model
 
 import kotlin.concurrent.Volatile
 
-/** A simulator's complete readout key catalog and defaults. */
+/**
+ * 手動読み上げに対応するシミュレーターの項目定義と表示上の挙動。
+ *
+ * [showSimHubGuideLink] は手動読み上げのホットキー案内に SimHub の導入リンクを出すかどうか。
+ */
+class ManualReadoutSimulatorSpec(
+    val itemDefinitions: Map<String, ManualReadoutItemDefinition>,
+    val showSimHubGuideLink: Boolean = true,
+)
+
+/** A simulator's complete readout key catalog and defaults. [manualReadout] は手動読み上げ非対応なら null。 */
 class SimulatorReadoutSpec(
     val simulator: Simulator,
     val keys: List<ReadoutItemKey>,
@@ -10,6 +20,7 @@ class SimulatorReadoutSpec(
     val startSoundEnabledStateDefault: Map<ReadoutItemKey, Boolean>,
     val queueEnabledStateDefault: Map<ReadoutItemKey, Boolean>,
     val defaultAutoReadoutOrder: List<ReadoutItemKey>,
+    val manualReadout: ManualReadoutSimulatorSpec? = null,
 )
 
 /** Thread-safe registry; updates replace an immutable snapshot. */
@@ -24,6 +35,18 @@ object ReadoutItemKeyRegistry {
     val registeredSpecs: List<SimulatorReadoutSpec> get() = registryState.registeredSpecs
 
     val entries: List<ReadoutItemKey> get() = registryState.entries
+
+    /** 手動読み上げに対応する登録済みシミュレーターの ID と spec を [Simulator.entries] の順で返す。 */
+    val manualReadoutSpecs: List<Pair<String, ManualReadoutSimulatorSpec>>
+        get() = registeredSpecs.mapNotNull { spec -> spec.manualReadout?.let { spec.simulator.id to it } }
+
+    /** [simulatorId] の手動読み上げ spec。未登録・非対応なら null。 */
+    fun manualReadoutSpecOf(simulatorId: String): ManualReadoutSimulatorSpec? =
+        manualReadoutSpecs.firstOrNull { it.first == simulatorId }?.second
+
+    /** [simulatorId] の手動読み上げ画面で SimHub の導入リンクを出すか。未登録・非対応は既定の true。 */
+    fun showsManualReadoutSimHubGuideLink(simulatorId: String): Boolean =
+        manualReadoutSpecOf(simulatorId)?.showSimHubGuideLink ?: true
 
     fun fromValue(value: String): ReadoutItemKey? = registryState.fromValue(value)
 
@@ -78,5 +101,9 @@ internal class ReadoutItemKeyRegistryState {
             startSoundEnabledStateDefault = startSoundEnabledStateDefault.toMap(),
             queueEnabledStateDefault = queueEnabledStateDefault.toMap(),
             defaultAutoReadoutOrder = defaultAutoReadoutOrder.toList(),
+            manualReadout =
+                manualReadout?.let {
+                    ManualReadoutSimulatorSpec(it.itemDefinitions.toMap(), it.showSimHubGuideLink)
+                },
         )
 }

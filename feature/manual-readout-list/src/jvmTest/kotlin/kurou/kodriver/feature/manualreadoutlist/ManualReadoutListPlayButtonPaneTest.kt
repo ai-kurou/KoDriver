@@ -27,6 +27,10 @@ import org.junit.Rule
 import org.junit.Test
 
 class ManualReadoutListPlayButtonPaneTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
     private val onAddSet: () -> Unit = mockk()
     private val onReadSet: (String) -> Unit = mockk()
     private val onSetClick: (String) -> Unit = mockk()
