@@ -15,43 +15,4 @@ class LmuWindowsTyreTemperatureReadoutTextTest {
             assertEquals(emptyList(), findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders(template))
         }
     }
-
-    @Test
-    fun `プレースホルダーがなければ文言を維持する`() {
-        assertEquals("タイヤ警告", formatLmuWindowsTyreTemperatureReadoutText("タイヤ警告", 1))
-    }
-
-    @Test
-    fun `温度の境界値を単純に置換する`() {
-        listOf(Int.MIN_VALUE, -1, 0, 1, Int.MAX_VALUE).forEach { celsius ->
-            assertEquals(
-                "温度$celsius℃",
-                formatLmuWindowsTyreTemperatureReadoutText("温度{celsius}℃", celsius),
-            )
-        }
-    }
-
-    @Test
-    fun `複数のプレースホルダーを置換して未知のトークンを維持する`() {
-        assertEquals(
-            "2・2・{unknown}",
-            formatLmuWindowsTyreTemperatureReadoutText("{celsius}・{celsius}・{unknown}", 2),
-        )
-    }
-
-    @Test
-    fun `未知のトークンを出現順で重複なく返す`() {
-        assertEquals(
-            listOf("{lap}", "{x}", "{}"),
-            findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders("{celsius}{lap}%{x}{lap}{}"),
-        )
-    }
-
-    @Test
-    fun `既知のトークンと閉じていない括弧は未知のトークンにならない`() {
-        listOf("", "{celsius}%", "{celsius}{celsius}", "{", "}", "{lap", "文言").forEach {
-            assertEquals(emptyList(), findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders(it))
-        }
-        assertEquals(listOf("{x}"), findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders("{{x}}"))
-    }
 }

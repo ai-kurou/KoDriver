@@ -42,26 +42,4 @@ class LmuWindowsMyBestLapReadoutTextTest {
     fun `Intの上限を超えるタイムもLongで整形する`() {
         assertEquals("50000分0秒005", formatLmuWindowsMyBestLapReadoutText("{laptime}", 3_000_000_005L))
     }
-
-    @Test
-    fun `複数の既知トークンだけを置換し空白や未知トークンは維持する`() {
-        assertEquals(" ", formatLmuWindowsMyBestLapReadoutText(" ", 5))
-        assertEquals("更新", formatLmuWindowsMyBestLapReadoutText("更新", 5))
-        assertEquals(
-            "0秒005・0秒005・{unknown}",
-            formatLmuWindowsMyBestLapReadoutText("{laptime}・{laptime}・{unknown}", 5),
-        )
-    }
-
-    @Test
-    fun `未知トークンを出現順で重複なく返す`() {
-        assertEquals(
-            listOf("{lap}", "{x}", "{}"),
-            findUnknownLmuWindowsMyBestLapReadoutPlaceholders("{laptime}{lap}{x}{lap}{}"),
-        )
-        listOf("", "{laptime}", "{laptime}{laptime}", "{", "}", "{lap", "文言").forEach {
-            assertEquals(emptyList(), findUnknownLmuWindowsMyBestLapReadoutPlaceholders(it))
-        }
-        assertEquals(listOf("{x}"), findUnknownLmuWindowsMyBestLapReadoutPlaceholders("{{x}}"))
-    }
 }

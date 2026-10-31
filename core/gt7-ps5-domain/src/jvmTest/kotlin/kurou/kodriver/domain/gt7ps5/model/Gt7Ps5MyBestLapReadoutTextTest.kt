@@ -37,26 +37,4 @@ class Gt7Ps5MyBestLapReadoutTextTest {
             assertEquals(expected, formatGt7Ps5MyBestLapReadoutText("{laptime}", time))
         }
     }
-
-    @Test
-    fun `複数の既知トークンだけを置換し空白や未知トークンは維持する`() {
-        assertEquals(" ", formatGt7Ps5MyBestLapReadoutText(" ", 5))
-        assertEquals("更新", formatGt7Ps5MyBestLapReadoutText("更新", 5))
-        assertEquals(
-            "0秒005・0秒005・{unknown}",
-            formatGt7Ps5MyBestLapReadoutText("{laptime}・{laptime}・{unknown}", 5),
-        )
-    }
-
-    @Test
-    fun `未知トークンを出現順で重複なく返す`() {
-        assertEquals(
-            listOf("{lap}", "{x}", "{}"),
-            findUnknownGt7Ps5MyBestLapReadoutPlaceholders("{laptime}{lap}{x}{lap}{}"),
-        )
-        listOf("", "{laptime}", "{laptime}{laptime}", "{", "}", "{lap", "文言").forEach {
-            assertEquals(emptyList(), findUnknownGt7Ps5MyBestLapReadoutPlaceholders(it))
-        }
-        assertEquals(listOf("{x}"), findUnknownGt7Ps5MyBestLapReadoutPlaceholders("{{x}}"))
-    }
 }

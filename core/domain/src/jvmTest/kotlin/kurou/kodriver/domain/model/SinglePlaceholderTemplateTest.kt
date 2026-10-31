@@ -30,4 +30,14 @@ class SinglePlaceholderTemplateTest {
     fun `既知のトークンと閉じていない括弧は未知のトークンにならない`() {
         assertEquals(emptyList(), template.findUnknown("{value}{ open"))
     }
+
+    @Test
+    fun `空の括弧も未知のトークンとして返す`() {
+        assertEquals(listOf("{}"), template.findUnknown("{value}{}"))
+    }
+
+    @Test
+    fun `入れ子の括弧は内側のトークンだけを未知のトークンとして返す`() {
+        assertEquals(listOf("{x}"), template.findUnknown("{{x}}"))
+    }
 }

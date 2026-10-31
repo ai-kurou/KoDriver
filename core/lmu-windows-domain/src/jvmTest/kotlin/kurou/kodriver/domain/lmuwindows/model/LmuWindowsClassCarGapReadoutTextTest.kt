@@ -37,25 +37,4 @@ class LmuWindowsClassCarGapReadoutTextTest {
             assertEquals(expected, formatLmuWindowsClassCarGapReadoutText("{seconds}", seconds))
         }
     }
-
-    @Test
-    fun `複数の既知トークンだけを置換し空白や未知トークンは維持する`() {
-        assertEquals(" ", formatLmuWindowsClassCarGapReadoutText(" ", 1.0))
-        assertEquals("差", formatLmuWindowsClassCarGapReadoutText("差", 1.0))
-        assertEquals(
-            "2.0・2.0・{unknown}",
-            formatLmuWindowsClassCarGapReadoutText("{seconds}・{seconds}・{unknown}", 2.0),
-        )
-    }
-
-    @Test
-    fun `未知トークンを出現順で重複なく返す`() {
-        assertEquals(
-            listOf("{sec}", "{x}", "{}"),
-            findUnknownLmuWindowsClassCarGapReadoutPlaceholders("{seconds}{sec}{x}{sec}{}"),
-        )
-        listOf("", "{seconds}", "{seconds}{seconds}", "{", "}", "{sec", "文言").forEach {
-            assertEquals(emptyList(), findUnknownLmuWindowsClassCarGapReadoutPlaceholders(it))
-        }
-    }
 }
