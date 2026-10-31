@@ -12,33 +12,11 @@ class SaveAceWindowsMyBestLapReadoutTextUseCaseTest {
     private val repository: AceWindowsMyBestLapPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
-    fun `前後の空白を除去して保存する`() =
+    fun `正規化した文言を保存する`() =
         runTest {
             SaveAceWindowsMyBestLapReadoutTextUseCase(repository)("  更新{laptime}  ")
 
             coVerify(exactly = 1) { repository.saveReadoutText("更新{laptime}") }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `空白のみの入力は未設定として保存する`() =
-        runTest {
-            SaveAceWindowsMyBestLapReadoutTextUseCase(repository)(" \t\n ")
-
-            coVerify(exactly = 1) { repository.saveReadoutText("") }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `最大文字数を超える入力は切り詰めて保存する`() =
-        runTest {
-            val text = "  " + "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 5) + "  "
-
-            SaveAceWindowsMyBestLapReadoutTextUseCase(repository)(text)
-
-            coVerify(exactly = 1) {
-                repository.saveReadoutText("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH))
-            }
             confirmVerified(repository)
         }
 

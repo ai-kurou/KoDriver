@@ -14,10 +14,10 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
-import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isManualReadoutHotkeyVirtualKeyCode
+import kurou.kodriver.domain.model.normalizeReadoutCustomText
 import kurou.kodriver.domain.model.takeManualReadoutSetName
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
@@ -157,7 +157,7 @@ internal class ManualReadoutSetDetailViewModel(
             mutationMutex.withLock {
                 if (deleted.value) return@withLock
                 val set = observeSets().first().find { it.id == setId } ?: return@withLock
-                val normalizedText = text.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+                val normalizedText = text.normalizeReadoutCustomText()
                 updateSet(set.copy(itemTexts = set.itemTexts + (itemKey to normalizedText)))
             }
         }
