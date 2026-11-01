@@ -43,23 +43,24 @@ dependencies {
     implementation(libs.compose.ui)
 }
 
-val generateAppVersion by tasks.registering {
-    val version = providers.gradleProperty("appVersion")
-    val outputDir = layout.buildDirectory.dir("generated/appVersion/kotlin")
-    inputs.property("appVersion", version)
-    outputs.dir(outputDir)
-    doLast {
-        val dir = outputDir.get().asFile
-        dir.mkdirs()
-        File(dir, "AppVersion.kt").writeText(
-            """
-            package kurou.kodriver
+val generateAppVersion =
+    tasks.register("generateAppVersion") {
+        val version = providers.gradleProperty("appVersion")
+        val outputDir = layout.buildDirectory.dir("generated/appVersion/kotlin")
+        inputs.property("appVersion", version)
+        outputs.dir(outputDir)
+        doLast {
+            val dir = outputDir.get().asFile
+            dir.mkdirs()
+            File(dir, "AppVersion.kt").writeText(
+                """
+                package kurou.kodriver
 
-            internal const val APP_VERSION = "${version.get()}"
-            """.trimIndent(),
-        )
+                internal const val APP_VERSION = "${version.get()}"
+                """.trimIndent(),
+            )
+        }
     }
-}
 
 kotlin.sourceSets.main {
     kotlin.srcDirs(generateAppVersion)

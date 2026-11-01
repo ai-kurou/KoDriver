@@ -17,12 +17,13 @@ dependencies {
     testImplementation(platform(libs.kotlinx.coroutines.bom))
 }
 
-val testArtifacts: Configuration by configurations.creating
+val testArtifacts: Configuration = configurations.create("testArtifacts")
 
-val testJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("test")
-    from(sourceSets["test"].output)
-}
+val testJar =
+    tasks.register<Jar>("testJar") {
+        archiveClassifier.set("test")
+        from(sourceSets["test"].output)
+    }
 
 artifacts {
     add("testArtifacts", testJar)
