@@ -23,16 +23,13 @@ class ResetAutoReadoutSettingsUseCaseTest {
         runTest {
             val calls = mutableListOf<String>()
             coEvery { firstResetter.resetToDefault() } answers {
-                calls.add("first")
-                Unit
+                calls += "first"
             }
             coEvery { secondResetter.resetToDefault() } answers {
-                calls.add("second")
-                Unit
+                calls += "second"
             }
             coEvery { lastResetter.resetToDefault() } answers {
-                calls.add("last")
-                Unit
+                calls += "last"
             }
 
             useCase()

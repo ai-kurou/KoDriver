@@ -88,7 +88,7 @@ class WindowsSharedMemoryReaderTest {
         val actual = r.readBuffer()
 
         assertTrue(actual === expected)
-        assertEquals(ByteOrder.LITTLE_ENDIAN, actual?.order())
+        assertEquals(ByteOrder.LITTLE_ENDIAN, actual.order())
     }
 
     @Test
