@@ -1,0 +1,3 @@
+package kurou.kodriver.feature.otheroverlaytextsizedetail
+
+internal expect fun captureOtherOverlayTextSizeDetailError(throwable: Throwable)

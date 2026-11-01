@@ -44,7 +44,8 @@ class OtherOverlayTextColorDetailViewModel internal constructor(
                 saveOverlayTextColor(overlayTextColor)
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                captureOtherOverlayTextColorDetailError(e)
                 // 保存に失敗しても未保存の色を表示し続けず、保存済みの設定へ戻す。
             } finally {
                 if (confirmingRequest == request) confirmingRequest = null
