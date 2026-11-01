@@ -203,7 +203,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 自動読み上げのスイッチ・閾値・`remainingFuelWarned` 等の判定状態は変更せず、
 開始音・ログ・常時キュー末尾追加には既存の `RemainingFuel.Root` を使う。
 `manualReadoutItemKeys(Simulator.AceWindows.id)` は続けて既存の `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`）を返し、手動の「残り燃料の周回数」を選択できる。
-`currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・0以下・1,000周超は null（データなし）とする。1周未満の正数は従来どおり整数部へ切り捨てて0周を返す。
+`currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・負値・1,000周超は null（データなし）とする。ちょうど0と1周未満の正数は整数部へ切り捨てて0周を返し、手動読み上げは固定文言「燃料残り1周未満」を読む。
 手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）を `formatAceWindowsRemainingFuelLapsReadoutText` で置換し、値が null の項目は「残り燃料の周回数はデータがありません」を読む。
 `AceWindowsReadoutItemKey.MyBestLap.Root` も手動項目に含め、最新の `AceWindowsBestLapTimeData.bestLapTimeMs` を、正値の場合に（Android ではサーバーが値の変化時しか送らないため鮮度判定はしない） `formatAceWindowsMyBestLapReadoutText` で整形する。既定文言は `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」）。
 

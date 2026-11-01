@@ -216,12 +216,12 @@ class DetermineAceWindowsNarratorReadoutUseCase {
     /** 未受信または未計測の自己ベストラップは手動読み上げのデータなしとして扱う。 */
     fun currentBestLapTimeMs(data: AceWindowsBestLapTimeData?): Int? = data?.bestLapTimeMs?.takeIf { it > 0 }
 
-    /** 未受信・鮮度切れ・非有限・0以下・1,000周超の値はデータなしとし、1周未満の正数は整数部へ切り捨てる。 */
+    /** 未受信・鮮度切れ・非有限・負値・1,000周超の値はデータなしとし、0周と1周未満の正数は整数部（0）へ切り捨てる。 */
     fun currentRemainingFuelLaps(data: AceWindowsRemainingFuelLapsData?): Int? {
         val remaining = data?.remainingLaps ?: return null
         if (
             !remaining.isFinite() ||
-            remaining <= 0f ||
+            remaining < 0f ||
             remaining > ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX
         ) {
             return null
