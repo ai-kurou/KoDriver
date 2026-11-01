@@ -36,11 +36,11 @@ class WebSocketAceWindowsVehicleApproachRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) =
+    private fun buildRepository() =
         WebSocketAceWindowsVehicleApproachRepository(
             serverIpRepository = fakeIpRepository,
             port = server.port,
-            retryDelayMs = retryDelayMs,
+            retryDelayMs = 0L,
         )
 
     @Test

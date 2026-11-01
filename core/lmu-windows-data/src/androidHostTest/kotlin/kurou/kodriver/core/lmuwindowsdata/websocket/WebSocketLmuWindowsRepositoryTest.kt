@@ -66,15 +66,13 @@ class WebSocketLmuWindowsRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(
-        retryDelayMs: Long = 3_000L,
-        currentTimeMs: () -> Long = System::currentTimeMillis,
-    ) = WebSocketLmuWindowsRepository(
-        serverIpRepository = fakeIpRepository,
-        port = server.port,
-        retryDelayMs = retryDelayMs,
-        currentTimeMs = currentTimeMs,
-    )
+    private fun buildRepository(currentTimeMs: () -> Long = System::currentTimeMillis) =
+        WebSocketLmuWindowsRepository(
+            serverIpRepository = fakeIpRepository,
+            port = server.port,
+            retryDelayMs = 3_000L,
+            currentTimeMs = currentTimeMs,
+        )
 
     @Test
     fun `ipがnullのときtelemetryStreamは何もemitしない`() =

@@ -41,11 +41,11 @@ class WebSocketLmuWindowsTyreDetachedRepositoryTest {
         }
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) =
+    private fun buildRepository() =
         WebSocketLmuWindowsTyreDetachedRepository(
             serverIpRepository = fakeIpRepository,
             port = server.port,
-            retryDelayMs = retryDelayMs,
+            retryDelayMs = 0L,
         )
 
     @Test
