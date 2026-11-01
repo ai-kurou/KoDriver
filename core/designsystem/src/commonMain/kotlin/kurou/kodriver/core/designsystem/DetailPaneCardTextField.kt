@@ -94,7 +94,7 @@ fun DetailPaneCardTextField(
                 insertAtSelection(text, selection, request.text, maxLength)
                     .takeIf { enabled }
                     ?.takeIf { it.text != text }
-            insertState?.consume(request)
+            insertState.consume(request)
             if (inserted != null) {
                 text = inserted.text
                 selection = inserted.selection
