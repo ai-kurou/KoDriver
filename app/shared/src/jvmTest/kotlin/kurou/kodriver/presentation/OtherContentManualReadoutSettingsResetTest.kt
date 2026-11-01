@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.computeWindowSizeClass
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListResetUiState
 import kurou.kodriver.feature.otherlist.OtherListUiState
@@ -26,7 +27,7 @@ class OtherContentManualReadoutSettingsResetTest {
     @get:Rule
     val rule = createComposeRule()
 
-    private val compactWindowSizeClass = WindowSizeClass.compute(400f, 800f)
+    private val compactWindowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(400f, 800f)
 
     private val singlePaneDirective =
         PaneScaffoldDirective(

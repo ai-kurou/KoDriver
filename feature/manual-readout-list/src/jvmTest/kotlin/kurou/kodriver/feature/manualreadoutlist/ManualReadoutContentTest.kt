@@ -27,6 +27,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.computeWindowSizeClass
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Rule
@@ -126,7 +127,7 @@ class ManualReadoutContentTest {
                         uiState = state.value,
                         simulatorId = "lmu_windows",
                         simulatorName = "LMU",
-                        windowSizeClass = WindowSizeClass.compute(360f, 640f),
+                        windowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(360f, 640f),
                         scaffoldDirective =
                             PaneScaffoldDirective(
                                 maxHorizontalPartitions = 1,
@@ -170,7 +171,7 @@ class ManualReadoutContentTest {
                         uiState = state.value,
                         simulatorId = "lmu_windows",
                         simulatorName = "LMU",
-                        windowSizeClass = WindowSizeClass.compute(840f, 640f),
+                        windowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(840f, 640f),
                         onAddSet = {},
                         onReadSet = {},
                         onSetClick = {},

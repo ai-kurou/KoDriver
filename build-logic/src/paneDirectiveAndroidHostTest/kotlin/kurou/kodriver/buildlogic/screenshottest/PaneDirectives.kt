@@ -12,6 +12,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.computeWindowSizeClass
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 val twoPaneDirective =
@@ -41,7 +42,7 @@ fun rememberFoldedVerticalHingeDirective(
         val hingeCenterDp = windowWidthDp / 2f
         calculatePaneScaffoldDirective(
             WindowAdaptiveInfo(
-                windowSizeClass = WindowSizeClass.compute(windowWidthDp, windowHeightDp),
+                windowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(windowWidthDp, windowHeightDp),
                 windowPosture =
                     Posture(
                         hingeList =

@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.computeWindowSizeClass
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -26,7 +27,7 @@ class AutoReadoutContentRootBannerTest {
     @get:Rule
     val rule = createComposeRule()
 
-    private val compactWindowSizeClass = WindowSizeClass.compute(400f, 800f)
+    private val compactWindowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(400f, 800f)
 
     private val singlePaneDirective =
         PaneScaffoldDirective(

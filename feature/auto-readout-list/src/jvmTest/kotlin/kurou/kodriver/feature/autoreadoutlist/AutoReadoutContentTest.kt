@@ -33,6 +33,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.computeWindowSizeClass
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -59,7 +60,7 @@ class AutoReadoutContentTest {
     @get:Rule
     val rule = createComposeRule()
 
-    private val compactWindowSizeClass = WindowSizeClass.compute(400f, 800f)
+    private val compactWindowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(400f, 800f)
 
     private val singlePaneDirective =
         PaneScaffoldDirective(

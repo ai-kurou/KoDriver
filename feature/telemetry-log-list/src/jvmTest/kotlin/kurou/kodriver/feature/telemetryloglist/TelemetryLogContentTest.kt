@@ -32,6 +32,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.computeWindowSizeClass
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
@@ -51,7 +52,7 @@ class TelemetryLogContentTest {
     @get:Rule
     val rule = createComposeRule()
 
-    private val compactWindowSizeClass = WindowSizeClass.compute(400f, 800f)
+    private val compactWindowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(400f, 800f)
 
     private val singlePaneDirective =
         PaneScaffoldDirective(
