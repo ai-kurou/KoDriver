@@ -1,5 +1,6 @@
 package kurou.kodriver.core.devicevolumedata
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -9,6 +10,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class PollingVolumeFlowTest {
     @Test
     fun `指定間隔で取得し値が変化したときだけ流す`() =
