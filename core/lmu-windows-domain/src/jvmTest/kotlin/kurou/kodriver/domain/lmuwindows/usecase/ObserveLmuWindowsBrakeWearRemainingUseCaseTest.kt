@@ -48,7 +48,7 @@ class ObserveLmuWindowsBrakeWearRemainingUseCaseTest {
             ?.roundToInt()
 
     @Test
-    fun `観測した最大の厚さを基準に残量%を流す`() =
+    fun `観測した最大の厚さを基準に残量パーセントを流す`() =
         runTest {
             every { wearRepo.brakeWearStream() } returns flowOf(wear(0.036f), wear(0.0305f), wear(0.025f))
             every { classRepo.vehicleClassStream() } returns flowOf(LmuWindowsVehicleClassData.Hypercar)
@@ -64,7 +64,7 @@ class ObserveLmuWindowsBrakeWearRemainingUseCaseTest {
         }
 
     @Test
-    fun `ブレーキ交換で厚さが増えると最大値が更新され100%に戻る`() =
+    fun `ブレーキ交換で厚さが増えると最大値が更新され100パーセントに戻る`() =
         runTest {
             every { wearRepo.brakeWearStream() } returns flowOf(wear(0.030f), wear(0.0275f), wear(0.036f))
             every { classRepo.vehicleClassStream() } returns flowOf(LmuWindowsVehicleClassData.Hypercar)
