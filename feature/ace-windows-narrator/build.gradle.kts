@@ -25,8 +25,5 @@ kotlin {
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.mockk)
         }
-        androidUnitTest.dependencies {
-            implementation(libs.kotlin.testJunit)
-        }
     }
 }
