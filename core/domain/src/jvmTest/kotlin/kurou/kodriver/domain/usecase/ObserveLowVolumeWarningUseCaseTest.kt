@@ -4,6 +4,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ObserveLowVolumeWarningUseCaseTest {
     private val deviceRepository: DeviceVolumeRepository = mockk()
     private val soundRepository: SoundVolumePreferencesRepository = mockk()

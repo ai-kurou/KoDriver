@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.usecase
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -10,6 +11,7 @@ import kurou.kodriver.domain.model.Simulator
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MergeManualReadoutRequestsTest {
     @Test
     fun `両経路の重複と別シミュレーター宛てもそのまま合流し終了時に両購読を解除する`() =
