@@ -164,7 +164,6 @@ private fun ManualReadoutHotkeyRegistration(
 ) {
     when (registration) {
         HotkeyRegistrationState.Unsupported -> {
-            Unit
         }
 
         HotkeyRegistrationState.Registering -> {
