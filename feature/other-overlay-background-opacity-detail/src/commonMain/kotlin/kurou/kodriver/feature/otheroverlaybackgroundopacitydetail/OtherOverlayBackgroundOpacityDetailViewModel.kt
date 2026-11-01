@@ -40,7 +40,8 @@ internal class OtherOverlayBackgroundOpacityDetailViewModel(
                 saveOverlayBackgroundOpacity(opacity)
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                captureOtherOverlayBackgroundOpacityDetailError(e)
                 // 保存に失敗しても未保存の透明度を表示し続けず、保存済みの設定へ戻す。
             } finally {
                 // 保存中に操作し直された場合は、後続の操作のプレビューを解除しない。

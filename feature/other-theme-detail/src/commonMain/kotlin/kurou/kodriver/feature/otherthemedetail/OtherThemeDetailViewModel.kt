@@ -45,7 +45,8 @@ class OtherThemeDetailViewModel internal constructor(
                 uiState.first { it.selectedThemeMode == themeMode }
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                captureOtherThemeDetailError(e)
                 // 保存に失敗しても未保存のテーマを表示し続けず、保存済みの設定へ戻す。
             } finally {
                 // 同じテーマを選び直した場合も、後続の選択・保存処理には触れない。

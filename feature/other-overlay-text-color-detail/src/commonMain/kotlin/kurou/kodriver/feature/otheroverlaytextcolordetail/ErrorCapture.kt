@@ -1,0 +1,3 @@
+package kurou.kodriver.feature.otheroverlaytextcolordetail
+
+internal expect fun captureOtherOverlayTextColorDetailError(throwable: Throwable)
