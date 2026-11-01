@@ -44,12 +44,21 @@ internal class OtherVoiceDetailViewModel(
             getAvailableVoices()
         } catch (e: CancellationException) {
             throw e
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            captureOtherVoiceDetailError(e)
             emptyList()
         }
 
     fun onVoiceSelected(id: String) {
-        viewModelScope.launch { saveVoice(id) }
+        viewModelScope.launch {
+            try {
+                saveVoice(id)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                captureOtherVoiceDetailError(e)
+            }
+        }
     }
 
     fun onPreviewClicked(
