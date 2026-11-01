@@ -14,7 +14,6 @@ fun createTelemetryLogRepository(context: Context): TelemetryLogRepository {
             .databaseBuilder<TelemetryLogDatabase>(
                 context = context,
                 name = "telemetry_logs.db",
-                factory = { TelemetryLogDatabaseConstructor.initialize() },
             ).setDriver(BundledSQLiteDriver())
             .addMigrations(
                 TELEMETRY_LOG_MIGRATION_1_2,
