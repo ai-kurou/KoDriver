@@ -209,7 +209,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `手動燃料周回数の現在値は切り捨て未受信と0以下と非有限と上限超過はデータなしになる`() {
+    fun `手動燃料周回数の現在値は切り捨てられ0周は0になり未受信と負値と非有限と上限超過はデータなしになる`() {
         assertEquals(null, useCase.currentRemainingFuelLaps(null))
         val cases =
             listOf(
@@ -220,7 +220,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                     ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX,
                 (ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX + 1).toFloat() to
                     null,
-                0f to null,
+                0f to 0,
                 -0.5f to null,
                 Float.NaN to null,
                 Float.POSITIVE_INFINITY to null,
