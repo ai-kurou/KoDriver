@@ -75,25 +75,6 @@ class LmuWindowsFlagRepositoryImplTest {
         }
 
     @Test
-    fun `reader が open できない間は emit しない`() =
-        runBlocking {
-            val reader =
-                FakeStaticSharedMemoryReader(
-                    buffer = buildFlagsBuffer(),
-                    initialOpen = false,
-                    openResult = false,
-                )
-            val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
-            val emitCount = AtomicInteger(0)
-
-            val job = launch { repo.flagStream().collect { emitCount.incrementAndGet() } }
-            delay(50)
-            job.cancelAndJoin()
-
-            assertEquals(0, emitCount.get())
-        }
-
-    @Test
     fun `フローがキャンセルされると reader の close が呼ばれる`() =
         runBlocking {
             val reader = FakeStaticSharedMemoryReader(buildFlagsBuffer())

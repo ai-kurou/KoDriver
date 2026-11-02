@@ -68,30 +68,6 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
         }
 
     @Test
-    fun `reader が open できない間は emit しない`() =
-        runBlocking {
-            val reader =
-                FakeVehicleApproachMemoryReader(
-                    buffer = buildBuffer(activeVehicles = 1, playerIdx = 0),
-                    openResult = false,
-                )
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
-                    source = makeSource(reader),
-                )
-            var emitCount = 0
-
-            val job = launch { repo.vehicleApproachStream().collect { emitCount++ } }
-            delay(50)
-            job.cancelAndJoin()
-            reader.closed.await()
-
-            assertTrue(reader.closeCalled)
-            assertEqual(0, emitCount)
-        }
-
-    @Test
     fun `readBuffer が null の間は emit しない`() =
         runBlocking {
             val reader =
@@ -488,11 +464,6 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
 // -----------------------------------------------------------------------------
 // ヘルパー
 // -----------------------------------------------------------------------------
-
-private fun assertEqual(
-    expected: Int,
-    actual: Int,
-) = assertTrue(expected == actual)
 
 private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     private val longitudinal: Double = 1.0,

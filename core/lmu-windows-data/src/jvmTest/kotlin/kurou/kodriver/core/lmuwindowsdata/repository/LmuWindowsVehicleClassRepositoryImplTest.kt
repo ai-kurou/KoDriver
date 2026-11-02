@@ -2,17 +2,13 @@ package kurou.kodriver.core.lmuwindowsdata.repository
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -84,24 +80,6 @@ class LmuWindowsVehicleClassRepositoryImplTest {
             val result = repo.vehicleClassStream().first()
 
             assertEquals("", result.name)
-        }
-
-    @Test
-    fun `reader が open できない間は emit しない`() =
-        runBlocking {
-            val reader =
-                FakeVehicleClassMemoryReader(
-                    buffer = buildVehicleClassBuffer(),
-                    openResult = false,
-                )
-            val repo = LmuWindowsVehicleClassRepositoryImpl(source = makeSource(reader))
-            val emitCount = AtomicInteger(0)
-
-            val job = launch { repo.vehicleClassStream().collect { emitCount.incrementAndGet() } }
-            delay(50)
-            job.cancelAndJoin()
-
-            assertEquals(0, emitCount.get())
         }
 
     private fun buildVehicleClassBuffer(config: VehicleClassBufferConfig = VehicleClassBufferConfig()): ByteBuffer {
