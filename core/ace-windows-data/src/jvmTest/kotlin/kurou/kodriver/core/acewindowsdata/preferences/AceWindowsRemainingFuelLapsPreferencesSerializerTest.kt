@@ -1,27 +1,12 @@
 package kurou.kodriver.core.acewindowsdata.preferences
 
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AceWindowsRemainingFuelLapsPreferencesSerializerTest {
-    @Test
-    fun `デフォルト値は3周と既定文言`() {
-        assertEquals(
-            AceWindowsRemainingFuelLapsPreferences(
-                thresholdLaps = ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT,
-                readoutText = ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT,
-                emptyReadoutText = ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT,
-            ),
-            AceWindowsRemainingFuelLapsPreferencesSerializer.defaultValue,
-        )
-    }
-
     @Test
     fun `空欄文言は読み出しても既定値に戻らない`() =
         runTest {

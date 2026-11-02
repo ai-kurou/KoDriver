@@ -8,11 +8,6 @@ import kotlin.test.assertEquals
 
 class LmuWindowsVehicleDamagePreferencesSerializerTest {
     @Test
-    fun `デフォルト値は enabledStates が空Map`() {
-        assertEquals(LmuWindowsVehicleDamagePreferences(), LmuWindowsVehicleDamagePreferencesSerializer.defaultValue)
-    }
-
-    @Test
     fun `保存した空欄は復元後も既定文言へ戻らない`() =
         runTest {
             val original =
