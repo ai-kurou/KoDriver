@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -33,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -232,28 +235,42 @@ fun OtherConsoleIpDetailPaneContent(
             Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .selectable(
+                            selected = uiState.selectedPort == GT7_PS5_UDP_PORT_DEFAULT,
+                            role = Role.RadioButton,
+                            onClick = { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_DEFAULT) },
+                        ),
             ) {
                 RadioButton(
                     selected = uiState.selectedPort == GT7_PS5_UDP_PORT_DEFAULT,
-                    onClick = { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_DEFAULT) },
+                    onClick = null,
+                    modifier = Modifier.minimumInteractiveComponentSize(),
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33740_label),
-                    modifier = Modifier.clickable { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_DEFAULT) },
                 )
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .selectable(
+                            selected = uiState.selectedPort == GT7_PS5_UDP_PORT_ALTERNATE,
+                            role = Role.RadioButton,
+                            onClick = { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_ALTERNATE) },
+                        ),
             ) {
                 RadioButton(
                     selected = uiState.selectedPort == GT7_PS5_UDP_PORT_ALTERNATE,
-                    onClick = { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_ALTERNATE) },
+                    onClick = null,
+                    modifier = Modifier.minimumInteractiveComponentSize(),
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33741_label),
-                    modifier = Modifier.clickable { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_ALTERNATE) },
                 )
             }
             AnimatedVisibility(visible = uiState.saveFailed) {
