@@ -276,8 +276,8 @@ tasks.register("generateModuleGraphImages") {
         val graphsDir = file("docs/graphs")
         graphsDir.mkdirs()
 
-        fun runCommand(vararg args: String, dir: File = rootDir) {
-            val result = ProcessBuilder(*args)
+        fun runCommand(args: List<String>, dir: File = rootDir) {
+            val result = ProcessBuilder(args)
                 .directory(dir)
                 .inheritIO()
                 .start()
@@ -431,7 +431,7 @@ tasks.register("generateModuleGraphImages") {
             },
         )
 
-        runCommand(dotBinary, "-Tsvg", fullGvFile.absolutePath, "-o", "$graphsDir/full-graph.svg")
+        runCommand(listOf(dotBinary, "-Tsvg", fullGvFile.absolutePath, "-o", "$graphsDir/full-graph.svg"))
         println("Generated: docs/graphs/full-graph.svg")
 
         allModules.forEach { module ->
@@ -464,7 +464,7 @@ tasks.register("generateModuleGraphImages") {
             val moduleGvFile = file("$graphsDir/$svgName.gv")
             moduleGvFile.writeText(gvContent)
 
-            runCommand(dotBinary, "-Tsvg", moduleGvFile.absolutePath, "-o", "$graphsDir/$svgName.svg")
+            runCommand(listOf(dotBinary, "-Tsvg", moduleGvFile.absolutePath, "-o", "$graphsDir/$svgName.svg"))
             println("Generated: docs/graphs/$svgName.svg")
         }
 
