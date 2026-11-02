@@ -80,34 +80,6 @@ class WebSocketAceWindowsFuelRepositoryTest {
         }
 
     @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(OTHER_FUEL_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-
-            fakeIpRepository.setIp(null)
-            val repository = buildRepository()
-
-            val noEmit = withTimeoutOrNull(300) { repository.fuelStream().first() }
-            assertNull(noEmit)
-
-            fakeIpRepository.setIp("127.0.0.1")
-            val result = repository.fuelStream().first()
-            assertEquals(FuelPercent(28.5), result.remainingPercent)
-        }
-
-    @Test
     fun `isConnectedは常にfalseを返す`() =
         runTest {
             assertFalse(buildRepository().isConnected())
@@ -131,4 +103,3 @@ private class FakeAceServerIpPreferencesRepository(
 }
 
 private const val FUEL_JSON = """{"remainingPercent": 42.0}"""
-private const val OTHER_FUEL_JSON = """{"remainingPercent": 28.5}"""

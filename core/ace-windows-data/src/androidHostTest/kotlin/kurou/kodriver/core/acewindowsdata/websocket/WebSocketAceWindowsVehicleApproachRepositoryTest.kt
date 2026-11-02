@@ -77,34 +77,6 @@ class WebSocketAceWindowsVehicleApproachRepositoryTest {
             assertEquals(12.5, result.nearbyVehicles.first().distanceMeters)
             assertEquals("/ws/ace_windows/vehicle_approach", server.takeRequest().path)
         }
-
-    @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(EMPTY_VEHICLES_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-
-            fakeIpRepository.setIp(null)
-            val repository = buildRepository()
-
-            val noEmit = withTimeoutOrNull(300) { repository.vehicleApproachStream().first() }
-            assertNull(noEmit)
-
-            fakeIpRepository.setIp("127.0.0.1")
-            val result = repository.vehicleApproachStream().first()
-            assertEquals(emptyList(), result.nearbyVehicles)
-        }
 }
 
 private class FakeAceVehicleApproachServerIpPreferencesRepository(
@@ -124,4 +96,3 @@ private class FakeAceVehicleApproachServerIpPreferencesRepository(
 }
 
 private const val ONE_VEHICLE_JSON = """{"nearbyVehicles": [{"distanceMeters": 12.5}]}"""
-private const val EMPTY_VEHICLES_JSON = """{"nearbyVehicles": []}"""

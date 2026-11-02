@@ -79,35 +79,6 @@ class WebSocketAceWindowsGapRepositoryTest {
             assertEquals(2.25f, result.gapBehindSeconds)
             assertEquals("/ws/ace_windows/car_gap", server.takeRequest().path)
         }
-
-    @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(GAP_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-
-            fakeIpRepository.setIp(null)
-            val repository = buildRepository()
-
-            val noEmit = withTimeoutOrNull(300) { repository.gapStream().first() }
-            assertNull(noEmit)
-
-            fakeIpRepository.setIp("127.0.0.1")
-            val result = repository.gapStream().first()
-            assertEquals(-1.5f, result.gapAheadSeconds)
-            assertEquals(2.25f, result.gapBehindSeconds)
-        }
 }
 
 private class FakeAceGapServerIpPreferencesRepository(

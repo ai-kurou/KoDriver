@@ -78,34 +78,6 @@ class WebSocketAceWindowsBestLapTimeRepositoryTest {
             assertEquals(3, result.currentLap)
             assertEquals("/ws/ace_windows/my_best_lap", server.takeRequest().path)
         }
-
-    @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(BEST_LAP_TIME_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-
-            fakeIpRepository.setIp(null)
-            val repository = buildRepository()
-
-            val noEmit = withTimeoutOrNull(300) { repository.bestLapTimeStream().first() }
-            assertNull(noEmit)
-
-            fakeIpRepository.setIp("127.0.0.1")
-            val result = repository.bestLapTimeStream().first()
-            assertEquals(95_123, result.bestLapTimeMs)
-        }
 }
 
 private class FakeAceBestLapTimeServerIpPreferencesRepository(

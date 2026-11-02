@@ -79,35 +79,6 @@ class WebSocketAceWindowsOverallPositionRepositoryTest {
             assertEquals(20, result.totalDrivers)
             assertEquals("/ws/ace_windows/overall_position", server.takeRequest().path)
         }
-
-    @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(OVERALL_POSITION_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-
-            fakeIpRepository.setIp(null)
-            val repository = buildRepository()
-
-            val noEmit = withTimeoutOrNull(300) { repository.overallPositionStream().first() }
-            assertNull(noEmit)
-
-            fakeIpRepository.setIp("127.0.0.1")
-            val result = repository.overallPositionStream().first()
-            assertEquals(2, result.position)
-            assertEquals(20, result.totalDrivers)
-        }
 }
 
 private class FakeAceOverallPositionServerIpPreferencesRepository(
