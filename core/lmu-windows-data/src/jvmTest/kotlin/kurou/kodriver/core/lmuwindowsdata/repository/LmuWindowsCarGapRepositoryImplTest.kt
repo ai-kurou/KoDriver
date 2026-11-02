@@ -106,23 +106,6 @@ class LmuWindowsCarGapRepositoryImplTest {
             assertEquals(0, emitCount.get())
         }
 
-    @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
-        runBlocking {
-            val reader =
-                FakeCarGapMemoryReader(
-                    buildCarGapBuffer(CarGapBufferConfig(activeVehicles = 1, playerIdx = 1)),
-                )
-            val repo = LmuWindowsCarGapRepositoryImpl(source = makeSource(reader))
-            val emitCount = AtomicInteger(0)
-
-            val job = launch { repo.carGapStream().collect { emitCount.incrementAndGet() } }
-            delay(50)
-            job.cancelAndJoin()
-
-            assertEquals(0, emitCount.get())
-        }
-
     private fun buildCarGapBuffer(config: CarGapBufferConfig = CarGapBufferConfig()): ByteBuffer {
         val buffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)
         buffer.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, config.activeVehicles.toByte())

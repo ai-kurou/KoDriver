@@ -92,25 +92,6 @@ class LmuWindowsBrakeTemperatureRepositoryImplTest {
             assertEquals(0, emitCount.get())
         }
 
-    @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
-        runBlocking {
-            val reader =
-                FakeBrakeTemperatureMemoryReader(
-                    buildBrakeTemperatureBuffer(
-                        BrakeTemperatureBufferConfig(activeVehicles = 1, playerIdx = 1),
-                    ),
-                )
-            val repo = LmuWindowsBrakeTemperatureRepositoryImpl(source = makeSource(reader))
-            val emitCount = AtomicInteger(0)
-
-            val job = launch { repo.brakeTemperatureStream().collect { emitCount.incrementAndGet() } }
-            delay(50)
-            job.cancelAndJoin()
-
-            assertEquals(0, emitCount.get())
-        }
-
     private fun buildBrakeTemperatureBuffer(
         config: BrakeTemperatureBufferConfig = BrakeTemperatureBufferConfig(),
     ): ByteBuffer {

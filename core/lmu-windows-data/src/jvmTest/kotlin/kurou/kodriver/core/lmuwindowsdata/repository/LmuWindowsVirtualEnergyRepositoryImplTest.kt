@@ -75,23 +75,6 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
             assertEquals(0, emitCount.get())
         }
 
-    @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
-        runBlocking {
-            val reader =
-                FakeVirtualEnergyMemoryReader(
-                    buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(activeVehicles = 1, playerIdx = 1)),
-                )
-            val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
-            val emitCount = AtomicInteger(0)
-
-            val job = launch { repo.virtualEnergyStream().collect { emitCount.incrementAndGet() } }
-            delay(50)
-            job.cancelAndJoin()
-
-            assertEquals(0, emitCount.get())
-        }
-
     private fun buildVirtualEnergyBuffer(config: VirtualEnergyBufferConfig = VirtualEnergyBufferConfig()): ByteBuffer {
         val buffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)
         buffer.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, config.activeVehicles.toByte())

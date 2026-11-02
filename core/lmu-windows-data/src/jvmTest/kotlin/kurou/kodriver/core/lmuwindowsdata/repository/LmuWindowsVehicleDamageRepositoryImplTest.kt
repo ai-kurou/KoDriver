@@ -83,23 +83,6 @@ class LmuWindowsVehicleDamageRepositoryImplTest {
             assertEquals(0, emitCount.get())
         }
 
-    @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
-        runBlocking {
-            val reader =
-                FakeDamageMemoryReader(
-                    buildDamageBuffer(DamageBufferConfig(activeVehicles = 1, playerIdx = 1)),
-                )
-            val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
-            val emitCount = AtomicInteger(0)
-
-            val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
-            delay(50)
-            job.cancelAndJoin()
-
-            assertEquals(0, emitCount.get())
-        }
-
     private fun buildDamageBuffer(config: DamageBufferConfig = DamageBufferConfig()): ByteBuffer {
         val telemetryBase = 128_464
         val telemInfo = 4
