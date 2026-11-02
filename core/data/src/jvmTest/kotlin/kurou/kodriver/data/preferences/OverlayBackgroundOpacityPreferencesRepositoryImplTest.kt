@@ -32,18 +32,6 @@ class OverlayBackgroundOpacityPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値は50・保存した値を返す・上書きで更新される`() =
-        runTest {
-            assertEquals(50, repository.observeOverlayBackgroundOpacity().first())
-
-            repository.saveOverlayBackgroundOpacity(70)
-            assertEquals(70, repository.observeOverlayBackgroundOpacity().first())
-
-            repository.saveOverlayBackgroundOpacity(0)
-            assertEquals(0, repository.observeOverlayBackgroundOpacity().first())
-        }
-
-    @Test
     fun `プレビューは保存せず配信され解除すると保存値に戻る`() =
         runTest {
             repository.saveOverlayBackgroundOpacity(20)

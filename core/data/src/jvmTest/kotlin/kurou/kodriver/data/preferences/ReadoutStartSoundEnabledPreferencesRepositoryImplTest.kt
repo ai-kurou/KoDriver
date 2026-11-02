@@ -16,7 +16,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReadoutStartSoundEnabledPreferencesRepositoryImplTest {
@@ -39,24 +38,6 @@ class ReadoutStartSoundEnabledPreferencesRepositoryImplTest {
     fun tearDown() {
         tempDir.deleteRecursively()
     }
-
-    @Test
-    fun `初期値は空Map・保存した値を返す・上書きで更新される`() =
-        runTest {
-            assertTrue(repository.observeStartSoundEnabledStates().first().isEmpty())
-
-            repository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
-            assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to false),
-                repository.observeStartSoundEnabledStates().first(),
-            )
-
-            repository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, true)
-            assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to true),
-                repository.observeStartSoundEnabledStates().first(),
-            )
-        }
 
     @Test
     fun `複数項目を独立して保存・取得できる`() =

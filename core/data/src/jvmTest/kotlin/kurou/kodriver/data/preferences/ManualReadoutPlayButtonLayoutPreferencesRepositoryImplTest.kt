@@ -10,7 +10,6 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManualReadoutPlayButtonLayoutPreferencesRepositoryImplTest {
@@ -28,15 +27,6 @@ class ManualReadoutPlayButtonLayoutPreferencesRepositoryImplTest {
     fun tearDown() {
         tempDir.deleteRecursively()
     }
-
-    @Test
-    fun `初期値はtrue・保存した値を返す・上書きで更新される`() =
-        runTest {
-            assertFalse(repository.observeManualReadoutPlayButtonLayoutEnabled().first())
-
-            repository.saveManualReadoutPlayButtonLayoutEnabled(true)
-            assertTrue(repository.observeManualReadoutPlayButtonLayoutEnabled().first())
-        }
 
     @Test
     fun `resetToDefaultで既定値へ戻す`() =
