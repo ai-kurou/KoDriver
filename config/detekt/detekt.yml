@@ -3,6 +3,8 @@ build:
 
 config:
   validation: true
+  # compose-rules 0.6.8 の既定設定には許可リストのキーが載っていないため、検証から除外する
+  excludes: 'Compose>CompositionLocalAllowlist>allowedCompositionLocals'
   warningsAsErrors: false
 
 Compose:
@@ -44,21 +46,21 @@ Compose:
     active: true
   ModifierWithoutDefault:
     active: true
-  MultipleContentEmitters:
+  MultipleEmitters:
     active: true
-  MutableParameters:
+  MutableParams:
     active: true
   MutableStateAutoboxing:
     active: true
-  MutableStateParameter:
+  MutableStateParam:
     active: true
-  Naming:
+  ComposableNaming:
     active: true
   # KoDriver全体でonXxxChanged/onXxxClickedのような過去形イベント名が既に一貫して使われているため、
   # 現在形を強制するこのルールは既存の命名規則と衝突する。無効化する。
   ParameterNaming:
     active: false
-  ParameterOrder:
+  ComposableParamOrder:
     active: true
   PreviewAnnotationNaming:
     active: true
@@ -68,7 +70,7 @@ Compose:
     active: true
   RememberContentMissing:
     active: true
-  RememberStateMissing:
+  RememberMissing:
     active: true
   UnstableCollections:
     active: true
