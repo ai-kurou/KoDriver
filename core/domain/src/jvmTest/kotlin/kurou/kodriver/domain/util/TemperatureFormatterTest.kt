@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.acewindowsdebugstatedetail
+package kurou.kodriver.domain.util
 
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.WheelIndex
