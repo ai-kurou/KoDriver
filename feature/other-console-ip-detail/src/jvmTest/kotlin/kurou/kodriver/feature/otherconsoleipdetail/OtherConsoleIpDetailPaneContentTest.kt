@@ -1,12 +1,19 @@
 package kurou.kodriver.feature.otherconsoleipdetail
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -221,6 +228,44 @@ class OtherConsoleIpDetailPaneContentTest {
         rule.onNodeWithText("33741（SimHub経由で接続）").performClick()
 
         assertEquals(33741, selected)
+    }
+
+    @Test
+    fun `ポート行はRadioButtonのroleと選択状態を公開する`() {
+        setContent(
+            ContentParams(
+                uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33741),
+            ),
+        )
+        val radioRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
+
+        rule
+            .onNodeWithText("33740（ゲーム機に直接接続）")
+            .assert(radioRole)
+            .assertIsNotSelected()
+        rule
+            .onNodeWithText("33741（SimHub経由で接続）")
+            .assert(radioRole)
+            .assertIsSelected()
+    }
+
+    @Test
+    fun `ポート行の余白をタップするとそのポートでonPortSelectedが呼ばれる`() {
+        var selected: Int? = null
+        setContent(
+            ContentParams(
+                uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33741),
+                onPortSelected = { selected = it },
+            ),
+        )
+
+        rule
+            .onNodeWithText("33740（ゲーム機に直接接続）")
+            .performTouchInput { click(Offset(width - 1f, height / 2f)) }
+
+        assertEquals(33740, selected)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 
     @Test
