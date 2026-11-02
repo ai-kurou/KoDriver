@@ -314,13 +314,13 @@ class AceWindowsNarratorViewModelTest {
     @Test
     fun `手動燃料は5秒を超えたらデータなしを読み上げる`() =
         runTest(testDispatcher) {
-            assertManualReadout(hotkey = false, fuelAgeMs = 5_001L, expectedText = "残り燃料はデータがありません")
+            assertManualReadout(hotkey = false, fuelAgeMs = 5_001L, expectedText = "燃料残量はデータがありません")
         }
 
     @Test
     fun `手動燃料は未受信ならデータなしを読み上げる`() =
         runTest(testDispatcher) {
-            assertManualReadout(hotkey = true, expectedText = "残り燃料はデータがありません")
+            assertManualReadout(hotkey = true, expectedText = "燃料残量はデータがありません")
         }
 
     @Test
@@ -332,7 +332,7 @@ class AceWindowsNarratorViewModelTest {
     @Test
     fun `シミュレーターを切り替えると手動燃料の現在値をクリアする`() =
         runTest(testDispatcher) {
-            assertManualReadout(hotkey = false, fuelAgeMs = 0L, expectedText = "残り燃料はデータがありません", switchSimulator = true)
+            assertManualReadout(hotkey = false, fuelAgeMs = 0L, expectedText = "燃料残量はデータがありません", switchSimulator = true)
         }
 
     @Test
@@ -352,7 +352,7 @@ class AceWindowsNarratorViewModelTest {
             assertManualReadout(
                 hotkey = false,
                 valueAgeMs = 5_001L,
-                expectedText = "残り燃料の周回数はデータがありません",
+                expectedText = "燃料残り周回数はデータがありません",
                 itemKeys = listOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
             )
         }
@@ -362,7 +362,7 @@ class AceWindowsNarratorViewModelTest {
         runTest(testDispatcher) {
             assertManualReadout(
                 hotkey = true,
-                expectedText = "残り燃料の周回数はデータがありません",
+                expectedText = "燃料残り周回数はデータがありません",
                 itemKeys = listOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
             )
         }
@@ -373,7 +373,7 @@ class AceWindowsNarratorViewModelTest {
             assertManualReadout(
                 hotkey = false,
                 valueAgeMs = 0L,
-                expectedText = "残り燃料の周回数はデータがありません",
+                expectedText = "燃料残り周回数はデータがありません",
                 switchSimulator = true,
                 itemKeys = listOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
             )
@@ -722,7 +722,7 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `給油後は残り燃料警告を再度読み上げる`() =
+    fun `給油後は燃料残量警告を再度読み上げる`() =
         runTest(testDispatcher) {
             val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -787,7 +787,7 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `残り燃料項目が無効のときは読み上げない`() =
+    fun `燃料残量項目が無効のときは読み上げない`() =
         runTest(testDispatcher) {
             val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()

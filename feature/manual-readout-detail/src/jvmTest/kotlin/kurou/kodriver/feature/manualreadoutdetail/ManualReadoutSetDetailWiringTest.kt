@@ -95,13 +95,13 @@ class ManualReadoutSetDetailWiringTest {
     }
 
     @Test
-    fun `ACEのContentは残り燃料の追加と文言編集と試聴と削除を配線する`() {
-        assertItemWiring(Simulator.AceWindows, "残り燃料")
+    fun `ACEのContentは燃料残量の追加と文言編集と試聴と削除を配線する`() {
+        assertItemWiring(Simulator.AceWindows, "燃料残量")
     }
 
     @Test
-    fun `GT7のContentは残り燃料の追加と文言編集と試聴と削除を配線する`() {
-        assertItemWiring(Simulator.Gt7Ps5, "残り燃料")
+    fun `GT7のContentは燃料残量の追加と文言編集と試聴と削除を配線する`() {
+        assertItemWiring(Simulator.Gt7Ps5, "燃料残量")
     }
 
     private fun renameSet(name: String) {

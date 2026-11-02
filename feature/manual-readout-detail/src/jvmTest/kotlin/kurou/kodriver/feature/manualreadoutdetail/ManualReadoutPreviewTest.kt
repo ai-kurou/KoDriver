@@ -182,7 +182,7 @@ class ManualReadoutPreviewTest {
     }
 
     @Test
-    fun `GT7の残り燃料周回数は3周でプレビューし空欄は読まない`() {
+    fun `GT7の燃料残り周回数は3周でプレビューし空欄は読まない`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.Gt7Ps5.id, selectedItemKeys = listOf(key))
         assertEquals("燃料は残り約3周", manualReadoutPreview(state))
@@ -203,7 +203,7 @@ class ManualReadoutPreviewTest {
     }
 
     @Test
-    fun `ACEの残り燃料の既定文言と編集文言はサンプル値に置換する`() {
+    fun `ACEの燃料残量の既定文言と編集文言はサンプル値に置換する`() {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.AceWindows.id, selectedItemKeys = listOf(key))
         assertEquals("燃料は残り50パーセント", manualReadoutPreview(state))
@@ -215,7 +215,7 @@ class ManualReadoutPreviewTest {
     }
 
     @Test
-    fun `ACEの残り燃料の周回数の既定文言と編集文言はサンプル値に置換する`() {
+    fun `ACEの燃料残り周回数の既定文言と編集文言はサンプル値に置換する`() {
         val key = AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.AceWindows.id, selectedItemKeys = listOf(key))
         assertEquals("燃料は残り約5周", manualReadoutPreview(state))
@@ -224,7 +224,7 @@ class ManualReadoutPreviewTest {
     }
 
     @Test
-    fun `GT7の残り燃料の既定文言と編集文言はサンプル値に置換する`() {
+    fun `GT7の燃料残量の既定文言と編集文言はサンプル値に置換する`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.Gt7Ps5.id, selectedItemKeys = listOf(key))
         assertEquals("燃料は残り50パーセント", manualReadoutPreview(state))

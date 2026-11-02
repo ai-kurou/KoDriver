@@ -32,7 +32,7 @@ import kotlin.math.roundToInt
 /**
  * GT7 向け読み上げ判定の継続状態。
  *
- * 自己ベスト、燃料警告、残り燃料周回数の重複読み上げを避けるため、
+ * 自己ベスト、燃料警告、燃料残り周回数の重複読み上げを避けるため、
  * 前回までの判定結果と燃料消費の追跡状態を保持する。
  * 自己ベストの状態は周回数の減少による新セッション検出時にリセットする。
  */
@@ -82,7 +82,7 @@ data class Gt7Ps5NarratorReadoutDecision(
 )
 
 /**
- * GT7 のテレメトリから、自己ベスト・燃料残量・残り燃料周回数・タイヤ温度の読み上げを決定する UseCase。
+ * GT7 のテレメトリから、自己ベスト・燃料残量・燃料残り周回数・タイヤ温度の読み上げを決定する UseCase。
  */
 class DetermineGt7Ps5NarratorReadoutUseCase {
     /** セットの対応項目を保存順に連結し、自動読み上げの警告済み状態を維持する。 */
@@ -92,7 +92,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
     ): Gt7Ps5NarratorReadoutDecision {
         val supportedEvents = items.mapNotNull { manualCurrentValue(it) }.take(MANUAL_READOUT_SET_ITEM_MAX)
         val text = joinManualReadoutTexts(supportedEvents.map { event -> event.resolvedText ?: event.narratedText })
-        // セット全体を1イベントにまとめ、項目の構成にかかわらず開始音・ログのキーは残り燃料に統一する。
+        // セット全体を1イベントにまとめ、項目の構成にかかわらず開始音・ログのキーは燃料残量に統一する。
         return Gt7Ps5NarratorReadoutDecision(
             state = state,
             events = listOf(Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, text)),

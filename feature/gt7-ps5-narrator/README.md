@@ -76,13 +76,13 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 
 GT7 の手動読み上げは、一覧の ▶ と Windows のセットホットキーからの依頼を合流し、
 `Simulator.Gt7Ps5.id` 宛てで保存済みセットが見つかり、GT7 が選択中の場合だけ処理する。
-`manualReadoutItemKeys(Simulator.Gt7Ps5.id)` は「残り燃料」の
-`Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value`、続いて「残り燃料の周回数」の
+`manualReadoutItemKeys(Simulator.Gt7Ps5.id)` は「燃料残量」の
+`Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value`、続いて「燃料残り周回数」の
 `Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value`、続いて「タイヤ温度」の
 `Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value` に対応する。詳細画面で保存したセットの
 `itemKeys`・`itemTexts` を ViewModel が参照し、`Gt7Ps5ManualReadoutItem` を判定へ渡す。
 最新テレメトリの `gasLevel / gasCapacity * 100` を四捨五入して0〜100に制限する。
-未受信・受信から5秒超・不正な燃料値は null とし「残り燃料はデータがありません」を読む。
+未受信・受信から5秒超・不正な燃料値は null とし「燃料残量はデータがありません」を読む。
 既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` の
 「燃料は残り{percent}パーセント」で、既存の燃料用フォーマット関数を再利用する。
 判定は対応項目を最大3件、保存順に空欄を除いて「、」で連結し、
@@ -97,11 +97,11 @@ GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持
 状態と設定は `toRawTelemetryLogJson` を使い、テレメトリの前回値・現在値を含めない。
 
 
-手動の残り燃料周回数は `currentRemainingFuelLaps(state)` で `fuelTrackingState` から算出する。
+手動の燃料残り周回数は `currentRemainingFuelLaps(state)` で `fuelTrackingState` から算出する。
 開始燃料＋総給油量－現在燃料を、完走周回数＋`CURRENT_LAP_CONSUMPTION_WEIGHT`（0.9）で割った平均消費を使い、
 現在燃料÷平均消費を整数へ切り捨てる。開始燃料・開始周回が未設定、完走周回数が0以下、消費燃料が0以下なら null。
-最終受信から5秒以内だけ推定値を使い、未受信・鮮度切れは「残り燃料の周回数はデータがありません」を読む。
-`Gt7Ps5ManualReadoutItem.value` は `ManualReadoutValue`（Percent・Celsius・LapTimeMs・RemainingLaps）で、残り燃料が `Percent`（％）、残り燃料の周回数が `RemainingLaps`（周）、タイヤ温度が `Celsius`（℃）、自己ベストが `LapTimeMs`（ms）。項目キーと種別が対応しない値はデータなしとして扱う。
+最終受信から5秒以内だけ推定値を使い、未受信・鮮度切れは「燃料残り周回数はデータがありません」を読む。
+`Gt7Ps5ManualReadoutItem.value` は `ManualReadoutValue`（Percent・Celsius・LapTimeMs・RemainingLaps）で、燃料残量が `Percent`（％）、燃料残り周回数が `RemainingLaps`（周）、タイヤ温度が `Celsius`（℃）、自己ベストが `LapTimeMs`（ms）。項目キーと種別が対応しない値はデータなしとして扱う。
 既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）で、
 `formatGt7Ps5RemainingFuelLapsReadoutText` で置換する。0周以下は「燃料残り1周未満」。
 テンプレートが空欄なら、0周以下やデータなしでも読まない。

@@ -417,7 +417,7 @@ class ManualReadoutSetDetailViewModelTest {
         }
 
     @Test
-    fun `GT7の残り燃料周回数は項目追加と編集文言をセットへ保存する`() =
+    fun `GT7の燃料残り周回数は項目追加と編集文言をセットへ保存する`() =
         runTest(dispatcher) {
             val key = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value
             val original = ManualReadoutSet("target")
@@ -481,7 +481,7 @@ class ManualReadoutSetDetailViewModelTest {
         }
 
     @Test
-    fun `ACEの残り燃料は項目追加と編集文言をセットへ保存する`() =
+    fun `ACEの燃料残量は項目追加と編集文言をセットへ保存する`() =
         runTest(dispatcher) {
             val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
             val original = ManualReadoutSet("target")
@@ -513,7 +513,7 @@ class ManualReadoutSetDetailViewModelTest {
         }
 
     @Test
-    fun `GT7の残り燃料は項目追加と編集文言をセットへ保存する`() =
+    fun `GT7の燃料残量は項目追加と編集文言をセットへ保存する`() =
         runTest(dispatcher) {
             val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
             val original = ManualReadoutSet("target")

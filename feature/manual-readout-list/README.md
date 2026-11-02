@@ -1,6 +1,6 @@
 # manual-readout-list
 
-手動読み上げセットの一覧・依頼・ナビゲーションを担う feature モジュール。シミュレーター ID と表示名を受け取り、選択中シミュレーターの保存済みセット一覧を ViewModel で観測する。見出し右端の2つのセグメントから選んで標準表示と再生ボタン表示を切り替える設定を保存する。再生ボタン表示は2列固定の大きな再生ボタンタイルで、タップで再生し、長押しで編集画面を開く。見出しの「編集」ボタンで編集モードにするとタップでも編集画面を開く。セットが1件以上あるときは見出し行の下に「Nセット」を表示する（狭い幅で操作部を潰さないため別行）。編集モードは表示切替や再表示で解除する。ホットキーチップは対応環境で割り当て済みのみ表示する。再生不可または項目なしのタイルは再生できない。末尾の追加タイルはセット0件でも表示する。標準表示では、保存済みセットが0件なら説明シート付きの見出しと、選択中シミュレーター名入りの空状態を表示する。1件以上なら説明見出し行の下に、保存済みセットを1件1行のカードで表示する。各行にはセット名（未設定なら固定番号の「セット N」）と、カテゴリのアイコン・名称・件数をチップで表示する。カテゴリはバーチャルエネルギー・燃料・タイヤ・ブレーキ・ラップの5種で、最初の出現順に集計し、不明なキーは無視する。項目キーが空なら「項目なし」、不明なキーだけなら「N項目」とする。左端の5dpストライプは先頭カテゴリの色、カテゴリなしは outlineVariant。右端の再生ボタンは52dpの塗りつぶし円。再生タイルには同じ順序のカテゴリ色ドットも表示する。カテゴリ色は `:core:designsystem` の拡張カラー（`KoDriverExtendedColors`）を参照する。右下の「セットを追加」拡張 FAB は標準表示で常時表示し、UUID を ID とする空のセットを`AddManualReadoutSetUseCase` を通じて保存済みセットの末尾へアトミックに追加する。LMU・GT7・ACE の行の右端の ▶ は `RequestManualReadoutUseCase` で `ManualReadoutRequest(simulatorId, setId)` を送る。`canReadSets` は全シミュレーターで true。ACE の対象セットに残り燃料・残り燃料の周回数・自己ベストラップ・タイヤ温度、GT7 の対象セットに残り燃料・残り燃料の周回数・タイヤ温度・自己ベストラップ、または LMU の対象セットにバーチャルエネルギー残量・燃料残量・タイヤ摩耗・ブレーキ残量・ブレーキ温度・タイヤ温度・自己ベストラップ・バーチャルエネルギーの残り周回数・タイヤ摩耗の残り周回数の項目が含まれる場合は、保存した項目順に現在値の文を「、」でつないだ1イベントとして自動読み上げスイッチに関係なく読み、キュー設定に関係なく常にキューの末尾に並べる。対象項目がないセットは、データの有無に関係なく編集不可の固定文言「読み上げる項目がありません」を開始音付きで読み上げ、常にキュー末尾へ追加してログを保存する。セットが見つからない場合は読み上げない。一部の項目が未受信・鮮度切れなら「<項目名>はデータがありません」を連結し、LMU も ACE・GT7 と同様に先頭 `MANUAL_READOUT_SET_ITEM_MAX`（3件）までを開始音付きで読み上げ、常にキュー末尾へ追加してログを保存する。行タップで詳細を開く。行を長押しすると「削除」メニューを表示し、確認ダイアログで確定すると `DeleteManualReadoutSetUseCase` でセットを削除する。選択中のセットを削除すると選択が解除され詳細も閉じる。詳細は `ManualReadoutContent` のスロットとして受け取り、詳細モジュールへの依存は持たない。詳細スロットに `canNavigateBack` と `onBack` を渡し、戻るボタンと削除後の通知で一覧に戻る。説明シートでは読み上げ・順番待ち・データがないときの動作・長押しによる削除を説明し、Windows デスクトップ版のみ（macOS/Linux では表示しない）ホットキーの説明と、その直下に SimHub 手順書を外部ブラウザで開くリンクを表示する。アプリの「手動」タブから表示され、離脱時に選択は解除せず、他タブから戻ると選択中のセットの詳細を引き続き表示する。選択はシミュレーターごとの ViewModel が保持する。
+手動読み上げセットの一覧・依頼・ナビゲーションを担う feature モジュール。シミュレーター ID と表示名を受け取り、選択中シミュレーターの保存済みセット一覧を ViewModel で観測する。見出し右端の2つのセグメントから選んで標準表示と再生ボタン表示を切り替える設定を保存する。再生ボタン表示は2列固定の大きな再生ボタンタイルで、タップで再生し、長押しで編集画面を開く。見出しの「編集」ボタンで編集モードにするとタップでも編集画面を開く。セットが1件以上あるときは見出し行の下に「Nセット」を表示する（狭い幅で操作部を潰さないため別行）。編集モードは表示切替や再表示で解除する。ホットキーチップは対応環境で割り当て済みのみ表示する。再生不可または項目なしのタイルは再生できない。末尾の追加タイルはセット0件でも表示する。標準表示では、保存済みセットが0件なら説明シート付きの見出しと、選択中シミュレーター名入りの空状態を表示する。1件以上なら説明見出し行の下に、保存済みセットを1件1行のカードで表示する。各行にはセット名（未設定なら固定番号の「セット N」）と、カテゴリのアイコン・名称・件数をチップで表示する。カテゴリはバーチャルエネルギー・燃料・タイヤ・ブレーキ・ラップの5種で、最初の出現順に集計し、不明なキーは無視する。項目キーが空なら「項目なし」、不明なキーだけなら「N項目」とする。左端の5dpストライプは先頭カテゴリの色、カテゴリなしは outlineVariant。右端の再生ボタンは52dpの塗りつぶし円。再生タイルには同じ順序のカテゴリ色ドットも表示する。カテゴリ色は `:core:designsystem` の拡張カラー（`KoDriverExtendedColors`）を参照する。右下の「セットを追加」拡張 FAB は標準表示で常時表示し、UUID を ID とする空のセットを`AddManualReadoutSetUseCase` を通じて保存済みセットの末尾へアトミックに追加する。LMU・GT7・ACE の行の右端の ▶ は `RequestManualReadoutUseCase` で `ManualReadoutRequest(simulatorId, setId)` を送る。`canReadSets` は全シミュレーターで true。ACE の対象セットに燃料残量・燃料残り周回数・自己ベストラップ・タイヤ温度、GT7 の対象セットに燃料残量・燃料残り周回数・タイヤ温度・自己ベストラップ、または LMU の対象セットにバーチャルエネルギー残量・燃料残量・タイヤ摩耗・ブレーキ残量・ブレーキ温度・タイヤ温度・自己ベストラップ・バーチャルエネルギーの残り周回数・タイヤ摩耗の残り周回数の項目が含まれる場合は、保存した項目順に現在値の文を「、」でつないだ1イベントとして自動読み上げスイッチに関係なく読み、キュー設定に関係なく常にキューの末尾に並べる。対象項目がないセットは、データの有無に関係なく編集不可の固定文言「読み上げる項目がありません」を開始音付きで読み上げ、常にキュー末尾へ追加してログを保存する。セットが見つからない場合は読み上げない。一部の項目が未受信・鮮度切れなら「<項目名>はデータがありません」を連結し、LMU も ACE・GT7 と同様に先頭 `MANUAL_READOUT_SET_ITEM_MAX`（3件）までを開始音付きで読み上げ、常にキュー末尾へ追加してログを保存する。行タップで詳細を開く。行を長押しすると「削除」メニューを表示し、確認ダイアログで確定すると `DeleteManualReadoutSetUseCase` でセットを削除する。選択中のセットを削除すると選択が解除され詳細も閉じる。詳細は `ManualReadoutContent` のスロットとして受け取り、詳細モジュールへの依存は持たない。詳細スロットに `canNavigateBack` と `onBack` を渡し、戻るボタンと削除後の通知で一覧に戻る。説明シートでは読み上げ・順番待ち・データがないときの動作・長押しによる削除を説明し、Windows デスクトップ版のみ（macOS/Linux では表示しない）ホットキーの説明と、その直下に SimHub 手順書を外部ブラウザで開くリンクを表示する。アプリの「手動」タブから表示され、離脱時に選択は解除せず、他タブから戻ると選択中のセットの詳細を引き続き表示する。選択はシミュレーターごとの ViewModel が保持する。
 
 セット追加（FAB／タイル）と表示切替、標準カード内の再生ボタンと再生タイルの再生操作には `ContextClick` の触覚フィードバックを1回返す。再生不可の操作では返さず、選択・長押しのフィードバックと重複させない。選択済みの表示セグメントでは返さない。再生ボタン表示の編集タップは、異なるセットを選択したときに返す。標準行タップ・長押し編集・手順書リンクの既存フィードバックは維持する。カテゴリチップは表示専用で、状態の同期や追加アニメーションでは触覚を返さない。`ManualReadoutListPaneHapticTest` で操作ごとの回数と重複しないことを確認する。
 
@@ -28,20 +28,20 @@ Windows デスクトップでは、各セット行の左側にセット名・項
 - `ManualReadoutListPaneScreenshotTest.kt`: 再生ボタン表示と編集モード（割り当て済みチップ付き）、見出し・セット追加 FAB 付きの空状態・読み上げボタンが有効な LMU の保存済みセット一覧と説明シート（ホットキーあり・なし）を確認する Desktop/JVM 向けスクリーンショットテスト。
 - `ManualReadoutHintSheetContentScreenshotTest.kt`: Android 版の説明シート（ホットキーの説明なし）を確認する Android 向けスクリーンショットテスト。Windows デスクトップ版と表示内容が異なるため追加している。
 
-手動の「燃料の残り周回数」は `LmuWindowsReadoutItemKey.RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`）に対応する。
+手動の「燃料残り周回数」は `LmuWindowsReadoutItemKey.RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`）に対応する。
 `RemainingFuel` 配下の手動専用項目で、TopLevel・自動タブ・スイッチには追加しない。手動項目定義の末尾（タイヤ摩耗の残り周回数の後）に並ぶ。
 `fuelLapsTrackingState` の蓄積値を `manualFuelRemainingLaps` で読み、1周以上は `formatLmuWindowsPitTimingReadoutText` で `{laps}` を置換する。
 既定文言は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、0周は
 `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料残り1周未満」）。空欄テンプレートなら0周でも空文字にする。
 蓄積前・消費量が null／0以下／非有限・算出不能・最新燃料が未受信または受信から5秒超の場合はデータ無しとする。
 鮮度は `latestFuelReceivedAtMs` で判定し、ピットタイミングの鮮度には依存しない。
-複数項目では「燃料の残り周回数はデータがありません」を連結する。
+複数項目では「燃料残り周回数はデータがありません」を連結する。
 先頭項目なら開始音・優先度・ログ・キューに `RemainingFuel.Root` を使う。編集画面はACE・GT7の燃料項目と同じ「燃料」カテゴリに配置し、既存の
 `LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
 自動燃料警告の設定・状態は変更せず、自動読み上げには接続しない。
 
 手動の「クラス内前方車／後方車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value`（`lmu_windows_auto_class_car_gap_ahead`）・`ClassCarGap.Behind.value`（`lmu_windows_auto_class_car_gap_behind`）に対応する。
-TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料の残り周回数の後）に並ぶ。
+TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料残り周回数の後）に並ぶ。
 `ObserveLmuWindowsClassCarGapUseCase` の最新値（`LmuWindowsClassCarGapData`）を `latestClassCarGap` / `latestClassCarGapReceivedAtMs` に保持し、受信から5秒（`CURRENT_VALUE_MAX_AGE_MS`）以内のものだけを項目へ渡す。未受信・鮮度切れはデータ無しとする。
 周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定し、固定文言
 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）・`LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）を読む（データありとして扱う。空欄テンプレートなら空文字）。
@@ -73,15 +73,15 @@ LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingF
 | LMU Windows | 自己ベストラップ | `MyBestLap.Root` | `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT` | `MyBestLap.Root` |
 | LMU Windows | バーチャルエネルギーの残り周回数 | `PitTiming.VirtualEnergy` | `LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT` | `PitTiming.Root` |
 | LMU Windows | タイヤ摩耗の残り周回数 | `PitTiming.TyreWear` | `LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT` | `PitTiming.Root` |
-| LMU Windows | 燃料の残り周回数 | `RemainingFuel.Laps` | `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT` | `RemainingFuel.Root` |
+| LMU Windows | 燃料残り周回数 | `RemainingFuel.Laps` | `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT` | `RemainingFuel.Root` |
 | LMU Windows | クラス内前方車とのギャップ | `ClassCarGap.Ahead` | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT` | `VehicleApproach.Root` |
 | LMU Windows | クラス内後方車とのギャップ | `ClassCarGap.Behind` | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_BEHIND_TEXT_DEFAULT` | `VehicleApproach.Root` |
-| GT7 PS5 | 残り燃料 | `RemainingFuel.Root` | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| GT7 PS5 | 残り燃料の周回数 | `RemainingFuelLaps.Root` | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT` | `RemainingFuel.Root` |
+| GT7 PS5 | 燃料残量 | `RemainingFuel.Root` | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` | `RemainingFuel.Root` |
+| GT7 PS5 | 燃料残り周回数 | `RemainingFuelLaps.Root` | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT` | `RemainingFuel.Root` |
 | GT7 PS5 | タイヤ温度 | `TyreTemperature.Root` | `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT` | `RemainingFuel.Root` |
 | GT7 PS5 | 自己ベストラップ | `MyBestLap.Root` | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| ACE Windows | 残り燃料 | `RemainingFuel.Root` | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| ACE Windows | 残り燃料の周回数 | `RemainingFuelLaps.Root` | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT` | `RemainingFuel.Root` |
+| ACE Windows | 燃料残量 | `RemainingFuel.Root` | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` | `RemainingFuel.Root` |
+| ACE Windows | 燃料残り周回数 | `RemainingFuelLaps.Root` | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT` | `RemainingFuel.Root` |
 | ACE Windows | 自己ベストラップ | `MyBestLap.Root` | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT` | `RemainingFuel.Root` |
 | ACE Windows | タイヤ温度 | `TyreTemperature.Root` | `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT` | `RemainingFuel.Root` |
 
@@ -103,7 +103,7 @@ LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingF
 
 - 保存先は `manual_readout_set_preferences_${simulator.id}.pb`。`lmu_windows_readout_hotkey_preferences.pb` はデバッグ用ホットキーの保存先として残す。
 - おすすめセット・Android の運転中モード・セット数の上限・ログ上での手動/自動の区別は別フェーズ（未実装）。
-- 現状は LMU のバーチャルエネルギー残量・燃料残量・タイヤ摩耗・ブレーキ残量・ブレーキ温度・タイヤ温度・自己ベストラップ・バーチャルエネルギーの残り周回数・タイヤ摩耗の残り周回数に対応済み。GT7 は「残り燃料」「残り燃料の周回数」「タイヤ温度」「自己ベストラップ」に対応済み。セット内の保存文言（既定は「燃料は残り{percent}パーセント」）に現在の整数％を埋め、未受信・受信から5秒超は「残り燃料はデータがありません」を読む。対応項目なしの固定文言と常時キュー追加・ログ保存は維持する。ACE は「残り燃料」「残り燃料の周回数」「自己ベストラップ」「タイヤ温度」に対応済み（自己ベストのみ鮮度判定なし）。周回数は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を使い、未受信・鮮度切れ・不正値は「残り燃料の周回数はデータがありません」を読む。既存の `RemainingFuel.Root` キーを手動項目に使い、受信から5秒以内の `remainingPercent` を四捨五入した整数％で読む。未受信・鮮度切れ・不正値なら「残り燃料はデータがありません」を読む。
+- 現状は LMU のバーチャルエネルギー残量・燃料残量・タイヤ摩耗・ブレーキ残量・ブレーキ温度・タイヤ温度・自己ベストラップ・バーチャルエネルギーの残り周回数・タイヤ摩耗の残り周回数に対応済み。GT7 は「燃料残量」「燃料残り周回数」「タイヤ温度」「自己ベストラップ」に対応済み。セット内の保存文言（既定は「燃料は残り{percent}パーセント」）に現在の整数％を埋め、未受信・受信から5秒超は「燃料残量はデータがありません」を読む。対応項目なしの固定文言と常時キュー追加・ログ保存は維持する。ACE は「燃料残量」「燃料残り周回数」「自己ベストラップ」「タイヤ温度」に対応済み（自己ベストのみ鮮度判定なし）。周回数は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を使い、未受信・鮮度切れ・不正値は「燃料残り周回数はデータがありません」を読む。既存の `RemainingFuel.Root` キーを手動項目に使い、受信から5秒以内の `remainingPercent` を四捨五入した整数％で読む。未受信・鮮度切れ・不正値なら「燃料残量はデータがありません」を読む。
 
 手動ブレーキ温度は `BrakeTemperature.Root` に対応し、`LmuWindowsBrakeTemperatureData.wheels` の最高温度を四捨五入した整数℃を、既定文言「ブレーキ温度{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱警告の前回値・警告済み状態は変更しない。
 
@@ -116,9 +116,9 @@ LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingF
 手動タイヤ摩耗残り周回数は `LmuWindowsReadoutItemKey.PitTiming.TyreWear.value`（項目名「タイヤ摩耗の残り周回数」）に対応し、蓄積済みの `pitTimingTyreWearTrackingState` からエネルギーと同じ式で算出する（共通の private ヘルパーを `manualPitTimingTyreWearRemainingLaps` から呼ぶ）。既定文言は `LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT`（「タイヤは残り約{laps}周」）で、1周以上なら `formatLmuWindowsPitTimingReadoutText` で置換し、0周なら固定文言「タイヤ残り1周未満」を読む（空欄テンプレートなら0周でも空文字）。蓄積前・消費量が null・0以下・非有限、算出結果が負、最新タイヤ摩耗が未受信・受信から5秒超の場合はデータ無しとし、`PitTiming.Root` を開始音・優先度・ログに使う。バーチャルエネルギーの残り周回数とは別項目で、既存の「タイヤ摩耗」(%) 項目とも別。
 
 
-GT7 の残り燃料の周回数は保存文言（既定「燃料は残り約{laps}周」）に、燃料追跡の平均消費から推定した整数周回数を埋める。
+GT7 の燃料残り周回数は保存文言（既定「燃料は残り約{laps}周」）に、燃料追跡の平均消費から推定した整数周回数を埋める。
 自動読み上げが無効でも追跡し、しきい値・重複抑止・周回内タイミングに関係なく読む。
-0周以下は「燃料残り1周未満」、推定不能・未受信・受信から5秒超は「残り燃料の周回数はデータがありません」。
+0周以下は「燃料残り1周未満」、推定不能・未受信・受信から5秒超は「燃料残り周回数はデータがありません」。
 空欄の項目は値の有無にかかわらず連結しない。
 
 GT7 の手動「タイヤ温度」は `TyreTemperature.Root` を使い、`currentMaxTyreTemperatureCelsius(telemetry)` で

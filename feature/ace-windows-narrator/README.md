@@ -86,21 +86,21 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 ACE の手動読み上げは、一覧の ▶ と Windows のセットホットキーからの依頼を合流し、
 `Simulator.AceWindows.id` 宛てで保存済みセットが見つかり、ACE が選択中の場合だけ処理する。
 `manualReadoutItemKeys(Simulator.AceWindows.id)` は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root.value`
-（`ace_windows_auto_remaining_fuel`）を返し、手動の「残り燃料」を選択できる。
+（`ace_windows_auto_remaining_fuel`）を返し、手動の「燃料残量」を選択できる。
 `currentRemainingFuelPercent(data)` は `AceWindowsFuelData.remainingPercent`（0〜100）を四捨五入した整数％を返す。
 未受信・受信から5秒超・非有限・0未満・100超は null とし、シミュレーター切替時は最新値と受信時刻をクリアする。
 鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` を保存順に最大3件処理し、
 手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）か
 セットの編集文言を `formatAceWindowsRemainingFuelReadoutText` で置換する。
 空白文言を除外して「、」で連結し、`AceWindowsManualReadoutText` の1イベントにまとめる。
-値が null の項目は「残り燃料はデータがありません」を読む（全項目がデータ無しでも同じ）。
+値が null の項目は「燃料残量はデータがありません」を読む（全項目がデータ無しでも同じ）。
 対応項目なしは
 「読み上げる項目がありません」、全項目が空白なら空文字とする。
 自動読み上げのスイッチ・閾値・`remainingFuelWarned` 等の判定状態は変更せず、
 開始音・ログ・常時キュー末尾追加には既存の `RemainingFuel.Root` を使う。
-`manualReadoutItemKeys(Simulator.AceWindows.id)` は続けて既存の `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`）を返し、手動の「残り燃料の周回数」を選択できる。
+`manualReadoutItemKeys(Simulator.AceWindows.id)` は続けて既存の `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`）を返し、手動の「燃料残り周回数」を選択できる。
 `currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・負値・上限超過は null（データなし）とする。ちょうど0は0周として扱い、固定文言「燃料残り1周未満」を読む。
-手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）を `formatAceWindowsRemainingFuelLapsReadoutText` で置換し、値が null の項目は「残り燃料の周回数はデータがありません」を読む。
+手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）を `formatAceWindowsRemainingFuelLapsReadoutText` で置換し、値が null の項目は「燃料残り周回数はデータがありません」を読む。
 自己ベストラップも同じ手動セットで選択でき、最新の `bestLapTimeMs > 0` の値を（Android ではサーバーが値の変化時しか送らないため5秒の鮮度判定はせず、未受信・0以下・シミュレーター切替後はデータなし） `formatAceWindowsMyBestLapReadoutText` で整形する。自動用 `AceWindowsMyBestLap` イベントの動作は変えない。
 
 `processManualReadout` のログ JSON は `state`・`settings`・`observedAtMs` の3フィールドで、

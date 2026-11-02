@@ -392,18 +392,18 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             Triple(
                 listOf(laps.copy(value = Ratio(1.0)), wear),
                 root,
-                "燃料の残り周回数はデータがありません、タイヤ80%",
+                "燃料残り周回数はデータがありません、タイヤ80%",
             ),
             Triple(
                 listOf(laps.copy(value = RemainingLaps(-1)), wear),
                 root,
-                "燃料の残り周回数はデータがありません、タイヤ80%",
+                "燃料残り周回数はデータがありません、タイヤ80%",
             ),
-            Triple(listOf(laps.copy(value = null)), root, "燃料の残り周回数はデータがありません"),
+            Triple(listOf(laps.copy(value = null)), root, "燃料残り周回数はデータがありません"),
             Triple(
                 listOf(laps.copy(value = RemainingLaps(-1)), wear.copy(value = null)),
                 root,
-                "燃料の残り周回数はデータがありません、タイヤ摩耗はデータがありません",
+                "燃料残り周回数はデータがありません、タイヤ摩耗はデータがありません",
             ),
             Triple(listOf(laps.copy(textTemplate = "")), root, ""),
             Triple(listOf(laps.copy(textTemplate = "", value = RemainingLaps(0))), root, ""),

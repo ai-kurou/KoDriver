@@ -338,7 +338,7 @@ class Gt7Ps5NarratorViewModelTest {
                 initialTelemetry = Gt7Ps5TelemetryData(1, 1, 90_000, Gt7Ps5FuelUnit(100f), Gt7Ps5FuelUnit(100f)),
                 telemetry = Gt7Ps5TelemetryData(3, 5, 90_000, Gt7Ps5FuelUnit(50f), Gt7Ps5FuelUnit(100f)),
                 ageMs = 5_001L,
-                expectedText = "残り燃料の周回数はデータがありません",
+                expectedText = "燃料残り周回数はデータがありません",
             )
         }
 
@@ -349,14 +349,14 @@ class Gt7Ps5NarratorViewModelTest {
                 true,
                 selectedLaps = true,
                 telemetry = Gt7Ps5TelemetryData(1, 1, 90_000, Gt7Ps5FuelUnit(50f), Gt7Ps5FuelUnit(100f)),
-                expectedText = "残り燃料の周回数はデータがありません",
+                expectedText = "燃料残り周回数はデータがありません",
             )
         }
 
     @Test
     fun `手動燃料は未受信なら項目名付きのデータなしを読む`() =
         runTest(testDispatcher) {
-            assertManualReadout(false, selectedFuel = true, expectedText = "残り燃料はデータがありません")
+            assertManualReadout(false, selectedFuel = true, expectedText = "燃料残量はデータがありません")
         }
 
     @Test
@@ -380,7 +380,7 @@ class Gt7Ps5NarratorViewModelTest {
                 selectedFuel = true,
                 telemetry = Gt7Ps5TelemetryData(1, 5, 90_000, Gt7Ps5FuelUnit(42f), Gt7Ps5FuelUnit(100f)),
                 ageMs = 5_001L,
-                expectedText = "残り燃料はデータがありません",
+                expectedText = "燃料残量はデータがありません",
             )
         }
 
@@ -573,7 +573,7 @@ class Gt7Ps5NarratorViewModelTest {
             every {
                 autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.LmuWindows.id)
             } returns MutableStateFlow(emptyList())
-            val text = "残り燃料はデータがありません"
+            val text = "燃料残量はデータがありません"
             val event = Gt7Ps5ManualReadoutText(key, text, text)
             val json = slot<String>()
             every { ttsEngine.speak(event, true) } just Runs

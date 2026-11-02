@@ -104,7 +104,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             listOf(
                 AceWindowsManualReadoutText(
                     AceWindowsReadoutItemKey.RemainingFuel.Root,
-                    "あと42% {unknown}、残り燃料はデータがありません",
+                    "あと42% {unknown}、燃料残量はデータがありません",
                 ),
             ),
             decision.events,
@@ -117,15 +117,15 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val cases =
             listOf(
                 listOf(AceWindowsManualReadoutItem(key, "燃料{percent}%", ManualReadoutValue.Percent(42))) to "燃料42%",
-                listOf(AceWindowsManualReadoutItem(key, "燃料{percent}%", null)) to "残り燃料はデータがありません",
+                listOf(AceWindowsManualReadoutItem(key, "燃料{percent}%", null)) to "燃料残量はデータがありません",
                 listOf(
                     AceWindowsManualReadoutItem(key, "燃料{percent}%", null),
                     AceWindowsManualReadoutItem(key, "残量{percent}%", null),
-                ) to "残り燃料はデータがありません、残り燃料はデータがありません",
+                ) to "燃料残量はデータがありません、燃料残量はデータがありません",
                 listOf(
                     AceWindowsManualReadoutItem(key, "", ManualReadoutValue.Percent(42)),
                     AceWindowsManualReadoutItem(key, "残量{percent}%", null),
-                ) to "残り燃料はデータがありません",
+                ) to "燃料残量はデータがありません",
                 listOf(AceWindowsManualReadoutItem(key, "", ManualReadoutValue.Percent(42))) to "",
                 listOf(AceWindowsManualReadoutItem(key, "  ", null)) to "",
                 listOf(
@@ -173,7 +173,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", ManualReadoutValue.RemainingLaps(0))) to
                     "燃料残り1周未満",
                 listOf(AceWindowsManualReadoutItem(lapsKey, "", ManualReadoutValue.RemainingLaps(0))) to "",
-                listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", null)) to "残り燃料の周回数はデータがありません",
+                listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", null)) to "燃料残り周回数はデータがありません",
                 listOf(AceWindowsManualReadoutItem(lapsKey, "", ManualReadoutValue.RemainingLaps(5))) to "",
                 listOf(
                     AceWindowsManualReadoutItem(fuelKey, "燃料{percent}%", ManualReadoutValue.Percent(42)),
@@ -593,7 +593,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `残り燃料項目が無効なら読み上げない`() {
+    fun `燃料残量項目が無効なら読み上げない`() {
         val decision =
             useCase.determineRemainingFuel(
                 state = AceWindowsNarratorState(),
@@ -610,7 +610,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `残り燃料の読み上げはRootが有効でもdetailPane側のスイッチが無効なら読み上げない`() {
+    fun `燃料残量の読み上げはRootが有効でもdetailPane側のスイッチが無効なら読み上げない`() {
         val decision =
             useCase.determineRemainingFuel(
                 state = AceWindowsNarratorState(),
