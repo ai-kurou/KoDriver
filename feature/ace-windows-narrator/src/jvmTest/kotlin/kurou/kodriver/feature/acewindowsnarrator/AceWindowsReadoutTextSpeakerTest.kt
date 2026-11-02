@@ -12,22 +12,14 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagReadoutTextKey
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
@@ -69,16 +61,7 @@ class AceWindowsReadoutTextSpeakerTest {
         registerAceWindowsReadoutItemKeys()
     }
 
-    private val observeText: ObserveAceWindowsCheckeredFlagReadoutTextUseCase = mockk()
-    private val observeWhite: ObserveAceWindowsWhiteFlagReadoutTextUseCase = mockk()
-    private val observeGreen: ObserveAceWindowsGreenFlagReadoutTextUseCase = mockk()
-    private val observeRed: ObserveAceWindowsRedFlagReadoutTextUseCase = mockk()
-    private val observeBlue: ObserveAceWindowsBlueFlagReadoutTextUseCase = mockk()
-    private val observeYellow: ObserveAceWindowsYellowFlagReadoutTextUseCase = mockk()
-    private val observeBlack: ObserveAceWindowsBlackFlagReadoutTextUseCase = mockk()
-    private val observeBlackWhite: ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase = mockk()
-    private val observeOrangeCircle: ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase = mockk()
-    private val observeRedYellowStripes: ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase = mockk()
+    private val observeFlagText: ObserveAceWindowsFlagReadoutTextUseCase = mockk()
     private val observeTyreOverheat: ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeVehicleApproach: ObserveAceWindowsVehicleApproachReadoutTextUseCase = mockk()
     private val observeRemainingFuel: ObserveAceWindowsRemainingFuelReadoutTextUseCase = mockk()
@@ -91,19 +74,7 @@ class AceWindowsReadoutTextSpeakerTest {
         AceWindowsReadoutTextSpeaker(
             readoutTexts =
                 AceWindowsReadoutTextUseCases(
-                    flag =
-                        AceWindowsFlagReadoutTextUseCases(
-                            checkered = observeText,
-                            white = observeWhite,
-                            green = observeGreen,
-                            red = observeRed,
-                            blue = observeBlue,
-                            yellow = observeYellow,
-                            black = observeBlack,
-                            blackWhite = observeBlackWhite,
-                            orangeCircle = observeOrangeCircle,
-                            redYellowStripes = observeRedYellowStripes,
-                        ),
+                    flag = observeFlagText,
                     remainingFuel =
                         AceWindowsRemainingFuelReadoutTextUseCases(
                             fuel = observeRemainingFuel,
@@ -206,44 +177,44 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `保存文言をそのまま指定音量で読み上げる`() =
         runTest {
-            every { observeText() } returns flowOf("チェッカー、完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.CHECKERED) } returns flowOf("チェッカー、完走")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
             assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsCheckeredFlag()))
             speaker(AceWindowsCheckeredFlag(), 42)
 
-            verify(exactly = 2) { observeText() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.CHECKERED) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeText, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
     fun `空文字と空白では利用可否を確認せず読み上げない`() =
         runTest {
             listOf("", " \t\n ").forEach { text ->
-                every { observeText() } returns flowOf(text)
+                every { observeFlagText(AceWindowsFlagReadoutTextKey.CHECKERED) } returns flowOf(text)
                 assertNull(speaker.readoutText(AceWindowsCheckeredFlag()))
                 speaker(AceWindowsCheckeredFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
-            verify(exactly = 4) { observeText() }
+            verify(exactly = 4) { observeFlagText(AceWindowsFlagReadoutTextKey.CHECKERED) }
             coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeText, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
     fun `TTS利用不可なら読み上げない`() =
         runTest {
-            every { observeText() } returns flowOf("完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.CHECKERED) } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
             assertNull(speaker.readoutText(AceWindowsCheckeredFlag()))
             speaker(AceWindowsCheckeredFlag(), 100)
-            verify(exactly = 2) { observeText() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.CHECKERED) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
-            confirmVerified(observeText, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
@@ -253,9 +224,9 @@ class AceWindowsReadoutTextSpeakerTest {
             assertFalse(isAceWindowsCustomSpeakEvent(event))
             assertNull(speaker.readoutText(event))
             speaker(event, 100)
-            verify(exactly = 0) { observeText() }
+            verify(exactly = 0) { observeFlagText(AceWindowsFlagReadoutTextKey.CHECKERED) }
             coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeText, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
@@ -266,10 +237,10 @@ class AceWindowsReadoutTextSpeakerTest {
             assertFalse(isAceWindowsCustomSpeakEvent(event))
             assertNull(speaker.readoutText(event))
             speaker(event, 42)
-            verify(exactly = 0) { observeText() }
+            verify(exactly = 0) { observeFlagText(AceWindowsFlagReadoutTextKey.CHECKERED) }
             coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 0) { speakText(text, volume = 42) }
-            confirmVerified(observeText, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
@@ -297,145 +268,145 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `Whiteは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
-            every { observeWhite() } returns flowOf("チェッカー、完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.WHITE) } returns flowOf("チェッカー、完走")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
             assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsWhiteFlag()))
             speaker(AceWindowsWhiteFlag(), 42)
 
-            verify(exactly = 2) { observeWhite() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.WHITE) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeWhite, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
     fun `Greenは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
-            every { observeGreen() } returns flowOf("チェッカー、完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.GREEN) } returns flowOf("チェッカー、完走")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
             assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsGreenFlag()))
             speaker(AceWindowsGreenFlag(), 42)
 
-            verify(exactly = 2) { observeGreen() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.GREEN) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeGreen, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
     fun `Redは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
-            every { observeRed() } returns flowOf("チェッカー、完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.RED) } returns flowOf("チェッカー、完走")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
             assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsRedFlag()))
             speaker(AceWindowsRedFlag(), 42)
 
-            verify(exactly = 2) { observeRed() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.RED) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeRed, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
     fun `Blueは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
-            every { observeBlue() } returns flowOf("チェッカー、完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.BLUE) } returns flowOf("チェッカー、完走")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
             assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsBlueFlag()))
             speaker(AceWindowsBlueFlag(), 42)
 
-            verify(exactly = 2) { observeBlue() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.BLUE) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeBlue, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
     fun `Yellowは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
-            every { observeYellow() } returns flowOf("チェッカー、完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.YELLOW) } returns flowOf("チェッカー、完走")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
             assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsYellowFlag()))
             speaker(AceWindowsYellowFlag(), 42)
 
-            verify(exactly = 2) { observeYellow() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.YELLOW) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeYellow, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
     fun `Blackは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
-            every { observeBlack() } returns flowOf("チェッカー、完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.BLACK) } returns flowOf("チェッカー、完走")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
             assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsBlackFlag()))
             speaker(AceWindowsBlackFlag(), 42)
 
-            verify(exactly = 2) { observeBlack() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.BLACK) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeBlack, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
     fun `BlackWhiteは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
-            every { observeBlackWhite() } returns flowOf("チェッカー、完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.BLACK_WHITE) } returns flowOf("チェッカー、完走")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
             assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsBlackWhiteFlag()))
             speaker(AceWindowsBlackWhiteFlag(), 42)
 
-            verify(exactly = 2) { observeBlackWhite() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.BLACK_WHITE) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeBlackWhite, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
     fun `OrangeCircleは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
-            every { observeOrangeCircle() } returns flowOf("チェッカー、完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE) } returns flowOf("チェッカー、完走")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
             assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsOrangeCircleFlag()))
             speaker(AceWindowsOrangeCircleFlag(), 42)
 
-            verify(exactly = 2) { observeOrangeCircle() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeOrangeCircle, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
     fun `RedYellowStripesは保存文言をそのまま指定音量で読み上げる`() =
         runTest {
-            every { observeRedYellowStripes() } returns flowOf("チェッカー、完走")
+            every { observeFlagText(AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES) } returns flowOf("チェッカー、完走")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
             assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsRedYellowStripesFlag()))
             speaker(AceWindowsRedYellowStripesFlag(), 42)
 
-            verify(exactly = 2) { observeRedYellowStripes() }
+            verify(exactly = 2) { observeFlagText(AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES) }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
-            confirmVerified(observeRedYellowStripes, checkAvailable, speakText)
+            confirmVerified(observeFlagText, checkAvailable, speakText)
         }
 
     @Test
@@ -580,31 +551,22 @@ class AceWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 11) { speakText("判定時の本文", volume = 42) }
             coVerify(exactly = 11) { checkAvailable() }
             verify(exactly = 0) {
-                observeText()
-                observeWhite()
-                observeGreen()
-                observeRed()
-                observeBlue()
-                observeYellow()
-                observeBlack()
-                observeBlackWhite()
-                observeOrangeCircle()
-                observeRedYellowStripes()
+                observeFlagText(AceWindowsFlagReadoutTextKey.CHECKERED)
+                observeFlagText(AceWindowsFlagReadoutTextKey.WHITE)
+                observeFlagText(AceWindowsFlagReadoutTextKey.GREEN)
+                observeFlagText(AceWindowsFlagReadoutTextKey.RED)
+                observeFlagText(AceWindowsFlagReadoutTextKey.BLUE)
+                observeFlagText(AceWindowsFlagReadoutTextKey.YELLOW)
+                observeFlagText(AceWindowsFlagReadoutTextKey.BLACK)
+                observeFlagText(AceWindowsFlagReadoutTextKey.BLACK_WHITE)
+                observeFlagText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE)
+                observeFlagText(AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES)
                 observeVehicleApproach()
             }
             confirmVerified(
                 speakText,
                 checkAvailable,
-                observeText,
-                observeWhite,
-                observeGreen,
-                observeRed,
-                observeBlue,
-                observeYellow,
-                observeBlack,
-                observeBlackWhite,
-                observeOrangeCircle,
-                observeRedYellowStripes,
+                observeFlagText,
                 observeVehicleApproach,
             )
         }
