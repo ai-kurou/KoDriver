@@ -1,3 +1,5 @@
+import com.android.build.api.variant.HasHostTestsBuilder
+import com.android.build.api.variant.HostTestBuilder
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
@@ -119,6 +121,24 @@ android {
     lint {
         abortOnError = true
         warningsAsErrors = false
+    }
+}
+
+// AGP 9.5 は compose が有効だと全バリアントで Compose Preview 用タスクを作り、その作成には単体テストと Android リソースが必要になる。
+// release 系バリアントは単体テストが無効になっているため、ここで有効に戻す
+androidComponents {
+    beforeVariants { variantBuilder ->
+        (variantBuilder as HasHostTestsBuilder).hostTests[HostTestBuilder.UNIT_TEST_TYPE]?.apply {
+            enable = true
+            includeAndroidResources = true
+        }
+    }
+}
+
+// 上で有効にしたのは Compose Preview のタスク作成を通すためで、debug 以外のバリアントの単体テストは実行しない
+tasks.configureEach {
+    if (name.startsWith("test") && name.endsWith("UnitTest") && name != "testDebugUnitTest") {
+        enabled = false
     }
 }
 

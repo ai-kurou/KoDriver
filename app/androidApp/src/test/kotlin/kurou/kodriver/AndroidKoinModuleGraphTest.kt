@@ -16,6 +16,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.test.check.checkKoinModules
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /**
  * KoDriverApplication.kt の composition root（androidDataModule + gt7Ps5DataModule +
@@ -29,8 +30,12 @@ import org.robolectric.RobolectricTestRunner
  * Android 版は LMU/ACE 系の実データを Windows 共有メモリではなく KoDriver サーバーへの
  * WebSocket 経由で取得するため（`lmuWindowsDataModule`/`aceWindowsDataModule` を含まない）、
  * `DesktopKoinModuleGraphTest` と異なりダミー実装での置き換えは不要。
+ *
+ * Android リソースを含めると Manifest の KoDriverApplication が起動して Koin を開始してしまうため、
+ * `@Config` で素の Application を指定して実行する。
  */
 @RunWith(RobolectricTestRunner::class)
+@Config(application = Application::class)
 class AndroidKoinModuleGraphTest {
     @Suppress("DEPRECATION") // verify() はコンストラクタ DSL の静的検証で、ラムダ DSL の定義を解決検証できないため移行しない
     @Test
