@@ -1,6 +1,7 @@
 package kurou.kodriver
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
@@ -69,6 +70,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // ACCESS_LOCAL_NETWORK は API 37 で追加された定数だが、コンパイル時に文字列へインライン展開されるため
+    // 古い端末で参照しても実行時エラーにならない。実際の要求は shouldRequestAccessLocalNetworkPermission で
+    // SDK_INT を判定してから行うため、InlinedApi 警告は抑止する。
+    @SuppressLint("InlinedApi")
     private fun requestAccessLocalNetworkPermissionIfNeeded() {
         val isPermissionGranted =
             ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_LOCAL_NETWORK) ==

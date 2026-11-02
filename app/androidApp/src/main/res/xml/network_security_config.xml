@@ -2,7 +2,9 @@
 <!--
     KoDriver は信頼できる LAN 内のみで使用するアプリのため、平文通信を許可する。
     ws:// (WebSocket) でローカル PC に接続するために必要。
+    接続先は LAN 内の IP アドレス直指定 (ws://) のため、domain-config ではドメイン単位に絞れない。
+    そのため base-config で許可している (InsecureBaseConfiguration 警告は意図的に抑止)。
 -->
-<network-security-config>
-    <base-config cleartextTrafficPermitted="true" />
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <base-config cleartextTrafficPermitted="true" tools:ignore="InsecureBaseConfiguration" />
 </network-security-config>
