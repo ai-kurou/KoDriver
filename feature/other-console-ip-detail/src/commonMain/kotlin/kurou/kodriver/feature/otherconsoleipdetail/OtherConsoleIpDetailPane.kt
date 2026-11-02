@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.otherconsoleipdetail
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -255,13 +256,15 @@ fun OtherConsoleIpDetailPaneContent(
                     modifier = Modifier.clickable { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_ALTERNATE) },
                 )
             }
-            if (uiState.saveFailed) {
-                Spacer(modifier = Modifier.height(KoDriverSpacing.small))
-                Text(
-                    text = stringResource(Res.string.console_ip_save_failed),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                )
+            AnimatedVisibility(visible = uiState.saveFailed) {
+                Column {
+                    Spacer(modifier = Modifier.height(KoDriverSpacing.small))
+                    Text(
+                        text = stringResource(Res.string.console_ip_save_failed),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             Button(
