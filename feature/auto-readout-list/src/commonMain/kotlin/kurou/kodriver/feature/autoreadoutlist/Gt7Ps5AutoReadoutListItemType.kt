@@ -2,10 +2,11 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 
 sealed class Gt7Ps5AutoReadoutListItemType(
     id: ReadoutItemKey,
-) : AutoReadoutListItemType(id) {
+) : AutoReadoutListItemType(id, Simulator.Gt7Ps5) {
     data object MyBestLap : Gt7Ps5AutoReadoutListItemType(Gt7Ps5ReadoutItemKey.MyBestLap.Root)
 
     data object RemainingFuelLaps : Gt7Ps5AutoReadoutListItemType(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root)

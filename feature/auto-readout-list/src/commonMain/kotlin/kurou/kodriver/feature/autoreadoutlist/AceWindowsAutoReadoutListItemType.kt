@@ -2,10 +2,11 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 
 sealed class AceWindowsAutoReadoutListItemType(
     id: ReadoutItemKey,
-) : AutoReadoutListItemType(id) {
+) : AutoReadoutListItemType(id, Simulator.AceWindows) {
     data object VehicleApproach : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.VehicleApproach.Root)
 
     data object Flag : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.Flag.Root)

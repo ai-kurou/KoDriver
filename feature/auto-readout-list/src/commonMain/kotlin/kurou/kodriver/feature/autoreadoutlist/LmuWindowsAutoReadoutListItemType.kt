@@ -2,10 +2,11 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 
 sealed class LmuWindowsAutoReadoutListItemType(
     id: ReadoutItemKey,
-) : AutoReadoutListItemType(id) {
+) : AutoReadoutListItemType(id, Simulator.LmuWindows) {
     data object VehicleApproach : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.VehicleApproach.Root)
 
     data object Flag : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.Flag.Root)
