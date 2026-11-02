@@ -41,6 +41,11 @@ dependencies {
 
     implementation(libs.compose.runtime)
     implementation(libs.compose.ui)
+    implementation(libs.compose.components.resources)
+}
+
+compose.resources {
+    packageOfResClass = "kurou.kodriver.generated.resources"
 }
 
 val generateAppVersion =

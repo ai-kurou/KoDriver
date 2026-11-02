@@ -32,7 +32,7 @@ import org.robolectric.RobolectricTestRunner
  */
 @RunWith(RobolectricTestRunner::class)
 class AndroidKoinModuleGraphTest {
-    @Suppress("DEPRECATION") // verify() API への移行は検証方式が変わるため別途対応する
+    @Suppress("DEPRECATION") // verify() はコンストラクタ DSL の静的検証で、ラムダ DSL の定義を解決検証できないため移行しない
     @Test
     fun `Android構成のKoinモジュールグラフが解決可能である`() {
         val context = ApplicationProvider.getApplicationContext<Application>()
