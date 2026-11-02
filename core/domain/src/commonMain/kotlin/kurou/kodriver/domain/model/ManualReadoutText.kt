@@ -11,5 +11,5 @@ fun joinManualReadoutTexts(texts: List<String>): String =
         texts.filter { it.isNotBlank() }.joinToString(MANUAL_READOUT_TEXT_SEPARATOR)
     }
 
-/** 項目の現在値が取得できない場合の読み上げ文言（例: 「残り燃料はデータがありません」）。 */
+/** 項目の現在値が取得できない場合の読み上げ文言（例: 「燃料残量はデータがありません」）。 */
 fun manualReadoutNoDataText(itemName: String): String = "${itemName}は$MANUAL_READOUT_NO_DATA_TEXT"

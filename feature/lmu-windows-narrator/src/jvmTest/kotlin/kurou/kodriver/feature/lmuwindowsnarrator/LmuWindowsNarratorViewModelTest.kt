@@ -982,12 +982,12 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             assertEquals(
                 listOf(
-                    "燃料の残り周回数はデータがありません",
-                    "燃料の残り周回数はデータがありません",
+                    "燃料残り周回数はデータがありません",
+                    "燃料残り周回数はデータがありません",
                     "燃料は残り約5周",
                     "燃料は残り約5周",
                     "燃料は残り約5周",
-                    "燃料の残り周回数はデータがありません",
+                    "燃料残り周回数はデータがありません",
                 ),
                 spoken.map { it.narratedText },
             )

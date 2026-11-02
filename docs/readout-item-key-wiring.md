@@ -25,8 +25,8 @@
 | フラッグ（全10種） | `Flag.Root` | 種別ごとの `Flag.WhiteFlag` 等（`Flag.OrangeCircleFlag`・`Flag.RedYellowStripesFlag` を含む10種） | 種別キーと `Flag.Root` の有効状態 | 種別ごとの `ACE_WINDOWS_*_FLAG_READOUT_TEXT_DEFAULT`（例: `ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT`） | 保存文言をOS標準TTSのみで読み上げ（WAVなし）。開始音・優先度・キュー・試聴は `Flag.Root` |
 | 車両接近 | `VehicleApproach.Root` | `VehicleApproach.StartReadout` | `Root` と `StartReadout` の有効状態 | `ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT`（「車両接近」） | 固定文言でプレースホルダーなし。開始音・優先度・キュー・試聴は `Root` |
 | タイヤ過熱 | `TyreTemperature.Root` | `TyreTemperature.OverheatWarning` | 過熱・解除判定と `Root` / `OverheatWarning` の有効判定 | `ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT`（「タイヤ過熱 {celsius}度」） | `{celsius}` は判定時の全輪最大カーカス温度を四捨五入。保存は `AceWindowsTyreTemperaturePreferences` のフィールド3（`overheatReadoutText`） |
-| 残り燃料 | `RemainingFuel.Root` | `RemainingFuel.DetailEnabled` | 閾値判定と `Root` / `DetailEnabled` の有効判定 | `ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | `{percent}` は判定時の実残量。閾値は `ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT`。保存は `AceWindowsRemainingFuelPreferences` のフィールド2（`readoutText`） |
-| 残り燃料の周回数 | `RemainingFuelLaps.Root` | `RemainingFuelLaps.DetailEnabled` | 閾値判定と有効判定は従来どおり | `ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料残り1周未満」） | 閾値は `ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT`。保存は `AceWindowsRemainingFuelLapsPreferences` のフィールド2・3。旧データは閾値を維持して既定文言を使用 |
+| 燃料残量 | `RemainingFuel.Root` | `RemainingFuel.DetailEnabled` | 閾値判定と `Root` / `DetailEnabled` の有効判定 | `ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | `{percent}` は判定時の実残量。閾値は `ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT`。保存は `AceWindowsRemainingFuelPreferences` のフィールド2（`readoutText`） |
+| 燃料残り周回数 | `RemainingFuelLaps.Root` | `RemainingFuelLaps.DetailEnabled` | 閾値判定と有効判定は従来どおり | `ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料残り1周未満」） | 閾値は `ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT`。保存は `AceWindowsRemainingFuelLapsPreferences` のフィールド2・3。旧データは閾値を維持して既定文言を使用 |
 | 自己ベストラップ | `MyBestLap.Root` | `MyBestLap.DetailEnabled` | 更新判定と `Root` / `DetailEnabled` の有効判定 | `ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT`（「自己ベストラップ更新 {laptime}」） | `{laptime}` は「1分23秒456」形式。保存は共有 `MyBestLapPreferences` の `aceWindowsReadoutText`（ProtoNumber 4） |
 
 ACE の補足（各項目の動作詳細は下の段落を参照）:
@@ -172,7 +172,7 @@ Android は非対応実装を使い、キー未割り当て・非対応時は登
 | 自己ベストラップ | `MyBestLap.Root.value`（`lmu_windows_auto_my_best_lap`） | セッションの `timing.bestLapTimeMs`（ms）。「1分23秒456」形式に整形 | `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 未受信・鮮度切れ・0以下 | 自動の `MyBestLap.Root`・`DetailEnabled` スイッチとは独立。`determineMyBestLap`・`personalBestMs` の状態は変更しない。 |
 | バーチャルエネルギーの残り周回数 | `PitTiming.VirtualEnergy.value`（`lmu_windows_auto_pit_timing_virtual_energy`） | 蓄積済みの `pitTimingVirtualEnergyTrackingState` から算出した残り周回数（周） | `LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT`（「バーチャルエネルギーは残り約{laps}周」）。0周は `LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT`（「バーチャルエネルギー残り1周未満」） | 蓄積前（`currentLap == -1`）、消費量が null・0以下、算出結果が負、最新エネルギーが未受信・鮮度切れ | 算出式は下の補足。自動のスイッチ・閾値・ベストラップ経過時間には依存しない。追跡状態・自動判定状態（`lastAnnouncedPitTimingVirtualEnergyLaps` 等）は変更しない。 |
 | タイヤ摩耗の残り周回数 | `PitTiming.TyreWear.value`（`lmu_windows_auto_pit_timing_tyre_wear`） | 蓄積済みの `pitTimingTyreWearTrackingState` から同じ式で算出した残り周回数（周） | `LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT`（「タイヤは残り約{laps}周」）。0周は `LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT`（「タイヤ残り1周未満」） | 蓄積前、消費量が null・0以下・非有限、算出結果が負、最新タイヤ摩耗が未受信・鮮度切れ | 「タイヤ摩耗」(%) 項目とも、バーチャルエネルギーの残り周回数とも別項目。 |
-| 燃料の残り周回数 | `RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`） | 蓄積済みの `fuelLapsTrackingState` から同じ式で算出した残り周回数（周） | `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料残り1周未満」） | 蓄積前、消費量が null・0以下・非有限・算出不能、最新燃料が未受信・鮮度切れ | 自動側の燃料判定は変更しない。 |
+| 燃料残り周回数 | `RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`） | 蓄積済みの `fuelLapsTrackingState` から同じ式で算出した残り周回数（周） | `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料残り1周未満」） | 蓄積前、消費量が null・0以下・非有限・算出不能、最新燃料が未受信・鮮度切れ | 自動側の燃料判定は変更しない。 |
 | クラス内前方車とのギャップ | `ClassCarGap.Ahead.value`（`lmu_windows_auto_class_car_gap_ahead`） | クラス内前方車との差（秒） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT`（「クラス内前方{seconds}秒」）。クラス内先頭は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」） | ギャップが null・非有限・負 | 先頭キーは `VehicleApproach.Root`（下の補足）。先頭の空欄テンプレートは空文字。 |
 | クラス内後方車とのギャップ | `ClassCarGap.Behind.value`（`lmu_windows_auto_class_car_gap_behind`） | クラス内後方車との差（秒） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_BEHIND_TEXT_DEFAULT`（「クラス内後方{seconds}秒」）。クラス内最後尾は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」） | ギャップが null・非有限・負 | 先頭キーは `VehicleApproach.Root`（下の補足）。最後尾の空欄テンプレートは空文字。 |
 
@@ -189,26 +189,26 @@ LMU の補足は次のとおり。
 
 | 項目 | キー | データ源と単位 | 既定文言（定数名） | データなし・特殊条件 | 補足 |
 | --- | --- | --- | --- | --- | --- |
-| 残り燃料 | `RemainingFuel.Root.value`（`gt7_ps5_auto_remaining_fuel`） | 最新テレメトリの `gasLevel / gasCapacity * 100` を四捨五入し0〜100に制限した整数％ | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | 未受信・鮮度切れ・不正な燃料値は「残り燃料はデータがありません」 | 既存の燃料用フォーマット関数を再利用する。開始音・ログ・常時キュー追加のキーもこの項目。 |
-| 残り燃料の周回数 | `RemainingFuelLaps.Root.value`（`gt7_ps5_auto_remaining_fuel_laps`） | 残り燃料の推定周回数（周）。算出式は下の補足 | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料残り1周未満」） | 未受信・鮮度切れは「残り燃料の周回数はデータがありません」。開始燃料・開始周回が未設定、完走周回数が0以下、消費燃料が0以下は null | 自動側のしきい値・重複抑止・有効スイッチは適用しない。 |
+| 燃料残量 | `RemainingFuel.Root.value`（`gt7_ps5_auto_remaining_fuel`） | 最新テレメトリの `gasLevel / gasCapacity * 100` を四捨五入し0〜100に制限した整数％ | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | 未受信・鮮度切れ・不正な燃料値は「燃料残量はデータがありません」 | 既存の燃料用フォーマット関数を再利用する。開始音・ログ・常時キュー追加のキーもこの項目。 |
+| 燃料残り周回数 | `RemainingFuelLaps.Root.value`（`gt7_ps5_auto_remaining_fuel_laps`） | 燃料残り周回数の推定（周）。算出式は下の補足 | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料残り1周未満」） | 未受信・鮮度切れは「燃料残り周回数はデータがありません」。開始燃料・開始周回が未設定、完走周回数が0以下、消費燃料が0以下は null | 自動側のしきい値・重複抑止・有効スイッチは適用しない。 |
 | タイヤ温度 | `TyreTemperature.Root.value`（`gt7_ps5_auto_tyre_temperature`） | 4輪の有限値の最高温度を `roundToInt()` した整数℃（`currentMaxTyreTemperatureCelsius`） | `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度{celsius}℃」） | 未受信・鮮度切れ・全輪が非有限または0（取得不能）は「タイヤ温度はデータがありません」 | 詳細画面のカテゴリはタイヤ、プレビューは90℃。自動のしきい値・ヒステリシス・スイッチ判定は適用しない。 |
 | 自己ベストラップ | `MyBestLap.Root.value`（`gt7_ps5_auto_my_best_lap`） | テレメトリの `bestLapTimeMs`（ms）（`currentBestLapTimeMs`）。既存の `Gt7Ps5MyBestLap` で整形 | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 未受信・鮮度切れ・0以下（未確定）は「自己ベストラップはデータがありません」 | 詳細画面のカテゴリはラップ、プレビューは83456ms。自動の `determineMyBestLap` の状態（`personalBestMs` 等）は変更しない。 |
 
 GT7 PS5 の補足は次のとおり。
 
 - 対応項目は保存順に先頭 `MANUAL_READOUT_SET_ITEM_MAX`（3件）まで処理する。
-- 残り燃料の周回数は、開始燃料＋総給油量－現在燃料を、完走周回数＋`CURRENT_LAP_CONSUMPTION_WEIGHT`（0.9）で割った平均消費を使い、現在燃料÷平均消費を整数へ切り捨てる。最終受信から5秒以内だけ推定値を使う。テレメトリごとに `determineRemainingFuelLaps` が呼ばれ、有効スイッチの判定より前に燃料追跡が更新されるため、自動読み上げが無効でも手動用の追跡が続く。
+- 燃料残り周回数は、開始燃料＋総給油量－現在燃料を、完走周回数＋`CURRENT_LAP_CONSUMPTION_WEIGHT`（0.9）で割った平均消費を使い、現在燃料÷平均消費を整数へ切り捨てる。最終受信から5秒以内だけ推定値を使う。テレメトリごとに `determineRemainingFuelLaps` が呼ばれ、有効スイッチの判定より前に燃料追跡が更新されるため、自動読み上げが無効でも手動用の追跡が続く。
 - 空欄テンプレートなら、0周以下やデータ無しでも読まない。
 - GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持ち衝突しない。
 
 ### ACE Windows（4項目）
 
-キーは `AceWindowsReadoutItemKey.` の接頭辞を省略し、`value` の値（`ace_windows_` 接頭辞）を括弧内に示す。手動項目の順は「残り燃料」「残り燃料の周回数」「自己ベストラップ」「タイヤ温度」。
+キーは `AceWindowsReadoutItemKey.` の接頭辞を省略し、`value` の値（`ace_windows_` 接頭辞）を括弧内に示す。手動項目の順は「燃料残量」「燃料残り周回数」「自己ベストラップ」「タイヤ温度」。
 
 | 項目 | キー | データ源と単位 | 既定文言（定数名） | データなし・特殊条件 | 補足 |
 | --- | --- | --- | --- | --- | --- |
-| 残り燃料 | `RemainingFuel.Root.value`（`ace_windows_auto_remaining_fuel`） | `AceWindowsFuelData.remainingPercent`（0〜100）を四捨五入した整数％（`currentRemainingFuelPercent`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | 未受信・鮮度切れ・非有限・0未満・100超は「残り燃料はデータがありません」 | 既存の `formatAceWindowsRemainingFuelReadoutText` で置換する。`remainingFuelWarned` 等の判定状態は変更しない。 |
-| 残り燃料の周回数 | `RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`） | `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部（周）（`currentRemainingFuelLaps`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」） | 未受信・鮮度切れ・非有限・負値・1,000周（`ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX`）超は「残り燃料の周回数はデータがありません」 | ちょうど0と1周未満の正数は整数部へ切り捨てて0周を返す。 |
+| 燃料残量 | `RemainingFuel.Root.value`（`ace_windows_auto_remaining_fuel`） | `AceWindowsFuelData.remainingPercent`（0〜100）を四捨五入した整数％（`currentRemainingFuelPercent`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | 未受信・鮮度切れ・非有限・0未満・100超は「燃料残量はデータがありません」 | 既存の `formatAceWindowsRemainingFuelReadoutText` で置換する。`remainingFuelWarned` 等の判定状態は変更しない。 |
+| 燃料残り周回数 | `RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`） | `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部（周）（`currentRemainingFuelLaps`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」） | 未受信・鮮度切れ・非有限・負値・1,000周（`ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX`）超は「燃料残り周回数はデータがありません」 | ちょうど0と1周未満の正数は整数部へ切り捨てて0周を返す。 |
 | 自己ベストラップ | `MyBestLap.Root.value`（`ace_windows_auto_my_best_lap`） | 最新ベストラップ（ms）。5秒以内かつ正値のときだけ渡す | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 未受信・鮮度切れ・0以下はデータ無し | 既定文言を `formatAceWindowsMyBestLapReadoutText` で整形する。 |
 | タイヤ温度 | `TyreTemperature.Root.value`（`ace_windows_auto_tyre_temperature`） | `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい最高値を四捨五入した整数℃（`currentMaxTyreTemperatureCelsius`） | `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度{celsius}℃」） | 未受信・鮮度切れ・有効な温度なし・ACE以外への切り替え後は「タイヤ温度はデータがありません」 | 既存の `formatAceWindowsTyreTemperatureReadoutText` と `findUnknownAceWindowsTyreTemperatureReadoutPlaceholders` を使う。詳細画面のカテゴリはタイヤ、プレビューは90℃。自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。 |
 
@@ -217,18 +217,18 @@ ACE Windows の補足は次のとおり。
 - 対応項目は保存順に先頭 `MANUAL_READOUT_SET_ITEM_MAX`（3件）まで処理する。
 - 手動値は鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` で受け取る。シミュレーター切替時は最新値と受信時刻をクリアする。
 - 全項目の文言が空白なら空文字とする。
-- 一覧は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root` を含むため、手動の「残り燃料」を選択できる。開始音・ログ・常時キュー末尾追加には既存の `RemainingFuel.Root` を使う。
+- 一覧は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root` を含むため、手動の「燃料残量」を選択できる。開始音・ログ・常時キュー末尾追加には既存の `RemainingFuel.Root` を使う。
 
 # ReadoutItemKey の配置と登録
 
-手動の「燃料の残り周回数」は `LmuWindowsReadoutItemKey.RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`）に対応する。
+手動の「燃料残り周回数」は `LmuWindowsReadoutItemKey.RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`）に対応する。
 `RemainingFuel` 配下の手動専用項目で、TopLevel・自動タブ・スイッチには追加しない。手動項目定義の末尾（タイヤ摩耗の残り周回数の後）に並ぶ。
 `fuelLapsTrackingState` の蓄積値を `manualFuelRemainingLaps` で読み、1周以上は `formatLmuWindowsPitTimingReadoutText` で `{laps}` を置換する。
 既定文言は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、0周は
 `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料残り1周未満」）。空欄テンプレートなら0周でも空文字にする。
 蓄積前・消費量が null／0以下／非有限・算出不能・最新燃料が未受信または受信から5秒超の場合はデータ無しとする。
 鮮度は `latestFuelReceivedAtMs` で判定し、ピットタイミングの鮮度には依存しない。
-複数項目では「燃料の残り周回数はデータがありません」を連結する。
+複数項目では「燃料残り周回数はデータがありません」を連結する。
 先頭項目なら開始音・優先度・ログ・キューに `RemainingFuel.Root` を使う。編集画面はACE・GT7の燃料項目と同じ「燃料」カテゴリに配置し、既存の
 `LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
 手動の燃料読み上げは自動警告の有効状態・評価履歴を変更しない。
@@ -248,7 +248,7 @@ VE・タイヤ・燃料の候補の最小周回数を選び、共通の `PitTimi
 既存の `PitTiming.Root` の流儀を使い、ログに燃料スナップショットと判定状態を含める。
 
 手動の「クラス内前方車／後方車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value`（`lmu_windows_auto_class_car_gap_ahead`）・`ClassCarGap.Behind.value`（`lmu_windows_auto_class_car_gap_behind`）に対応する。
-TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料の残り周回数の後）に並ぶ。
+TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料残り周回数の後）に並ぶ。
 `ObserveLmuWindowsClassCarGapUseCase` の最新値（`LmuWindowsClassCarGapData`）を `latestClassCarGap` / `latestClassCarGapReceivedAtMs` に保持し、受信から5秒（`CURRENT_VALUE_MAX_AGE_MS`）以内のものだけを項目へ渡す。未受信・鮮度切れはデータ無しとする。
 周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定し、固定文言
 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）・`LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）を読む（データありとして扱う。空欄テンプレートなら空文字）。

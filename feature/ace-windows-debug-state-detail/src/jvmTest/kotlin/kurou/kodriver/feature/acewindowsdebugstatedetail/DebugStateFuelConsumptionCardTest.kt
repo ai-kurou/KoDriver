@@ -38,7 +38,7 @@ class DebugStateFuelConsumptionCardTest {
     }
 
     @Test
-    fun `ACEの場合は残り燃料の割合を表示する`() {
+    fun `ACEの場合は燃料残量の割合を表示する`() {
         rule.setContent {
             MaterialTheme {
                 AceWindowsDebugStateDetailPaneContent(
@@ -61,7 +61,7 @@ class DebugStateFuelConsumptionCardTest {
     }
 
     @Test
-    fun `ACEの場合は残り燃料の割合と残り周数を表示する`() {
+    fun `ACEの場合は燃料残量の割合と残り周数を表示する`() {
         rule.setContent {
             MaterialTheme {
                 AceWindowsDebugStateDetailPaneContent(

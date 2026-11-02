@@ -171,7 +171,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
     }
 
     @Test
-    fun `燃料の残り周回数の文言欄は周回数の挿入と警告とリセットと文字数上限を扱う`() {
+    fun `燃料残り周回数の文言欄は周回数の挿入と警告とリセットと文字数上限を扱う`() {
         val key = LmuWindowsReadoutItemKey.RemainingFuel.Laps.value
         val defaultText = lmuWindowsManualReadoutItemTextDefault(key)
         val state =
@@ -205,7 +205,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("燃料の残り周回数").performScrollTo().performClick()
+        rule.onNodeWithText("燃料残り周回数").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{laps}は残り燃料で走れる周回数に置き換わります。").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {laps}（そのまま読み上げます）").assertDoesNotExist()
@@ -220,7 +220,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{laps}を挿入").performClick()
         rule.onNodeWithText("30/30").assertExists()
-        rule.onNodeWithContentDescription("燃料の残り周回数を削除").performClick()
+        rule.onNodeWithContentDescription("燃料残り周回数を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
             assertEquals(
@@ -474,7 +474,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
     }
 
     @Test
-    fun `ACEの残り燃料を追加して文言を編集し既定文言に戻せる`() {
+    fun `ACEの燃料残量を追加して文言を編集し既定文言に戻せる`() {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
         val state =
             mutableStateOf(
@@ -498,7 +498,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("残り燃料").performScrollTo().performClick()
+        rule.onNodeWithText("燃料残量").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
         rule.onNodeWithText("{percent} は現在の残量（%）に置き換わります").assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("残り{percent}%")
@@ -515,7 +515,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
     }
 
     @Test
-    fun `GT7の残り燃料を追加して文言を編集し既定文言に戻せる`() {
+    fun `GT7の燃料残量を追加して文言を編集し既定文言に戻せる`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
         val state =
             mutableStateOf(
@@ -539,7 +539,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("残り燃料").performScrollTo().performClick()
+        rule.onNodeWithText("燃料残量").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
         rule.onNodeWithText("{percent} は現在の残量（%）に置き換わります").assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("残り{percent}%")
@@ -584,7 +584,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("残り燃料の周回数").performScrollTo().performClick()
+        rule.onNodeWithText("燃料残り周回数").performScrollTo().performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNodeWithText("{laps}は残り燃料で走れる周回数に置き換わります。").assertExists()
         rule.onNodeWithText("未対応のプレースホルダー: {laps}（そのまま読み上げます）").assertDoesNotExist()
@@ -599,7 +599,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{laps}を挿入").performClick()
         rule.onNodeWithText("30/30").assertExists()
-        rule.onNodeWithContentDescription("残り燃料の周回数を削除").performClick()
+        rule.onNodeWithContentDescription("燃料残り周回数を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
             assertEquals(

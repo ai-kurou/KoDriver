@@ -26,7 +26,7 @@ class ManualReadoutTextTest {
 
     @Test
     fun `データなし文言は項目名とデータがありませんを連結する`() {
-        assertEquals("残り燃料はデータがありません", manualReadoutNoDataText("残り燃料"))
+        assertEquals("燃料残量はデータがありません", manualReadoutNoDataText("燃料残量"))
         assertEquals("データがありません", MANUAL_READOUT_NO_DATA_TEXT)
     }
 }

@@ -16,7 +16,7 @@ val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         manualReadoutItemDefinitionOf(
             AceWindowsReadoutItemKey.RemainingFuel.Root,
             ManualReadoutItemCategory.FUEL,
-            "残り燃料",
+            "燃料残量",
             ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT,
             ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER,
             ::findUnknownAceWindowsRemainingFuelReadoutPlaceholders,
@@ -25,7 +25,7 @@ val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         manualReadoutItemDefinitionOf(
             AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
             ManualReadoutItemCategory.FUEL,
-            "残り燃料の周回数",
+            "燃料残り周回数",
             ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT,
             ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER,
             ::findUnknownAceWindowsRemainingFuelLapsReadoutPlaceholders,

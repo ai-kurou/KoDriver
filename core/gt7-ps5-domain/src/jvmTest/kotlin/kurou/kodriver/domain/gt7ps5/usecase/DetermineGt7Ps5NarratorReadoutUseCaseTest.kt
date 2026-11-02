@@ -161,7 +161,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 Gt7Ps5ManualReadoutItem(key, "あと{laps}周", ManualReadoutValue.RemainingLaps(3)) to "あと3周",
                 Gt7Ps5ManualReadoutItem(key, "あと{laps}周", ManualReadoutValue.RemainingLaps(0)) to "燃料残り1周未満",
                 Gt7Ps5ManualReadoutItem(key, "あと{laps}周", ManualReadoutValue.RemainingLaps(-1)) to "燃料残り1周未満",
-                Gt7Ps5ManualReadoutItem(key, "あと{laps}周", null) to "残り燃料の周回数はデータがありません",
+                Gt7Ps5ManualReadoutItem(key, "あと{laps}周", null) to "燃料残り周回数はデータがありません",
                 Gt7Ps5ManualReadoutItem(key, " ", null) to "",
                 Gt7Ps5ManualReadoutItem(key, "", ManualReadoutValue.RemainingLaps(0)) to "",
             )
@@ -249,7 +249,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             )
         assertTrue(state === decision.state)
         assertEquals(
-            listOf(Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, "あと42% {unknown}、残り燃料はデータがありません")),
+            listOf(Gt7Ps5ManualReadoutText(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, "あと42% {unknown}、燃料残量はデータがありません")),
             decision.events,
         )
     }
@@ -267,7 +267,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                     ),
                 ) to
                     "燃料は残り0パーセント",
-                listOf(Gt7Ps5ManualReadoutItem(key, "任意", null)) to "残り燃料はデータがありません",
+                listOf(Gt7Ps5ManualReadoutItem(key, "任意", null)) to "燃料残量はデータがありません",
                 listOf(Gt7Ps5ManualReadoutItem(key, "  ", ManualReadoutValue.Percent(100))) to "",
                 listOf(Gt7Ps5ManualReadoutItem(key, "", null)) to "",
                 listOf(Gt7Ps5ManualReadoutItem("unknown", "任意", ManualReadoutValue.Percent(50))) to "読み上げる項目がありません",

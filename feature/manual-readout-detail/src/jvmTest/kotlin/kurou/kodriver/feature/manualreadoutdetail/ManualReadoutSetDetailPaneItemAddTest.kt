@@ -73,7 +73,7 @@ class ManualReadoutSetDetailPaneItemAddTest {
     }
 
     @Test
-    fun `燃料の残り周回数を追加すると既定文言とプレビューを表示する`() {
+    fun `燃料残り周回数を追加すると既定文言とプレビューを表示する`() {
         val state =
             mutableStateOf(
                 ManualReadoutSetDetailUiState(
@@ -92,7 +92,7 @@ class ManualReadoutSetDetailPaneItemAddTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("燃料の残り周回数").performScrollTo().performClick()
+        rule.onNodeWithText("燃料残り周回数").performScrollTo().performClick()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り約3周")
     }
 

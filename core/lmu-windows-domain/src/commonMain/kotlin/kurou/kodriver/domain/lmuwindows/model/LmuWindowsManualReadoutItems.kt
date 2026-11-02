@@ -103,7 +103,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         manualReadoutItemDefinitionOf(
             LmuWindowsReadoutItemKey.RemainingFuel.Laps,
             ManualReadoutItemCategory.FUEL,
-            "燃料の残り周回数",
+            "燃料残り周回数",
             LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT,
             LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
             ::findUnknownLmuWindowsPitTimingReadoutPlaceholders,

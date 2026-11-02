@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.acewindows.model
 
 /**
- * 残り燃料警告のデフォルト閾値（残量 %）。
+ * 燃料残量警告のデフォルト閾値（残量 %）。
  *
  * DataStore のデフォルト値（AceWindowsRemainingFuelPreferences）・詳細設定画面のリセット値・
  * Narrator の購読初期値が同じ値を参照できるよう、この一箇所にのみ定義する。

@@ -16,7 +16,7 @@ val gt7Ps5ManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition>
         manualReadoutItemDefinitionOf(
             Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
             ManualReadoutItemCategory.FUEL,
-            "残り燃料",
+            "燃料残量",
             GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT,
             GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER,
             ::findUnknownGt7Ps5RemainingFuelReadoutPlaceholders,
@@ -25,7 +25,7 @@ val gt7Ps5ManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition>
         manualReadoutItemDefinitionOf(
             Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
             ManualReadoutItemCategory.FUEL,
-            "残り燃料の周回数",
+            "燃料残り周回数",
             GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT,
             GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER,
             ::findUnknownGt7Ps5RemainingFuelLapsReadoutPlaceholders,

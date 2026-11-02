@@ -101,7 +101,7 @@ data class Gt7Ps5RemainingFuelCurrentValue(
     override fun withResolvedText(text: String): Gt7Ps5RemainingFuelCurrentValue = copy(resolvedText = text)
 }
 
-/** GT7 の現在の残り燃料周回数。手動読み上げではセット内の文言を優先する。 */
+/** GT7 の現在の燃料残り周回数。手動読み上げではセット内の文言を優先する。 */
 data class Gt7Ps5RemainingFuelLapsCurrentValue(
     val laps: Int,
     override val resolvedText: String? = null,

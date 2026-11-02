@@ -30,20 +30,20 @@ GT7・ACE・LMU はすべて移動済み。
 一時値を渡す。文字サイズと同様に `null` で解除し、`ObserveOverlayBackgroundOpacityUseCase` はプレビュー優先の現在値を配信する。
 永続化は `SaveOverlayBackgroundOpacityUseCase` が担当する。
 
-手動の「燃料の残り周回数」は `LmuWindowsReadoutItemKey.RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`）に対応する。
+手動の「燃料残り周回数」は `LmuWindowsReadoutItemKey.RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`）に対応する。
 `RemainingFuel` 配下の手動専用項目で、TopLevel・自動タブ・スイッチには追加しない。手動項目定義の末尾（タイヤ摩耗の残り周回数の後）に並ぶ。
 `fuelLapsTrackingState` の蓄積値を `manualFuelRemainingLaps` で読み、1周以上は `formatLmuWindowsPitTimingReadoutText` で `{laps}` を置換する。
 既定文言は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、0周は
 `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料残り1周未満」）。空欄テンプレートなら0周でも空文字にする。
 蓄積前・消費量が null／0以下／非有限・算出不能・最新燃料が未受信または受信から5秒超の場合はデータ無しとする。
 鮮度は `latestFuelReceivedAtMs` で判定し、ピットタイミングの鮮度には依存しない。
-複数項目では「燃料の残り周回数はデータがありません」を連結する。
+複数項目では「燃料残り周回数はデータがありません」を連結する。
 先頭項目なら開始音・優先度・ログ・キューに `RemainingFuel.Root` を使う。編集画面はACE・GT7の燃料項目と同じ「エネルギー」カテゴリに配置し、既存の
 `LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
 手動の燃料読み上げは自動警告の有効状態・評価履歴を変更しない。
 
 手動の「クラス内前方車／後方車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value`（`lmu_windows_auto_class_car_gap_ahead`）・`ClassCarGap.Behind.value`（`lmu_windows_auto_class_car_gap_behind`）に対応する。
-TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料の残り周回数の後）に並ぶ。
+TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料残り周回数の後）に並ぶ。
 `ObserveLmuWindowsClassCarGapUseCase` の最新値（`LmuWindowsClassCarGapData`）を `latestClassCarGap` / `latestClassCarGapReceivedAtMs` に保持し、受信から5秒（`CURRENT_VALUE_MAX_AGE_MS`）以内のものだけを項目へ渡す。未受信・鮮度切れはデータ無しとする。
 周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定し、固定文言
 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）・`LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）を読む（データありとして扱う。空欄テンプレートなら空文字）。
@@ -143,13 +143,13 @@ LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingF
 
 GT7 の手動読み上げは、一覧の ▶ と Windows のセットホットキーからの依頼を合流し、
 `Simulator.Gt7Ps5.id` 宛てで保存済みセットが見つかり、GT7 が選択中の場合だけ処理する。
-`manualReadoutItemKeys(Simulator.Gt7Ps5.id)` は「残り燃料」の
-`Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value`、続いて「残り燃料の周回数」の
+`manualReadoutItemKeys(Simulator.Gt7Ps5.id)` は「燃料残量」の
+`Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value`、続いて「燃料残り周回数」の
 `Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value`、続いて「タイヤ温度」の
 `Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value` に対応する。詳細画面で保存したセットの
 `itemKeys`・`itemTexts` を ViewModel が参照し、`Gt7Ps5ManualReadoutItem` を判定へ渡す。
 最新テレメトリの `gasLevel / gasCapacity * 100` を四捨五入して0〜100に制限する。
-未受信・受信から5秒超・不正な燃料値は null とし「残り燃料はデータがありません」を読む。
+未受信・受信から5秒超・不正な燃料値は null とし「燃料残量はデータがありません」を読む。
 既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` の
 「燃料は残り{percent}パーセント」で、既存の燃料用フォーマット関数を再利用する。
 判定は対応項目を最大3件、保存順に空欄を除いて「、」で連結し、
@@ -161,11 +161,11 @@ GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持
 手動項目の選択・文言はシミュレーター別のセット設定に保存し、自動項目のスイッチとは独立して判定する。
 
 
-手動の残り燃料周回数は `currentRemainingFuelLaps(state)` で `fuelTrackingState` から算出する。
+手動の燃料残り周回数は `currentRemainingFuelLaps(state)` で `fuelTrackingState` から算出する。
 開始燃料＋総給油量－現在燃料を、完走周回数＋`CURRENT_LAP_CONSUMPTION_WEIGHT`（0.9）で割った平均消費を使い、
 現在燃料÷平均消費を整数へ切り捨てる。開始燃料・開始周回が未設定、完走周回数が0以下、消費燃料が0以下なら null。
-最終受信から5秒以内だけ推定値を使い、未受信・鮮度切れは「残り燃料の周回数はデータがありません」を読む。
-`Gt7Ps5ManualReadoutItem.value` は `ManualReadoutValue`（Percent・Celsius・LapTimeMs・RemainingLaps）で、残り燃料が `Percent`（％）、残り燃料の周回数が `RemainingLaps`（周）、タイヤ温度が `Celsius`（℃）、自己ベストが `LapTimeMs`（ms）。項目キーと種別が対応しない値はデータなしとして扱う。
+最終受信から5秒以内だけ推定値を使い、未受信・鮮度切れは「燃料残り周回数はデータがありません」を読む。
+`Gt7Ps5ManualReadoutItem.value` は `ManualReadoutValue`（Percent・Celsius・LapTimeMs・RemainingLaps）で、燃料残量が `Percent`（％）、燃料残り周回数が `RemainingLaps`（周）、タイヤ温度が `Celsius`（℃）、自己ベストが `LapTimeMs`（ms）。項目キーと種別が対応しない値はデータなしとして扱う。
 既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）で、
 `formatGt7Ps5RemainingFuelLapsReadoutText` で置換する。0周以下は「燃料残り1周未満」。
 テンプレートが空欄なら、0周以下やデータなしでも読まない。
@@ -190,21 +190,21 @@ GT7 の手動「自己ベストラップ」は `MyBestLap.Root` を使い、`cur
 ACE の手動読み上げは、一覧の ▶ と Windows のセットホットキーからの依頼を合流し、
 `Simulator.AceWindows.id` 宛てで保存済みセットが見つかり、ACE が選択中の場合だけ処理する。
 `manualReadoutItemKeys(Simulator.AceWindows.id)` は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root.value`
-（`ace_windows_auto_remaining_fuel`）を返し、手動の「残り燃料」を選択できる。
+（`ace_windows_auto_remaining_fuel`）を返し、手動の「燃料残量」を選択できる。
 `currentRemainingFuelPercent(data)` は `AceWindowsFuelData.remainingPercent`（0〜100）を四捨五入した整数％を返す。
 未受信・受信から5秒超・非有限・0未満・100超は null とし、シミュレーター切替時は最新値と受信時刻をクリアする。
 鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` を保存順に最大3件処理し、
 手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）か
 セットの編集文言を `formatAceWindowsRemainingFuelReadoutText` で置換する。
 空白文言を除外して「、」で連結し、`AceWindowsManualReadoutText` の1イベントにまとめる。
-値が null の項目は「残り燃料はデータがありません」を読む（全項目がデータ無しでも同じ）。
+値が null の項目は「燃料残量はデータがありません」を読む（全項目がデータ無しでも同じ）。
 対応項目なしは
 「読み上げる項目がありません」、全項目が空白なら空文字とする。
 自動読み上げのスイッチ・閾値・`remainingFuelWarned` 等の判定状態は変更せず、
 開始音・ログ・常時キュー末尾追加には既存の `RemainingFuel.Root` を使う。
-`manualReadoutItemKeys(Simulator.AceWindows.id)` は続けて既存の `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`）を返し、手動の「残り燃料の周回数」を選択できる。
+`manualReadoutItemKeys(Simulator.AceWindows.id)` は続けて既存の `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`）を返し、手動の「燃料残り周回数」を選択できる。
 `currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・負値・1,000周超は null（データなし）とする。ちょうど0と1周未満の正数は整数部へ切り捨てて0周を返し、手動読み上げは固定文言「燃料残り1周未満」を読む。
-手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）を `formatAceWindowsRemainingFuelLapsReadoutText` で置換し、値が null の項目は「残り燃料の周回数はデータがありません」を読む。
+手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）を `formatAceWindowsRemainingFuelLapsReadoutText` で置換し、値が null の項目は「燃料残り周回数はデータがありません」を読む。
 `AceWindowsReadoutItemKey.MyBestLap.Root` も手動項目に含め、最新の `AceWindowsBestLapTimeData.bestLapTimeMs` を、正値の場合に（Android ではサーバーが値の変化時しか送らないため鮮度判定はしない） `formatAceWindowsMyBestLapReadoutText` で整形する。既定文言は `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」）。
 
 ## エネルギーの日本語表記

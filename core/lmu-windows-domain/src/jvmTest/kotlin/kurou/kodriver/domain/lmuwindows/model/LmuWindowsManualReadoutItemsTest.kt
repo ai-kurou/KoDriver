@@ -44,7 +44,7 @@ class LmuWindowsManualReadoutItemsTest {
         assertEquals("バーチャルエネルギーの残り周回数", energyLaps.name)
         assertEquals("バーチャルエネルギーは残り約{laps}周", energyLaps.textDefault)
         val laps = definitions.getValue(LmuWindowsReadoutItemKey.RemainingFuel.Laps.value)
-        assertEquals("燃料の残り周回数", laps.name)
+        assertEquals("燃料残り周回数", laps.name)
         assertEquals(LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT, laps.textDefault)
         val ahead = definitions.getValue(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value)
         assertEquals("クラス内前方車とのギャップ", ahead.name)
