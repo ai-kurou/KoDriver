@@ -6,13 +6,9 @@ import kurou.kodriver.domain.model.defaultAutoReadoutOrder
 
 sealed class AutoReadoutListItemType(
     val id: ReadoutItemKey,
+    private val simulator: Simulator,
 ) {
-    fun belongsTo(simulator: Simulator): Boolean =
-        when (simulator) {
-            is Simulator.LmuWindows -> this is LmuWindowsAutoReadoutListItemType
-            is Simulator.Gt7Ps5 -> this is Gt7Ps5AutoReadoutListItemType
-            is Simulator.AceWindows -> this is AceWindowsAutoReadoutListItemType
-        }
+    fun belongsTo(simulator: Simulator): Boolean = this.simulator == simulator
 
     companion object {
         fun fromId(
