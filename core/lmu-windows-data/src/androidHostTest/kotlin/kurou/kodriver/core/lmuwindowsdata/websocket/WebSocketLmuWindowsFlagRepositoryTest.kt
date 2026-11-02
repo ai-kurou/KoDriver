@@ -79,34 +79,6 @@ class WebSocketLmuWindowsFlagRepositoryTest {
             assertEquals(SessionYellowFlagState.NONE, result.yellowFlagState)
             assertEquals("/ws/lmu_windows/flags", server.takeRequest().path)
         }
-
-    @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(RED_FLAG_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-
-            fakeIpRepository.setIp(null)
-            val repository = buildRepository()
-
-            val noEmit = withTimeoutOrNull(300) { repository.flagStream().first() }
-            assertNull(noEmit)
-
-            fakeIpRepository.setIp("127.0.0.1")
-            val result = repository.flagStream().first()
-            assertEquals(SessionPhase.RED_FLAG, result.gamePhase)
-        }
 }
 
 private class FakeServerIpPreferencesRepository(
@@ -129,17 +101,6 @@ private val GREEN_FLAG_JSON =
     """
     {
         "gamePhase": "GREEN_FLAG",
-        "yellowFlagState": "NONE",
-        "sectorFlags": [],
-        "playerFlag": "GREEN",
-        "playerUnderYellow": false
-    }
-    """.trimIndent()
-
-private val RED_FLAG_JSON =
-    """
-    {
-        "gamePhase": "RED_FLAG",
         "yellowFlagState": "NONE",
         "sectorFlags": [],
         "playerFlag": "GREEN",

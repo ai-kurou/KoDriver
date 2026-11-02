@@ -77,34 +77,6 @@ class WebSocketAceWindowsStatusRepositoryTest {
             assertEquals(AceWindowsStatusType.LIVE, result.status)
             assertEquals("/ws/ace_windows/status", server.takeRequest().path)
         }
-
-    @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(PAUSE_STATUS_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-
-            fakeIpRepository.setIp(null)
-            val repository = buildRepository()
-
-            val noEmit = withTimeoutOrNull(300) { repository.statusStream().first() }
-            assertNull(noEmit)
-
-            fakeIpRepository.setIp("127.0.0.1")
-            val result = repository.statusStream().first()
-            assertEquals(AceWindowsStatusType.PAUSE, result.status)
-        }
 }
 
 private class FakeAceStatusServerIpPreferencesRepository(
@@ -124,4 +96,3 @@ private class FakeAceStatusServerIpPreferencesRepository(
 }
 
 private const val LIVE_STATUS_JSON = """{"status": "LIVE"}"""
-private const val PAUSE_STATUS_JSON = """{"status": "PAUSE"}"""

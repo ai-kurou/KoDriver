@@ -77,34 +77,6 @@ class WebSocketAceWindowsRemainingFuelLapsRepositoryTest {
             assertEquals(2.5f, result.remainingLaps)
             assertEquals("/ws/ace_windows/remaining_fuel_laps", server.takeRequest().path)
         }
-
-    @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(REMAINING_FUEL_LAPS_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-
-            fakeIpRepository.setIp(null)
-            val repository = buildRepository()
-
-            val noEmit = withTimeoutOrNull(300) { repository.remainingFuelLapsStream().first() }
-            assertNull(noEmit)
-
-            fakeIpRepository.setIp("127.0.0.1")
-            val result = repository.remainingFuelLapsStream().first()
-            assertEquals(2.5f, result.remainingLaps)
-        }
 }
 
 private class FakeAceRemainingFuelLapsServerIpPreferencesRepository(

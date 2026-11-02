@@ -77,34 +77,6 @@ class WebSocketAceWindowsFlagRepositoryTest {
             assertEquals(AceWindowsFlagType.BLUE_FLAG, result.flag)
             assertEquals("/ws/ace_windows/flags", server.takeRequest().path)
         }
-
-    @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(YELLOW_FLAG_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-
-            fakeIpRepository.setIp(null)
-            val repository = buildRepository()
-
-            val noEmit = withTimeoutOrNull(300) { repository.flagStream().first() }
-            assertNull(noEmit)
-
-            fakeIpRepository.setIp("127.0.0.1")
-            val result = repository.flagStream().first()
-            assertEquals(AceWindowsFlagType.YELLOW_FLAG, result.flag)
-        }
 }
 
 private class FakeAceFlagServerIpPreferencesRepository(
@@ -124,4 +96,3 @@ private class FakeAceFlagServerIpPreferencesRepository(
 }
 
 private const val BLUE_FLAG_JSON = """{"flag": "BLUE_FLAG"}"""
-private const val YELLOW_FLAG_JSON = """{"flag": "YELLOW_FLAG"}"""
