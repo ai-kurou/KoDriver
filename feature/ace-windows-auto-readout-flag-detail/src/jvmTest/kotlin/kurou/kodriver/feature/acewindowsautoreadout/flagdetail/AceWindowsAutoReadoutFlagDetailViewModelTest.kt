@@ -22,28 +22,10 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagReadoutTextPreferencesRepository
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsBlackFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsBlackWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsCheckeredFlagReadoutTextUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsFlagEnabledStateUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsGreenFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsOrangeCircleFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRedYellowStripesFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -95,26 +77,8 @@ class AceWindowsAutoReadoutFlagDetailViewModelTest {
                     ObserveAceWindowsFlagEnabledStatesUseCase(repository),
                     SaveAceWindowsFlagEnabledStateUseCase(repository),
                     FlagReadoutTextUseCases(
-                        ObserveAceWindowsCheckeredFlagReadoutTextUseCase(texts),
-                        SaveAceWindowsCheckeredFlagReadoutTextUseCase(texts),
-                        ObserveAceWindowsWhiteFlagReadoutTextUseCase(texts),
-                        SaveAceWindowsWhiteFlagReadoutTextUseCase(texts),
-                        ObserveAceWindowsGreenFlagReadoutTextUseCase(texts),
-                        SaveAceWindowsGreenFlagReadoutTextUseCase(texts),
-                        ObserveAceWindowsRedFlagReadoutTextUseCase(texts),
-                        SaveAceWindowsRedFlagReadoutTextUseCase(texts),
-                        ObserveAceWindowsBlueFlagReadoutTextUseCase(texts),
-                        SaveAceWindowsBlueFlagReadoutTextUseCase(texts),
-                        ObserveAceWindowsYellowFlagReadoutTextUseCase(texts),
-                        SaveAceWindowsYellowFlagReadoutTextUseCase(texts),
-                        ObserveAceWindowsBlackFlagReadoutTextUseCase(texts),
-                        SaveAceWindowsBlackFlagReadoutTextUseCase(texts),
-                        ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase(texts),
-                        SaveAceWindowsBlackWhiteFlagReadoutTextUseCase(texts),
-                        ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase(texts),
-                        SaveAceWindowsOrangeCircleFlagReadoutTextUseCase(texts),
-                        ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase(texts),
-                        SaveAceWindowsRedYellowStripesFlagReadoutTextUseCase(texts),
+                        ObserveAceWindowsFlagReadoutTextUseCase(texts),
+                        SaveAceWindowsFlagReadoutTextUseCase(texts),
                     ),
                 ),
             speakText = SpeakTextUseCase(tts, observeVoice, observeVoiceSpeed, observeVoicePitch),
