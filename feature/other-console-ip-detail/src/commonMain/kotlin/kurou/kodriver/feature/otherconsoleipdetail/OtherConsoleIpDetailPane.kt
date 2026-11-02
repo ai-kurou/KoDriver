@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -245,6 +246,7 @@ fun OtherConsoleIpDetailPaneContent(
                 RadioButton(
                     selected = uiState.selectedPort == GT7_PS5_UDP_PORT_DEFAULT,
                     onClick = null,
+                    modifier = Modifier.minimumInteractiveComponentSize(),
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33740_label),
@@ -264,6 +266,7 @@ fun OtherConsoleIpDetailPaneContent(
                 RadioButton(
                     selected = uiState.selectedPort == GT7_PS5_UDP_PORT_ALTERNATE,
                     onClick = null,
+                    modifier = Modifier.minimumInteractiveComponentSize(),
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33741_label),
