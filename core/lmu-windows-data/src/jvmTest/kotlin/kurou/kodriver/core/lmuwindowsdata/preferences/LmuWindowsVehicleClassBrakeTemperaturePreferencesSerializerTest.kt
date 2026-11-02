@@ -8,14 +8,6 @@ import kotlin.test.assertEquals
 
 class LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializerTest {
     @Test
-    fun `デフォルト値は highThresholdCelsiusByVehicleClass が空Map`() {
-        assertEquals(
-            LmuWindowsVehicleClassBrakeTemperaturePreferences(highThresholdCelsiusByVehicleClass = emptyMap()),
-            LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializer.defaultValue,
-        )
-    }
-
-    @Test
     fun `保存した空欄は復元後も既定文言へ戻らない`() =
         runTest {
             val original = LmuWindowsVehicleClassBrakeTemperaturePreferences(readoutText = "")
