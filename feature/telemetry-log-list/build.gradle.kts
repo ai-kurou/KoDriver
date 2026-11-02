@@ -25,14 +25,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.navigation3.ui)
         }
-        androidMain.dependencies {
-            implementation(project.dependencies.platform(libs.sentry.bom))
-            implementation(libs.sentry)
-        }
-        jvmMain.dependencies {
-            implementation(project.dependencies.platform(libs.sentry.bom))
-            implementation(libs.sentry)
-        }
         jvmTest.dependencies {
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesTest)

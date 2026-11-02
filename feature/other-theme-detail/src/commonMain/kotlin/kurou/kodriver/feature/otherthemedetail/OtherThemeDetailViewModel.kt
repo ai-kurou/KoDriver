@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
 import kurou.kodriver.domain.usecase.SaveThemeModeUseCase
@@ -46,7 +47,7 @@ class OtherThemeDetailViewModel internal constructor(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                captureOtherThemeDetailError(e)
+                captureError(e)
                 // 保存に失敗しても未保存のテーマを表示し続けず、保存済みの設定へ戻す。
             } finally {
                 // 同じテーマを選び直した場合も、後続の選択・保存処理には触れない。

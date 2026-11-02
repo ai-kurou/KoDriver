@@ -2,6 +2,6 @@ package kurou.kodriver.domain
 
 import io.sentry.Sentry
 
-internal actual fun captureDomainError(throwable: Throwable) {
+actual fun captureError(throwable: Throwable) {
     Sentry.captureException(throwable)
 }

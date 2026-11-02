@@ -1,3 +1,0 @@
-package kurou.kodriver.feature.otheroverlaybackgroundopacitydetail
-
-internal expect fun captureOtherOverlayBackgroundOpacityDetailError(throwable: Throwable)

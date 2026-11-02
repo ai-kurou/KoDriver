@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -85,7 +86,7 @@ class TelemetryLogListViewModel internal constructor(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    captureTelemetryLogListError(e)
+                    captureError(e)
                     false
                 }
             _deleteState.update { it.copy(isDeleting = false, deleteSucceeded = succeeded) }

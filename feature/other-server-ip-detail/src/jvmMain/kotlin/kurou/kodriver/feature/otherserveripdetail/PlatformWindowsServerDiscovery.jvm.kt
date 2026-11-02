@@ -4,6 +4,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kurou.kodriver.domain.MdnsConstants
+import kurou.kodriver.domain.captureError
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import java.io.IOException
@@ -23,7 +24,7 @@ internal class JmdnsWindowsServerDiscovery(
                 try {
                     jmdnsFactory()
                 } catch (e: IOException) {
-                    captureOtherServerIpDetailError(e)
+                    captureError(e)
                     close()
                     return@callbackFlow
                 }

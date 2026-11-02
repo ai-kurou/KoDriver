@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.PreviewOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayTextColorUseCase
@@ -45,7 +46,7 @@ class OtherOverlayTextColorDetailViewModel internal constructor(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                captureOtherOverlayTextColorDetailError(e)
+                captureError(e)
                 // 保存に失敗しても未保存の色を表示し続けず、保存済みの設定へ戻す。
             } finally {
                 if (confirmingRequest == request) confirmingRequest = null

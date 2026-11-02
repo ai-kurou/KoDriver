@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.CancellationException
-import kurou.kodriver.domain.captureDomainError
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
@@ -36,7 +36,7 @@ class SendFeedbackUseCase(
             throw e
         } catch (e: Exception) {
             // 送信自体は成功しているため、クールダウン記録の失敗で送信結果を失敗扱いにしない。
-            captureDomainError(e)
+            captureError(e)
         }
     }
 }

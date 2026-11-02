@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherserveripdetail
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kurou.kodriver.domain.captureError
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -28,7 +29,7 @@ internal class TcpServerConnectivityChecker(
             } catch (e: IOException) {
                 false
             } catch (e: Exception) {
-                captureOtherServerIpDetailError(e)
+                captureError(e)
                 false
             }
         }

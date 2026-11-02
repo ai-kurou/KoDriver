@@ -1,4 +1,4 @@
 package kurou.kodriver.domain
 
-/** ドメイン処理の非致命的な例外を記録する。Android/JVM では Sentry に送信する。 */
-internal expect fun captureDomainError(throwable: Throwable)
+/** 非致命的な例外を記録する共通入口。Android/JVM では Sentry に送信する。 */
+expect fun captureError(throwable: Throwable)
