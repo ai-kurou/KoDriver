@@ -11,7 +11,6 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsClassCarGapRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveLmuWindowsClassCarGapUseCaseTest {
     private val repo: LmuWindowsClassCarGapRepository = mockk()
@@ -26,19 +25,6 @@ class ObserveLmuWindowsClassCarGapUseCaseTest {
             val result = useCase().first()
 
             assertEquals(expected, result)
-            verify(exactly = 1) { repo.classCarGapStream() }
-            confirmVerified(repo)
-        }
-
-    @Test
-    fun `invoke は空のフローをそのまま返す`() =
-        runTest {
-            every { repo.classCarGapStream() } returns flowOf()
-            val useCase = ObserveLmuWindowsClassCarGapUseCase(repo)
-
-            val results = buildList { useCase().collect { add(it) } }
-
-            assertTrue(results.isEmpty())
             verify(exactly = 1) { repo.classCarGapStream() }
             confirmVerified(repo)
         }

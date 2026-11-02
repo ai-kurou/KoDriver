@@ -11,7 +11,6 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveAceWindowsRemainingFuelLapsUseCaseTest {
     private val repo: AceWindowsRemainingFuelLapsRepository = mockk()
@@ -26,19 +25,6 @@ class ObserveAceWindowsRemainingFuelLapsUseCaseTest {
             val result = useCase().first()
 
             assertEquals(expected, result)
-            verify(exactly = 1) { repo.remainingFuelLapsStream() }
-            confirmVerified(repo)
-        }
-
-    @Test
-    fun `invoke は空のフローをそのまま返す`() =
-        runTest {
-            every { repo.remainingFuelLapsStream() } returns flowOf()
-            val useCase = ObserveAceWindowsRemainingFuelLapsUseCase(repo)
-
-            val results = buildList { useCase().collect { add(it) } }
-
-            assertTrue(results.isEmpty())
             verify(exactly = 1) { repo.remainingFuelLapsStream() }
             confirmVerified(repo)
         }

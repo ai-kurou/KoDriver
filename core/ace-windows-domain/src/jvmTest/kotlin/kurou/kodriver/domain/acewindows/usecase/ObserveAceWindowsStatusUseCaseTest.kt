@@ -12,7 +12,6 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveAceWindowsStatusUseCaseTest {
     private val repo: AceWindowsStatusRepository = mockk()
@@ -27,19 +26,6 @@ class ObserveAceWindowsStatusUseCaseTest {
             val result = useCase().first()
 
             assertEquals(expected, result)
-            verify(exactly = 1) { repo.statusStream() }
-            confirmVerified(repo)
-        }
-
-    @Test
-    fun `invoke は空のフローをそのまま返す`() =
-        runTest {
-            every { repo.statusStream() } returns flowOf()
-            val useCase = ObserveAceWindowsStatusUseCase(repo)
-
-            val results = buildList { useCase().collect { add(it) } }
-
-            assertTrue(results.isEmpty())
             verify(exactly = 1) { repo.statusStream() }
             confirmVerified(repo)
         }

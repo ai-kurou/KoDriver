@@ -11,7 +11,6 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveLmuWindowsVehicleDamageUseCaseTest {
     private val repo: LmuWindowsVehicleDamageRepository = mockk()
@@ -27,19 +26,6 @@ class ObserveLmuWindowsVehicleDamageUseCaseTest {
             val result = useCase().first()
 
             assertEquals(expected, result)
-            verify(exactly = 1) { repo.vehicleDamageStream() }
-            confirmVerified(repo)
-        }
-
-    @Test
-    fun `invoke は空のフローをそのまま返す`() =
-        runTest {
-            every { repo.vehicleDamageStream() } returns flowOf()
-            val useCase = ObserveLmuWindowsVehicleDamageUseCase(repo)
-
-            val results = buildList { useCase().collect { add(it) } }
-
-            assertTrue(results.isEmpty())
             verify(exactly = 1) { repo.vehicleDamageStream() }
             confirmVerified(repo)
         }

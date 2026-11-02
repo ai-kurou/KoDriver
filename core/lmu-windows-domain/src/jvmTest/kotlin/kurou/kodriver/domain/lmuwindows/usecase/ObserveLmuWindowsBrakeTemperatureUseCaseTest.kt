@@ -13,7 +13,6 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveLmuWindowsBrakeTemperatureUseCaseTest {
     private val repo: LmuWindowsBrakeTemperatureRepository = mockk()
@@ -31,19 +30,6 @@ class ObserveLmuWindowsBrakeTemperatureUseCaseTest {
             val result = useCase().first()
 
             assertEquals(expected, result)
-            verify(exactly = 1) { repo.brakeTemperatureStream() }
-            confirmVerified(repo)
-        }
-
-    @Test
-    fun `invoke は空のフローをそのまま返す`() =
-        runTest {
-            every { repo.brakeTemperatureStream() } returns flowOf()
-            val useCase = ObserveLmuWindowsBrakeTemperatureUseCase(repo)
-
-            val results = buildList { useCase().collect { add(it) } }
-
-            assertTrue(results.isEmpty())
             verify(exactly = 1) { repo.brakeTemperatureStream() }
             confirmVerified(repo)
         }

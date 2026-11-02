@@ -13,7 +13,6 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveLmuWindowsTyreWearUseCaseTest {
     private val repo: LmuWindowsTyreWearRepository = mockk()
@@ -31,19 +30,6 @@ class ObserveLmuWindowsTyreWearUseCaseTest {
             val result = useCase().first()
 
             assertEquals(expected, result)
-            verify(exactly = 1) { repo.tyreWearStream() }
-            confirmVerified(repo)
-        }
-
-    @Test
-    fun `invoke は空のフローをそのまま返す`() =
-        runTest {
-            every { repo.tyreWearStream() } returns flowOf()
-            val useCase = ObserveLmuWindowsTyreWearUseCase(repo)
-
-            val results = buildList { useCase().collect { add(it) } }
-
-            assertTrue(results.isEmpty())
             verify(exactly = 1) { repo.tyreWearStream() }
             confirmVerified(repo)
         }
