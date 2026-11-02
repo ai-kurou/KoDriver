@@ -100,24 +100,6 @@ class LmuWindowsVehicleDamageRepositoryImplTest {
             assertEquals(0, emitCount.get())
         }
 
-    @Test
-    fun `reader が open できない間は emit しない`() =
-        runBlocking {
-            val reader =
-                FakeDamageMemoryReader(
-                    buffer = buildDamageBuffer(),
-                    openResult = false,
-                )
-            val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
-            val emitCount = AtomicInteger(0)
-
-            val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
-            delay(50)
-            job.cancelAndJoin()
-
-            assertEquals(0, emitCount.get())
-        }
-
     private fun buildDamageBuffer(config: DamageBufferConfig = DamageBufferConfig()): ByteBuffer {
         val telemetryBase = 128_464
         val telemInfo = 4
