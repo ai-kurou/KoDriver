@@ -9,18 +9,11 @@ import kurou.kodriver.core.narrator.readStartSoundBytes
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.acewindows.usecase.DetermineAceWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
@@ -34,8 +27,6 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperature
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
@@ -71,7 +62,7 @@ import org.koin.dsl.module
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
  *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / RemainingFuelLapsUseCases /
  *   ManualReadoutUseCases / SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases /
- *   AceWindowsFlagReadoutTextUseCases / AceWindowsRemainingFuelReadoutTextUseCases / AceWindowsReadoutTextUseCases）、
+ *   AceWindowsRemainingFuelReadoutTextUseCases / AceWindowsReadoutTextUseCases）、
  *   それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・
  *   TextToSpeechEngine・SpeakTextUseCase・
@@ -152,16 +143,7 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
         // TTS依存は他シミュレーターのunqualified登録と区別する。
-        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsCheckeredFlagReadoutTextUseCase(get()) }
-        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsWhiteFlagReadoutTextUseCase(get()) }
-        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsGreenFlagReadoutTextUseCase(get()) }
-        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRedFlagReadoutTextUseCase(get()) }
-        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsBlueFlagReadoutTextUseCase(get()) }
-        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsYellowFlagReadoutTextUseCase(get()) }
-        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsBlackFlagReadoutTextUseCase(get()) }
-        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase(get()) }
-        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase(get()) }
-        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsVehicleApproachReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRemainingFuelReadoutTextUseCase(get()) }
@@ -184,19 +166,7 @@ val aceWindowsNarratorModule: Module =
             AceWindowsReadoutTextSpeaker(
                 readoutTexts =
                     AceWindowsReadoutTextUseCases(
-                        flag =
-                            AceWindowsFlagReadoutTextUseCases(
-                                checkered = get(named(Simulator.AceWindows.id)),
-                                white = get(named(Simulator.AceWindows.id)),
-                                green = get(named(Simulator.AceWindows.id)),
-                                red = get(named(Simulator.AceWindows.id)),
-                                blue = get(named(Simulator.AceWindows.id)),
-                                yellow = get(named(Simulator.AceWindows.id)),
-                                black = get(named(Simulator.AceWindows.id)),
-                                blackWhite = get(named(Simulator.AceWindows.id)),
-                                orangeCircle = get(named(Simulator.AceWindows.id)),
-                                redYellowStripes = get(named(Simulator.AceWindows.id)),
-                            ),
+                        flag = get(named(Simulator.AceWindows.id)),
                         remainingFuel =
                             AceWindowsRemainingFuelReadoutTextUseCases(
                                 fuel = get(named(Simulator.AceWindows.id)),

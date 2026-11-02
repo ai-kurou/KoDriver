@@ -7,28 +7,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsBlackFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsBlackWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsCheckeredFlagReadoutTextUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsFlagEnabledStateUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsGreenFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsOrangeCircleFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRedYellowStripesFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsWhiteFlagReadoutTextUseCase
-import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
@@ -43,59 +25,17 @@ internal data class FlagSettingsUseCases(
 )
 
 /** フラッグごとの読み上げ文言の Observe / Save UseCase を [FlagReadoutItem] で引けるようにまとめたもの。 */
-@Suppress("LongParameterList")
 internal data class FlagReadoutTextUseCases(
-    val observeCheckeredFlag: ObserveAceWindowsCheckeredFlagReadoutTextUseCase,
-    val saveCheckeredFlag: SaveAceWindowsCheckeredFlagReadoutTextUseCase,
-    val observeWhiteFlag: ObserveAceWindowsWhiteFlagReadoutTextUseCase,
-    val saveWhiteFlag: SaveAceWindowsWhiteFlagReadoutTextUseCase,
-    val observeGreenFlag: ObserveAceWindowsGreenFlagReadoutTextUseCase,
-    val saveGreenFlag: SaveAceWindowsGreenFlagReadoutTextUseCase,
-    val observeRedFlag: ObserveAceWindowsRedFlagReadoutTextUseCase,
-    val saveRedFlag: SaveAceWindowsRedFlagReadoutTextUseCase,
-    val observeBlueFlag: ObserveAceWindowsBlueFlagReadoutTextUseCase,
-    val saveBlueFlag: SaveAceWindowsBlueFlagReadoutTextUseCase,
-    val observeYellowFlag: ObserveAceWindowsYellowFlagReadoutTextUseCase,
-    val saveYellowFlag: SaveAceWindowsYellowFlagReadoutTextUseCase,
-    val observeBlackFlag: ObserveAceWindowsBlackFlagReadoutTextUseCase,
-    val saveBlackFlag: SaveAceWindowsBlackFlagReadoutTextUseCase,
-    val observeBlackWhiteFlag: ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase,
-    val saveBlackWhiteFlag: SaveAceWindowsBlackWhiteFlagReadoutTextUseCase,
-    val observeOrangeCircleFlag: ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase,
-    val saveOrangeCircleFlag: SaveAceWindowsOrangeCircleFlagReadoutTextUseCase,
-    val observeRedYellowStripesFlag: ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase,
-    val saveRedYellowStripesFlag: SaveAceWindowsRedYellowStripesFlagReadoutTextUseCase,
+    val observeFlagText: ObserveAceWindowsFlagReadoutTextUseCase,
+    val saveFlagText: SaveAceWindowsFlagReadoutTextUseCase,
 ) {
-    fun observe(item: FlagReadoutItem): Flow<String> =
-        when (item) {
-            FlagReadoutItem.CheckeredFlag -> observeCheckeredFlag()
-            FlagReadoutItem.WhiteFlag -> observeWhiteFlag()
-            FlagReadoutItem.GreenFlag -> observeGreenFlag()
-            FlagReadoutItem.RedFlag -> observeRedFlag()
-            FlagReadoutItem.BlueFlag -> observeBlueFlag()
-            FlagReadoutItem.YellowFlag -> observeYellowFlag()
-            FlagReadoutItem.BlackFlag -> observeBlackFlag()
-            FlagReadoutItem.BlackWhiteFlag -> observeBlackWhiteFlag()
-            FlagReadoutItem.OrangeCircleFlag -> observeOrangeCircleFlag()
-            FlagReadoutItem.RedYellowStripesFlag -> observeRedYellowStripesFlag()
-        }
+    fun observe(item: FlagReadoutItem): Flow<String> = observeFlagText(item.textKey)
 
     suspend fun save(
         item: FlagReadoutItem,
         text: String,
     ) {
-        when (item) {
-            FlagReadoutItem.CheckeredFlag -> saveCheckeredFlag(text)
-            FlagReadoutItem.WhiteFlag -> saveWhiteFlag(text)
-            FlagReadoutItem.GreenFlag -> saveGreenFlag(text)
-            FlagReadoutItem.RedFlag -> saveRedFlag(text)
-            FlagReadoutItem.BlueFlag -> saveBlueFlag(text)
-            FlagReadoutItem.YellowFlag -> saveYellowFlag(text)
-            FlagReadoutItem.BlackFlag -> saveBlackFlag(text)
-            FlagReadoutItem.BlackWhiteFlag -> saveBlackWhiteFlag(text)
-            FlagReadoutItem.OrangeCircleFlag -> saveOrangeCircleFlag(text)
-            FlagReadoutItem.RedYellowStripesFlag -> saveRedYellowStripesFlag(text)
-        }
+        saveFlagText(item.textKey, text)
     }
 }
 

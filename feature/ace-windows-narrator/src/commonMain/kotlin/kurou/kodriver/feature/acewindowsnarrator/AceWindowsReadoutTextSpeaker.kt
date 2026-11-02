@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
 import kotlinx.coroutines.flow.first
+import kurou.kodriver.domain.acewindows.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
@@ -110,43 +111,43 @@ internal class AceWindowsReadoutTextSpeaker(
     private suspend fun flagText(event: AceWindowsFlagSpeechEvent): String =
         when (event) {
             is AceWindowsCheckeredFlag -> {
-                readoutTexts.flag.checkered().first()
+                readoutTexts.flag(AceWindowsFlagReadoutTextKey.CHECKERED).first()
             }
 
             is AceWindowsWhiteFlag -> {
-                readoutTexts.flag.white().first()
+                readoutTexts.flag(AceWindowsFlagReadoutTextKey.WHITE).first()
             }
 
             is AceWindowsGreenFlag -> {
-                readoutTexts.flag.green().first()
+                readoutTexts.flag(AceWindowsFlagReadoutTextKey.GREEN).first()
             }
 
             is AceWindowsRedFlag -> {
-                readoutTexts.flag.red().first()
+                readoutTexts.flag(AceWindowsFlagReadoutTextKey.RED).first()
             }
 
             is AceWindowsBlueFlag -> {
-                readoutTexts.flag.blue().first()
+                readoutTexts.flag(AceWindowsFlagReadoutTextKey.BLUE).first()
             }
 
             is AceWindowsYellowFlag -> {
-                readoutTexts.flag.yellow().first()
+                readoutTexts.flag(AceWindowsFlagReadoutTextKey.YELLOW).first()
             }
 
             is AceWindowsBlackFlag -> {
-                readoutTexts.flag.black().first()
+                readoutTexts.flag(AceWindowsFlagReadoutTextKey.BLACK).first()
             }
 
             is AceWindowsBlackWhiteFlag -> {
-                readoutTexts.flag.blackWhite().first()
+                readoutTexts.flag(AceWindowsFlagReadoutTextKey.BLACK_WHITE).first()
             }
 
             is AceWindowsOrangeCircleFlag -> {
-                readoutTexts.flag.orangeCircle().first()
+                readoutTexts.flag(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE).first()
             }
 
             is AceWindowsRedYellowStripesFlag -> {
-                readoutTexts.flag.redYellowStripes().first()
+                readoutTexts.flag(AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES).first()
             }
         }
 }

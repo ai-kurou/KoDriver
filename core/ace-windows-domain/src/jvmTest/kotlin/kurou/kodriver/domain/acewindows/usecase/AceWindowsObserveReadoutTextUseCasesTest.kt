@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.acewindows.model.AceWindowsFlagReadoutTextKey
-import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
@@ -39,72 +37,16 @@ class AceWindowsObserveReadoutTextUseCasesTest {
 
     @Test
     fun `各ObserveUseCaseがRepositoryの値をそのまま流すその1`() {
-        assertObserves<AceWindowsFlagReadoutTextPreferencesRepository>(
-            useCaseName = "ObserveAceWindowsBlackFlagReadoutTextUseCase",
-            expected = "ブラックフラッグ",
-            observe = { observeText(AceWindowsFlagReadoutTextKey.BLACK) },
-            useCase = { ObserveAceWindowsBlackFlagReadoutTextUseCase(it)() },
-        )
-
-        assertObserves<AceWindowsFlagReadoutTextPreferencesRepository>(
-            useCaseName = "ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase",
-            expected = "ブラック・ホワイトフラッグ",
-            observe = { observeText(AceWindowsFlagReadoutTextKey.BLACK_WHITE) },
-            useCase = { ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase(it)() },
-        )
-
-        assertObserves<AceWindowsFlagReadoutTextPreferencesRepository>(
-            useCaseName = "ObserveAceWindowsBlueFlagReadoutTextUseCase",
-            expected = "ブルーフラッグ",
-            observe = { observeText(AceWindowsFlagReadoutTextKey.BLUE) },
-            useCase = { ObserveAceWindowsBlueFlagReadoutTextUseCase(it)() },
-        )
-
-        assertObserves<AceWindowsFlagReadoutTextPreferencesRepository>(
-            useCaseName = "ObserveAceWindowsCheckeredFlagReadoutTextUseCase",
-            expected = "チェッカー、完走",
-            observe = { observeText(AceWindowsFlagReadoutTextKey.CHECKERED) },
-            useCase = { ObserveAceWindowsCheckeredFlagReadoutTextUseCase(it)() },
-        )
-
-        assertObserves<AceWindowsFlagReadoutTextPreferencesRepository>(
-            useCaseName = "ObserveAceWindowsGreenFlagReadoutTextUseCase",
-            expected = "グリーンフラッグ",
-            observe = { observeText(AceWindowsFlagReadoutTextKey.GREEN) },
-            useCase = { ObserveAceWindowsGreenFlagReadoutTextUseCase(it)() },
-        )
-
         assertObserves<AceWindowsMyBestLapPreferencesRepository>(
             useCaseName = "ObserveAceWindowsMyBestLapReadoutTextUseCase",
             expected = "更新{laptime}",
             observe = { observeReadoutText() },
             useCase = { ObserveAceWindowsMyBestLapReadoutTextUseCase(it)() },
         )
-
-        assertObserves<AceWindowsFlagReadoutTextPreferencesRepository>(
-            useCaseName = "ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase",
-            expected = "オレンジボールフラッグ、車両に不具合があります",
-            observe = { observeText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE) },
-            useCase = { ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase(it)() },
-        )
-
-        assertObserves<AceWindowsFlagReadoutTextPreferencesRepository>(
-            useCaseName = "ObserveAceWindowsRedFlagReadoutTextUseCase",
-            expected = "レッドフラッグ",
-            observe = { observeText(AceWindowsFlagReadoutTextKey.RED) },
-            useCase = { ObserveAceWindowsRedFlagReadoutTextUseCase(it)() },
-        )
     }
 
     @Test
     fun `各ObserveUseCaseがRepositoryの値をそのまま流すその2`() {
-        assertObserves<AceWindowsFlagReadoutTextPreferencesRepository>(
-            useCaseName = "ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase",
-            expected = "レッド・イエローストライプフラッグ、路面が滑りやすいです",
-            observe = { observeText(AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES) },
-            useCase = { ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase(it)() },
-        )
-
         assertObserves<AceWindowsRemainingFuelLapsPreferencesRepository>(
             useCaseName = "ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase",
             expected = "燃料なし",
@@ -138,20 +80,6 @@ class AceWindowsObserveReadoutTextUseCasesTest {
             expected = "車両接近",
             observe = { observeReadoutText() },
             useCase = { ObserveAceWindowsVehicleApproachReadoutTextUseCase(it)() },
-        )
-
-        assertObserves<AceWindowsFlagReadoutTextPreferencesRepository>(
-            useCaseName = "ObserveAceWindowsWhiteFlagReadoutTextUseCase",
-            expected = "ホワイトフラッグ",
-            observe = { observeText(AceWindowsFlagReadoutTextKey.WHITE) },
-            useCase = { ObserveAceWindowsWhiteFlagReadoutTextUseCase(it)() },
-        )
-
-        assertObserves<AceWindowsFlagReadoutTextPreferencesRepository>(
-            useCaseName = "ObserveAceWindowsYellowFlagReadoutTextUseCase",
-            expected = "イエローフラッグ",
-            observe = { observeText(AceWindowsFlagReadoutTextKey.YELLOW) },
-            useCase = { ObserveAceWindowsYellowFlagReadoutTextUseCase(it)() },
         )
     }
 }
