@@ -64,7 +64,8 @@ fun main() {
                 onCloseRequest = { exitApplication() },
                 title = "KoDriver",
                 state = windowState,
-                icon = painterResource("launcher.png"),
+                // Compose resources への移行は別途対応する
+                icon = @Suppress("DEPRECATION") painterResource("launcher.png"),
             ) {
                 SideEffect { window.minimumSize = Dimension(600, 500) }
                 DesktopSplashHost(

@@ -58,6 +58,10 @@ subprojects {
             )
         }
     }
+    // Kotlin コンパイラの警告を増やさないため、全モジュールで警告をエラー扱いにする
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+        compilerOptions.allWarningsAsErrors.set(true)
+    }
     apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")

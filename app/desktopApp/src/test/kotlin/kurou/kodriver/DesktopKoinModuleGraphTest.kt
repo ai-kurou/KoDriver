@@ -319,6 +319,7 @@ class DesktopKoinModuleGraphTest {
         }
     }
 
+    @Suppress("DEPRECATION") // verify() API への移行は検証方式が変わるため別途対応する
     @Test
     fun `Desktop構成のKoinモジュールグラフが解決可能である`() {
         checkKoinModules(
