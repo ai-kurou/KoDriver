@@ -9,6 +9,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.util.wheelCarcassTemperatureText
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_wheel_temperature_fl
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_wheel_temperature_fr

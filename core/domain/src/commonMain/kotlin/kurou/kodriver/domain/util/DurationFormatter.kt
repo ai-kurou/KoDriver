@@ -21,3 +21,9 @@ fun decomposeDurationMs(milliseconds: Long): DurationComponents {
 }
 
 fun Long.padStartZero(length: Int): String = toString().padStart(length, '0')
+
+fun formatLapTimeMs(milliseconds: Long): String {
+    val totalMinutes = milliseconds / MILLISECONDS_PER_MINUTE
+    val components = decomposeDurationMs(milliseconds)
+    return "$totalMinutes:${components.seconds.padStartZero(2)}.${components.millis.padStartZero(3)}"
+}
