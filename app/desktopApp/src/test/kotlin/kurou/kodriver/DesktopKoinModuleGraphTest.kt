@@ -319,7 +319,7 @@ class DesktopKoinModuleGraphTest {
         }
     }
 
-    @Suppress("DEPRECATION") // verify() API への移行は検証方式が変わるため別途対応する
+    @Suppress("DEPRECATION") // verify() はコンストラクタ DSL の静的検証で、ラムダ DSL の定義を解決検証できないため移行しない
     @Test
     fun `Desktop構成のKoinモジュールグラフが解決可能である`() {
         checkKoinModules(

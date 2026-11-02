@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -28,9 +27,12 @@ import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.AnonymousUserId
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.data.registerReadoutItemKeys
+import kurou.kodriver.generated.resources.Res
+import kurou.kodriver.generated.resources.launcher
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.DesktopSplashHost
 import kurou.kodriver.presentation.featureModules
+import org.jetbrains.compose.resources.painterResource
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
@@ -64,8 +66,7 @@ fun main() {
                 onCloseRequest = { exitApplication() },
                 title = "KoDriver",
                 state = windowState,
-                // Compose resources への移行は別途対応する
-                icon = @Suppress("DEPRECATION") painterResource("launcher.png"),
+                icon = painterResource(Res.drawable.launcher),
             ) {
                 SideEffect { window.minimumSize = Dimension(600, 500) }
                 DesktopSplashHost(
