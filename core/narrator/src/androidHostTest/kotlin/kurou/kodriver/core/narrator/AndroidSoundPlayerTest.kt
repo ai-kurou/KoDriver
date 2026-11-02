@@ -59,7 +59,7 @@ class AndroidSoundPlayerTest {
         runTest {
             val cacheDir = temporaryFolder.newFolder()
             every { context.cacheDir } returns cacheDir
-            every { soundPool.setOnLoadCompleteListener(match { it != null }) } answers {
+            every { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
@@ -92,13 +92,13 @@ class AndroidSoundPlayerTest {
             assertFalse(player.isPlaying)
             assertFalse(loadedFile.exists())
             assertTrue(cacheDir.listFiles().orEmpty().isEmpty())
-            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(match { it != null }) }
+            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) }
             verify(exactly = 1) { soundPool.load(loadedFile.absolutePath, 1) }
             verify(exactly = 1) { soundPool.setOnLoadCompleteListener(null) }
             verify(exactly = 1) { soundPool.play(7, 0.5f, 0.5f, 1, 0, 1.0f) }
             verify(exactly = 1) { soundPool.stop(11) }
             verifyOrder {
-                soundPool.setOnLoadCompleteListener(match { it != null })
+                soundPool.setOnLoadCompleteListener(isNull(inverse = true))
                 soundPool.load(loadedFile.absolutePath, 1)
             }
             confirmVerified(soundPool)
@@ -109,7 +109,7 @@ class AndroidSoundPlayerTest {
         runTest {
             val cacheDir = temporaryFolder.newFolder()
             every { context.cacheDir } returns cacheDir
-            every { soundPool.setOnLoadCompleteListener(match { it != null }) } answers {
+            every { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
@@ -133,7 +133,7 @@ class AndroidSoundPlayerTest {
             assertFalse(player.isPlaying)
             assertFalse(loadedFile.exists())
             assertTrue(cacheDir.listFiles().orEmpty().isEmpty())
-            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(match { it != null }) }
+            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) }
             verify(exactly = 1) { soundPool.load(loadedFile.absolutePath, 1) }
             verify(exactly = 1) { soundPool.setOnLoadCompleteListener(null) }
             verify(exactly = 1) { soundPool.unload(7) }
@@ -145,7 +145,7 @@ class AndroidSoundPlayerTest {
         runTest {
             val cacheDir = temporaryFolder.newFolder()
             every { context.cacheDir } returns cacheDir
-            every { soundPool.setOnLoadCompleteListener(match { it != null }) } answers {
+            every { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
@@ -173,7 +173,7 @@ class AndroidSoundPlayerTest {
             assertFalse(player.isPlaying)
             assertFalse(loadedFile.exists())
             assertTrue(cacheDir.listFiles().orEmpty().isEmpty())
-            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(match { it != null }) }
+            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) }
             verify(exactly = 1) { soundPool.load(loadedFile.absolutePath, 1) }
             verify(exactly = 1) { soundPool.setOnLoadCompleteListener(null) }
             verify(exactly = 1) { soundPool.unload(7) }
@@ -185,7 +185,7 @@ class AndroidSoundPlayerTest {
         runTest {
             val cacheDir = temporaryFolder.newFolder()
             every { context.cacheDir } returns cacheDir
-            every { soundPool.setOnLoadCompleteListener(match { it != null }) } answers {
+            every { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
@@ -207,7 +207,7 @@ class AndroidSoundPlayerTest {
             assertFalse(player.isPlaying)
             assertFalse(loadedFile.exists())
             assertTrue(cacheDir.listFiles().orEmpty().isEmpty())
-            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(match { it != null }) }
+            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) }
             verify(exactly = 1) { soundPool.load(loadedFile.absolutePath, 1) }
             verify(exactly = 1) { soundPool.setOnLoadCompleteListener(null) }
             verify(exactly = 1) { soundPool.play(7, 0.5f, 0.5f, 1, 0, 1.0f) }
@@ -220,7 +220,7 @@ class AndroidSoundPlayerTest {
         runTest {
             val cacheDir = temporaryFolder.newFolder()
             every { context.cacheDir } returns cacheDir
-            every { soundPool.setOnLoadCompleteListener(match { it != null }) } answers {
+            every { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
@@ -248,7 +248,7 @@ class AndroidSoundPlayerTest {
             assertFalse(player.isPlaying)
             assertFalse(loadedFile.exists())
             assertTrue(cacheDir.listFiles().orEmpty().isEmpty())
-            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(match { it != null }) }
+            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) }
             verify(exactly = 1) { soundPool.load(loadedFile.absolutePath, 1) }
             verify(exactly = 1) { soundPool.setOnLoadCompleteListener(null) }
             verify(exactly = 1) { soundPool.play(7, 0.5f, 0.5f, 1, 0, 1.0f) }
@@ -261,7 +261,7 @@ class AndroidSoundPlayerTest {
         runTest {
             val cacheDir = temporaryFolder.newFolder()
             every { context.cacheDir } returns cacheDir
-            every { soundPool.setOnLoadCompleteListener(match { it != null }) } answers {
+            every { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
@@ -287,7 +287,7 @@ class AndroidSoundPlayerTest {
             assertFalse(player.isPlaying)
             assertFalse(loadedFile.exists())
             assertTrue(cacheDir.listFiles().orEmpty().isEmpty())
-            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(match { it != null }) }
+            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) }
             verify(exactly = 1) { soundPool.load(loadedFile.absolutePath, 1) }
             verify(exactly = 1) { soundPool.setOnLoadCompleteListener(null) }
             verify(exactly = 1) { soundPool.play(7, 0.5f, 0.5f, 1, 0, 1.0f) }
@@ -300,7 +300,7 @@ class AndroidSoundPlayerTest {
         runTest {
             val cacheDir = temporaryFolder.newFolder()
             every { context.cacheDir } returns cacheDir
-            every { soundPool.setOnLoadCompleteListener(match { it != null }) } answers {
+            every { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
@@ -323,7 +323,7 @@ class AndroidSoundPlayerTest {
             assertFalse(player.isPlaying)
             assertFalse(loadedFile.exists())
             assertTrue(cacheDir.listFiles().orEmpty().isEmpty())
-            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(match { it != null }) }
+            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) }
             verify(exactly = 1) { soundPool.load(loadedFile.absolutePath, 1) }
             verify(exactly = 1) { soundPool.setOnLoadCompleteListener(null) }
             verify(exactly = 1) { soundPool.unload(7) }
@@ -335,7 +335,7 @@ class AndroidSoundPlayerTest {
         runTest {
             val cacheDir = temporaryFolder.newFolder()
             every { context.cacheDir } returns cacheDir
-            every { soundPool.setOnLoadCompleteListener(match { it != null }) } answers {
+            every { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
@@ -356,7 +356,7 @@ class AndroidSoundPlayerTest {
             assertFalse(player.isPlaying)
             assertFalse(loadedFile.exists())
             assertTrue(cacheDir.listFiles().orEmpty().isEmpty())
-            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(match { it != null }) }
+            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) }
             verify(exactly = 1) { soundPool.load(loadedFile.absolutePath, 1) }
             verify(exactly = 0) { soundPool.setOnLoadCompleteListener(null) }
             verify(exactly = 0) { soundPool.unload(0) }
@@ -368,7 +368,7 @@ class AndroidSoundPlayerTest {
         runTest {
             val cacheDir = temporaryFolder.newFolder()
             every { context.cacheDir } returns cacheDir
-            every { soundPool.setOnLoadCompleteListener(match { it != null }) } answers {
+            every { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
@@ -387,7 +387,7 @@ class AndroidSoundPlayerTest {
             assertFalse(player.isPlaying)
             assertFalse(loadedFile.exists())
             assertTrue(cacheDir.listFiles().orEmpty().isEmpty())
-            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(match { it != null }) }
+            verify(exactly = 1) { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) }
             verify(exactly = 1) { soundPool.load(loadedFile.absolutePath, 1) }
             confirmVerified(soundPool)
         }
@@ -397,7 +397,7 @@ class AndroidSoundPlayerTest {
         runTest {
             val cacheDir = temporaryFolder.newFolder()
             every { context.cacheDir } returns cacheDir
-            every { soundPool.setOnLoadCompleteListener(match { it != null }) } answers {
+            every { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
                 listener = firstArg()
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
@@ -428,7 +428,7 @@ class AndroidSoundPlayerTest {
             assertFalse(player.isPlaying)
             assertTrue(errors.isEmpty())
             assertTrue(cacheDir.listFiles().orEmpty().isEmpty())
-            verify(exactly = 2) { soundPool.setOnLoadCompleteListener(match { it != null }) }
+            verify(exactly = 2) { soundPool.setOnLoadCompleteListener(isNull(inverse = true)) }
             verify(exactly = 2) { soundPool.setOnLoadCompleteListener(null) }
             verify(exactly = 1) { soundPool.load(paths[0], 1) }
             verify(exactly = 1) { soundPool.load(paths[1], 1) }
@@ -569,7 +569,7 @@ class AndroidSoundPlayerTest {
         soundId: Int,
         streamId: Int,
     ) {
-        every { pool.setOnLoadCompleteListener(match { it != null }) } answers {
+        every { pool.setOnLoadCompleteListener(isNull(inverse = true)) } answers {
             listener = firstArg()
         }
         every { pool.setOnLoadCompleteListener(null) } returns Unit
@@ -586,7 +586,7 @@ class AndroidSoundPlayerTest {
         soundId: Int,
         streamId: Int,
     ) {
-        verify(exactly = 1) { pool.setOnLoadCompleteListener(match { it != null }) }
+        verify(exactly = 1) { pool.setOnLoadCompleteListener(isNull(inverse = true)) }
         verify(exactly = 1) { pool.setOnLoadCompleteListener(null) }
         verify(exactly = 1) { pool.load(loadedFile.absolutePath, 1) }
         verify(exactly = 1) { pool.play(soundId, 0.5f, 0.5f, 1, 0, 1.0f) }

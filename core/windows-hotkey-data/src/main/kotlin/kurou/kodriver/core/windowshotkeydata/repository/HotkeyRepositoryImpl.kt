@@ -58,7 +58,7 @@ class HotkeyRepositoryImpl(
         }
     }
 
-    override fun hotkeyPressStream(): Flow<Unit> = events.filterIsInstance<GlobalHotkeyEvent.Pressed>().map { Unit }
+    override fun hotkeyPressStream(): Flow<Unit> = events.filterIsInstance<GlobalHotkeyEvent.Pressed>().map { }
 
     override fun registrationStateStream(): Flow<HotkeyRegistrationState> =
         flow {

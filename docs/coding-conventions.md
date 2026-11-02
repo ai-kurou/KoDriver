@@ -111,3 +111,7 @@ try {
 ```
 
 テストにおける mockk の `any()` 使用ルールは [`docs/testing-guidelines.md`](testing-guidelines.md) を参照。
+
+## Kotlin コンパイラの警告
+
+ルートの `build.gradle.kts` で、全サブプロジェクトの Kotlin コンパイルに `allWarningsAsErrors` を設定している。警告が出るとコンパイルが失敗するため、`@Suppress` で隠さず原因を解消する。非推奨 API の移行で検証方式やリソース読み込みの挙動が変わるなど、そのPRで対応できない場合に限り、理由をコメントに書いて対象の宣言・式に限定した `@Suppress("DEPRECATION")` を付ける。

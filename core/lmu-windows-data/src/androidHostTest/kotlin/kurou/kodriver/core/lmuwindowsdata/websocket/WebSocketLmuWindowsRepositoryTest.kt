@@ -107,7 +107,7 @@ class WebSocketLmuWindowsRepositoryTest {
             assertEquals(60_000L, result.timing.bestLapTimeMs)
             assertEquals(2, result.timing.currentLap)
             val expected =
-                Json { ignoreUnknownKeys = true }.decodeFromString<LmuWindowsTelemetryData>(TELEMETRY_JSON)
+                TELEMETRY_JSON_FORMAT.decodeFromString<LmuWindowsTelemetryData>(TELEMETRY_JSON)
             assertEquals(expected.copy(fuel = result.fuel), result)
             assertEquals(expected.fuel.copy(receivedAtMs = result.fuel.receivedAtMs), result.fuel)
             assertEquals(1234L, result.fuel.receivedAtMs)
@@ -256,6 +256,8 @@ private class FakeServerIpPreferencesRepositoryForTelemetry(
         _ip.update { ip }
     }
 }
+
+private val TELEMETRY_JSON_FORMAT = Json { ignoreUnknownKeys = true }
 
 private val TELEMETRY_JSON =
     """

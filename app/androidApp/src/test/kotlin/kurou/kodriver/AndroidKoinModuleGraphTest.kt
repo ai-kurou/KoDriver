@@ -32,6 +32,7 @@ import org.robolectric.RobolectricTestRunner
  */
 @RunWith(RobolectricTestRunner::class)
 class AndroidKoinModuleGraphTest {
+    @Suppress("DEPRECATION") // verify() API への移行は検証方式が変わるため別途対応する
     @Test
     fun `Android構成のKoinモジュールグラフが解決可能である`() {
         val context = ApplicationProvider.getApplicationContext<Application>()
