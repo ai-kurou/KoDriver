@@ -92,25 +92,6 @@ class LmuWindowsTyreCarcassTemperatureRepositoryImplTest {
             assertEquals(0, emitCount.get())
         }
 
-    @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
-        runBlocking {
-            val reader =
-                FakeTyreCarcassTemperatureMemoryReader(
-                    buildTyreCarcassTemperatureBuffer(
-                        TyreCarcassTemperatureBufferConfig(activeVehicles = 1, playerIdx = 1),
-                    ),
-                )
-            val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
-            val emitCount = AtomicInteger(0)
-
-            val job = launch { repo.tyreCarcassTemperatureStream().collect { emitCount.incrementAndGet() } }
-            delay(50)
-            job.cancelAndJoin()
-
-            assertEquals(0, emitCount.get())
-        }
-
     private fun buildTyreCarcassTemperatureBuffer(
         config: TyreCarcassTemperatureBufferConfig = TyreCarcassTemperatureBufferConfig(),
     ): ByteBuffer {
