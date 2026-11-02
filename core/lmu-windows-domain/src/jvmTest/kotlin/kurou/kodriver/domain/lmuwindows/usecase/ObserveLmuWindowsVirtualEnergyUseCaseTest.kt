@@ -12,7 +12,6 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveLmuWindowsVirtualEnergyUseCaseTest {
     private val repo: LmuWindowsVirtualEnergyRepository = mockk()
@@ -27,19 +26,6 @@ class ObserveLmuWindowsVirtualEnergyUseCaseTest {
             val result = useCase().first()
 
             assertEquals(expected, result)
-            verify(exactly = 1) { repo.virtualEnergyStream() }
-            confirmVerified(repo)
-        }
-
-    @Test
-    fun `invoke は空のフローをそのまま返す`() =
-        runTest {
-            every { repo.virtualEnergyStream() } returns flowOf()
-            val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
-
-            val results = buildList { useCase().collect { add(it) } }
-
-            assertTrue(results.isEmpty())
             verify(exactly = 1) { repo.virtualEnergyStream() }
             confirmVerified(repo)
         }

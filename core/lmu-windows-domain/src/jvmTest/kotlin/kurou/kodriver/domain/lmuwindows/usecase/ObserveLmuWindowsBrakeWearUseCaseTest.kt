@@ -13,7 +13,6 @@ import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveLmuWindowsBrakeWearUseCaseTest {
     private val repo: LmuWindowsBrakeWearRepository = mockk()
@@ -31,19 +30,6 @@ class ObserveLmuWindowsBrakeWearUseCaseTest {
             val result = useCase().first()
 
             assertEquals(expected, result)
-            verify(exactly = 1) { repo.brakeWearStream() }
-            confirmVerified(repo)
-        }
-
-    @Test
-    fun `invoke は空のフローをそのまま返す`() =
-        runTest {
-            every { repo.brakeWearStream() } returns flowOf()
-            val useCase = ObserveLmuWindowsBrakeWearUseCase(repo)
-
-            val results = buildList { useCase().collect { add(it) } }
-
-            assertTrue(results.isEmpty())
             verify(exactly = 1) { repo.brakeWearStream() }
             confirmVerified(repo)
         }

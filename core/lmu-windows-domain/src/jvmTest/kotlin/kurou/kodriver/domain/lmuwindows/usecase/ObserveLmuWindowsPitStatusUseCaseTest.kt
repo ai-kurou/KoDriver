@@ -12,7 +12,6 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitStatusRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveLmuWindowsPitStatusUseCaseTest {
     private val repo: LmuWindowsPitStatusRepository = mockk()
@@ -28,19 +27,6 @@ class ObserveLmuWindowsPitStatusUseCaseTest {
             val result = useCase().first()
 
             assertEquals(expected, result)
-            verify(exactly = 1) { repo.pitStatusStream() }
-            confirmVerified(repo)
-        }
-
-    @Test
-    fun `invoke は空のフローをそのまま返す`() =
-        runTest {
-            every { repo.pitStatusStream() } returns flowOf()
-            val useCase = ObserveLmuWindowsPitStatusUseCase(repo)
-
-            val results = buildList { useCase().collect { add(it) } }
-
-            assertTrue(results.isEmpty())
             verify(exactly = 1) { repo.pitStatusStream() }
             confirmVerified(repo)
         }

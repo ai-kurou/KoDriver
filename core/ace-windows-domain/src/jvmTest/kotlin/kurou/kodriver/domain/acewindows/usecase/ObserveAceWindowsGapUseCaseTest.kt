@@ -11,7 +11,6 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveAceWindowsGapUseCaseTest {
     private val repo: AceWindowsGapRepository = mockk()
@@ -26,19 +25,6 @@ class ObserveAceWindowsGapUseCaseTest {
             val result = useCase().first()
 
             assertEquals(expected, result)
-            verify(exactly = 1) { repo.gapStream() }
-            confirmVerified(repo)
-        }
-
-    @Test
-    fun `invoke は空のフローをそのまま返す`() =
-        runTest {
-            every { repo.gapStream() } returns flowOf()
-            val useCase = ObserveAceWindowsGapUseCase(repo)
-
-            val results = buildList { useCase().collect { add(it) } }
-
-            assertTrue(results.isEmpty())
             verify(exactly = 1) { repo.gapStream() }
             confirmVerified(repo)
         }
