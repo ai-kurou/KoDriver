@@ -75,8 +75,8 @@ subprojects {
     }
     apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jetbrains.dokka")
-    // androidBenchmark は計測専用のため API ドキュメントの対象から除く
-    if (path != ":app:androidBenchmark") {
+    // androidBenchmark は計測専用、:app/:core/:feature の中間ディレクトリはソースを持たないため対象から除く
+    if (path != ":app:androidBenchmark" && buildFile.exists()) {
         rootProject.dependencies.add("dokka", project)
     }
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
