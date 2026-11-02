@@ -89,7 +89,7 @@ confirmVerified(jmdns)
 
 ## カバレッジ
 
-Kover でカバレッジを計測する。新しいモジュールを追加した場合、ルートの `build.gradle.kts` の `dependencies { }` ブロックに `kover(project(":module:name"))` を追加しないとカバレッジ集計から除外される。
+Kover でカバレッジを計測する。kover プラグインを適用したモジュールは、ルートの `build.gradle.kts` の `subprojects { }` が自動でカバレッジ集計に加える（手動登録は不要）。KMP ライブラリは convention plugin `kmp-library`（`feature-kmp` 経由を含む）で kover を適用する。
 
 CI の `unit-test` ジョブは `-PexcludeScreenshotTests=true` でスクリーンショットテストを除外している。
 

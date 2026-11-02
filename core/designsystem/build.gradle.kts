@@ -1,38 +1,16 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidMultiplatformLibrary)
+    id("kmp-library")
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.kover)
 }
 
 kotlin {
-    jvm()
-
     android {
         namespace = "kurou.kodriver.core.designsystem"
-        compileSdk =
-            libs.versions.android.compileSdk
-                .get()
-                .toInt()
-        minSdk =
-            libs.versions.android.minSdk
-                .get()
-                .toInt()
-
         androidResources {
             enable = true
-        }
-
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
-        }
-        lint {
-            abortOnError = true
-            warningsAsErrors = false
         }
     }
 

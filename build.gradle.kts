@@ -39,6 +39,17 @@ detekt {
     autoCorrect = !isCI
 }
 
+// カバレッジ集計から除く対象。各モジュールのレポートとルートの統合レポートで共通に使う
+fun kotlinx.kover.gradle.plugin.dsl.KoverReportFilter.excludeCommonCoverageTargets() {
+    annotatedBy("androidx.compose.ui.tooling.preview.Preview")
+    classes("*ComposableSingletons\$*")
+    classes("*Empty*")
+    classes("*PreviewKt")
+    classes("*PreviewKt\$*")
+    classes("*PreviewParameterProvider")
+    packages("*.generated.resources")
+}
+
 subprojects {
     // macOS でテスト用 JVM が Dock に表示されて画面フォーカスが奪われるのを防ぐ
     tasks.withType<Test>().configureEach {
@@ -91,17 +102,13 @@ subprojects {
         "detektPlugins"(rootProject.libs.detekt.composeRules)
     }
     pluginManager.withPlugin("org.jetbrains.kotlinx.kover") {
+        // kover を適用したモジュールをルートの集計対象に自動で加える
+        rootProject.dependencies.add("kover", project)
         extensions.configure<kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension> {
             reports {
                 filters {
                     excludes {
-                        annotatedBy("androidx.compose.ui.tooling.preview.Preview")
-                        classes("*ComposableSingletons\$*")
-                        classes("*Empty*")
-                        classes("*PreviewKt")
-                        classes("*PreviewKt\$*")
-                        classes("*PreviewParameterProvider")
-                        packages("*.generated.resources")
+                        excludeCommonCoverageTargets()
                     }
                 }
             }
@@ -560,13 +567,7 @@ kover {
     reports {
         filters {
             excludes {
-                annotatedBy("androidx.compose.ui.tooling.preview.Preview")
-                classes("*ComposableSingletons\$*")
-                classes("*Empty*")
-                classes("*PreviewKt")
-                classes("*PreviewKt\$*")
-                classes("*PreviewParameterProvider")
-                packages("*.generated.resources")
+                excludeCommonCoverageTargets()
                 classes("kurou.kodriver.core.windowshotkeydata.JnaHotkeyNativeApi")
                 classes("kurou.kodriver.core.windowsstartupdata.windows.JnaStartupRegistryApi")
             }
@@ -575,80 +576,6 @@ kover {
 }
 
 dependencies {
-    kover(project(":core:domain"))
-    kover(project(":core:lmu-windows-domain"))
-    kover(project(":core:ace-windows-domain"))
-    kover(project(":core:gt7-ps5-domain"))
-    kover(project(":core:data"))
-    kover(project(":core:lmu-windows-data"))
-    kover(project(":core:lmu-windows-rest-api-data"))
-    kover(project(":core:gt7-ps5-data"))
-    kover(project(":core:ace-windows-data"))
-    kover(project(":core:device-volume-data"))
-    kover(project(":core:text-to-speech-data"))
-    kover(project(":core:windows-startup-data"))
-    kover(project(":core:windows-hotkey-data"))
-    kover(project(":core:windows-shared-memory"))
-    kover(project(":core:designsystem"))
-    kover(project(":core:narrator"))
-    kover(project(":feature:desktop-splash"))
-    kover(project(":feature:lmu-windows-connection"))
-    kover(project(":feature:main"))
-    kover(project(":feature:server-connection"))
-    kover(project(":feature:lmu-windows-narrator"))
-    kover(project(":feature:other-license-detail"))
-    kover(project(":feature:other-android-audio-usage-detail"))
-    kover(project(":feature:other-list"))
-    kover(project(":feature:other-server-ip-detail"))
-    kover(project(":feature:other-console-ip-detail"))
-    kover(project(":feature:other-overlay-text-size-detail"))
-    kover(project(":feature:other-overlay-text-color-detail"))
-    kover(project(":feature:other-overlay-background-opacity-detail"))
-    kover(project(":feature:other-readout-start-sound-detail"))
-    kover(project(":feature:other-theme-detail"))
-    kover(project(":feature:other-volume-detail"))
-    kover(project(":feature:other-voice-detail"))
-    kover(project(":feature:other-voice-speed-detail"))
-    kover(project(":feature:other-voice-pitch-detail"))
-    kover(project(":feature:other-feedback-detail"))
-    kover(project(":feature:auto-readout-list"))
-    kover(project(":feature:manual-readout-list"))
-    kover(project(":feature:manual-readout-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-vehicle-approach-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-flag-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-my-best-lap-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-pit-timing-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-vehicle-damage-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-tyre-temperature-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-remaining-virtual-energy-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-remaining-fuel-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-tyre-wear-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-brake-temperature-detail"))
-    kover(project(":feature:lmu-windows-auto-readout-brake-wear-detail"))
-    kover(project(":feature:gt7-ps5-auto-readout-my-best-lap-detail"))
-    kover(project(":feature:gt7-ps5-auto-readout-remaining-fuel-detail"))
-    kover(project(":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail"))
-    kover(project(":feature:gt7-ps5-auto-readout-tyre-temperature-detail"))
-    kover(project(":feature:gt7-ps5-connection"))
-    kover(project(":feature:gt7-ps5-narrator"))
-    kover(project(":feature:ace-windows-connection"))
-    kover(project(":feature:ace-windows-narrator"))
-    kover(project(":feature:ace-windows-auto-readout-remaining-fuel-detail"))
-    kover(project(":feature:ace-windows-auto-readout-remaining-fuel-laps-detail"))
-    kover(project(":feature:ace-windows-auto-readout-flag-detail"))
-    kover(project(":feature:ace-windows-auto-readout-tyre-temperature-detail"))
-    kover(project(":feature:ace-windows-auto-readout-vehicle-approach-detail"))
-    kover(project(":feature:ace-windows-auto-readout-my-best-lap-detail"))
-    kover(project(":feature:telemetry-log-list"))
-    kover(project(":feature:telemetry-log-detail"))
-    kover(project(":feature:lmu-windows-debug-state-detail"))
-    kover(project(":feature:ace-windows-debug-state-detail"))
-    kover(project(":feature:gt7-ps5-debug-state-detail"))
-    kover(project(":feature:narrator-overlay"))
-    kover(project(":app:androidApp"))
-    kover(project(":app:shared"))
-    kover(project(":app:desktopApp"))
-    kover(project(":server"))
     dokka(project(":core:domain"))
     dokka(project(":core:lmu-windows-domain"))
     dokka(project(":core:ace-windows-domain"))
