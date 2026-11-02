@@ -77,7 +77,7 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
     // androidBenchmark は計測専用、:app/:core/:feature の中間ディレクトリはソースを持たないため対象から除く
     if (path != ":app:androidBenchmark" && buildFile.exists()) {
-        rootProject.dependencies.add("dokka", project)
+        rootProject.dependencies.add("dokka", rootProject.dependencies.project(path))
     }
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
@@ -107,7 +107,7 @@ subprojects {
     }
     pluginManager.withPlugin("org.jetbrains.kotlinx.kover") {
         // kover を適用したモジュールをルートの集計対象に自動で加える
-        rootProject.dependencies.add("kover", project)
+        rootProject.dependencies.add("kover", rootProject.dependencies.project(path))
         extensions.configure<kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension> {
             reports {
                 filters {
