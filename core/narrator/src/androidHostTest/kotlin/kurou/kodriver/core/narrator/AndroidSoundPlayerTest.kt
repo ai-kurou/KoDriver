@@ -45,7 +45,8 @@ class AndroidSoundPlayerTest {
     private val soundPool: SoundPool = mockk()
     private val errors = mutableListOf<Throwable>()
     private var listener: SoundPool.OnLoadCompleteListener? = null
-    private lateinit var loadedFile: File
+    private var capturedFile: File? = null
+    private val loadedFile: File get() = checkNotNull(capturedFile)
 
     @Test
     fun `公開コンストラクタは停止状態のプレイヤーを生成する`() {
@@ -64,7 +65,7 @@ class AndroidSoundPlayerTest {
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
-                loadedFile = File(firstArg<String>())
+                capturedFile = File(firstArg<String>())
                 7
             }
             val player =
@@ -79,7 +80,7 @@ class AndroidSoundPlayerTest {
             runCurrent()
             assertContentEquals(bytes, loadedFile.readBytes())
             assertFalse(player.isPlaying)
-            listener!!.onLoadComplete(soundPool, 7, 0)
+            checkNotNull(listener).onLoadComplete(soundPool, 7, 0)
             runCurrent()
             assertTrue(player.isPlaying)
             advanceTimeBy(999)
@@ -114,7 +115,7 @@ class AndroidSoundPlayerTest {
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
-                loadedFile = File(firstArg<String>())
+                capturedFile = File(firstArg<String>())
                 7
             }
             val player =
@@ -124,10 +125,10 @@ class AndroidSoundPlayerTest {
             every { soundPool.unload(7) } returns true
             val job = launch { player.play(wav(), 50) }
             runCurrent()
-            listener!!.onLoadComplete(soundPool, 99, 0)
+            checkNotNull(listener).onLoadComplete(soundPool, 99, 0)
             runCurrent()
             assertFalse(job.isCompleted)
-            listener!!.onLoadComplete(soundPool, 7, 3)
+            checkNotNull(listener).onLoadComplete(soundPool, 7, 3)
             job.join()
             assertEquals("SoundPool load failed: status=3", errors.single().message)
             assertFalse(player.isPlaying)
@@ -150,7 +151,7 @@ class AndroidSoundPlayerTest {
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
-                loadedFile = File(firstArg<String>())
+                capturedFile = File(firstArg<String>())
                 7
             }
             val player =
@@ -167,7 +168,7 @@ class AndroidSoundPlayerTest {
             runCurrent()
             job.join()
             assertEquals("SoundPool load timed out: ${loadedFile.absolutePath}", errors.single().message)
-            listener!!.onLoadComplete(soundPool, 7, 0)
+            checkNotNull(listener).onLoadComplete(soundPool, 7, 0)
             runCurrent()
             assertEquals(1, errors.size)
             assertFalse(player.isPlaying)
@@ -190,7 +191,7 @@ class AndroidSoundPlayerTest {
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
-                loadedFile = File(firstArg<String>())
+                capturedFile = File(firstArg<String>())
                 7
             }
             val player =
@@ -201,7 +202,7 @@ class AndroidSoundPlayerTest {
             every { soundPool.unload(7) } returns true
             val job = launch { player.play(wav(), 50) }
             runCurrent()
-            listener!!.onLoadComplete(soundPool, 7, 0)
+            checkNotNull(listener).onLoadComplete(soundPool, 7, 0)
             job.join()
             assertEquals("SoundPool.play() failed", errors.single().message)
             assertFalse(player.isPlaying)
@@ -225,7 +226,7 @@ class AndroidSoundPlayerTest {
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
-                loadedFile = File(firstArg<String>())
+                capturedFile = File(firstArg<String>())
                 7
             }
             val player =
@@ -236,7 +237,7 @@ class AndroidSoundPlayerTest {
             every { soundPool.stop(11) } returns Unit
             val job = launch { player.play(byteArrayOf(1), 50) }
             runCurrent()
-            listener!!.onLoadComplete(soundPool, 7, 0)
+            checkNotNull(listener).onLoadComplete(soundPool, 7, 0)
             runCurrent()
             advanceTimeBy(5_999)
             runCurrent()
@@ -266,7 +267,7 @@ class AndroidSoundPlayerTest {
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
-                loadedFile = File(firstArg<String>())
+                capturedFile = File(firstArg<String>())
                 7
             }
             val player =
@@ -277,7 +278,7 @@ class AndroidSoundPlayerTest {
             every { soundPool.stop(11) } returns Unit
             val job = async { player.play(wav(), 50) }
             runCurrent()
-            listener!!.onLoadComplete(soundPool, 7, 0)
+            checkNotNull(listener).onLoadComplete(soundPool, 7, 0)
             runCurrent()
             assertTrue(player.isPlaying)
             job.cancel()
@@ -305,7 +306,7 @@ class AndroidSoundPlayerTest {
             }
             every { soundPool.setOnLoadCompleteListener(null) } returns Unit
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
-                loadedFile = File(firstArg<String>())
+                capturedFile = File(firstArg<String>())
                 7
             }
             val player =
@@ -318,7 +319,7 @@ class AndroidSoundPlayerTest {
             job.cancel()
             assertFailsWith<CancellationException> { job.await() }
             runCurrent()
-            listener!!.onLoadComplete(soundPool, 7, 3)
+            checkNotNull(listener).onLoadComplete(soundPool, 7, 3)
             assertTrue(errors.isEmpty())
             assertFalse(player.isPlaying)
             assertFalse(loadedFile.exists())
@@ -344,7 +345,7 @@ class AndroidSoundPlayerTest {
                     AudioAttributes.USAGE_MEDIA
                 }, { soundPool })
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
-                loadedFile = File(firstArg<String>())
+                capturedFile = File(firstArg<String>())
                 0
             }
             val job = async { player.play(wav(), 50) }
@@ -378,7 +379,7 @@ class AndroidSoundPlayerTest {
                 }, { soundPool })
             val failure = IllegalStateException("load exception")
             every { soundPool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
-                loadedFile = File(firstArg<String>())
+                capturedFile = File(firstArg<String>())
                 throw failure
             }
             player.play(wav(), 50)
@@ -418,11 +419,11 @@ class AndroidSoundPlayerTest {
 
             val first = launch { player.play(wav(), -1) }
             runCurrent()
-            listener!!.onLoadComplete(soundPool, 7, 0)
+            checkNotNull(listener).onLoadComplete(soundPool, 7, 0)
             first.join()
             val second = launch { player.play(wav(), 101) }
             runCurrent()
-            listener!!.onLoadComplete(soundPool, 8, 0)
+            checkNotNull(listener).onLoadComplete(soundPool, 8, 0)
             second.join()
 
             assertFalse(player.isPlaying)
@@ -467,7 +468,7 @@ class AndroidSoundPlayerTest {
                 )
             val job = launch { player.play(wav(), 50) }
             runCurrent()
-            listener!!.onLoadComplete(replacementPool, 18, 0)
+            checkNotNull(listener).onLoadComplete(replacementPool, 18, 0)
             runCurrent()
             advanceTimeBy(1_000)
             job.join()
@@ -499,7 +500,7 @@ class AndroidSoundPlayerTest {
                 )
             val job = launch { player.play(wav(), 50) }
             runCurrent()
-            listener!!.onLoadComplete(soundPool, 7, 0)
+            checkNotNull(listener).onLoadComplete(soundPool, 7, 0)
             runCurrent()
             advanceTimeBy(1_000)
             job.join()
@@ -530,7 +531,7 @@ class AndroidSoundPlayerTest {
                 )
             val job = launch { player.play(wav(), 50) }
             runCurrent()
-            listener!!.onLoadComplete(soundPool, 7, 0)
+            checkNotNull(listener).onLoadComplete(soundPool, 7, 0)
             runCurrent()
             advanceTimeBy(1_000)
             job.join()
@@ -574,7 +575,7 @@ class AndroidSoundPlayerTest {
         }
         every { pool.setOnLoadCompleteListener(null) } returns Unit
         every { pool.load(match<String> { File(it).parentFile == cacheDir }, 1) } answers {
-            loadedFile = File(firstArg<String>())
+            capturedFile = File(firstArg<String>())
             soundId
         }
         every { pool.play(soundId, 0.5f, 0.5f, 1, 0, 1.0f) } returns streamId
