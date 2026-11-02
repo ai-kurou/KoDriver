@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5UdpPortUseCase
@@ -62,7 +63,7 @@ internal class OtherConsoleIpDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                captureOtherConsoleIpDetailError(e)
+                captureError(e)
                 _mutable.update { it.copy(saveFailed = true) }
             }
         }

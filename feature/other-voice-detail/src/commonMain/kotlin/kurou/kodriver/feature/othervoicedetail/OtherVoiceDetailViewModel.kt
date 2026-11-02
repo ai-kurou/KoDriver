@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.usecase.GetAvailableVoicesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
@@ -45,7 +46,7 @@ internal class OtherVoiceDetailViewModel(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            captureOtherVoiceDetailError(e)
+            captureError(e)
             emptyList()
         }
 
@@ -56,7 +57,7 @@ internal class OtherVoiceDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                captureOtherVoiceDetailError(e)
+                captureError(e)
             }
         }
     }

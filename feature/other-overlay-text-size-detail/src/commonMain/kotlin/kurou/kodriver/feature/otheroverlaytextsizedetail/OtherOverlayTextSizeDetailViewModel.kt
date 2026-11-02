@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.PreviewOverlayTextSizeUseCase
@@ -48,7 +49,7 @@ class OtherOverlayTextSizeDetailViewModel internal constructor(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                captureOtherOverlayTextSizeDetailError(e)
+                captureError(e)
                 // 保存に失敗しても未保存のサイズを表示し続けず、保存済みの設定へ戻す。
             } finally {
                 if (confirmingRequest == request) confirmingRequest = null

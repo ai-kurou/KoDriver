@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.usecase.CanSendFeedbackUseCase
@@ -115,7 +116,7 @@ internal class OtherFeedbackDetailViewModel(
                             telemetryLogJson = attachedTelemetryLog?.telemetryJson,
                         ),
                     )
-                result.exceptionOrNull()?.let { captureOtherFeedbackDetailError(it) }
+                result.exceptionOrNull()?.let { captureError(it) }
                 if (result.isSuccess) {
                     _telemetryLogId.update { null }
                 }
@@ -129,7 +130,7 @@ internal class OtherFeedbackDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                captureOtherFeedbackDetailError(e)
+                captureError(e)
                 _uiState.update { it.copy(sendStatus = FeedbackSendStatus.Failed) }
             }
         }

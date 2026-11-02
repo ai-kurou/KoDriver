@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otherserveripdetail
 
 import kotlinx.coroutines.CancellationException
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
 
 internal sealed interface SaveServerIpResult {
@@ -31,7 +32,7 @@ internal class SaveServerIpWithConnectivityCheckUseCase(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            captureOtherServerIpDetailError(e)
+            captureError(e)
             SaveServerIpResult.SaveFailed
         }
     }
