@@ -501,9 +501,21 @@ class MainActivityTest {
         descriptionText: String,
     ) {
         scrollToItem(itemText)
+        // TODO: API 28 でのタップ不発の原因調査用。特定できたら削除する。
+        val itemBounds = describeItemBounds(itemText)
         clickReadoutItem(itemText)
-        waitUntilDisplayed(descriptionText)
+        try {
+            waitUntilDisplayed(descriptionText)
+        } catch (e: AssertionError) {
+            throw AssertionError("タップ直前の項目位置: $itemBounds\n${e.message}", e)
+        }
         navigateBack()
+    }
+
+    private fun describeItemBounds(itemText: String): String {
+        val nodes = composeTestRule.onAllNodes(hasContentDescription(itemText)).fetchSemanticsNodes()
+        val rootBounds = composeTestRule.onAllNodes(isRoot()).fetchSemanticsNodes().firstOrNull()?.boundsInRoot
+        return "item=${nodes.map { it.boundsInRoot }} root=$rootBounds"
     }
 
     private fun clickScrollableItem(text: String) {
