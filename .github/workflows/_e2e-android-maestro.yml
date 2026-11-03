@@ -62,7 +62,7 @@ jobs:
       - name: Run Maestro flow on Android emulator
         uses: reactivecircus/android-emulator-runner@c9c93e6ba9c4194322e114c40970d5983d9a07cc # v2.38.0
         with:
-          api-level: 34
+          api-level: 37.0
           target: google_apis
           arch: x86_64
           profile: pixel_6
