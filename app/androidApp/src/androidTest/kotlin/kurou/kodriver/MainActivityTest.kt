@@ -1,5 +1,7 @@
 package kurou.kodriver
 
+import android.accessibilityservice.AccessibilityService
+import android.os.Build
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertHasClickAction
@@ -15,6 +17,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -26,6 +29,7 @@ import kurou.kodriver.feature.otherlist.fakeTextToSpeechRepository
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -209,9 +213,13 @@ class MainActivityTest {
     fun `その他タブの項目を順にタップする`() {
         launchActivity()
         clickItem("その他")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            clickItemAndReturnFromSystemSettings("ローカルネットワークへのアクセス許可")
+        }
         clickItemAndNavigateBack("Windows版KoDriverへ接続するIPアドレス")
         clickItemAndNavigateBack("ゲーム機・SimHubへ接続するIPアドレス")
         clickItemAndNavigateBack("音量")
+        clickItemAndNavigateBack("読み上げ音声")
         clickScrollableItem("読み上げ速度")
         waitUntilDisplayed("読み上げの速さを設定します。")
         navigateBack()
@@ -228,6 +236,12 @@ class MainActivityTest {
         clickItem("キャンセル")
         clickScrollableItem("ダイナミックカラー")
         clickScrollableItem("ハプティックフィードバック")
+        clickScrollableItem("自動タブの設定を初期化")
+        clickItem("キャンセル")
+        clickScrollableItem("手動タブの設定を初期化")
+        clickItem("キャンセル")
+        clickScrollableItem("ログを全て削除")
+        clickItem("キャンセル")
         clickItemAndNavigateBack("フィードバックを送信")
         clickItemAndNavigateBack("ライセンス")
     }
@@ -443,6 +457,28 @@ class MainActivityTest {
         navigateBack()
     }
 
+    private fun clickItemAndReturnFromSystemSettings(text: String) {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val appPackage = instrumentation.targetContext.packageName
+
+        fun foregroundPackage(): String? =
+            instrumentation.uiAutomation
+                .rootInActiveWindow
+                ?.packageName
+                ?.toString()
+
+        scrollToItem(text)
+        clickItem(text)
+        composeTestRule.waitUntil(timeoutMillis = SYSTEM_SETTINGS_TIMEOUT_MILLIS) {
+            foregroundPackage().let { it != null && it != appPackage }
+        }
+        assertTrue(instrumentation.uiAutomation.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK))
+        composeTestRule.waitUntil(timeoutMillis = SYSTEM_SETTINGS_TIMEOUT_MILLIS) {
+            foregroundPackage() == appPackage
+        }
+        waitUntilDisplayed(text)
+    }
+
     private fun clickItemAndVerifyDescription(
         itemText: String,
         descriptionText: String,
@@ -522,6 +558,7 @@ class MainActivityTest {
     }
 
     private companion object {
+        const val SYSTEM_SETTINGS_TIMEOUT_MILLIS = 8_000L
         const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。"
         var isFakeTelemetryLogListModuleLoaded = false
