@@ -2,6 +2,7 @@ package kurou.kodriver.feature.gt7ps5debugstatedetail
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5VehicleClassData
 
 @Composable

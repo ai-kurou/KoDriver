@@ -12,11 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.generated.resources.Res
+import kurou.kodriver.core.designsystem.generated.resources.debug_state_unavailable
+import org.jetbrains.compose.resources.stringResource
 
-/** 未取得の文言と装飾を表示する。文言は呼び出し側で解決する。 */
+/** 未取得の文言と装飾を表示する。文言は既定で共通の「未取得」を使う。 */
 @Composable
 fun DebugStateUnavailableContent(
-    text: String,
+    text: String = stringResource(Res.string.debug_state_unavailable),
     modifier: Modifier = Modifier,
 ) {
     val color = MaterialTheme.colorScheme.outlineVariant

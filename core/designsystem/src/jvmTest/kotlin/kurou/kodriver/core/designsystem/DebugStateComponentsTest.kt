@@ -83,6 +83,17 @@ class DebugStateComponentsTest {
     }
 
     @Test
+    fun `未取得の文言を省略すると共通の文言を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                DebugStateUnavailableContent()
+            }
+        }
+
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
     fun `装飾の有無によらずカード内容を表示して記号は読み上げない`() {
         rule.setContent {
             KoDriverTheme {
