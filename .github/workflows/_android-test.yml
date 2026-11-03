@@ -38,6 +38,14 @@ jobs:
           profile: pixel_9
           script: ./gradlew connectedDebugAndroidTest
 
+      - name: Upload first-attempt test report
+        if: always() && steps.emulator-test.outcome == 'failure'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: android-test-report-api-${{ inputs.api-level }}-attempt1
+          path: app/androidApp/build/reports/androidTests/connected/
+          if-no-files-found: ignore
+
       - name: Retry emulator test
         id: emulator-test-retry
         if: steps.emulator-test.outcome == 'failure'
@@ -49,7 +57,7 @@ jobs:
           script: ./gradlew connectedDebugAndroidTest
 
       - name: Upload test report
-        if: steps.emulator-test.outcome == 'failure'
+        if: always() && steps.emulator-test-retry.outcome == 'failure'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-test-report-api-${{ inputs.api-level }}

@@ -71,6 +71,14 @@ jobs:
           script: |
             .github/scripts/run-maestro-with-artifacts.sh "apk/KoDriver-android-${{ needs.build.outputs.version }}.apk"
 
+      - name: Upload first-attempt Maestro debug artifacts
+        if: always() && steps.maestro.outcome == 'failure'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: maestro-debug-artifacts-attempt1
+          path: maestro-artifacts/
+          if-no-files-found: ignore
+
       - name: Retry Maestro flow on Android emulator
         if: steps.maestro.outcome == 'failure'
         uses: reactivecircus/android-emulator-runner@c9c93e6ba9c4194322e114c40970d5983d9a07cc # v2.38.0
