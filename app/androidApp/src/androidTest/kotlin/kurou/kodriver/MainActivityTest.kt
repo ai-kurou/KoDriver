@@ -3,14 +3,11 @@ package kurou.kodriver
 import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import androidx.compose.ui.semantics.SemanticsActions
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -18,7 +15,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
-import androidx.compose.ui.test.printToString
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -447,19 +443,8 @@ class MainActivityTest {
     ) {
         // CI実機エミュレータではボトムシートの閉じるアニメーション等が遅く、
         // 5秒では不足してタイムアウトすることがあるため、実機テストのみ余裕を持たせる。
-        try {
-            composeTestRule.waitUntil(timeoutMillis = 8_000L) {
-                composeTestRule.onAllNodes(hasText(text, substring = substring)).fetchSemanticsNodes().isNotEmpty()
-            }
-        } catch (e: ComposeTimeoutException) {
-            // TODO: API 28 でのタイムアウト原因調査用。特定できたら削除する。
-            val roots = composeTestRule.onAllNodes(isRoot())
-            val rootCount = roots.fetchSemanticsNodes().size
-            val tree =
-                (0 until rootCount).joinToString("\n---\n") { index ->
-                    roots[index].printToString(maxDepth = 12)
-                }
-            throw AssertionError("表示待ちがタイムアウト: $text\n$tree", e)
+        composeTestRule.waitUntil(timeoutMillis = 8_000L) {
+            composeTestRule.onAllNodes(hasText(text, substring = substring)).fetchSemanticsNodes().isNotEmpty()
         }
     }
 
@@ -502,59 +487,9 @@ class MainActivityTest {
         descriptionText: String,
     ) {
         scrollToItem(itemText)
-        // TODO: API 28 でのタップ不発の原因調査用。特定できたら削除する。
-        val itemBounds = describeItemBounds(itemText)
         clickReadoutItem(itemText)
-        try {
-            if (!isDisplayedWithin(descriptionText)) {
-                // タッチ注入が効かないだけかを切り分けるため、セマンティクスの OnClick を直接呼ぶ。
-                composeTestRule
-                    .onNode(hasContentDescription(itemText))
-                    .performSemanticsAction(SemanticsActions.OnClick)
-                composeTestRule.waitForIdle()
-                if (isDisplayedWithin(descriptionText)) {
-                    throw AssertionError("セマンティクスの OnClick では遷移できた（タッチ注入のみ不発）")
-                }
-                val timeline =
-                    (1..3).joinToString("\n") { step ->
-                        Thread.sleep(500L)
-                        "+${step * 500}ms: ${describeVisibleTexts()}"
-                    }
-                throw AssertionError("タップ後の画面遷移:\n$timeline")
-            }
-        } catch (e: AssertionError) {
-            throw AssertionError("タップ直前の項目位置: $itemBounds\n${e.message}", e)
-        }
+        waitUntilDisplayed(descriptionText)
         navigateBack()
-    }
-
-    private fun isDisplayedWithin(text: String): Boolean =
-        try {
-            composeTestRule.waitUntil(timeoutMillis = 2_000L) {
-                composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
-            }
-            true
-        } catch (_: ComposeTimeoutException) {
-            false
-        }
-
-    private fun describeVisibleTexts(): String =
-        composeTestRule
-            .onAllNodes(hasText("", substring = true))
-            .fetchSemanticsNodes()
-            .filter { SemanticsProperties.Text in it.config }
-            .flatMap { it.config[SemanticsProperties.Text] }
-            .joinToString(" | ") { it.text.take(20) }
-
-    private fun describeItemBounds(itemText: String): String {
-        val nodes = composeTestRule.onAllNodes(hasContentDescription(itemText)).fetchSemanticsNodes()
-        val rootBounds =
-            composeTestRule
-                .onAllNodes(isRoot())
-                .fetchSemanticsNodes()
-                .firstOrNull()
-                ?.boundsInRoot
-        return "item=${nodes.map { it.boundsInRoot }} root=$rootBounds"
     }
 
     private fun clickScrollableItem(text: String) {
@@ -584,7 +519,11 @@ class MainActivityTest {
     }
 
     private fun clickReadoutItem(text: String) {
-        composeTestRule.onNode(hasContentDescription(text)).performClick()
+        // スクロール直後の項目は一覧上部の「先頭へ戻る」ボタンの下に重なることがあり、
+        // 座標でタップするとボタンに奪われるため、セマンティクスの OnClick で実行する。
+        composeTestRule
+            .onNode(hasContentDescription(text))
+            .performSemanticsAction(SemanticsActions.OnClick)
         composeTestRule.waitForIdle()
     }
 
