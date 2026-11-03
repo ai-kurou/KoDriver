@@ -514,7 +514,12 @@ class MainActivityTest {
 
     private fun describeItemBounds(itemText: String): String {
         val nodes = composeTestRule.onAllNodes(hasContentDescription(itemText)).fetchSemanticsNodes()
-        val rootBounds = composeTestRule.onAllNodes(isRoot()).fetchSemanticsNodes().firstOrNull()?.boundsInRoot
+        val rootBounds =
+            composeTestRule
+                .onAllNodes(isRoot())
+                .fetchSemanticsNodes()
+                .firstOrNull()
+                ?.boundsInRoot
         return "item=${nodes.map { it.boundsInRoot }} root=$rootBounds"
     }
 
