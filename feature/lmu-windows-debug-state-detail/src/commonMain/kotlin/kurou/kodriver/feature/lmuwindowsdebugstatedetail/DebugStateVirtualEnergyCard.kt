@@ -8,12 +8,12 @@ import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.util.formatOneDecimal
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_virtual_energy_per_lap_ratio
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_virtual_energy_remaining_laps
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_virtual_energy_remaining_percent
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.round
 
 @Composable
 internal fun VirtualEnergyContent(
@@ -55,9 +55,4 @@ internal fun VirtualEnergyContent(
             )
         }
     }
-}
-
-internal fun formatOneDecimal(value: Double): String {
-    val rounded = round(value * 10) / 10
-    return rounded.toString()
 }

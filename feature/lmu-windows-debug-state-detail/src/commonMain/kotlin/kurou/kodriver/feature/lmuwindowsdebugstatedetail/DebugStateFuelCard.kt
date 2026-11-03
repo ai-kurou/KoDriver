@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.util.formatOneDecimal
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_fuel_remaining_liters
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_fuel_remaining_percent
