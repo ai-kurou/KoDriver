@@ -3,11 +3,13 @@ package kurou.kodriver
 import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -15,6 +17,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.printToString
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -443,8 +446,19 @@ class MainActivityTest {
     ) {
         // CI実機エミュレータではボトムシートの閉じるアニメーション等が遅く、
         // 5秒では不足してタイムアウトすることがあるため、実機テストのみ余裕を持たせる。
-        composeTestRule.waitUntil(timeoutMillis = 8_000L) {
-            composeTestRule.onAllNodes(hasText(text, substring = substring)).fetchSemanticsNodes().isNotEmpty()
+        try {
+            composeTestRule.waitUntil(timeoutMillis = 8_000L) {
+                composeTestRule.onAllNodes(hasText(text, substring = substring)).fetchSemanticsNodes().isNotEmpty()
+            }
+        } catch (e: ComposeTimeoutException) {
+            // TODO: API 28 でのタイムアウト原因調査用。特定できたら削除する。
+            val roots = composeTestRule.onAllNodes(isRoot())
+            val rootCount = roots.fetchSemanticsNodes().size
+            val tree =
+                (0 until rootCount).joinToString("\n---\n") { index ->
+                    roots[index].printToString(maxDepth = 12)
+                }
+            throw AssertionError("表示待ちがタイムアウト: $text\n$tree", e)
         }
     }
 
