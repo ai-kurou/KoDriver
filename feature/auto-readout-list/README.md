@@ -4,7 +4,7 @@
 
 ## 主要なファイルの役割
 
-- `AutoReadoutListPane.kt` / `AutoReadoutContent.kt`: 一覧画面のUI。`AutoReadoutContent.kt` は `Material3 Adaptive` の `ListDetailPaneScaffold` と `AutoReadoutNavigationState`（Navigation 3の `NavBackStack`）を組み合わせて list/detail ペインの表示切り替えを行う（詳細パターンは `docs/list-detail-navigation-pattern.md` を参照）。
+- `AutoReadoutListPane.kt` / `AutoReadoutContent.kt`: 一覧画面のUI。`AutoReadoutContent.kt` は `Material3 Adaptive` の `ListDetailPaneScaffold` とナビゲーターで list/detail ペインの表示切り替えを行い、選択状態は ViewModel の UiState から同期する。
 - `AutoReadoutDetailPane.kt`: 選択した読み上げ項目の詳細設定画面。一覧側の Root スイッチ（`ReadoutItemKey.*.Root`）がOFFの場合は、画面上部に警告バナー（左端に縦方向中央の警告アイコン、中央にメッセージ、右端に Root を有効化する「ONにする」リンク）を表示し、詳細内容全体を薄く表示する（操作は可能なまま、保存値は変更しない）。バナーの表示・非表示は縦方向の展開とフェードでアニメーションする。詳細内容の透明度も滑らかに変化する。バナー全体がタップ領域となり、タップすると Root を有効化する。波紋はバナーの角丸内に表示する。各 detail モジュール側の変更は不要。
 - `AutoReadoutListFlow.kt` / `AutoReadoutListViewModel.kt`: Flow が設定を観測して表示状態を合成し、ViewModel が並び替え・選択・設定保存などの操作を扱う。並び替え中は `LocalOrderState` で楽観的に状態を保持し、確定時に `SaveAutoReadoutOrderUseCase` へ反映する。
 - `AutoReadoutListModule.kt`: この feature の Koin モジュール定義。

@@ -12,7 +12,7 @@ Windows デスクトップでは、各セット行の左側にセット名・項
 
 ## 主要なファイルの役割
 
-- `ManualReadoutContent.kt` / `ManualReadoutNavigationState.kt`: Adaptive scaffold と Navigation 3 の list/detail 切替・戻る操作。選択は一覧 ViewModel の UiState から同期する。
+- `ManualReadoutContent.kt`: Adaptive scaffold の list/detail 切替・戻る操作。選択は一覧 ViewModel の UiState から同期する。
 
 - `ManualReadoutListUiState.kt` / `ManualReadoutListViewModel.kt`: 保存済みセット一覧を `StateFlow` で提供し、空のセットを追加・保存し、シミュレーター ID とセット ID を指定した読み上げ依頼を送る。
 - `ManualReadoutListModule.kt`: `named(simulatorId)` の Repository を使う ViewModel の Koin 登録。

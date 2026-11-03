@@ -36,10 +36,6 @@ Le Mans Ultimate（LMU）・Assetto Corsa EVO（ACE）から Windows 共有メ�
 ### ReadoutItemKey の配線（listPane / detailPane とNarratorの読み上げ判定の一致）
 `ReadoutItemKey` を新設・変更する際は、listPane/detailPaneのスイッチの保存先 `DataStore` と、Narrator側の実際の読み上げ判定ロジックへの配線が一致しているかを必ず確認すること。片方だけ実装すると、スイッチが存在するのに効果がない死んだ実装になる（過去に #464, #472 のバグが発生）。詳細・確認手順は [`docs/readout-item-key-wiring.md`](docs/readout-item-key-wiring.md) を参照。
 
-### list/detail ペイン切り替えの Navigation 3 パターン
-
-`AutoReadoutContent.kt`（`feature:auto-readout-list`）・`OtherContent.kt`（`app:shared`）・`TelemetryLogContent.kt`（`feature:telemetry-log-list`）は、`Material3 Adaptive` の `ListDetailPaneScaffold` と並行して、Navigation 3 の `NavBackStack<NavKey>` を「現在どちらのペインを表示しているか」の状態として保持する共通パターンを使う。新しく list/detail 構成の画面を追加する場合は、これらの実装（`XxxNavigationState.kt` とその `XxxNavigationStateTest.kt`）を参照すること。パターンの詳細・`rememberSaveable` を使わない理由は [`docs/list-detail-navigation-pattern.md`](docs/list-detail-navigation-pattern.md) を参照。
-
 ### 実装前の類似コード確認
 
 新規実装・修正の前に、必ず同一モジュールまたは近い責務の既存コードを確認すること。確認項目・進め方の詳細は [`docs/pr-workflow-checklist.md`](docs/pr-workflow-checklist.md) の「実装前」を参照。

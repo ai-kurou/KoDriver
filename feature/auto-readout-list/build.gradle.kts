@@ -22,7 +22,6 @@ kotlin {
             implementation(libs.compose.material.icons.extended)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.reorderable)
-            implementation(libs.navigation3.ui)
         }
         jvmTest.dependencies {
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))

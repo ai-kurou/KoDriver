@@ -4,7 +4,7 @@
 
 ## 主要なファイルの役割
 
-- `TelemetryLogListPane.kt` / `TelemetryLogContent.kt`: 一覧画面のUI。`TelemetryLogContent.kt` は `AutoReadoutContent.kt`（`feature:auto-readout-list`）・`OtherContent.kt`（`app:shared`）と同様に `Material3 Adaptive` の `ListDetailPaneScaffold` と `TelemetryLogNavigationState`（Navigation 3の `NavBackStack`）を組み合わせるパターンを使う（詳細は `docs/list-detail-navigation-pattern.md` を参照）。
+- `TelemetryLogListPane.kt` / `TelemetryLogContent.kt`: 一覧画面のUI。`TelemetryLogContent.kt` は `Material3 Adaptive` の `ListDetailPaneScaffold` とナビゲーターで list/detail ペインを切り替え、選択状態は ViewModel の UiState から同期する。
 - `TelemetryLogListViewModel.kt`: ログ一覧・選択中ログ・削除確認ダイアログ表示状態などを `StateFlow` で公開する。
 - `TelemetryLogListFlow.kt`: ログ一覧と画面内状態を合成する冷たい `Flow<TelemetryLogListUiState>` を提供する。
 - `ObserveSortedTelemetryLogsUseCase.kt`: `:core:domain` の `ObserveTelemetryLogsUseCase` を作成日時の降順にソートして提供する、この feature 固有のUseCase。
