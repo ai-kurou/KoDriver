@@ -25,7 +25,7 @@ class AceWindowsDebugStateCardOrderFlowTest {
 
             assertEquals(
                 persisted + defaultDebugStateCardOrder.filter { it !in persisted },
-                flow.cardOrder.first(),
+                flow.order.first(),
             )
         }
 
@@ -39,7 +39,7 @@ class AceWindowsDebugStateCardOrderFlowTest {
                     resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
                 )
 
-            assertEquals(defaultDebugStateCardOrder, flow.cardOrder.first())
+            assertEquals(defaultDebugStateCardOrder, flow.order.first())
         }
 
     @Test
@@ -53,7 +53,7 @@ class AceWindowsDebugStateCardOrderFlowTest {
                     resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
                 )
             val orders = mutableListOf<List<AceWindowsDebugStateCardKey>>()
-            backgroundScope.launch { flow.cardOrder.collect { orders.add(it) } }
+            backgroundScope.launch { flow.order.collect { orders.add(it) } }
             testScheduler.runCurrent()
             assertEquals(defaultDebugStateCardOrder, orders.last())
 
@@ -75,7 +75,7 @@ class AceWindowsDebugStateCardOrderFlowTest {
                     resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
                 )
             val orders = mutableListOf<List<AceWindowsDebugStateCardKey>>()
-            backgroundScope.launch { flow.cardOrder.collect { orders.add(it) } }
+            backgroundScope.launch { flow.order.collect { orders.add(it) } }
             testScheduler.runCurrent()
 
             val localOrder = listOf(AceWindowsDebugStateCardKey.FLAG_INFO)

@@ -4,13 +4,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 
-/** 保存済み順序とドラッグ中のローカル順序を合成する。共有・初期値は ViewModel が管理する。 */
+/** ローカル順序を優先して保存済み順序を合成する cold Flow。共有と初期値は ViewModel が管理する。 */
 internal class AceWindowsDebugStateCardOrderFlow(
     persistedOrder: Flow<List<AceWindowsDebugStateCardKey>>,
     localOrder: Flow<List<AceWindowsDebugStateCardKey>?>,
     resolveCardOrder: ResolveDebugStateCardOrderUseCase,
 ) {
-    val cardOrder: Flow<List<AceWindowsDebugStateCardKey>> =
+    val order: Flow<List<AceWindowsDebugStateCardKey>> =
         combine(persistedOrder, localOrder) { persisted, local ->
             local ?: resolveCardOrder(persistedOrder = persisted, defaultOrder = defaultDebugStateCardOrder)
         }

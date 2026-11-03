@@ -43,7 +43,7 @@ internal class AceWindowsDebugStateDetailViewModel(
             persistedOrder = cardOrderUseCases.observeKeys(),
             localOrder = _localCardOrder,
             resolveCardOrder = cardOrderUseCases.resolveCardOrder,
-        ).cardOrder.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
+        ).order.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
 
     private val detailFlow =
         AceWindowsDebugStateDetailFlow(
