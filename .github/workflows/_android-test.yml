@@ -33,7 +33,7 @@ jobs:
         with:
           api-level: ${{ inputs.api-level }}
           arch: x86_64
-          script: ./gradlew connectedDebugAndroidTest
+          script: ./gradlew connectedDebugAndroidTest || { mkdir -p app/androidApp/build/reports/androidTests/connected && adb logcat -d -t 5000 > app/androidApp/build/reports/androidTests/connected/logcat.txt; exit 1; }
 
       - name: Upload test report
         if: failure()

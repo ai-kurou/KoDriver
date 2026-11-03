@@ -3,6 +3,7 @@ package kurou.kodriver
 import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertHasClickAction
@@ -505,12 +506,37 @@ class MainActivityTest {
         val itemBounds = describeItemBounds(itemText)
         clickReadoutItem(itemText)
         try {
-            waitUntilDisplayed(descriptionText)
+            if (!isDisplayedWithin(descriptionText)) {
+                val timeline =
+                    (1..3).joinToString("\n") { step ->
+                        Thread.sleep(500L)
+                        "+${step * 500}ms: ${describeVisibleTexts()}"
+                    }
+                throw AssertionError("タップ後の画面遷移:\n$timeline")
+            }
         } catch (e: AssertionError) {
             throw AssertionError("タップ直前の項目位置: $itemBounds\n${e.message}", e)
         }
         navigateBack()
     }
+
+    private fun isDisplayedWithin(text: String): Boolean =
+        try {
+            composeTestRule.waitUntil(timeoutMillis = 2_000L) {
+                composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
+            }
+            true
+        } catch (_: ComposeTimeoutException) {
+            false
+        }
+
+    private fun describeVisibleTexts(): String =
+        composeTestRule
+            .onAllNodes(hasText("", substring = true))
+            .fetchSemanticsNodes()
+            .filter { SemanticsProperties.Text in it.config }
+            .flatMap { it.config[SemanticsProperties.Text] }
+            .joinToString(" | ") { it.text.take(20) }
 
     private fun describeItemBounds(itemText: String): String {
         val nodes = composeTestRule.onAllNodes(hasContentDescription(itemText)).fetchSemanticsNodes()
