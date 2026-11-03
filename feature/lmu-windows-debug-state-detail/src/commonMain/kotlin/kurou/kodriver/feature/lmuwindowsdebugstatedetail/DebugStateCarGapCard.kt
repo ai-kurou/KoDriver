@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res

@@ -14,6 +14,7 @@ import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.DebugStateStatusChip
 import kurou.kodriver.core.designsystem.ExtendedColorScheme
 import kurou.kodriver.core.designsystem.HeatLevel
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors

@@ -8,13 +8,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import kurou.kodriver.core.designsystem.HeatLevel
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.heatColor
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.core.designsystem.DebugStateHeatTile as CommonDebugStateHeatTile
-import kurou.kodriver.core.designsystem.DebugStateStatusChip as CommonDebugStateStatusChip
 
 @Composable
 internal fun DebugStateHeatTile(
@@ -44,12 +42,4 @@ internal fun DebugStateWearMeter(
             )
         }
     }
-}
-
-@Composable
-internal fun DebugStateStatusChip(
-    text: String,
-    accent: Color = MaterialTheme.colorScheme.tertiary,
-) {
-    CommonDebugStateStatusChip(text = text, accent = accent)
 }

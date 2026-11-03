@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.DebugStateWheelTemperatureTile
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
