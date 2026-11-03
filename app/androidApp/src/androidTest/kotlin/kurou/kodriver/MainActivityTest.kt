@@ -234,7 +234,10 @@ class MainActivityTest {
         clickScrollableItem("テレメトリ受信中は画面をスリープさせない")
         clickScrollableItem("テーマ")
         clickItem("キャンセル")
-        clickScrollableItem("ダイナミックカラー")
+        // ダイナミックカラーは Android 12（API 31）以上でのみ一覧に表示される。
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            clickScrollableItem("ダイナミックカラー")
+        }
         clickScrollableItem("ハプティックフィードバック")
         clickScrollableItem("自動タブの設定を初期化")
         clickItem("キャンセル")
@@ -516,7 +519,11 @@ class MainActivityTest {
     }
 
     private fun clickReadoutItem(text: String) {
-        composeTestRule.onNode(hasContentDescription(text)).performClick()
+        // スクロール直後の項目は一覧上部の「先頭へ戻る」ボタンの下に重なることがあり、
+        // 座標でタップするとボタンに奪われるため、セマンティクスの OnClick で実行する。
+        composeTestRule
+            .onNode(hasContentDescription(text))
+            .performSemanticsAction(SemanticsActions.OnClick)
         composeTestRule.waitForIdle()
     }
 
