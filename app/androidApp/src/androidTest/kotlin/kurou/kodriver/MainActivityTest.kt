@@ -507,6 +507,14 @@ class MainActivityTest {
         clickReadoutItem(itemText)
         try {
             if (!isDisplayedWithin(descriptionText)) {
+                // タッチ注入が効かないだけかを切り分けるため、セマンティクスの OnClick を直接呼ぶ。
+                composeTestRule
+                    .onNode(hasContentDescription(itemText))
+                    .performSemanticsAction(SemanticsActions.OnClick)
+                composeTestRule.waitForIdle()
+                if (isDisplayedWithin(descriptionText)) {
+                    throw AssertionError("セマンティクスの OnClick では遷移できた（タッチ注入のみ不発）")
+                }
                 val timeline =
                     (1..3).joinToString("\n") { step ->
                         Thread.sleep(500L)
