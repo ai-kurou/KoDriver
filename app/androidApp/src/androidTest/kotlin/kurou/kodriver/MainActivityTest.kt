@@ -234,7 +234,10 @@ class MainActivityTest {
         clickScrollableItem("テレメトリ受信中は画面をスリープさせない")
         clickScrollableItem("テーマ")
         clickItem("キャンセル")
-        clickScrollableItem("ダイナミックカラー")
+        // ダイナミックカラーは Android 12（API 31）以上でのみ一覧に表示される。
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            clickScrollableItem("ダイナミックカラー")
+        }
         clickScrollableItem("ハプティックフィードバック")
         clickScrollableItem("自動タブの設定を初期化")
         clickItem("キャンセル")
