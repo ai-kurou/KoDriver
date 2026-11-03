@@ -66,6 +66,7 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_6
+          disk-size: 6144M
           script: |
             .github/scripts/run-maestro-with-artifacts.sh "apk/KoDriver-android-${{ needs.build.outputs.version }}.apk"
 
