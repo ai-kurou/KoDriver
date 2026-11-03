@@ -28,6 +28,7 @@ import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
+import kurou.kodriver.domain.util.APP_VERSION
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -53,7 +54,7 @@ val otherListModule =
                 get(),
                 get(),
                 OtherListAppVersionInfo(
-                    currentVersion = currentAppVersion(),
+                    currentVersion = APP_VERSION,
                     appVersionLabel = currentAppVersionLabel(),
                 ),
                 get(),
@@ -87,7 +88,7 @@ val otherListModule =
         factory { OtherListTtsAvailabilityFlow(get()) }
         factory { OtherListDeviceVolumeFlow(get()) }
         // CheckAppUpdateAvailableUseCase は既存の mainModule の登録を使用する。
-        factory { OtherListAppUpdateFlow(get(), currentAppVersion()) }
+        factory { OtherListAppUpdateFlow(get(), APP_VERSION) }
         factory { ResetTelemetryLogDatabaseUseCase(get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:windows-startup-data の Repository を解決）

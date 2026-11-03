@@ -19,6 +19,7 @@ import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
+import kurou.kodriver.domain.util.APP_VERSION
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -35,7 +36,7 @@ import org.koin.dsl.module
 val mainModule =
     module {
         // ViewModel
-        viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get()) }
+        viewModel { AppScreenViewModel(get(), APP_VERSION, get(), get()) }
         viewModelOf(::ConnectionBannerViewModel)
         viewModelOf(::LowVolumeWarningViewModel)
 
