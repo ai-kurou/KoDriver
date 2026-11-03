@@ -500,31 +500,11 @@ class MainActivityTest {
         itemText: String,
         descriptionText: String,
     ) {
-        // 低速な API 28 エミュレータでは、スクロール直後のタップが遷移に結びつかないことがあるため、
-        // 説明が表示されるまで再スクロール・再タップを最大 3 回まで繰り返す。
-        repeat(CLICK_RETRY_COUNT - 1) {
-            scrollToItem(itemText)
-            clickReadoutItem(itemText)
-            if (isDisplayedWithin(descriptionText)) {
-                navigateBack()
-                return
-            }
-        }
         scrollToItem(itemText)
         clickReadoutItem(itemText)
         waitUntilDisplayed(descriptionText)
         navigateBack()
     }
-
-    private fun isDisplayedWithin(text: String): Boolean =
-        try {
-            composeTestRule.waitUntil(timeoutMillis = 5_000L) {
-                composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
-            }
-            true
-        } catch (_: ComposeTimeoutException) {
-            false
-        }
 
     private fun clickScrollableItem(text: String) {
         scrollToItem(text)
@@ -596,7 +576,6 @@ class MainActivityTest {
 
     private companion object {
         const val SYSTEM_SETTINGS_TIMEOUT_MILLIS = 8_000L
-        const val CLICK_RETRY_COUNT = 3
         const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。"
         var isFakeTelemetryLogListModuleLoaded = false
