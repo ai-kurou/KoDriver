@@ -40,6 +40,7 @@ jobs:
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
+        continue-on-error: true # スナップショット生成は高速化のためだけのため、失敗してもテスト本体（AVDは未作成なら自動作成）に進む
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: ${{ inputs.api-level }}
@@ -58,7 +59,7 @@ jobs:
           arch: x86_64
           profile: pixel_9
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
           script: ./gradlew connectedDebugAndroidTest
 
       - name: Upload first-attempt test report
@@ -78,7 +79,7 @@ jobs:
           arch: x86_64
           profile: pixel_9
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
           script: ./gradlew connectedDebugAndroidTest
 
       - name: Upload test report
