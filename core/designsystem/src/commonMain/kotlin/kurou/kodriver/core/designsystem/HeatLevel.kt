@@ -25,3 +25,23 @@ internal fun heatColor(
         HeatLevel.WARM -> colors.heatWarm
         HeatLevel.HOT -> colors.heatHot
     }
+
+private const val COOL_TEMPERATURE_CELSIUS_DEFAULT = 70.0
+private const val HOT_TEMPERATURE_CELSIUS_DEFAULT = 110.0
+
+/**
+ * 温度を熱レベルに分類する。[coolThreshold] 未満は COOL、[warmThreshold] 未満は OK、[hotThreshold] 未満は WARM、それ以上は HOT。
+ * [warmThreshold] はシミュレーター固有の警告閾値のため、呼び出し側が渡す。
+ */
+fun temperatureHeatLevel(
+    celsius: Double,
+    warmThreshold: Double,
+    coolThreshold: Double = COOL_TEMPERATURE_CELSIUS_DEFAULT,
+    hotThreshold: Double = HOT_TEMPERATURE_CELSIUS_DEFAULT,
+): HeatLevel =
+    when {
+        celsius < coolThreshold -> HeatLevel.COOL
+        celsius < warmThreshold -> HeatLevel.OK
+        celsius < hotThreshold -> HeatLevel.WARM
+        else -> HeatLevel.HOT
+    }
