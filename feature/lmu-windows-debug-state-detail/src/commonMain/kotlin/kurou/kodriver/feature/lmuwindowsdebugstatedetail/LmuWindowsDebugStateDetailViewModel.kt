@@ -15,6 +15,7 @@ import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kotlin.time.Clock
 
@@ -22,7 +23,7 @@ private const val SIDE_BY_SIDE_TICK_INTERVAL_MS = 100L
 
 internal class LmuWindowsDebugStateDetailViewModel(
     lmuWindowsUseCases: LmuWindowsDebugStateUseCases,
-    cardOrderUseCases: DebugStateCardOrderUseCases,
+    cardOrderUseCases: DebugStateCardOrderUseCases<LmuWindowsDebugStateCardKey>,
     private val requestDebugReadout: RequestDebugReadoutUseCase,
     private val hotkeyUseCases: ReadoutHotkeyUseCases,
     private val hotkeyCheckTimeoutMs: Long = 10_000L,

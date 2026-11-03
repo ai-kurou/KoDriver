@@ -35,6 +35,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproach
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import org.junit.After
 import org.junit.Before
@@ -107,7 +108,9 @@ class AceWindowsDebugStateDetailModuleTest {
             }.koin
         try {
             assertNotNull(koin.get<RequestDebugReadoutUseCase>())
-            assertNotNull(koin.get<DebugStateCardOrderUseCases>())
+            assertNotNull(
+                koin.get<DebugStateCardOrderUseCases<AceWindowsDebugStateCardKey>>(named(Simulator.AceWindows.id)),
+            )
             assertNotNull(koin.get<AceWindowsDebugStateUseCases>())
             assertNotNull(koin.get<ObserveAceWindowsFuelUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsGapUseCase>())
@@ -149,7 +152,10 @@ class AceWindowsDebugStateDetailModuleTest {
                     )
                 }.koin
             try {
-                koin.get<DebugStateCardOrderUseCases>().saveCardOrder(order)
+                koin
+                    .get<DebugStateCardOrderUseCases<AceWindowsDebugStateCardKey>>(
+                        named(Simulator.AceWindows.id),
+                    ).saveCardOrder(order)
             } finally {
                 koin.close()
             }

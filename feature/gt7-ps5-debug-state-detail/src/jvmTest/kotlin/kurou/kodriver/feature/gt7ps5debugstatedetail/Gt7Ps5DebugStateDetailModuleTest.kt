@@ -17,6 +17,7 @@ import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5VehicleClassUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import org.junit.After
 import org.junit.Before
@@ -63,7 +64,7 @@ class Gt7Ps5DebugStateDetailModuleTest {
             }.koin
         try {
             assertNotNull(koin.get<RequestDebugReadoutUseCase>())
-            assertNotNull(koin.get<DebugStateCardOrderUseCases>())
+            assertNotNull(koin.get<DebugStateCardOrderUseCases<Gt7Ps5DebugStateCardKey>>(named(Simulator.Gt7Ps5.id)))
             assertNotNull(koin.get<Gt7Ps5DebugStateUseCases>())
             assertNotNull(koin.get<ObserveGt7Ps5UseCase>())
             assertNotNull(koin.get<ObserveGt7Ps5VehicleClassUseCase>())

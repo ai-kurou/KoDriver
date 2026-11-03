@@ -84,6 +84,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
@@ -177,6 +178,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             ),
         cardOrderUseCases =
             DebugStateCardOrderUseCases(
+                keys = LmuWindowsDebugStateCardKey.entries,
                 observeCardOrder = ObserveDebugStateCardOrderUseCase(cardOrderRepository),
                 resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
                 saveCardOrder = SaveDebugStateCardOrderUseCase(cardOrderRepository),
