@@ -1,5 +1,7 @@
 package kurou.kodriver
 
+import android.accessibilityservice.AccessibilityService
+import android.os.Build
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertHasClickAction
@@ -15,6 +17,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -209,9 +212,13 @@ class MainActivityTest {
     fun `その他タブの項目を順にタップする`() {
         launchActivity()
         clickItem("その他")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            clickItemAndReturnFromSystemSettings("ローカルネットワークへのアクセス許可")
+        }
         clickItemAndNavigateBack("Windows版KoDriverへ接続するIPアドレス")
         clickItemAndNavigateBack("ゲーム機・SimHubへ接続するIPアドレス")
         clickItemAndNavigateBack("音量")
+        clickItemAndNavigateBack("読み上げ音声")
         clickScrollableItem("読み上げ速度")
         waitUntilDisplayed("読み上げの速さを設定します。")
         navigateBack()
@@ -228,6 +235,12 @@ class MainActivityTest {
         clickItem("キャンセル")
         clickScrollableItem("ダイナミックカラー")
         clickScrollableItem("ハプティックフィードバック")
+        clickScrollableItem("自動タブの設定を初期化")
+        clickItem("キャンセル")
+        clickScrollableItem("手動タブの設定を初期化")
+        clickItem("キャンセル")
+        clickScrollableItem("ログを全て削除")
+        clickItem("キャンセル")
         clickItemAndNavigateBack("フィードバックを送信")
         clickItemAndNavigateBack("ライセンス")
     }
@@ -441,6 +454,16 @@ class MainActivityTest {
         scrollToItem(text)
         clickItem(text)
         navigateBack()
+    }
+
+    private fun clickItemAndReturnFromSystemSettings(text: String) {
+        scrollToItem(text)
+        clickItem(text)
+        InstrumentationRegistry
+            .getInstrumentation()
+            .uiAutomation
+            .performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+        waitUntilDisplayed(text)
     }
 
     private fun clickItemAndVerifyDescription(
