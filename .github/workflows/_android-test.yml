@@ -33,6 +33,7 @@ jobs:
         with:
           api-level: ${{ inputs.api-level }}
           arch: x86_64
+          profile: pixel_9
           script: ./gradlew connectedDebugAndroidTest
 
       - name: Upload test report
