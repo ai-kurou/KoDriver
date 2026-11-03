@@ -574,6 +574,9 @@ kover {
                 excludeCommonCoverageTargets()
                 classes("kurou.kodriver.core.windowshotkeydata.JnaHotkeyNativeApi")
                 classes("kurou.kodriver.core.windowsstartupdata.windows.JnaStartupRegistryApi")
+                // デスクトップのエントリーポイント。ウィンドウ・Sentry・サーバー起動は実機依存で単体テストできない。
+                // 同じ Koin 構成は AppTest / DesktopKoinModuleGraphTest が検証する
+                classes("kurou.kodriver.MainKt", "kurou.kodriver.MainKt\$*")
             }
         }
     }
