@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
@@ -53,6 +54,7 @@ class Gt7Ps5DebugStateDetailViewModelTest {
         Gt7Ps5DebugStateDetailViewModel(
             Gt7Ps5DebugStateUseCases(observeTelemetry, observeVehicleClass),
             DebugStateCardOrderUseCases(
+                Gt7Ps5DebugStateCardKey.entries,
                 ObserveDebugStateCardOrderUseCase(cardOrderRepository),
                 ResolveDebugStateCardOrderUseCase(),
                 SaveDebugStateCardOrderUseCase(cardOrderRepository),

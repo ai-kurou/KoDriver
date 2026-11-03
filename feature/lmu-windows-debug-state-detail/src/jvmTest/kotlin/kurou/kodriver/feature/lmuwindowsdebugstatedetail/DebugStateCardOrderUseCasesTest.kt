@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
@@ -20,6 +21,7 @@ class DebugStateCardOrderUseCasesTest {
     private val repository: DebugStateCardOrderPreferencesRepository = mockk()
     private val useCases =
         DebugStateCardOrderUseCases(
+            LmuWindowsDebugStateCardKey.entries,
             ObserveDebugStateCardOrderUseCase(repository),
             ResolveDebugStateCardOrderUseCase(),
             SaveDebugStateCardOrderUseCase(repository),

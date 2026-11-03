@@ -12,11 +12,12 @@ import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.GT7_PS5_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 
 internal class Gt7Ps5DebugStateDetailViewModel(
     gt7Ps5UseCases: Gt7Ps5DebugStateUseCases,
-    cardOrderUseCases: DebugStateCardOrderUseCases,
+    cardOrderUseCases: DebugStateCardOrderUseCases<Gt7Ps5DebugStateCardKey>,
     private val requestDebugReadout: RequestDebugReadoutUseCase,
 ) : ViewModel() {
     private val _selectedReadoutItemKey =

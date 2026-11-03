@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
@@ -13,10 +14,11 @@ import org.koin.dsl.module
 val aceWindowsDebugStateDetailModule =
     module {
         factory { RequestDebugReadoutUseCase(get()) }
-        viewModel { AceWindowsDebugStateDetailViewModel(get(), get(), get()) }
+        viewModel { AceWindowsDebugStateDetailViewModel(get(), get(named(Simulator.AceWindows.id)), get()) }
 
-        factory {
+        factory(named(Simulator.AceWindows.id)) {
             DebugStateCardOrderUseCases(
+                AceWindowsDebugStateCardKey.entries,
                 ObserveDebugStateCardOrderUseCase(get(named(Simulator.AceWindows.id))),
                 ResolveDebugStateCardOrderUseCase(),
                 SaveDebugStateCardOrderUseCase(get(named(Simulator.AceWindows.id))),

@@ -2,11 +2,9 @@ package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -14,27 +12,12 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
-import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
-
-internal data class DebugStateCardOrderUseCases(
-    val observeCardOrder: ObserveDebugStateCardOrderUseCase,
-    val resolveCardOrder: ResolveDebugStateCardOrderUseCase,
-    val saveCardOrder: SaveDebugStateCardOrderUseCase,
-) {
-    fun observeKeys(): Flow<List<AceWindowsDebugStateCardKey>> =
-        observeCardOrder().map { order ->
-            order.mapNotNull { name -> AceWindowsDebugStateCardKey.entries.find { it.name == name } }
-        }
-
-    suspend fun saveKeys(order: List<AceWindowsDebugStateCardKey>) = saveCardOrder(order.map { it.name })
-}
 
 internal class AceWindowsDebugStateDetailViewModel(
     aceWindowsUseCases: AceWindowsDebugStateUseCases,
-    cardOrderUseCases: DebugStateCardOrderUseCases,
+    cardOrderUseCases: DebugStateCardOrderUseCases<AceWindowsDebugStateCardKey>,
     private val requestDebugReadout: RequestDebugReadoutUseCase,
 ) : ViewModel() {
     private val _selectedReadoutItemKey =

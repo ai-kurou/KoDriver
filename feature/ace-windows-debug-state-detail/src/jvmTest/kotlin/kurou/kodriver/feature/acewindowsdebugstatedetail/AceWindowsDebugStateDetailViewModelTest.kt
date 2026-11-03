@@ -53,6 +53,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
@@ -128,6 +129,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 ),
             cardOrderUseCases =
                 DebugStateCardOrderUseCases(
+                    keys = AceWindowsDebugStateCardKey.entries,
                     observeCardOrder = ObserveDebugStateCardOrderUseCase(cardOrderRepository),
                     resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
                     saveCardOrder = SaveDebugStateCardOrderUseCase(cardOrderRepository),

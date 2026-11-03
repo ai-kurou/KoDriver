@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.gt7ps5debugstatedetail
 
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
@@ -13,10 +14,11 @@ import org.koin.dsl.module
 val gt7Ps5DebugStateDetailModule =
     module {
         factory { RequestDebugReadoutUseCase(get()) }
-        viewModel { Gt7Ps5DebugStateDetailViewModel(get(), get(), get()) }
+        viewModel { Gt7Ps5DebugStateDetailViewModel(get(), get(named(Simulator.Gt7Ps5.id)), get()) }
 
-        factory {
+        factory(named(Simulator.Gt7Ps5.id)) {
             DebugStateCardOrderUseCases(
+                Gt7Ps5DebugStateCardKey.entries,
                 ObserveDebugStateCardOrderUseCase(get(named(Simulator.Gt7Ps5.id))),
                 ResolveDebugStateCardOrderUseCase(),
                 SaveDebugStateCardOrderUseCase(get(named(Simulator.Gt7Ps5.id))),

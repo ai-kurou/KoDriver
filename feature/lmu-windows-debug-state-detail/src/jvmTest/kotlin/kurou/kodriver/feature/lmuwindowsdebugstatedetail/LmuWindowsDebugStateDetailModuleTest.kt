@@ -45,6 +45,7 @@ import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
+import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import org.junit.After
 import org.junit.Before
@@ -133,7 +134,9 @@ class LmuWindowsDebugStateDetailModuleTest {
         try {
             assertNotNull(koin.get<LmuWindowsDebugStateUseCases>())
             assertNotNull(koin.get<RequestDebugReadoutUseCase>())
-            assertNotNull(koin.get<DebugStateCardOrderUseCases>())
+            assertNotNull(
+                koin.get<DebugStateCardOrderUseCases<LmuWindowsDebugStateCardKey>>(named(Simulator.LmuWindows.id)),
+            )
             assertNotNull(koin.get<ReadoutHotkeyUseCases>())
             assertNotNull(koin.get<ObserveLmuWindowsRaceFlagsUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsVirtualEnergyUseCase>())
@@ -179,7 +182,10 @@ class LmuWindowsDebugStateDetailModuleTest {
                     )
                 }.koin
             try {
-                koin.get<DebugStateCardOrderUseCases>().saveCardOrder(order)
+                koin
+                    .get<DebugStateCardOrderUseCases<LmuWindowsDebugStateCardKey>>(
+                        named(Simulator.LmuWindows.id),
+                    ).saveCardOrder(order)
             } finally {
                 koin.close()
             }
