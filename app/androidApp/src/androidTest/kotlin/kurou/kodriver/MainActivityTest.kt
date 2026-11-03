@@ -29,6 +29,7 @@ import kurou.kodriver.feature.otherlist.fakeTextToSpeechRepository
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -457,12 +458,24 @@ class MainActivityTest {
     }
 
     private fun clickItemAndReturnFromSystemSettings(text: String) {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val appPackage = instrumentation.targetContext.packageName
+
+        fun foregroundPackage(): String? =
+            instrumentation.uiAutomation
+                .rootInActiveWindow
+                ?.packageName
+                ?.toString()
+
         scrollToItem(text)
         clickItem(text)
-        InstrumentationRegistry
-            .getInstrumentation()
-            .uiAutomation
-            .performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+        composeTestRule.waitUntil(timeoutMillis = SYSTEM_SETTINGS_TIMEOUT_MILLIS) {
+            foregroundPackage().let { it != null && it != appPackage }
+        }
+        assertTrue(instrumentation.uiAutomation.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK))
+        composeTestRule.waitUntil(timeoutMillis = SYSTEM_SETTINGS_TIMEOUT_MILLIS) {
+            foregroundPackage() == appPackage
+        }
         waitUntilDisplayed(text)
     }
 
@@ -545,6 +558,7 @@ class MainActivityTest {
     }
 
     private companion object {
+        const val SYSTEM_SETTINGS_TIMEOUT_MILLIS = 8_000L
         const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。"
         var isFakeTelemetryLogListModuleLoaded = false
