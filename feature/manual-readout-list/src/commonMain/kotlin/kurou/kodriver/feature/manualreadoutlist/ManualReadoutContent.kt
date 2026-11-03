@@ -109,17 +109,6 @@ internal fun ManualReadoutContentScaffold(
     ScrollToTopEffect(scrollToTopRequest) {
         if (uiState.playButtonLayoutEnabled) gridState.animateScrollToItem(0) else listState.animateScrollToItem(0)
     }
-    val navigationState =
-        rememberManualReadoutNavigationState(
-            initial =
-                if (uiState.selectedSetId !=
-                    null
-                ) {
-                    ManualReadoutPaneDestination.Detail
-                } else {
-                    ManualReadoutPaneDestination.List
-                },
-        )
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Nothing>(
             scaffoldDirective =
@@ -157,19 +146,9 @@ internal fun ManualReadoutContentScaffold(
     val navigateBack = {
         predictiveBackProgress = 0f
         scope.launch { navigator.navigateBack() }
-        navigationState.navigateTo(ManualReadoutPaneDestination.List)
         onClearSelectedSet()
     }
 
-    SideEffect(uiState.selectedSetId) {
-        navigationState.navigateTo(
-            if (uiState.selectedSetId != null) {
-                ManualReadoutPaneDestination.Detail
-            } else {
-                ManualReadoutPaneDestination.List
-            },
-        )
-    }
     LaunchedEffect(uiState.selectedSetId) {
         navigator.navigateTo(
             if (uiState.selectedSetId != null) ListDetailPaneScaffoldRole.Detail else ListDetailPaneScaffoldRole.List,
