@@ -3,6 +3,7 @@ package kurou.kodriver.data
 import kurou.kodriver.data.debugreadout.InMemoryDebugReadoutRequestRepository
 import kurou.kodriver.data.device.JvmAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.JvmHapticFeedbackAvailabilityRepository
+import kurou.kodriver.data.device.JvmRecordAudioPermissionRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
@@ -32,6 +33,7 @@ import kurou.kodriver.data.preferences.createVoicePitchPreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePreferencesRepository
 import kurou.kodriver.data.preferences.createVoiceSpeedPreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
+import kurou.kodriver.data.speech.JvmSpeechRecognitionRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
@@ -62,8 +64,10 @@ import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
+import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
@@ -179,6 +183,9 @@ fun desktopDataModule(directory: String): Module =
         single<HapticFeedbackAvailabilityRepository> { JvmHapticFeedbackAvailabilityRepository() }
         // ACCESS_LOCAL_NETWORK 権限（プラットフォーム固有実装。Desktop はこの権限自体が存在しないため常に許可済み扱い）
         single<AccessLocalNetworkPermissionRepository> { JvmAccessLocalNetworkPermissionRepository() }
+        // デスクトップ版は音声認識を提供しない（権限は常に許可済み、認識は常に利用不可）
+        single<RecordAudioPermissionRepository> { JvmRecordAudioPermissionRepository() }
+        single<SpeechRecognitionRepository> { JvmSpeechRecognitionRepository() }
         // テレメトリログ（Room データベース）
         single<TelemetryLogRepository> {
             createTelemetryLogRepository(directory = directory)

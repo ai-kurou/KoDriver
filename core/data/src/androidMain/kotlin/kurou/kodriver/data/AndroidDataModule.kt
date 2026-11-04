@@ -1,11 +1,13 @@
 package kurou.kodriver.data
 
 import android.content.Context
+import android.speech.SpeechRecognizer
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
 import kurou.kodriver.data.debugreadout.InMemoryDebugReadoutRequestRepository
 import kurou.kodriver.data.device.AndroidAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
+import kurou.kodriver.data.device.AndroidRecordAudioPermissionRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.hotkey.UnsupportedHotkeyRepository
 import kurou.kodriver.data.hotkey.UnsupportedManualReadoutHotkeyRepository
@@ -39,6 +41,8 @@ import kurou.kodriver.data.preferences.createVoicePreferencesRepository
 import kurou.kodriver.data.preferences.createVoiceSpeedPreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.release.HttpServerVersionRepository
+import kurou.kodriver.data.speech.AndroidSpeechRecognitionRepository
+import kurou.kodriver.data.speech.PlatformSpeechRecognitionEngine
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.data.websocket.createWebSocketHttpClient
 import kurou.kodriver.domain.model.Simulator
@@ -72,10 +76,12 @@ import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
+import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
@@ -219,6 +225,16 @@ private fun androidDataModuleAppSettings(context: Context) =
         // ACCESS_LOCAL_NETWORK 権限（Android 17+で必要。未満は常に許可済み扱い）が許可されているか（設定画面でのバッジ表示に使用）
         single<AccessLocalNetworkPermissionRepository> {
             AndroidAccessLocalNetworkPermissionRepository(context)
+        }
+        // マイク（RECORD_AUDIO）の権限が許可されているか（音声による手動読み上げの開始可否に使用）
+        single<RecordAudioPermissionRepository> { AndroidRecordAudioPermissionRepository(context) }
+        // マイクからの常時聞き取り（端末内の音声認識を優先して使う）
+        single<SpeechRecognitionRepository> {
+            AndroidSpeechRecognitionRepository(
+                engineFactory = { PlatformSpeechRecognitionEngine(context) },
+                recognitionAvailabilityChecker = { SpeechRecognizer.isRecognitionAvailable(context) },
+                permissionRepository = get(),
+            )
         }
         // オーバーレイの文字サイズ設定
         single<OverlayTextSizePreferencesRepository> {
