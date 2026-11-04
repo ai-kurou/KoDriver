@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" android:minSdkVersion="37" />
 
     <application
@@ -26,5 +27,12 @@
             </intent-filter>
         </activity>
     </application>
+
+    <!-- Android 11以降、音声認識サービスの有無（SpeechRecognizer.isRecognitionAvailable）を判定するために必要 -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
 
 </manifest>
