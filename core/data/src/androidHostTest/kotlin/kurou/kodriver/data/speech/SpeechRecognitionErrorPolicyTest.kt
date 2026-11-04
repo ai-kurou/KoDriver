@@ -33,8 +33,8 @@ class SpeechRecognitionErrorPolicyTest {
     }
 
     @Test
-    fun `その他のエラーは長めの待ち時間で再開する`() {
-        val expected = SpeechRecognitionErrorAction.Restart(SPEECH_RECOGNITION_RETRY_DELAY_MS)
+    fun `その他のエラーは一時的な失敗として扱う`() {
+        val expected = SpeechRecognitionErrorAction.Retry
 
         listOf(
             SpeechRecognizer.ERROR_NETWORK_TIMEOUT,
@@ -47,5 +47,21 @@ class SpeechRecognitionErrorPolicyTest {
             SpeechRecognizer.ERROR_TOO_MANY_REQUESTS,
             SpeechRecognizer.ERROR_CANNOT_CHECK_SUPPORT,
         ).forEach { assertEquals(expected, speechRecognitionErrorAction(it), "errorCode=$it") }
+    }
+
+    @Test
+    fun `再開待ち時間は連続失敗のたびに倍にして上限で止める`() {
+        assertEquals(1_000L, speechRecognitionRetryDelayMs(1))
+        assertEquals(2_000L, speechRecognitionRetryDelayMs(2))
+        assertEquals(4_000L, speechRecognitionRetryDelayMs(3))
+        assertEquals(16_000L, speechRecognitionRetryDelayMs(5))
+        assertEquals(SPEECH_RECOGNITION_RETRY_DELAY_MAX_MS, speechRecognitionRetryDelayMs(6))
+        assertEquals(SPEECH_RECOGNITION_RETRY_DELAY_MAX_MS, speechRecognitionRetryDelayMs(1_000))
+    }
+
+    @Test
+    fun `連続失敗が0回以下でも1回目の待ち時間にする`() {
+        assertEquals(SPEECH_RECOGNITION_RETRY_DELAY_MS, speechRecognitionRetryDelayMs(0))
+        assertEquals(SPEECH_RECOGNITION_RETRY_DELAY_MS, speechRecognitionRetryDelayMs(-1))
     }
 }
