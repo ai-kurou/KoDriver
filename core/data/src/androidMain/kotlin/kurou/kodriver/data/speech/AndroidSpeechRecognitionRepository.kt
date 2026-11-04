@@ -29,7 +29,10 @@ internal const val SPEECH_RECOGNITION_CALLBACK_TIMEOUT_MS = 30_000L
  * [SpeechRecognitionEngine] を使い、聞き取りセッションを繰り返して常時聞き取りを実現する [SpeechRecognitionRepository]。
  *
  * セッションは結果通知かエラーで終わるため、終わるたびに再開する。再開待ち時間とエラーごとの扱いは
- * [speechRecognitionErrorAction] に従う。権限がない・音声認識を利用できない場合は
+ * [speechRecognitionErrorAction] に従う。通信・音声入力などの一時的な失敗は、連続するほど再開の待ち時間を
+ * 延ばし（[speechRecognitionRetryDelayMs]）、[SPEECH_RECOGNITION_RETRY_LIMIT] 回続いたら諦めて
+ * [SpeechRecognitionEvent.Failed] を流して完了する。認識結果が得られた、または無音・認識不能で終わった
+ * ときは認識が動いているとみなして連続失敗を数え直す。権限がない・音声認識を利用できない場合は
  * [SpeechRecognitionEvent.Failed] を流して完了する。端末内認識が言語エラーになった場合（日本語モデルが
  * 未導入など）は、通常の認識サービスに切り替えて再開し、それも失敗したときに利用不可として完了する。
  * 一定時間コールバックが来ないセッションは打ち切って再開する。
@@ -55,10 +58,21 @@ internal class AndroidSpeechRecognitionRepository(
                 return@flow
             }
             var preferOnDevice = true
+            var consecutiveFailures = 0
             while (true) {
                 when (val end = listenOnce(preferOnDevice)) {
                     is SessionEnd.Restart -> {
+                        consecutiveFailures = 0
                         delay(end.delayMs)
+                    }
+
+                    SessionEnd.Retry -> {
+                        consecutiveFailures++
+                        if (consecutiveFailures >= SPEECH_RECOGNITION_RETRY_LIMIT) {
+                            emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
+                            return@flow
+                        }
+                        delay(speechRecognitionRetryDelayMs(consecutiveFailures))
                     }
 
                     SessionEnd.FallbackToStandard -> {
@@ -96,7 +110,7 @@ internal class AndroidSpeechRecognitionRepository(
             while (true) {
                 val signal =
                     withTimeoutOrNull(SPEECH_RECOGNITION_CALLBACK_TIMEOUT_MS) { signals.receive() }
-                        ?: return SessionEnd.Restart(SPEECH_RECOGNITION_RETRY_DELAY_MS)
+                        ?: return SessionEnd.Retry
                 when (signal) {
                     Signal.Ready -> {
                         emit(SpeechRecognitionEvent.Listening)
@@ -137,6 +151,10 @@ internal class AndroidSpeechRecognitionRepository(
                 SessionEnd.Restart(action.delayMs)
             }
 
+            SpeechRecognitionErrorAction.Retry -> {
+                SessionEnd.Retry
+            }
+
             is SpeechRecognitionErrorAction.Stop -> {
                 if (isOnDevice && action.reason == SpeechRecognitionFailureReason.Unavailable) {
                     SessionEnd.FallbackToStandard
@@ -165,9 +183,13 @@ internal class AndroidSpeechRecognitionRepository(
         /** 端末内認識を諦め、通常の認識サービスで直ちに再開する。 */
         data object FallbackToStandard : SessionEnd
 
+        /** 認識は動いている。[delayMs] 待って再開し、連続失敗を数え直す。 */
         data class Restart(
             val delayMs: Long,
         ) : SessionEnd
+
+        /** 一時的な失敗。連続失敗として数え、待ち時間を延ばして再開する。 */
+        data object Retry : SessionEnd
 
         data class Stop(
             val reason: SpeechRecognitionFailureReason,
