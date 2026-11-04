@@ -73,6 +73,7 @@ fun OtherContent(
 ) {
     val viewModel: OtherListViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val speechRecognitionSection = LocalSpeechRecognitionSection.current
     val uriHandler = LocalUriHandler.current
 
     SideEffect(Unit) {
@@ -120,6 +121,7 @@ fun OtherContent(
         windowPosture = windowPosture,
         backHandler = backHandler,
         scrollToTopRequest = scrollToTopRequest,
+        speechRecognitionSection = speechRecognitionSection,
         detailContent = detailContent,
     )
 }
@@ -224,6 +226,7 @@ internal fun OtherContent(
     windowPosture: Posture = currentWindowAdaptiveInfoV2().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
+    speechRecognitionSection: @Composable (Modifier) -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
 ) {
     val navigator =
@@ -342,6 +345,7 @@ internal fun OtherContent(
                         )
                     },
                     scrollToTopRequest = scrollToTopRequest,
+                    speechRecognitionSection = speechRecognitionSection,
                 )
             },
             detailPane = {

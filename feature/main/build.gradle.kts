@@ -52,6 +52,9 @@ kotlin {
             implementation(projects.core.designsystem)
             implementation(libs.compose.material.icons.extended)
         }
+        androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
+        }
         jvmTest.dependencies {
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)

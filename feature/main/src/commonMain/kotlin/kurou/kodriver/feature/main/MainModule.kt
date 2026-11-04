@@ -6,6 +6,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
+import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveEffectiveKeepScreenOnUseCase
@@ -14,6 +15,7 @@ import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryReceivingUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
@@ -27,7 +29,7 @@ import org.koin.dsl.module
 /**
  * アプリのメイン画面（main feature）の Koin モジュール。
  *
- * 提供: AppScreenViewModel・ConnectionBannerViewModel・LowVolumeWarningViewModel と、それらが使うドメイン UseCase。
+ * 提供: AppScreenViewModel・ConnectionBannerViewModel・LowVolumeWarningViewModel・SpeechRecognitionViewModel と、それらが使うドメイン UseCase。
  * 消費（get で解決）: AppUpdateRepository・KeepScreenOnEnabledRepository・
  *   SimulatorPreferencesRepository（:core:data で登録）。アプリバージョンはビルド生成値を直接渡す。
  * プラットフォーム別の登録は [mainPlatformModule]（expect/actual）に分離している。
@@ -38,6 +40,12 @@ val mainModule =
         viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get()) }
         viewModelOf(::ConnectionBannerViewModel)
         viewModelOf(::LowVolumeWarningViewModel)
+        viewModel {
+            SpeechRecognitionViewModel(
+                observeSpeechRecognition = ObserveSpeechRecognitionUseCase(get()),
+                checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(get()),
+            )
+        }
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
         factory { CheckAppUpdateAvailableUseCase(get()) }

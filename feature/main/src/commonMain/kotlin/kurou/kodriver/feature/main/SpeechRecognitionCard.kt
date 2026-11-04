@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.manualreadoutlist
+package kurou.kodriver.feature.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,15 +22,15 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_status_idle_stopped
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_status_listening
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_status_permission_denied
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_status_starting
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_status_stopped
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_status_unavailable
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_switch_description
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_title
+import kurou.kodriver.feature.main.generated.resources.Res
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_idle_stopped
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_listening
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_permission_denied
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_starting
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_stopped
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_unavailable
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_switch_description
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_title
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

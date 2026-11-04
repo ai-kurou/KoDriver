@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.manualreadoutlist
+package kurou.kodriver.feature.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,6 +31,9 @@ internal class SpeechRecognitionViewModel(
 
     /** 発話がないまま [SPEECH_RECOGNITION_IDLE_TIMEOUT_MS] 経つと聞き取りを止める。認識途中の文字列や確定結果で数え直す。 */
     private var idleJob: Job? = null
+
+    /** アプリが見えなくなった時点で聞き取り中だったか。前面に戻ったときに聞き取りを再開するかの判断に使う。 */
+    private var resumeOnForeground = false
 
     /** 権限の要求結果を待っている間だけ true。停止すると無効になり、後から届いた許可では聞き取りを始めない。 */
     private var permissionRequestPending = false
@@ -66,8 +69,23 @@ internal class SpeechRecognitionViewModel(
         }
     }
 
-    /** 聞き取りを止める。画面から離れたときやアプリが見えなくなったときにも呼ぶ。 */
+    /** アプリが見えなくなったときに聞き取りを止める。聞き取り中だった場合は [onAppForegrounded] で再開する。 */
+    fun onAppBackgrounded() {
+        val wasEnabled = _uiState.value.enabled
+        stop()
+        resumeOnForeground = wasEnabled
+    }
+
+    /** アプリが前面に戻ったとき、見えなくなる前に聞き取り中だったなら再開する。権限が外されていれば再開しない。 */
+    fun onAppForegrounded() {
+        if (!resumeOnForeground) return
+        resumeOnForeground = false
+        if (checkRecordAudioPermissionGranted()) start()
+    }
+
+    /** 聞き取りを止める。再開はしない。 */
     fun stop() {
+        resumeOnForeground = false
         permissionRequestPending = false
         cancelJobs()
         _uiState.update {

@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.manualreadoutlist
+package kurou.kodriver.feature.main
 
 import androidx.lifecycle.viewModelScope
 import io.mockk.confirmVerified

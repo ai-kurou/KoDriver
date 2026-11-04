@@ -1,11 +1,9 @@
 package kurou.kodriver.feature.manualreadoutlist
 
 import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
-import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutPlayButtonLayoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
-import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
 import kurou.kodriver.domain.usecase.SaveManualReadoutPlayButtonLayoutEnabledUseCase
 import org.koin.core.module.dsl.viewModel
@@ -27,12 +25,6 @@ val manualReadoutListModule =
                         observe = ObserveManualReadoutPlayButtonLayoutEnabledUseCase(get()),
                         save = SaveManualReadoutPlayButtonLayoutEnabledUseCase(get()),
                     ),
-            )
-        }
-        viewModel {
-            SpeechRecognitionViewModel(
-                observeSpeechRecognition = ObserveSpeechRecognitionUseCase(get()),
-                checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(get()),
             )
         }
     }

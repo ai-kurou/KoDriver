@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.manualreadoutlist
+package kurou.kodriver.feature.main
 
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
