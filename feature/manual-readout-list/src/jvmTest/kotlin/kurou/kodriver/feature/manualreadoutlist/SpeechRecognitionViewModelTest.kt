@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,6 +15,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
@@ -239,13 +242,22 @@ class SpeechRecognitionViewModelTest {
     }
 
     @Test
-    fun `認識の購読が例外で終わった場合は利用不可として停止状態にする`() {
+    fun `認識の購読が例外で終わった場合は例外を記録して利用不可として停止状態にする`() {
         val viewModel = createViewModel(granted = true)
-        every { speechRepository.observeRecognition() } returns flow { throw IllegalStateException("失敗") }
+        val exception = IllegalStateException("失敗")
+        every { speechRepository.observeRecognition() } returns flow { throw exception }
+        val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+        mockkStatic(errorCapture)
+        every { captureError(exception) } returns Unit
+        try {
+            viewModel.onEnabledChange(true) {}
 
-        viewModel.onEnabledChange(true) {}
-
-        assertFalse(viewModel.uiState.value.enabled)
-        assertEquals(SpeechRecognitionStatus.Unavailable, viewModel.uiState.value.status)
+            assertFalse(viewModel.uiState.value.enabled)
+            assertEquals(SpeechRecognitionStatus.Unavailable, viewModel.uiState.value.status)
+            verify(exactly = 1) { captureError(exception) }
+            confirmVerified(errorCapture)
+        } finally {
+            unmockkStatic(errorCapture)
+        }
     }
 }

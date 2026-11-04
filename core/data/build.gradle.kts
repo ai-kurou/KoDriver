@@ -82,6 +82,7 @@ kotlin {
                 implementation(libs.okhttp.mockwebserver)
                 implementation(libs.robolectric)
                 implementation(libs.androidx.testExt.junit)
+                implementation(libs.mockk)
             }
         }
     }
