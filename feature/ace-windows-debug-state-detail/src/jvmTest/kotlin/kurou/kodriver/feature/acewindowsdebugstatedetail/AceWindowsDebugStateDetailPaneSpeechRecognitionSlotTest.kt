@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertTrue
 
 class AceWindowsDebugStateDetailPaneSpeechRecognitionSlotTest {
     @get:Rule
@@ -32,6 +33,9 @@ class AceWindowsDebugStateDetailPaneSpeechRecognitionSlotTest {
 
         rule.onNodeWithText(SLOT_TEXT).assertIsDisplayed()
         rule.onNodeWithTag("debug_readout_request_card").assertIsDisplayed()
+        val slotBounds = rule.onNodeWithText(SLOT_TEXT).fetchSemanticsNode().boundsInRoot
+        val readoutBounds = rule.onNodeWithTag("debug_readout_request_card").fetchSemanticsNode().boundsInRoot
+        assertTrue(slotBounds.top < readoutBounds.top)
     }
 
     @Test
