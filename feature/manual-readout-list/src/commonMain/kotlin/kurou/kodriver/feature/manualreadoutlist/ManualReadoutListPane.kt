@@ -84,6 +84,7 @@ fun ManualReadoutListPane(
         onTogglePlayButtonLayout = viewModel::onPlayButtonLayoutToggle,
         onSetClick = onSetClick,
         modifier = modifier,
+        speechRecognitionSection = { ManualReadoutSpeechRecognitionSection() },
     )
 }
 
@@ -104,6 +105,7 @@ internal fun ManualReadoutListPaneContent(
     showHotkeyChip: Boolean = isManualReadoutHotkeySupported(),
     listState: LazyListState = rememberLazyListState(),
     gridState: LazyGridState = rememberLazyGridState(),
+    speechRecognitionSection: @Composable () -> Unit = {},
 ) {
     val haptic = LocalHapticFeedback.current
     var editMode by remember { mutableStateOf(false) }
@@ -139,6 +141,7 @@ internal fun ManualReadoutListPaneContent(
                     onToggleEditMode = { editMode = !editMode },
                     modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
                 )
+                speechRecognitionSection()
                 if (uiState.playButtonLayoutEnabled) {
                     val tileHeightsPx = remember { mutableStateMapOf<String, Int>() }
                     val density = LocalDensity.current
