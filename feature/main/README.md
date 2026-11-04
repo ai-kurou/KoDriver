@@ -17,7 +17,7 @@ AppScreen の UI 状態の合成は `AppScreenFlow` が cold Flow として担�
 
 `SpeechRecognitionViewModel` が `ObserveSpeechRecognitionUseCase` の常時聞き取りを開始・停止し、状態（停止中・準備中・聞き取り中・マイクの権限が許可されていません・この端末では音声認識を利用できません・しばらく発話がなかったため停止しました）、認識途中の文字列、確定結果の履歴（新しい順に最大5件）を `SpeechRecognitionUiState` で保持します。アプリ全体で1つの ViewModel を共有するため、タブを切り替えても聞き取りは止まりません。
 
-- `rememberSpeechRecognitionSection()`: `AppScreen` から一度だけ呼ぶ。マイクの権限の要求（`rememberRecordAudioPermissionRequester`、Android のみ実行時ダイアログ）、アプリが見えなくなったとき（ON_STOP）の停止、前面に戻ったとき（ON_START）の再開を担い、「その他」の一覧に差し込むカード（`SpeechRecognitionCard`）を返す。デスクトップ版は `isSpeechRecognitionSupportedOnPlatform()` が false のため何も表示しない。
+- `rememberSpeechRecognitionSection()`: `AppScreen` から一度だけ呼ぶ。マイクの権限の要求（`rememberRecordAudioPermissionRequester`、Android のみ実行時ダイアログ）、アプリが見えなくなったとき（ON_STOP）の停止、前面に戻ったとき（ON_START）の再開を担い、デバッグ状態画面（`DebugStateDetailPane`）のグリッド先頭に差し込むカード（`SpeechRecognitionCard`）を返す。デスクトップ版は `isSpeechRecognitionSupportedOnPlatform()` が false のため何も表示しない。
 - 見えなくなる前に聞き取り中だった場合だけ、前面に戻ったときに再開する（権限が外されていれば再開しない）。スイッチを OFF にした場合や失敗・無発話の自動停止の後は再開しない。ON/OFF の状態はメモリ上にのみ持つため、アプリのプロセスが終了すると OFF に戻る。
 - 認識途中の文字列も確定結果も届かないまま5分経つと自動で止める（暫定値）。
 - 認識結果の解釈や読み上げの起動はまだ行わない。
