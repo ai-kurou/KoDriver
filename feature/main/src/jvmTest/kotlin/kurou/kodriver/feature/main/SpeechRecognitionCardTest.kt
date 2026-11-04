@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.manualreadoutlist
+package kurou.kodriver.feature.main
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsOff
@@ -25,7 +25,7 @@ class SpeechRecognitionCardTest {
             }
         }
 
-        rule.onNodeWithText("音声認識(テスト)").assertExists()
+        rule.onNodeWithText("音声認識").assertExists()
         rule.onNodeWithText("停止中").assertExists()
         rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsOff().performClick()
         rule.runOnIdle { assertEquals(listOf(true), changes) }

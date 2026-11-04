@@ -29,6 +29,7 @@ fun OtherListPane(
     modifier: Modifier = Modifier,
     onAppVersionTapped: () -> Unit = {},
     scrollToTopRequest: Int = 0,
+    speechRecognitionSection: @Composable (Modifier) -> Unit = {},
 ) {
     val listState = rememberLazyListState()
     val groupedItems = remember(uiState.items) { uiState.items.groupBy { it.section() } }
@@ -44,6 +45,9 @@ fun OtherListPane(
                 .fillMaxSize()
                 .padding(vertical = KoDriverSpacing.small),
     ) {
+        item(key = "speech_recognition") {
+            speechRecognitionSection(Modifier)
+        }
         otherListSections.forEach { section ->
             val sectionItems = groupedItems[section].orEmpty()
             if (sectionItems.isNotEmpty()) {

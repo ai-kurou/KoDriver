@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.manualreadoutlist
+package kurou.kodriver.feature.main
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Rule

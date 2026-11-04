@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.manualreadoutlist
+package kurou.kodriver.feature.main
 
 import androidx.lifecycle.viewModelScope
 import io.mockk.confirmVerified
@@ -43,7 +43,7 @@ class SpeechRecognitionModuleTest {
         val application =
             koinApplication {
                 modules(
-                    manualReadoutListModule,
+                    mainModule,
                     module {
                         single<SpeechRecognitionRepository> { speechRepository }
                         single<RecordAudioPermissionRepository> { permissionRepository }

@@ -12,8 +12,6 @@ Windows デスクトップでは、各セット行の左側にセット名・項
 
 ## 主要なファイルの役割
 
-- `SpeechRecognitionSection.kt` / `SpeechRecognitionCard.kt` / `SpeechRecognitionViewModel.kt` / `SpeechRecognitionUiState.kt` / `SpeechRecognitionPlatform.kt`: Android のみで一覧の見出し直下に出す、音声認識の確認用の簡易カード。スイッチで常時聞き取り（`ObserveSpeechRecognitionUseCase`）を開始・停止し、状態（停止中・準備中・聞き取り中・マイクの権限が許可されていません・この端末では音声認識を利用できません・しばらく発話がなかったため停止しました）、認識途中の文字列、確定結果の履歴（新しい順に最大5件、候補は「 / 」区切り）を表示する。マイクの権限が未許可でONにすると実行時の権限ダイアログを表示し、許可されたら聞き取りを始める。画面から離れたときとアプリが見えなくなったときに聞き取りを止め、認識途中の文字列も確定結果も届かないまま5分経ったときも自動で止める（「しばらく発話がなかったため停止しました」を表示）。聞き取り中はマイクのアイコンを強調し、状態の文言に「マイクを使用中」を添える。認識の購読が想定外の例外で終わった場合は `captureError` で記録してから利用不可として停止する。デスクトップ版は `isSpeechRecognitionSupportedOnPlatform()` が false のため何も表示しない。認識結果の解釈や読み上げの起動はまだ行わない。
-
 - `ManualReadoutContent.kt`: Adaptive scaffold の list/detail 切替・戻る操作。選択は一覧 ViewModel の UiState から同期する。
 
 - `ManualReadoutListUiState.kt` / `ManualReadoutListViewModel.kt`: 保存済みセット一覧を `StateFlow` で提供し、空のセットを追加・保存し、シミュレーター ID とセット ID を指定した読み上げ依頼を送る。
@@ -116,7 +114,6 @@ LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingF
 手動バーチャルエネルギー残り周回数は `LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value` に対応し、蓄積済みの `pitTimingVirtualEnergyTrackingState` から `(currentValue / lastValidLapConsumption).toInt()` で算出する。既定文言は `LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT`（「バーチャルエネルギーは残り約{laps}周」）で、1周以上なら `formatLmuWindowsPitTimingReadoutText` で置換し、0周なら固定文言「バーチャルエネルギー残り1周未満」を読む。蓄積前（`currentLap == -1`）、消費量が null・0以下、算出結果が負、最新エネルギーが未受信・受信から5秒超の場合はデータ無しとし、複数項目では「バーチャルエネルギーの残り周回数はデータがありません」を連結。自動のスイッチ・閾値・ベストラップ経過時間には依存せず、追跡状態・自動判定状態（`lastAnnouncedPitTimingVirtualEnergyLaps` 等）は変更しない。保存順の1イベントを常にキュー末尾へ追加し、先頭がこの項目なら開始音・優先度・ログには `PitTiming.Root` を使う。タイヤ摩耗の残り周回数は別項目として扱う。
 
 手動タイヤ摩耗残り周回数は `LmuWindowsReadoutItemKey.PitTiming.TyreWear.value`（項目名「タイヤ摩耗の残り周回数」）に対応し、蓄積済みの `pitTimingTyreWearTrackingState` からエネルギーと同じ式で算出する（共通の private ヘルパーを `manualPitTimingTyreWearRemainingLaps` から呼ぶ）。既定文言は `LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT`（「タイヤは残り約{laps}周」）で、1周以上なら `formatLmuWindowsPitTimingReadoutText` で置換し、0周なら固定文言「タイヤ残り1周未満」を読む（空欄テンプレートなら0周でも空文字）。蓄積前・消費量が null・0以下・非有限、算出結果が負、最新タイヤ摩耗が未受信・受信から5秒超の場合はデータ無しとし、`PitTiming.Root` を開始音・優先度・ログに使う。バーチャルエネルギーの残り周回数とは別項目で、既存の「タイヤ摩耗」(%) 項目とも別。
-
 
 GT7 の燃料残り周回数は保存文言（既定「燃料は残り約{laps}周」）に、燃料追跡の平均消費から推定した整数周回数を埋める。
 自動読み上げが無効でも追跡し、しきい値・重複抑止・周回内タイミングに関係なく読む。

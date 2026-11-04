@@ -85,6 +85,7 @@ import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.LowVolumeWarningUiState
 import kurou.kodriver.feature.main.LowVolumeWarningViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
+import kurou.kodriver.feature.main.rememberSpeechRecognitionSection
 import kurou.kodriver.feature.manualreadoutdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
 import kurou.kodriver.feature.otherandroidaudiousagedetail.OtherAndroidAudioUsageDetailPane
@@ -558,66 +559,68 @@ fun AppScreen(
         onPauseOrDispose {}
     }
 
-    AppScreenContent(
-        darkTheme = darkTheme,
-        dynamicColorEnabled = uiState.dynamicColorEnabled,
-        bannerUiState = bannerUiState,
-        ttsUnavailableGuidance = otherListUiState.ttsUnavailableGuidance,
-        lowVolumeWarning = lowVolumeWarning,
-        onLowVolumeBannerDismiss = lowVolumeWarningViewModel::dismiss,
-        onLowVolumeBannerClick = { otherListViewModel.selectItem(OtherListItemType.Volume) },
-        onTtsAction = {
-            handleTtsUnavailableAction(
-                guidance = otherListUiState.ttsUnavailableGuidance,
-                openUri = uriHandler::openUri,
-                openTtsSettings = openTtsSettings,
-                openWindowsSpeechSettings = otherListViewModel::openWindowsSpeechSettings,
-            )
-        },
-        snackbarHostState = snackbarHostState,
-        hasAppUpdate = uiState.hasAppUpdate,
-        accessLocalNetworkPermissionGranted = uiState.accessLocalNetworkPermissionGranted,
-        keepScreenOn = uiState.keepScreenOn,
-        hapticFeedbackEnabled = uiState.hapticFeedbackEnabled,
-        selectedSimulatorId = uiState.selectedSimulatorId,
-        onSimulatorSelected = viewModel::selectSimulator,
-        onBannerTap =
-            rememberConnectionBannerTap(
-                bannerUiState = bannerUiState,
-                onSelectOtherItem = otherListViewModel::selectItem,
-            ),
-        onFeedbackClick = { telemetryLogId -> otherListViewModel.selectFeedbackItem(telemetryLogId) },
-        onManualReadoutTabReselected = { manualReadoutTabReselectRequest++ },
-        manualReadoutTabReselectRequest = manualReadoutTabReselectRequest,
-        onAutoReadoutTabReselected = {
-            handleTabReselected(
-                selectedItem = autoReadoutListUiState.selectedItem,
-                clearSelectedItem = autoReadoutListViewModel::clearSelectedItem,
-                requestScrollToTop = { autoReadoutListScrollToTopRequest++ },
-            )
-        },
-        onLogTabReselected = {
-            handleTabReselected(
-                selectedItem = telemetryLogListUiState.selectedLogId,
-                clearSelectedItem = telemetryLogListViewModel::clearSelectedLog,
-                requestScrollToTop = { telemetryLogListScrollToTopRequest++ },
-            )
-        },
-        onOtherTabReselected = {
-            handleTabReselected(
-                selectedItem = otherListUiState.selectedItem,
-                clearSelectedItem = otherListViewModel::clearSelectedItem,
-                requestScrollToTop = { otherListScrollToTopRequest++ },
-            )
-        },
-        autoReadoutContent = autoReadoutContent,
-        autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
-        telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
-        otherListScrollToTopRequest = otherListScrollToTopRequest,
-        telemetryLogContent = telemetryLogContent,
-        manualReadoutContent = manualReadoutContent,
-        otherContent = otherContent,
-    )
+    CompositionLocalProvider(LocalSpeechRecognitionSection provides rememberSpeechRecognitionSection()) {
+        AppScreenContent(
+            darkTheme = darkTheme,
+            dynamicColorEnabled = uiState.dynamicColorEnabled,
+            bannerUiState = bannerUiState,
+            ttsUnavailableGuidance = otherListUiState.ttsUnavailableGuidance,
+            lowVolumeWarning = lowVolumeWarning,
+            onLowVolumeBannerDismiss = lowVolumeWarningViewModel::dismiss,
+            onLowVolumeBannerClick = { otherListViewModel.selectItem(OtherListItemType.Volume) },
+            onTtsAction = {
+                handleTtsUnavailableAction(
+                    guidance = otherListUiState.ttsUnavailableGuidance,
+                    openUri = uriHandler::openUri,
+                    openTtsSettings = openTtsSettings,
+                    openWindowsSpeechSettings = otherListViewModel::openWindowsSpeechSettings,
+                )
+            },
+            snackbarHostState = snackbarHostState,
+            hasAppUpdate = uiState.hasAppUpdate,
+            accessLocalNetworkPermissionGranted = uiState.accessLocalNetworkPermissionGranted,
+            keepScreenOn = uiState.keepScreenOn,
+            hapticFeedbackEnabled = uiState.hapticFeedbackEnabled,
+            selectedSimulatorId = uiState.selectedSimulatorId,
+            onSimulatorSelected = viewModel::selectSimulator,
+            onBannerTap =
+                rememberConnectionBannerTap(
+                    bannerUiState = bannerUiState,
+                    onSelectOtherItem = otherListViewModel::selectItem,
+                ),
+            onFeedbackClick = { telemetryLogId -> otherListViewModel.selectFeedbackItem(telemetryLogId) },
+            onManualReadoutTabReselected = { manualReadoutTabReselectRequest++ },
+            manualReadoutTabReselectRequest = manualReadoutTabReselectRequest,
+            onAutoReadoutTabReselected = {
+                handleTabReselected(
+                    selectedItem = autoReadoutListUiState.selectedItem,
+                    clearSelectedItem = autoReadoutListViewModel::clearSelectedItem,
+                    requestScrollToTop = { autoReadoutListScrollToTopRequest++ },
+                )
+            },
+            onLogTabReselected = {
+                handleTabReselected(
+                    selectedItem = telemetryLogListUiState.selectedLogId,
+                    clearSelectedItem = telemetryLogListViewModel::clearSelectedLog,
+                    requestScrollToTop = { telemetryLogListScrollToTopRequest++ },
+                )
+            },
+            onOtherTabReselected = {
+                handleTabReselected(
+                    selectedItem = otherListUiState.selectedItem,
+                    clearSelectedItem = otherListViewModel::clearSelectedItem,
+                    requestScrollToTop = { otherListScrollToTopRequest++ },
+                )
+            },
+            autoReadoutContent = autoReadoutContent,
+            autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
+            telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
+            otherListScrollToTopRequest = otherListScrollToTopRequest,
+            telemetryLogContent = telemetryLogContent,
+            manualReadoutContent = manualReadoutContent,
+            otherContent = otherContent,
+        )
+    }
 }
 
 /**
