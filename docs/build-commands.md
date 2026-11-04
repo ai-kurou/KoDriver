@@ -46,6 +46,21 @@
 
 GitHub Actions ワークフローの一覧・詳細な挙動・権限設計は [`docs/ci-workflows.md`](ci-workflows.md) を参照。
 
+## preSubmitChecks を終了が確定できる形で起動する
+
+`preSubmitChecks` はフォアグラウンド実行の上限（10分）を超えやすく、`run_in_background` の終了通知もGradleの子プロセスが残ると届かないことがある。終了を取りこぼして待機し続けないよう、ログと終了コードをファイルに残す形で起動する。
+
+```bash
+LOG=<スクラッチパッドのディレクトリ>/preSubmitChecks.log
+rm -f "$LOG"
+(./gradlew preSubmitChecks --console=plain > "$LOG" 2>&1; echo "EXIT=$?" >> "$LOG") &
+```
+
+- 終了の判定は、ログ末尾の `EXIT=<終了コード>` 行だけで行う。`EXIT=0` なら成功、それ以外は失敗として `BUILD FAILED` 周辺のログを読んで修正する。
+- 待機は Monitor の until ループで `EXIT=` 行の出現を待ち、上限時間を付ける（例: 60分）。`grep -q '^EXIT=' "$LOG"` が成立するまで一定間隔で確認する。
+- 待機のタイムアウトは終了ではない。タイムアウトしたら `ps aux | grep -i gradle`・`./gradlew --status`・ログの最終更新時刻（`stat`）で状態を確認し、更新が数分以上止まっていればハングとみなして、該当プロセスを止めて再実行する。実行中の場合は同じログを引き続き待つ（`preSubmitChecks` を重ねて起動しない）。
+- ハングの原因は、ログ末尾の実行中タスク名や `jstack <テストワーカーのPID>` で特定する。
+
 作業中に個別のチェックを素早く回したい場合は、以下も利用できる（完了報告前の `preSubmitChecks` 実行は省略不可）。
 
 ```bash
