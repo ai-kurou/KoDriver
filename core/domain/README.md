@@ -3,6 +3,8 @@
 `ResetAutoReadoutSettingsUseCase` は受け取った `AutoReadoutSettingsResetter` を順番に実行し、全シミュレーターの自動読み上げ設定を一括で既定値に戻します。途中で失敗した場合は例外を呼び出し側に伝播します。
 `ResetManualReadoutSettingsUseCase` も同形で、受け取った `ManualReadoutSettingsResetter` を順番に実行し、手動読み上げセット（ホットキーを含む）と再生ボタン表示設定を既定値に戻します。
 
+`GetAudioInputDevicesUseCase` は `AudioInputDeviceRepository` から入力デバイス（マイク）の一覧を取得し、`ObserveMicrophoneAudioUseCase` は `MicrophoneRepository` から指定デバイス（省略時は既定）のPCM音声を `MicrophoneAudioEvent` として流す。PCM形式は `MICROPHONE_*` 定数（16kHz・モノラル・16bit）で固定する。
+
 ## パッケージ構成
 
 シミュレーター固有コードの配置先は `kurou.kodriver.domain.<lmuwindows|acewindows|gt7ps5>.{model,repository,usecase}` とする。
