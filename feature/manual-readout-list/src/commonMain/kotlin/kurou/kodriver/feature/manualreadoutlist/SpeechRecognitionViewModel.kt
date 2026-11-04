@@ -24,19 +24,33 @@ internal class SpeechRecognitionViewModel(
 
     private var listenJob: Job? = null
 
+    /** 権限の要求結果を待っている間だけ true。停止すると無効になり、後から届いた許可では聞き取りを始めない。 */
+    private var permissionRequestPending = false
+
     /** スイッチの操作。マイクの権限が未許可なら [requestPermission] で要求し、結果を [onPermissionResult] で受ける。 */
     fun onEnabledChange(
         enabled: Boolean,
         requestPermission: () -> Unit,
     ) {
         when {
-            !enabled -> stop()
-            checkRecordAudioPermissionGranted() -> start()
-            else -> requestPermission()
+            !enabled -> {
+                stop()
+            }
+
+            checkRecordAudioPermissionGranted() -> {
+                start()
+            }
+
+            else -> {
+                permissionRequestPending = true
+                requestPermission()
+            }
         }
     }
 
     fun onPermissionResult(granted: Boolean) {
+        if (!permissionRequestPending) return
+        permissionRequestPending = false
         if (granted) {
             start()
         } else {
@@ -46,6 +60,7 @@ internal class SpeechRecognitionViewModel(
 
     /** 聞き取りを止める。画面から離れたときやアプリが見えなくなったときにも呼ぶ。 */
     fun stop() {
+        permissionRequestPending = false
         listenJob?.cancel()
         listenJob = null
         _uiState.update {
@@ -77,7 +92,7 @@ internal class SpeechRecognitionViewModel(
     private fun onEvent(event: SpeechRecognitionEvent) {
         when (event) {
             SpeechRecognitionEvent.Listening -> {
-                _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening) }
+                _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
             }
 
             is SpeechRecognitionEvent.Partial -> {

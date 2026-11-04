@@ -94,7 +94,7 @@ class SpeechRecognitionViewModelTest {
         ) { events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("結果$it"))) }
 
         val recognized = viewModel.uiState.value.recognized
-        assertEquals(SPEECH_RECOGNITION_HISTORY_MAX, recognized.size)
+        assertEquals(5, recognized.size)
         assertEquals(listOf("結果${SPEECH_RECOGNITION_HISTORY_MAX}"), recognized.first())
         assertEquals(listOf("結果1"), recognized.last())
     }
@@ -116,6 +116,7 @@ class SpeechRecognitionViewModelTest {
     @Test
     fun `権限が許可されたら聞き取りを開始する`() {
         val viewModel = createViewModel(granted = false)
+        viewModel.onEnabledChange(true) {}
 
         viewModel.onPermissionResult(true)
 
@@ -128,6 +129,7 @@ class SpeechRecognitionViewModelTest {
     @Test
     fun `権限が拒否されたら権限未許可を表示して聞き取りは開始しない`() {
         val viewModel = createViewModel(granted = false)
+        viewModel.onEnabledChange(true) {}
 
         viewModel.onPermissionResult(false)
 
@@ -164,11 +166,50 @@ class SpeechRecognitionViewModelTest {
     @Test
     fun `停止中にstopを呼んでも表示中の状態は変えない`() {
         val viewModel = createViewModel(granted = false)
+        viewModel.onEnabledChange(true) {}
         viewModel.onPermissionResult(false)
 
         viewModel.stop()
 
         assertEquals(SpeechRecognitionStatus.PermissionDenied, viewModel.uiState.value.status)
+    }
+
+    @Test
+    fun `聞き取りの再開を知らせるListeningで認識途中の文字列を消す`() {
+        val viewModel = createViewModel(granted = true)
+        viewModel.onEnabledChange(true) {}
+        events.tryEmit(SpeechRecognitionEvent.Listening)
+        events.tryEmit(SpeechRecognitionEvent.Partial("燃"))
+
+        events.tryEmit(SpeechRecognitionEvent.Listening)
+
+        assertEquals("", viewModel.uiState.value.partialText)
+        assertEquals(SpeechRecognitionStatus.Listening, viewModel.uiState.value.status)
+    }
+
+    @Test
+    fun `権限の要求中に停止した場合は後から届いた許可で聞き取りを始めない`() {
+        val viewModel = createViewModel(granted = false)
+        viewModel.onEnabledChange(true) {}
+
+        viewModel.stop()
+        viewModel.onPermissionResult(true)
+
+        assertEquals(SpeechRecognitionUiState(), viewModel.uiState.value)
+        verify(exactly = 0) { speechRepository.observeRecognition() }
+        confirmVerified(speechRepository)
+    }
+
+    @Test
+    fun `要求していない権限の結果は無視する`() {
+        val viewModel = createViewModel(granted = false)
+
+        viewModel.onPermissionResult(true)
+        viewModel.onPermissionResult(false)
+
+        assertEquals(SpeechRecognitionUiState(), viewModel.uiState.value)
+        verify(exactly = 0) { speechRepository.observeRecognition() }
+        confirmVerified(speechRepository)
     }
 
     @Test
