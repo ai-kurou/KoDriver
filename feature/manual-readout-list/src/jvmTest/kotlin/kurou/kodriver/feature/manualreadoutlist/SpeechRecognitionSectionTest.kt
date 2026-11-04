@@ -98,7 +98,7 @@ class SpeechRecognitionSectionTest {
         rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").performClick()
         rule.runOnIdle { events.tryEmit(SpeechRecognitionEvent.Listening) }
 
-        rule.onNodeWithText("聞き取り中").assertExists()
+        rule.onNodeWithText("聞き取り中(マイクを使用中)").assertExists()
         assertEquals(0, requestCount)
     }
 

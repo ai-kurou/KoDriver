@@ -19,6 +19,9 @@ internal enum class SpeechRecognitionStatus {
 
     /** 音声認識を端末で利用できない。 */
     Unavailable,
+
+    /** しばらく発話がなかったため、聞き取りを自動で止めた。 */
+    IdleStopped,
 }
 
 /** 音声認識の確認用カードの表示状態。 */

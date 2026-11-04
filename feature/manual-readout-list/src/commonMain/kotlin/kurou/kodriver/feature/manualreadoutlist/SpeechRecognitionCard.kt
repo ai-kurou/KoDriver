@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_status_idle_stopped
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_status_listening
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_status_permission_denied
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.speech_recognition_status_starting
@@ -61,7 +62,16 @@ internal fun SpeechRecognitionCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
             ) {
-                Icon(Icons.Filled.Mic, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Filled.Mic,
+                    contentDescription = null,
+                    tint =
+                        if (uiState.enabled) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                )
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = stringResource(Res.string.speech_recognition_title),
@@ -116,4 +126,5 @@ private fun SpeechRecognitionStatus.label(): StringResource =
         SpeechRecognitionStatus.Listening -> Res.string.speech_recognition_status_listening
         SpeechRecognitionStatus.PermissionDenied -> Res.string.speech_recognition_status_permission_denied
         SpeechRecognitionStatus.Unavailable -> Res.string.speech_recognition_status_unavailable
+        SpeechRecognitionStatus.IdleStopped -> Res.string.speech_recognition_status_idle_stopped
     }
