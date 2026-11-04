@@ -10,13 +10,19 @@ import android.speech.SpeechRecognizer
 
 /**
  * Android の [SpeechRecognizer] を使う [SpeechRecognitionEngine]。メインスレッドで生成・操作する。
- * 端末内認識が使える場合はそれを優先し、使えなければ通常の認識サービスを使う。
+ * [preferOnDevice] が true で端末内認識が使える場合はそれを使い、使えなければ通常の認識サービスを使う。
  * プラットフォームのAPIを直接呼ぶ薄いアダプターのため、単体テストの対象にしない。
  */
 internal class PlatformSpeechRecognitionEngine(
     private val context: Context,
+    preferOnDevice: Boolean,
 ) : SpeechRecognitionEngine {
     private var recognizer: SpeechRecognizer? = null
+
+    override val isOnDevice: Boolean =
+        preferOnDevice &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
 
     override fun start(listener: SpeechRecognitionEngineListener) {
         val created = createRecognizer()
@@ -31,9 +37,7 @@ internal class PlatformSpeechRecognitionEngine(
     }
 
     private fun createRecognizer(): SpeechRecognizer =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-            SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
-        ) {
+        if (isOnDevice) {
             SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
         } else {
             SpeechRecognizer.createSpeechRecognizer(context)

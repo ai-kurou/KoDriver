@@ -6,6 +6,9 @@ package kurou.kodriver.data.speech
  * 常時聞き取りの再開は [AndroidSpeechRecognitionRepository] が担う。
  */
 internal interface SpeechRecognitionEngine {
+    /** 端末内認識を使っているか。端末内認識が言語エラーになった場合に、通常の認識へ切り替える判断に使う。 */
+    val isOnDevice: Boolean
+
     /** 聞き取りを開始し、以降の通知を [listener] に渡す。 */
     fun start(listener: SpeechRecognitionEngineListener)
 

@@ -4,7 +4,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
@@ -26,7 +26,7 @@ class ObserveSpeechRecognitionUseCaseTest {
                     SpeechRecognitionEvent.Recognized(listOf("燃料残量", "燃料")),
                     SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable),
                 )
-            every { repository.observeRecognition() } returns flowOf(*events.toTypedArray())
+            every { repository.observeRecognition() } returns events.asFlow()
 
             assertEquals(events, ObserveSpeechRecognitionUseCase(repository)().toList())
             verify(exactly = 1) { repository.observeRecognition() }

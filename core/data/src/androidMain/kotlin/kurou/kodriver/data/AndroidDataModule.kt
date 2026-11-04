@@ -231,7 +231,7 @@ private fun androidDataModuleAppSettings(context: Context) =
         // マイクからの常時聞き取り（端末内の音声認識を優先して使う）
         single<SpeechRecognitionRepository> {
             AndroidSpeechRecognitionRepository(
-                engineFactory = { PlatformSpeechRecognitionEngine(context) },
+                engineFactory = { preferOnDevice -> PlatformSpeechRecognitionEngine(context, preferOnDevice) },
                 recognitionAvailabilityChecker = { SpeechRecognizer.isRecognitionAvailable(context) },
                 permissionRepository = get(),
             )

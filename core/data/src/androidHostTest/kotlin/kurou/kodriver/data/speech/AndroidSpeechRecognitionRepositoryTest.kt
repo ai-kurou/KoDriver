@@ -30,6 +30,7 @@ class AndroidSpeechRecognitionRepositoryTest {
 
     /** 開始時に [script] を実行して、セッション内の通知を再現する。 */
     private class FakeEngine(
+        override val isOnDevice: Boolean = false,
         private val startFailure: Exception? = null,
         private val script: (SpeechRecognitionEngineListener) -> Unit = {},
     ) : SpeechRecognitionEngine {
@@ -51,11 +52,13 @@ class AndroidSpeechRecognitionRepositoryTest {
     private var available = true
     private val engines = ArrayDeque<FakeEngine>()
     private var createdEngineCount = 0
+    private val requestedPreferOnDevice = mutableListOf<Boolean>()
 
     private fun TestScope.createRepository() =
         AndroidSpeechRecognitionRepository(
-            engineFactory = {
+            engineFactory = { preferOnDevice ->
                 createdEngineCount++
+                requestedPreferOnDevice += preferOnDevice
                 engines.removeFirst()
             },
             recognitionAvailabilityChecker = { available },
@@ -233,5 +236,117 @@ class AndroidSpeechRecognitionRepositoryTest {
 
             assertEquals(1, engine.startCount)
             assertEquals(1, engine.stopCount)
+        }
+
+    @Test
+    fun `認識途中の文字列は最新の1件だけを流す`() =
+        runTest {
+            engines.add(
+                FakeEngine { listener ->
+                    repeat(1000) { listener.onPartial("途中$it") }
+                    listener.onResults(listOf("確定"))
+                },
+            )
+
+            val events = createRepository().observeRecognition().take(2).toList()
+
+            assertEquals(
+                listOf(
+                    SpeechRecognitionEvent.Partial("途中999"),
+                    SpeechRecognitionEvent.Recognized(listOf("確定")),
+                ),
+                events,
+            )
+        }
+
+    @Test
+    fun `コールバックが来ないセッションは打ち切って再開する`() =
+        runTest {
+            val stalled = FakeEngine { listener -> listener.onReady() }
+            val next = FakeEngine { listener -> listener.onReady() }
+            engines.addAll(listOf(stalled, next))
+
+            val events = createRepository().observeRecognition().take(2).toList()
+
+            assertEquals(listOf(SpeechRecognitionEvent.Listening, SpeechRecognitionEvent.Listening), events)
+            assertEquals(SPEECH_RECOGNITION_CALLBACK_TIMEOUT_MS + SPEECH_RECOGNITION_RETRY_DELAY_MS, currentTime)
+            assertEquals(1, stalled.stopCount)
+        }
+
+    @Test
+    fun `端末内認識が言語エラーになった場合は通常の認識に切り替えて直ちに再開する`() =
+        runTest {
+            val onDevice =
+                FakeEngine(isOnDevice = true) { listener ->
+                    listener.onError(SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE)
+                }
+            val standard = FakeEngine(isOnDevice = false) { listener -> listener.onReady() }
+            engines.addAll(listOf(onDevice, standard))
+
+            val events = createRepository().observeRecognition().take(1).toList()
+
+            assertEquals(listOf(SpeechRecognitionEvent.Listening), events)
+            assertEquals(listOf(true, false), requestedPreferOnDevice)
+            assertEquals(0, currentTime)
+            assertEquals(1, onDevice.stopCount)
+        }
+
+    @Test
+    fun `切り替えた後は以降のセッションも通常の認識を使う`() =
+        runTest {
+            engines.addAll(
+                listOf(
+                    FakeEngine(isOnDevice = true) { listener ->
+                        listener.onError(SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED)
+                    },
+                    FakeEngine { listener -> listener.onResults(listOf("確定")) },
+                    FakeEngine { listener -> listener.onReady() },
+                ),
+            )
+
+            createRepository().observeRecognition().take(2).toList()
+
+            assertEquals(listOf(true, false, false), requestedPreferOnDevice)
+        }
+
+    @Test
+    fun `通常の認識でも言語エラーになった場合は利用不可を通知して完了する`() =
+        runTest {
+            engines.addAll(
+                listOf(
+                    FakeEngine(isOnDevice = true) { listener ->
+                        listener.onError(SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE)
+                    },
+                    FakeEngine(isOnDevice = false) { listener ->
+                        listener.onError(SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE)
+                    },
+                ),
+            )
+
+            val events = createRepository().observeRecognition().toList()
+
+            assertEquals(
+                listOf(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable)),
+                events,
+            )
+            assertEquals(listOf(true, false), requestedPreferOnDevice)
+        }
+
+    @Test
+    fun `端末内認識でも権限不足は切り替えずに権限未許可を通知して完了する`() =
+        runTest {
+            engines.add(
+                FakeEngine(isOnDevice = true) { listener ->
+                    listener.onError(SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS)
+                },
+            )
+
+            val events = createRepository().observeRecognition().toList()
+
+            assertEquals(
+                listOf(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.PermissionDenied)),
+                events,
+            )
+            assertEquals(listOf(true), requestedPreferOnDevice)
         }
 }
