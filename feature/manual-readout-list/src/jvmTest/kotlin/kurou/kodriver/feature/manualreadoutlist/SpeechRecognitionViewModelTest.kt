@@ -34,11 +34,12 @@ class SpeechRecognitionViewModelTest {
     private val speechRepository: SpeechRecognitionRepository = mockk()
     private val permissionRepository: RecordAudioPermissionRepository = mockk()
     private val events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = 16)
+    private val dispatcher = UnconfinedTestDispatcher()
     private var viewModel: SpeechRecognitionViewModel? = null
 
     @BeforeTest
     fun setUp() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        Dispatchers.setMain(dispatcher)
     }
 
     @AfterTest

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,9 @@ import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 
+/** 認識途中の文字列も確定結果も届かないまま経つと、聞き取りを自動で止めるまでの時間。つけっぱなしを防ぐ。 */
+internal const val SPEECH_RECOGNITION_IDLE_TIMEOUT_MS = 5 * 60 * 1_000L
+
 /** 音声認識の常時聞き取りを開始・停止し、認識状況を確認用に保持する。 */
 internal class SpeechRecognitionViewModel(
     private val observeSpeechRecognition: ObserveSpeechRecognitionUseCase,
@@ -24,6 +28,9 @@ internal class SpeechRecognitionViewModel(
     val uiState: StateFlow<SpeechRecognitionUiState> = _uiState.asStateFlow()
 
     private var listenJob: Job? = null
+
+    /** 発話がないまま [SPEECH_RECOGNITION_IDLE_TIMEOUT_MS] 経つと聞き取りを止める。認識途中の文字列や確定結果で数え直す。 */
+    private var idleJob: Job? = null
 
     /** 権限の要求結果を待っている間だけ true。停止すると無効になり、後から届いた許可では聞き取りを始めない。 */
     private var permissionRequestPending = false
@@ -62,8 +69,7 @@ internal class SpeechRecognitionViewModel(
     /** 聞き取りを止める。画面から離れたときやアプリが見えなくなったときにも呼ぶ。 */
     fun stop() {
         permissionRequestPending = false
-        listenJob?.cancel()
-        listenJob = null
+        cancelJobs()
         _uiState.update {
             if (it.enabled) {
                 it.copy(enabled = false, status = SpeechRecognitionStatus.Stopped, partialText = "")
@@ -73,11 +79,31 @@ internal class SpeechRecognitionViewModel(
         }
     }
 
-    private fun start() {
+    private fun cancelJobs() {
         listenJob?.cancel()
+        listenJob = null
+        idleJob?.cancel()
+        idleJob = null
+    }
+
+    private fun restartIdleTimer() {
+        idleJob?.cancel()
+        idleJob =
+            viewModelScope.launch {
+                delay(SPEECH_RECOGNITION_IDLE_TIMEOUT_MS)
+                cancelJobs()
+                _uiState.update {
+                    it.copy(enabled = false, status = SpeechRecognitionStatus.IdleStopped, partialText = "")
+                }
+            }
+    }
+
+    private fun start() {
+        cancelJobs()
         _uiState.update {
             it.copy(enabled = true, status = SpeechRecognitionStatus.Starting, partialText = "")
         }
+        restartIdleTimer()
         listenJob =
             viewModelScope.launch {
                 try {
@@ -98,10 +124,12 @@ internal class SpeechRecognitionViewModel(
             }
 
             is SpeechRecognitionEvent.Partial -> {
+                restartIdleTimer()
                 _uiState.update { it.copy(partialText = event.text) }
             }
 
             is SpeechRecognitionEvent.Recognized -> {
+                restartIdleTimer()
                 _uiState.update {
                     it.copy(
                         partialText = "",
@@ -117,6 +145,8 @@ internal class SpeechRecognitionViewModel(
     }
 
     private fun onFailed(reason: SpeechRecognitionFailureReason) {
+        idleJob?.cancel()
+        idleJob = null
         _uiState.update {
             it.copy(
                 enabled = false,
