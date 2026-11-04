@@ -80,6 +80,7 @@ fun ManualReadoutContent(
         onClearSelectedSet = viewModel::clearSelectedSet,
         modifier = modifier,
         backHandler = backHandler,
+        speechRecognitionSection = { ManualReadoutSpeechRecognitionSection() },
         detailContent = detailContent,
     )
 }
@@ -104,6 +105,7 @@ internal fun ManualReadoutContentScaffold(
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass,
     windowPosture: Posture = currentWindowAdaptiveInfoV2().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
+    speechRecognitionSection: @Composable () -> Unit = {},
     detailContent: @Composable (setId: String, canNavigateBack: Boolean, onBack: () -> Unit) -> Unit,
 ) {
     ScrollToTopEffect(scrollToTopRequest) {
@@ -186,6 +188,7 @@ internal fun ManualReadoutContentScaffold(
                     onDeleteSet = onDeleteSet,
                     onTogglePlayButtonLayout = onTogglePlayButtonLayout,
                     onSetClick = onSetClick,
+                    speechRecognitionSection = speechRecognitionSection,
                 )
             },
             detailPane = {
