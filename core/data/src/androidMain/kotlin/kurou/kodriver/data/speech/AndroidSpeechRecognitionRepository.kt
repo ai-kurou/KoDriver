@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withTimeoutOrNull
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
@@ -90,7 +91,8 @@ internal class AndroidSpeechRecognitionRepository(
                 engine.start(listener)
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                captureError(e)
                 return SessionEnd.Stop(SpeechRecognitionFailureReason.Unavailable)
             }
             while (true) {

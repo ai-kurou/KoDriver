@@ -3,6 +3,11 @@
 package kurou.kodriver.data.speech
 
 import android.speech.SpeechRecognizer
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.take
@@ -11,6 +16,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
@@ -202,18 +208,27 @@ class AndroidSpeechRecognitionRepositoryTest {
         }
 
     @Test
-    fun `エンジンの開始に失敗した場合は利用不可を通知して完了する`() =
+    fun `エンジンの開始に失敗した場合は例外を記録して利用不可を通知して完了する`() =
         runTest {
-            val engine = FakeEngine(startFailure = IllegalStateException("開始失敗"))
+            val exception = IllegalStateException("開始失敗")
+            val engine = FakeEngine(startFailure = exception)
             engines.add(engine)
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(exception) } returns Unit
+            try {
+                val events = createRepository().observeRecognition().toList()
 
-            val events = createRepository().observeRecognition().toList()
-
-            assertEquals(
-                listOf(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable)),
-                events,
-            )
-            assertEquals(1, engine.stopCount)
+                assertEquals(
+                    listOf(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable)),
+                    events,
+                )
+                assertEquals(1, engine.stopCount)
+                verify(exactly = 1) { captureError(exception) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test
