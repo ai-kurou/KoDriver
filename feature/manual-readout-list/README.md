@@ -12,7 +12,7 @@ Windows デスクトップでは、各セット行の左側にセット名・項
 
 ## 主要なファイルの役割
 
-- `SpeechRecognitionSection.kt` / `SpeechRecognitionCard.kt` / `SpeechRecognitionViewModel.kt` / `SpeechRecognitionUiState.kt` / `SpeechRecognitionPlatform.kt`: Android のみで一覧の見出し直下に出す、音声認識の確認用の簡易カード。スイッチで常時聞き取り（`ObserveSpeechRecognitionUseCase`）を開始・停止し、状態（停止中・準備中・聞き取り中・マイクの権限が許可されていません・この端末では音声認識を利用できません）、認識途中の文字列、確定結果の履歴（新しい順に最大5件、候補は「 / 」区切り）を表示する。マイクの権限が未許可でONにすると実行時の権限ダイアログを表示し、許可されたら聞き取りを始める。画面から離れたときとアプリが見えなくなったときに聞き取りを止める。デスクトップ版は `isSpeechRecognitionSupportedOnPlatform()` が false のため何も表示しない。認識結果の解釈や読み上げの起動はまだ行わない。
+- `SpeechRecognitionSection.kt` / `SpeechRecognitionCard.kt` / `SpeechRecognitionViewModel.kt` / `SpeechRecognitionUiState.kt` / `SpeechRecognitionPlatform.kt`: Android のみで一覧の見出し直下に出す、音声認識の確認用の簡易カード。スイッチで常時聞き取り（`ObserveSpeechRecognitionUseCase`）を開始・停止し、状態（停止中・準備中・聞き取り中・マイクの権限が許可されていません・この端末では音声認識を利用できません）、認識途中の文字列、確定結果の履歴（新しい順に最大5件、候補は「 / 」区切り）を表示する。マイクの権限が未許可でONにすると実行時の権限ダイアログを表示し、許可されたら聞き取りを始める。画面から離れたときとアプリが見えなくなったときに聞き取りを止める。認識の購読が想定外の例外で終わった場合は `captureError` で記録してから利用不可として停止する。デスクトップ版は `isSpeechRecognitionSupportedOnPlatform()` が false のため何も表示しない。認識結果の解釈や読み上げの起動はまだ行わない。
 
 - `ManualReadoutContent.kt`: Adaptive scaffold の list/detail 切替・戻る操作。選択は一覧 ViewModel の UiState から同期する。
 

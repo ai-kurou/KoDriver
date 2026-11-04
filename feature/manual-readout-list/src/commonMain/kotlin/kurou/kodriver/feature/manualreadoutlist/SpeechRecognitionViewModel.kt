@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
@@ -83,7 +84,8 @@ internal class SpeechRecognitionViewModel(
                     observeSpeechRecognition().collect(::onEvent)
                 } catch (e: CancellationException) {
                     throw e
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    captureError(e)
                     onFailed(SpeechRecognitionFailureReason.Unavailable)
                 }
             }
