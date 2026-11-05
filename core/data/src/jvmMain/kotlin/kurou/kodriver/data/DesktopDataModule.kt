@@ -6,6 +6,8 @@ import kurou.kodriver.data.device.JvmHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.device.JvmRecordAudioPermissionRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
+import kurou.kodriver.data.microphone.JvmAudioInputDeviceRepository
+import kurou.kodriver.data.microphone.JvmMicrophoneRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.JvmKeepScreenOnEnabledRepository
@@ -39,6 +41,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
@@ -55,6 +58,7 @@ import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPref
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutSettingsResetter
+import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
@@ -186,6 +190,9 @@ fun desktopDataModule(directory: String): Module =
         // デスクトップ版は音声認識を提供しない（権限は常に許可済み、認識は常に利用不可）
         single<RecordAudioPermissionRepository> { JvmRecordAudioPermissionRepository() }
         single<SpeechRecognitionRepository> { JvmSpeechRecognitionRepository() }
+        // マイク入力（Java Sound。デバイス一覧と音声取得）
+        single<AudioInputDeviceRepository> { JvmAudioInputDeviceRepository() }
+        single<MicrophoneRepository> { JvmMicrophoneRepository() }
         // テレメトリログ（Room データベース）
         single<TelemetryLogRepository> {
             createTelemetryLogRepository(directory = directory)
