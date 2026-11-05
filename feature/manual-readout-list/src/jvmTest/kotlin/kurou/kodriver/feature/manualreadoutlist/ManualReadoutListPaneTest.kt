@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -509,14 +510,21 @@ class ManualReadoutListPaneTest {
         val window = IntSize(360, 640)
         val menuSize = IntSize(100, 96)
 
+        val provider = ManualReadoutMenuPositionProvider()
+
         fun position(
             anchor: IntRect,
             direction: LayoutDirection,
-        ) = ManualReadoutMenuPositionProvider.calculatePosition(anchor, window, direction, menuSize)
+        ) = provider.calculatePosition(anchor, window, direction, menuSize)
 
         assertEquals(IntOffset(220, 30), position(IntRect(20, 30, 320, 130), LayoutDirection.Ltr))
+        assertEquals(TransformOrigin(1f, 0f), provider.transformOrigin)
         assertEquals(IntOffset(20, 30), position(IntRect(20, 30, 320, 130), LayoutDirection.Rtl))
+        assertEquals(TransformOrigin(0f, 0f), provider.transformOrigin)
         assertEquals(IntOffset(0, 30), position(IntRect(0, 30, 50, 130), LayoutDirection.Ltr))
         assertEquals(IntOffset(260, 544), position(IntRect(20, 580, 360, 640), LayoutDirection.Ltr))
+        assertEquals(TransformOrigin(1f, 1f), provider.transformOrigin)
+        assertEquals(IntOffset(20, 544), position(IntRect(20, 580, 360, 640), LayoutDirection.Rtl))
+        assertEquals(TransformOrigin(0f, 1f), provider.transformOrigin)
     }
 }

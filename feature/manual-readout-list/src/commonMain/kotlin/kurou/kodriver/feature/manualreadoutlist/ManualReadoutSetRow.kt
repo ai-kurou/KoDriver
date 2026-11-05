@@ -124,7 +124,7 @@ internal fun ManualReadoutSetRow(
             onDismissRequest = {
                 menuExpanded = false
             },
-            popupPositionProvider = ManualReadoutMenuPositionProvider,
+            popupPositionProvider = remember { ManualReadoutMenuPositionProvider() },
         ) {
             Surface(
                 color = MaterialTheme.colorScheme.surface,
@@ -222,10 +222,14 @@ internal fun ManualReadoutSetRow(
     }
 }
 
-/** 行の右端にメニューの右端を揃えて表示する（RTL では左端）。 */
+/**
+ * 行の右端にメニューの右端を揃えて表示する（RTL では左端）。下端に収まらない場合は行の下端に揃えて上へ開く。
+ * 拡大アニメーションの起点は、選んだ配置の行側の角に合わせる。
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-internal object ManualReadoutMenuPositionProvider : DropdownMenuPopupPositionProvider {
-    override val transformOrigin: TransformOrigin = TransformOrigin(1f, 0f)
+internal class ManualReadoutMenuPositionProvider : DropdownMenuPopupPositionProvider {
+    override var transformOrigin: TransformOrigin by mutableStateOf(TransformOrigin(1f, 0f))
+        private set
 
     override fun calculatePosition(
         anchorBounds: IntRect,
@@ -233,18 +237,11 @@ internal object ManualReadoutMenuPositionProvider : DropdownMenuPopupPositionPro
         layoutDirection: LayoutDirection,
         popupContentSize: IntSize,
     ): IntOffset {
-        val x =
-            if (layoutDirection == LayoutDirection.Ltr) {
-                anchorBounds.right - popupContentSize.width
-            } else {
-                anchorBounds.left
-            }
-        val y =
-            if (anchorBounds.top + popupContentSize.height > windowSize.height) {
-                anchorBounds.bottom - popupContentSize.height
-            } else {
-                anchorBounds.top
-            }
+        val alignEnd = layoutDirection == LayoutDirection.Ltr
+        val opensUpward = anchorBounds.top + popupContentSize.height > windowSize.height
+        transformOrigin = TransformOrigin(if (alignEnd) 1f else 0f, if (opensUpward) 1f else 0f)
+        val x = if (alignEnd) anchorBounds.right - popupContentSize.width else anchorBounds.left
+        val y = if (opensUpward) anchorBounds.bottom - popupContentSize.height else anchorBounds.top
         return IntOffset(
             x = x.coerceIn(0, (windowSize.width - popupContentSize.width).coerceAtLeast(0)),
             y = y.coerceIn(0, (windowSize.height - popupContentSize.height).coerceAtLeast(0)),
