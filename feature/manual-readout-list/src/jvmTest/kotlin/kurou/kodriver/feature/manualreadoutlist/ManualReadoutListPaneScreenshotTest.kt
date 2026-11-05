@@ -9,10 +9,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.isPopup
 import androidx.compose.ui.test.longClick
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
@@ -71,54 +69,6 @@ class ManualReadoutListPaneScreenshotTest {
                     }
                 }
             }
-            onRoot().captureRoboImage()
-        }
-
-    @Test
-    fun `再生ボタン表示_編集モード`() =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
-                            ManualReadoutListPaneContent(
-                                uiState =
-                                    ManualReadoutListUiState(
-                                        playButtonLayoutEnabled = true,
-                                        canReadSets = true,
-                                        sets =
-                                            listOf(
-                                                ManualReadoutSet(
-                                                    id = "set-1",
-                                                    name = "燃料とタイヤ",
-                                                    itemKeys =
-                                                        listOf(
-                                                            LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
-                                                            LmuWindowsReadoutItemKey.TyreWear.Root.value,
-                                                        ),
-                                                    hotkeyVirtualKeyCode = 0x41,
-                                                ),
-                                                ManualReadoutSet(id = "set-2"),
-                                                ManualReadoutSet(
-                                                    id = "set-3",
-                                                    itemKeys =
-                                                        listOf(
-                                                            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
-                                                        ),
-                                                ),
-                                            ),
-                                    ),
-                                simulatorId = "lmu_windows",
-                                simulatorName = "LMU",
-                                onAddSet = {},
-                                onReadSet = {},
-                                showHotkeyChip = true,
-                            )
-                        }
-                    }
-                }
-            }
-            onNodeWithContentDescription("編集モードにする").performClick()
             onRoot().captureRoboImage()
         }
 
@@ -257,7 +207,7 @@ class ManualReadoutListPaneScreenshotTest {
                     }
                 }
             }
-            onNodeWithText("標準表示では、セットを長押しすると、確認してから削除できます。再生ボタン表示では、編集画面から削除します。").assertIsDisplayed()
+            onNodeWithText("セットを長押しすると、メニューから編集と、確認してからの削除ができます。標準表示では行を、再生ボタン表示ではボタンを長押しします。").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 

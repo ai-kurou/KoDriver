@@ -1,10 +1,12 @@
 package kurou.kodriver.feature.manualreadoutlist
 
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -33,7 +35,7 @@ class ManualReadoutListPaneRequestFeedbackTest {
     }
 
     @Test
-    fun `編集モードのタイルタップでは依頼中表示を出さない`() {
+    fun `長押しメニューの編集では依頼中表示を出さない`() {
         val readSetIds = mutableListOf<String>()
         val clickedSetIds = mutableListOf<String>()
         showPane(
@@ -42,9 +44,9 @@ class ManualReadoutListPaneRequestFeedbackTest {
             onSetClick = { clickedSetIds += it },
         )
 
-        rule.onNodeWithContentDescription("編集モードにする").performClick()
+        rule.onNodeWithText("LMU(Windows)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
         rule.mainClock.advanceTimeByFrame()
-        rule.onNodeWithText("LMU(Windows)セット1").performClick()
+        rule.onNodeWithText("編集").performClick()
         rule.mainClock.advanceTimeByFrame()
         rule.onNodeWithContentDescription("読み上げを依頼しました").assertDoesNotExist()
         assertEquals(emptyList<String>(), readSetIds)

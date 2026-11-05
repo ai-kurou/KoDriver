@@ -106,7 +106,6 @@ internal fun ManualReadoutListPaneContent(
     gridState: LazyGridState = rememberLazyGridState(),
 ) {
     val haptic = LocalHapticFeedback.current
-    var editMode by remember { mutableStateOf(false) }
     var additionBaseline by remember(simulatorId) { mutableStateOf<Set<String>?>(null) }
     val enteredSetIds = remember(simulatorId) { mutableSetOf<String>() }
     val addSet = {
@@ -131,12 +130,7 @@ internal fun ManualReadoutListPaneContent(
                     setCount = uiState.sets.size,
                     showSimHubGuideLink = ReadoutItemKeyRegistry.showsManualReadoutSimHubGuideLink(simulatorId),
                     playButtonLayoutEnabled = uiState.playButtonLayoutEnabled,
-                    onTogglePlayButtonLayout = {
-                        editMode = false
-                        onTogglePlayButtonLayout()
-                    },
-                    editMode = editMode,
-                    onToggleEditMode = { editMode = !editMode },
+                    onTogglePlayButtonLayout = onTogglePlayButtonLayout,
                     modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
                 )
                 if (uiState.playButtonLayoutEnabled) {
@@ -174,12 +168,11 @@ internal fun ManualReadoutListPaneContent(
                                     set = set,
                                     title = set.name.ifBlank { manualReadoutSetTitle(simulatorId, setNumber) },
                                     setNumber = setNumber,
-                                    editMode = editMode,
-                                    selected = uiState.selectedSetId == set.id,
                                     canReadSet = uiState.canReadSets && set.itemKeys.isNotEmpty(),
                                     showHotkeyChip = showHotkeyChip,
                                     onReadSet = { onReadSet(set.id) },
                                     onSetClick = { onSetClick(set.id) },
+                                    onDeleteSet = { onDeleteSet(set.id) },
                                 )
                             }
                         }

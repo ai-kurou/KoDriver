@@ -1,6 +1,5 @@
 package kurou.kodriver.feature.manualreadoutlist
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,25 +41,23 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set_named
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_requesting
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_tap_to_edit
 import org.jetbrains.compose.resources.stringResource
 
-/** 再生を主操作にし、長押しまたは編集モードで詳細を開くタイル。 */
+/** 再生を主操作にし、長押しで「編集」「削除」メニューを開くタイル。 */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ManualReadoutSetPlayButton(
     set: ManualReadoutSet,
     title: String,
     setNumber: Int,
-    editMode: Boolean,
-    selected: Boolean,
     canReadSet: Boolean,
     showHotkeyChip: Boolean,
     onReadSet: () -> Unit,
     onSetClick: () -> Unit,
+    onDeleteSet: () -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
-    val enabled = editMode || canReadSet
+    var menuExpanded by remember { mutableStateOf(false) }
     var requestCount by remember { mutableIntStateOf(0) }
     LaunchedEffect(requestCount) {
         if (requestCount != 0) {
@@ -71,48 +68,49 @@ internal fun ManualReadoutSetPlayButton(
     Surface(
         modifier =
             Modifier
-                .alpha(if (enabled) 1f else 0.38f)
+                .alpha(if (canReadSet) 1f else 0.38f)
                 .combinedClickable(
                     onClick = {
-                        if (editMode) {
-                            if (!selected) haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            onSetClick()
-                        } else if (canReadSet) {
+                        if (canReadSet) {
                             haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                             onReadSet()
                             requestCount++
                         }
                     },
-                    onLongClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        onSetClick()
-                    },
+                    onLongClick = { menuExpanded = true },
                 ),
         shape = MaterialTheme.shapes.large,
-        color = if (editMode) MaterialTheme.colorScheme.surfaceContainerHighest else MaterialTheme.colorScheme.primary,
-        contentColor = if (editMode) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimary,
-        border = if (editMode) BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary) else null,
+        color = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().heightIn(min = 104.dp).padding(KoDriverSpacing.medium),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall, Alignment.CenterVertically),
-        ) {
-            ManualReadoutPlayTileIcon(editMode, requestCount != 0, set, setNumber)
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
+        Box {
+            ManualReadoutSetMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+                onEdit = onSetClick,
+                onDelete = onDeleteSet,
             )
-            Text(
-                text = manualReadoutPlayButtonSubtitle(editMode, set.itemKeys.size),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            ManualReadoutCategoryDots(remember(set.itemKeys) { manualReadoutCategorySummary(set.itemKeys) })
-            if (showHotkeyChip && manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null) {
-                ManualReadoutHotkeyChip(set, playButtonLayout = true)
+            Column(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 104.dp).padding(KoDriverSpacing.medium),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall, Alignment.CenterVertically),
+            ) {
+                ManualReadoutPlayTileIcon(requestCount != 0, set, setNumber)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                )
+                Text(
+                    text = manualReadoutPlayButtonSubtitle(set.itemKeys.size),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                ManualReadoutCategoryDots(remember(set.itemKeys) { manualReadoutCategorySummary(set.itemKeys) })
+                if (showHotkeyChip && manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null) {
+                    ManualReadoutHotkeyChip(set, playButtonLayout = true)
+                }
             }
         }
     }
@@ -120,19 +118,18 @@ internal fun ManualReadoutSetPlayButton(
 
 @Composable
 private fun ManualReadoutPlayTileIcon(
-    editMode: Boolean,
     requesting: Boolean,
     set: ManualReadoutSet,
     setNumber: Int,
 ) {
-    if (!editMode && requesting) {
+    if (requesting) {
         Box(Modifier.size(32.dp), contentAlignment = Alignment.Center) {
             PlayingEqualizer(stringResource(Res.string.manual_readout_list_requesting))
         }
     } else {
         Icon(
-            imageVector = if (editMode) Icons.Filled.Edit else Icons.Filled.PlayArrow,
-            contentDescription = if (editMode) null else manualReadoutPlayButtonDescription(set, setNumber),
+            imageVector = Icons.Filled.PlayArrow,
+            contentDescription = manualReadoutPlayButtonDescription(set, setNumber),
             modifier = Modifier.size(32.dp),
         )
     }
@@ -150,12 +147,8 @@ internal fun manualReadoutPlayButtonDescription(
     }
 
 @Composable
-internal fun manualReadoutPlayButtonSubtitle(
-    editMode: Boolean,
-    itemCount: Int,
-): String =
+internal fun manualReadoutPlayButtonSubtitle(itemCount: Int): String =
     when {
-        editMode -> stringResource(Res.string.manual_readout_tap_to_edit)
         itemCount == 0 -> stringResource(Res.string.manual_readout_list_no_items)
         else -> stringResource(Res.string.manual_readout_list_item_count, itemCount)
     }
