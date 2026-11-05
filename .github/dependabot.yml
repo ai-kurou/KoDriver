@@ -8,12 +8,20 @@ updates:
       timezone: Asia/Tokyo
     open-pull-requests-limit: 5
     groups:
-      # Kotlin・KSP・Compose は版を揃えて上げる必要があるため、1つのPRにまとめる
+      # Kotlin・KSP・Compose は版を揃えて上げる必要があるため、minor / patch を1つのPRにまとめる
+      # （major は個別PR。kotlinx 系・Kover・Material3 は別管理のため対象外）
       kotlin-compose:
         patterns:
-          - "org.jetbrains.kotlin*"
+          - "org.jetbrains.kotlin:*"
+          - "org.jetbrains.kotlin.*"
           - "com.google.devtools.ksp*"
-          - "org.jetbrains.compose*"
+          - "org.jetbrains.compose"
+          - "org.jetbrains.compose.*"
+        exclude-patterns:
+          - "org.jetbrains.compose.material3*"
+        update-types:
+          - minor
+          - patch
       # 上記以外の minor / patch 更新は1つのPRにまとめる（major は個別PR）
       minor-and-patch:
         update-types:
