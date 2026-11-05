@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.narratoroverlay
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,6 +41,11 @@ private val NarratorOverlayTextShadow =
     Shadow(color = Color.Black.copy(alpha = 0.8f), offset = Offset(2f, 2f), blurRadius = 4f)
 
 /**
+ * 読み上げ内容が切り替わる際のフェード時間（ミリ秒）。ゲーム中の視認性を優先し、短く保つ。
+ */
+private const val NARRATOR_OVERLAY_TEXT_FADE_DURATION_MILLIS = 150
+
+/**
  * NarratorOverlayContent を提供する公開関数。
  */
 @Composable
@@ -65,12 +72,18 @@ internal fun NarratorOverlayContent(
                     .padding(KoDriverSpacing.large),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = uiState.latestTelemetryLog?.narratedText.orEmpty(),
-                color = Color(uiState.overlayTextColor),
-                style = narratorOverlayTextStyle(uiState.overlayTextSize),
-                textAlign = TextAlign.Center,
-            )
+            Crossfade(
+                targetState = uiState.latestTelemetryLog?.narratedText.orEmpty(),
+                animationSpec = tween(durationMillis = NARRATOR_OVERLAY_TEXT_FADE_DURATION_MILLIS),
+                label = "narratorOverlayText",
+            ) { narratedText ->
+                Text(
+                    text = narratedText,
+                    color = Color(uiState.overlayTextColor),
+                    style = narratorOverlayTextStyle(uiState.overlayTextSize),
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }

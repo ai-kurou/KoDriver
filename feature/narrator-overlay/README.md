@@ -13,6 +13,7 @@ TelemetryLog に記録された最新の読み上げ内容をライブ購読し�
 経由）。ウィンドウのドラッグ移動・リサイズ、初期表示位置・サイズについては
 `app/desktopApp/src/main/kotlin/kurou/kodriver/NarratorOverlayWindow.kt` を参照。
 文字にはテーマに依存しない黒い影を付け、背景が透明な場合の視認性を高める。
+読み上げ内容が更新されると 150ms の短いフェードで切り替わる（背景・文字色・サイズ・影は変えない）。
 文字色は `ObserveOverlayTextColorUseCase` のARGB Longを購読し、Textのcolorへ適用する。
 既定値は `OVERLAY_TEXT_COLOR_DEFAULT` を参照する。文字色ダイアログの選択は共有Repositoryのプレビュー値として即時反映される。
 OKで保存され、キャンセル・ダイアログ外タップ・ViewModel破棄・保存失敗では保存値に戻る。
