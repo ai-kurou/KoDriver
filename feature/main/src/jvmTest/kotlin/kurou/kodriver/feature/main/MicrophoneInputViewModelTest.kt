@@ -7,13 +7,18 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.MicrophoneAudioEvent
 import kurou.kodriver.domain.model.MicrophoneFailureReason
@@ -110,17 +115,47 @@ class MicrophoneInputViewModelTest {
     }
 
     @Test
-    fun `再度ONにすると前のデバイス名を残さず取得し直す`() {
+    fun `再度ONにするとデバイス一覧の取得を待つ間は前のデバイス名を消す`() {
         stubDevices()
         viewModel.onEnabledChange(true)
-        events.tryEmit(MicrophoneAudioEvent.Failed(MicrophoneFailureReason.Unavailable))
-        coEvery { deviceRepository.getDevices() } returns emptyList()
-        every { microphoneRepository.observeAudio(null) } returns events
+        assertEquals("Mic A", viewModel.uiState.value.deviceName)
+        val pending = CompletableDeferred<List<AudioInputDevice>>()
+        coEvery { deviceRepository.getDevices() } coAnswers { pending.await() }
 
         viewModel.onEnabledChange(true)
 
         assertEquals(null, viewModel.uiState.value.deviceName)
         assertEquals(MicrophoneInputStatus.Starting, viewModel.uiState.value.status)
+    }
+
+    @Test
+    fun `再度ONにすると前の取得がマイクを閉じ終えるまで次の取得を始めない`() {
+        stubDevices()
+        val closing = CompletableDeferred<Unit>()
+        every { microphoneRepository.observeAudio(micA) } returnsMany
+            listOf(
+                flow<MicrophoneAudioEvent> {
+                    try {
+                        awaitCancellation()
+                    } finally {
+                        withContext(NonCancellable) { closing.await() }
+                    }
+                },
+                events,
+            )
+        viewModel.onEnabledChange(true)
+
+        viewModel.onEnabledChange(true)
+
+        verify(exactly = 1) { microphoneRepository.observeAudio(micA) }
+        assertEquals(0, events.subscriptionCount.value)
+
+        closing.complete(Unit)
+
+        verify(exactly = 2) { microphoneRepository.observeAudio(micA) }
+        assertEquals(1, events.subscriptionCount.value)
+        coVerify(exactly = 2) { deviceRepository.getDevices() }
+        confirmVerified(deviceRepository, microphoneRepository)
     }
 
     @Test
