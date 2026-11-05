@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
 import kurou.kodriver.core.acewindowsdata.desktopAceWindowsPreferencesDataModule
 import kurou.kodriver.core.lmuwindowsdata.desktopLmuWindowsPreferencesDataModule
+import kurou.kodriver.core.speechrecognitiondata.speechRecognitionDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.data.registerReadoutItemKeys
@@ -85,6 +86,7 @@ class AppTest {
                         desktopLmuWindowsPreferencesDataModule(directory),
                         aceWindowsDataModule,
                         textToSpeechDataModule,
+                        speechRecognitionDataModule,
                     ) +
                         featureModules +
                         listOf(

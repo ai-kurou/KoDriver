@@ -7,6 +7,7 @@ import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.desktopLmuWindowsPreferencesDataModule
 import kurou.kodriver.core.lmuwindowsrestapidata.lmuWindowsRestApiDataModule
+import kurou.kodriver.core.speechrecognitiondata.speechRecognitionDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.core.windowshotkeydata.windowsHotkeyDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
@@ -329,6 +330,7 @@ class DesktopKoinModuleGraphTest {
                 desktopLmuWindowsPreferencesDataModule(directory),
                 gt7Ps5DataModule,
                 deviceVolumeDataModule,
+                speechRecognitionDataModule,
                 textToSpeechDataModule,
                 windowsStartupDataModule,
                 lmuWindowsRestApiDataModule,

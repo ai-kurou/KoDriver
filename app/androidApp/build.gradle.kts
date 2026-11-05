@@ -23,6 +23,7 @@ dependencies {
     implementation(projects.core.gt7Ps5Data)
     implementation(projects.core.lmuWindowsData)
     implementation(projects.core.deviceVolumeData)
+    implementation(projects.core.speechRecognitionData)
     implementation(projects.core.textToSpeechData)
     implementation(projects.core.windowsStartupData)
 
