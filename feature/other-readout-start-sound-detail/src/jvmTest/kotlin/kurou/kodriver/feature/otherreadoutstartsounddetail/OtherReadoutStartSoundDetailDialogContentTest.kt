@@ -69,6 +69,50 @@ class OtherReadoutStartSoundDetailDialogContentTest {
     }
 
     @Test
+    fun `OKボタンをクリックするとハプティックとonConfirmが一度ずつ呼ばれる`() {
+        var confirmCount = 0
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherReadoutStartSoundDetailDialogContent(
+                        uiState = OtherReadoutStartSoundDetailUiState(),
+                        onConfirm = { confirmCount++ },
+                    )
+                }
+            }
+        }
+
+        rule.onNodeWithText("OK").performClick()
+
+        assertEquals(1, confirmCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `キャンセルボタンをクリックするとハプティックとonDismissが一度ずつ呼ばれる`() {
+        var dismissCount = 0
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherReadoutStartSoundDetailDialogContent(
+                        uiState = OtherReadoutStartSoundDetailUiState(),
+                        onDismiss = { dismissCount++ },
+                    )
+                }
+            }
+        }
+
+        rule.onNodeWithText("キャンセル").performClick()
+
+        assertEquals(1, dismissCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
     fun `すべての種別ラベルが表示されている`() {
         setContent()
 

@@ -71,6 +71,50 @@ class OtherOverlayTextSizeDetailDialogContentTest {
     }
 
     @Test
+    fun `OKボタンをクリックするとハプティックとonConfirmが一度ずつ呼ばれる`() {
+        var confirmCount = 0
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherOverlayTextSizeDetailDialogContent(
+                        uiState = OtherOverlayTextSizeDetailUiState(),
+                        onConfirm = { confirmCount++ },
+                    )
+                }
+            }
+        }
+
+        rule.onNodeWithText("OK").performClick()
+
+        assertEquals(1, confirmCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `キャンセルボタンをクリックするとハプティックとonDismissが一度ずつ呼ばれる`() {
+        var dismissCount = 0
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    OtherOverlayTextSizeDetailDialogContent(
+                        uiState = OtherOverlayTextSizeDetailUiState(),
+                        onDismiss = { dismissCount++ },
+                    )
+                }
+            }
+        }
+
+        rule.onNodeWithText("キャンセル").performClick()
+
+        assertEquals(1, dismissCount)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
     fun `すべての文字サイズラベルが表示されている`() {
         setContent()
 
