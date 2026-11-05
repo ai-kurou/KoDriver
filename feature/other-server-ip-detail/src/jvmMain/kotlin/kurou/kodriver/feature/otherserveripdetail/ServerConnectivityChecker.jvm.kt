@@ -14,8 +14,8 @@ private const val TIMEOUT_MS = 3000
 
 internal class TcpServerConnectivityChecker(
     private val port: Int = DEFAULT_PORT,
-    private val connect: (InetAddress, Int, Int) -> Unit = { address, port, timeoutMs ->
-        Socket().use { socket -> socket.connect(InetSocketAddress(address, port), timeoutMs) }
+    private val connect: (InetAddress, Int, Int) -> Unit = { address, connectPort, timeoutMs ->
+        Socket().use { socket -> socket.connect(InetSocketAddress(address, connectPort), timeoutMs) }
     },
 ) : ServerConnectivityChecker {
     override suspend fun isReachable(ip: String): Boolean =
