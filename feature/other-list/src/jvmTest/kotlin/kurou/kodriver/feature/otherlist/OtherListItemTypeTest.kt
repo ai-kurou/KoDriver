@@ -6,15 +6,15 @@ import kotlin.test.assertNull
 
 class OtherListItemTypeTest {
     @Test
-    fun `データログはアプリ設定と情報の間にあり削除と初期化の項目が所属する`() {
+    fun `データログは情報の後ろにあり削除と初期化の項目が所属する`() {
         assertEquals(
             listOf(
                 OtherListSection.ConnectionSettings,
                 OtherListSection.ReadoutSettings,
                 OtherListSection.OverlaySettings,
                 OtherListSection.AppSettings,
-                OtherListSection.DataLog,
                 OtherListSection.Information,
+                OtherListSection.DataLog,
             ),
             otherListSections,
         )
@@ -93,16 +93,28 @@ class OtherListItemTypeTest {
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.Startup,
-                OtherListItemType.ResetAutoReadoutSettings,
-                OtherListItemType.ResetManualReadoutSettings,
-                OtherListItemType.DeleteAllLogs,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
                 OtherListItemType.License,
                 OtherListItemType.DebugState,
+                OtherListItemType.ResetAutoReadoutSettings,
+                OtherListItemType.ResetManualReadoutSettings,
+                OtherListItemType.DeleteAllLogs,
             ),
             OtherListItemType.entries,
+        )
+    }
+
+    @Test
+    fun `破壊的操作の項目だけがisDestructiveになる`() {
+        assertEquals(
+            setOf(
+                OtherListItemType.ResetAutoReadoutSettings,
+                OtherListItemType.ResetManualReadoutSettings,
+                OtherListItemType.DeleteAllLogs,
+            ),
+            OtherListItemType.entries.filter { it.isDestructive() }.toSet(),
         )
     }
 

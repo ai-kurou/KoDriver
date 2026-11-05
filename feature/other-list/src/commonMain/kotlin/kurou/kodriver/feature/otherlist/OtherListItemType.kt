@@ -156,14 +156,14 @@ sealed interface OtherListItemType {
                 DynamicColor,
                 HapticFeedback,
                 Startup,
-                ResetAutoReadoutSettings,
-                ResetManualReadoutSettings,
-                DeleteAllLogs,
                 GitHubRepository,
                 ReleasePage,
                 Feedback,
                 License,
                 DebugState,
+                ResetAutoReadoutSettings,
+                ResetManualReadoutSettings,
+                DeleteAllLogs,
             )
         }
 

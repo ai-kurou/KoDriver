@@ -66,8 +66,8 @@ internal enum class OtherListSection {
     ReadoutSettings,
     OverlaySettings,
     AppSettings,
-    DataLog,
     Information,
+    DataLog,
 }
 
 internal val otherListSections =
@@ -76,9 +76,12 @@ internal val otherListSections =
         OtherListSection.ReadoutSettings,
         OtherListSection.OverlaySettings,
         OtherListSection.AppSettings,
-        OtherListSection.DataLog,
         OtherListSection.Information,
+        OtherListSection.DataLog,
     )
+
+/** 破壊的操作（設定の初期化・ログ削除）の項目か。見た目で警告色を使う判定に用いる。 */
+internal fun OtherListItemType.isDestructive(): Boolean = section() == OtherListSection.DataLog
 
 internal fun OtherListItemType.section(): OtherListSection =
     when (this) {

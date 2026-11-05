@@ -256,22 +256,23 @@ internal fun OtherListItem(
         animationSpec = tween(durationMillis = 500),
         label = "otherListItemContainerColor",
     )
+    val isDestructive = item.isDestructive()
     val headlineColor by animateColorAsState(
         targetValue =
-            if (isSelected) {
-                MaterialTheme.colorScheme.onSecondaryContainer
-            } else {
-                MaterialTheme.colorScheme.onSurface
+            when {
+                isSelected -> MaterialTheme.colorScheme.onSecondaryContainer
+                isDestructive -> MaterialTheme.colorScheme.error
+                else -> MaterialTheme.colorScheme.onSurface
             },
         animationSpec = tween(durationMillis = 500),
         label = "otherListItemHeadlineColor",
     )
     val iconColor by animateColorAsState(
         targetValue =
-            if (isSelected) {
-                MaterialTheme.colorScheme.onSecondaryContainer
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
+            when {
+                isSelected -> MaterialTheme.colorScheme.onSecondaryContainer
+                isDestructive -> MaterialTheme.colorScheme.error
+                else -> MaterialTheme.colorScheme.onSurfaceVariant
             },
         animationSpec = tween(durationMillis = 500),
         label = "otherListItemIconColor",
