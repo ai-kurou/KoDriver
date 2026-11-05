@@ -250,8 +250,12 @@ private fun NewTelemetryLogsButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
     TextButton(
-        onClick = onClick,
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            onClick()
+        },
         modifier = modifier,
         colors =
             ButtonDefaults.textButtonColors(
