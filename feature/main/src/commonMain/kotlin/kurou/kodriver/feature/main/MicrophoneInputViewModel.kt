@@ -43,7 +43,11 @@ internal class MicrophoneInputViewModel(
         refreshJob =
             viewModelScope.launch {
                 try {
-                    applyDevices(getAudioInputDevices())
+                    val devices = getAudioInputDevices()
+                    val before = _uiState.value.deviceName
+                    val device = applyDevices(devices)
+                    // 取得中に解決先のデバイスが変わった場合は、表示と取得元がずれないよう取得し直す
+                    if (_uiState.value.enabled && before != null && device?.name != before) start()
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
@@ -54,8 +58,8 @@ internal class MicrophoneInputViewModel(
 
     /** ドロップダウンで入力デバイスを選ぶ。取得中の場合は選んだデバイスで取得し直す。 */
     fun onDeviceSelected(name: String) {
-        if (name == selectedDeviceName) return
         selectedDeviceName = name
+        if (name == _uiState.value.deviceName) return
         _uiState.update { it.copy(deviceName = name) }
         if (_uiState.value.enabled) start()
     }
@@ -88,6 +92,8 @@ internal class MicrophoneInputViewModel(
     }
 
     private fun start() {
+        // 古い一覧取得の結果が、新しく始める取得の表示を上書きしないようにする
+        refreshJob?.cancel()
         val previous = captureJob
         previous?.cancel()
         _uiState.update {
@@ -113,6 +119,8 @@ internal class MicrophoneInputViewModel(
     /** 一覧を反映し、選択中（見つからなければ先頭）のデバイスを返す。 */
     private fun applyDevices(devices: List<AudioInputDevice>): AudioInputDevice? {
         val device = devices.firstOrNull { it.name == selectedDeviceName } ?: devices.firstOrNull()
+        // 選択中のデバイスが一覧から消えたら選択を破棄し、再接続されても勝手に元へ戻らないようにする
+        if (devices.isNotEmpty() && device?.name != selectedDeviceName) selectedDeviceName = null
         _uiState.update { it.copy(devices = devices.map(AudioInputDevice::name), deviceName = device?.name) }
         return device
     }

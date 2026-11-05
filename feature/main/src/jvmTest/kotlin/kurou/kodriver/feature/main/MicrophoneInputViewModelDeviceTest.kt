@@ -123,8 +123,8 @@ class MicrophoneInputViewModelDeviceTest {
         viewModel.onDeviceSelected("Mic A")
         viewModel.onDeviceSelected("Mic A")
 
-        coVerify(exactly = 2) { deviceRepository.getDevices() }
-        verify(exactly = 2) { microphoneRepository.observeAudio(micA) }
+        coVerify(exactly = 1) { deviceRepository.getDevices() }
+        verify(exactly = 1) { microphoneRepository.observeAudio(micA) }
         confirmVerified(deviceRepository, microphoneRepository)
     }
 
@@ -139,5 +139,38 @@ class MicrophoneInputViewModelDeviceTest {
 
         assertEquals("Mic A", viewModel.uiState.value.deviceName)
         assertEquals(listOf("Mic A"), viewModel.uiState.value.devices)
+    }
+
+    @Test
+    fun `取得中に一覧の更新で解決先のデバイスが変わったら取得し直す`() {
+        stubDevices()
+        val micB = AudioInputDevice("Mic B")
+        every { microphoneRepository.observeAudio(micB) } returns events
+        viewModel.onEnabledChange(true)
+        viewModel.onDeviceSelected("Mic B")
+        coEvery { deviceRepository.getDevices() } returns listOf(micA)
+
+        viewModel.refreshDevices()
+
+        assertEquals("Mic A", viewModel.uiState.value.deviceName)
+        assertEquals(1, events.subscriptionCount.value)
+        verify(exactly = 2) { microphoneRepository.observeAudio(micA) }
+        verify(exactly = 1) { microphoneRepository.observeAudio(micB) }
+        coVerify(exactly = 4) { deviceRepository.getDevices() }
+        confirmVerified(deviceRepository, microphoneRepository)
+    }
+
+    @Test
+    fun `一覧から消えた選択は破棄され、再接続されても元のデバイスに戻らない`() {
+        stubDevices()
+        viewModel.refreshDevices()
+        viewModel.onDeviceSelected("Mic B")
+        coEvery { deviceRepository.getDevices() } returns listOf(micA)
+        viewModel.refreshDevices()
+        coEvery { deviceRepository.getDevices() } returns listOf(micA, AudioInputDevice("Mic B"))
+
+        viewModel.refreshDevices()
+
+        assertEquals("Mic A", viewModel.uiState.value.deviceName)
     }
 }
