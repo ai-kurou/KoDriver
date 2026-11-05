@@ -27,9 +27,13 @@ internal class VoskSpeechTranscriberFactory(
     override fun create(): SpeechTranscriber {
         LibVosk.setLogLevel(LogLevel.WARNINGS)
         val model = Model(modelDirectory.absolutePath)
+        var recognizer: Recognizer? = null
         return try {
-            VoskSpeechTranscriber(model, Recognizer(model, MICROPHONE_SAMPLE_RATE_HZ.toFloat()))
+            recognizer = Recognizer(model, MICROPHONE_SAMPLE_RATE_HZ.toFloat())
+            VoskSpeechTranscriber(model, recognizer)
         } catch (e: Exception) {
+            // 呼び出し側は閉じる対象を受け取れないため、作成済みのネイティブ資源はここで解放する
+            recognizer?.close()
             model.close()
             throw e
         }

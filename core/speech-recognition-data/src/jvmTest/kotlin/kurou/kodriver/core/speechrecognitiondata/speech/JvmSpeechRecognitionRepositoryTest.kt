@@ -1,11 +1,15 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.MicrophoneAudioEvent
@@ -142,12 +146,58 @@ class JvmSpeechRecognitionRepositoryTest {
             )
             assertTrue(transcriber.closed)
         }
+
+    @Test
+    fun `認識中に想定外の例外が出たら利用不可を通知し、認識エンジンを閉じる`() =
+        runTest {
+            val transcriber = FakeTranscriber().apply { acceptError = IllegalStateException("accept failed") }
+            microphone.events = flowOf(chunk(1), chunk(2))
+
+            val events = observeWith(transcriber)
+
+            assertEquals(
+                listOf(
+                    SpeechRecognitionEvent.Listening,
+                    SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable),
+                ),
+                events,
+            )
+            assertEquals(1, transcriber.acceptedChunks.size)
+            assertTrue(transcriber.closed)
+        }
+
+    @Test
+    fun `選択マイクの読み取りに失敗したら利用不可を通知し、認識エンジンを閉じる`() =
+        runTest {
+            val transcriber = FakeTranscriber()
+            preferences.readError = IllegalStateException("read failed")
+
+            val events = observeWith(transcriber)
+
+            assertEquals(listOf(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable)), events)
+            assertEquals(emptyList(), microphone.requestedDevices)
+            assertTrue(transcriber.closed)
+        }
+
+    @Test
+    fun `収集をキャンセルすると認識エンジンを閉じる`() =
+        runTest {
+            val transcriber = FakeTranscriber()
+            microphone.events = flow { awaitCancellation() }
+
+            val job = launch(Dispatchers.Unconfined) { observeWith(transcriber) }
+            assertFalse(transcriber.closed)
+            job.cancelAndJoin()
+
+            assertTrue(transcriber.closed)
+        }
 }
 
 private class FakeSelectedDevicePreferences : SelectedAudioInputDevicePreferencesRepository {
     val name = MutableStateFlow(SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED)
+    var readError: Throwable? = null
 
-    override fun selectedDeviceName(): Flow<String> = name
+    override fun selectedDeviceName(): Flow<String> = readError?.let { error -> flow { throw error } } ?: name
 
     override suspend fun saveSelectedDeviceName(name: String) {
         this.name.update { name }
@@ -169,11 +219,13 @@ private class FakeTranscriber(
 ) : SpeechTranscriber {
     private val queue = transcripts.toMutableList()
     val acceptedChunks = mutableListOf<ByteArray>()
+    var acceptError: Throwable? = null
     var closed = false
         private set
 
     override fun accept(pcm: ByteArray): SpeechTranscript? {
         acceptedChunks += pcm
+        acceptError?.let { throw it }
         return if (queue.isEmpty()) null else queue.removeAt(0)
     }
 

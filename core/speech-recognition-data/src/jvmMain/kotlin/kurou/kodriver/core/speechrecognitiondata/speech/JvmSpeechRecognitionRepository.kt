@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -39,6 +40,11 @@ internal class JvmSpeechRecognitionRepository(
             } else {
                 transcriber.use { recognize(it) }
             }
+        }.catch { e ->
+            // 設定の読み取りや認識中に想定外の例外が出ても、続行できないことをFailedで知らせて完了する
+            if (e !is Exception && e !is LinkageError) throw e
+            captureError(e)
+            emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
         }.flowOn(computeDispatcher)
 
     private fun createTranscriber(): SpeechTranscriber? {
