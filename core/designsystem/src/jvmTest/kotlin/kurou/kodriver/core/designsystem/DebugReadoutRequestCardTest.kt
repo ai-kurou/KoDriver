@@ -1,9 +1,13 @@
 package kurou.kodriver.core.designsystem
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -51,5 +55,51 @@ class DebugReadoutRequestCardTest {
         rule.onNodeWithText("読み上げ").assertIsEnabled().performClick()
         assertEquals("入力 {laps}", sent)
         rule.onNodeWithText("入力 {laps}").assertIsDisplayed()
+    }
+
+    @Test
+    fun `項目選択と送信ボタン押下でそれぞれハプティックを一度ずつ発生させる`() {
+        val haptic = RecordingHapticFeedback()
+        var selected = ""
+        var sendCount = 0
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    var key by remember { mutableStateOf("gt7_ps5_auto_my_best_lap") }
+                    DebugReadoutRequestCard(
+                        readoutItemKeyValues = listOf("gt7_ps5_auto_my_best_lap", "gt7_ps5_auto_remaining_fuel"),
+                        selectedReadoutItemKeyValue = key,
+                        text = "入力",
+                        onReadoutItemSelected = {
+                            key = it
+                            selected = it
+                        },
+                        onTextChange = {},
+                        onReadout = { sendCount++ },
+                    )
+                }
+            }
+        }
+
+        rule.onNodeWithTag("debug_readout_request_item").performClick()
+        assertEquals(emptyList(), haptic.performedTypes)
+        rule.onNodeWithText("燃料残量").performClick()
+        assertEquals("gt7_ps5_auto_remaining_fuel", selected)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
+
+        rule.onNodeWithText("読み上げ").performClick()
+        assertEquals(1, sendCount)
+        assertEquals(
+            listOf(HapticFeedbackType.ContextClick, HapticFeedbackType.ContextClick),
+            haptic.performedTypes,
+        )
+    }
+
+    private class RecordingHapticFeedback : HapticFeedback {
+        val performedTypes = mutableListOf<HapticFeedbackType>()
+
+        override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+            performedTypes += hapticFeedbackType
+        }
     }
 }
