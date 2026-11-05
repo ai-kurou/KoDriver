@@ -7,19 +7,31 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.main.generated.resources.Res
+import kurou.kodriver.feature.main.generated.resources.microphone_input_device_label
 import kurou.kodriver.feature.main.generated.resources.microphone_input_device_name
 import kurou.kodriver.feature.main.generated.resources.microphone_input_device_not_found
 import kurou.kodriver.feature.main.generated.resources.microphone_input_level_description
@@ -39,6 +51,8 @@ import org.jetbrains.compose.resources.stringResource
 internal fun MicrophoneInputCard(
     uiState: MicrophoneInputUiState,
     onEnabledChange: (Boolean) -> Unit,
+    onDeviceMenuOpen: () -> Unit,
+    onDeviceSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val switchDescription = stringResource(Res.string.microphone_input_switch_description)
@@ -94,7 +108,14 @@ internal fun MicrophoneInputCard(
             val deviceLine =
                 uiState.deviceName?.let { stringResource(Res.string.microphone_input_device_name, it) }
                     ?: stringResource(Res.string.microphone_input_device_not_found).takeIf { deviceEnumerated }
-            if (deviceLine != null) {
+            if (uiState.devices.isNotEmpty() && uiState.deviceName != null) {
+                MicrophoneDeviceDropdown(
+                    devices = uiState.devices,
+                    selected = uiState.deviceName,
+                    onMenuOpen = onDeviceMenuOpen,
+                    onSelected = onDeviceSelected,
+                )
+            } else if (deviceLine != null) {
                 Text(
                     text = deviceLine,
                     style = MaterialTheme.typography.bodyMedium,
@@ -115,6 +136,50 @@ internal fun MicrophoneInputCard(
                     text = stringResource(Res.string.microphone_input_no_signal_guidance),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MicrophoneDeviceDropdown(
+    devices: List<String>,
+    selected: String,
+    onMenuOpen: () -> Unit,
+    onSelected: (String) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            if (it) onMenuOpen()
+            expanded = it
+        },
+    ) {
+        OutlinedTextField(
+            value = selected,
+            onValueChange = {},
+            readOnly = true,
+            singleLine = true,
+            label = { Text(stringResource(Res.string.microphone_input_device_label)) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            modifier =
+                Modifier
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth()
+                    .testTag("microphone_input_device"),
+        )
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            devices.forEach { name ->
+                DropdownMenuItem(
+                    text = { Text(name) },
+                    modifier = Modifier.testTag("microphone_input_device_$name"),
+                    onClick = {
+                        onSelected(name)
+                        expanded = false
+                    },
                 )
             }
         }

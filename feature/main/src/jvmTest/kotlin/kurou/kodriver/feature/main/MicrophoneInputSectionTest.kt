@@ -2,8 +2,10 @@ package kurou.kodriver.feature.main
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.Lifecycle
@@ -100,7 +102,18 @@ class MicrophoneInputSectionTest {
         rule.onNodeWithContentDescription("マイク入力の確認を切り替え").performClick()
 
         rule.onNodeWithText("準備中(マイクを使用中)").assertExists()
-        rule.onNodeWithText("入力デバイス: Mic A").assertExists()
+        rule.onNodeWithTag("microphone_input_device").assertTextContains("Mic A")
+    }
+
+    @Test
+    fun `表示した時点で一覧を取得し、停止中でも選択中のデバイスを表示する`() {
+        stubMicA()
+        rule.setContent {
+            KoDriverTheme { rememberMicrophoneInputSection(viewModel)(Modifier) }
+        }
+
+        rule.onNodeWithTag("microphone_input_device").assertTextContains("Mic A")
+        rule.runOnIdle { assertEquals(false, viewModel.uiState.value.enabled) }
     }
 
     @Test

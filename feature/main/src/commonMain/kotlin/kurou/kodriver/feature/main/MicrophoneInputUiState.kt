@@ -22,8 +22,10 @@ internal enum class MicrophoneInputStatus {
 internal data class MicrophoneInputUiState(
     val enabled: Boolean = false,
     val status: MicrophoneInputStatus = MicrophoneInputStatus.Stopped,
-    /** 入力デバイスの表示名。取得前や、デバイスが見つからない場合は null。 */
+    /** 選択中の入力デバイスの表示名。一覧の取得前や、デバイスが見つからない場合は null。 */
     val deviceName: String? = null,
+    /** ドロップダウンに出す入力デバイス名の一覧。取得前や、デバイスが無い場合は空。 */
+    val devices: List<String> = emptyList(),
     /** 直近の音量。0.0（無音）〜1.0（最大振幅）。 */
     val level: Float = 0f,
 )

@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.main
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -63,12 +64,15 @@ private fun SpeechRecognitionSectionContent(
 internal fun rememberMicrophoneInputSection(viewModel: MicrophoneInputViewModel): @Composable (Modifier) -> Unit {
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.onAppBackgrounded() }
     LifecycleEventEffect(Lifecycle.Event.ON_START) { viewModel.onAppForegrounded() }
+    LaunchedEffect(viewModel) { viewModel.refreshDevices() }
     return remember(viewModel) {
         val section: @Composable (Modifier) -> Unit = { modifier ->
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             MicrophoneInputCard(
                 uiState = uiState,
                 onEnabledChange = viewModel::onEnabledChange,
+                onDeviceMenuOpen = viewModel::refreshDevices,
+                onDeviceSelected = viewModel::onDeviceSelected,
                 modifier = modifier,
             )
         }

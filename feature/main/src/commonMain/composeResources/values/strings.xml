@@ -16,6 +16,7 @@
     <string name="microphone_input_status_unavailable">マイクを利用できません</string>
     <string name="microphone_input_status_no_signal">音声が入力されていません</string>
     <string name="microphone_input_device_name">入力デバイス: %1$s</string>
+    <string name="microphone_input_device_label">入力デバイス</string>
     <string name="microphone_input_device_not_found">入力デバイスが見つかりません</string>
     <string name="microphone_input_level_description">マイクの入力音量</string>
     <string name="microphone_input_no_signal_guidance">Windows の設定 &gt; プライバシーとセキュリティ &gt; マイク で、マイクへのアクセスが許可されているか確認してください。</string>

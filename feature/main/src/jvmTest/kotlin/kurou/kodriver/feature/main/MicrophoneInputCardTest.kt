@@ -2,8 +2,10 @@ package kurou.kodriver.feature.main
 
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -18,9 +20,18 @@ class MicrophoneInputCardTest {
     private fun setCard(
         uiState: MicrophoneInputUiState,
         changes: MutableList<Boolean> = mutableListOf(),
+        menuOpens: MutableList<Unit> = mutableListOf(),
+        selections: MutableList<String> = mutableListOf(),
     ) {
         rule.setContent {
-            KoDriverTheme { MicrophoneInputCard(uiState = uiState, onEnabledChange = { changes += it }) }
+            KoDriverTheme {
+                MicrophoneInputCard(
+                    uiState = uiState,
+                    onEnabledChange = { changes += it },
+                    onDeviceMenuOpen = { menuOpens += Unit },
+                    onDeviceSelected = { selections += it },
+                )
+            }
         }
     }
 
@@ -55,6 +66,28 @@ class MicrophoneInputCardTest {
         rule.onNodeWithContentDescription("マイクの入力音量").assertExists()
         rule.onNodeWithContentDescription("マイク入力の確認を切り替え").assertIsOn().performClick()
         rule.runOnIdle { assertEquals(listOf(false), changes) }
+    }
+
+    @Test
+    fun `停止中でも選択中のデバイスをドロップダウンに表示し、開くと一覧を取り直して選択を通知する`() {
+        val menuOpens = mutableListOf<Unit>()
+        val selections = mutableListOf<String>()
+        setCard(
+            MicrophoneInputUiState(deviceName = "Mic A", devices = listOf("Mic A", "Mic B")),
+            menuOpens = menuOpens,
+            selections = selections,
+        )
+
+        rule.onNodeWithTag("microphone_input_device").assertTextContains("Mic A")
+        rule.onNodeWithText("入力デバイス: Mic A").assertDoesNotExist()
+        rule.onNodeWithTag("microphone_input_device").performClick()
+        rule.onNodeWithTag("microphone_input_device_Mic B").performClick()
+
+        rule.runOnIdle {
+            assertEquals(1, menuOpens.size)
+            assertEquals(listOf("Mic B"), selections)
+        }
+        rule.onNodeWithTag("microphone_input_device_Mic B").assertDoesNotExist()
     }
 
     @Test

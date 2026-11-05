@@ -24,4 +24,4 @@ AppScreen の UI 状態の合成は `AppScreenFlow` が cold Flow として担�
 
 ## マイク入力の確認（Windows）
 
-`MicrophoneInputViewModel` が `ObserveMicrophoneInputStatusUseCase` でマイクの取得を開始・停止し、入力デバイス名（`GetAudioInputDevicesUseCase` の先頭のデバイス。表示した名前のデバイスを明示して取得する）・状態（停止中・準備中・入力中・利用できない・無音）・音量（0.0〜1.0、線形）を `MicrophoneInputUiState` で保持する。無音（`NoSignal`）のときは Windows のプライバシー設定の案内を表示する。ON_STOP で停止し ON_START で再開する。`MicrophoneRepository` を持つ JVM の `mainPlatformModule` でのみ登録する。
+`MicrophoneInputViewModel` が `ObserveMicrophoneInputStatusUseCase` でマイクの取得を開始・停止し、入力デバイス名と一覧（`GetAudioInputDevicesUseCase`。カードの表示時とドロップダウンを開いたときに取得し直す。ドロップダウンで選んだデバイス、未選択なら先頭を、表示した名前のデバイスとして明示して取得する。選択は保存せずアプリの終了で既定に戻り、選んだデバイスが一覧から消えたときは先頭に戻す。取得中に選び直すとそのデバイスで取得し直す）・状態（停止中・準備中・入力中・利用できない・無音）・音量（0.0〜1.0、線形）を `MicrophoneInputUiState` で保持する。無音（`NoSignal`）のときは Windows のプライバシー設定の案内を表示する。ON_STOP で停止し ON_START で再開する。`MicrophoneRepository` を持つ JVM の `mainPlatformModule` でのみ登録する。
