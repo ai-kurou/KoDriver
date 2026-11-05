@@ -1,13 +1,19 @@
 package kurou.kodriver.data.microphone
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.MicrophoneAudioEvent
 import kurou.kodriver.domain.model.MicrophoneFailureReason
+import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -102,6 +108,31 @@ class JvmMicrophoneRepositoryTest {
             val capture = FakeAudioCapture(List(10) { pcm(1) })
 
             repository(FakeAudioInputSource(capture = capture)).observeAudio(null).first()
+            testScheduler.advanceUntilIdle()
+
+            assertTrue(capture.closed)
+        }
+
+    @Test
+    fun `0バイトの読み込みが続いたらUnavailableで完了して閉じる`() =
+        runTest {
+            val capture = FakeAudioCapture(List(200) { ByteArray(0) })
+
+            val events = repository(FakeAudioInputSource(capture = capture)).observeAudio(null).toList()
+
+            assertEquals(listOf(MicrophoneAudioEvent.Failed(MicrophoneFailureReason.Unavailable)), events)
+            assertTrue(capture.closed)
+        }
+
+    @Test
+    fun `読み込みがブロックしていてもキャンセルでデバイスを閉じる`() =
+        runBlocking {
+            val capture = BlockingAudioCapture()
+            val repository = JvmMicrophoneRepository(FakeAudioInputSource(capture = capture), Dispatchers.IO)
+
+            val job = launch(Dispatchers.Default) { repository.observeAudio(null).collect {} }
+            assertTrue(capture.readStarted.await(5, TimeUnit.SECONDS))
+            withTimeout(5_000) { job.cancelAndJoin() }
 
             assertTrue(capture.closed)
         }

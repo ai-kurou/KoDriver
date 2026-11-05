@@ -33,3 +33,21 @@ internal class FakeAudioCapture(
         closed = true
     }
 }
+
+/** [close] されるまで [read] がブロックし、閉じられると -1 を返す。 */
+internal class BlockingAudioCapture : AudioCapture {
+    val readStarted = java.util.concurrent.CountDownLatch(1)
+    private val closedLatch = java.util.concurrent.CountDownLatch(1)
+
+    val closed: Boolean get() = closedLatch.count == 0L
+
+    override fun read(buffer: ByteArray): Int {
+        readStarted.countDown()
+        closedLatch.await()
+        return -1
+    }
+
+    override fun close() {
+        closedLatch.countDown()
+    }
+}

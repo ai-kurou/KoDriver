@@ -12,7 +12,7 @@ internal interface AudioInputSource {
 }
 
 /**
- * 開いた入力デバイス。[close] で取得を止める。
+ * 開いた入力デバイス。[close] で取得を止める。[read] でブロック中の別スレッドから呼べ、複数回呼んでも安全であること。
  */
 internal interface AudioCapture : AutoCloseable {
     /** 最大で [buffer] の大きさまで読み込み、読み込んだバイト数を返す（ブロックする）。デバイスが閉じた・使えなくなったときは -1。 */

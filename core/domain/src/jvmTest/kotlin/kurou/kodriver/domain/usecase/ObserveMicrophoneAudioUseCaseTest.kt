@@ -4,7 +4,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AudioInputDevice
@@ -26,7 +26,7 @@ class ObserveMicrophoneAudioUseCaseTest {
     fun `指定したデバイスの音声イベントをそのまま流す`() =
         runTest {
             val device = AudioInputDevice("マイク A")
-            every { repository.observeAudio(device) } returns flowOf(*events.toTypedArray())
+            every { repository.observeAudio(device) } returns events.asFlow()
 
             assertEquals(events, ObserveMicrophoneAudioUseCase(repository)(device).toList())
             verify(exactly = 1) { repository.observeAudio(device) }
@@ -36,7 +36,7 @@ class ObserveMicrophoneAudioUseCaseTest {
     @Test
     fun `デバイスを省略すると既定のデバイスで取得する`() =
         runTest {
-            every { repository.observeAudio(null) } returns flowOf(*events.toTypedArray())
+            every { repository.observeAudio(null) } returns events.asFlow()
 
             assertEquals(events, ObserveMicrophoneAudioUseCase(repository)().toList())
             verify(exactly = 1) { repository.observeAudio(null) }
