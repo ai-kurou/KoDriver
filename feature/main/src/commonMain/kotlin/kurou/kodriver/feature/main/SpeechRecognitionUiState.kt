@@ -29,6 +29,8 @@ internal data class SpeechRecognitionUiState(
     val enabled: Boolean = false,
     val status: SpeechRecognitionStatus = SpeechRecognitionStatus.Stopped,
     val partialText: String = "",
+    /** 直近の入力音量。0.0（無音）〜1.0（大音量）。音量を通知しないプラットフォームや、聞き取りを止めている間は null。 */
+    val level: Float? = null,
     /** 確定した認識結果の履歴。新しい順で、各要素は信頼度の高い順の候補。 */
     val recognized: List<List<String>> = emptyList(),
 )

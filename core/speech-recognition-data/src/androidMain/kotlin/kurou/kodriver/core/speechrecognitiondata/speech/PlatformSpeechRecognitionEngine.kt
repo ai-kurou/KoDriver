@@ -67,7 +67,7 @@ internal class PlatformSpeechRecognitionEngine(
 
         override fun onBeginningOfSpeech() = Unit
 
-        override fun onRmsChanged(rmsdB: Float) = Unit
+        override fun onRmsChanged(rmsdB: Float) = listener.onLevel(normalizeRecognitionRmsDb(rmsdB))
 
         override fun onBufferReceived(buffer: ByteArray?) = Unit
 

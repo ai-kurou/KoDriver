@@ -58,6 +58,28 @@ class SpeechRecognitionCardTest {
     }
 
     @Test
+    fun `入力音量があるときだけ音量のゲージを表示する`() {
+        val level = mutableStateOf<Float?>(null)
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionCard(
+                    uiState =
+                        SpeechRecognitionUiState(
+                            enabled = true,
+                            status = SpeechRecognitionStatus.Listening,
+                            level = level.value,
+                        ),
+                    onEnabledChange = {},
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("マイクの入力音量").assertDoesNotExist()
+        level.value = 0.4f
+        rule.onNodeWithContentDescription("マイクの入力音量").assertExists()
+    }
+
+    @Test
     fun `状態ごとの案内文を表示する`() {
         val status = mutableStateOf(SpeechRecognitionStatus.Stopped)
         rule.setContent {

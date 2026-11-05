@@ -102,6 +102,22 @@ class SpeechRecognitionViewModelIdleTimeoutTest {
     }
 
     @Test
+    fun `入力音量が届いても無発話の時間は数え直さず、自動停止で音量は消える`() {
+        val viewModel = createViewModel(granted = true)
+        viewModel.onEnabledChange(true) {}
+        advanceBy(SPEECH_RECOGNITION_IDLE_TIMEOUT_MS - 1)
+
+        events.tryEmit(SpeechRecognitionEvent.Level(0.5f))
+        assertEquals(0.5f, viewModel.uiState.value.level)
+        advanceBy(1)
+
+        assertEquals(
+            SpeechRecognitionUiState(enabled = false, status = SpeechRecognitionStatus.IdleStopped),
+            viewModel.uiState.value,
+        )
+    }
+
+    @Test
     fun `聞き取りの再開を知らせるListeningでは無発話の時間を数え直さない`() {
         val viewModel = createViewModel(granted = true)
         viewModel.onEnabledChange(true) {}

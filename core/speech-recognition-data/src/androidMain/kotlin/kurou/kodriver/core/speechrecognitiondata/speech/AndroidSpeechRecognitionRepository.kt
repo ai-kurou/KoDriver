@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
@@ -98,7 +99,8 @@ internal class AndroidSpeechRecognitionRepository(
     /** 1セッション分を聞き取り、イベントを流して、再開か停止かを返す。終了時は必ずエンジンを解放する。 */
     private suspend fun FlowCollector<SpeechRecognitionEvent>.listenOnce(preferOnDevice: Boolean): SessionEnd {
         val signals = Channel<Signal>(Channel.UNLIMITED)
-        val listener = ChannelListener(signals)
+        val levels = Channel<Float>(Channel.CONFLATED)
+        val listener = ChannelListener(signals, levels)
         val engine = engineFactory(preferOnDevice)
         try {
             try {
@@ -110,9 +112,7 @@ internal class AndroidSpeechRecognitionRepository(
                 return SessionEnd.Stop(SpeechRecognitionFailureReason.Unavailable)
             }
             while (true) {
-                val signal =
-                    withTimeoutOrNull(SPEECH_RECOGNITION_CALLBACK_TIMEOUT_MS) { signals.receive() }
-                        ?: return SessionEnd.Retry
+                val signal = receiveSignal(signals, levels) ?: return SessionEnd.Retry
                 when (signal) {
                     Signal.Ready -> {
                         emit(SpeechRecognitionEvent.Listening)
@@ -137,8 +137,34 @@ internal class AndroidSpeechRecognitionRepository(
         } finally {
             engine.stop()
             signals.close()
+            levels.close()
         }
     }
+
+    /**
+     * 次の通知を待つ。待っている間に届いた入力音量は [SpeechRecognitionEvent.Level] として流す。
+     * 入力音量は認識が進んだ証拠にしないため、待ち時間の数え直しには使わない。
+     * [SPEECH_RECOGNITION_CALLBACK_TIMEOUT_MS] 経っても入力音量以外の通知が無ければ null を返す。
+     */
+    private suspend fun FlowCollector<SpeechRecognitionEvent>.receiveSignal(
+        signals: Channel<Signal>,
+        levels: Channel<Float>,
+    ): Signal? =
+        withTimeoutOrNull(SPEECH_RECOGNITION_CALLBACK_TIMEOUT_MS) {
+            var signal: Signal? = null
+            while (signal == null) {
+                signal =
+                    select {
+                        // 入力音量を先に流す。最新の1件しか溜まらないため、他の通知を待たせ続けることはない
+                        levels.onReceive { level ->
+                            emit(SpeechRecognitionEvent.Level(level))
+                            null
+                        }
+                        signals.onReceive { it }
+                    }
+            }
+            signal
+        }
 
     /**
      * 端末内認識の言語エラー（日本語モデルが未導入など）は通常の認識サービスなら扱える場合があるため、
@@ -200,11 +226,12 @@ internal class AndroidSpeechRecognitionRepository(
 
     /**
      * エンジンのコールバックを [Signal] に変えて、フローを収集するコルーチンへ渡す。
-     * 認識途中の文字列は最新の1件だけを保持し、収集側が遅くてもキューが伸びないようにする。
+     * 認識途中の文字列と入力音量は最新の1件だけを保持し、収集側が遅くてもキューが伸びないようにする。
      * 確定結果とエラーは取りこぼさない。
      */
     private class ChannelListener(
         private val signals: Channel<Signal>,
+        private val levels: Channel<Float>,
     ) : SpeechRecognitionEngineListener {
         private val latestPartial = AtomicReference<String?>(null)
 
@@ -218,6 +245,10 @@ internal class AndroidSpeechRecognitionRepository(
             if (text.isNotBlank() && latestPartial.getAndSet(text) == null) {
                 signals.trySend(Signal.PartialAvailable)
             }
+        }
+
+        override fun onLevel(level: Float) {
+            levels.trySend(level)
         }
 
         override fun onResults(candidates: List<String>) {
