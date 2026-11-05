@@ -12,7 +12,5 @@ appId: kurou.kodriver
 - tapOn: "自動"
 - assertNotVisible: "Windows版KoDriverへ接続するIPアドレス"
 - tapOn: "手動"
-- tapOn: "ログ"
-- assertVisible: "Assetto Corsa EVO（Windows版）のログはまだありません"
 - tapOn: "その他"
 - assertVisible: "Windows版KoDriverへ接続するIPアドレス"
