@@ -410,6 +410,7 @@ tasks.register("generateModuleGraphImages") {
                         ":core:lmu-windows-rest-api-data",
                         ":core:text-to-speech-data",
                         ":core:device-volume-data",
+                        ":core:speech-recognition-data",
                         ":core:windows-hotkey-data",
                         ":core:windows-startup-data",
                     ),
@@ -577,8 +578,8 @@ kover {
                 classes("kurou.kodriver.core.windowsstartupdata.windows.JnaStartupRegistryApi")
                 // Android の SpeechRecognizer を直接呼ぶ薄いアダプター。再開ループは AndroidSpeechRecognitionRepository が検証する
                 classes(
-                    "kurou.kodriver.data.speech.PlatformSpeechRecognitionEngine",
-                    "kurou.kodriver.data.speech.PlatformSpeechRecognitionEngine\$*",
+                    "kurou.kodriver.core.speechrecognitiondata.speech.PlatformSpeechRecognitionEngine",
+                    "kurou.kodriver.core.speechrecognitiondata.speech.PlatformSpeechRecognitionEngine\$*",
                 )
                 // デスクトップのエントリーポイント。ウィンドウ・Sentry・サーバー起動は実機依存で単体テストできない。
                 // 同じ Koin 構成は AppTest / DesktopKoinModuleGraphTest が検証する
