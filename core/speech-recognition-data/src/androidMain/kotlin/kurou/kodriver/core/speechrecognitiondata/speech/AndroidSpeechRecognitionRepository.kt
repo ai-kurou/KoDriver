@@ -3,14 +3,15 @@ package kurou.kodriver.core.speechrecognitiondata.speech
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.selects.select
-import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
@@ -96,8 +97,21 @@ internal class AndroidSpeechRecognitionRepository(
             else -> null
         }
 
-    /** 1セッション分を聞き取り、イベントを流して、再開か停止かを返す。終了時は必ずエンジンを解放する。 */
+    /**
+     * 1セッション分を聞き取り、イベントを流して、再開か停止かを返す。終了時は必ずエンジンを解放する。
+     * 入力音量を流していた場合は、次のセッションまで古い音量が残らないよう、終了時に無音（0.0）を流す。
+     */
     private suspend fun FlowCollector<SpeechRecognitionEvent>.listenOnce(preferOnDevice: Boolean): SessionEnd {
+        val levelEmitted = LevelEmitted()
+        val end = listenSession(preferOnDevice, levelEmitted)
+        if (levelEmitted.value) emit(SpeechRecognitionEvent.Level(0f))
+        return end
+    }
+
+    private suspend fun FlowCollector<SpeechRecognitionEvent>.listenSession(
+        preferOnDevice: Boolean,
+        levelEmitted: LevelEmitted,
+    ): SessionEnd {
         val signals = Channel<Signal>(Channel.UNLIMITED)
         val levels = Channel<Float>(Channel.CONFLATED)
         val listener = ChannelListener(signals, levels)
@@ -112,7 +126,7 @@ internal class AndroidSpeechRecognitionRepository(
                 return SessionEnd.Stop(SpeechRecognitionFailureReason.Unavailable)
             }
             while (true) {
-                val signal = receiveSignal(signals, levels) ?: return SessionEnd.Retry
+                val signal = receiveSignal(signals, levels, levelEmitted) ?: return SessionEnd.Retry
                 when (signal) {
                     Signal.Ready -> {
                         emit(SpeechRecognitionEvent.Listening)
@@ -144,25 +158,36 @@ internal class AndroidSpeechRecognitionRepository(
     /**
      * 次の通知を待つ。待っている間に届いた入力音量は [SpeechRecognitionEvent.Level] として流す。
      * 入力音量は認識が進んだ証拠にしないため、待ち時間の数え直しには使わない。
+     * 待ち時間は別のタイマーで数えるため、音量の送出を収集側が待たせても打ち切りには数えない。
      * [SPEECH_RECOGNITION_CALLBACK_TIMEOUT_MS] 経っても入力音量以外の通知が無ければ null を返す。
      */
     private suspend fun FlowCollector<SpeechRecognitionEvent>.receiveSignal(
         signals: Channel<Signal>,
         levels: Channel<Float>,
+        levelEmitted: LevelEmitted,
     ): Signal? =
-        withTimeoutOrNull(SPEECH_RECOGNITION_CALLBACK_TIMEOUT_MS) {
+        coroutineScope {
+            val timer = async { delay(SPEECH_RECOGNITION_CALLBACK_TIMEOUT_MS) }
             var signal: Signal? = null
-            while (signal == null) {
-                signal =
+            var timedOut = false
+            while (signal == null && !timedOut) {
+                if (timer.isCompleted) {
+                    // 音量が続いてもタイマーを飢えさせない。溜まっている通知があればそれを先に処理する
+                    signal = signals.tryReceive().getOrNull()
+                    timedOut = signal == null
+                } else {
+                    // 音量を先に流す。最新の1件しか溜まらないため、他の通知を待たせ続けない
                     select {
-                        // 入力音量を先に流す。最新の1件しか溜まらないため、他の通知を待たせ続けることはない
                         levels.onReceive { level ->
+                            levelEmitted.value = true
                             emit(SpeechRecognitionEvent.Level(level))
-                            null
                         }
-                        signals.onReceive { it }
+                        signals.onReceive { signal = it }
+                        timer.onAwait { }
                     }
+                }
             }
+            timer.cancel()
             signal
         }
 
@@ -259,4 +284,9 @@ internal class AndroidSpeechRecognitionRepository(
             signals.trySend(Signal.Error(errorCode))
         }
     }
+}
+
+/** セッション中に入力音量を流したか。終了時に音量を無音へ戻すかの判断に使う。 */
+private class LevelEmitted {
+    var value = false
 }

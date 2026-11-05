@@ -1,8 +1,11 @@
 package kurou.kodriver.feature.main
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -77,6 +80,7 @@ class SpeechRecognitionCardTest {
         rule.onNodeWithContentDescription("マイクの入力音量").assertDoesNotExist()
         level.value = 0.4f
         rule.onNodeWithContentDescription("マイクの入力音量").assertExists()
+        rule.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo(0.4f, 0f..1f))).assertIsDisplayed()
     }
 
     @Test

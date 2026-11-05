@@ -19,4 +19,9 @@ class SpeechRecognitionLevelTest {
         assertEquals(0.5f, normalizeRecognitionRmsDb(4f))
         assertEquals(0.25f, normalizeRecognitionRmsDb(1f))
     }
+
+    @Test
+    fun `NaNは無音として扱う`() {
+        assertEquals(0f, normalizeRecognitionRmsDb(Float.NaN))
+    }
 }

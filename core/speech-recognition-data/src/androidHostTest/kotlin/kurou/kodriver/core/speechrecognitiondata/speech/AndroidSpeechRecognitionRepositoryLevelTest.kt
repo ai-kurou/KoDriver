@@ -41,12 +41,13 @@ class AndroidSpeechRecognitionRepositoryLevelTest {
                 },
             )
 
-            val events = createRepository().observeRecognition().take(2).toList()
+            val events = createRepository().observeRecognition().take(3).toList()
 
             assertEquals(
                 listOf(
                     SpeechRecognitionEvent.Level(0.999f),
                     SpeechRecognitionEvent.Recognized(listOf("確定")),
+                    SpeechRecognitionEvent.Level(0f),
                 ),
                 events,
             )
@@ -70,13 +71,14 @@ class AndroidSpeechRecognitionRepositoryLevelTest {
                 }
             }
 
-            val events = createRepository().observeRecognition().take(4).toList()
+            val events = createRepository().observeRecognition().take(5).toList()
 
             assertEquals(
                 listOf(
                     SpeechRecognitionEvent.Listening,
                     SpeechRecognitionEvent.Level(0.5f),
                     SpeechRecognitionEvent.Level(0.5f),
+                    SpeechRecognitionEvent.Level(0f),
                     SpeechRecognitionEvent.Listening,
                 ),
                 events,
