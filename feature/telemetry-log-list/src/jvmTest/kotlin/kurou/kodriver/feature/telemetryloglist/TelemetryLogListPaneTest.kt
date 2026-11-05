@@ -184,6 +184,29 @@ class TelemetryLogListPaneTest {
     }
 
     @Test
+    fun `新しいログボタンを押すと触覚を一度発火して先頭へ戻りボタンを非表示にする`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        val logs = (30 downTo 1).map { createTelemetryLog(id = it.toLong()) }
+        val uiState = mutableStateOf(TelemetryLogListUiState(logs = logs))
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    Box(modifier = Modifier.height(240.dp)) { TelemetryLogListPane(uiState = uiState.value) }
+                }
+            }
+        }
+
+        rule.onNodeWithTag(TELEMETRY_LOG_LIST_TEST_TAG).performScrollToIndex(1)
+        rule.runOnIdle { uiState.value = uiState.value.copy(logs = listOf(createTelemetryLog(id = 100)) + logs) }
+        rule.onNodeWithText("新しいログ").performClick()
+
+        rule.onNodeWithText("新しいログ").assertDoesNotExist()
+        rule.onNodeWithText("09:00:00.100").assertIsDisplayed()
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
     fun `選択中のシミュレーターの表示名を含む空状態を表示する`() {
         rule.setContent {
             KoDriverTheme {

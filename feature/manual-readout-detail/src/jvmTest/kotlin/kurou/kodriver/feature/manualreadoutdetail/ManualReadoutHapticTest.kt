@@ -208,4 +208,27 @@ class ManualReadoutHapticTest {
         verify(exactly = 5) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(haptic)
     }
+
+    @Test
+    fun `登録失敗時の再試行は触覚を一度だけ発火してonRetryを一度呼ぶ`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        val state =
+            ManualReadoutSetDetailUiState(
+                simulatorId = Simulator.LmuWindows.id,
+                hotkeyVirtualKeyCode = 0x41,
+                hotkeyRegistrationState = HotkeyRegistrationState.Failed(5),
+            )
+        var retries = 0
+        rule.setContent {
+            HapticContent {
+                ManualReadoutHotkeyCard(state, {}, {}, { retries++ }, {}, {}, false)
+            }
+        }
+
+        rule.onNodeWithText("再試行").performClick()
+
+        assertEquals(1, retries)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
 }
