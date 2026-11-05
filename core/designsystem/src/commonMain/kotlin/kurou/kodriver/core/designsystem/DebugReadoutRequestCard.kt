@@ -17,6 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import kurou.kodriver.core.designsystem.generated.resources.Res
 import kurou.kodriver.core.designsystem.generated.resources.debug_readout_request_item
@@ -39,6 +41,7 @@ fun DebugReadoutRequestCard(
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val haptic = LocalHapticFeedback.current
     DetailPaneCard(
         title = stringResource(Res.string.debug_readout_request_title),
         modifier = modifier.testTag("debug_readout_request_card"),
@@ -66,6 +69,7 @@ fun DebugReadoutRequestCard(
                                 modifier = Modifier.testTag("debug_readout_item_$value"),
                                 text = { Text(readoutItemDisplayName(value)) },
                                 onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                     onReadoutItemSelected(value)
                                     expanded = false
                                 },
@@ -79,7 +83,13 @@ fun DebugReadoutRequestCard(
                     label = { Text(stringResource(Res.string.debug_readout_request_text)) },
                     modifier = Modifier.fillMaxWidth().testTag("debug_readout_request_text"),
                 )
-                Button(onClick = onReadout, enabled = text.isNotBlank()) {
+                Button(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onReadout()
+                    },
+                    enabled = text.isNotBlank(),
+                ) {
                     Text(stringResource(Res.string.debug_readout_request_send))
                 }
             }
