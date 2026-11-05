@@ -2,9 +2,6 @@ package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -42,10 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.IntOffset
@@ -64,6 +60,7 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete_body
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete_confirm
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete_title
+import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_edit
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_requesting
 import org.jetbrains.compose.resources.stringResource
 
@@ -96,8 +93,6 @@ internal fun ManualReadoutSetRow(
         }
     }
     var menuExpanded by remember { mutableStateOf(false) }
-    var longPressPosition by remember { mutableStateOf(Offset.Unspecified) }
-    var pointerDownPosition by remember { mutableStateOf(Offset.Unspecified) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     if (showDeleteDialog) {
         ManualReadoutListDeleteConfirmDialog(
@@ -113,21 +108,12 @@ internal fun ManualReadoutSetRow(
             Modifier
                 .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
                 .fillMaxWidth()
-                .pointerInput(Unit) {
-                    awaitEachGesture {
-                        val down = awaitFirstDown(requireUnconsumed = false)
-                        pointerDownPosition = down.position
-                        waitForUpOrCancellation()
-                        pointerDownPosition = Offset.Unspecified
-                    }
-                }.combinedClickable(
+                .combinedClickable(
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         onSetClick()
                     },
                     onLongClick = {
-                        longPressPosition = pointerDownPosition
-                        pointerDownPosition = Offset.Unspecified
                         menuExpanded = true
                     },
                 ),
@@ -138,10 +124,7 @@ internal fun ManualReadoutSetRow(
             onDismissRequest = {
                 menuExpanded = false
             },
-            popupPositionProvider =
-                remember(longPressPosition) {
-                    ManualReadoutMenuPositionProvider(longPressPosition)
-                },
+            popupPositionProvider = ManualReadoutMenuPositionProvider,
         ) {
             Surface(
                 color = MaterialTheme.colorScheme.surface,
@@ -150,6 +133,15 @@ internal fun ManualReadoutSetRow(
                 shadowElevation = MenuDefaults.ShadowElevation,
             ) {
                 Column(modifier = Modifier.widthIn(max = 280.dp).verticalScroll(rememberScrollState())) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.manual_readout_list_edit)) },
+                        leadingIcon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+                        onClick = {
+                            menuExpanded = false
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            onSetClick()
+                        },
+                    )
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -230,11 +222,10 @@ internal fun ManualReadoutSetRow(
     }
 }
 
+/** 行の右端にメニューの右端を揃えて表示する（RTL では左端）。 */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-internal class ManualReadoutMenuPositionProvider(
-    private val anchor: Offset,
-) : DropdownMenuPopupPositionProvider {
-    override val transformOrigin: TransformOrigin = TransformOrigin(0.5f, 0.5f)
+internal object ManualReadoutMenuPositionProvider : DropdownMenuPopupPositionProvider {
+    override val transformOrigin: TransformOrigin = TransformOrigin(1f, 0f)
 
     override fun calculatePosition(
         anchorBounds: IntRect,
@@ -243,22 +234,20 @@ internal class ManualReadoutMenuPositionProvider(
         popupContentSize: IntSize,
     ): IntOffset {
         val x =
-            if (anchor != Offset.Unspecified) {
-                anchorBounds.left + anchor.x.toInt()
+            if (layoutDirection == LayoutDirection.Ltr) {
+                anchorBounds.right - popupContentSize.width
             } else {
-                anchorBounds.left + anchorBounds.width / 2
+                anchorBounds.left
             }
         val y =
-            if (anchor != Offset.Unspecified) {
-                anchorBounds.top + anchor.y.toInt()
+            if (anchorBounds.top + popupContentSize.height > windowSize.height) {
+                anchorBounds.bottom - popupContentSize.height
             } else {
-                anchorBounds.top + anchorBounds.height / 2
+                anchorBounds.top
             }
-        val preferredY = if (y + popupContentSize.height > windowSize.height) y - popupContentSize.height else y
-        val preferredX = if (layoutDirection == LayoutDirection.Ltr) x else x - popupContentSize.width
         return IntOffset(
-            x = preferredX.coerceIn(0, (windowSize.width - popupContentSize.width).coerceAtLeast(0)),
-            y = preferredY.coerceIn(0, (windowSize.height - popupContentSize.height).coerceAtLeast(0)),
+            x = x.coerceIn(0, (windowSize.width - popupContentSize.width).coerceAtLeast(0)),
+            y = y.coerceIn(0, (windowSize.height - popupContentSize.height).coerceAtLeast(0)),
         )
     }
 }

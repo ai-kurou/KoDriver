@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.center
-import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -19,7 +17,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
@@ -297,10 +294,10 @@ class ManualReadoutListPaneTest {
             .onNodeWithText("読み上げる値がない項目は「データがありません」と読み上げます。")
             .performScrollTo()
             .assertIsDisplayed()
-        rule.onNodeWithText("長押しで削除").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("長押しで編集・削除").performScrollTo().assertIsDisplayed()
         rule
             .onNodeWithText(
-                "標準表示では、セットを長押しすると、確認してから削除できます。再生ボタン表示では、編集画面から削除します。",
+                "標準表示では、セットを長押しすると、メニューから編集と、確認してからの削除ができます。再生ボタン表示では、編集画面から削除します。",
             ).performScrollTo()
             .assertIsDisplayed()
         // ホットキーの説明は Windows デスクトップでのみ表示するため、実行OSに合わせて検証する。
@@ -454,7 +451,7 @@ class ManualReadoutListPaneTest {
     }
 
     @Test
-    fun `長押し位置の近くに削除メニューを表示し画面端では範囲内に収める`() {
+    fun `長押しメニューを行の右端に揃えて表示し編集と削除を並べる`() {
         rule.setContent {
             KoDriverTheme {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
@@ -472,93 +469,54 @@ class ManualReadoutListPaneTest {
         }
 
         val row = rule.onNodeWithText("LMU(Windows)セット1")
+        row.performTouchInput { longClick(Offset(10f, 10f)) }
+        val edit = rule.onNodeWithText("編集")
+        edit.assertIsDisplayed()
+        rule.onNodeWithText("削除").assertIsDisplayed()
+        val editBounds = edit.fetchSemanticsNode().boundsInRoot
         val rowBounds = row.fetchSemanticsNode().boundsInRoot
-        val pressOffset = Offset(rowBounds.width / 2, rowBounds.height / 2)
-        val pressPosition = rowBounds.topLeft + pressOffset
-        val tolerance = 16f
-        val menuItem = rule.onNodeWithText("削除")
-        row.performTouchInput { longClick(pressOffset) }
-        menuItem.assertIsDisplayed()
-        val standardMenuBounds = menuItem.fetchSemanticsNode().boundsInRoot
         rule.runOnIdle {
-            assertEquals(true, standardMenuBounds.left >= pressPosition.x - tolerance)
-            assertEquals(true, standardMenuBounds.left <= pressPosition.x + tolerance)
-            assertEquals(true, standardMenuBounds.top >= pressPosition.y - tolerance)
-            assertEquals(true, standardMenuBounds.top <= pressPosition.y + tolerance)
-            assertEquals(true, standardMenuBounds.width <= 280f)
-            assertEquals(true, standardMenuBounds.center.y >= rowBounds.center.y)
-            assertEquals(true, standardMenuBounds.left >= 0f)
-            assertEquals(true, standardMenuBounds.right <= 360f)
-            assertEquals(true, standardMenuBounds.top >= 0f)
-            assertEquals(true, standardMenuBounds.bottom <= 640f)
+            assertEquals(true, editBounds.left > rowBounds.left + 40f)
+            assertEquals(true, editBounds.right <= 360f)
+            assertEquals(true, editBounds.top >= 0f)
         }
     }
 
     @Test
-    fun `読み上げボタンのタップ後にセマンティクスで長押しすると行中央にメニューを表示する`() {
+    fun `長押しメニューの編集でセットの詳細を開く`() {
+        val selected = mutableListOf<String>()
         rule.setContent {
             KoDriverTheme {
-                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                    ManualReadoutListPaneContent(
-                        uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet("set-1"))),
-                        simulatorId = "lmu_windows",
-                        simulatorName = "LMU",
-                        onAddSet = {},
-                        onReadSet = {},
-                        onTogglePlayButtonLayout = {},
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
+                ManualReadoutListPaneContent(
+                    uiState = ManualReadoutListUiState(sets = listOf(ManualReadoutSet("set-1"))),
+                    simulatorId = "lmu_windows",
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                    onTogglePlayButtonLayout = {},
+                    onSetClick = { selected.add(it) },
+                )
             }
         }
-
-        val row = rule.onNodeWithText("LMU(Windows)セット1")
-        val rowBounds = row.fetchSemanticsNode().boundsInRoot
-        rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
-        row.performSemanticsAction(SemanticsActions.OnLongClick) { it() }
-
-        val menuItem = rule.onNodeWithText("削除")
-        menuItem.assertIsDisplayed()
-        val menuBounds = menuItem.fetchSemanticsNode().boundsInRoot
-        val rowCenter = rowBounds.center
-        rule.runOnIdle {
-            assertEquals(true, menuBounds.left >= rowCenter.x - 16f)
-            assertEquals(true, menuBounds.left <= rowCenter.x + 16f)
-            assertEquals(true, menuBounds.top >= rowCenter.y - 16f)
-            assertEquals(true, menuBounds.top <= rowCenter.y + 16f)
-        }
+        rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
+        rule.onNodeWithText("編集").performClick()
+        rule.runOnIdle { assertEquals(listOf("set-1"), selected) }
+        rule.onNodeWithText("編集").assertDoesNotExist()
     }
 
     @Test
-    fun `メニュー位置を左右上下端とレイアウト方向に合わせて補正する`() {
+    fun `メニュー位置を行の右端に揃え画面端とレイアウト方向に合わせて補正する`() {
         val window = IntSize(360, 640)
-        val anchorBounds = IntRect(0, 0, 360, 640)
-        val menuSize = IntSize(100, 48)
-        val lowerRightPosition =
-            ManualReadoutMenuPositionProvider(Offset(350f, 630f)).calculatePosition(
-                anchorBounds = anchorBounds,
-                windowSize = window,
-                layoutDirection = LayoutDirection.Ltr,
-                popupContentSize = menuSize,
-            )
-        assertEquals(IntOffset(260, 582), lowerRightPosition)
+        val menuSize = IntSize(100, 96)
 
-        val upperLeftRtlPosition =
-            ManualReadoutMenuPositionProvider(Offset(10f, 10f)).calculatePosition(
-                anchorBounds = anchorBounds,
-                windowSize = window,
-                layoutDirection = LayoutDirection.Rtl,
-                popupContentSize = menuSize,
-            )
-        assertEquals(IntOffset(0, 10), upperLeftRtlPosition)
+        fun position(
+            anchor: IntRect,
+            direction: LayoutDirection,
+        ) = ManualReadoutMenuPositionProvider.calculatePosition(anchor, window, direction, menuSize)
 
-        val semanticLongPressFallback =
-            ManualReadoutMenuPositionProvider(Offset.Unspecified).calculatePosition(
-                anchorBounds = IntRect(20, 30, 220, 130),
-                windowSize = window,
-                layoutDirection = LayoutDirection.Ltr,
-                popupContentSize = menuSize,
-            )
-        assertEquals(IntOffset(120, 80), semanticLongPressFallback)
+        assertEquals(IntOffset(220, 30), position(IntRect(20, 30, 320, 130), LayoutDirection.Ltr))
+        assertEquals(IntOffset(20, 30), position(IntRect(20, 30, 320, 130), LayoutDirection.Rtl))
+        assertEquals(IntOffset(0, 30), position(IntRect(0, 30, 50, 130), LayoutDirection.Ltr))
+        assertEquals(IntOffset(260, 544), position(IntRect(20, 580, 360, 640), LayoutDirection.Ltr))
     }
 }
