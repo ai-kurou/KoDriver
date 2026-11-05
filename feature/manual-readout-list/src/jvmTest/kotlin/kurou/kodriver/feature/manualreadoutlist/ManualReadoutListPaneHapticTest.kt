@@ -6,6 +6,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -204,6 +205,24 @@ class ManualReadoutListPaneHapticTest {
         rule.onNodeWithText("編集").performClick()
 
         assertEquals(listOf("first"), selections)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `長押しメニューの削除は触覚を1回だけ返し削除確認を開く`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        showPane()
+        rule.runOnIdle {
+            state.value = state.value.copy(sets = listOf(ManualReadoutSet("first", name = "セットA")))
+        }
+        rule.onNodeWithText("セットA").performSemanticsAction(SemanticsActions.OnLongClick)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        rule.onNodeWithText("削除").performClick()
+
+        rule.onNodeWithText("セットを削除しますか？").assertIsDisplayed()
+        assertEquals(emptyList<String>(), selections)
+        assertEquals(emptyList<String>(), readRequests)
         verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(haptic)
     }
