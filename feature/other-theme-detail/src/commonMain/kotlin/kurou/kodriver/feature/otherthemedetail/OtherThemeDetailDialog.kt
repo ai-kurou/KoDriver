@@ -107,12 +107,22 @@ internal fun OtherThemeDetailDialogContent(
             }
         },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onConfirm()
+                },
+            ) {
                 Text(stringResource(Res.string.theme_ok))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onDismiss()
+                },
+            ) {
                 Text(stringResource(Res.string.theme_cancel))
             }
         },

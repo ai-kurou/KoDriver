@@ -72,12 +72,22 @@ internal fun OtherServerIpDiscoveryDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onConfirm()
+                },
+            ) {
                 Text(stringResource(Res.string.server_ip_discovery_dialog_confirm))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onDismiss()
+                },
+            ) {
                 Text(stringResource(Res.string.server_ip_discovery_dialog_cancel))
             }
         },

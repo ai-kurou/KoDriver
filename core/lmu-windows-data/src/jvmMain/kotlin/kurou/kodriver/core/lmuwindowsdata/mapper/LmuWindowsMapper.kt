@@ -7,16 +7,9 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsInputsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitState
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTimingData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearRatio
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleData
-import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
-import kotlin.math.roundToLong
 import kotlin.time.Clock
 
 /**
@@ -89,23 +82,16 @@ internal object LmuWindowsMapper {
     internal const val VEHICLE_SCORING_STRIDE = 584
     internal const val MAX_SCORING_VEHICLES = 104
 
-    private const val OFF_SCORING_CURRENT_ET = 68
     private const val OFF_SCORING_SESSION = 64
-    private const val OFF_SCORING_MAX_LAPS = 84
     internal const val OFF_SCORING_NUM_VEHICLES = 104
 
     private const val OFF_SCORING_IN_PITS = 198
-    private const val OFF_SCORING_BEST_LAP_TIME = 144
-    private const val OFF_SCORING_LAST_LAP_TIME = 168
     internal const val OFF_SCORING_IS_PLAYER = 196
     internal const val OFF_SCORING_PLACE = 199
     private const val OFF_SCORING_VEHICLE_CLASS = 200
     private const val VEHICLE_CLASS_LENGTH = 32
-    private const val OFF_SCORING_LAP_START_ET = 256
     private const val OFF_SCORING_PIT_STATE = 457
     internal const val OFF_SCORING_IN_GARAGE_STALL = 507
-    private const val OFF_SCORING_BEST_LAP_SECTOR1 = 576
-    private const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
 
     private const val TELEMETRY_BASE = 128464
 
@@ -114,7 +100,6 @@ internal object LmuWindowsMapper {
     private const val OFF_TELEM_INFO = 4
     private const val VEHICLE_STRIDE = 1888
 
-    private const val OFF_LAP_NUMBER = 20
     private const val OFF_ELAPSED_TIME = 12
     private const val OFF_POS_X = 160
     private const val OFF_POS_Y = 168
@@ -131,15 +116,10 @@ internal object LmuWindowsMapper {
     private const val OFF_UNFILTERED_CLUTCH = 412
     private const val OFF_FUEL = 524
     private const val OFF_FUEL_CAPACITY = 608
-    private const val OFF_WHEELS = 848
+    internal const val OFF_WHEELS = 848
     private const val OFF_VIRTUAL_ENERGY = 776
 
-    private const val WHEEL_STRIDE = 260
-    private const val OFF_WHEEL_BRAKE_TEMP = 24
-    private const val OFF_WHEEL_PRESSURE = 120
-    private const val OFF_WHEEL_TEMPERATURE = 128
-    private const val OFF_WHEEL_WEAR = 152
-    private const val OFF_WHEEL_TIRE_CARCASS_TEMPERATURE = 204
+    internal const val WHEEL_STRIDE = 260
 
     fun map(buffer: ByteBuffer): LmuWindowsTelemetryData? {
         val vehicleBase = findPlayerVehicleBase(buffer) ?: return null
@@ -161,22 +141,13 @@ internal object LmuWindowsMapper {
                     clutch = buffer.getDouble(vehicleBase + OFF_UNFILTERED_CLUTCH),
                     steering = buffer.getDouble(vehicleBase + OFF_UNFILTERED_STEERING),
                 ),
-            tyres = mapTyres(buffer, vehicleBase),
+            tyres = LmuWindowsTyreMapper.map(buffer, vehicleBase),
             fuel =
                 LmuWindowsFuelData(
                     currentLiters = LmuWindowsFuelUnit(buffer.getDouble(vehicleBase + OFF_FUEL)),
                     capacityLiters = LmuWindowsFuelUnit(buffer.getDouble(vehicleBase + OFF_FUEL_CAPACITY)),
                 ),
-            timing =
-                LmuWindowsTimingData(
-                    currentLapTimeMs = currentLapTimeMs(buffer, vehicleScoringBase),
-                    lastLapTimeMs = vehicleScoringBase.readDoubleSecondsAsMillis(buffer, OFF_SCORING_LAST_LAP_TIME),
-                    bestLapTimeMs = vehicleScoringBase.readDoubleSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_TIME),
-                    sector1Ms = vehicleScoringBase.readFloatSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_SECTOR1),
-                    sector1And2Ms = vehicleScoringBase.readFloatSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_SECTOR2),
-                    currentLap = buffer.getInt(vehicleBase + OFF_LAP_NUMBER),
-                    maxLaps = buffer.getInt(SCORING_BASE + OFF_SCORING_MAX_LAPS),
-                ),
+            timing = LmuWindowsTimingMapper.map(buffer, vehicleBase, vehicleScoringBase),
             vehicle =
                 LmuWindowsVehicleData(
                     localVelocityX = buffer.getDouble(vehicleBase + OFF_LOCAL_VEL_X),
@@ -294,59 +265,6 @@ internal object LmuWindowsMapper {
         }
         return null
     }
-
-    private fun currentLapTimeMs(
-        buffer: ByteBuffer,
-        vehicleScoringBase: Int?,
-    ): Long {
-        if (vehicleScoringBase == null) return 0L
-        val currentSessionTime = buffer.getDouble(SCORING_BASE + OFF_SCORING_CURRENT_ET)
-        val lapStartSessionTime = buffer.getDouble(vehicleScoringBase + OFF_SCORING_LAP_START_ET)
-        return secondsToMillis(currentSessionTime - lapStartSessionTime)
-    }
-
-    private fun Int?.readDoubleSecondsAsMillis(
-        buffer: ByteBuffer,
-        offset: Int,
-    ): Long = if (this == null) 0L else secondsToMillis(buffer.getDouble(this + offset))
-
-    private fun Int?.readFloatSecondsAsMillis(
-        buffer: ByteBuffer,
-        offset: Int,
-    ): Long = if (this == null) 0L else secondsToMillis(buffer.getFloat(this + offset).toDouble())
-
-    private fun secondsToMillis(seconds: Double): Long =
-        if (seconds.isFinite() && seconds > 0.0) {
-            (seconds * MILLIS_PER_SECOND).roundToLong()
-        } else {
-            0L
-        }
-
-    private fun mapTyres(
-        buffer: ByteBuffer,
-        vehicleBase: Int,
-    ): LmuWindowsTyreData {
-        val wheels =
-            WheelIndex.entries.associateWith { wheel ->
-                val offset = vehicleBase + OFF_WHEELS + (wheel.ordinal * WHEEL_STRIDE)
-                val surfaceTempK = buffer.getDouble(offset + OFF_WHEEL_TEMPERATURE + 8)
-                val carcassTempK = buffer.getDouble(offset + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE)
-                LmuWindowsTyreWheelData(
-                    surfaceTemperature = CelsiusReading((surfaceTempK - KELVIN_OFFSET).toFloat()),
-                    carcassTemperature = CelsiusReading((carcassTempK - KELVIN_OFFSET).toFloat()),
-                    brakeTemperature =
-                        CelsiusReading(
-                            (buffer.getDouble(offset + OFF_WHEEL_BRAKE_TEMP) - KELVIN_OFFSET).toFloat(),
-                        ),
-                    pressureKpa = PressureKpa(buffer.getDouble(offset + OFF_WHEEL_PRESSURE)),
-                    wear = LmuWindowsTyreWearRatio(buffer.getDouble(offset + OFF_WHEEL_WEAR)),
-                )
-            }
-        return LmuWindowsTyreData(wheels)
-    }
-
-    private const val KELVIN_OFFSET = 273.15
-    private const val MILLIS_PER_SECOND = 1_000
 }
 
 /**
