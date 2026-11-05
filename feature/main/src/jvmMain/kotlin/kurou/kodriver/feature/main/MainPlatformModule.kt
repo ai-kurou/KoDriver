@@ -2,6 +2,8 @@ package kurou.kodriver.feature.main
 
 import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
 import kurou.kodriver.domain.usecase.ObserveMicrophoneInputStatusUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedAudioInputDeviceNameUseCase
+import kurou.kodriver.domain.usecase.SaveSelectedAudioInputDeviceNameUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -20,6 +22,8 @@ actual val mainPlatformModule: Module =
             MicrophoneInputViewModel(
                 observeMicrophoneInputStatus = ObserveMicrophoneInputStatusUseCase(get()),
                 getAudioInputDevices = GetAudioInputDevicesUseCase(get()),
+                observeSelectedAudioInputDeviceName = ObserveSelectedAudioInputDeviceNameUseCase(get()),
+                saveSelectedAudioInputDeviceName = SaveSelectedAudioInputDeviceNameUseCase(get()),
             )
         }
     }

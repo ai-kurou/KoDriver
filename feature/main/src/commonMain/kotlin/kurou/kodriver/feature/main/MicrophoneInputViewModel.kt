@@ -7,19 +7,25 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.MicrophoneFailureReason
+import kurou.kodriver.domain.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
 import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
 import kurou.kodriver.domain.usecase.ObserveMicrophoneInputStatusUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedAudioInputDeviceNameUseCase
+import kurou.kodriver.domain.usecase.SaveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.model.MicrophoneInputStatus as DomainMicrophoneInputStatus
 
 /** マイク入力の取得を開始・停止し、入力デバイス名・状態・音量を確認用に保持する。 */
 internal class MicrophoneInputViewModel(
     private val observeMicrophoneInputStatus: ObserveMicrophoneInputStatusUseCase,
     private val getAudioInputDevices: GetAudioInputDevicesUseCase,
+    private val observeSelectedAudioInputDeviceName: ObserveSelectedAudioInputDeviceNameUseCase,
+    private val saveSelectedAudioInputDeviceName: SaveSelectedAudioInputDeviceNameUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MicrophoneInputUiState())
     val uiState: StateFlow<MicrophoneInputUiState> = _uiState.asStateFlow()
@@ -27,8 +33,14 @@ internal class MicrophoneInputViewModel(
     private var captureJob: Job? = null
     private var refreshJob: Job? = null
 
-    /** ユーザーが選んだデバイス名。保存はせず、アプリを終了すると既定（先頭）に戻る。 */
+    /**
+     * 今回の起動中に使うと決めたデバイス名。初回の一覧取得時に保存済みの名前を読み込む。
+     * 一覧に見つからなければ破棄して先頭のデバイスを使うが、保存済みの名前は上書きしない（次回起動で再び選ばれる）。
+     */
     private var selectedDeviceName: String? = null
+
+    /** 保存済みの名前を [selectedDeviceName] へ読み込み済み、またはユーザーが先に選んだため読み込み不要になったか。 */
+    private var savedSelectionResolved = false
 
     /** アプリが見えなくなった時点で取得中だったか。前面に戻ったときに再開するかの判断に使う。 */
     private var resumeOnForeground = false
@@ -59,6 +71,16 @@ internal class MicrophoneInputViewModel(
     /** ドロップダウンで入力デバイスを選ぶ。取得中の場合は選んだデバイスで取得し直す。 */
     fun onDeviceSelected(name: String) {
         selectedDeviceName = name
+        savedSelectionResolved = true
+        viewModelScope.launch {
+            try {
+                saveSelectedAudioInputDeviceName(name)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                captureError(e)
+            }
+        }
         if (name == _uiState.value.deviceName) return
         _uiState.update { it.copy(deviceName = name) }
         if (_uiState.value.enabled) start()
@@ -117,12 +139,22 @@ internal class MicrophoneInputViewModel(
     }
 
     /** 一覧を反映し、選択中（見つからなければ先頭）のデバイスを返す。 */
-    private fun applyDevices(devices: List<AudioInputDevice>): AudioInputDevice? {
+    private suspend fun applyDevices(devices: List<AudioInputDevice>): AudioInputDevice? {
+        loadSavedSelection()
         val device = devices.firstOrNull { it.name == selectedDeviceName } ?: devices.firstOrNull()
         // 選択中のデバイスが一覧から消えたら選択を破棄し、再接続されても勝手に元へ戻らないようにする
         if (devices.isNotEmpty() && device?.name != selectedDeviceName) selectedDeviceName = null
         _uiState.update { it.copy(devices = devices.map(AudioInputDevice::name), deviceName = device?.name) }
         return device
+    }
+
+    /** 初回だけ、保存済みのデバイス名を読み込む。読み込み中にユーザーが選んだ場合は選択を優先する。 */
+    private suspend fun loadSavedSelection() {
+        if (savedSelectionResolved) return
+        val saved = observeSelectedAudioInputDeviceName().first()
+        if (savedSelectionResolved) return
+        savedSelectionResolved = true
+        selectedDeviceName = saved.takeIf { it != SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED }
     }
 
     private fun onStatus(status: DomainMicrophoneInputStatus) {
