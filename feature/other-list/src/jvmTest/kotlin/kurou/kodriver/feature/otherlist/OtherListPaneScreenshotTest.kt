@@ -40,7 +40,7 @@ class OtherListPaneScreenshotTest {
         }
 
     @Test
-    fun `データログを情報の直上に表示`() =
+    fun `データログを情報の下に表示`() =
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
@@ -52,10 +52,10 @@ class OtherListPaneScreenshotTest {
                                         items =
                                             listOf(
                                                 OtherListItemType.Startup,
+                                                OtherListItemType.GitHubRepository,
                                                 OtherListItemType.ResetAutoReadoutSettings,
                                                 OtherListItemType.ResetManualReadoutSettings,
                                                 OtherListItemType.DeleteAllLogs,
-                                                OtherListItemType.GitHubRepository,
                                             ),
                                     ),
                                 onItemClick = {},
