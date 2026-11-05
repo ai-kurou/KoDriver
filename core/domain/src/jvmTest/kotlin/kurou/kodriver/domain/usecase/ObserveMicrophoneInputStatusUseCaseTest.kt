@@ -64,6 +64,26 @@ class ObserveMicrophoneInputStatusUseCaseTest {
         }
 
     @Test
+    fun `振幅の異なる断片は二乗平均平方根で音量を計算し下位バイトも読む`() =
+        runTest {
+            every { repository.observeAudio(null) } returns
+                flowOf(MicrophoneAudioEvent.Chunk(pcm(0, 32767)), MicrophoneAudioEvent.Chunk(pcm(0, -32768)))
+
+            val levels =
+                ObserveMicrophoneInputStatusUseCase(repository)()
+                    .toList()
+                    .filterIsInstance<MicrophoneInputStatus.Capturing>()
+                    .map { it.level }
+
+            // 平均絶対値なら約0.5になるが、二乗平均平方根では約0.7071になる。
+            assertEquals(2, levels.size)
+            assertEquals(0.707085f, levels[0], absoluteTolerance = 0.0001f)
+            assertEquals(0.707107f, levels[1], absoluteTolerance = 0.0001f)
+            verify(exactly = 1) { repository.observeAudio(null) }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `空の断片と端数バイトだけの断片は音量0になる`() =
         runTest {
             every { repository.observeAudio(null) } returns
