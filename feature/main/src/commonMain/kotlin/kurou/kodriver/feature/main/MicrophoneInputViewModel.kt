@@ -48,8 +48,8 @@ internal class MicrophoneInputViewModel(
     /** 取得を止める。再開はしない。 */
     fun stop() {
         resumeOnForeground = false
+        // 取得の終了（マイクを閉じる処理）を次の開始が待てるよう、キャンセルしたジョブの参照は残す
         captureJob?.cancel()
-        captureJob = null
         _uiState.update {
             if (it.enabled) {
                 it.copy(enabled = false, status = MicrophoneInputStatus.Stopped, level = 0f)
@@ -60,16 +60,20 @@ internal class MicrophoneInputViewModel(
     }
 
     private fun start() {
-        captureJob?.cancel()
+        val previous = captureJob
+        previous?.cancel()
         _uiState.update {
-            it.copy(enabled = true, status = MicrophoneInputStatus.Starting, level = 0f)
+            it.copy(enabled = true, status = MicrophoneInputStatus.Starting, deviceName = null, level = 0f)
         }
         captureJob =
             viewModelScope.launch {
                 try {
-                    val deviceName = getAudioInputDevices().firstOrNull()?.name
-                    _uiState.update { it.copy(deviceName = deviceName) }
-                    observeMicrophoneInputStatus().collect(::onStatus)
+                    // 前の取得がマイクを閉じ終えてから開く。同じデバイスを同時に開けない環境で失敗しないようにする
+                    previous?.join()
+                    // 表示する名前と実際に取得するデバイスを一致させるため、先頭のデバイスを明示して開く
+                    val device = getAudioInputDevices().firstOrNull()
+                    _uiState.update { it.copy(deviceName = device?.name) }
+                    observeMicrophoneInputStatus(device).collect(::onStatus)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {

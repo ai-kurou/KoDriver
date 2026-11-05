@@ -59,13 +59,17 @@ class MicrophoneInputSectionTest {
     private val viewModel: MicrophoneInputViewModel
 
     init {
-        every { microphoneRepository.observeAudio(null) } returns events
-        coEvery { deviceRepository.getDevices() } returns listOf(AudioInputDevice("Mic A"))
         viewModel =
             MicrophoneInputViewModel(
                 observeMicrophoneInputStatus = ObserveMicrophoneInputStatusUseCase(microphoneRepository),
                 getAudioInputDevices = GetAudioInputDevicesUseCase(deviceRepository),
             )
+    }
+
+    private fun stubMicA() {
+        val micA = AudioInputDevice("Mic A")
+        coEvery { deviceRepository.getDevices() } returns listOf(micA)
+        every { microphoneRepository.observeAudio(micA) } returns events
     }
 
     private class TestLifecycleOwner : LifecycleOwner {
@@ -88,6 +92,7 @@ class MicrophoneInputSectionTest {
 
     @Test
     fun `スイッチを操作すると取得を開始してデバイス名と状態を表示する`() {
+        stubMicA()
         rule.setContent {
             KoDriverTheme { rememberMicrophoneInputSection(viewModel)(Modifier) }
         }
@@ -100,6 +105,7 @@ class MicrophoneInputSectionTest {
 
     @Test
     fun `アプリが見えなくなると取得を止め前面に戻ると再開する`() {
+        stubMicA()
         val owner = TestLifecycleOwner()
         owner.moveTo(Lifecycle.State.RESUMED)
         rule.setContent {

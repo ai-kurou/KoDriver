@@ -58,12 +58,19 @@ class MicrophoneInputCardTest {
     }
 
     @Test
-    fun `準備中でデバイス名が未取得のときはデバイスが見つからない表示になる`() {
+    fun `準備中でデバイス名が未取得のときはデバイスの行を表示しない`() {
         setCard(MicrophoneInputUiState(enabled = true, status = MicrophoneInputStatus.Starting))
 
         rule.onNodeWithText("準備中(マイクを使用中)").assertExists()
-        rule.onNodeWithText("入力デバイスが見つかりません").assertExists()
+        rule.onNodeWithText("入力デバイスが見つかりません").assertDoesNotExist()
         rule.onNodeWithContentDescription("マイクの入力音量").assertDoesNotExist()
+    }
+
+    @Test
+    fun `デバイス名が無いまま入力中や失敗のときはデバイスが見つからない表示になる`() {
+        setCard(MicrophoneInputUiState(status = MicrophoneInputStatus.Unavailable))
+
+        rule.onNodeWithText("入力デバイスが見つかりません").assertExists()
     }
 
     @Test

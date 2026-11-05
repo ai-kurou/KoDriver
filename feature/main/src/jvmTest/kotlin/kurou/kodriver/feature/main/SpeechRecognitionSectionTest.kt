@@ -23,6 +23,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
+import kurou.kodriver.domain.repository.AudioInputDeviceRepository
+import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
@@ -61,6 +63,8 @@ class SpeechRecognitionSectionTest {
 
     private val speechRepository: SpeechRecognitionRepository = mockk()
     private val permissionRepository: RecordAudioPermissionRepository = mockk()
+    private val microphoneRepository: MicrophoneRepository = mockk()
+    private val audioInputDeviceRepository: AudioInputDeviceRepository = mockk()
     private val events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = 16)
     private lateinit var viewModel: SpeechRecognitionViewModel
 
@@ -173,8 +177,8 @@ class SpeechRecognitionSectionTest {
     fun `音声認識を提供しないデスクトップではマイク入力のカードを表示する`() {
         val microphoneViewModel =
             MicrophoneInputViewModel(
-                observeMicrophoneInputStatus = ObserveMicrophoneInputStatusUseCase(mockk()),
-                getAudioInputDevices = GetAudioInputDevicesUseCase(mockk()),
+                observeMicrophoneInputStatus = ObserveMicrophoneInputStatusUseCase(microphoneRepository),
+                getAudioInputDevices = GetAudioInputDevicesUseCase(audioInputDeviceRepository),
             )
         try {
             rule.setContent {

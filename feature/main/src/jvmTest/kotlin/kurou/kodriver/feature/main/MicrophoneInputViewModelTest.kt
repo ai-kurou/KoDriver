@@ -36,8 +36,6 @@ class MicrophoneInputViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
-        every { microphoneRepository.observeAudio(null) } returns events
-        coEvery { deviceRepository.getDevices() } returns listOf(AudioInputDevice("Mic A"), AudioInputDevice("Mic B"))
         viewModel =
             MicrophoneInputViewModel(
                 observeMicrophoneInputStatus = ObserveMicrophoneInputStatusUseCase(microphoneRepository),
@@ -51,6 +49,13 @@ class MicrophoneInputViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private val micA = AudioInputDevice("Mic A")
+
+    private fun stubDevices(devices: List<AudioInputDevice> = listOf(micA, AudioInputDevice("Mic B"))) {
+        coEvery { deviceRepository.getDevices() } returns devices
+        every { microphoneRepository.observeAudio(devices.firstOrNull()) } returns events
+    }
+
     private fun loudChunk() = MicrophoneAudioEvent.Chunk(byteArrayOf(0, 0x40, 0, 0x40))
 
     @Test
@@ -59,7 +64,8 @@ class MicrophoneInputViewModelTest {
     }
 
     @Test
-    fun `ONにすると先頭のデバイス名を表示し音声が届くと音量を表示する`() {
+    fun `ONにすると先頭のデバイス名を表示し、そのデバイスで取得して音量を表示する`() {
+        stubDevices()
         viewModel.onEnabledChange(true)
 
         assertEquals(
@@ -72,13 +78,13 @@ class MicrophoneInputViewModelTest {
         assertEquals(MicrophoneInputStatus.Capturing, viewModel.uiState.value.status)
         assertEquals(0.5f, viewModel.uiState.value.level)
         coVerify(exactly = 1) { deviceRepository.getDevices() }
-        verify(exactly = 1) { microphoneRepository.observeAudio(null) }
+        verify(exactly = 1) { microphoneRepository.observeAudio(micA) }
         confirmVerified(deviceRepository, microphoneRepository)
     }
 
     @Test
     fun `デバイスが無いときはデバイス名なしで取得を続ける`() {
-        coEvery { deviceRepository.getDevices() } returns emptyList()
+        stubDevices(emptyList())
 
         viewModel.onEnabledChange(true)
 
@@ -91,6 +97,7 @@ class MicrophoneInputViewModelTest {
 
     @Test
     fun `OFFにすると停止して音量を0に戻す`() {
+        stubDevices()
         viewModel.onEnabledChange(true)
         events.tryEmit(loudChunk())
 
@@ -103,6 +110,20 @@ class MicrophoneInputViewModelTest {
     }
 
     @Test
+    fun `再度ONにすると前のデバイス名を残さず取得し直す`() {
+        stubDevices()
+        viewModel.onEnabledChange(true)
+        events.tryEmit(MicrophoneAudioEvent.Failed(MicrophoneFailureReason.Unavailable))
+        coEvery { deviceRepository.getDevices() } returns emptyList()
+        every { microphoneRepository.observeAudio(null) } returns events
+
+        viewModel.onEnabledChange(true)
+
+        assertEquals(null, viewModel.uiState.value.deviceName)
+        assertEquals(MicrophoneInputStatus.Starting, viewModel.uiState.value.status)
+    }
+
+    @Test
     fun `停止中にOFFを操作しても状態は変わらない`() {
         viewModel.onEnabledChange(false)
 
@@ -111,6 +132,7 @@ class MicrophoneInputViewModelTest {
 
     @Test
     fun `無音が続いたときはOFFにして案内用の状態にする`() {
+        stubDevices()
         viewModel.onEnabledChange(true)
 
         events.tryEmit(MicrophoneAudioEvent.Failed(MicrophoneFailureReason.NoSignal))
@@ -121,6 +143,7 @@ class MicrophoneInputViewModelTest {
 
     @Test
     fun `デバイスを開けないときは利用不可にする`() {
+        stubDevices()
         viewModel.onEnabledChange(true)
 
         events.tryEmit(MicrophoneAudioEvent.Failed(MicrophoneFailureReason.Unavailable))
@@ -141,6 +164,7 @@ class MicrophoneInputViewModelTest {
 
     @Test
     fun `取得中にバックグラウンドへ移ると止め前面に戻ると再開する`() {
+        stubDevices()
         viewModel.onEnabledChange(true)
 
         viewModel.onAppBackgrounded()
@@ -166,6 +190,7 @@ class MicrophoneInputViewModelTest {
 
     @Test
     fun `ONを重ねて操作しても取得は1つだけ`() {
+        stubDevices()
         viewModel.onEnabledChange(true)
         viewModel.onEnabledChange(true)
 

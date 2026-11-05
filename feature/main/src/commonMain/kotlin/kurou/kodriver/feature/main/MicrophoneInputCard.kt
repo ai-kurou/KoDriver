@@ -88,11 +88,15 @@ internal fun MicrophoneInputCard(
                     modifier = Modifier.semantics { contentDescription = switchDescription },
                 )
             }
-            if (uiState.enabled || uiState.deviceName != null) {
+            // デバイス一覧の取得が終わる前（準備中）は、見つからないと誤解させないよう何も表示しない
+            val deviceEnumerated =
+                uiState.status != MicrophoneInputStatus.Stopped && uiState.status != MicrophoneInputStatus.Starting
+            val deviceLine =
+                uiState.deviceName?.let { stringResource(Res.string.microphone_input_device_name, it) }
+                    ?: stringResource(Res.string.microphone_input_device_not_found).takeIf { deviceEnumerated }
+            if (deviceLine != null) {
                 Text(
-                    text =
-                        uiState.deviceName?.let { stringResource(Res.string.microphone_input_device_name, it) }
-                            ?: stringResource(Res.string.microphone_input_device_not_found),
+                    text = deviceLine,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
