@@ -58,6 +58,7 @@ fun AceWindowsDebugStateDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    speechRecognitionSection: @Composable (Modifier) -> Unit = {},
 ) {
     val viewModel: AceWindowsDebugStateDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -70,6 +71,7 @@ fun AceWindowsDebugStateDetailPane(
         onDebugReadoutTextChange = viewModel::updateDebugReadoutText,
         onRequestReadout = viewModel::requestReadout,
         modifier = modifier,
+        speechRecognitionSection = speechRecognitionSection,
     )
 }
 
@@ -83,6 +85,7 @@ internal fun AceWindowsDebugStateDetailPaneContent(
     onDebugReadoutTextChange: (String) -> Unit = {},
     onRequestReadout: () -> Unit = {},
     modifier: Modifier = Modifier,
+    speechRecognitionSection: @Composable (Modifier) -> Unit = {},
 ) {
     DetailPaneScaffold(
         title = stringResource(Res.string.debug_state_title),
@@ -104,6 +107,9 @@ internal fun AceWindowsDebugStateDetailPaneContent(
                 state = gridState,
                 modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
             ) {
+                item(key = SPEECH_RECOGNITION_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
+                    speechRecognitionSection(Modifier.padding(KoDriverSpacing.small))
+                }
                 item(key = DEBUG_READOUT_REQUEST_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
                     DebugReadoutRequestCard(
                         readoutItemKeyValues =
@@ -143,8 +149,9 @@ internal fun AceWindowsDebugStateDetailPaneContent(
     }
 }
 
+private const val SPEECH_RECOGNITION_ITEM_KEY = "speechRecognition"
 private const val DEBUG_READOUT_REQUEST_ITEM_KEY = "debugReadoutRequest"
-private const val FIXED_ITEM_COUNT = 1
+private const val FIXED_ITEM_COUNT = 2
 
 private val debugStateCardTitles: Map<AceWindowsDebugStateCardKey, StringResource> =
     mapOf(

@@ -19,6 +19,7 @@ junit = "4.13.2"
 kotlin = "2.4.21"
 ksp = "2.3.13"
 jna = "5.19.1"
+vosk = "0.3.45"
 jmdns = "3.6.5"
 kotlinx-coroutines = "1.11.0"
 detekt = "1.23.8"
@@ -74,6 +75,7 @@ compose-uiTestJunit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", ver
 navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 jna-platform = { module = "net.java.dev.jna:jna-platform", version.ref = "jna" }
+vosk = { module = "com.alphacephei:vosk", version.ref = "vosk" }
 jmdns = { module = "org.jmdns:jmdns", version.ref = "jmdns" }
 kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }

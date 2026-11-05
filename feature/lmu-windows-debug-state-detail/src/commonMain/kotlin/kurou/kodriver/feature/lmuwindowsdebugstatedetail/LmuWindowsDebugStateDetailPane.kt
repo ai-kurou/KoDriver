@@ -72,6 +72,7 @@ fun LmuWindowsDebugStateDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    speechRecognitionSection: @Composable (Modifier) -> Unit = {},
 ) {
     val viewModel: LmuWindowsDebugStateDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -86,6 +87,7 @@ fun LmuWindowsDebugStateDetailPane(
         onHotkeySelected = viewModel::selectHotkey,
         onCheckHotkey = viewModel::checkHotkey,
         modifier = modifier,
+        speechRecognitionSection = speechRecognitionSection,
     )
 }
 
@@ -101,6 +103,7 @@ fun LmuWindowsDebugStateDetailPaneContent(
     onHotkeySelected: (Int) -> Unit = {},
     onCheckHotkey: () -> Unit = {},
     modifier: Modifier = Modifier,
+    speechRecognitionSection: @Composable (Modifier) -> Unit = {},
 ) {
     DetailPaneScaffold(
         title = stringResource(Res.string.debug_state_title),
@@ -112,7 +115,7 @@ fun LmuWindowsDebugStateDetailPaneContent(
             val columns = calculateDebugStateColumns(maxWidth)
             val gridState = rememberLazyGridState()
             val showHotkey = uiState.readoutHotkey.registrationState != HotkeyRegistrationState.Unsupported
-            val fixedItemCount = if (showHotkey) 2 else 1
+            val fixedItemCount = if (showHotkey) 3 else 2
             val reorderableState =
                 rememberReorderableLazyGridState(gridState) { from, to ->
                     if (from.index >= fixedItemCount && to.index >= fixedItemCount) {
@@ -124,6 +127,9 @@ fun LmuWindowsDebugStateDetailPaneContent(
                 state = gridState,
                 modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
             ) {
+                item(key = SPEECH_RECOGNITION_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
+                    speechRecognitionSection(Modifier.padding(KoDriverSpacing.small))
+                }
                 item(key = DEBUG_READOUT_REQUEST_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
                     DebugReadoutRequestCard(
                         readoutItemKeyValues =
@@ -173,6 +179,7 @@ fun LmuWindowsDebugStateDetailPaneContent(
     }
 }
 
+private const val SPEECH_RECOGNITION_ITEM_KEY = "speechRecognition"
 private const val DEBUG_READOUT_REQUEST_ITEM_KEY = "debugReadoutRequest"
 private const val READOUT_HOTKEY_ITEM_KEY = "readoutHotkey"
 
