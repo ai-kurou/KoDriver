@@ -272,7 +272,7 @@ class ManualReadoutListPaneTest {
     }
 
     @Test
-    fun `ヘルプシートは編集モードと削除とホットキーの説明を表示する`() {
+    fun `ヘルプシートは削除とホットキーの説明を表示する`() {
         rule.setContent {
             KoDriverTheme {
                 Box(modifier = Modifier.requiredSize(480.dp, 400.dp)) {
@@ -285,12 +285,7 @@ class ManualReadoutListPaneTest {
             .onNodeWithText("見出し右の切り替えボタンで、標準表示と再生ボタン表示（2列の大きなボタン）を切り替えます。")
             .performScrollTo()
             .assertIsDisplayed()
-        rule.onNodeWithText("編集モード").performScrollTo().assertIsDisplayed()
-        rule
-            .onNodeWithText(
-                "再生ボタン表示では、見出しの「編集」ボタンでボタンのタップが編集に切り替わります。ボタンの長押しでも編集できます。",
-            ).performScrollTo()
-            .assertIsDisplayed()
+        rule.onNodeWithText("編集モード").assertDoesNotExist()
         rule
             .onNodeWithText("読み上げる値がない項目は「データがありません」と読み上げます。")
             .performScrollTo()
@@ -298,7 +293,7 @@ class ManualReadoutListPaneTest {
         rule.onNodeWithText("長押しで編集・削除").performScrollTo().assertIsDisplayed()
         rule
             .onNodeWithText(
-                "標準表示では、セットを長押しすると、メニューから編集と、確認してからの削除ができます。再生ボタン表示では、編集画面から削除します。",
+                "セットを長押しすると、メニューから編集と、確認してからの削除ができます。標準表示では行を、再生ボタン表示ではボタンを長押しします。",
             ).performScrollTo()
             .assertIsDisplayed()
         // ホットキーの説明は Windows デスクトップでのみ表示するため、実行OSに合わせて検証する。

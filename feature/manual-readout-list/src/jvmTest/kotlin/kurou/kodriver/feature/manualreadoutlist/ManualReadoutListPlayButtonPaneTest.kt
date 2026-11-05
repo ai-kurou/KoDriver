@@ -4,15 +4,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.unit.height
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -51,14 +52,15 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
-    fun `再生タイルのタップはセットIDを送信し長押しは詳細を開く`() {
+    fun `再生タイルのタップはセットIDを送信し長押しメニューの編集は詳細を開く`() {
         every { onAddSet() } returns Unit
         every { onReadSet("set-1") } returns Unit
         every { onSetClick("set-1") } returns Unit
         showPlayButtons()
 
         rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsEnabled().performClick()
-        rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
+        rule.onNodeWithText("LMU(Windows)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
+        rule.onNodeWithText("編集").performClick()
         rule.onNodeWithContentDescription("セットを追加").assertDoesNotExist()
         rule.onNodeWithText("セットを追加").performClick()
         verify(exactly = 1) { onReadSet("set-1") }
@@ -68,7 +70,7 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
-    fun `読み上げ不可と項目なしのタイルは再生せず長押し編集できる`() {
+    fun `読み上げ不可と項目なしのタイルは再生せず長押しメニューから編集できる`() {
         val canReadSets = mutableStateOf(false)
         every { onSetClick("set-1") } returns Unit
         rule.setContent {
@@ -96,7 +98,8 @@ class ManualReadoutListPlayButtonPaneTest {
             .onNodeWithContentDescription("セット 1 を読み上げ")
             .assert(SemanticsMatcher.keyIsDefined(SemanticsActions.OnLongClick))
             .performClick()
-        rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
+        rule.onNodeWithText("LMU(Windows)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
+        rule.onNodeWithText("編集").performClick()
         rule.runOnIdle { canReadSets.value = true }
         rule.onNodeWithContentDescription("セット 2 を読み上げ").performClick()
         verify(exactly = 0) { onReadSet("set-1") }
@@ -106,28 +109,50 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
-    fun `編集ボタンで編集を開始するとタップと長押しで編集し終了すると再生に戻る`() {
+    fun `再生タイルの長押しメニューは編集と削除を並べ削除は確認後にセットIDを送信する`() {
         every { onSetClick("set-1") } returns Unit
-        every { onReadSet("set-1") } returns Unit
-        showPlayButtons()
+        val deleted = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState =
+                        ManualReadoutListUiState(
+                            playButtonLayoutEnabled = true,
+                            canReadSets = true,
+                            sets = listOf(ManualReadoutSet("set-1", itemKeys = listOf("SESSION"))),
+                        ),
+                    simulatorId = "lmu_windows",
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = { onReadSet(it) },
+                    onSetClick = { onSetClick(it) },
+                    onDeleteSet = { deleted += it },
+                )
+            }
+        }
 
+        rule.onNodeWithText("LMU(Windows)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
         rule.onNodeWithText("編集").assertIsDisplayed()
-        rule.onNodeWithContentDescription("編集モードにする").performClick()
-        rule.onNodeWithText("編集").assertIsDisplayed()
-        rule.onNodeWithText("タップで編集").assertIsDisplayed()
-        rule.onNodeWithText("LMU(Windows)セット1").performClick()
-        rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
-        verify(exactly = 2) { onSetClick("set-1") }
+        rule.onNodeWithText("削除").assertIsDisplayed().performClick()
+        rule.onNodeWithText("セットを削除しますか？").assertIsDisplayed()
+        rule.runOnIdle { assertEquals(emptyList<String>(), deleted) }
+        rule.onNodeWithText("キャンセル").performClick()
+        rule.onNodeWithText("セットを削除しますか？").assertDoesNotExist()
+        rule.runOnIdle { assertEquals(emptyList<String>(), deleted) }
+        rule.mainClock.advanceTimeBy(500)
+        rule.onNodeWithText("LMU(Windows)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
+        rule.onNodeWithText("削除").performClick()
+        val deleteActions = rule.onAllNodesWithText("削除")
+        deleteActions.assertCountEquals(1)
+        deleteActions[0].performClick()
+        rule.runOnIdle { assertEquals(listOf("set-1"), deleted) }
         verify(exactly = 0) { onReadSet("set-1") }
-        rule.onNodeWithContentDescription("編集モードを終了").performClick()
-        rule.onNodeWithText("タップで編集").assertDoesNotExist()
-        rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
-        verify(exactly = 1) { onReadSet("set-1") }
-        confirmVerified(onSetClick, onReadSet)
+        verify(exactly = 0) { onSetClick("set-1") }
+        confirmVerified(onReadSet, onSetClick)
     }
 
     @Test
-    fun `表示切替後は編集モードを解除し標準表示には編集ボタンを出さない`() {
+    fun `どちらの表示にも編集モードの切替ボタンを出さない`() {
         val playLayout = mutableStateOf(true)
         rule.setContent {
             KoDriverTheme {
@@ -141,20 +166,14 @@ class ManualReadoutListPlayButtonPaneTest {
                 )
             }
         }
-        rule.onNodeWithContentDescription("編集モードにする").performClick()
+        rule.onNodeWithContentDescription("編集モードにする").assertDoesNotExist()
         rule.onNodeWithContentDescription("標準表示").performClick()
         rule.onNodeWithContentDescription("編集モードにする").assertDoesNotExist()
-        rule.onNodeWithContentDescription("編集モードを終了").assertDoesNotExist()
-        rule.onNodeWithContentDescription("再生ボタン表示").performClick()
-        rule.onNodeWithContentDescription("編集モードにする").assertIsDisplayed()
     }
 
     @Test
     fun `再生ボタン表示は対応環境で割り当て済みのチップだけを表示する`() {
         showPlayButtonHotkeySets(showHotkeyChip = true)
-        rule.onNodeWithText("Ctrl+Shift+A", useUnmergedTree = true).assertIsDisplayed()
-        rule.onNodeWithText("未設定", useUnmergedTree = true).assertDoesNotExist()
-        rule.onNodeWithContentDescription("編集モードにする").performClick()
         rule.onNodeWithText("Ctrl+Shift+A", useUnmergedTree = true).assertIsDisplayed()
         rule.onNodeWithText("未設定", useUnmergedTree = true).assertDoesNotExist()
     }
@@ -192,7 +211,7 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
-    fun `再生タイルはカテゴリドットを集計して編集モードでも表示する`() {
+    fun `再生タイルはカテゴリドットを集計して表示する`() {
         showPlayButtons(
             sets =
                 listOf(
@@ -208,9 +227,6 @@ class ManualReadoutListPlayButtonPaneTest {
                     ),
                 ),
         )
-        rule.onNodeWithContentDescription("燃料 2", useUnmergedTree = true).assertIsDisplayed()
-        rule.onNodeWithContentDescription("タイヤ 1", useUnmergedTree = true).assertIsDisplayed()
-        rule.onNodeWithContentDescription("編集モードにする").performClick()
         rule.onNodeWithContentDescription("燃料 2", useUnmergedTree = true).assertIsDisplayed()
         rule.onNodeWithContentDescription("タイヤ 1", useUnmergedTree = true).assertIsDisplayed()
     }

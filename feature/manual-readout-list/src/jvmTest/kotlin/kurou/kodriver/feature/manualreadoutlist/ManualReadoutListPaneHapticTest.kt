@@ -159,23 +159,21 @@ class ManualReadoutListPaneHapticTest {
     }
 
     @Test
-    fun `編集タップは異なるセットの選択で触覚を返し長押しの既存触覚と重複しない`() {
+    fun `再生タイルの長押しメニューの編集は詳細を開き触覚を1回だけ返す`() {
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         state.value =
             state.value.copy(
                 playButtonLayoutEnabled = true,
-                sets = listOf(ManualReadoutSet("first", name = "セットA"), ManualReadoutSet("second", name = "セットB")),
+                sets = listOf(ManualReadoutSet("first", name = "セットA")),
             )
         showPane()
-        rule.onNodeWithText("編集").performClick()
-        rule.onNodeWithText("セットA").performClick()
-        rule.onNodeWithText("セットA").performClick()
-        rule.onNodeWithText("セットB").performClick()
         rule.onNodeWithText("セットA").performSemanticsAction(SemanticsActions.OnLongClick)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        rule.onNodeWithText("編集").performClick()
 
-        assertEquals(listOf("first", "first", "second", "first"), selections)
+        assertEquals(listOf("first"), selections)
         assertEquals(emptyList<String>(), readRequests)
-        verify(exactly = 3) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(haptic)
     }
 

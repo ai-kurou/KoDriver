@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.PlayArrow
@@ -38,8 +37,6 @@ import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_title
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_edit_mode_description
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_edit_mode_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_help_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_hotkey_guide_link
@@ -63,8 +60,6 @@ private const val SIMHUB_HOTKEY_SETUP_URL =
 internal fun ManualReadoutHintRow(
     setCount: Int,
     showSimHubGuideLink: Boolean,
-    editMode: Boolean,
-    onToggleEditMode: () -> Unit,
     playButtonLayoutEnabled: Boolean,
     onTogglePlayButtonLayout: () -> Unit,
     modifier: Modifier = Modifier,
@@ -79,9 +74,6 @@ internal fun ManualReadoutHintRow(
                     horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (playButtonLayoutEnabled) {
-                        ManualReadoutEditButton(editMode, onToggleEditMode)
-                    }
                     Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceContainerHighest) {
                         Row(modifier = Modifier.selectableGroup()) {
                             ManualReadoutLayoutSegment(
@@ -141,11 +133,6 @@ internal fun ManualReadoutHintSheetContent(
             icon = Icons.Filled.GridView,
             title = stringResource(Res.string.manual_readout_hint_layout_title),
             description = stringResource(Res.string.manual_readout_hint_layout_description),
-        )
-        KoDriverHintSheetRow(
-            icon = Icons.Filled.Edit,
-            title = stringResource(Res.string.manual_readout_hint_edit_mode_title),
-            description = stringResource(Res.string.manual_readout_hint_edit_mode_description),
         )
         KoDriverHintSheetRow(
             icon = Icons.AutoMirrored.Filled.PlaylistAdd,

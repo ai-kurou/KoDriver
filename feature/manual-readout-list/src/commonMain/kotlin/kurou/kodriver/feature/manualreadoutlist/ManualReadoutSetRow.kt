@@ -93,16 +93,6 @@ internal fun ManualReadoutSetRow(
         }
     }
     var menuExpanded by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    if (showDeleteDialog) {
-        ManualReadoutListDeleteConfirmDialog(
-            onConfirm = {
-                showDeleteDialog = false
-                onDeleteSet()
-            },
-            onDismiss = { showDeleteDialog = false },
-        )
-    }
     ElevatedCard(
         modifier =
             Modifier
@@ -119,51 +109,12 @@ internal fun ManualReadoutSetRow(
                 ),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
-        DropdownMenuPopup(
+        ManualReadoutSetMenu(
             expanded = menuExpanded,
-            onDismissRequest = {
-                menuExpanded = false
-            },
-            popupPositionProvider = remember { ManualReadoutMenuPositionProvider() },
-        ) {
-            Surface(
-                color = MaterialTheme.colorScheme.surface,
-                shape = MenuDefaults.shape,
-                tonalElevation = MenuDefaults.TonalElevation,
-                shadowElevation = MenuDefaults.ShadowElevation,
-            ) {
-                Column(modifier = Modifier.widthIn(max = 280.dp).verticalScroll(rememberScrollState())) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(Res.string.manual_readout_list_edit)) },
-                        leadingIcon = { Icon(Icons.Filled.Edit, contentDescription = null) },
-                        onClick = {
-                            menuExpanded = false
-                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            onSetClick()
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                stringResource(Res.string.manual_readout_list_delete),
-                                color = MaterialTheme.colorScheme.error,
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error,
-                            )
-                        },
-                        onClick = {
-                            menuExpanded = false
-                            showDeleteDialog = true
-                        },
-                    )
-                }
-            }
-        }
+            onDismissRequest = { menuExpanded = false },
+            onEdit = onSetClick,
+            onDelete = onDeleteSet,
+        )
         Row(
             modifier =
                 Modifier
@@ -217,6 +168,71 @@ internal fun ManualReadoutSetRow(
                         contentDescription = manualReadoutPlayButtonDescription(set, setNumber),
                     )
                 }
+            }
+        }
+    }
+}
+
+/** 長押しで開く「編集」「削除」メニューと、削除の確認ダイアログ。アンカーとなる要素の子として置く。 */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+internal fun ManualReadoutSetMenu(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    if (showDeleteDialog) {
+        ManualReadoutListDeleteConfirmDialog(
+            onConfirm = {
+                showDeleteDialog = false
+                onDelete()
+            },
+            onDismiss = { showDeleteDialog = false },
+        )
+    }
+    DropdownMenuPopup(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+        popupPositionProvider = remember { ManualReadoutMenuPositionProvider() },
+    ) {
+        Surface(
+            color = MaterialTheme.colorScheme.surface,
+            shape = MenuDefaults.shape,
+            tonalElevation = MenuDefaults.TonalElevation,
+            shadowElevation = MenuDefaults.ShadowElevation,
+        ) {
+            Column(modifier = Modifier.widthIn(max = 280.dp).verticalScroll(rememberScrollState())) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(Res.string.manual_readout_list_edit)) },
+                    leadingIcon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+                    onClick = {
+                        onDismissRequest()
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onEdit()
+                    },
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            stringResource(Res.string.manual_readout_list_delete),
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    },
+                    onClick = {
+                        onDismissRequest()
+                        showDeleteDialog = true
+                    },
+                )
             }
         }
     }
