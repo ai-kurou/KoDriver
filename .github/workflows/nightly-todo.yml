@@ -108,10 +108,10 @@ jobs:
               and (.summary | type == "string" and test("\\S"))
               and (.issues | type == "array"
                 and all(.[]; type == "object"
-                  and (.title | type == "string" and length > 0 and length <= 200)
+                  and (.title | type == "string" and length > 0 and length <= 200 and (test("[\\x00-\\x1f]") | not))
                   and (.body | type == "string" and length > 0)))))
           ' "$diagnostics/response.json" > /dev/null; then
-            printf '# 夜間調査: 未完了\n\nCLI終了コード: %s。エラー・結果欠落・未完了の有無は診断Artifactを確認してください。\n\n起票件数: 未確認（途中で起票された可能性があります）。\n' "$exit_code" > "$diagnostics/summary.md"
+            printf '# 夜間調査: 未完了\n\nCLI終了コード: %s。エラー・結果欠落・未完了の有無は診断Artifactを確認してください。\n\n起票件数: 0（調査が完了しなかったため起票していません）。\n' "$exit_code" > "$diagnostics/summary.md"
             echo "::error::Nightly investigation did not complete successfully"
             exit 1
           fi
