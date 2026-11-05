@@ -6,15 +6,19 @@ import kurou.kodriver.core.speechrecognitiondata.microphone.JvmMicrophoneReposit
 import kurou.kodriver.core.speechrecognitiondata.speech.JvmSpeechRecognitionRepository
 import kurou.kodriver.core.speechrecognitiondata.speech.SpeechTranscriberFactory
 import kurou.kodriver.core.speechrecognitiondata.speech.VoskSpeechTranscriberFactory
+import kurou.kodriver.core.speechrecognitiondata.speech.resolveVoskModelDirectory
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import org.koin.dsl.module
-import java.io.File
 
-/** Voskの日本語モデルを展開しておくディレクトリ。 */
-private val voskModelDirectory = File("${System.getProperty("user.home")}/.kodriver/vosk-model-ja")
+/** Voskの日本語モデルのディレクトリ。手動配置を優先し、無ければアプリ同梱のモデルを使う。 */
+private val voskModelDirectory =
+    resolveVoskModelDirectory(
+        userHome = System.getProperty("user.home"),
+        resourcesDirectory = System.getProperty("compose.application.resources.dir"),
+    )
 
 /**
  * マイク入力・音声認識・マイク権限のRepositoryバインドを行うKoinモジュール（:core:speech-recognition-data / jvmMain）。
