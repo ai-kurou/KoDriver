@@ -8,4 +8,15 @@
     <string name="speech_recognition_status_permission_denied">マイクの権限が許可されていません</string>
     <string name="speech_recognition_status_unavailable">この端末では音声認識を利用できません</string>
     <string name="speech_recognition_status_idle_stopped">しばらく発話がなかったため停止しました</string>
+    <string name="microphone_input_title">マイク入力</string>
+    <string name="microphone_input_switch_description">マイク入力の確認を切り替え</string>
+    <string name="microphone_input_status_stopped">停止中</string>
+    <string name="microphone_input_status_starting">準備中(マイクを使用中)</string>
+    <string name="microphone_input_status_capturing">入力中(マイクを使用中)</string>
+    <string name="microphone_input_status_unavailable">マイクを利用できません</string>
+    <string name="microphone_input_status_no_signal">音声が入力されていません</string>
+    <string name="microphone_input_device_name">入力デバイス: %1$s</string>
+    <string name="microphone_input_device_not_found">入力デバイスが見つかりません</string>
+    <string name="microphone_input_level_description">マイクの入力音量</string>
+    <string name="microphone_input_no_signal_guidance">Windows の設定 &gt; プライバシーとセキュリティ &gt; マイク で、マイクへのアクセスが許可されているか確認してください。</string>
 </resources>

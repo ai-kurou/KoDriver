@@ -23,14 +23,22 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
+import kurou.kodriver.domain.repository.AudioInputDeviceRepository
+import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneInputStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
+import org.koin.compose.KoinApplication
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.koinConfiguration
+import org.koin.dsl.module
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -55,6 +63,8 @@ class SpeechRecognitionSectionTest {
 
     private val speechRepository: SpeechRecognitionRepository = mockk()
     private val permissionRepository: RecordAudioPermissionRepository = mockk()
+    private val microphoneRepository: MicrophoneRepository = mockk()
+    private val audioInputDeviceRepository: AudioInputDeviceRepository = mockk()
     private val events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = 16)
     private lateinit var viewModel: SpeechRecognitionViewModel
 
@@ -164,12 +174,24 @@ class SpeechRecognitionSectionTest {
     }
 
     @Test
-    fun `音声認識を提供しないプラットフォームでは何も表示しない`() {
-        rule.setContent {
-            KoDriverTheme { rememberSpeechRecognitionSection()(Modifier) }
-        }
+    fun `音声認識を提供しないデスクトップではマイク入力のカードを表示する`() {
+        val microphoneViewModel =
+            MicrophoneInputViewModel(
+                observeMicrophoneInputStatus = ObserveMicrophoneInputStatusUseCase(microphoneRepository),
+                getAudioInputDevices = GetAudioInputDevicesUseCase(audioInputDeviceRepository),
+            )
+        try {
+            rule.setContent {
+                KoinApplication(koinConfiguration { modules(module { viewModel { microphoneViewModel } }) }) {
+                    KoDriverTheme { rememberSpeechRecognitionSection()(Modifier) }
+                }
+            }
 
-        rule.onNodeWithText("音声認識").assertDoesNotExist()
-        assertFalse(isSpeechRecognitionSupportedOnPlatform())
+            rule.onNodeWithText("マイク入力").assertExists()
+            rule.onNodeWithText("音声認識").assertDoesNotExist()
+            assertFalse(isSpeechRecognitionSupportedOnPlatform())
+        } finally {
+            microphoneViewModel.viewModelScope.cancel()
+        }
     }
 }
