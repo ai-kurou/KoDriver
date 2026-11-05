@@ -27,7 +27,17 @@ abstract class PrepareVoskModelTask
         @TaskAction
         fun prepare() {
             val zip = temporaryDir.resolve("vosk-model.zip")
-            URI(modelUrl.get()).toURL().openStream().use { input ->
+            val uri = URI(modelUrl.get())
+            // ビルドスクリプトで固定した配布元（HTTPS）以外からは取得しない
+            require(uri.scheme == "https" && uri.host == "alphacephei.com") { "想定外のモデル取得元です: $uri" }
+            // 配布元の応答が止まってもビルドが終わらなくならないよう、接続・読み取りの待ち時間に上限を設ける
+            val timeoutMillis = 60_000
+            val connection =
+                uri.toURL().openConnection().apply {
+                    connectTimeout = timeoutMillis
+                    readTimeout = timeoutMillis
+                }
+            connection.getInputStream().use { input ->
                 zip.outputStream().use { output -> input.copyTo(output) }
             }
             val actual =
@@ -45,7 +55,7 @@ abstract class PrepareVoskModelTask
                 into(target)
                 includeEmptyDirs = false
                 // zip直下のディレクトリ（vosk-model-small-ja-0.22）を取り除き、モデルの中身を直接配置する
-                eachFile { relativePath = RelativePath(true, *relativePath.segments.drop(1).toTypedArray()) }
+                eachFile { path = path.substringAfter('/') }
             }
         }
     }

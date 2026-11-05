@@ -11,17 +11,29 @@ class VoskModelLocationTest {
     private val userModel = File(userHome, ".kodriver/vosk-model-ja")
     private val bundledModel = File(resources, "vosk-model-ja")
 
+    private fun File.placeModel() {
+        File(this, "am").mkdirs()
+    }
+
     @Test
     fun `手動配置のモデルがあれば同梱より優先する`() {
-        userModel.mkdirs()
-        bundledModel.mkdirs()
+        userModel.placeModel()
+        bundledModel.placeModel()
 
         assertEquals(userModel, resolveVoskModelDirectory(userHome.path, resources.path))
     }
 
     @Test
     fun `手動配置が無ければ同梱のモデルを使う`() {
-        bundledModel.mkdirs()
+        bundledModel.placeModel()
+
+        assertEquals(bundledModel, resolveVoskModelDirectory(userHome.path, resources.path))
+    }
+
+    @Test
+    fun `手動配置のディレクトリが空や展開途中なら同梱のモデルを使う`() {
+        userModel.mkdirs()
+        bundledModel.placeModel()
 
         assertEquals(bundledModel, resolveVoskModelDirectory(userHome.path, resources.path))
     }
