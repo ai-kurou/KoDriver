@@ -73,6 +73,7 @@ class ManualReadoutListPlayButtonPaneTest {
     fun `読み上げ不可と項目なしのタイルは再生せず長押しメニューから編集できる`() {
         val canReadSets = mutableStateOf(false)
         every { onSetClick("set-1") } returns Unit
+        every { onSetClick("empty") } returns Unit
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
@@ -102,9 +103,12 @@ class ManualReadoutListPlayButtonPaneTest {
         rule.onNodeWithText("編集").performClick()
         rule.runOnIdle { canReadSets.value = true }
         rule.onNodeWithContentDescription("セット 2 を読み上げ").performClick()
+        rule.onNodeWithText("LMU(Windows)セット2").performSemanticsAction(SemanticsActions.OnLongClick)
+        rule.onNodeWithText("編集").performClick()
         verify(exactly = 0) { onReadSet("set-1") }
         verify(exactly = 0) { onReadSet("empty") }
         verify(exactly = 1) { onSetClick("set-1") }
+        verify(exactly = 1) { onSetClick("empty") }
         confirmVerified(onReadSet, onSetClick)
     }
 
