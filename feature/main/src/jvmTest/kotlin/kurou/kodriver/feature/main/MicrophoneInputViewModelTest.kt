@@ -24,8 +24,6 @@ import kurou.kodriver.domain.model.MicrophoneAudioEvent
 import kurou.kodriver.domain.model.MicrophoneFailureReason
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
-import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
-import kurou.kodriver.domain.usecase.ObserveMicrophoneInputStatusUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -42,10 +40,7 @@ class MicrophoneInputViewModelTest {
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         viewModel =
-            MicrophoneInputViewModel(
-                observeMicrophoneInputStatus = ObserveMicrophoneInputStatusUseCase(microphoneRepository),
-                getAudioInputDevices = GetAudioInputDevicesUseCase(deviceRepository),
-            )
+            microphoneInputViewModel(microphoneRepository, deviceRepository)
     }
 
     @AfterTest

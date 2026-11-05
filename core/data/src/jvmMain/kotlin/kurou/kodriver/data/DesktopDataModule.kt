@@ -25,6 +25,7 @@ import kurou.kodriver.data.preferences.createQueuePreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutHotkeyPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
+import kurou.kodriver.data.preferences.createSelectedAudioInputDevicePreferencesRepository
 import kurou.kodriver.data.preferences.createSimulatorPreferencesRepository
 import kurou.kodriver.data.preferences.createSoundVolumePreferencesRepository
 import kurou.kodriver.data.preferences.createThemePreferencesRepository
@@ -62,6 +63,7 @@ import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
+import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -130,6 +132,10 @@ fun desktopDataModule(directory: String): Module =
         }
         single<VoicePitchPreferencesRepository> {
             createVoicePitchPreferencesRepository(directory = directory)
+        }
+        // 選択したマイク（音声入力デバイス）名
+        single<SelectedAudioInputDevicePreferencesRepository> {
+            createSelectedAudioInputDevicePreferencesRepository(directory = directory)
         }
         single<VoicePreferencesRepository> {
             createVoicePreferencesRepository(directory = directory)

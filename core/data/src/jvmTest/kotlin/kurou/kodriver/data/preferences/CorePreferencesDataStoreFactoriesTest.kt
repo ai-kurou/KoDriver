@@ -57,6 +57,10 @@ class CorePreferencesDataStoreFactoriesTest {
                 val dataStore = createOverlayWindowBoundsPreferencesDataStore(dir)
                 dataStore.updateData { it.copy(x = 10, y = 20) }
             }
+            assertWritesTo("selected_audio_input_device_preferences.pb") { dir ->
+                val dataStore = createSelectedAudioInputDevicePreferencesDataStore(dir)
+                dataStore.updateData { it.copy(deviceName = "Mic A") }
+            }
             assertWritesTo("simulator_preferences.pb") { dir ->
                 val dataStore = createSimulatorPreferencesDataStore(dir)
                 dataStore.updateData { it.copy(selectedSimulator = "lmu_windows") }

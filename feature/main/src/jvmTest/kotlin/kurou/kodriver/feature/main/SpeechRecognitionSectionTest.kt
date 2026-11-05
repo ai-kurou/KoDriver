@@ -28,8 +28,6 @@ import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
-import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
-import kurou.kodriver.domain.usecase.ObserveMicrophoneInputStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import org.junit.After
 import org.junit.Rule
@@ -176,10 +174,7 @@ class SpeechRecognitionSectionTest {
     @Test
     fun `音声認識を提供しないデスクトップではマイク入力のカードを表示する`() {
         val microphoneViewModel =
-            MicrophoneInputViewModel(
-                observeMicrophoneInputStatus = ObserveMicrophoneInputStatusUseCase(microphoneRepository),
-                getAudioInputDevices = GetAudioInputDevicesUseCase(audioInputDeviceRepository),
-            )
+            microphoneInputViewModel(microphoneRepository, audioInputDeviceRepository)
         try {
             rule.setContent {
                 KoinApplication(koinConfiguration { modules(module { viewModel { microphoneViewModel } }) }) {

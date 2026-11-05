@@ -28,8 +28,6 @@ import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.MicrophoneAudioEvent
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
-import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
-import kurou.kodriver.domain.usecase.ObserveMicrophoneInputStatusUseCase
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -62,10 +60,7 @@ class MicrophoneInputSectionTest {
 
     init {
         viewModel =
-            MicrophoneInputViewModel(
-                observeMicrophoneInputStatus = ObserveMicrophoneInputStatusUseCase(microphoneRepository),
-                getAudioInputDevices = GetAudioInputDevicesUseCase(deviceRepository),
-            )
+            microphoneInputViewModel(microphoneRepository, deviceRepository)
     }
 
     private fun stubMicA() {
