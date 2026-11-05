@@ -52,7 +52,7 @@ internal class OtherConsoleIpDetailViewModel(
     }
 
     fun onSave() {
-        val address = _mutable.value.userInput ?: savedAddress.value ?: ""
+        val address = _mutable.value.userInput ?: savedAddress.value.orEmpty()
         if (!isValidConsoleIpAddress(address)) return
         val port = _mutable.value.userSelectedPort ?: savedPort.value
         viewModelScope.launch {
