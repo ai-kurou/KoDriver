@@ -113,12 +113,22 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
             }
         },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onConfirm()
+                },
+            ) {
                 Text(stringResource(Res.string.readout_start_sound_ok))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onDismiss()
+                },
+            ) {
                 Text(stringResource(Res.string.readout_start_sound_cancel))
             }
         },
