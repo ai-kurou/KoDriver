@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -137,6 +138,29 @@ class MicrophoneInputViewModelSelectionTest {
     }
 
     @Test
+    fun `保存済みの名前の読み込み中にユーザーが選んだ場合は、読み込み後もユーザーの選択を優先する`() {
+        val gate = CompletableDeferred<String>()
+        val pending =
+            object : SelectedAudioInputDevicePreferencesRepository {
+                override fun selectedDeviceName() = flow { emit(gate.await()) }
+
+                override suspend fun saveSelectedDeviceName(name: String) = Unit
+            }
+        stubDevices()
+        val vm = microphoneInputViewModel(microphoneRepository, deviceRepository, pending)
+        try {
+            vm.refreshDevices()
+            vm.onDeviceSelected("Mic B")
+
+            gate.complete("Mic A")
+
+            assertEquals("Mic B", vm.uiState.value.deviceName)
+        } finally {
+            vm.viewModelScope.cancel()
+        }
+    }
+
+    @Test
     fun `名前の保存に失敗しても選択は有効なまま`() {
         val failing =
             object : SelectedAudioInputDevicePreferencesRepository {
@@ -158,7 +182,7 @@ class MicrophoneInputViewModelSelectionTest {
     }
 
     @Test
-    fun `保存済みの名前の読み込みに失敗しても状態は変えない`() {
+    fun `保存済みの名前の読み込みに失敗しても、デバイスの一覧表示と選択はできる`() {
         val failing =
             object : SelectedAudioInputDevicePreferencesRepository {
                 override fun selectedDeviceName() = flow<String> { throw IllegalStateException("boom") }
@@ -170,7 +194,8 @@ class MicrophoneInputViewModelSelectionTest {
         try {
             vm.refreshDevices()
 
-            assertEquals(MicrophoneInputUiState(), vm.uiState.value)
+            assertEquals(listOf("Mic A", "Mic B"), vm.uiState.value.devices)
+            assertEquals("Mic A", vm.uiState.value.deviceName)
         } finally {
             vm.viewModelScope.cancel()
         }

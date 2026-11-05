@@ -148,10 +148,19 @@ internal class MicrophoneInputViewModel(
         return device
     }
 
-    /** 初回だけ、保存済みのデバイス名を読み込む。読み込み中にユーザーが選んだ場合は選択を優先する。 */
+    /** 初回だけ、保存済みのデバイス名を読み込む。失敗した場合は選択を変えず、次の一覧取得で読み直す。読み込み中にユーザーが選んだ場合は選択を優先する。 */
     private suspend fun loadSavedSelection() {
         if (savedSelectionResolved) return
-        val saved = observeSelectedAudioInputDeviceName().first()
+        val saved =
+            try {
+                observeSelectedAudioInputDeviceName().first()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // 保存値を読めなくても、取得できるデバイスの一覧表示と取得は止めない。次回の一覧取得で読み直す
+                captureError(e)
+                return
+            }
         if (savedSelectionResolved) return
         savedSelectionResolved = true
         selectedDeviceName = saved.takeIf { it != SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED }
