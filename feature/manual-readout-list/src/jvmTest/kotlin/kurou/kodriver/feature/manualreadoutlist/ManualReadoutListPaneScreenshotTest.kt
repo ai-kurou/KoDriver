@@ -257,7 +257,7 @@ class ManualReadoutListPaneScreenshotTest {
                     }
                 }
             }
-            onNodeWithText("標準表示では、セットを長押しすると、確認してから削除できます。再生ボタン表示では、編集画面から削除します。").assertIsDisplayed()
+            onNodeWithText("標準表示では、セットを長押しすると、メニューから編集と、確認してからの削除ができます。再生ボタン表示では、編集画面から削除します。").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
