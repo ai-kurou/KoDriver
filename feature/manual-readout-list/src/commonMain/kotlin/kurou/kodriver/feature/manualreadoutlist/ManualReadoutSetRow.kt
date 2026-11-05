@@ -230,6 +230,7 @@ internal fun ManualReadoutSetMenu(
                     },
                     onClick = {
                         onDismissRequest()
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         showDeleteDialog = true
                     },
                 )

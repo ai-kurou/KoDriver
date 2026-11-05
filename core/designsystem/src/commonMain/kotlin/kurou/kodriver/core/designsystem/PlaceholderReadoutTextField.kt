@@ -10,6 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -40,6 +42,7 @@ fun PlaceholderReadoutTextField(
     val textState = rememberPendingText(savedText, maxLength)
     val currentText = textState.currentText
     val insertState = rememberTextInsertState()
+    val haptic = LocalHapticFeedback.current
     Column(modifier = modifier) {
         ReadoutTextField(
             label = label,
@@ -66,7 +69,10 @@ fun PlaceholderReadoutTextField(
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
             AssistChip(
-                onClick = { insertState.insert(placeholder) },
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    insertState.insert(placeholder)
+                },
                 label = { Text(insertLabel) },
                 enabled = isTextToSpeechAvailable && currentText.length + placeholder.length <= maxLength,
             )
