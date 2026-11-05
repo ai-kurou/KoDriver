@@ -534,7 +534,7 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                        items = emptyList(),
+                        items = listOf(OtherListItemType.Feedback),
                         appVersionLabel = "Android版KoDriverバージョン",
                         appVersion = "1.2.3",
                     ),
@@ -607,7 +607,7 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                        items = emptyList(),
+                        items = listOf(OtherListItemType.Feedback),
                         appVersionLabel = "Android版KoDriverバージョン",
                         appVersion = "1.2.3",
                     ),
@@ -636,7 +636,7 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                        items = emptyList(),
+                        items = listOf(OtherListItemType.Feedback),
                         appVersionLabel = "Android版KoDriverバージョン",
                         appVersion = "1.2.3",
                     ),

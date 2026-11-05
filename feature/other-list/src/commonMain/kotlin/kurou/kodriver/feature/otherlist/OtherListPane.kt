@@ -64,16 +64,19 @@ fun OtherListPane(
                     )
                     HorizontalDivider()
                 }
-            }
-        }
-        if (uiState.appVersionLabel.isNotBlank() && uiState.appVersion.isNotBlank()) {
-            item(key = "app_version") {
-                OtherAppVersionListItem(
-                    appVersionLabel = uiState.appVersionLabel,
-                    appVersion = uiState.appVersion,
-                    onAppVersionTapped = onAppVersionTapped,
-                )
-                HorizontalDivider()
+                if (section == OtherListSection.Information &&
+                    uiState.appVersionLabel.isNotBlank() &&
+                    uiState.appVersion.isNotBlank()
+                ) {
+                    item(key = "app_version") {
+                        OtherAppVersionListItem(
+                            appVersionLabel = uiState.appVersionLabel,
+                            appVersion = uiState.appVersion,
+                            onAppVersionTapped = onAppVersionTapped,
+                        )
+                        HorizontalDivider()
+                    }
+                }
             }
         }
     }
