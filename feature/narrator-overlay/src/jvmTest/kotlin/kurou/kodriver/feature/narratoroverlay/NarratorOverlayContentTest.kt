@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -21,6 +22,7 @@ import kotlin.test.assertEquals
 
 private const val FADE_MIDWAY_MILLIS = 75L
 private const val FADE_COMPLETE_MILLIS = 300L
+private const val CENTER_TOLERANCE_DP = 1f
 
 class NarratorOverlayContentTest {
     @get:Rule
@@ -50,13 +52,20 @@ class NarratorOverlayContentTest {
         val state = mutableStateOf(NarratorOverlayUiState(latestTelemetryLog = telemetryLog("旧")))
         rule.setContent { NarratorOverlayContent(uiState = state.value) }
         rule.mainClock.autoAdvance = false
-        rule.runOnIdle { state.value = NarratorOverlayUiState(latestTelemetryLog = telemetryLog("新")) }
+        rule.runOnIdle { state.value = NarratorOverlayUiState(latestTelemetryLog = telemetryLog("新しい長めの読み上げ内容")) }
         rule.mainClock.advanceTimeBy(FADE_MIDWAY_MILLIS)
         rule.onAllNodesWithText("旧").assertCountEquals(1)
-        rule.onAllNodesWithText("新").assertCountEquals(1)
+        rule.onAllNodesWithText("新しい長めの読み上げ内容").assertCountEquals(1)
+        val oldBounds = rule.onNodeWithText("旧").getBoundsInRoot()
+        val newBounds = rule.onNodeWithText("新しい長めの読み上げ内容").getBoundsInRoot()
+        assertEquals(
+            (oldBounds.left.value + oldBounds.right.value) / 2,
+            (newBounds.left.value + newBounds.right.value) / 2,
+            CENTER_TOLERANCE_DP,
+        )
         rule.mainClock.advanceTimeBy(FADE_COMPLETE_MILLIS)
         rule.onAllNodesWithText("旧").assertCountEquals(0)
-        rule.onAllNodesWithText("新").assertCountEquals(1)
+        rule.onAllNodesWithText("新しい長めの読み上げ内容").assertCountEquals(1)
     }
 
     private fun telemetryLog(narratedText: String) =

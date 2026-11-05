@@ -1,7 +1,12 @@
 package kurou.kodriver.feature.narratoroverlay
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -72,9 +77,15 @@ internal fun NarratorOverlayContent(
                     .padding(KoDriverSpacing.large),
             contentAlignment = Alignment.Center,
         ) {
-            Crossfade(
+            AnimatedContent(
                 targetState = uiState.latestTelemetryLog?.narratedText.orEmpty(),
-                animationSpec = tween(durationMillis = NARRATOR_OVERLAY_TEXT_FADE_DURATION_MILLIS),
+                transitionSpec = {
+                    (
+                        fadeIn(tween(NARRATOR_OVERLAY_TEXT_FADE_DURATION_MILLIS)) togetherWith
+                            fadeOut(tween(NARRATOR_OVERLAY_TEXT_FADE_DURATION_MILLIS))
+                    ).using(SizeTransform(clip = false) { _, _ -> snap() })
+                },
+                contentAlignment = Alignment.Center,
                 label = "narratorOverlayText",
             ) { narratedText ->
                 Text(
