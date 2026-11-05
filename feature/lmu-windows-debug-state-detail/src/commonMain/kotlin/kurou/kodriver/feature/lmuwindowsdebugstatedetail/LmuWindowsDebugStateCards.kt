@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DebugStateStatusChip
@@ -71,7 +72,7 @@ internal fun LmuFlagInfoContent(raceFlags: LmuWindowsRaceFlagsData?) {
         DebugStateUnavailableContent()
         return
     }
-    val activeFlags = determineActiveRaceFlags(raceFlags)
+    val activeFlags = remember(raceFlags) { determineActiveRaceFlags(raceFlags) }
     Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
         if (activeFlags.isEmpty()) {
             DebugStateStatusChip(text = stringResource(Res.string.debug_state_flag_none))
