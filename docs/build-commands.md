@@ -21,6 +21,7 @@
 ./gradlew koverXmlReport -PexcludeScreenshotTests=true
 
 # 完了報告・PR 作成前の必須チェック一式（全モジュールのdetekt・ktlintCheck・Android lint・
+# Android 実機テスト（androidTest）のコンパイル・
 # assertModuleGraph・assertArchitectureDocModuleList・全ユニットテスト（カバレッジ付き）・
 # 両アプリのビルド・デスクトップ統合テスト）
 ./gradlew preSubmitChecks
