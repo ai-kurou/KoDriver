@@ -42,4 +42,26 @@ class AccessLocalNetworkPermissionSettingsActionTest {
         assertEquals(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, startedIntent.action)
         assertEquals("package:${rule.activity.packageName}", startedIntent.data.toString())
     }
+
+    @Test
+    fun `その他一覧のローカルネットワーク項目をタップするとアプリ詳細設定画面を開くIntentを起動する`() {
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.AccessLocalNetworkPermission)),
+                onItemClick = {},
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNode(hasText("ローカルネットワークへのアクセス許可")).performClick()
+
+        val startedIntent = shadowOf(rule.activity).nextStartedActivity
+
+        assertEquals(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, startedIntent.action)
+        assertEquals("package:${rule.activity.packageName}", startedIntent.data.toString())
+    }
 }
