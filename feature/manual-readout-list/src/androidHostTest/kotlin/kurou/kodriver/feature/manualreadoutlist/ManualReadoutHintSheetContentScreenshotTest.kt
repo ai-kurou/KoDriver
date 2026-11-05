@@ -35,7 +35,7 @@ class ManualReadoutHintSheetContentScreenshotTest {
             }
         }
         composeRule
-            .onNodeWithText("標準表示では、セットを長押しすると、メニューから編集と、確認してからの削除ができます。再生ボタン表示では、編集画面から削除します。")
+            .onNodeWithText("セットを長押しすると、メニューから編集と、確認してからの削除ができます。標準表示では行を、再生ボタン表示ではボタンを長押しします。")
             .assertIsDisplayed()
         composeRule.onRoot().captureRoboImage(roborazziOptions = defaultRoborazziOptions)
     }

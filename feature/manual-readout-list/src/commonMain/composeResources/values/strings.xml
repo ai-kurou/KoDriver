@@ -30,16 +30,10 @@
     <string name="manual_readout_list_delete_confirm">削除</string>
     <string name="manual_readout_list_cancel">キャンセル</string>
     <string name="manual_readout_hint_delete_title">長押しで編集・削除</string>
-    <string name="manual_readout_hint_delete_description">標準表示では、セットを長押しすると、メニューから編集と、確認してからの削除ができます。再生ボタン表示では、編集画面から削除します。</string>
+    <string name="manual_readout_hint_delete_description">セットを長押しすると、メニューから編集と、確認してからの削除ができます。標準表示では行を、再生ボタン表示ではボタンを長押しします。</string>
     <string name="manual_readout_list_hotkey_unassigned">未設定</string>
     <string name="manual_readout_list_readout_set_named">%1$s を読み上げ</string>
-    <string name="manual_readout_edit_mode_label">編集</string>
     <string name="manual_readout_list_set_count">%1$dセット</string>
-    <string name="manual_readout_edit_mode_enable">編集モードにする</string>
-    <string name="manual_readout_edit_mode_disable">編集モードを終了</string>
-    <string name="manual_readout_tap_to_edit">タップで編集</string>
-    <string name="manual_readout_hint_edit_mode_title">編集モード</string>
-    <string name="manual_readout_hint_edit_mode_description">再生ボタン表示では、見出しの「編集」ボタンでボタンのタップが編集に切り替わります。ボタンの長押しでも編集できます。</string>
     <string name="manual_readout_category_virtual_energy">バーチャルエネルギー</string>
     <string name="manual_readout_category_fuel">燃料</string>
     <string name="manual_readout_category_tyre">タイヤ</string>
