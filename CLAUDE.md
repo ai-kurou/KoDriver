@@ -72,6 +72,8 @@ feature の `companion object` や `Pane.kt` に仕様値を置かず、共通�
 
 `libs.versions.toml` にライブラリを追加するときは、**致命的なバグや互換性問題がない限り、その時点の最新安定版を使用すること**。追加前に必ず公式リリースページで最新バージョンを確認する。
 
+既存ライブラリの更新検知は Dependabot（`.github/dependabot.yml`、毎週月曜）が行う。Kotlin・KSP・Compose は1つのPRにまとまり、それ以外の minor / patch もまとまり、major は個別PRになる。Dependabot の PR も通常の PR と同じく CI の成功を確認してからマージする。
+
 ---
 
 ## ビルド・実行コマンド

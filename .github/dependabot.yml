@@ -1,0 +1,33 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 5
+    groups:
+      # Kotlin・KSP・Compose は版を揃えて上げる必要があるため、1つのPRにまとめる
+      kotlin-compose:
+        patterns:
+          - "org.jetbrains.kotlin*"
+          - "com.google.devtools.ksp*"
+          - "org.jetbrains.compose*"
+      # 上記以外の minor / patch 更新は1つのPRにまとめる（major は個別PR）
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 3
+    groups:
+      github-actions:
+        update-types:
+          - minor
+          - patch
