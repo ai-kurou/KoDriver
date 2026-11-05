@@ -21,6 +21,9 @@ internal interface SpeechRecognitionEngineListener {
 
     fun onPartial(text: String)
 
+    /** [level] は入力音量を 0.0（無音）〜1.0（大音量）に正規化した値。聞き取り中に頻繁に通知される。 */
+    fun onLevel(level: Float)
+
     /** [candidates] は信頼度の高い順。通知後にセッションは終了する。 */
     fun onResults(candidates: List<String>)
 

@@ -15,7 +15,7 @@ AppScreen の UI 状態の合成は `AppScreenFlow` が cold Flow として担�
 
 ## 音声認識（常時聞き取り）
 
-`SpeechRecognitionViewModel` が `ObserveSpeechRecognitionUseCase` の常時聞き取りを開始・停止し、状態（停止中・準備中・聞き取り中・マイクの権限が許可されていません・この端末では音声認識を利用できません・しばらく発話がなかったため停止しました）、認識途中の文字列、確定結果の履歴（新しい順に最大5件）を `SpeechRecognitionUiState` で保持します。アプリ全体で1つの ViewModel を共有するため、タブを切り替えても聞き取りは止まりません。
+`SpeechRecognitionViewModel` が `ObserveSpeechRecognitionUseCase` の常時聞き取りを開始・停止し、状態（停止中・準備中・聞き取り中・マイクの権限が許可されていません・この端末では音声認識を利用できません・しばらく発話がなかったため停止しました）、認識途中の文字列、確定結果の履歴（新しい順に最大5件）、入力音量（`level`、0.0〜1.0。認識エンジンが音量を通知するプラットフォームだけで、Android が該当する。届いた間だけカードにゲージを表示し、停止・失敗で消す。無発話の自動停止の数え直しには使わない）を `SpeechRecognitionUiState` で保持します。アプリ全体で1つの ViewModel を共有するため、タブを切り替えても聞き取りは止まりません。
 
 - `rememberSpeechRecognitionSection()`: `AppScreen` から一度だけ呼ぶ。マイクの権限の要求（`rememberRecordAudioPermissionRequester`、Android のみ実行時ダイアログ）、アプリが見えなくなったとき（ON_STOP）の停止、前面に戻ったとき（ON_START）の再開を担い、デバッグ状態画面（`DebugStateDetailPane`）のグリッド先頭に差し込むカード（`SpeechRecognitionCard`）を返す。音声認識のカードは `isSpeechRecognitionSupportedOnPlatform()` が true のプラットフォーム（Android とデスクトップ）で、マイク入力の確認用カード（`MicrophoneInputCard`、後述）は `isMicrophoneInputSupportedOnPlatform()` が true のプラットフォーム（デスクトップ）で返す。デスクトップは両方が true で、音声認識のカードの下にマイク入力の確認用カードを並べる（認識は選択中のマイクを使う）。どちらも false なら何も出さない。
 - 見えなくなる前に聞き取り中だった場合だけ、前面に戻ったときに再開する（権限が外されていれば再開しない）。スイッチを OFF にした場合や失敗・無発話の自動停止の後は再開しない。ON/OFF の状態はメモリ上にのみ持つため、アプリのプロセスが終了すると OFF に戻る。

@@ -89,6 +89,32 @@ class SpeechRecognitionViewModelTest {
     }
 
     @Test
+    fun `入力音量を更新し、聞き取りを止めると消す`() {
+        val viewModel = createViewModel(granted = true)
+        viewModel.onEnabledChange(true) {}
+        assertEquals(null, viewModel.uiState.value.level)
+
+        events.tryEmit(SpeechRecognitionEvent.Level(0.3f))
+        assertEquals(0.3f, viewModel.uiState.value.level)
+        events.tryEmit(SpeechRecognitionEvent.Level(0.8f))
+        assertEquals(0.8f, viewModel.uiState.value.level)
+
+        viewModel.onEnabledChange(false) {}
+        assertEquals(null, viewModel.uiState.value.level)
+    }
+
+    @Test
+    fun `失敗すると入力音量を消す`() {
+        val viewModel = createViewModel(granted = true)
+        viewModel.onEnabledChange(true) {}
+        events.tryEmit(SpeechRecognitionEvent.Level(0.3f))
+
+        events.tryEmit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
+
+        assertEquals(null, viewModel.uiState.value.level)
+    }
+
+    @Test
     fun `認識結果の履歴は新しい順で最大件数までにする`() {
         val viewModel = createViewModel(granted = true)
         viewModel.onEnabledChange(true) {}

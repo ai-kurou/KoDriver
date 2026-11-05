@@ -90,7 +90,7 @@ internal class SpeechRecognitionViewModel(
         cancelJobs()
         _uiState.update {
             if (it.enabled) {
-                it.copy(enabled = false, status = SpeechRecognitionStatus.Stopped, partialText = "")
+                it.copy(enabled = false, status = SpeechRecognitionStatus.Stopped, partialText = "", level = null)
             } else {
                 it
             }
@@ -111,7 +111,12 @@ internal class SpeechRecognitionViewModel(
                 delay(SPEECH_RECOGNITION_IDLE_TIMEOUT_MS)
                 cancelJobs()
                 _uiState.update {
-                    it.copy(enabled = false, status = SpeechRecognitionStatus.IdleStopped, partialText = "")
+                    it.copy(
+                        enabled = false,
+                        status = SpeechRecognitionStatus.IdleStopped,
+                        partialText = "",
+                        level = null,
+                    )
                 }
             }
     }
@@ -119,7 +124,7 @@ internal class SpeechRecognitionViewModel(
     private fun start() {
         cancelJobs()
         _uiState.update {
-            it.copy(enabled = true, status = SpeechRecognitionStatus.Starting, partialText = "")
+            it.copy(enabled = true, status = SpeechRecognitionStatus.Starting, partialText = "", level = null)
         }
         restartIdleTimer()
         listenJob =
@@ -139,6 +144,11 @@ internal class SpeechRecognitionViewModel(
         when (event) {
             SpeechRecognitionEvent.Listening -> {
                 _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
+            }
+
+            is SpeechRecognitionEvent.Level -> {
+                // 入力音量は発話の証拠にならない（環境音でも届く）ため、無発話の自動停止の数え直しには使わない
+                _uiState.update { it.copy(level = event.level) }
             }
 
             is SpeechRecognitionEvent.Partial -> {
@@ -169,6 +179,7 @@ internal class SpeechRecognitionViewModel(
             it.copy(
                 enabled = false,
                 partialText = "",
+                level = null,
                 status =
                     when (reason) {
                         SpeechRecognitionFailureReason.PermissionDenied -> SpeechRecognitionStatus.PermissionDenied

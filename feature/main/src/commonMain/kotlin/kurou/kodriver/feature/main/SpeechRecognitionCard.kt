@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -23,6 +24,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.main.generated.resources.Res
+import kurou.kodriver.feature.main.generated.resources.microphone_input_level_description
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_idle_stopped
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_listening
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_permission_denied
@@ -45,6 +47,7 @@ internal fun SpeechRecognitionCard(
     modifier: Modifier = Modifier,
 ) {
     val switchDescription = stringResource(Res.string.speech_recognition_switch_description)
+    val levelDescription = stringResource(Res.string.microphone_input_level_description)
     Surface(
         modifier =
             modifier.fillMaxWidth().padding(
@@ -88,6 +91,15 @@ internal fun SpeechRecognitionCard(
                     checked = uiState.enabled,
                     onCheckedChange = onEnabledChange,
                     modifier = Modifier.semantics { contentDescription = switchDescription },
+                )
+            }
+            uiState.level?.let { level ->
+                LinearProgressIndicator(
+                    progress = { level },
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .semantics { contentDescription = levelDescription },
                 )
             }
             if (uiState.partialText.isNotEmpty() || uiState.recognized.isNotEmpty()) {
