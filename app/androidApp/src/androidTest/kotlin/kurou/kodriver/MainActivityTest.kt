@@ -16,16 +16,9 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.feature.otherlist.fakeOtherListModule
 import kurou.kodriver.feature.otherlist.fakeTextToSpeechRepository
-import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
-import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -42,9 +35,7 @@ class MainActivityTest {
 
     @Before
     fun setUp() {
-        loadFakeTelemetryLogListModuleIfNeeded()
         loadFakeOtherListModuleIfNeeded()
-        fakeTelemetryLogRepository.clear()
         fakeTextToSpeechRepository.unavailableReason = TextToSpeechUnavailableReason.WindowsSpeechUnavailable
     }
 
@@ -286,14 +277,10 @@ class MainActivityTest {
     }
 
     @Test
-    fun `ログと手動タブにセットやログがない場合は空状態を表示する`() {
+    fun `LMUの手動タブにセットがない場合は空状態を表示する`() {
         launchActivity()
         selectSimulator("Le Mans Ultimate（Windows版）")
 
-        clickItem("ログ")
-        waitUntilDisplayed("Le Mans Ultimate（Windows版）のログはまだありません")
-        waitUntilDisplayed("手動")
-        waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
         clickItem("手動")
         waitUntilDisplayed("LMUの手動読み上げセットはまだありません")
         waitUntilDisplayed("手動読み上げについて")
@@ -320,73 +307,6 @@ class MainActivityTest {
         waitUntilDisplayed("${simulatorShortName}の手動読み上げセットはまだありません")
         waitUntilDisplayed("手動読み上げについて")
     }
-
-    @Test
-    fun `ログタブにログがある場合は一覧を表示する`() {
-        fakeTelemetryLogRepository.emit(
-            listOf(
-                telemetryLog(
-                    id = 1,
-                    createdAt = 100,
-                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_sector_yellow_flag")),
-                    telemetryJson = """{"flag":"yellow"}""",
-                ),
-                telemetryLog(
-                    id = 2,
-                    createdAt = 200,
-                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_flag")),
-                    telemetryJson = """{"flag":"green"}""",
-                ),
-            ),
-        )
-        launchActivity()
-        selectSimulator("Le Mans Ultimate（Windows版）")
-
-        clickItem("ログ")
-
-        waitUntilDisplayed("フラッグ")
-        waitUntilDisplayed("09:00:00.200")
-        waitUntilDisplayed("イエローフラッグ")
-        clickItem("フラッグ")
-        waitUntilDisplayed("選択したログ")
-        waitUntilDisplayed("一つ前のログ")
-        waitUntilDisplayed("""{"flag":"yellow"}""")
-    }
-
-    @Test
-    fun `ログタブを再タップするとログ一覧に戻る`() {
-        fakeTelemetryLogRepository.emit(
-            listOf(
-                telemetryLog(
-                    id = 1,
-                    createdAt = 100,
-                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_sector_yellow_flag")),
-                    telemetryJson = """{"flag":"yellow"}""",
-                ),
-                telemetryLog(
-                    id = 2,
-                    createdAt = 200,
-                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_flag")),
-                    telemetryJson = """{"flag":"green"}""",
-                ),
-            ),
-        )
-        launchActivity()
-        selectSimulator("Le Mans Ultimate（Windows版）")
-
-        clickItem("ログ")
-        clickItem("フラッグ")
-        waitUntilDisplayed("選択したログ")
-
-        clickItem("ログ")
-
-        waitUntilNotDisplayed("選択したログ")
-        waitUntilDisplayed("フラッグ")
-    }
-
-    // Desktop版(AppTest.kt)には「選択済みのログを再タップするとログ一覧に戻る」テストが存在するが、
-    // Androidのコンパクト幅では詳細表示中は一覧ペインが画面上に存在せず、
-    // 選択済み一覧項目の再タップを再現できないため移植していない。
 
     private fun assertDebugStateScreen(
         simulatorName: String,
@@ -544,15 +464,7 @@ class MainActivityTest {
     private companion object {
         const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。"
-        var isFakeTelemetryLogListModuleLoaded = false
         var isFakeOtherListModuleLoaded = false
-
-        fun loadFakeTelemetryLogListModuleIfNeeded() {
-            if (!isFakeTelemetryLogListModuleLoaded) {
-                loadKoinModules(fakeTelemetryLogListModule)
-                isFakeTelemetryLogListModuleLoaded = true
-            }
-        }
 
         fun loadFakeOtherListModuleIfNeeded() {
             if (!isFakeOtherListModuleLoaded) {
@@ -562,19 +474,3 @@ class MainActivityTest {
         }
     }
 }
-
-private fun telemetryLog(
-    id: Long,
-    createdAt: Long,
-    readoutItemKey: ReadoutItemKey,
-    telemetryJson: String,
-) = TelemetryLog(
-    id = id,
-    createdAt = createdAt,
-    simulator = Simulator.LmuWindows,
-    readoutItemKey = readoutItemKey,
-    narratedText = "イエローフラッグ",
-    narrationOutcome = NarrationOutcome.INTERRUPTED,
-    narrationSource = NarrationSource.AUTO,
-    telemetryJson = telemetryJson,
-)

@@ -23,7 +23,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.banner_simulator_disconnected
-import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -33,9 +32,6 @@ import kurou.kodriver.feature.autoreadoutlist.autoReadoutListModule
 import kurou.kodriver.feature.autoreadoutlist.fakeAutoReadoutListModule
 import kurou.kodriver.feature.autoreadoutlist.registerAllReadoutItemKeys
 import kurou.kodriver.feature.otherlist.OtherListUiState
-import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
-import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
-import kurou.kodriver.feature.telemetryloglist.telemetryLogListModule
 import org.jetbrains.compose.resources.stringResource
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -58,9 +54,7 @@ class AppScreenScreenshotTest {
                 modules(
                     listOf(
                         fakeAutoReadoutListModule,
-                        fakeTelemetryLogListModule,
                         autoReadoutListModule,
-                        telemetryLogListModule,
                     ),
                 )
             }
@@ -155,32 +149,6 @@ class AppScreenScreenshotTest {
         }
 
     @Test
-    fun `NavigationRail ログタブ`() =
-        composeScreenshotTest {
-            var navLog by mutableStateOf("")
-
-            setAppContent {
-                navLog = stringResource(Res.string.nav_log)
-                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-                Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
-                    AppScreenContent(
-                        layoutType = NavigationSuiteType.NavigationRail,
-                        bannerUiState =
-                            ConnectionBannerUiState(
-                                status = ConnectionBannerStatus.DISCONNECTED,
-                                message = bannerMessage,
-                            ),
-                        hasAppUpdate = true,
-                        telemetryLogContent = { _, _ -> TelemetryLogContent() },
-                    )
-                }
-            }
-            onNodeWithText(navLog).performClick()
-            waitForIdle()
-            onRoot().captureRoboImage()
-        }
-
-    @Test
     fun `NavigationRail シミュレーター選択ポップアップ`() =
         composeScreenshotTest {
             setAppContent {
@@ -250,32 +218,6 @@ class AppScreenScreenshotTest {
                 }
             }
             onNodeWithText("手動").performClick()
-            waitForIdle()
-            onRoot().captureRoboImage()
-        }
-
-    @Test
-    fun `NavigationBar ログタブ`() =
-        composeScreenshotTest {
-            var navLog by mutableStateOf("")
-
-            setAppContent {
-                navLog = stringResource(Res.string.nav_log)
-                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                    AppScreenContent(
-                        layoutType = NavigationSuiteType.NavigationBar,
-                        bannerUiState =
-                            ConnectionBannerUiState(
-                                status = ConnectionBannerStatus.DISCONNECTED,
-                                message = bannerMessage,
-                            ),
-                        hasAppUpdate = true,
-                        telemetryLogContent = { _, _ -> TelemetryLogContent() },
-                    )
-                }
-            }
-            onNodeWithText(navLog).performClick()
             waitForIdle()
             onRoot().captureRoboImage()
         }
