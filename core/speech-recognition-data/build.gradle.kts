@@ -18,6 +18,11 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }
+        jvmMain.dependencies {
+            implementation(libs.vosk)
+            implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
+            implementation(libs.kotlinx.serialization.json)
+        }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
         }

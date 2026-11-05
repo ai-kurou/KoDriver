@@ -172,19 +172,30 @@ class SpeechRecognitionSectionTest {
     }
 
     @Test
-    fun `音声認識を提供しないデスクトップではマイク入力のカードを表示する`() {
+    fun `デスクトップでは音声認識のカードとマイク入力のカードを並べて表示する`() {
+        createViewModel(granted = true)
         val microphoneViewModel =
             microphoneInputViewModel(microphoneRepository, audioInputDeviceRepository)
         try {
             rule.setContent {
-                KoinApplication(koinConfiguration { modules(module { viewModel { microphoneViewModel } }) }) {
+                KoinApplication(
+                    koinConfiguration {
+                        modules(
+                            module {
+                                viewModel { viewModel }
+                                viewModel { microphoneViewModel }
+                            },
+                        )
+                    },
+                ) {
                     KoDriverTheme { rememberSpeechRecognitionSection()(Modifier) }
                 }
             }
 
+            rule.onNodeWithText("音声認識").assertExists()
             rule.onNodeWithText("マイク入力").assertExists()
-            rule.onNodeWithText("音声認識").assertDoesNotExist()
-            assertFalse(isSpeechRecognitionSupportedOnPlatform())
+            assertTrue(isSpeechRecognitionSupportedOnPlatform())
+            assertTrue(isMicrophoneInputSupportedOnPlatform())
         } finally {
             microphoneViewModel.viewModelScope.cancel()
         }
