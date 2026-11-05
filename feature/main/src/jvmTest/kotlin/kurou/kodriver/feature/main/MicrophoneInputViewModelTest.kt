@@ -74,7 +74,12 @@ class MicrophoneInputViewModelTest {
         viewModel.onEnabledChange(true)
 
         assertEquals(
-            MicrophoneInputUiState(enabled = true, status = MicrophoneInputStatus.Starting, deviceName = "Mic A"),
+            MicrophoneInputUiState(
+                enabled = true,
+                status = MicrophoneInputStatus.Starting,
+                deviceName = "Mic A",
+                devices = listOf("Mic A", "Mic B"),
+            ),
             viewModel.uiState.value,
         )
 
@@ -115,7 +120,7 @@ class MicrophoneInputViewModelTest {
     }
 
     @Test
-    fun `再度ONにするとデバイス一覧の取得を待つ間は前のデバイス名を消す`() {
+    fun `再度ONにするとデバイス一覧の取得を待つ間も選択中のデバイス名を表示し続ける`() {
         stubDevices()
         viewModel.onEnabledChange(true)
         assertEquals("Mic A", viewModel.uiState.value.deviceName)
@@ -124,7 +129,7 @@ class MicrophoneInputViewModelTest {
 
         viewModel.onEnabledChange(true)
 
-        assertEquals(null, viewModel.uiState.value.deviceName)
+        assertEquals("Mic A", viewModel.uiState.value.deviceName)
         assertEquals(MicrophoneInputStatus.Starting, viewModel.uiState.value.status)
     }
 
