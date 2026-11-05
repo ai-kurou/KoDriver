@@ -170,8 +170,8 @@ moduleGraphAssert {
         ":feature:.* -> :core:designsystem",
         // core:data 系 → core:domain（.*data にマッチ: core:data, core:*-data。core:designsystem は除外される）
         ":core:.*data -> :core:domain",
-        // Windows共有メモリ系データモジュール → core:windows-shared-memory（Windows共有メモリI/Oの共通基盤）
-        ":core:.*windows.*data -> :core:windows-shared-memory",
+        // LMU / ACE の Windows 共有メモリ系データモジュール → core:windows-shared-memory（Windows共有メモリI/Oの共通基盤）
+        ":core:(lmu|ace)-windows-data -> :core:windows-shared-memory",
         // narrator系featureモジュール → core:narrator（開始音のWAV再生・TTS読み上げ制御・SoundPlayer・NarratorEngineの共通基盤。
         // core:narrator自体はcore:domainに依存させず、SpeechEvent等はfeature側が型パラメータとして渡す）
         ":feature:.*narrator -> :core:narrator",
@@ -184,44 +184,19 @@ moduleGraphAssert {
         // server は WebSocket 配信対象の LMU / ACE のみ（GT7 は参照しない）
         ":server -> :core:(lmu|ace)-windows-domain",
     )
+    // restricted は allowed に含まれない依存を禁止するための補助ルール。
+    // allowed がホワイトリストで、上記以外の依存は allowed に合致せず失敗する。
+    // restricted は allowed の `.+-domain` が広いため、シミュレーター間の参照（cross-sim）だけを追加で禁止する。
     restricted = arrayOf(
-        // app エントリーポイント（feature 層・domain 層・他 app への直接参照禁止）
-        ":app:.*App -X> :feature:.*",
-        ":app:.*App -X> :core:domain",
-        ":app:.*App -X> :app:.*App",
-        // app:shared（上位 app・core・server への参照禁止）
-        ":app:shared -X> :app:.*",
-        ":app:shared -X> :core:.*",
-        ":app:shared -X> :server",
-        // feature（上位 app・他 feature・core:data 系への直接参照禁止。
-        // core:data 系は composition root（app エントリーポイント）でのみ DI バインドする）
-        ":feature:.* -X> :app:.*",
-        ":feature:.* -X> :feature:.*",
-        ":feature:.* -X> :core:.*data",
-        // core（上位層への参照禁止・逆方向依存禁止・葉モジュールの他モジュール参照禁止・兄弟 data モジュール参照禁止）
-        ":core:domain -X> :.*",
-        ":core:.+-domain -X> :(?!core:domain$).*",
-        // シミュレーター固有の data / feature は、他シミュレーターのドメインに依存しない
-        // （feature:main や feature:other-* のように複数シミュレーターを扱うモジュールは対象外）
+        // シミュレーター固有の data は、他シミュレーターのドメインに依存しない
         ":core:lmu-windows-.*data -X> :core:(ace-windows|gt7-ps5)-domain",
         ":core:ace-windows-.*data -X> :core:(lmu-windows|gt7-ps5)-domain",
         ":core:gt7-ps5-.*data -X> :core:(lmu-windows|ace-windows)-domain",
+        // シミュレーター固有の feature は、他シミュレーターのドメインに依存しない
+        // （feature:main や feature:other-* のように複数シミュレーターを扱うモジュールは対象外）
         ":feature:lmu-windows-.* -X> :core:(ace-windows|gt7-ps5)-domain",
         ":feature:ace-windows-.* -X> :core:(lmu-windows|gt7-ps5)-domain",
         ":feature:gt7-ps5-.* -X> :core:(lmu-windows|ace-windows)-domain",
-        ":core:narrator -X> :.*",
-        ":core:designsystem -X> :.*",
-        ":core:windows-shared-memory -X> :.*",
-        ":core:.*data -X> :core:.*data",
-        ":core:.* -X> :feature:.*",
-        ":core:.* -X> :app:.*",
-        ":core:.* -X> :server",
-        // server（app・feature・narrator・designsystem・core:data 系への参照禁止）
-        ":server -X> :app:.*",
-        ":server -X> :feature:.*",
-        ":server -X> :core:narrator",
-        ":server -X> :core:designsystem",
-        ":server -X> :core:.*data",
     )
 }
 
