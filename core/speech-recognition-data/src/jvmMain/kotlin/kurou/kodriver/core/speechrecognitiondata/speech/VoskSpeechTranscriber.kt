@@ -2,6 +2,7 @@ package kurou.kodriver.core.speechrecognitiondata.speech
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -78,9 +79,13 @@ internal fun parseVoskFinal(json: String): SpeechTranscript.Final? {
             .jsonObject["alternatives"]
             ?.jsonArray
             .orEmpty()
-            .mapNotNull { it.jsonObject["text"]?.jsonPrimitive?.contentOrNull }
-            .map { it.replace(" ", "") }
-            .filter { it.isNotEmpty() }
+            .mapNotNull { alternative ->
+                val fields = alternative.jsonObject
+                val text = fields["text"]?.jsonPrimitive?.contentOrNull?.replace(" ", "")
+                val confidence = fields["confidence"]?.jsonPrimitive?.doubleOrNull ?: 0.0
+                text?.takeIf { it.isNotEmpty() }?.let { it to confidence }
+            }.sortedByDescending { (_, confidence) -> confidence }
+            .map { (text, _) -> text }
             .distinct()
     return candidates.takeIf { it.isNotEmpty() }?.let(SpeechTranscript::Final)
 }

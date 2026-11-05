@@ -50,8 +50,8 @@ internal class JvmSpeechRecognitionRepository(
         } catch (e: Exception) {
             captureError(e)
             null
-        } catch (e: UnsatisfiedLinkError) {
-            // 対応していないOS向けのネイティブライブラリが読み込めない場合
+        } catch (e: LinkageError) {
+            // 対応していないOS向けのネイティブライブラリが読み込めない場合。初回失敗後のクラス初期化エラー（NoClassDefFoundError）も含む
             captureError(e)
             null
         }

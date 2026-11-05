@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.MicrophoneAudioEvent
@@ -73,6 +74,16 @@ class JvmSpeechRecognitionRepositoryTest {
         }
 
     @Test
+    fun `ネイティブライブラリの初期化エラーでも利用不可を通知する`() =
+        runTest {
+            val factory = FakeTranscriberFactory(available = true, createError = NoClassDefFoundError("LibVosk"))
+
+            val events = repository(factory).observeRecognition().toList()
+
+            assertEquals(listOf(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable)), events)
+        }
+
+    @Test
     fun `途中経過と確定結果を認識イベントとして流し、同じ途中経過は重ねて流さない`() =
         runTest {
             val transcriber =
@@ -106,9 +117,9 @@ class JvmSpeechRecognitionRepositoryTest {
             val factory = FakeTranscriberFactory(available = true, transcriber = FakeTranscriber())
             microphone.events = flowOf()
 
-            preferences.name.value = "Mic A"
+            preferences.name.update { "Mic A" }
             repository(factory).observeRecognition().toList()
-            preferences.name.value = SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
+            preferences.name.update { SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED }
             repository(factory).observeRecognition().toList()
 
             assertEquals(listOf(AudioInputDevice("Mic A"), null), microphone.requestedDevices)
@@ -139,7 +150,7 @@ private class FakeSelectedDevicePreferences : SelectedAudioInputDevicePreference
     override fun selectedDeviceName(): Flow<String> = name
 
     override suspend fun saveSelectedDeviceName(name: String) {
-        this.name.value = name
+        this.name.update { name }
     }
 }
 

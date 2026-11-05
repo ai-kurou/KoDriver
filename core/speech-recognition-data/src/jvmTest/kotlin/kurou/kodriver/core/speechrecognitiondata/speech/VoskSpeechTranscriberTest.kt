@@ -36,6 +36,20 @@ class VoskSpeechTranscriberTest {
     }
 
     @Test
+    fun `確定結果の候補は入力順ではなく信頼度の高い順に並べる`() {
+        val json =
+            """
+            {"alternatives":[
+              {"text":"b","confidence":0.2},
+              {"text":"a","confidence":0.8},
+              {"text":"c"}
+            ]}
+            """.trimIndent()
+
+        assertEquals(SpeechTranscript.Final(listOf("a", "b", "c")), parseVoskFinal(json))
+    }
+
+    @Test
     fun `確定結果に候補が無い・空文字だけなら無しとして扱う`() {
         assertNull(parseVoskFinal("""{"alternatives":[]}"""))
         assertNull(parseVoskFinal("""{"alternatives":[{"text":""}]}"""))
