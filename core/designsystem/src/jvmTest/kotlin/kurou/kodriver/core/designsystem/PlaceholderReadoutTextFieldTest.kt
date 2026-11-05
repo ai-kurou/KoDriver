@@ -1,9 +1,13 @@
 package kurou.kodriver.core.designsystem
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
@@ -52,6 +56,39 @@ class PlaceholderReadoutTextFieldTest {
         rule.onNode(editableTextField).assertEditableText("注意{laptime}")
         rule.onNodeWithText("ラップタイムを挿入").assertIsNotEnabled().performClick()
         assertEquals(listOf("注意{laptime}"), changedTexts)
+    }
+
+    @Test
+    fun `チップ押下でハプティックを一度発生させてプレースホルダーを挿入する`() {
+        val haptic = RecordingHapticFeedback()
+        setContent(haptic = haptic)
+
+        rule.onNodeWithText("ラップタイムを挿入").assertIsEnabled().performClick()
+
+        rule.onNode(editableTextField).assertEditableText("注意{laptime}")
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
+    }
+
+    @Test
+    fun `上限超過で無効なチップはハプティックを発生させず挿入もしない`() {
+        val haptic = RecordingHapticFeedback()
+        val changedTexts = mutableListOf<String>()
+        setContent(savedText = "注意", maxLength = 10, haptic = haptic, onTextChanged = { changedTexts.add(it) })
+
+        rule.onNodeWithText("ラップタイムを挿入").assertIsNotEnabled().performClick()
+
+        assertEquals(emptyList(), haptic.performedTypes)
+        assertEquals(emptyList(), changedTexts)
+    }
+
+    @Test
+    fun `TTS不可で無効なチップはハプティックを発生させない`() {
+        val haptic = RecordingHapticFeedback()
+        setContent(isTextToSpeechAvailable = false, haptic = haptic)
+
+        rule.onNodeWithText("ラップタイムを挿入").assertIsNotEnabled().performClick()
+
+        assertEquals(emptyList(), haptic.performedTypes)
     }
 
     @Test
@@ -220,6 +257,7 @@ class PlaceholderReadoutTextFieldTest {
         assert(SemanticsMatcher.expectValue(SemanticsProperties.EditableText, AnnotatedString(expected)))
     }
 
+    @Suppress("LongParameterList")
     private fun setContent(
         savedText: String = "注意",
         savedTextProvider: (() -> String)? = null,
@@ -228,28 +266,39 @@ class PlaceholderReadoutTextFieldTest {
         onTextChanged: (String) -> Unit = {},
         onPreviewClick: (String) -> Unit = {},
         unknownPlaceholdersText: @Composable (String) -> String? = { null },
+        haptic: HapticFeedback = RecordingHapticFeedback(),
     ) {
         rule.setContent {
-            KoDriverTheme {
-                PlaceholderReadoutTextField(
-                    label = "読み上げ",
-                    savedText = savedTextProvider?.invoke() ?: savedText,
-                    defaultText = "既定の文言",
-                    maxLength = maxLength,
-                    isTextToSpeechAvailable = isTextToSpeechAvailable,
-                    onTextChanged = onTextChanged,
-                    onPreviewClick = onPreviewClick,
-                    placeholder = "{laptime}",
-                    insertLabel = "ラップタイムを挿入",
-                    placeholderHint = "ラップタイムに置き換えます",
-                    resetContentDescription = "デフォルトに戻す",
-                    previewContentDescription = "試聴",
-                    selectedContentDescription = "選択中",
-                    unavailableText = "読み上げ不可",
-                    supportingText = "空欄の説明",
-                    unknownPlaceholdersText = unknownPlaceholdersText,
-                )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    PlaceholderReadoutTextField(
+                        label = "読み上げ",
+                        savedText = savedTextProvider?.invoke() ?: savedText,
+                        defaultText = "既定の文言",
+                        maxLength = maxLength,
+                        isTextToSpeechAvailable = isTextToSpeechAvailable,
+                        onTextChanged = onTextChanged,
+                        onPreviewClick = onPreviewClick,
+                        placeholder = "{laptime}",
+                        insertLabel = "ラップタイムを挿入",
+                        placeholderHint = "ラップタイムに置き換えます",
+                        resetContentDescription = "デフォルトに戻す",
+                        previewContentDescription = "試聴",
+                        selectedContentDescription = "選択中",
+                        unavailableText = "読み上げ不可",
+                        supportingText = "空欄の説明",
+                        unknownPlaceholdersText = unknownPlaceholdersText,
+                    )
+                }
             }
+        }
+    }
+
+    private class RecordingHapticFeedback : HapticFeedback {
+        val performedTypes = mutableListOf<HapticFeedbackType>()
+
+        override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+            performedTypes += hapticFeedbackType
         }
     }
 }
