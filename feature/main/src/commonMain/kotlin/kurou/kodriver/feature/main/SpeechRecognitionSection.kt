@@ -16,7 +16,13 @@ import org.koin.compose.viewmodel.koinViewModel
  */
 @Composable
 fun rememberSpeechRecognitionSection(): @Composable (Modifier) -> Unit {
-    if (!isSpeechRecognitionSupportedOnPlatform()) return NoSpeechRecognitionSection
+    if (!isSpeechRecognitionSupportedOnPlatform()) {
+        return if (isMicrophoneInputSupportedOnPlatform()) {
+            rememberMicrophoneInputSection(koinViewModel())
+        } else {
+            NoSpeechRecognitionSection
+        }
+    }
     val viewModel: SpeechRecognitionViewModel = koinViewModel()
     val requestPermission = rememberRecordAudioPermissionRequester(viewModel::onPermissionResult)
     return rememberSpeechRecognitionSection(viewModel, requestPermission)
@@ -51,4 +57,21 @@ private fun SpeechRecognitionSectionContent(
         onEnabledChange = { viewModel.onEnabledChange(it, requestPermission) },
         modifier = modifier,
     )
+}
+
+@Composable
+internal fun rememberMicrophoneInputSection(viewModel: MicrophoneInputViewModel): @Composable (Modifier) -> Unit {
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.onAppBackgrounded() }
+    LifecycleEventEffect(Lifecycle.Event.ON_START) { viewModel.onAppForegrounded() }
+    return remember(viewModel) {
+        val section: @Composable (Modifier) -> Unit = { modifier ->
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            MicrophoneInputCard(
+                uiState = uiState,
+                onEnabledChange = viewModel::onEnabledChange,
+                modifier = modifier,
+            )
+        }
+        section
+    }
 }

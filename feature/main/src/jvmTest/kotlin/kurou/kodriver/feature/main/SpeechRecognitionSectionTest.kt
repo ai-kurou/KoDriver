@@ -26,11 +26,17 @@ import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneInputStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
+import org.koin.compose.KoinApplication
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.koinConfiguration
+import org.koin.dsl.module
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -164,12 +170,24 @@ class SpeechRecognitionSectionTest {
     }
 
     @Test
-    fun `音声認識を提供しないプラットフォームでは何も表示しない`() {
-        rule.setContent {
-            KoDriverTheme { rememberSpeechRecognitionSection()(Modifier) }
-        }
+    fun `音声認識を提供しないデスクトップではマイク入力のカードを表示する`() {
+        val microphoneViewModel =
+            MicrophoneInputViewModel(
+                observeMicrophoneInputStatus = ObserveMicrophoneInputStatusUseCase(mockk()),
+                getAudioInputDevices = GetAudioInputDevicesUseCase(mockk()),
+            )
+        try {
+            rule.setContent {
+                KoinApplication(koinConfiguration { modules(module { viewModel { microphoneViewModel } }) }) {
+                    KoDriverTheme { rememberSpeechRecognitionSection()(Modifier) }
+                }
+            }
 
-        rule.onNodeWithText("音声認識").assertDoesNotExist()
-        assertFalse(isSpeechRecognitionSupportedOnPlatform())
+            rule.onNodeWithText("マイク入力").assertExists()
+            rule.onNodeWithText("音声認識").assertDoesNotExist()
+            assertFalse(isSpeechRecognitionSupportedOnPlatform())
+        } finally {
+            microphoneViewModel.viewModelScope.cancel()
+        }
     }
 }
