@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.acewindows.model.matchAceWindowsManualReadoutItemKey
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutItemKey
 import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutItemKey
@@ -247,6 +248,9 @@ internal class SpeechRecognitionViewModel(
                 }
                 matchGt7Ps5ManualReadoutItemKey(event.candidates)?.let { itemKey ->
                     requestManualReadoutItem(ManualReadoutItemRequest(Simulator.Gt7Ps5.id, itemKey))
+                }
+                matchAceWindowsManualReadoutItemKey(event.candidates)?.let { itemKey ->
+                    requestManualReadoutItem(ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey))
                 }
             }
 

@@ -2,6 +2,7 @@ package kurou.kodriver.feature.acewindowsnarrator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -33,6 +34,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperature
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
@@ -43,6 +45,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutItemRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -55,6 +58,7 @@ import kotlin.time.ExperimentalTime
 internal data class ManualReadoutUseCases(
     val observeRequests: ObserveManualReadoutRequestsUseCase,
     val observeHotkeyPresses: ObserveManualReadoutHotkeyPressesUseCase,
+    val observeItemRequests: ObserveManualReadoutItemRequestsUseCase,
     val observeSets: ObserveManualReadoutSetsUseCase,
 )
 
@@ -272,6 +276,24 @@ internal class AceWindowsNarratorViewModel(
                 readManualReadout(set)
             }
         }.launchIn(viewModelScope)
+
+    /** 音声認識の発話から届く項目単位の依頼。1項目だけの一時セットとして既存の手動読み上げに渡す（保存済みセットの編集文言は使わない）。 */
+    @Suppress("UnusedPrivateProperty")
+    private val manualReadoutItemRequestJob =
+        manualReadoutUseCases
+            .observeItemRequests()
+            .onEach { request ->
+                if (request.simulatorId == Simulator.AceWindows.id) {
+                    // 1件の失敗で購読が止まり、以降の音声依頼が無視されないよう依頼ごとに捕捉する。
+                    try {
+                        readManualReadout(ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)))
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        captureError(e)
+                    }
+                }
+            }.launchIn(viewModelScope)
 
     private suspend fun readManualReadout(set: ManualReadoutSet?) {
         if (set == null || selectedSimulator.value !is Simulator.AceWindows) return

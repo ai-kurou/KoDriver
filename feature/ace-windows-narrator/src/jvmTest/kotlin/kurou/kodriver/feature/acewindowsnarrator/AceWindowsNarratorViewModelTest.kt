@@ -10,7 +10,9 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.slot
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,6 +39,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemTextDefault
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
@@ -61,6 +64,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperature
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
@@ -84,6 +88,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.NarrationOutcome
@@ -95,6 +100,7 @@ import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
+import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
@@ -104,6 +110,7 @@ import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutItemRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -115,6 +122,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsNarratorViewModelTest {
@@ -125,9 +133,11 @@ class AceWindowsNarratorViewModelTest {
 
     private val manualRequests = MutableSharedFlow<ManualReadoutRequest>()
     private val manualHotkeyPresses = MutableSharedFlow<ManualReadoutRequest>()
+    private val manualItemRequests = MutableSharedFlow<ManualReadoutItemRequest>()
     private val manualSets = MutableStateFlow(listOf(ManualReadoutSet("set-1")))
     private val manualRequestRepository: ManualReadoutRequestRepository = mockk()
     private val manualHotkeyRepository: ManualReadoutHotkeyRepository = mockk()
+    private val manualItemRequestRepository: ManualReadoutItemRequestRepository = mockk()
     private val manualSetRepository: ManualReadoutSetPreferencesRepository = mockk()
 
     private val debugRequests = MutableSharedFlow<DebugReadoutRequest>()
@@ -204,12 +214,14 @@ class AceWindowsNarratorViewModelTest {
         every { debugRequestRepository.observeRequests() } returns debugRequests
         every { manualRequestRepository.observeRequests() } returns manualRequests
         every { manualHotkeyRepository.pressStream() } returns manualHotkeyPresses
+        every { manualItemRequestRepository.observeRequests() } returns manualItemRequests
         every { manualSetRepository.observeSets() } returns manualSets
         return AceWindowsNarratorViewModel(
             manualReadoutUseCases =
                 ManualReadoutUseCases(
                     ObserveManualReadoutRequestsUseCase(manualRequestRepository),
                     ObserveManualReadoutHotkeyPressesUseCase(manualHotkeyRepository),
+                    ObserveManualReadoutItemRequestsUseCase(manualItemRequestRepository),
                     ObserveManualReadoutSetsUseCase(manualSetRepository),
                 ),
             observeDebugReadoutRequest = ObserveDebugReadoutRequestUseCase(debugRequestRepository),
@@ -303,6 +315,148 @@ class AceWindowsNarratorViewModelTest {
     fun `ホットキーの依頼も項目なし文言を末尾に追加してログ保存する`() =
         runTest(testDispatcher) {
             assertManualReadout(hotkey = true)
+        }
+
+    @Test
+    fun `音声の項目依頼は保存済みセットに関係なく指定項目を既定文言で読む`() =
+        runTest(testDispatcher) {
+            val itemKey = AceWindowsReadoutItemKey.MyBestLap.Root
+            // 手動読み上げのイベントとログのキーは、選んだ項目に関係なく燃料残量のキーになる。
+            val key = AceWindowsReadoutItemKey.RemainingFuel.Root
+            val text = aceWindowsManualReadoutItemTextDefault(itemKey.value).replace("{laptime}", "1分23秒456")
+            val event = AceWindowsManualReadoutText(key, text, text)
+            val json = slot<String>()
+            manualSets.update { emptyList() }
+            stubReadoutDefaults(thresholdPercentage = 30, queueEnabledOverrides = mapOf(key to false))
+            every { ttsEngine.speak(event, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    key,
+                    text,
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
+                    capture(json),
+                )
+            } just Runs
+            val bestLapChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
+            val viewModel =
+                createViewModel(
+                    Channel(Channel.UNLIMITED),
+                    ttsEngine,
+                    bestLapTimeChannel = bestLapChannel,
+                    currentTimeMs = { 100L },
+                )
+            try {
+                runCurrent()
+                bestLapChannel.send(AceWindowsBestLapTimeData(83_456))
+                runCurrent()
+                manualItemRequests.emit(ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey.value))
+                runCurrent()
+                verify(exactly = 1) { ttsEngine.speak(event, true) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        100L,
+                        Simulator.AceWindows,
+                        key,
+                        text,
+                        NarrationOutcome.QUEUED,
+                        NarrationSource.MANUAL,
+                        json.captured,
+                    )
+                }
+                confirmVerified(ttsEngine, telemetryLogRepository)
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `音声の項目依頼はACE以外のシミュレーター宛てなら読まない`() =
+        runTest(testDispatcher) {
+            val bestLapChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
+            stubReadoutDefaults(thresholdPercentage = 30)
+            val viewModel =
+                createViewModel(Channel(Channel.UNLIMITED), ttsEngine, bestLapTimeChannel = bestLapChannel)
+            try {
+                runCurrent()
+                bestLapChannel.send(AceWindowsBestLapTimeData(83_456))
+                runCurrent()
+                manualItemRequests.emit(
+                    ManualReadoutItemRequest(Simulator.LmuWindows.id, AceWindowsReadoutItemKey.MyBestLap.Root.value),
+                )
+                runCurrent()
+                confirmVerified(ttsEngine, telemetryLogRepository)
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `音声の項目依頼の読み上げが例外で失敗しても記録して次の依頼を処理する`() =
+        runTest(testDispatcher) {
+            val itemKey = AceWindowsReadoutItemKey.MyBestLap.Root
+            val key = AceWindowsReadoutItemKey.RemainingFuel.Root
+            val text = aceWindowsManualReadoutItemTextDefault(itemKey.value).replace("{laptime}", "1分23秒456")
+            val event = AceWindowsManualReadoutText(key, text, text)
+            val json = slot<String>()
+            stubReadoutDefaults(thresholdPercentage = 30, queueEnabledOverrides = mapOf(key to false))
+            var failing = true
+            every { ttsEngine.speak(event, true) } answers {
+                if (failing) error("tts error")
+            }
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    key,
+                    text,
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
+                    capture(json),
+                )
+            } just Runs
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            val captured = slot<Throwable>()
+            mockkStatic(errorCapture)
+            every { captureError(capture(captured)) } returns Unit
+            val bestLapChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
+            val viewModel =
+                createViewModel(
+                    Channel(Channel.UNLIMITED),
+                    ttsEngine,
+                    bestLapTimeChannel = bestLapChannel,
+                    currentTimeMs = { 100L },
+                )
+            try {
+                runCurrent()
+                bestLapChannel.send(AceWindowsBestLapTimeData(83_456))
+                runCurrent()
+                manualItemRequests.emit(ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey.value))
+                runCurrent()
+                assertTrue(captured.isCaptured)
+                failing = false
+                manualItemRequests.emit(ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey.value))
+                runCurrent()
+                verify(exactly = 2) { ttsEngine.speak(event, true) }
+                verify(exactly = 1) { captureError(captured.captured) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        100L,
+                        Simulator.AceWindows,
+                        key,
+                        text,
+                        NarrationOutcome.QUEUED,
+                        NarrationSource.MANUAL,
+                        json.captured,
+                    )
+                }
+                confirmVerified(ttsEngine, telemetryLogRepository, errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+                viewModel.viewModelScope.cancel()
+            }
         }
 
     @Test
