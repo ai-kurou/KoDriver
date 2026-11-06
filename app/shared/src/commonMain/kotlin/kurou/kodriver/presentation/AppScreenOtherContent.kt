@@ -106,7 +106,14 @@ internal fun DefaultOtherContent(
         onOpenThemeDialog = { showThemeDialog = true },
         onOpenOverlayTextColorDialog = { showOverlayTextColorDialog = true },
         onOpenOverlayTextSizeDialog = { showOverlayTextSizeDialog = true },
-        detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId, feedbackAttachRequestId ->
+        detailContent = {
+            itemType,
+            canNavigateBack,
+            onBack,
+            feedbackTelemetryLogId,
+            feedbackAttachRequestId,
+            onFeedbackSelected,
+            ->
             DefaultOtherDetailContent(
                 itemType = itemType,
                 selectedSimulatorId = selectedSimulatorId,
@@ -114,6 +121,7 @@ internal fun DefaultOtherContent(
                 onBack = onBack,
                 feedbackTelemetryLogId = feedbackTelemetryLogId,
                 feedbackAttachRequestId = feedbackAttachRequestId,
+                onFeedbackSelected = onFeedbackSelected,
             )
         },
     )
@@ -127,6 +135,7 @@ internal fun DefaultOtherDetailContent(
     onBack: () -> Unit,
     feedbackTelemetryLogId: Long?,
     feedbackAttachRequestId: Long,
+    onFeedbackSelected: (Long) -> Unit = {},
 ) {
     when (itemType) {
         OtherListItemType.ServerIp -> {
@@ -163,7 +172,7 @@ internal fun DefaultOtherDetailContent(
         }
 
         OtherListItemType.ShowLogs -> {
-            TelemetryLogListDetailPane(canNavigateBack, onBack)
+            TelemetryLogListDetailPane(canNavigateBack, onBack, onFeedbackClick = onFeedbackSelected)
         }
 
         OtherListItemType.DebugState -> {

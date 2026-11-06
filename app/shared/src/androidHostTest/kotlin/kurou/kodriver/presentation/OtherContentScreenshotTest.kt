@@ -62,7 +62,7 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = twoPaneDirective,
-                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                            detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                 if (itemType == OtherListItemType.ServerIp) {
                                     OtherServerIpDetailPaneContent(
                                         uiState =
@@ -103,7 +103,7 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = twoPaneDirective,
-                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                            detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                 if (itemType == OtherListItemType.ConsoleIp) {
                                     OtherConsoleIpDetailPaneContent(
                                         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
@@ -130,7 +130,7 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = twoPaneDirective,
-                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                            detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                 if (itemType == OtherListItemType.Volume) {
                                     OtherVolumeDetailPaneContent(
                                         uiState = OtherVolumeDetailUiState(volume = 80),
@@ -175,7 +175,7 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = rememberFoldedVerticalHingeDirective(),
-                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                            detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                 if (itemType == OtherListItemType.Volume) {
                                     OtherVolumeDetailPaneContent(
                                         uiState = OtherVolumeDetailUiState(volume = 80),
@@ -204,7 +204,7 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             windowPosture = rememberTabletopPosture(),
-                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                            detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                 if (itemType == OtherListItemType.Volume) {
                                     OtherVolumeDetailPaneContent(
                                         uiState = OtherVolumeDetailUiState(volume = 80),
@@ -234,7 +234,7 @@ class OtherContentScreenshotTest {
                             onItemSelected = { selectedItem = it },
                             onClearSelectedItem = { selectedItem = null },
                             windowPosture = rememberNonFlatVerticalHingePosture(),
-                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                            detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                 if (itemType == OtherListItemType.Volume) {
                                     OtherVolumeDetailPaneContent(
                                         uiState = OtherVolumeDetailUiState(volume = 80),

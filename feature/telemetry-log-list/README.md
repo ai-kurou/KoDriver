@@ -5,7 +5,7 @@
 ## 主要なファイルの役割
 
 - `TelemetryLogListPane.kt` / `TelemetryLogContent.kt`: 一覧画面のUI。`TelemetryLogContent.kt` は `Material3 Adaptive` の `ListDetailPaneScaffold` とナビゲーターで list/detail ペインを切り替え、選択状態は ViewModel の UiState から同期する。
-- `TelemetryLogContent.kt` の `TelemetryLogListDetailPane`: 一覧だけを `DetailPaneScaffold` に載せる詳細ペイン用の Composable。ログの選択・ログ詳細は扱わず、個別削除の確認ダイアログと結果スナックバーのみ持つ。`:feature:other-list` の「ログを表示」から `app:shared` 経由で表示する。
+- `TelemetryLogContent.kt` の `TelemetryLogListDetailPane`: 一覧だけを `DetailPaneScaffold` に載せる詳細ペイン用の Composable。ログの選択・ログ詳細は扱わず、個別削除の確認ダイアログと結果スナックバーのみ持つ。「フィードバック送信」は `onFeedbackClick(logId)` で呼び出し側へ通知する（`app:shared` が `OtherListViewModel.selectFeedbackItem` へ接続する）。`:feature:other-list` の「ログを表示」から `app:shared` 経由で表示する。
 - `TelemetryLogListViewModel.kt`: ログ一覧・選択中ログ・削除確認ダイアログ表示状態などを `StateFlow` で公開する。
 - `TelemetryLogListFlow.kt`: ログ一覧と画面内状態を合成する冷たい `Flow<TelemetryLogListUiState>` を提供する。
 - `ObserveSortedTelemetryLogsUseCase.kt`: `:core:domain` の `ObserveTelemetryLogsUseCase` を作成日時の降順にソートして提供する、この feature 固有のUseCase。
