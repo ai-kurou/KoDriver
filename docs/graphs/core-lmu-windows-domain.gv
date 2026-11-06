@@ -25,9 +25,9 @@ digraph G {
   ":feature:manual-readout-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:manual-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-feedback-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-log-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:telemetry-log-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:telemetry-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":server" [fillcolor="#F8BBD0", color="#D81B60", penwidth=1]
   ":server" -> ":core:domain"
   ":server" -> ":core:lmu-windows-domain"
@@ -76,10 +76,10 @@ digraph G {
   ":feature:manual-readout-list" -> ":core:lmu-windows-domain"
   ":feature:other-feedback-detail" -> ":core:domain"
   ":feature:other-feedback-detail" -> ":core:lmu-windows-domain"
+  ":feature:other-log-detail" -> ":core:domain"
+  ":feature:other-log-detail" -> ":core:lmu-windows-domain"
+  ":feature:other-log-list" -> ":core:domain"
+  ":feature:other-log-list" -> ":core:lmu-windows-domain"
   ":feature:other-volume-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:lmu-windows-domain"
-  ":feature:telemetry-log-detail" -> ":core:domain"
-  ":feature:telemetry-log-detail" -> ":core:lmu-windows-domain"
-  ":feature:telemetry-log-list" -> ":core:domain"
-  ":feature:telemetry-log-list" -> ":core:lmu-windows-domain"
 }

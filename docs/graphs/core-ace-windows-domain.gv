@@ -19,8 +19,8 @@ digraph G {
   ":feature:manual-readout-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:manual-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:telemetry-log-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:telemetry-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-log-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":server" [fillcolor="#F8BBD0", color="#D81B60", penwidth=1]
   ":server" -> ":core:domain"
   ":server" -> ":core:ace-windows-domain"
@@ -57,8 +57,8 @@ digraph G {
   ":feature:manual-readout-list" -> ":core:ace-windows-domain"
   ":feature:narrator-overlay" -> ":core:domain"
   ":feature:narrator-overlay" -> ":core:ace-windows-domain"
-  ":feature:telemetry-log-detail" -> ":core:domain"
-  ":feature:telemetry-log-detail" -> ":core:ace-windows-domain"
-  ":feature:telemetry-log-list" -> ":core:domain"
-  ":feature:telemetry-log-list" -> ":core:ace-windows-domain"
+  ":feature:other-log-detail" -> ":core:domain"
+  ":feature:other-log-detail" -> ":core:ace-windows-domain"
+  ":feature:other-log-list" -> ":core:domain"
+  ":feature:other-log-list" -> ":core:ace-windows-domain"
 }

@@ -13,14 +13,14 @@ import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.otherlogdetail.TelemetryLogDetailContent
+import kurou.kodriver.feature.otherloglist.TelemetryLogListPaneHost
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPane
 import kurou.kodriver.feature.otheroverlaytextcolordetail.OtherOverlayTextColorDetailDialog
 import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDetailDialog
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
-import kurou.kodriver.feature.telemetrylogdetail.TelemetryLogDetailContent
-import kurou.kodriver.feature.telemetryloglist.TelemetryLogListPaneHost
 
 /**
  * `:core:domain` の `Simulator.LmuWindows.id` と一致させる、初期選択シミュレーターの ID。

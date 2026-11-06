@@ -1,0 +1,644 @@
+package kurou.kodriver.feature.otherloglist
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Feedback
+import androidx.compose.material.icons.filled.HeadsetMic
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PlaylistRemove
+import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.material.icons.outlined.Inbox
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.KoDriverHintRow
+import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
+import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.core.designsystem.simulatorDisplayName
+import kurou.kodriver.core.designsystem.simulatorIcon
+import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.NarrationSource
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.util.MILLISECONDS_PER_DAY
+import kurou.kodriver.domain.util.MILLISECONDS_PER_HOUR
+import kurou.kodriver.domain.util.decomposeDurationMs
+import kurou.kodriver.domain.util.padStartZero
+import kurou.kodriver.feature.otherloglist.generated.resources.Res
+import kurou.kodriver.feature.otherloglist.generated.resources.new_telemetry_logs
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_delete_menu_item
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_empty_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_empty_title
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_empty_title_for_simulator
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_feedback_menu_item
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_more_button
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_hint_help_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_hint_label
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_interrupted_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_interrupted_hint_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_interrupted_title
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_queued_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_queued_hint_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_queued_title
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_skipped_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_skipped_hint_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_skipped_title
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_spoken_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_spoken_hint_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_narration_spoken_title
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_source_auto_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_source_auto_hint_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_source_auto_title
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_source_manual_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_source_manual_hint_description
+import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_source_manual_title
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun TelemetryLogListPane(
+    uiState: TelemetryLogListUiState = TelemetryLogListUiState(),
+    modifier: Modifier = Modifier,
+    onLogClick: (Long) -> Unit = {},
+    onFeedbackClick: (Long) -> Unit = {},
+    onDeleteClick: (Long) -> Unit = {},
+    scrollToTopRequest: Int = 0,
+) {
+    val visibleState = remember { MutableTransitionState(false).apply { targetState = true } }
+    val entryOffset = with(LocalDensity.current) { 12.dp.roundToPx() }
+    AnimatedVisibility(
+        visibleState = visibleState,
+        enter =
+            slideInVertically(
+                initialOffsetY = { entryOffset },
+                animationSpec = tween(durationMillis = 200),
+            ) + fadeIn(animationSpec = tween(durationMillis = 200)),
+        modifier = modifier.fillMaxSize(),
+    ) {
+        if (uiState.logs.isEmpty()) {
+            TelemetryLogEmptyState(
+                selectedSimulator = uiState.selectedSimulator,
+                modifier = Modifier.fillMaxSize(),
+            )
+            return@AnimatedVisibility
+        }
+
+        key(uiState.selectedSimulator) {
+            val listState = rememberLazyListState()
+            val coroutineScope = rememberCoroutineScope()
+            val firstLogId = uiState.logs.first().id
+            var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
+            var showNewLogsButton by rememberSaveable { mutableStateOf(false) }
+            val isAtTop by remember {
+                derivedStateOf {
+                    listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+                }
+            }
+
+            LaunchedEffect(firstLogId) {
+                if (previousFirstLogId != firstLogId) {
+                    if (listState.firstVisibleItemIndex <= FIRST_VISIBLE_ITEM_INDEX_WITH_HINT_ROW_FOR_AUTO_SCROLL) {
+                        listState.animateScrollToItem(0)
+                    } else {
+                        showNewLogsButton = true
+                    }
+                    previousFirstLogId = firstLogId
+                }
+            }
+
+            ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+                listState.animateScrollToItem(0)
+                showNewLogsButton = false
+            }
+
+            LaunchedEffect(isAtTop) {
+                if (isAtTop) {
+                    showNewLogsButton = false
+                }
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    state = listState,
+                    modifier =
+                        Modifier
+                            .testTag(TELEMETRY_LOG_LIST_TEST_TAG)
+                            .fillMaxSize()
+                            .padding(vertical = KoDriverSpacing.small),
+                ) {
+                    item(key = NARRATION_OUTCOME_HINT_ITEM_KEY) {
+                        TelemetryLogNarrationOutcomeHintRow(
+                            modifier =
+                                Modifier
+                                    .padding(horizontal = KoDriverSpacing.small),
+                        )
+                    }
+                    items(
+                        items = uiState.logs,
+                        key = { it.id },
+                    ) { log ->
+                        TelemetryLogListItem(
+                            log = log,
+                            isSelected = log.id == uiState.selectedLogId,
+                            modifier = Modifier.animateItem(),
+                            onClick = { onLogClick(log.id) },
+                            onFeedbackClick = { onFeedbackClick(log.id) },
+                            onDeleteClick = { onDeleteClick(log.id) },
+                        )
+                        HorizontalDivider()
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = showNewLogsButton,
+                    enter =
+                        slideInVertically(
+                            initialOffsetY = { -it },
+                            animationSpec = tween(durationMillis = 300),
+                        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                    exit =
+                        slideOutVertically(
+                            targetOffsetY = { -it },
+                            animationSpec = tween(durationMillis = 200),
+                        ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = KoDriverSpacing.large),
+                ) {
+                    NewTelemetryLogsButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                listState.animateScrollToItem(0)
+                                showNewLogsButton = false
+                            }
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NewTelemetryLogsButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val haptic = LocalHapticFeedback.current
+    TextButton(
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            onClick()
+        },
+        modifier = modifier,
+        colors =
+            ButtonDefaults.textButtonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
+    ) {
+        Text(stringResource(Res.string.new_telemetry_logs))
+    }
+}
+
+@Composable
+private fun TelemetryLogEmptyState(
+    selectedSimulator: Simulator?,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.padding(KoDriverSpacing.extraLarge),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Inbox,
+                contentDescription = null,
+                modifier = Modifier.size(TELEMETRY_LOG_EMPTY_STATE_ICON_SIZE),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text =
+                    if (selectedSimulator != null) {
+                        stringResource(
+                            Res.string.telemetry_log_empty_title_for_simulator,
+                            simulatorDisplayName(selectedSimulator.id),
+                        )
+                    } else {
+                        stringResource(Res.string.telemetry_log_empty_title)
+                    },
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                text = stringResource(Res.string.telemetry_log_empty_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+private fun TelemetryLogListItem(
+    log: TelemetryLog,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    onFeedbackClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
+) {
+    val haptic = LocalHapticFeedback.current
+    var menuExpanded by rememberSaveable { mutableStateOf(false) }
+    val containerColor by animateColorAsState(
+        targetValue =
+            if (isSelected) {
+                MaterialTheme.colorScheme.secondaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
+            },
+        animationSpec = tween(durationMillis = 500),
+        label = "telemetryLogListItemContainerColor",
+    )
+    val headlineColor by animateColorAsState(
+        targetValue =
+            if (isSelected) {
+                MaterialTheme.colorScheme.onSecondaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            }.applySkippedAlpha(log.narrationOutcome),
+        animationSpec = tween(durationMillis = 500),
+        label = "telemetryLogListItemHeadlineColor",
+    )
+    val supportingColor by animateColorAsState(
+        targetValue =
+            if (isSelected) {
+                MaterialTheme.colorScheme.onSecondaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            }.applySkippedAlpha(log.narrationOutcome),
+        animationSpec = tween(durationMillis = 500),
+        label = "telemetryLogListItemSupportingColor",
+    )
+
+    ListItem(
+        headlineContent = {
+            Text(
+                text = readoutItemDisplayName(log.readoutItemKey),
+                color = headlineColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        supportingContent = {
+            Text(
+                text =
+                    formatTelemetryLogTime(createdAt = log.createdAt),
+                color = supportingColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        leadingContent = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(width = 40.dp, height = 64.dp),
+            ) {
+                Image(
+                    painter = simulatorIcon(log.simulator.id),
+                    contentDescription = null,
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .clip(MaterialTheme.shapes.small),
+                )
+            }
+        },
+        trailingContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+            ) {
+                TelemetryLogNarrationSourceBadge(
+                    source = log.narrationSource,
+                    isSelected = isSelected,
+                    narrationOutcome = log.narrationOutcome,
+                )
+                Icon(
+                    imageVector = narrationOutcomeIcon(log.narrationOutcome),
+                    contentDescription =
+                        stringResource(
+                            when (log.narrationOutcome) {
+                                NarrationOutcome.QUEUED -> {
+                                    Res.string.telemetry_log_narration_queued_description
+                                }
+
+                                NarrationOutcome.SPOKEN -> {
+                                    Res.string.telemetry_log_narration_spoken_description
+                                }
+
+                                NarrationOutcome.INTERRUPTED -> {
+                                    Res.string.telemetry_log_narration_interrupted_description
+                                }
+
+                                NarrationOutcome.SKIPPED -> {
+                                    Res.string.telemetry_log_narration_skipped_description
+                                }
+                            },
+                        ),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.applySkippedAlpha(log.narrationOutcome),
+                )
+                VerticalDivider(
+                    modifier = Modifier.height(24.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                )
+                Box {
+                    IconButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            menuExpanded = true
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = stringResource(Res.string.telemetry_log_more_button),
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.telemetry_log_feedback_menu_item)) },
+                            leadingIcon = { Icon(imageVector = Icons.Default.Feedback, contentDescription = null) },
+                            onClick = {
+                                menuExpanded = false
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                onFeedbackClick()
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(Res.string.telemetry_log_delete_menu_item),
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                onDeleteClick()
+                            },
+                        )
+                    }
+                }
+            }
+        },
+        colors = ListItemDefaults.colors(containerColor = containerColor),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onClick()
+                },
+    )
+}
+
+internal fun formatTelemetryLogTime(createdAt: Long): String = formatTimeOfDay(createdAt)
+
+@Composable
+private fun TelemetryLogNarrationOutcomeHintRow(modifier: Modifier = Modifier) {
+    KoDriverHintRow(
+        label = stringResource(Res.string.telemetry_log_narration_hint_label),
+        helpContentDescription = stringResource(Res.string.telemetry_log_narration_hint_help_description),
+        modifier = modifier,
+    ) {
+        TelemetryLogNarrationOutcomeHintSheetContent()
+    }
+}
+
+@Composable
+internal fun TelemetryLogNarrationOutcomeHintSheetContent(modifier: Modifier = Modifier) {
+    Column(
+        modifier =
+            modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = KoDriverSpacing.large)
+                .padding(bottom = KoDriverSpacing.extraLarge),
+        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+    ) {
+        KoDriverHintSheetRow(
+            icon = narrationOutcomeIcon(NarrationOutcome.QUEUED),
+            title = stringResource(Res.string.telemetry_log_narration_queued_title),
+            description = stringResource(Res.string.telemetry_log_narration_queued_hint_description),
+        )
+        KoDriverHintSheetRow(
+            icon = narrationOutcomeIcon(NarrationOutcome.SPOKEN),
+            title = stringResource(Res.string.telemetry_log_narration_spoken_title),
+            description = stringResource(Res.string.telemetry_log_narration_spoken_hint_description),
+        )
+        KoDriverHintSheetRow(
+            icon = narrationOutcomeIcon(NarrationOutcome.INTERRUPTED),
+            title = stringResource(Res.string.telemetry_log_narration_interrupted_title),
+            description = stringResource(Res.string.telemetry_log_narration_interrupted_hint_description),
+        )
+        KoDriverHintSheetRow(
+            icon = narrationOutcomeIcon(NarrationOutcome.SKIPPED),
+            title = stringResource(Res.string.telemetry_log_narration_skipped_title),
+            description = stringResource(Res.string.telemetry_log_narration_skipped_hint_description),
+        )
+        KoDriverHintSheetRow(
+            icon = narrationSourceIcon(NarrationSource.AUTO),
+            title = stringResource(Res.string.telemetry_log_source_auto_title),
+            description = stringResource(Res.string.telemetry_log_source_auto_hint_description),
+        )
+        KoDriverHintSheetRow(
+            icon = narrationSourceIcon(NarrationSource.MANUAL),
+            title = stringResource(Res.string.telemetry_log_source_manual_title),
+            description = stringResource(Res.string.telemetry_log_source_manual_hint_description),
+        )
+    }
+}
+
+@Composable
+private fun TelemetryLogNarrationSourceBadge(
+    source: NarrationSource,
+    isSelected: Boolean,
+    narrationOutcome: NarrationOutcome,
+) {
+    val backgroundColor =
+        when {
+            isSelected -> MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.12f)
+            source == NarrationSource.MANUAL -> MaterialTheme.colorScheme.tertiaryContainer
+            else -> MaterialTheme.colorScheme.surfaceVariant
+        }
+    val contentColor =
+        when {
+            isSelected -> MaterialTheme.colorScheme.onSecondaryContainer
+            source == NarrationSource.MANUAL -> MaterialTheme.colorScheme.onTertiaryContainer
+            else -> MaterialTheme.colorScheme.onSurfaceVariant
+        }
+    val backgroundAlpha = backgroundColor.copy(alpha = 1f).applySkippedAlpha(narrationOutcome).alpha
+    Box(
+        modifier =
+            Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(backgroundColor.copy(alpha = backgroundColor.alpha * backgroundAlpha)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = narrationSourceIcon(source),
+            contentDescription =
+                stringResource(
+                    when (source) {
+                        NarrationSource.AUTO -> Res.string.telemetry_log_source_auto_description
+                        NarrationSource.MANUAL -> Res.string.telemetry_log_source_manual_description
+                    },
+                ),
+            tint = contentColor.applySkippedAlpha(narrationOutcome),
+            modifier = Modifier.size(18.dp),
+        )
+    }
+}
+
+internal fun narrationSourceIcon(source: NarrationSource): ImageVector =
+    when (source) {
+        NarrationSource.AUTO -> Icons.Default.HeadsetMic
+        NarrationSource.MANUAL -> Icons.Default.TouchApp
+    }
+
+internal fun narrationOutcomeIcon(outcome: NarrationOutcome): ImageVector =
+    when (outcome) {
+        NarrationOutcome.QUEUED -> Icons.AutoMirrored.Filled.PlaylistAdd
+        NarrationOutcome.SPOKEN -> Icons.AutoMirrored.Filled.VolumeUp
+        NarrationOutcome.INTERRUPTED -> Icons.Filled.PlaylistRemove
+        NarrationOutcome.SKIPPED -> Icons.AutoMirrored.Filled.VolumeOff
+    }
+
+private fun formatTimeOfDay(milliseconds: Long): String {
+    val millisInDay = (milliseconds + JST_OFFSET_MILLIS).floorMod(MILLISECONDS_PER_DAY)
+    return formatDuration(millisInDay)
+}
+
+private fun formatDuration(milliseconds: Long): String {
+    val components = decomposeDurationMs(milliseconds)
+    return "${components.hours.padStartZero(2)}:${components.minutes.padStartZero(2)}:" +
+        "${components.seconds.padStartZero(2)}.${components.millis.padStartZero(3)}"
+}
+
+private fun Long.floorMod(other: Long): Long = ((this % other) + other) % other
+
+/**
+ * 読み上げされなかった（[NarrationOutcome.SKIPPED]）項目の前景色を減光する。
+ *
+ * `AutoReadoutListPane` の OFF 項目と同じ扱いにし、読み上げ済みの項目と一目で区別できるようにする。
+ */
+internal fun Color.applySkippedAlpha(narrationOutcome: NarrationOutcome): Color =
+    if (narrationOutcome == NarrationOutcome.SKIPPED) copy(alpha = SKIPPED_CONTENT_ALPHA) else this
+
+internal const val SKIPPED_CONTENT_ALPHA = 0.38f
+
+/** ヒント行が先頭の index 0 を占めるため、ヒント行が見えている間(index 0)のみ自動スクロール対象とする。 */
+private const val FIRST_VISIBLE_ITEM_INDEX_WITH_HINT_ROW_FOR_AUTO_SCROLL = 0
+private const val NARRATION_OUTCOME_HINT_ITEM_KEY = "telemetry_log_narration_outcome_hint"
+internal const val TELEMETRY_LOG_LIST_TEST_TAG = "telemetryLogList"
+private const val JST_OFFSET_MILLIS = 9 * MILLISECONDS_PER_HOUR
+private val TELEMETRY_LOG_EMPTY_STATE_ICON_SIZE = 48.dp
+
+@Preview(showBackground = true)
+@Composable
+private fun TelemetryLogListPanePreview() {
+    KoDriverTheme {
+        TelemetryLogListPane(
+            uiState = previewTelemetryLogListUiState,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TelemetryLogListPaneEmptyPreview() {
+    KoDriverTheme {
+        TelemetryLogListPane()
+    }
+}

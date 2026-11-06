@@ -40,6 +40,8 @@ import kurou.kodriver.feature.otherandroidaudiousagedetail.otherAndroidAudioUsag
 import kurou.kodriver.feature.otherconsoleipdetail.otherConsoleIpDetailModule
 import kurou.kodriver.feature.otherfeedbackdetail.otherFeedbackDetailModule
 import kurou.kodriver.feature.otherlist.otherListModule
+import kurou.kodriver.feature.otherlogdetail.telemetryLogDetailModule
+import kurou.kodriver.feature.otherloglist.telemetryLogListModule
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.otherOverlayBackgroundOpacityDetailModule
 import kurou.kodriver.feature.otheroverlaytextcolordetail.otherOverlayTextColorDetailModule
 import kurou.kodriver.feature.otheroverlaytextsizedetail.otherOverlayTextSizeDetailModule
@@ -51,8 +53,6 @@ import kurou.kodriver.feature.othervoicepitchdetail.otherVoicePitchDetailModule
 import kurou.kodriver.feature.othervoicespeeddetail.otherVoiceSpeedDetailModule
 import kurou.kodriver.feature.othervolumedetail.otherVolumeDetailModule
 import kurou.kodriver.feature.serverconnection.serverConnectionModule
-import kurou.kodriver.feature.telemetrylogdetail.telemetryLogDetailModule
-import kurou.kodriver.feature.telemetryloglist.telemetryLogListModule
 import org.koin.core.module.Module
 
 /**
