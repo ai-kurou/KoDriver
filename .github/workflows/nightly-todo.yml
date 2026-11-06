@@ -79,6 +79,8 @@ jobs:
           Gradleコマンドは run_in_background を使わずフォアグラウンドで実行し、Bashのtimeoutには上限の600000を指定してください。
           MonitorやoutputファイルのcatによるポーリングはdontAsk環境で拒否されるため行わないでください。
           Bashは許可されたghコマンドとGradleコマンドだけを使い、find・xargs・ls・cat・tail等やパイプ・リダイレクトは使いません。
+          Bashでは セミコロン・アンパサンド2つ・縦線2つによる連結や、コマンド置換（ドル記号と丸括弧、またはバッククォート）を使いません。ghコマンドには --repo を付けず、1コマンドずつ単体で実行してください（リポジトリはチェックアウトから自動判定されます）。モジュール数の比較などファイル内容の確認はGrep・Read・Globで行い、Bashのgrep・cat・sedは使わないでください。
+          Bashが拒否された場合は別のツールで代替し、調査を続けて、最後は必ず構造化出力を返してください。
           ファイルの探索・閲覧にはGlob・Grep・Readを使ってください。Gradleコマンドは指定どおり実行し、出力の加工（パイプ）はせず、必要なら--console=plainのみ付けてください。
           改善案は対象コードを読んで適用可能性を確認し、gh issue list --state all --searchで重複を確認します。必要ならgh issue viewで本文を確認してください。
           Issueは起票しないでください。重複のない各改善案を、構造化出力の issues 配列に1件ずつ、title（日本語の簡潔なタイトル）と body（Markdown、対象・課題・改善案が後から読んで分かる粒度）として返してください。title と body にはバックスラッシュ・バッククォート・ドル記号を使わないでください。ラベルは付けません。起票自体はワークフローが行います。
@@ -97,7 +99,7 @@ jobs:
             --allowedTools "$allowed_tools" \
             --disallowedTools "Edit,Write" \
             --permission-mode dontAsk \
-            --model sonnet --effort low \
+            --model sonnet --effort medium \
             --output-format json --json-schema "$schema" \
             > "$diagnostics/response.json" 2> "$diagnostics/stderr.log" || exit_code=$?
           printf '%s\n' "$exit_code" > "$diagnostics/exit-code.txt"
