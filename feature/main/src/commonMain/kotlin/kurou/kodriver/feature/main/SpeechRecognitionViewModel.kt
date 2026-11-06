@@ -28,11 +28,14 @@ internal class SpeechRecognitionViewModel(
     private val observeSpeechRecognition: ObserveSpeechRecognitionUseCase,
     private val checkRecordAudioPermissionGranted: CheckRecordAudioPermissionGrantedUseCase,
     private val requestManualReadoutItem: RequestManualReadoutItemUseCase,
+    /** 入力デバイスの一覧と選択。デバイスを選べないプラットフォーム（Android）では null。 */
+    private val audioInputDeviceSelector: AudioInputDeviceSelector? = null,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SpeechRecognitionUiState())
     val uiState: StateFlow<SpeechRecognitionUiState> = _uiState.asStateFlow()
 
     private var listenJob: Job? = null
+    private var refreshJob: Job? = null
 
     /** 発話がないまま [SPEECH_RECOGNITION_IDLE_TIMEOUT_MS] 経つと聞き取りを止める。認識途中の文字列や確定結果で数え直す。 */
     private var idleJob: Job? = null
@@ -71,6 +74,46 @@ internal class SpeechRecognitionViewModel(
             start()
         } else {
             _uiState.update { it.copy(enabled = false, status = SpeechRecognitionStatus.PermissionDenied) }
+        }
+    }
+
+    /** 入力デバイスの一覧を取得し直す。デバイスを選べないプラットフォームでは何もしない。停止中でも選択中のデバイスを表示するため、カードの表示時とメニューを開いたときに呼ぶ。 */
+    fun refreshDevices() {
+        val selector = audioInputDeviceSelector ?: return
+        refreshJob?.cancel()
+        refreshJob =
+            viewModelScope.launch {
+                try {
+                    val devices = selector.refresh()
+                    val before = _uiState.value.deviceName
+                    _uiState.update { it.copy(devices = devices.names, deviceName = devices.selected) }
+                    // 聞き取り中に解決先のデバイスが変わった場合は、表示と取得元がずれないよう聞き取りをやり直す
+                    if (_uiState.value.enabled && before != null && devices.selected != before) start()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    // 保存値を読めなくても、聞き取りは止めない。次の取得で読み直す
+                    captureError(e)
+                }
+            }
+    }
+
+    /** ドロップダウンで入力デバイスを選ぶ。聞き取り中の場合は、保存した選択で聞き取りをやり直す。 */
+    fun onDeviceSelected(name: String) {
+        val selector = audioInputDeviceSelector ?: return
+        if (name == _uiState.value.deviceName) return
+        refreshJob?.cancel()
+        _uiState.update { it.copy(deviceName = name) }
+        viewModelScope.launch {
+            try {
+                selector.select(name)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                captureError(e)
+            }
+            // 認識は保存済みのデバイス名を読んで開くため、保存が終わってからやり直す
+            if (_uiState.value.enabled) start()
         }
     }
 
@@ -127,6 +170,7 @@ internal class SpeechRecognitionViewModel(
     }
 
     private fun start() {
+        val previous = listenJob
         cancelJobs()
         _uiState.update {
             it.copy(enabled = true, status = SpeechRecognitionStatus.Starting, partialText = "", level = null)
@@ -135,6 +179,8 @@ internal class SpeechRecognitionViewModel(
         listenJob =
             viewModelScope.launch {
                 try {
+                    // 前の聞き取りがマイクを閉じ終えてから開く。同じデバイスを同時に開けない環境で失敗しないようにする
+                    previous?.join()
                     observeSpeechRecognition().collect(::onEvent)
                 } catch (e: CancellationException) {
                     throw e

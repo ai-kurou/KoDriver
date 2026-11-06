@@ -12,8 +12,11 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.AudioInputDevice
+import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
+import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
@@ -56,11 +59,45 @@ class SpeechRecognitionModuleTest {
             val viewModel = application.koin.get<SpeechRecognitionViewModel>()
             try {
                 assertEquals(SpeechRecognitionUiState(), viewModel.uiState.value)
+                viewModel.refreshDevices()
+                assertEquals(SpeechRecognitionUiState(), viewModel.uiState.value)
                 viewModel.onEnabledChange(true) { error("権限は要求しない") }
                 assertEquals(SpeechRecognitionStatus.Starting, viewModel.uiState.value.status)
                 verify(exactly = 1) { permissionRepository.isGranted() }
                 verify(exactly = 1) { speechRepository.observeRecognition() }
                 confirmVerified(permissionRepository, speechRepository)
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
+        } finally {
+            application.close()
+        }
+    }
+
+    @Test
+    fun `入力デバイスのRepositoryを登録していればViewModelは入力デバイスの一覧を取得する`() {
+        val deviceRepository = FakeAudioInputDeviceRepository(listOf(AudioInputDevice("Mic A")))
+        val application =
+            koinApplication {
+                modules(
+                    mainModule,
+                    module {
+                        single<SpeechRecognitionRepository> { speechRepository }
+                        single<RecordAudioPermissionRepository> { permissionRepository }
+                        single<ManualReadoutItemRequestRepository> { FakeManualReadoutItemRequestRepository() }
+                        single<AudioInputDeviceRepository> { deviceRepository }
+                        single<SelectedAudioInputDevicePreferencesRepository> {
+                            FakeSelectedAudioInputDevicePreferencesRepository()
+                        }
+                    },
+                )
+            }
+        try {
+            val viewModel = application.koin.get<SpeechRecognitionViewModel>()
+            try {
+                viewModel.refreshDevices()
+                assertEquals(listOf("Mic A"), viewModel.uiState.value.devices)
+                assertEquals("Mic A", viewModel.uiState.value.deviceName)
             } finally {
                 viewModel.viewModelScope.cancel()
             }

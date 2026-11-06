@@ -9,7 +9,7 @@ sealed interface SpeechRecognitionEvent {
 
     /**
      * 聞き取り中の入力音量。[level] は 0.0（無音）〜1.0（大音量）に正規化した値。
-     * 音声認識エンジンが音量を通知できるプラットフォームだけが流す（Androidは認識エンジンの通知を使う）。
+     * Android は認識エンジンの通知、デスクトップは取得した音声の断片ごとの音量を流す。
      */
     data class Level(
         val level: Float,

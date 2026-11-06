@@ -12,9 +12,9 @@ import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.MicrophoneAudioEvent
 import kurou.kodriver.domain.model.MicrophoneFailureReason
-import kurou.kodriver.domain.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
@@ -27,6 +27,7 @@ import kotlin.coroutines.cancellation.CancellationException
  */
 internal class JvmSpeechRecognitionRepository(
     private val microphone: MicrophoneRepository,
+    private val audioInputDevices: AudioInputDeviceRepository,
     private val selectedDevicePreferences: SelectedAudioInputDevicePreferencesRepository,
     private val transcriberFactory: SpeechTranscriberFactory,
     private val computeDispatcher: CoroutineDispatcher = Dispatchers.Default,
@@ -73,14 +74,24 @@ internal class JvmSpeechRecognitionRepository(
             MicrophoneFailureReason.NoSignal -> SpeechRecognitionFailureReason.NoSignal
         }
 
-    private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(transcriber: SpeechTranscriber) {
+    /**
+     * 画面の選択と同じデバイスを返す。保存済みの名前が一覧にある場合はそれを、一覧にない場合や未選択の場合は
+     * 一覧の先頭を使う（画面は同じ規則で選択中のデバイスを表示する）。一覧が空なら null（既定のデバイス）。
+     */
+    private suspend fun resolveDevice(): AudioInputDevice? {
         val name = selectedDevicePreferences.selectedDeviceName().first()
-        val device = name.takeIf { it != SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED }?.let(::AudioInputDevice)
+        val devices = audioInputDevices.getDevices()
+        return devices.firstOrNull { it.name == name } ?: devices.firstOrNull()
+    }
+
+    private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(transcriber: SpeechTranscriber) {
+        val device = resolveDevice()
         emit(SpeechRecognitionEvent.Listening)
         var lastPartial = ""
         microphone.observeAudio(device).collect { event ->
             when (event) {
                 is MicrophoneAudioEvent.Chunk -> {
+                    emit(SpeechRecognitionEvent.Level(event.pcm.pcmLevel()))
                     when (val transcript = transcriber.accept(event.pcm)) {
                         is SpeechTranscript.Partial -> {
                             if (transcript.text != lastPartial) {

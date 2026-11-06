@@ -27,7 +27,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.main.generated.resources.Res
-import kurou.kodriver.feature.main.generated.resources.microphone_input_level_description
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_level_description
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_idle_stopped
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_listening
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_microphone_unavailable
@@ -48,15 +48,17 @@ private val HISTORY_MAX_HEIGHT = 120.dp
 /** 入力音量ゲージの値変化を滑らかに見せるためのアニメーション時間(ミリ秒)。 */
 private const val LEVEL_ANIMATION_MILLIS = 100
 
-/** 音声認識の聞き取りの開始・停止と、認識状況を確認するための簡易カード。 */
+/** 音声認識の聞き取りの開始・停止、入力デバイスの選択（デスクトップのみ）、入力音量と認識状況を確認するための簡易カード。 */
 @Composable
 internal fun SpeechRecognitionCard(
     uiState: SpeechRecognitionUiState,
     onEnabledChange: (Boolean) -> Unit,
+    onDeviceMenuOpen: () -> Unit,
+    onDeviceSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val switchDescription = stringResource(Res.string.speech_recognition_switch_description)
-    val levelDescription = stringResource(Res.string.microphone_input_level_description)
+    val levelDescription = stringResource(Res.string.speech_recognition_level_description)
     Surface(
         modifier =
             modifier.fillMaxWidth().padding(
@@ -100,6 +102,15 @@ internal fun SpeechRecognitionCard(
                     checked = uiState.enabled,
                     onCheckedChange = onEnabledChange,
                     modifier = Modifier.semantics { contentDescription = switchDescription },
+                )
+            }
+            // 入力デバイスを選べるのはデスクトップだけ。Android では一覧が空のままなので表示しない
+            if (uiState.devices.isNotEmpty() && uiState.deviceName != null) {
+                AudioInputDeviceDropdown(
+                    devices = uiState.devices,
+                    selected = uiState.deviceName,
+                    onMenuOpen = onDeviceMenuOpen,
+                    onSelected = onDeviceSelected,
                 )
             }
             uiState.level?.let { level ->

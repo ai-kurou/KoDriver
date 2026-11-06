@@ -5,9 +5,11 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -24,7 +26,12 @@ class SpeechRecognitionCardTest {
         val changes = mutableListOf<Boolean>()
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionCard(uiState = SpeechRecognitionUiState(), onEnabledChange = { changes += it })
+                SpeechRecognitionCard(
+                    uiState = SpeechRecognitionUiState(),
+                    onEnabledChange = { changes += it },
+                    onDeviceMenuOpen = {},
+                    onDeviceSelected = {},
+                )
             }
         }
 
@@ -48,6 +55,8 @@ class SpeechRecognitionCardTest {
                             recognized = listOf(listOf("燃料", "然料"), listOf("ブレーキ")),
                         ),
                     onEnabledChange = { changes += it },
+                    onDeviceMenuOpen = {},
+                    onDeviceSelected = {},
                 )
             }
         }
@@ -73,6 +82,8 @@ class SpeechRecognitionCardTest {
                             level = level.value,
                         ),
                     onEnabledChange = {},
+                    onDeviceMenuOpen = {},
+                    onDeviceSelected = {},
                 )
             }
         }
@@ -91,6 +102,8 @@ class SpeechRecognitionCardTest {
                 SpeechRecognitionCard(
                     uiState = SpeechRecognitionUiState(status = status.value),
                     onEnabledChange = {},
+                    onDeviceMenuOpen = {},
+                    onDeviceSelected = {},
                 )
             }
         }
@@ -108,5 +121,50 @@ class SpeechRecognitionCardTest {
             status.value = expectedStatus
             rule.onNodeWithText(text).assertExists()
         }
+    }
+
+    @Test
+    fun `入力デバイスの一覧があるときは選択中のデバイスを表示しメニューを開くと通知し選ぶと通知する`() {
+        var menuOpenCount = 0
+        val selected = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionCard(
+                    uiState = SpeechRecognitionUiState(deviceName = "Mic A", devices = listOf("Mic A", "Mic B")),
+                    onEnabledChange = {},
+                    onDeviceMenuOpen = { menuOpenCount++ },
+                    onDeviceSelected = { selected += it },
+                )
+            }
+        }
+
+        rule.onNodeWithTag("speech_recognition_device").assertTextContains("Mic A")
+        rule.onNodeWithTag("speech_recognition_device").performClick()
+        rule.onNodeWithTag("speech_recognition_device_Mic B").performClick()
+
+        rule.runOnIdle {
+            assertEquals(1, menuOpenCount)
+            assertEquals(listOf("Mic B"), selected)
+        }
+        rule.onNodeWithTag("speech_recognition_device_Mic B").assertDoesNotExist()
+    }
+
+    @Test
+    fun `入力デバイスの一覧が空か選択中のデバイスが無いときはデバイスの選択を表示しない`() {
+        val uiState = mutableStateOf(SpeechRecognitionUiState(devices = listOf("Mic A")))
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionCard(
+                    uiState = uiState.value,
+                    onEnabledChange = {},
+                    onDeviceMenuOpen = {},
+                    onDeviceSelected = {},
+                )
+            }
+        }
+
+        rule.onNodeWithTag("speech_recognition_device").assertDoesNotExist()
+        uiState.value = SpeechRecognitionUiState(deviceName = "Mic A")
+        rule.onNodeWithTag("speech_recognition_device").assertDoesNotExist()
     }
 }
