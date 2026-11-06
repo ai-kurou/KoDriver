@@ -20,7 +20,7 @@ AppScreen の UI 状態の合成は `AppScreenFlow` が cold Flow として担�
 - `rememberSpeechRecognitionSection()`: `AppScreen` から一度だけ呼ぶ。マイクの権限の要求（`rememberRecordAudioPermissionRequester`、Android のみ実行時ダイアログ）、アプリが見えなくなったとき（ON_STOP）の停止、前面に戻ったとき（ON_START）の再開を担い、デバッグ状態画面（`DebugStateDetailPane`）のグリッド先頭に差し込むカード（`SpeechRecognitionCard`）を返す。カードは `isSpeechRecognitionSupportedOnPlatform()` が true のプラットフォーム（Android とデスクトップ）で返し、false なら何も出さない。カードを出すときに入力デバイスの一覧も取得する（デスクトップのみ）。
 - 見えなくなる前に聞き取り中だった場合だけ、前面に戻ったときに再開する（権限が外されていれば再開しない）。スイッチを OFF にした場合や失敗・無発話の自動停止の後は再開しない。ON/OFF の状態はメモリ上にのみ持つため、アプリのプロセスが終了すると OFF に戻る。
 - 認識途中の文字列も確定結果も届かないまま5分経つと自動で止める（暫定値）。
-- 確定結果（`Recognized`）の候補を `matchLmuWindowsManualReadoutItemKey`（`:core:lmu-windows-domain`）と `matchGt7Ps5ManualReadoutItemKey`（`:core:gt7-ps5-domain`）で手動読み上げ項目の語句と照合し、一致したシミュレーター宛ての `ManualReadoutItemRequest` を `RequestManualReadoutItemUseCase` で発行する（照合規則は `:core:domain` の `matchManualReadoutItemKey`）。該当シミュレーターの Narrator が受け取り、保存済みセットの編集文言を使わず既定文言で1項目だけ読み上げる。選択中のシミュレーターでなければ Narrator 側が無視する。ACE の照合は未対応。ウェイクワードは持たないため、常時聞き取り中の会話にも反応する。
+- 確定結果（`Recognized`）の候補を `matchLmuWindowsManualReadoutItemKey`（`:core:lmu-windows-domain`）・`matchGt7Ps5ManualReadoutItemKey`（`:core:gt7-ps5-domain`）・`matchAceWindowsManualReadoutItemKey`（`:core:ace-windows-domain`）で手動読み上げ項目の語句と照合し、一致したシミュレーター宛ての `ManualReadoutItemRequest` を `RequestManualReadoutItemUseCase` で発行する（照合規則は `:core:domain` の `matchManualReadoutItemKey`）。該当シミュレーターの Narrator が受け取り、保存済みセットの編集文言を使わず既定文言で1項目だけ読み上げる。選択中のシミュレーターでなければ Narrator 側が無視する。ウェイクワードは持たないため、常時聞き取り中の会話にも反応する。
 
 ## 入力デバイスの選択（デスクトップ）
 
