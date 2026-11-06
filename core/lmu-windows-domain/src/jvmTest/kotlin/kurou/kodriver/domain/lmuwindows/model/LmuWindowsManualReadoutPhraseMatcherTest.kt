@@ -38,6 +38,27 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
     }
 
     @Test
+    fun `燃料はあと何周のような助詞付きの周回数の質問は燃料残量より優先する`() {
+        assertEquals(
+            LmuWindowsReadoutItemKey.RemainingFuel.Laps.value,
+            matchLmuWindowsManualReadoutItemKey(listOf("燃料はあと何周")),
+        )
+    }
+
+    @Test
+    fun `英字だけの語句は英単語の途中には一致せず単独や日本語に隣接する場合は一致する`() {
+        assertNull(matchLmuWindowsManualReadoutItemKey(listOf("have a nice day")))
+        assertEquals(
+            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
+            matchLmuWindowsManualReadoutItemKey(listOf("VEを教えて")),
+        )
+        assertEquals(
+            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
+            matchLmuWindowsManualReadoutItemKey(listOf("have", "VE")),
+        )
+    }
+
+    @Test
     fun `空白と英字の大文字小文字を無視する`() {
         assertEquals(
             LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
