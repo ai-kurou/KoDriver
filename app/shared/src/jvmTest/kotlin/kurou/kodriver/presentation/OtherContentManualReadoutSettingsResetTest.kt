@@ -135,7 +135,7 @@ class OtherContentManualReadoutSettingsResetTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { _, _, _, _, _ -> detailDisplayed = true },
+                detailContent = { _, _, _, _, _, _ -> detailDisplayed = true },
             )
         }
 

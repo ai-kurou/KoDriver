@@ -46,7 +46,7 @@ class OtherContentScreenshotTest {
                                 onItemSelected = {},
                                 onClearSelectedItem = {},
                                 scaffoldDirective = twoPaneDirective,
-                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                     if (itemType == OtherListItemType.ConsoleIp) {
                                         OtherConsoleIpDetailPaneContent(
                                             uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
@@ -76,7 +76,7 @@ class OtherContentScreenshotTest {
                                 onItemSelected = {},
                                 onClearSelectedItem = {},
                                 scaffoldDirective = twoPaneDirective,
-                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                     if (itemType == OtherListItemType.Volume) {
                                         OtherVolumeDetailPaneContent(
                                             uiState = OtherVolumeDetailUiState(volume = 80),
@@ -106,7 +106,7 @@ class OtherContentScreenshotTest {
                                 onItemSelected = {},
                                 onClearSelectedItem = {},
                                 scaffoldDirective = twoPaneDirective,
-                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                     if (itemType == OtherListItemType.VoiceSpeed) {
                                         OtherVoiceSpeedDetailPaneContent(
                                             uiState = OtherVoiceSpeedDetailUiState(),
@@ -136,7 +136,7 @@ class OtherContentScreenshotTest {
                                 onItemSelected = {},
                                 onClearSelectedItem = {},
                                 scaffoldDirective = twoPaneDirective,
-                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                     if (itemType == OtherListItemType.VoicePitch) {
                                         OtherVoicePitchDetailPaneContent(
                                             uiState = OtherVoicePitchDetailUiState(),
@@ -166,7 +166,7 @@ class OtherContentScreenshotTest {
                                 onItemSelected = {},
                                 onClearSelectedItem = {},
                                 scaffoldDirective = twoPaneDirective,
-                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                     if (itemType == OtherListItemType.OverlayBackgroundOpacity) {
                                         OtherOverlayBackgroundOpacityDetailPaneContent(
                                             uiState = OtherOverlayBackgroundOpacityDetailUiState(opacity = 50),
@@ -196,7 +196,7 @@ class OtherContentScreenshotTest {
                                 onItemSelected = {},
                                 onClearSelectedItem = {},
                                 scaffoldDirective = twoPaneDirective,
-                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                     if (itemType == OtherListItemType.Feedback) {
                                         OtherFeedbackDetailPaneContent(
                                             uiState = OtherFeedbackDetailUiState(),
@@ -226,7 +226,7 @@ class OtherContentScreenshotTest {
                                 onItemSelected = {},
                                 onClearSelectedItem = {},
                                 scaffoldDirective = twoPaneDirective,
-                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                     if (itemType == OtherListItemType.License) {
                                         OtherLicenseDetailPane(
                                             canNavigateBack = canNavigateBack,
@@ -255,7 +255,7 @@ class OtherContentScreenshotTest {
                                 onItemSelected = {},
                                 onClearSelectedItem = {},
                                 scaffoldDirective = twoPaneDirective,
-                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                detailContent = { itemType, canNavigateBack, onBack, _, _, _ ->
                                     if (itemType == OtherListItemType.DebugState) {
                                         LmuWindowsDebugStateDetailPaneContent(
                                             uiState = LmuWindowsDebugStateDetailUiState(),

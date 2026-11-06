@@ -66,7 +66,7 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { item, canNavigateBack, onBack, _, _ ->
+                detailContent = { item, canNavigateBack, onBack, _, _, _ ->
                     if (item == OtherListItemType.VoicePitch) {
                         OtherVoicePitchDetailPaneContent(
                             uiState = OtherVoicePitchDetailUiState(),
@@ -99,7 +99,7 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { item, canNavigateBack, onBack, _, _ ->
+                detailContent = { item, canNavigateBack, onBack, _, _, _ ->
                     if (item == OtherListItemType.VoiceSpeed) {
                         OtherVoiceSpeedDetailPaneContent(
                             uiState = OtherVoiceSpeedDetailUiState(),
@@ -153,7 +153,7 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { item, _, _, _, _ -> Text("Detail: ${item.id}") },
+                detailContent = { item, _, _, _, _, _ -> Text("Detail: ${item.id}") },
             )
         }
 
@@ -274,7 +274,14 @@ class OtherContentTest {
                     state.backEnabled = enabled
                     state.capturedOnBack = onBack
                 },
-                detailContent = { item: OtherListItemType, _: Boolean, _: () -> Unit, _: Long?, _: Long ->
+                detailContent = {
+                    item: OtherListItemType,
+                    _: Boolean,
+                    _: () -> Unit,
+                    _: Long?,
+                    _: Long,
+                    _: (Long) -> Unit,
+                    ->
                     Text("Detail: ${item.id}")
                 },
             )
