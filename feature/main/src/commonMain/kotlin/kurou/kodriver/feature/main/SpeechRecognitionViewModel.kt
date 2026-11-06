@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutItemKey
 import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.Simulator
@@ -239,9 +240,13 @@ internal class SpeechRecognitionViewModel(
                         recognized = (listOf(event.candidates) + it.recognized).take(SPEECH_RECOGNITION_HISTORY_MAX),
                     )
                 }
-                // 現在はLMUの語句だけを照合する。選択中のシミュレーターがLMUでなければ、LMUのNarrator側が依頼を無視する。
+                // 各シミュレーターの語句を照合し、一致したシミュレーター宛てに依頼を発行する。
+                // 選択中のシミュレーターでなければ、そのNarrator側が依頼を無視する。ACEの照合は未対応。
                 matchLmuWindowsManualReadoutItemKey(event.candidates)?.let { itemKey ->
                     requestManualReadoutItem(ManualReadoutItemRequest(Simulator.LmuWindows.id, itemKey))
+                }
+                matchGt7Ps5ManualReadoutItemKey(event.candidates)?.let { itemKey ->
+                    requestManualReadoutItem(ManualReadoutItemRequest(Simulator.Gt7Ps5.id, itemKey))
                 }
             }
 

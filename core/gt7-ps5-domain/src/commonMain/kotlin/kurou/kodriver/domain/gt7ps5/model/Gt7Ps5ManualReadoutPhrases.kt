@@ -13,7 +13,7 @@ val gt7Ps5ManualReadoutItemPhrases: Map<String, List<String>> =
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value to
             listOf("燃料", "ねんりょう", "ガソリン", "フューエル", "燃料残量", "燃料は"),
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value to
-            listOf("燃料周回", "燃料残り周回", "燃料あと何周", "燃料ラップ", "燃料何周"),
+            listOf("燃料周回", "燃料残り周回", "燃料あと何周", "燃料ラップ", "燃料何周", "燃料はあと何周", "燃料は何周"),
         Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value to
             listOf("タイヤ温度", "タイヤの温度", "タイヤ熱", "タイヤテンプ"),
         Gt7Ps5ReadoutItemKey.MyBestLap.Root.value to
