@@ -10,10 +10,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
+import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
@@ -36,6 +38,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
     @BeforeTest
     fun setUp() {
         registerLmuWindowsReadoutItemKeys()
+        registerGt7Ps5ReadoutItemKeys()
         Dispatchers.setMain(UnconfinedTestDispatcher())
     }
 
@@ -59,7 +62,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
     }
 
     @Test
-    fun `確定結果が手動読み上げ項目の語句に一致するとLMUの項目依頼を発行する`() {
+    fun `確定結果が手動読み上げ項目の語句に一致するとLMUとGT7の項目依頼を発行する`() {
         createListeningViewModel()
 
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
@@ -68,7 +71,9 @@ class SpeechRecognitionViewModelManualReadoutTest {
         assertEquals(
             listOf(
                 ManualReadoutItemRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingFuel.Laps.value),
+                ManualReadoutItemRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value),
                 ManualReadoutItemRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.MyBestLap.Root.value),
+                ManualReadoutItemRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.MyBestLap.Root.value),
             ),
             itemRequestRepository.requests,
         )

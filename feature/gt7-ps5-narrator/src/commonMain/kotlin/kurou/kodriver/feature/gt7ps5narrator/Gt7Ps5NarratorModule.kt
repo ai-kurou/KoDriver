@@ -26,6 +26,7 @@ import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutItemRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -65,6 +66,7 @@ val gt7Ps5NarratorModule: Module =
     module {
         factory { ObserveDebugReadoutRequestUseCase(get()) }
         factory { ObserveManualReadoutRequestsUseCase(get()) }
+        factory { ObserveManualReadoutItemRequestsUseCase(get()) }
         factory { ObserveManualReadoutHotkeyPressesUseCase(get()) }
         // ViewModel（Gt7Ps5NarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
         viewModel {
@@ -85,6 +87,7 @@ val gt7Ps5NarratorModule: Module =
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory {
             ManualReadoutUseCases(
+                get(),
                 get(),
                 get(),
                 ObserveManualReadoutSetsUseCase(get(named(Simulator.Gt7Ps5.id))),
