@@ -20,7 +20,7 @@ import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoun
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
 import kurou.kodriver.feature.telemetrylogdetail.TelemetryLogDetailContent
-import kurou.kodriver.feature.telemetryloglist.TelemetryLogListDetailPane
+import kurou.kodriver.feature.telemetryloglist.TelemetryLogListPaneHost
 
 /**
  * `:core:domain` の `Simulator.LmuWindows.id` と一致させる、初期選択シミュレーターの ID。
@@ -173,7 +173,7 @@ internal fun DefaultOtherDetailContent(
         }
 
         OtherListItemType.ShowLogs -> {
-            TelemetryLogListDetailPane(
+            TelemetryLogListPaneHost(
                 canNavigateBack = canNavigateBack,
                 onBack = onBack,
                 onFeedbackClick = onFeedbackSelected,
