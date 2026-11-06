@@ -390,9 +390,6 @@ private fun handleOtherListItemClick(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
-        // ログ画面への遷移は未実装のため、タップしても何もしない。
-        OtherListItemType.ShowLogs -> {}
-
         OtherListItemType.DeleteAllLogs,
         OtherListItemType.ResetAutoReadoutSettings,
         OtherListItemType.ResetManualReadoutSettings,
@@ -450,6 +447,7 @@ private fun handleOtherListItemClick(
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
+        OtherListItemType.ShowLogs,
         OtherListItemType.Feedback,
         OtherListItemType.License,
         OtherListItemType.DebugState,

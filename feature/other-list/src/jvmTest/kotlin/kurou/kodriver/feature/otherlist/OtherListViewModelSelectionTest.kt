@@ -94,8 +94,6 @@ class OtherListViewModelSelectionTest : OtherListViewModelTestFixture() {
 
             viewModel.onItemSelected(OtherListItemType.Volume)
 
-            viewModel.onItemSelected(OtherListItemType.ShowLogs)
-            viewModel.selectItem(OtherListItemType.ShowLogs)
             viewModel.onItemSelected(OtherListItemType.DeleteAllLogs)
             viewModel.selectItem(OtherListItemType.DeleteAllLogs)
             viewModel.onItemSelected(OtherListItemType.ResetAutoReadoutSettings)
@@ -140,8 +138,6 @@ class OtherListViewModelSelectionTest : OtherListViewModelTestFixture() {
             viewModel.onItemSelected(OtherListItemType.GitHubRepository)
             viewModel.onItemSelected(OtherListItemType.ReleasePage)
             viewModel.onItemSelected(OtherListItemType.AccessLocalNetworkPermission)
-            viewModel.onItemSelected(OtherListItemType.ShowLogs)
-            viewModel.selectItem(OtherListItemType.ShowLogs)
             viewModel.onItemSelected(OtherListItemType.DeleteAllLogs)
             viewModel.selectItem(OtherListItemType.DeleteAllLogs)
             viewModel.onItemSelected(OtherListItemType.ResetAutoReadoutSettings)
@@ -186,6 +182,12 @@ class OtherListViewModelSelectionTest : OtherListViewModelTestFixture() {
             assertEquals(OtherListItemType.License, viewModel.uiState.first().selectedItem)
 
             viewModel.onItemSelected(OtherListItemType.License)
+            assertNull(viewModel.uiState.first().selectedItem)
+
+            viewModel.onItemSelected(OtherListItemType.ShowLogs)
+            assertEquals(OtherListItemType.ShowLogs, viewModel.uiState.first().selectedItem)
+
+            viewModel.onItemSelected(OtherListItemType.ShowLogs)
             assertNull(viewModel.uiState.first().selectedItem)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
