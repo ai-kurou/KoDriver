@@ -21,9 +21,9 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.feature.otherandroidaudiousagedetail.otherAndroidAudioUsageDetailModule
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.fakeOtherListModule
-import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
-import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
-import kurou.kodriver.feature.telemetryloglist.telemetryLogListModule
+import kurou.kodriver.feature.otherloglist.fakeTelemetryLogListModule
+import kurou.kodriver.feature.otherloglist.fakeTelemetryLogRepository
+import kurou.kodriver.feature.otherloglist.telemetryLogListModule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
