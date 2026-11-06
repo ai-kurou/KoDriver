@@ -363,14 +363,10 @@ class AppTest {
     }
 
     @Test
-    fun `ログと手動タブにセットやログがない場合は空状態を表示する`() {
+    fun `LMUの手動タブにセットがない場合は空状態を表示する`() {
         setContent()
         selectSimulator("Le Mans Ultimate（Windows版）")
 
-        clickItem("ログ")
-        waitUntilDisplayed("Le Mans Ultimate（Windows版）のログはまだありません")
-        waitUntilDisplayed("手動")
-        waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
         clickItem("手動")
         waitUntilDisplayed("LMUの手動読み上げセットはまだありません")
         waitUntilDisplayed("手動読み上げについて")
@@ -395,100 +391,6 @@ class AppTest {
         clickItem("手動")
         waitUntilDisplayed("${simulatorShortName}の手動読み上げセットはまだありません")
         waitUntilDisplayed("手動読み上げについて")
-    }
-
-    @Test
-    fun `ログタブにログがある場合は一覧を表示する`() {
-        fakeTelemetryLogRepository.emit(
-            listOf(
-                telemetryLog(
-                    id = 1,
-                    createdAt = 100,
-                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_sector_yellow_flag")),
-                    telemetryJson = """{"flag":"yellow"}""",
-                ),
-                telemetryLog(
-                    id = 2,
-                    createdAt = 200,
-                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_flag")),
-                    telemetryJson = """{"flag":"green"}""",
-                ),
-            ),
-        )
-        setContent()
-        selectSimulator("Le Mans Ultimate（Windows版）")
-
-        clickItem("ログ")
-
-        waitUntilDisplayed("フラッグ")
-        waitUntilDisplayed("09:00:00.200")
-        waitUntilDisplayed("イエローフラッグ")
-        clickItem("フラッグ")
-        waitUntilDisplayed("選択したログ")
-        waitUntilDisplayed("一つ前のログ")
-        waitUntilDisplayed("""{"flag":"yellow"}""")
-    }
-
-    @Test
-    fun `ログタブを再タップするとログ一覧に戻る`() {
-        fakeTelemetryLogRepository.emit(
-            listOf(
-                telemetryLog(
-                    id = 1,
-                    createdAt = 100,
-                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_sector_yellow_flag")),
-                    telemetryJson = """{"flag":"yellow"}""",
-                ),
-                telemetryLog(
-                    id = 2,
-                    createdAt = 200,
-                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_flag")),
-                    telemetryJson = """{"flag":"green"}""",
-                ),
-            ),
-        )
-        setContent()
-        selectSimulator("Le Mans Ultimate（Windows版）")
-
-        clickItem("ログ")
-        clickItem("フラッグ")
-        waitUntilDisplayed("選択したログ")
-
-        clickItem("ログ")
-
-        waitUntilNotDisplayed("選択したログ")
-        waitUntilDisplayed("フラッグ")
-    }
-
-    @Test
-    fun `選択済みのログを再タップするとログ一覧に戻る`() {
-        fakeTelemetryLogRepository.emit(
-            listOf(
-                telemetryLog(
-                    id = 1,
-                    createdAt = 100,
-                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_sector_yellow_flag")),
-                    telemetryJson = """{"flag":"yellow"}""",
-                ),
-                telemetryLog(
-                    id = 2,
-                    createdAt = 200,
-                    readoutItemKey = requireNotNull(ReadoutItemKey.fromValue("lmu_windows_auto_flag")),
-                    telemetryJson = """{"flag":"green"}""",
-                ),
-            ),
-        )
-        setContent()
-        selectSimulator("Le Mans Ultimate（Windows版）")
-
-        clickItem("ログ")
-        clickItem("フラッグ")
-        waitUntilDisplayed("選択したログ")
-
-        clickItem("フラッグ")
-
-        waitUntilNotDisplayed("選択したログ")
-        waitUntilDisplayed("フラッグ")
     }
 
     @Test

@@ -146,14 +146,12 @@ class AppScreenContentTest {
     @Test
     fun `自動読み上げタブを再タップするとonAutoReadoutTabReselectedが呼ばれる`() {
         var readoutReselectedCount = 0
-        var logReselectedCount = 0
         var otherReselectedCount = 0
 
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
                 onAutoReadoutTabReselected = { readoutReselectedCount++ },
-                onLogTabReselected = { logReselectedCount++ },
                 onOtherTabReselected = { otherReselectedCount++ },
             )
         }
@@ -162,48 +160,18 @@ class AppScreenContentTest {
         rule.waitForIdle()
 
         assertEquals(1, readoutReselectedCount)
-        assertEquals(0, logReselectedCount)
-        assertEquals(0, otherReselectedCount)
-    }
-
-    @Test
-    fun `ログタブを再タップするとonLogTabReselectedが呼ばれる`() {
-        var readoutReselectedCount = 0
-        var logReselectedCount = 0
-        var otherReselectedCount = 0
-
-        rule.setContent {
-            AppScreenContent(
-                layoutType = NavigationSuiteType.NavigationBar,
-                onAutoReadoutTabReselected = { readoutReselectedCount++ },
-                onLogTabReselected = { logReselectedCount++ },
-                onOtherTabReselected = { otherReselectedCount++ },
-            )
-        }
-
-        rule.onNode(hasText("ログ")).performClick()
-        rule.waitForIdle()
-        assertEquals(0, logReselectedCount)
-
-        rule.onNode(hasText("ログ")).performClick()
-        rule.waitForIdle()
-
-        assertEquals(0, readoutReselectedCount)
-        assertEquals(1, logReselectedCount)
         assertEquals(0, otherReselectedCount)
     }
 
     @Test
     fun `その他タブを再タップするとonOtherTabReselectedが呼ばれる`() {
         var readoutReselectedCount = 0
-        var logReselectedCount = 0
         var otherReselectedCount = 0
 
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
                 onAutoReadoutTabReselected = { readoutReselectedCount++ },
-                onLogTabReselected = { logReselectedCount++ },
                 onOtherTabReselected = { otherReselectedCount++ },
             )
         }
@@ -216,21 +184,18 @@ class AppScreenContentTest {
         rule.waitForIdle()
 
         assertEquals(0, readoutReselectedCount)
-        assertEquals(0, logReselectedCount)
         assertEquals(1, otherReselectedCount)
     }
 
     @Test
     fun `別タブに切り替えてもreselectedコールバックは呼ばれない`() {
         var readoutReselectedCount = 0
-        var logReselectedCount = 0
         var otherReselectedCount = 0
 
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
                 onAutoReadoutTabReselected = { readoutReselectedCount++ },
-                onLogTabReselected = { logReselectedCount++ },
                 onOtherTabReselected = { otherReselectedCount++ },
             )
         }
@@ -241,50 +206,7 @@ class AppScreenContentTest {
         rule.waitForIdle()
 
         assertEquals(0, readoutReselectedCount)
-        assertEquals(0, logReselectedCount)
         assertEquals(0, otherReselectedCount)
-    }
-
-    @Test
-    fun `ログタブを選択するとtelemetryLogContentが表示される`() {
-        rule.setContent {
-            AppScreenContent(
-                layoutType = NavigationSuiteType.NavigationBar,
-                telemetryLogContent = { _, _ -> Text("TelemetryLogContent") },
-            )
-        }
-
-        rule.onNode(hasText("ログ")).performClick()
-        rule.waitForIdle()
-
-        rule.onNodeWithText("TelemetryLogContent").assertExists()
-    }
-
-    @Test
-    fun `telemetryLogContentのonFeedbackClickを呼ぶとその他タブに切り替わりonFeedbackClickにログIDが渡される`() {
-        var feedbackClickedLogId: Long? = null
-
-        rule.setContent {
-            AppScreenContent(
-                layoutType = NavigationSuiteType.NavigationBar,
-                onFeedbackClick = { feedbackClickedLogId = it },
-                telemetryLogContent = { _, onFeedbackClick ->
-                    Text(
-                        text = "TelemetryLogContent",
-                        modifier = Modifier.clickable(onClick = { onFeedbackClick(42L) }),
-                    )
-                },
-                otherContent = { _, _ -> Text("OtherContent") },
-            )
-        }
-
-        rule.onNode(hasText("ログ")).performClick()
-        rule.waitForIdle()
-        rule.onNodeWithText("TelemetryLogContent").performClick()
-        rule.waitForIdle()
-
-        assertEquals(42L, feedbackClickedLogId)
-        rule.onNodeWithText("OtherContent").assertExists()
     }
 
     @Test
