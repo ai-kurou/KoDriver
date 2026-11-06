@@ -102,7 +102,7 @@ class SpeechRecognitionCardTest {
             SpeechRecognitionStatus.Unavailable to "この端末では音声認識を利用できません",
             SpeechRecognitionStatus.MicrophoneUnavailable to "マイクを開けないか、使えなくなりました",
             SpeechRecognitionStatus.NoSignal to "マイクの音声が届いていません。OSのマイク設定を確認してください",
-            SpeechRecognitionStatus.RecognitionFailed to "音声認識中にエラーが発生しました。ログを確認してください",
+            SpeechRecognitionStatus.RecognitionFailed to "音声認識中にエラーが発生しました",
             SpeechRecognitionStatus.IdleStopped to "しばらく発話がなかったため停止しました",
         ).forEach { (expectedStatus, text) ->
             status.value = expectedStatus

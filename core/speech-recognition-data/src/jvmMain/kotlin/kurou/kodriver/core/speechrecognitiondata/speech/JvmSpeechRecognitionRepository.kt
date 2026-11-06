@@ -99,12 +99,11 @@ internal class JvmSpeechRecognitionRepository(
                 }
 
                 is MicrophoneAudioEvent.Failed -> {
-                    // 理由が画面とログから分かるよう、マイク側の失敗理由を保って通知する
-                    captureError(
-                        IllegalStateException(
-                            "音声認識を続けられません。マイクの取得に失敗しました: ${event.reason}（デバイス: ${device?.name ?: "既定"}）",
-                        ),
-                    )
+                    // 理由が画面から分かるよう、マイク側の失敗理由を保って通知する。
+                    // 無音はOSのマイク設定が原因で画面に案内を出すため記録しない。デバイス名は個人情報を含み得るため記録しない。
+                    if (event.reason == MicrophoneFailureReason.Unavailable) {
+                        captureError(IllegalStateException("音声認識を続けられません。マイクの取得に失敗しました"))
+                    }
                     emit(SpeechRecognitionEvent.Failed(event.reason.toSpeechFailureReason()))
                 }
             }
