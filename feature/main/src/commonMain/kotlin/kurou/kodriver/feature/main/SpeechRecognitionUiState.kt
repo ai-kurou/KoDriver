@@ -20,6 +20,15 @@ internal enum class SpeechRecognitionStatus {
     /** 音声認識を端末で利用できない。 */
     Unavailable,
 
+    /** マイクを開けない、または取得中に使えなくなった。 */
+    MicrophoneUnavailable,
+
+    /** 完全な無音が続いた。OSのプライバシー設定でマイクがブロックされている可能性がある。 */
+    NoSignal,
+
+    /** 認識中に想定外のエラーが起きた。 */
+    RecognitionFailed,
+
     /** しばらく発話がなかったため、聞き取りを自動で止めた。 */
     IdleStopped,
 }

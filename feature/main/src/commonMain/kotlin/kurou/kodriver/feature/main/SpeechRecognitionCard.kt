@@ -30,7 +30,10 @@ import kurou.kodriver.feature.main.generated.resources.Res
 import kurou.kodriver.feature.main.generated.resources.microphone_input_level_description
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_idle_stopped
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_listening
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_microphone_unavailable
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_no_signal
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_permission_denied
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_recognition_failed
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_starting
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_stopped
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_unavailable
@@ -148,5 +151,8 @@ private fun SpeechRecognitionStatus.label(): StringResource =
         SpeechRecognitionStatus.Listening -> Res.string.speech_recognition_status_listening
         SpeechRecognitionStatus.PermissionDenied -> Res.string.speech_recognition_status_permission_denied
         SpeechRecognitionStatus.Unavailable -> Res.string.speech_recognition_status_unavailable
+        SpeechRecognitionStatus.MicrophoneUnavailable -> Res.string.speech_recognition_status_microphone_unavailable
+        SpeechRecognitionStatus.NoSignal -> Res.string.speech_recognition_status_no_signal
+        SpeechRecognitionStatus.RecognitionFailed -> Res.string.speech_recognition_status_recognition_failed
         SpeechRecognitionStatus.IdleStopped -> Res.string.speech_recognition_status_idle_stopped
     }

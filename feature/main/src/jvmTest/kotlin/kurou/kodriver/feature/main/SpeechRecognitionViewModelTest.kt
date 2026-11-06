@@ -271,7 +271,7 @@ class SpeechRecognitionViewModelTest {
     }
 
     @Test
-    fun `認識の購読が例外で終わった場合は例外を記録して利用不可として停止状態にする`() {
+    fun `認識の購読が例外で終わった場合は例外を記録して認識失敗として停止状態にする`() {
         val viewModel = createViewModel(granted = true)
         val exception = IllegalStateException("失敗")
         every { speechRepository.observeRecognition() } returns flow { throw exception }
@@ -282,7 +282,7 @@ class SpeechRecognitionViewModelTest {
             viewModel.onEnabledChange(true) {}
 
             assertFalse(viewModel.uiState.value.enabled)
-            assertEquals(SpeechRecognitionStatus.Unavailable, viewModel.uiState.value.status)
+            assertEquals(SpeechRecognitionStatus.RecognitionFailed, viewModel.uiState.value.status)
             verify(exactly = 1) { captureError(exception) }
             confirmVerified(errorCapture)
         } finally {

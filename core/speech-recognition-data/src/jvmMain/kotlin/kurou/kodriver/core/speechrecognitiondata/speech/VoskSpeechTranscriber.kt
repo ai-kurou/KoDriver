@@ -25,6 +25,7 @@ internal class VoskSpeechTranscriberFactory(
     override fun isAvailable(): Boolean = modelDirectory.isDirectory
 
     override fun create(): SpeechTranscriber {
+        useUtf8ForVoskStrings()
         LibVosk.setLogLevel(LogLevel.WARNINGS)
         val model = Model(modelDirectory.absolutePath)
         var recognizer: Recognizer? = null
@@ -38,6 +39,17 @@ internal class VoskSpeechTranscriberFactory(
             throw e
         }
     }
+}
+
+/** JNAが文字列の変換に使う文字コードを指定するシステムプロパティ名。 */
+internal const val JNA_ENCODING_PROPERTY = "jna.encoding"
+
+/**
+ * Voskは認識結果のJSONをUTF-8で返すが、JNAは既定でOSの文字コード（Windowsの日本語環境ではMS932）で読むため、
+ * 日本語が文字化けして語句に一致しなくなる。Voskのライブラリを読み込む前にUTF-8を指定する。
+ */
+internal fun useUtf8ForVoskStrings() {
+    System.setProperty(JNA_ENCODING_PROPERTY, "UTF-8")
 }
 
 internal class VoskSpeechTranscriber(
