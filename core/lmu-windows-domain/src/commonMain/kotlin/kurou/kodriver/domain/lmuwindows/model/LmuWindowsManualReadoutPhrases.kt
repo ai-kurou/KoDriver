@@ -1,0 +1,38 @@
+package kurou.kodriver.domain.lmuwindows.model
+
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+
+/**
+ * 音声認識の発話から手動読み上げ項目を選ぶための語句。キーは [lmuWindowsManualReadoutItemDefinitions] と同じ項目キー。
+ * 認識結果は表記が揺れるため、ひらがな・カタカナ・漢字の言い方を併記する。
+ */
+val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
+    mapOf(
+        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
+            listOf("バーチャルエネルギー", "ばーちゃるえねるぎー", "VE", "ブイイー", "エネルギー残量", "エネルギー"),
+        LmuWindowsReadoutItemKey.RemainingFuel.Root.value to
+            listOf("燃料", "ねんりょう", "ガソリン", "フューエル", "燃料残量", "燃料は"),
+        LmuWindowsReadoutItemKey.TyreWear.Root.value to
+            listOf("タイヤ摩耗", "タイヤ磨耗", "タイヤの摩耗", "タイヤウェア", "タイヤの減り", "タイヤ残量"),
+        LmuWindowsReadoutItemKey.BrakeWear.Root.value to
+            listOf("ブレーキ残量", "ブレーキ摩耗", "ブレーキ磨耗", "ブレーキの摩耗", "ブレーキウェア", "ブレーキの減り"),
+        LmuWindowsReadoutItemKey.BrakeTemperature.Root.value to
+            listOf("ブレーキ温度", "ブレーキの温度", "ブレーキ熱", "ブレーキテンプ"),
+        LmuWindowsReadoutItemKey.TyreTemperature.Root.value to
+            listOf("タイヤ温度", "タイヤの温度", "タイヤ熱", "タイヤテンプ"),
+        LmuWindowsReadoutItemKey.MyBestLap.Root.value to
+            listOf("自己ベスト", "じこべ", "ベストラップ", "ベストタイム", "自己ベストラップ"),
+        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to
+            listOf("バーチャルエネルギー周回", "エネルギー周回", "エネルギー残り周回", "VE周回", "VEラップ"),
+        LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to
+            listOf("タイヤ周回", "タイヤ残り周回", "タイヤあと何周", "タイヤ摩耗周回", "タイヤラップ"),
+        LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to
+            listOf("燃料周回", "燃料残り周回", "燃料あと何周", "燃料ラップ", "燃料何周"),
+        LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to
+            listOf("前の車", "前方", "前とのギャップ", "前のギャップ", "前の差", "前の車との差"),
+        LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to
+            listOf("後ろの車", "後方", "後ろとのギャップ", "後ろのギャップ", "後ろの差", "後ろの車との差"),
+    )
+
+fun lmuWindowsManualReadoutItemPhrases(itemKey: String): List<String> =
+    lmuWindowsManualReadoutItemPhrases[itemKey].orEmpty()
