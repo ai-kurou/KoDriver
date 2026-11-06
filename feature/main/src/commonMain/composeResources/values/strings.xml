@@ -7,6 +7,9 @@
     <string name="speech_recognition_status_listening">聞き取り中(マイクを使用中)</string>
     <string name="speech_recognition_status_permission_denied">マイクの権限が許可されていません</string>
     <string name="speech_recognition_status_unavailable">この端末では音声認識を利用できません</string>
+    <string name="speech_recognition_status_microphone_unavailable">マイクを開けないか、使えなくなりました</string>
+    <string name="speech_recognition_status_no_signal">マイクの音声が届いていません。OSのマイク設定を確認してください</string>
+    <string name="speech_recognition_status_recognition_failed">音声認識中にエラーが発生しました。ログを確認してください</string>
     <string name="speech_recognition_status_idle_stopped">しばらく発話がなかったため停止しました</string>
     <string name="microphone_input_title">マイク入力</string>
     <string name="microphone_input_switch_description">マイク入力の確認を切り替え</string>

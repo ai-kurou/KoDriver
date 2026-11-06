@@ -140,7 +140,7 @@ internal class SpeechRecognitionViewModel(
                     throw e
                 } catch (e: Exception) {
                     captureError(e)
-                    onFailed(SpeechRecognitionFailureReason.Unavailable)
+                    onFailed(SpeechRecognitionFailureReason.RecognitionFailed)
                 }
             }
     }
@@ -189,12 +189,17 @@ internal class SpeechRecognitionViewModel(
                 enabled = false,
                 partialText = "",
                 level = null,
-                status =
-                    when (reason) {
-                        SpeechRecognitionFailureReason.PermissionDenied -> SpeechRecognitionStatus.PermissionDenied
-                        SpeechRecognitionFailureReason.Unavailable -> SpeechRecognitionStatus.Unavailable
-                    },
+                status = reason.toStatus(),
             )
         }
     }
+
+    private fun SpeechRecognitionFailureReason.toStatus(): SpeechRecognitionStatus =
+        when (this) {
+            SpeechRecognitionFailureReason.PermissionDenied -> SpeechRecognitionStatus.PermissionDenied
+            SpeechRecognitionFailureReason.Unavailable -> SpeechRecognitionStatus.Unavailable
+            SpeechRecognitionFailureReason.MicrophoneUnavailable -> SpeechRecognitionStatus.MicrophoneUnavailable
+            SpeechRecognitionFailureReason.NoSignal -> SpeechRecognitionStatus.NoSignal
+            SpeechRecognitionFailureReason.RecognitionFailed -> SpeechRecognitionStatus.RecognitionFailed
+        }
 }

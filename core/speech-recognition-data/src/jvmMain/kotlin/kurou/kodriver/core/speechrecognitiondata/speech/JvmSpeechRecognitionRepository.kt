@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.MicrophoneAudioEvent
+import kurou.kodriver.domain.model.MicrophoneFailureReason
 import kurou.kodriver.domain.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
@@ -44,11 +45,14 @@ internal class JvmSpeechRecognitionRepository(
             // 設定の読み取りや認識中に想定外の例外が出ても、続行できないことをFailedで知らせて完了する
             if (e !is Exception && e !is LinkageError) throw e
             captureError(e)
-            emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
+            emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.RecognitionFailed))
         }.flowOn(computeDispatcher)
 
     private fun createTranscriber(): SpeechTranscriber? {
-        if (!transcriberFactory.isAvailable()) return null
+        if (!transcriberFactory.isAvailable()) {
+            captureError(IllegalStateException("音声認識を利用できません。認識モデルが見つかりません"))
+            return null
+        }
         return try {
             transcriberFactory.create()
         } catch (e: CancellationException) {
@@ -62,6 +66,12 @@ internal class JvmSpeechRecognitionRepository(
             null
         }
     }
+
+    private fun MicrophoneFailureReason.toSpeechFailureReason(): SpeechRecognitionFailureReason =
+        when (this) {
+            MicrophoneFailureReason.Unavailable -> SpeechRecognitionFailureReason.MicrophoneUnavailable
+            MicrophoneFailureReason.NoSignal -> SpeechRecognitionFailureReason.NoSignal
+        }
 
     private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(transcriber: SpeechTranscriber) {
         val name = selectedDevicePreferences.selectedDeviceName().first()
@@ -89,7 +99,13 @@ internal class JvmSpeechRecognitionRepository(
                 }
 
                 is MicrophoneAudioEvent.Failed -> {
-                    emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
+                    // 理由が画面とログから分かるよう、マイク側の失敗理由を保って通知する
+                    captureError(
+                        IllegalStateException(
+                            "音声認識を続けられません。マイクの取得に失敗しました: ${event.reason}（デバイス: ${device?.name ?: "既定"}）",
+                        ),
+                    )
+                    emit(SpeechRecognitionEvent.Failed(event.reason.toSpeechFailureReason()))
                 }
             }
         }

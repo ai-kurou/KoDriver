@@ -9,6 +9,24 @@ import kotlin.test.assertTrue
 
 class VoskSpeechTranscriberTest {
     @Test
+    fun `Voskの文字列変換にはUTF-8を指定する`() {
+        val previous = System.getProperty(JNA_ENCODING_PROPERTY)
+        try {
+            System.setProperty(JNA_ENCODING_PROPERTY, "MS932")
+
+            useUtf8ForVoskStrings()
+
+            assertEquals("UTF-8", System.getProperty(JNA_ENCODING_PROPERTY))
+        } finally {
+            if (previous == null) {
+                System.clearProperty(JNA_ENCODING_PROPERTY)
+            } else {
+                System.setProperty(JNA_ENCODING_PROPERTY, previous)
+            }
+        }
+    }
+
+    @Test
     fun `途中経過のJSONから文字列を取り出し、空白は取り除く`() {
         assertEquals(SpeechTranscript.Partial("次へ"), parseVoskPartial("""{"partial":"次 へ"}"""))
     }

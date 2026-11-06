@@ -130,7 +130,7 @@ class JvmSpeechRecognitionRepositoryTest {
         }
 
     @Test
-    fun `マイクの取得に失敗したら利用不可を通知し、認識エンジンを閉じる`() =
+    fun `マイクで無音が続いたら無音の失敗を通知し、認識エンジンを閉じる`() =
         runTest {
             val transcriber = FakeTranscriber()
             microphone.events = flowOf(MicrophoneAudioEvent.Failed(MicrophoneFailureReason.NoSignal))
@@ -140,7 +140,7 @@ class JvmSpeechRecognitionRepositoryTest {
             assertEquals(
                 listOf(
                     SpeechRecognitionEvent.Listening,
-                    SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable),
+                    SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.NoSignal),
                 ),
                 events,
             )
@@ -148,7 +148,25 @@ class JvmSpeechRecognitionRepositoryTest {
         }
 
     @Test
-    fun `認識中に想定外の例外が出たら利用不可を通知し、認識エンジンを閉じる`() =
+    fun `マイクを開けなければマイク利用不可を通知し、認識エンジンを閉じる`() =
+        runTest {
+            val transcriber = FakeTranscriber()
+            microphone.events = flowOf(MicrophoneAudioEvent.Failed(MicrophoneFailureReason.Unavailable))
+
+            val events = observeWith(transcriber)
+
+            assertEquals(
+                listOf(
+                    SpeechRecognitionEvent.Listening,
+                    SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.MicrophoneUnavailable),
+                ),
+                events,
+            )
+            assertTrue(transcriber.closed)
+        }
+
+    @Test
+    fun `認識中に想定外の例外が出たら認識失敗を通知し、認識エンジンを閉じる`() =
         runTest {
             val transcriber = FakeTranscriber().apply { acceptError = IllegalStateException("accept failed") }
             microphone.events = flowOf(chunk(1), chunk(2))
@@ -158,7 +176,7 @@ class JvmSpeechRecognitionRepositoryTest {
             assertEquals(
                 listOf(
                     SpeechRecognitionEvent.Listening,
-                    SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable),
+                    SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.RecognitionFailed),
                 ),
                 events,
             )
@@ -167,14 +185,17 @@ class JvmSpeechRecognitionRepositoryTest {
         }
 
     @Test
-    fun `選択マイクの読み取りに失敗したら利用不可を通知し、認識エンジンを閉じる`() =
+    fun `選択マイクの読み取りに失敗したら認識失敗を通知し、認識エンジンを閉じる`() =
         runTest {
             val transcriber = FakeTranscriber()
             preferences.readError = IllegalStateException("read failed")
 
             val events = observeWith(transcriber)
 
-            assertEquals(listOf(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable)), events)
+            assertEquals(
+                listOf(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.RecognitionFailed)),
+                events,
+            )
             assertEquals(emptyList(), microphone.requestedDevices)
             assertTrue(transcriber.closed)
         }
