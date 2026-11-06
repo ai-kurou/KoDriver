@@ -3,8 +3,10 @@ package kurou.kodriver.feature.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.Lifecycle
@@ -22,9 +24,8 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
-import kurou.kodriver.domain.repository.AudioInputDeviceRepository
-import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
@@ -63,8 +64,7 @@ class SpeechRecognitionSectionTest {
     private val speechRepository: SpeechRecognitionRepository = mockk()
     private val permissionRepository: RecordAudioPermissionRepository = mockk()
     private val itemRequestRepository = FakeManualReadoutItemRequestRepository()
-    private val microphoneRepository: MicrophoneRepository = mockk()
-    private val audioInputDeviceRepository: AudioInputDeviceRepository = mockk()
+    private val audioInputDeviceRepository = FakeAudioInputDeviceRepository()
     private val events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = 16)
     private lateinit var viewModel: SpeechRecognitionViewModel
 
@@ -81,7 +81,10 @@ class SpeechRecognitionSectionTest {
         }
     }
 
-    private fun createViewModel(granted: Boolean) {
+    private fun createViewModel(
+        granted: Boolean,
+        deviceSelector: AudioInputDeviceSelector? = null,
+    ) {
         every { permissionRepository.isGranted() } returns granted
         every { speechRepository.observeRecognition() } returns events
         viewModel =
@@ -89,6 +92,7 @@ class SpeechRecognitionSectionTest {
                 observeSpeechRecognition = ObserveSpeechRecognitionUseCase(speechRepository),
                 checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(permissionRepository),
                 requestManualReadoutItem = RequestManualReadoutItemUseCase(itemRequestRepository),
+                audioInputDeviceSelector = deviceSelector,
             )
     }
 
@@ -175,32 +179,46 @@ class SpeechRecognitionSectionTest {
     }
 
     @Test
-    fun `デスクトップでは音声認識のカードとマイク入力のカードを並べて表示する`() {
-        createViewModel(granted = true)
-        val microphoneViewModel =
-            microphoneInputViewModel(microphoneRepository, audioInputDeviceRepository)
-        try {
-            rule.setContent {
-                KoinApplication(
-                    koinConfiguration {
-                        modules(
-                            module {
-                                viewModel { viewModel }
-                                viewModel { microphoneViewModel }
-                            },
-                        )
-                    },
-                ) {
-                    KoDriverTheme { rememberSpeechRecognitionSection()(Modifier) }
-                }
-            }
+    fun `入力デバイスを選べる場合はカードを出すときに一覧を取得して選択中のデバイスを表示する`() {
+        audioInputDeviceRepository.devices = listOf(AudioInputDevice("Mic A"), AudioInputDevice("Mic B"))
+        createViewModel(granted = true, deviceSelector = audioInputDeviceSelector(audioInputDeviceRepository))
+        rule.setContent { KoDriverTheme { Section() } }
 
-            rule.onNodeWithText("音声認識").assertExists()
-            rule.onNodeWithText("マイク入力").assertExists()
-            assertTrue(isSpeechRecognitionSupportedOnPlatform())
-            assertTrue(isMicrophoneInputSupportedOnPlatform())
-        } finally {
-            microphoneViewModel.viewModelScope.cancel()
+        rule.onNodeWithTag("speech_recognition_device").assertTextContains("Mic A")
+        rule.onNodeWithTag("speech_recognition_device").performClick()
+        rule.onNodeWithTag("speech_recognition_device_Mic B").performClick()
+
+        rule.onNodeWithTag("speech_recognition_device").assertTextContains("Mic B")
+        rule.runOnIdle { assertEquals(2, audioInputDeviceRepository.getCount) }
+    }
+
+    @Test
+    fun `入力デバイスを選べない場合はデバイスの選択を表示しない`() {
+        createViewModel(granted = true)
+        rule.setContent { KoDriverTheme { Section() } }
+
+        rule.onNodeWithText("音声認識").assertExists()
+        rule.onNodeWithTag("speech_recognition_device").assertDoesNotExist()
+    }
+
+    @Test
+    fun `デスクトップでは音声認識のカードを表示する`() {
+        createViewModel(granted = true)
+        rule.setContent {
+            KoinApplication(
+                koinConfiguration {
+                    modules(
+                        module {
+                            viewModel { viewModel }
+                        },
+                    )
+                },
+            ) {
+                KoDriverTheme { rememberSpeechRecognitionSection()(Modifier) }
+            }
         }
+
+        rule.onNodeWithText("音声認識").assertExists()
+        assertTrue(isSpeechRecognitionSupportedOnPlatform())
     }
 }

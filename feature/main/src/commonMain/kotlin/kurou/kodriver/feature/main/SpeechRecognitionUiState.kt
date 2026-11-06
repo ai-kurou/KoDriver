@@ -42,4 +42,8 @@ internal data class SpeechRecognitionUiState(
     val level: Float? = null,
     /** 確定した認識結果の履歴。新しい順で、各要素は信頼度の高い順の候補。 */
     val recognized: List<List<String>> = emptyList(),
+    /** ドロップダウンに出す入力デバイス名の一覧。デバイスを選べないプラットフォーム（Android）や、取得前、デバイスが無い場合は空。 */
+    val devices: List<String> = emptyList(),
+    /** 選択中の入力デバイス名。一覧の取得前や、デバイスが無い場合は null。 */
+    val deviceName: String? = null,
 )

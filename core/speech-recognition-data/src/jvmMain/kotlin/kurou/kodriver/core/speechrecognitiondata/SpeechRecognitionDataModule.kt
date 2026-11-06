@@ -33,6 +33,7 @@ val speechRecognitionDataModule =
         single<SpeechRecognitionRepository> {
             JvmSpeechRecognitionRepository(
                 microphone = get(),
+                audioInputDevices = get(),
                 selectedDevicePreferences = get(),
                 transcriberFactory = get(),
             )

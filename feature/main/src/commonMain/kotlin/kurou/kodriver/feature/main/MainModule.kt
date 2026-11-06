@@ -3,16 +3,20 @@ package kurou.kodriver.feature.main
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.repository.AudioInputDeviceRepository
+import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
 import kurou.kodriver.domain.usecase.ObserveDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveEffectiveKeepScreenOnUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
@@ -21,6 +25,7 @@ import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -42,10 +47,25 @@ val mainModule =
         viewModelOf(::ConnectionBannerViewModel)
         viewModelOf(::LowVolumeWarningViewModel)
         viewModel {
+            // 入力デバイスを選べるのはデスクトップだけ。デバイス関連の Repository を登録していない Android では null にする
+            val deviceRepository = getOrNull<AudioInputDeviceRepository>()
+            val selectedDeviceRepository = getOrNull<SelectedAudioInputDevicePreferencesRepository>()
             SpeechRecognitionViewModel(
                 observeSpeechRecognition = ObserveSpeechRecognitionUseCase(get()),
                 checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(get()),
                 requestManualReadoutItem = RequestManualReadoutItemUseCase(get()),
+                audioInputDeviceSelector =
+                    if (deviceRepository != null && selectedDeviceRepository != null) {
+                        AudioInputDeviceSelector(
+                            getAudioInputDevices = GetAudioInputDevicesUseCase(deviceRepository),
+                            observeSelectedAudioInputDeviceName =
+                                ObserveSelectedAudioInputDeviceNameUseCase(selectedDeviceRepository),
+                            saveSelectedAudioInputDeviceName =
+                                SaveSelectedAudioInputDeviceNameUseCase(selectedDeviceRepository),
+                        )
+                    } else {
+                        null
+                    },
             )
         }
 

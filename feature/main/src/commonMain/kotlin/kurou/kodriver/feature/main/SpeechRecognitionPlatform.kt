@@ -9,13 +9,6 @@ import androidx.compose.runtime.Composable
 expect fun isSpeechRecognitionSupportedOnPlatform(): Boolean
 
 /**
- * マイク入力の確認用カードを表示するプラットフォームか。音声認識を提供しないプラットフォームのうち、
- * マイクの入力を確認できるものだけが true。
- * このプラットフォーム向けの実装を要求する expect 宣言。
- */
-expect fun isMicrophoneInputSupportedOnPlatform(): Boolean
-
-/**
  * マイクの権限を要求する関数を取得する。結果は [onResult] で受ける。
  * このプラットフォーム向けの実装を要求する expect 宣言。
  */

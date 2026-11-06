@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.MicrophoneFailureReason
 import kurou.kodriver.domain.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
 import kotlin.test.Test
@@ -27,9 +28,10 @@ import kotlin.test.assertTrue
 class JvmSpeechRecognitionRepositoryTest {
     private val preferences = FakeSelectedDevicePreferences()
     private val microphone = FakeMicrophone()
+    private val devices = FakeAudioInputDevices()
 
     private fun repository(factory: SpeechTranscriberFactory) =
-        JvmSpeechRecognitionRepository(microphone, preferences, factory, Dispatchers.Unconfined)
+        JvmSpeechRecognitionRepository(microphone, devices, preferences, factory, Dispatchers.Unconfined)
 
     private suspend fun observeWith(transcriber: SpeechTranscriber): List<SpeechRecognitionEvent> =
         repository(FakeTranscriberFactory(available = true, transcriber = transcriber))
@@ -105,8 +107,13 @@ class JvmSpeechRecognitionRepositoryTest {
             assertEquals(
                 listOf(
                     SpeechRecognitionEvent.Listening,
+                    SpeechRecognitionEvent.Level(0f),
                     SpeechRecognitionEvent.Partial("次"),
+                    SpeechRecognitionEvent.Level(0f),
+                    SpeechRecognitionEvent.Level(0f),
+                    SpeechRecognitionEvent.Level(0f),
                     SpeechRecognitionEvent.Recognized(listOf("次へ", "つぎへ")),
+                    SpeechRecognitionEvent.Level(0f),
                     SpeechRecognitionEvent.Partial("次"),
                 ),
                 events,
@@ -116,17 +123,52 @@ class JvmSpeechRecognitionRepositoryTest {
         }
 
     @Test
-    fun `保存済みのマイクを使い、未選択なら既定のマイクを使う`() =
+    fun `一覧にある保存済みのマイクを使い、未選択や一覧にない場合は先頭、一覧が空なら既定のマイクを使う`() =
         runTest {
             val factory = FakeTranscriberFactory(available = true, transcriber = FakeTranscriber())
             microphone.events = flowOf()
+            devices.names = listOf("Mic A", "Mic B")
 
-            preferences.name.update { "Mic A" }
+            preferences.name.update { "Mic B" }
+            repository(factory).observeRecognition().toList()
+            preferences.name.update { "Mic Z" }
             repository(factory).observeRecognition().toList()
             preferences.name.update { SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED }
             repository(factory).observeRecognition().toList()
+            devices.names = emptyList()
+            repository(factory).observeRecognition().toList()
 
-            assertEquals(listOf(AudioInputDevice("Mic A"), null), microphone.requestedDevices)
+            assertEquals(
+                listOf(AudioInputDevice("Mic B"), AudioInputDevice("Mic A"), AudioInputDevice("Mic A"), null),
+                microphone.requestedDevices,
+            )
+        }
+
+    @Test
+    fun `デバイス一覧を取得できなくても既定のマイクで聞き取りを続ける`() =
+        runTest {
+            microphone.events = flowOf()
+            devices.error = IllegalStateException("enumerate")
+
+            val events = repository(FakeTranscriberFactory(available = true)).observeRecognition().toList()
+
+            assertEquals(listOf(SpeechRecognitionEvent.Listening), events)
+            assertEquals(listOf<AudioInputDevice?>(null), microphone.requestedDevices)
+        }
+
+    @Test
+    fun `音声の断片ごとに音量を流す`() =
+        runTest {
+            val loud = byteArrayOf(0x00, 0x20, 0x00, 0x20)
+            microphone.events = flowOf(MicrophoneAudioEvent.Chunk(loud), MicrophoneAudioEvent.Chunk(ByteArray(4)))
+
+            val events = observeWith(FakeTranscriber())
+
+            val levels = events.filterIsInstance<SpeechRecognitionEvent.Level>().map { it.level }
+            // 8192 / 32768 = 0.25 → 約 -12 dBFS → (-12 + 60) / 50 ≒ 0.959
+            assertEquals(2, levels.size)
+            assertEquals(0.959f, levels[0], absoluteTolerance = 0.001f)
+            assertEquals(0f, levels[1])
         }
 
     @Test
@@ -176,6 +218,7 @@ class JvmSpeechRecognitionRepositoryTest {
             assertEquals(
                 listOf(
                     SpeechRecognitionEvent.Listening,
+                    SpeechRecognitionEvent.Level(0f),
                     SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.RecognitionFailed),
                 ),
                 events,
@@ -222,6 +265,16 @@ private class FakeSelectedDevicePreferences : SelectedAudioInputDevicePreference
 
     override suspend fun saveSelectedDeviceName(name: String) {
         this.name.update { name }
+    }
+}
+
+private class FakeAudioInputDevices : AudioInputDeviceRepository {
+    var names: List<String> = emptyList()
+    var error: Throwable? = null
+
+    override suspend fun getDevices(): List<AudioInputDevice> {
+        error?.let { throw it }
+        return names.map(::AudioInputDevice)
     }
 }
 

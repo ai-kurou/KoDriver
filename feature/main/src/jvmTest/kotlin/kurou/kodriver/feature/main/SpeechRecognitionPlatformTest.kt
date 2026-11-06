@@ -19,8 +19,7 @@ class SpeechRecognitionPlatformTest {
     }
 
     @Test
-    fun `デスクトップでは音声認識とマイク入力の確認の両方を提供する`() {
+    fun `デスクトップでは音声認識を提供する`() {
         assertTrue(isSpeechRecognitionSupportedOnPlatform())
-        assertTrue(isMicrophoneInputSupportedOnPlatform())
     }
 }
