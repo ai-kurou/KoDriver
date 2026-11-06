@@ -10,7 +10,9 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.slot
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +35,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
@@ -84,6 +87,7 @@ import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsAllVehicleClasses
+import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemTextDefault
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
@@ -156,6 +160,7 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.NarrationOutcome
@@ -170,6 +175,7 @@ import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
+import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
@@ -179,6 +185,7 @@ import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutItemRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -280,6 +287,7 @@ class LmuWindowsNarratorViewModelTest {
 
     private val manualHotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val manualRequestRepository: ManualReadoutRequestRepository = mockk()
+    private val manualItemRequestRepository: ManualReadoutItemRequestRepository = mockk()
     private val manualSetRepository: ManualReadoutSetPreferencesRepository = mockk()
 
     private val hotkeyRepository: HotkeyRepository = mockk()
@@ -447,6 +455,7 @@ class LmuWindowsNarratorViewModelTest {
         remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData> = Channel(Channel.UNLIMITED),
         hotkeyChannel: Channel<Unit> = Channel(Channel.UNLIMITED),
         manualRequestChannel: Channel<ManualReadoutRequest> = Channel(Channel.UNLIMITED),
+        manualItemRequestChannel: Channel<ManualReadoutItemRequest> = Channel(Channel.UNLIMITED),
         manualHotkeyChannel: Channel<ManualReadoutRequest> = Channel(Channel.UNLIMITED),
         manualSets: List<ManualReadoutSet> =
             listOf(ManualReadoutSet("set-1", listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value))),
@@ -529,6 +538,7 @@ class LmuWindowsNarratorViewModelTest {
         every { hotkeyRepository.hotkeyPressStream() } returns hotkeyChannel.receiveAsFlow()
         every { manualHotkeyRepository.pressStream() } returns manualHotkeyChannel.receiveAsFlow()
         every { manualRequestRepository.observeRequests() } returns manualRequestChannel.receiveAsFlow()
+        every { manualItemRequestRepository.observeRequests() } returns manualItemRequestChannel.receiveAsFlow()
         every { manualSetRepository.observeSets() } returns flowOf(manualSets)
 
         every { debugRequestRepository.observeRequests() } returns debugRequests
@@ -633,6 +643,10 @@ class LmuWindowsNarratorViewModelTest {
                             manualHotkeyRepository,
                         ),
                     observeManualReadoutRequests = ObserveManualReadoutRequestsUseCase(manualRequestRepository),
+                    observeManualReadoutItemRequests =
+                        ObserveManualReadoutItemRequestsUseCase(
+                            manualItemRequestRepository,
+                        ),
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(manualSetRepository),
                     observeThresholdPercentage =
                         ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(
@@ -1128,6 +1142,86 @@ class LmuWindowsNarratorViewModelTest {
             temperature.send(tyreTemperature(fl = 95.0))
             assertEquals("タイヤ過熱 95度", spoken.last().narratedText)
             assertEquals(6, spoken.size)
+        }
+
+    @Test
+    fun `音声の項目依頼は保存済みセットに関係なく指定項目を既定文言で読む`() =
+        runTest(testDispatcher) {
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val itemRequests = Channel<ManualReadoutItemRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.MyBestLap.Root
+            createViewModel(
+                telemetryChannel = telemetry,
+                manualItemRequestChannel = itemRequests,
+                manualSets = emptyList(),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(key to false),
+                queueEnabledOverrides = mapOf(key to false),
+            )
+            telemetry.send(fakeTelemetryData(bestLapTimeMs = 83_456L))
+            itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value))
+            assertEquals(
+                listOf(lmuWindowsManualReadoutItemTextDefault(key.value).replace("{laptime}", "1分23秒456")),
+                spoken.map { it.narratedText },
+            )
+            assertEquals(key, spoken.single().readoutItemKey)
+        }
+
+    @Test
+    fun `音声の項目依頼はLMU以外のシミュレーター宛てなら読まない`() =
+        runTest(testDispatcher) {
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val itemRequests = Channel<ManualReadoutItemRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.MyBestLap.Root
+            createViewModel(
+                telemetryChannel = telemetry,
+                manualItemRequestChannel = itemRequests,
+                manualSets = emptyList(),
+                ttsEngine = mockTts(spoken),
+            )
+            telemetry.send(fakeTelemetryData(bestLapTimeMs = 83_456L))
+            itemRequests.send(ManualReadoutItemRequest(Simulator.AceWindows.id, key.value))
+            assertEquals(emptyList(), spoken)
+        }
+
+    @Test
+    fun `音声の項目依頼の読み上げが例外で失敗しても記録して次の依頼を処理する`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val itemRequests = Channel<ManualReadoutItemRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                manualItemRequestChannel = itemRequests,
+                manualSets = emptyList(),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(key to false),
+                queueEnabledOverrides = mapOf(key to false),
+            )
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            val captured = slot<Throwable>()
+            mockkStatic(errorCapture)
+            every { captureError(capture(captured)) } returns Unit
+            try {
+                // NaNの残量は roundToInt が例外を投げる。
+                energy.send(remainingVirtualEnergy(remainingRatio = Double.NaN))
+                itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value))
+                assertTrue(captured.isCaptured)
+                assertEquals(emptyList(), spoken)
+                energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+                itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value))
+                assertEquals(
+                    listOf(lmuWindowsManualReadoutItemTextDefault(key.value).replace("{percent}", "80")),
+                    spoken.map { it.narratedText },
+                )
+                verify(exactly = 1) { captureError(captured.captured) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test

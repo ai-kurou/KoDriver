@@ -17,6 +17,7 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryReceivingUseCase
+import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
@@ -44,6 +45,7 @@ val mainModule =
             SpeechRecognitionViewModel(
                 observeSpeechRecognition = ObserveSpeechRecognitionUseCase(get()),
                 checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(get()),
+                requestManualReadoutItem = RequestManualReadoutItemUseCase(get()),
             )
         }
 

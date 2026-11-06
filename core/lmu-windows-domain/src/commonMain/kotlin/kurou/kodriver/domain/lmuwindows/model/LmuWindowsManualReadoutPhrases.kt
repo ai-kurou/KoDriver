@@ -29,7 +29,7 @@ val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to
             listOf("タイヤ周回", "タイヤ残り周回", "タイヤあと何周", "タイヤ摩耗周回", "タイヤラップ"),
         LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to
-            listOf("燃料周回", "燃料残り周回", "燃料あと何周", "燃料ラップ", "燃料何周"),
+            listOf("燃料周回", "燃料残り周回", "燃料あと何周", "燃料ラップ", "燃料何周", "燃料はあと何周", "燃料は何周"),
         LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to
             listOf("前の車", "前方", "前とのギャップ", "前のギャップ", "前の差", "前の車との差"),
         LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to
