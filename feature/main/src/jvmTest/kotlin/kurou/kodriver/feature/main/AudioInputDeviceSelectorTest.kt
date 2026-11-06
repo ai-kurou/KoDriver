@@ -67,6 +67,18 @@ class AudioInputDeviceSelectorTest {
         }
 
     @Test
+    fun `保存に失敗したら選択を元に戻して例外を投げる`() =
+        runTest {
+            selectedRepository.saved.value = "Mic A"
+            selector.refresh()
+            selectedRepository.saveError = IllegalStateException("save")
+
+            assertFailsWith<IllegalStateException> { selector.select("Mic B") }
+
+            assertEquals("Mic A", selector.refresh().selected)
+        }
+
+    @Test
     fun `保存済みの名前を読み込む前に選んだ場合は選んだデバイスを優先する`() =
         runTest {
             selectedRepository.saved.value = "Mic A"
@@ -87,15 +99,5 @@ class AudioInputDeviceSelectorTest {
             failing.saved.value = "Mic B"
 
             assertEquals("Mic B", failingSelector.refresh().selected)
-        }
-
-    @Test
-    fun `保存に失敗しても今回の選択は覚えておき例外を投げる`() =
-        runTest {
-            selectedRepository.saveError = IllegalStateException("save")
-
-            assertFailsWith<IllegalStateException> { selector.select("Mic B") }
-
-            assertEquals("Mic B", selector.refresh().selected)
         }
 }

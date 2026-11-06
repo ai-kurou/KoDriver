@@ -89,8 +89,8 @@ class SpeechRecognitionViewModelDeviceTest {
     @Test
     fun `一覧の取得に失敗しても状態は変えず聞き取りも止めない`() {
         val viewModel = createViewModel()
-        viewModel.onEnabledChange(true) {}
         deviceRepository.error = IllegalStateException("devices")
+        viewModel.onEnabledChange(true) {}
 
         viewModel.refreshDevices()
 
@@ -112,16 +112,16 @@ class SpeechRecognitionViewModelDeviceTest {
     }
 
     @Test
-    fun `選択中と同じデバイスを選んでも何もしない`() {
+    fun `表示中の先頭のデバイスを選ぶと保存だけ行い聞き取りはやり直さない`() {
         val viewModel = createViewModel()
         viewModel.refreshDevices()
+        viewModel.onEnabledChange(true) {}
 
         viewModel.onDeviceSelected("Mic A")
 
-        assertEquals(
-            SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED,
-            selectedRepository.saved.value,
-        )
+        assertEquals("Mic A", selectedRepository.saved.value)
+        verify(exactly = 1) { speechRepository.observeRecognition() }
+        confirmVerified(speechRepository)
     }
 
     @Test
@@ -146,7 +146,7 @@ class SpeechRecognitionViewModelDeviceTest {
     }
 
     @Test
-    fun `保存に失敗しても聞き取り中ならやり直す`() {
+    fun `保存に失敗したら表示を元に戻し聞き取りはやり直さない`() {
         val viewModel = createViewModel()
         viewModel.refreshDevices()
         viewModel.onEnabledChange(true) {}
@@ -154,9 +154,23 @@ class SpeechRecognitionViewModelDeviceTest {
 
         viewModel.onDeviceSelected("Mic B")
 
-        assertEquals("Mic B", viewModel.uiState.value.deviceName)
-        verify(exactly = 2) { speechRepository.observeRecognition() }
+        assertEquals("Mic A", viewModel.uiState.value.deviceName)
+        verify(exactly = 1) { speechRepository.observeRecognition() }
         confirmVerified(speechRepository)
+    }
+
+    @Test
+    fun `聞き取りを始めるときに一覧を取り直して表示を実際に開くデバイスに揃える`() {
+        selectedRepository.saved.value = "Mic B"
+        deviceRepository.devices = listOf(AudioInputDevice("Mic A"))
+        val viewModel = createViewModel()
+        viewModel.refreshDevices()
+        assertEquals("Mic A", viewModel.uiState.value.deviceName)
+        deviceRepository.devices = listOf(AudioInputDevice("Mic A"), AudioInputDevice("Mic B"))
+
+        viewModel.onEnabledChange(true) {}
+
+        assertEquals("Mic B", viewModel.uiState.value.deviceName)
     }
 
     @Test

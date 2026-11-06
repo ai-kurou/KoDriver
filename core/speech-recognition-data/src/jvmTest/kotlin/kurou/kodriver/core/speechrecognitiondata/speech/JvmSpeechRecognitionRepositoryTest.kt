@@ -145,6 +145,18 @@ class JvmSpeechRecognitionRepositoryTest {
         }
 
     @Test
+    fun `デバイス一覧を取得できなくても既定のマイクで聞き取りを続ける`() =
+        runTest {
+            microphone.events = flowOf()
+            devices.error = IllegalStateException("enumerate")
+
+            val events = repository(FakeTranscriberFactory(available = true)).observeRecognition().toList()
+
+            assertEquals(listOf(SpeechRecognitionEvent.Listening), events)
+            assertEquals(listOf<AudioInputDevice?>(null), microphone.requestedDevices)
+        }
+
+    @Test
     fun `音声の断片ごとに音量を流す`() =
         runTest {
             val loud = byteArrayOf(0x00, 0x20, 0x00, 0x20)
@@ -258,8 +270,12 @@ private class FakeSelectedDevicePreferences : SelectedAudioInputDevicePreference
 
 private class FakeAudioInputDevices : AudioInputDeviceRepository {
     var names: List<String> = emptyList()
+    var error: Throwable? = null
 
-    override suspend fun getDevices(): List<AudioInputDevice> = names.map(::AudioInputDevice)
+    override suspend fun getDevices(): List<AudioInputDevice> {
+        error?.let { throw it }
+        return names.map(::AudioInputDevice)
+    }
 }
 
 private class FakeMicrophone : MicrophoneRepository {

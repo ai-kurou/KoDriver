@@ -80,7 +80,16 @@ internal class JvmSpeechRecognitionRepository(
      */
     private suspend fun resolveDevice(): AudioInputDevice? {
         val name = selectedDevicePreferences.selectedDeviceName().first()
-        val devices = audioInputDevices.getDevices()
+        // 一覧を取得できなくても既定のデバイスで聞き取りを続ける
+        val devices =
+            try {
+                audioInputDevices.getDevices()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                captureError(e)
+                emptyList()
+            }
         return devices.firstOrNull { it.name == name } ?: devices.firstOrNull()
     }
 

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutItemKey
@@ -35,6 +36,9 @@ internal class SpeechRecognitionViewModel(
     val uiState: StateFlow<SpeechRecognitionUiState> = _uiState.asStateFlow()
 
     private var listenJob: Job? = null
+
+    /** 次の聞き取りが開始前に待つ、マイクを閉じ終えていない前の聞き取り。 */
+    private var startWaits: List<Job> = emptyList()
     private var refreshJob: Job? = null
 
     /** 発話がないまま [SPEECH_RECOGNITION_IDLE_TIMEOUT_MS] 経つと聞き取りを止める。認識途中の文字列や確定結果で数え直す。 */
@@ -101,7 +105,7 @@ internal class SpeechRecognitionViewModel(
     /** ドロップダウンで入力デバイスを選ぶ。聞き取り中の場合は、保存した選択で聞き取りをやり直す。 */
     fun onDeviceSelected(name: String) {
         val selector = audioInputDeviceSelector ?: return
-        if (name == _uiState.value.deviceName) return
+        val previousName = _uiState.value.deviceName
         refreshJob?.cancel()
         _uiState.update { it.copy(deviceName = name) }
         viewModelScope.launch {
@@ -110,10 +114,13 @@ internal class SpeechRecognitionViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                // 保存できなかった選択では聞き取りをやり直さず、表示も元に戻す（再度選べば保存をやり直せる）
                 captureError(e)
+                _uiState.update { it.copy(deviceName = previousName) }
+                return@launch
             }
             // 認識は保存済みのデバイス名を読んで開くため、保存が終わってからやり直す
-            if (_uiState.value.enabled) start()
+            if (name != previousName && _uiState.value.enabled) start()
         }
     }
 
@@ -170,7 +177,9 @@ internal class SpeechRecognitionViewModel(
     }
 
     private fun start() {
-        val previous = listenJob
+        // 待機中にキャンセルされた開始も含め、マイクを閉じ終えていない前の聞き取りをすべて待つ
+        val waits = (listOfNotNull(listenJob) + startWaits).filter { !it.isCompleted }
+        startWaits = waits
         cancelJobs()
         _uiState.update {
             it.copy(enabled = true, status = SpeechRecognitionStatus.Starting, partialText = "", level = null)
@@ -180,7 +189,8 @@ internal class SpeechRecognitionViewModel(
             viewModelScope.launch {
                 try {
                     // 前の聞き取りがマイクを閉じ終えてから開く。同じデバイスを同時に開けない環境で失敗しないようにする
-                    previous?.join()
+                    waits.joinAll()
+                    syncDeviceDisplay()
                     observeSpeechRecognition().collect(::onEvent)
                 } catch (e: CancellationException) {
                     throw e
@@ -189,6 +199,19 @@ internal class SpeechRecognitionViewModel(
                     onFailed(SpeechRecognitionFailureReason.RecognitionFailed)
                 }
             }
+    }
+
+    /** 聞き取りを始める前に一覧と選択を取り直し、画面の表示と実際に開くデバイスを同じ結果に揃える。 */
+    private suspend fun syncDeviceDisplay() {
+        val selector = audioInputDeviceSelector ?: return
+        try {
+            val devices = selector.refresh()
+            _uiState.update { it.copy(devices = devices.names, deviceName = devices.selected) }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            captureError(e)
+        }
     }
 
     private suspend fun onEvent(event: SpeechRecognitionEvent) {
