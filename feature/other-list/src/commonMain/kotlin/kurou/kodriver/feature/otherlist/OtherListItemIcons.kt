@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otherlist
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ListAlt
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.BedtimeOff
 import androidx.compose.material.icons.outlined.BrightnessHigh
@@ -42,7 +43,9 @@ internal fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageV
 
         is OtherListItemType.AppSettings -> otherAppSettingsItemLeadingIconVector(itemType)
 
-        OtherListItemType.DeleteAllLogs -> Icons.Outlined.DeleteSweep
+        OtherListItemType.ShowLogs,
+        OtherListItemType.DeleteAllLogs,
+        -> otherLogItemLeadingIconVector(itemType)
 
         OtherListItemType.ResetAutoReadoutSettings,
         OtherListItemType.ResetManualReadoutSettings,
@@ -93,4 +96,11 @@ private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType.Ap
         OtherListItemType.DynamicColor -> Icons.Outlined.Palette
         OtherListItemType.HapticFeedback -> Icons.Outlined.Vibration
         OtherListItemType.Startup -> Icons.Outlined.PowerSettingsNew
+    }
+
+private fun otherLogItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
+    if (itemType == OtherListItemType.ShowLogs) {
+        Icons.AutoMirrored.Outlined.ListAlt
+    } else {
+        Icons.Outlined.DeleteSweep
     }

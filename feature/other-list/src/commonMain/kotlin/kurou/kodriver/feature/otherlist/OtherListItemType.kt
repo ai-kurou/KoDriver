@@ -99,6 +99,10 @@ sealed interface OtherListItemType {
         override val id: String = "startup"
     }
 
+    data object ShowLogs : OtherListItemType {
+        override val id: String = "show_logs"
+    }
+
     data object ResetAutoReadoutSettings : OtherListItemType {
         override val id: String = "reset_auto_readout_settings"
     }
@@ -161,6 +165,7 @@ sealed interface OtherListItemType {
                 Feedback,
                 License,
                 DebugState,
+                ShowLogs,
                 ResetAutoReadoutSettings,
                 ResetManualReadoutSettings,
                 DeleteAllLogs,

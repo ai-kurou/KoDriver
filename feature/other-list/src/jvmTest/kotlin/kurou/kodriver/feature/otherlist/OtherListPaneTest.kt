@@ -70,6 +70,34 @@ class OtherListPaneTest {
     }
 
     @Test
+    fun `ログを表示をタップしてもコールバックは呼ばれず選択もされない`() {
+        val haptic = FakeHapticFeedback()
+        val callbacks = mutableListOf<String>()
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherListPane(
+                    uiState = OtherListUiState(items = listOf(OtherListItemType.ShowLogs)),
+                    onItemClick = { callbacks += it.id },
+                    onOverlayVisibleChange = { callbacks += "overlay" },
+                    onKeepScreenOnChange = { callbacks += "screen" },
+                    onDynamicColorEnabledChange = { callbacks += "color" },
+                    onHapticFeedbackEnabledChange = { callbacks += "haptic" },
+                    onStartupEnabledChange = { callbacks += "startup" },
+                )
+            }
+        }
+
+        rule.onNodeWithText("データ・ログ").assertIsDisplayed()
+        rule
+            .onNodeWithText("ログを表示")
+            .assertIsDisplayed()
+            .assertIsNotSelected()
+            .performClick()
+        rule.onNodeWithText("ログを表示").assertIsNotSelected()
+        assertEquals(emptyList(), callbacks)
+    }
+
+    @Test
     fun `自動タブの設定を初期化をタップするとコールバックと触覚反応が発生する`() {
         val haptic = FakeHapticFeedback()
         val callbacks = mutableListOf<String>()

@@ -147,6 +147,7 @@ class OtherListViewModel(
 
     fun onItemSelected(itemType: OtherListItemType) {
         if (
+            itemType == OtherListItemType.ShowLogs ||
             itemType == OtherListItemType.DeleteAllLogs ||
             itemType == OtherListItemType.ResetAutoReadoutSettings ||
             itemType == OtherListItemType.ResetManualReadoutSettings ||
@@ -166,6 +167,7 @@ class OtherListViewModel(
 
     fun selectItem(itemType: OtherListItemType) {
         if (
+            itemType == OtherListItemType.ShowLogs ||
             itemType == OtherListItemType.DeleteAllLogs ||
             itemType == OtherListItemType.ResetAutoReadoutSettings ||
             itemType == OtherListItemType.ResetManualReadoutSettings

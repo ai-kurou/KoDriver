@@ -61,6 +61,7 @@
     <string name="audio_usage_alarm">アラーム</string>
     <string name="audio_usage_assistant">アシスタント</string>
     <string name="section_data_log">データ・ログ</string>
+    <string name="item_show_logs">ログを表示</string>
     <string name="item_delete_all_logs">ログを全て削除</string>
     <string name="telemetry_log_reset_confirm_title">ログを全て削除</string>
     <string name="telemetry_log_reset_confirm_body">すべてのシミュレーターのログを削除します。この操作は元に戻せません。</string>
