@@ -163,6 +163,7 @@ private fun handleOtherItemClick(
 
         OtherListItemType.WindowsSpeechUnavailable -> onOpenWindowsSpeechSettings()
 
+        OtherListItemType.ShowLogs,
         OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,

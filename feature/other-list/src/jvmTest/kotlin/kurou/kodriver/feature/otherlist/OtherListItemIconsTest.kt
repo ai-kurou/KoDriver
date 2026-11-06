@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otherlist
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ListAlt
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.BedtimeOff
 import androidx.compose.material.icons.outlined.BrightnessHigh
@@ -37,6 +38,7 @@ class OtherListItemIconsTest {
                 OtherListItemType.AccessLocalNetworkPermission to Icons.Outlined.Wifi,
                 OtherListItemType.ServerIp to Icons.Outlined.Computer,
                 OtherListItemType.ConsoleIp to Icons.Outlined.SportsEsports,
+                OtherListItemType.ShowLogs to Icons.AutoMirrored.Outlined.ListAlt,
                 OtherListItemType.DeleteAllLogs to Icons.Outlined.DeleteSweep,
                 OtherListItemType.ResetAutoReadoutSettings to Icons.Outlined.RestartAlt,
                 OtherListItemType.ResetManualReadoutSettings to Icons.Outlined.RestartAlt,

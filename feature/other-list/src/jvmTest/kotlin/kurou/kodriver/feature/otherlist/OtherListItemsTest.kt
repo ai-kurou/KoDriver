@@ -51,6 +51,7 @@ class OtherListItemsTest {
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
                 OtherListItemType.License,
+                OtherListItemType.ShowLogs,
                 OtherListItemType.ResetAutoReadoutSettings,
                 OtherListItemType.ResetManualReadoutSettings,
                 OtherListItemType.DeleteAllLogs,

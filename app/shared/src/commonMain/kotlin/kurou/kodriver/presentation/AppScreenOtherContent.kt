@@ -169,6 +169,7 @@ internal fun DefaultOtherDetailContent(
             OtherAndroidAudioUsageDetailPane(canNavigateBack, onBack)
         }
 
+        OtherListItemType.ShowLogs,
         OtherListItemType.DeleteAllLogs,
         OtherListItemType.ResetAutoReadoutSettings,
         OtherListItemType.ResetManualReadoutSettings,

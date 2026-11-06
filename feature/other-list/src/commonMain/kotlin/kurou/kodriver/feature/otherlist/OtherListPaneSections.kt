@@ -42,6 +42,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible
 import kurou.kodriver.feature.otherlist.generated.resources.item_readout_start_sound
 import kurou.kodriver.feature.otherlist.generated.resources.item_release_page
 import kurou.kodriver.feature.otherlist.generated.resources.item_server_ip
+import kurou.kodriver.feature.otherlist.generated.resources.item_show_logs
 import kurou.kodriver.feature.otherlist.generated.resources.item_startup
 import kurou.kodriver.feature.otherlist.generated.resources.item_theme
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_engine_missing
@@ -81,7 +82,8 @@ internal val otherListSections =
     )
 
 /** 破壊的操作（設定の初期化・ログ削除）の項目か。見た目で警告色を使う判定に用いる。 */
-internal fun OtherListItemType.isDestructive(): Boolean = section() == OtherListSection.DataLog
+internal fun OtherListItemType.isDestructive(): Boolean =
+    section() == OtherListSection.DataLog && this != OtherListItemType.ShowLogs
 
 internal fun OtherListItemType.section(): OtherListSection =
     when (this) {
@@ -114,6 +116,7 @@ internal fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.Startup,
         -> OtherListSection.AppSettings
 
+        OtherListItemType.ShowLogs,
         OtherListItemType.DeleteAllLogs,
         OtherListItemType.ResetAutoReadoutSettings,
         OtherListItemType.ResetManualReadoutSettings,
@@ -126,6 +129,14 @@ internal fun OtherListItemType.section(): OtherListSection =
         -> OtherListSection.Information
 
         OtherListItemType.DebugState -> OtherListSection.Information
+    }
+
+@Composable
+private fun otherLogItemDisplayName(itemType: OtherListItemType): String =
+    if (itemType == OtherListItemType.ShowLogs) {
+        stringResource(Res.string.item_show_logs)
+    } else {
+        stringResource(Res.string.item_delete_all_logs)
     }
 
 @Composable
@@ -165,8 +176,10 @@ internal fun otherItemDisplayName(itemType: OtherListItemType): String =
             otherReadoutSettingsResetItemDisplayName(itemType)
         }
 
-        OtherListItemType.DeleteAllLogs -> {
-            stringResource(Res.string.item_delete_all_logs)
+        OtherListItemType.ShowLogs,
+        OtherListItemType.DeleteAllLogs,
+        -> {
+            otherLogItemDisplayName(itemType)
         }
 
         OtherListItemType.GitHubRepository -> {
@@ -300,6 +313,7 @@ internal fun OtherListItemTrailingIcon(
         OtherListItemType.VoicePitch,
         OtherListItemType.AndroidAudioUsage,
         OtherListItemType.OverlayBackgroundOpacity,
+        OtherListItemType.ShowLogs,
         OtherListItemType.Feedback,
         OtherListItemType.License,
         OtherListItemType.DebugState,

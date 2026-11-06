@@ -20,6 +20,7 @@ class OtherListItemTypeTest {
         )
         assertEquals(
             listOf(
+                OtherListItemType.ShowLogs,
                 OtherListItemType.ResetAutoReadoutSettings,
                 OtherListItemType.ResetManualReadoutSettings,
                 OtherListItemType.DeleteAllLogs,
@@ -40,6 +41,8 @@ class OtherListItemTypeTest {
             OtherListItemType.ResetManualReadoutSettings,
             OtherListItemType.fromId("reset_manual_readout_settings"),
         )
+        assertEquals("show_logs", OtherListItemType.ShowLogs.id)
+        assertEquals(OtherListItemType.ShowLogs, OtherListItemType.fromId("show_logs"))
         assertEquals("delete_all_logs", OtherListItemType.DeleteAllLogs.id)
         assertEquals(OtherListItemType.DeleteAllLogs, OtherListItemType.fromId("delete_all_logs"))
         assertEquals("overlay_text_color", OtherListItemType.OverlayTextColor.id)
@@ -98,6 +101,7 @@ class OtherListItemTypeTest {
                 OtherListItemType.Feedback,
                 OtherListItemType.License,
                 OtherListItemType.DebugState,
+                OtherListItemType.ShowLogs,
                 OtherListItemType.ResetAutoReadoutSettings,
                 OtherListItemType.ResetManualReadoutSettings,
                 OtherListItemType.DeleteAllLogs,
