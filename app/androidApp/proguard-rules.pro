@@ -8,3 +8,10 @@
 # 解決できず警告になる（Android SDKにこのクラスは存在しない）。
 -dontwarn java.lang.ProcessHandle
 -dontwarn java.lang.ProcessHandle$Info
+
+# Voskの音声認識（vosk-android）はJNAでネイティブライブラリを呼ぶため、JNAとVoskのクラス・メンバーを削除・改名させない。
+# JNAはデスクトップ向けのjava.awtのクラスも参照するが、Androidでは到達しない。
+-keep class com.sun.jna.* { *; }
+-keepclassmembers class * extends com.sun.jna.* { public *; }
+-keep class org.vosk.** { *; }
+-dontwarn java.awt.**

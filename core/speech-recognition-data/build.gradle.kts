@@ -17,14 +17,15 @@ kotlin {
             implementation(libs.kotlinx.coroutinesCore)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
-        }
-        jvmMain.dependencies {
-            implementation(libs.vosk)
             implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
             implementation(libs.kotlinx.serialization.json)
         }
+        jvmMain.dependencies {
+            implementation(libs.vosk)
+        }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
+            implementation(libs.vosk.android)
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.testJunit)
