@@ -15,9 +15,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
- * ログ一覧だけを詳細ペインとして表示する [TelemetryLogListDetailPaneContent] のテスト。
+ * ログ一覧だけを詳細ペインとして表示する [TelemetryLogListPaneHostContent] のテスト。
  */
-class TelemetryLogListDetailPaneTest {
+class TelemetryLogListPaneHostTest {
     @get:Rule
     val rule = createComposeRule()
 
@@ -214,7 +214,7 @@ private fun DetailPane(
     onDeleteDismiss: () -> Unit = {},
     onDeleteResultConsumed: () -> Unit = {},
 ) {
-    TelemetryLogListDetailPaneContent(
+    TelemetryLogListPaneHostContent(
         uiState = uiState,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
