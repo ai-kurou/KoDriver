@@ -19,6 +19,7 @@ import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDet
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
+import kurou.kodriver.feature.telemetrylogdetail.TelemetryLogDetailContent
 import kurou.kodriver.feature.telemetryloglist.TelemetryLogListDetailPane
 
 /**
@@ -172,7 +173,12 @@ internal fun DefaultOtherDetailContent(
         }
 
         OtherListItemType.ShowLogs -> {
-            TelemetryLogListDetailPane(canNavigateBack, onBack, onFeedbackClick = onFeedbackSelected)
+            TelemetryLogListDetailPane(
+                canNavigateBack = canNavigateBack,
+                onBack = onBack,
+                onFeedbackClick = onFeedbackSelected,
+                detailContent = { id -> TelemetryLogDetailContent(id = id) },
+            )
         }
 
         OtherListItemType.DebugState -> {

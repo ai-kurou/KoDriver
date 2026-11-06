@@ -2,6 +2,9 @@ package kurou.kodriver.feature.telemetryloglist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.VerticalDivider
@@ -16,6 +19,7 @@ import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldDestinationIt
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -204,7 +208,7 @@ internal fun TelemetryLogContentScaffold(
 }
 
 /**
- * ログ一覧だけを詳細ペインとして表示する Composable。ログの選択やログ詳細は扱わない。
+ * ログ一覧を詳細ペインとして表示する Composable。ログをタップするとボトムシートに [detailContent] でログ詳細を表示する。
  */
 @Composable
 fun TelemetryLogListDetailPane(
@@ -213,6 +217,7 @@ fun TelemetryLogListDetailPane(
     modifier: Modifier = Modifier,
     scrollToTopRequest: Int = 0,
     onFeedbackClick: (Long) -> Unit = {},
+    detailContent: @Composable (Long) -> Unit = {},
 ) {
     val viewModel = koinViewModel<TelemetryLogListViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -220,6 +225,8 @@ fun TelemetryLogListDetailPane(
         uiState = uiState,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
+        onLogClick = viewModel::selectLog,
+        onLogDetailDismiss = viewModel::clearSelectedLog,
         onDeleteClick = viewModel::onDeleteClick,
         onDeleteConfirm = viewModel::onDeleteConfirm,
         onDeleteDismiss = viewModel::onDeleteDismiss,
@@ -227,14 +234,18 @@ fun TelemetryLogListDetailPane(
         modifier = modifier,
         scrollToTopRequest = scrollToTopRequest,
         onFeedbackClick = onFeedbackClick,
+        detailContent = detailContent,
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TelemetryLogListDetailPaneContent(
     uiState: TelemetryLogListUiState,
     canNavigateBack: Boolean,
     onBack: () -> Unit,
+    onLogClick: (Long) -> Unit,
+    onLogDetailDismiss: () -> Unit,
     onDeleteClick: (Long) -> Unit,
     onDeleteConfirm: () -> Unit,
     onDeleteDismiss: () -> Unit,
@@ -242,6 +253,7 @@ internal fun TelemetryLogListDetailPaneContent(
     modifier: Modifier = Modifier,
     scrollToTopRequest: Int = 0,
     onFeedbackClick: (Long) -> Unit = {},
+    detailContent: @Composable (Long) -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     TelemetryLogResultSnackbarEffect(
@@ -259,6 +271,15 @@ internal fun TelemetryLogListDetailPaneContent(
         )
     }
 
+    uiState.selectedLogId?.let { selectedLogId ->
+        ModalBottomSheet(
+            onDismissRequest = onLogDetailDismiss,
+            sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden),
+        ) {
+            detailContent(selectedLogId)
+        }
+    }
+
     DetailPaneScaffold(
         title = stringResource(Res.string.telemetry_log_title),
         canNavigateBack = canNavigateBack,
@@ -268,6 +289,7 @@ internal fun TelemetryLogListDetailPaneContent(
         Box(modifier = Modifier.fillMaxSize()) {
             TelemetryLogListPane(
                 uiState = uiState,
+                onLogClick = onLogClick,
                 onFeedbackClick = onFeedbackClick,
                 onDeleteClick = onDeleteClick,
                 scrollToTopRequest = scrollToTopRequest,
@@ -315,6 +337,8 @@ private fun TelemetryLogListDetailPanePreview() {
             uiState = previewTelemetryLogListUiState,
             canNavigateBack = false,
             onBack = {},
+            onLogClick = {},
+            onLogDetailDismiss = {},
             onDeleteClick = {},
             onDeleteConfirm = {},
             onDeleteDismiss = {},
