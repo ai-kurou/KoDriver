@@ -69,7 +69,8 @@ fun OtherContent(
     onOpenThemeDialog: () -> Unit = {},
     onOpenOverlayTextColorDialog: () -> Unit = {},
     onOpenOverlayTextSizeDialog: () -> Unit = {},
-    detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
+    detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long, (Long) -> Unit) -> Unit =
+        { _, _, _, _, _, _ -> },
 ) {
     val viewModel: OtherListViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -115,6 +116,7 @@ fun OtherContent(
         onStartupEnabledChange = viewModel::onStartupEnabledChange,
         onAppVersionTapped = { viewModel.selectItem(OtherListItemType.DebugState) },
         onClearSelectedItem = viewModel::clearSelectedItem,
+        onFeedbackSelected = viewModel::selectFeedbackItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
         windowPosture = windowPosture,
@@ -163,6 +165,7 @@ private fun handleOtherItemClick(
 
         OtherListItemType.WindowsSpeechUnavailable -> onOpenWindowsSpeechSettings()
 
+        OtherListItemType.ShowLogs,
         OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
@@ -218,13 +221,15 @@ internal fun OtherContent(
     onStartupEnabledChange: (Boolean) -> Unit = {},
     onAppVersionTapped: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
+    onFeedbackSelected: (Long) -> Unit = {},
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfoV2()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass,
     windowPosture: Posture = currentWindowAdaptiveInfoV2().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
-    detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
+    detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long, (Long) -> Unit) -> Unit =
+        { _, _, _, _, _, _ -> },
 ) {
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Nothing>(
@@ -353,6 +358,7 @@ internal fun OtherContent(
                             navigateBack,
                             uiState.selectedFeedbackTelemetryLogId,
                             uiState.feedbackAttachRequestId,
+                            onFeedbackSelected,
                         )
                     }
                 }

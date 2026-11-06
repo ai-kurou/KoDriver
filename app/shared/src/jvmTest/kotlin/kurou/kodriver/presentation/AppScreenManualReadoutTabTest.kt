@@ -18,12 +18,12 @@ class AppScreenManualReadoutTabTest {
     val rule = createComposeRule()
 
     @Test
-    fun `NavigationBarの手動読み上げタブは自動読み上げとログの間に表示され選択と再選択で手動画面を表示する`() {
+    fun `NavigationBarの手動読み上げタブは自動読み上げとその他の間に表示され選択と再選択で手動画面を表示する`() {
         assertManualReadoutTab(NavigationSuiteType.NavigationBar)
     }
 
     @Test
-    fun `NavigationRailの手動読み上げタブは自動読み上げとログの間に表示され選択と再選択で手動画面を表示する`() {
+    fun `NavigationRailの手動読み上げタブは自動読み上げとその他の間に表示され選択と再選択で手動画面を表示する`() {
         assertManualReadoutTab(NavigationSuiteType.NavigationRail)
     }
 
@@ -36,19 +36,17 @@ class AppScreenManualReadoutTabTest {
                 onManualReadoutTabReselected = { manualReselectedCount++ },
                 manualReadoutTabReselectRequest = 7,
                 onAutoReadoutTabReselected = { reselectedCount++ },
-                onLogTabReselected = { reselectedCount++ },
                 onOtherTabReselected = { reselectedCount++ },
                 autoReadoutContent = { Text("読み上げ画面") },
                 manualReadoutContent = { _, request ->
                     assertEquals(7, request)
                     Text("手動画面")
                 },
-                telemetryLogContent = { _, _ -> Text("ログ画面") },
                 otherContent = { _, _ -> Text("その他画面") },
             )
         }
 
-        val labels = listOf("自動", "手動", "ログ", "その他")
+        val labels = listOf("自動", "手動", "その他")
         labels.forEach { rule.onNodeWithText(it).assertIsDisplayed() }
         val bounds = labels.map { rule.onNodeWithText(it).fetchSemanticsNode().boundsInRoot }
         bounds.zipWithNext().forEach { (previous, next) ->
@@ -61,7 +59,6 @@ class AppScreenManualReadoutTabTest {
 
         listOf(
             "自動" to "読み上げ画面",
-            "ログ" to "ログ画面",
             "その他" to "その他画面",
         ).forEach { (label, content) ->
             if (label != "自動") {
@@ -78,6 +75,6 @@ class AppScreenManualReadoutTabTest {
             }
         }
         assertEquals(0, reselectedCount)
-        assertEquals(3, manualReselectedCount)
+        assertEquals(2, manualReselectedCount)
     }
 }

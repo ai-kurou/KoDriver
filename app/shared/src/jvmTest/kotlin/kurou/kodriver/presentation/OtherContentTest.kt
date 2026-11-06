@@ -78,7 +78,7 @@ class OtherContentTest {
                             onClearSelectedItem = {},
                             windowSizeClass = sizeClass,
                             scaffoldDirective = directive,
-                            detailContent = { _, _, _, _, _ -> Text("詳細スロット") },
+                            detailContent = { _, _, _, _, _, _ -> Text("詳細スロット") },
                         )
                     }
                 }
@@ -113,7 +113,7 @@ class OtherContentTest {
                             onClearSelectedItem = {},
                             windowSizeClass = sizeClass,
                             scaffoldDirective = directive,
-                            detailContent = { _, _, _, _, _ -> Text("詳細スロット") },
+                            detailContent = { _, _, _, _, _, _ -> Text("詳細スロット") },
                         )
                     }
                 }
@@ -213,7 +213,7 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { _, _, _, _, _ -> detailDisplayed = true },
+                detailContent = { _, _, _, _, _, _ -> detailDisplayed = true },
             )
         }
 
@@ -246,7 +246,7 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { _, _, _, _, _ -> detailDisplayed = true },
+                detailContent = { _, _, _, _, _, _ -> detailDisplayed = true },
             )
         }
 
@@ -272,7 +272,7 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { item, canNavigateBack, onBack, _, _ ->
+                detailContent = { item, canNavigateBack, onBack, _, _, _ ->
                     if (item == OtherListItemType.VoicePitch) {
                         OtherVoicePitchDetailPaneContent(
                             uiState = OtherVoicePitchDetailUiState(),
@@ -305,7 +305,7 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { item, canNavigateBack, onBack, _, _ ->
+                detailContent = { item, canNavigateBack, onBack, _, _, _ ->
                     if (item == OtherListItemType.VoiceSpeed) {
                         OtherVoiceSpeedDetailPaneContent(
                             uiState = OtherVoiceSpeedDetailUiState(),
@@ -359,7 +359,7 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { item, _, _, _, _ -> Text("Detail: ${item.id}") },
+                detailContent = { item, _, _, _, _, _ -> Text("Detail: ${item.id}") },
             )
         }
 
@@ -387,7 +387,7 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { item, _, _, _, _ -> Text("Detail: ${item.id}") },
+                detailContent = { item, _, _, _, _, _ -> Text("Detail: ${item.id}") },
             )
         }
 
@@ -437,7 +437,14 @@ class OtherContentTest {
                     backEnabled = enabled
                     capturedOnBack = onBack
                 },
-                detailContent = { item: OtherListItemType, _: Boolean, _: () -> Unit, _: Long?, _: Long ->
+                detailContent = {
+                    item: OtherListItemType,
+                    _: Boolean,
+                    _: () -> Unit,
+                    _: Long?,
+                    _: Long,
+                    _: (Long) -> Unit,
+                    ->
                     Text("Detail: ${item.id}")
                 },
             )
@@ -552,7 +559,14 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 windowPosture = windowPosture,
-                detailContent = { item: OtherListItemType, _: Boolean, _: () -> Unit, _: Long?, _: Long ->
+                detailContent = {
+                    item: OtherListItemType,
+                    _: Boolean,
+                    _: () -> Unit,
+                    _: Long?,
+                    _: Long,
+                    _: (Long) -> Unit,
+                    ->
                     Text("Detail: ${item.id}")
                 },
             )
@@ -581,7 +595,14 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 windowPosture = windowPosture,
-                detailContent = { item: OtherListItemType, _: Boolean, _: () -> Unit, _: Long?, _: Long ->
+                detailContent = {
+                    item: OtherListItemType,
+                    _: Boolean,
+                    _: () -> Unit,
+                    _: Long?,
+                    _: Long,
+                    _: (Long) -> Unit,
+                    ->
                     Text("Detail: ${item.id}")
                 },
             )

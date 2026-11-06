@@ -183,6 +183,12 @@ class OtherListViewModelSelectionTest : OtherListViewModelTestFixture() {
 
             viewModel.onItemSelected(OtherListItemType.License)
             assertNull(viewModel.uiState.first().selectedItem)
+
+            viewModel.onItemSelected(OtherListItemType.ShowLogs)
+            assertEquals(OtherListItemType.ShowLogs, viewModel.uiState.first().selectedItem)
+
+            viewModel.onItemSelected(OtherListItemType.ShowLogs)
+            assertNull(viewModel.uiState.first().selectedItem)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }

@@ -37,7 +37,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_auto_readout
-import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_manual_readout
 import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
@@ -65,7 +64,6 @@ internal fun AppDestination.label(): String =
     when (this) {
         AppDestination.AutoReadout -> stringResource(Res.string.nav_auto_readout)
         AppDestination.ManualReadout -> stringResource(Res.string.nav_manual_readout)
-        AppDestination.Log -> stringResource(Res.string.nav_log)
         AppDestination.More -> stringResource(Res.string.nav_more)
     }
 

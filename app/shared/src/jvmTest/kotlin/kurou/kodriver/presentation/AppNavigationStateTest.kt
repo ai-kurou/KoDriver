@@ -30,11 +30,11 @@ class AppNavigationStateTest {
         lateinit var navigationState: AppNavigationState
 
         rule.setContent {
-            navigationState = rememberAppNavigationState(initial = AppDestination.Log)
+            navigationState = rememberAppNavigationState(initial = AppDestination.ManualReadout)
         }
 
         rule.runOnIdle {
-            assertEquals(AppDestination.Log, navigationState.current)
+            assertEquals(AppDestination.ManualReadout, navigationState.current)
         }
     }
 
@@ -56,9 +56,9 @@ class AppNavigationStateTest {
 
     @Test
     fun `初期状態はinitialで渡した宛先になる`() {
-        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.Log))
+        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.ManualReadout))
 
-        assertEquals(AppDestination.Log, state.current)
+        assertEquals(AppDestination.ManualReadout, state.current)
     }
 
     @Test
@@ -86,10 +86,10 @@ class AppNavigationStateTest {
         val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.AutoReadout))
         var reselected: AppDestination? = null
 
-        state.handleTabClick(AppDestination.Log) { reselected = it }
+        state.handleTabClick(AppDestination.ManualReadout) { reselected = it }
 
         assertEquals(null, reselected)
-        assertEquals(AppDestination.Log, state.current)
+        assertEquals(AppDestination.ManualReadout, state.current)
     }
 
     @Test

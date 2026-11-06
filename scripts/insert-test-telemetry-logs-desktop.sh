@@ -3,7 +3,7 @@
 # ~/.kodriver/telemetry_logs.db に直接INSERTするスクリプト。
 #
 # 使い方: アプリを終了した状態で ./insert-test-telemetry-logs-desktop.sh を実行し、
-# その後デスクトップアプリを起動してログタブを確認する。
+# その後デスクトップアプリを起動してログ一覧を確認する。
 set -euo pipefail
 
 DB_PATH="${HOME}/.kodriver/telemetry_logs.db"

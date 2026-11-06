@@ -18,7 +18,7 @@ digraph G {
   ":feature:manual-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-console-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:telemetry-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":core:data" -> ":core:gt7-ps5-domain"
   ":core:data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
@@ -50,6 +50,6 @@ digraph G {
   ":feature:other-console-ip-detail" -> ":core:gt7-ps5-domain"
   ":feature:other-list" -> ":core:domain"
   ":feature:other-list" -> ":core:gt7-ps5-domain"
-  ":feature:telemetry-log-list" -> ":core:domain"
-  ":feature:telemetry-log-list" -> ":core:gt7-ps5-domain"
+  ":feature:other-log-list" -> ":core:domain"
+  ":feature:other-log-list" -> ":core:gt7-ps5-domain"
 }

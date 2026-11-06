@@ -13,6 +13,8 @@ import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.otherlogdetail.TelemetryLogDetailContent
+import kurou.kodriver.feature.otherloglist.TelemetryLogListPaneHost
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPane
 import kurou.kodriver.feature.otheroverlaytextcolordetail.OtherOverlayTextColorDetailDialog
 import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDetailDialog
@@ -105,7 +107,14 @@ internal fun DefaultOtherContent(
         onOpenThemeDialog = { showThemeDialog = true },
         onOpenOverlayTextColorDialog = { showOverlayTextColorDialog = true },
         onOpenOverlayTextSizeDialog = { showOverlayTextSizeDialog = true },
-        detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId, feedbackAttachRequestId ->
+        detailContent = {
+            itemType,
+            canNavigateBack,
+            onBack,
+            feedbackTelemetryLogId,
+            feedbackAttachRequestId,
+            onFeedbackSelected,
+            ->
             DefaultOtherDetailContent(
                 itemType = itemType,
                 selectedSimulatorId = selectedSimulatorId,
@@ -113,6 +122,7 @@ internal fun DefaultOtherContent(
                 onBack = onBack,
                 feedbackTelemetryLogId = feedbackTelemetryLogId,
                 feedbackAttachRequestId = feedbackAttachRequestId,
+                onFeedbackSelected = onFeedbackSelected,
             )
         },
     )
@@ -126,6 +136,7 @@ internal fun DefaultOtherDetailContent(
     onBack: () -> Unit,
     feedbackTelemetryLogId: Long?,
     feedbackAttachRequestId: Long,
+    onFeedbackSelected: (Long) -> Unit = {},
 ) {
     when (itemType) {
         OtherListItemType.ServerIp -> {
@@ -158,6 +169,15 @@ internal fun DefaultOtherDetailContent(
                 onBack,
                 telemetryLogId = feedbackTelemetryLogId,
                 telemetryLogAttachRequestId = feedbackAttachRequestId,
+            )
+        }
+
+        OtherListItemType.ShowLogs -> {
+            TelemetryLogListPaneHost(
+                canNavigateBack = canNavigateBack,
+                onBack = onBack,
+                onFeedbackClick = onFeedbackSelected,
+                detailContent = { id -> TelemetryLogDetailContent(id = id) },
             )
         }
 

@@ -37,7 +37,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動", "ログ", "その他").forEachIndexed { index, label ->
+        listOf("自動", "その他").forEachIndexed { index, label ->
             if (index > 0) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -62,7 +62,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動", "手動", "ログ", "その他").forEach { label ->
+        listOf("自動", "手動", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -71,8 +71,6 @@ class AppScreenNavigationHapticTest {
 
         assertEquals(
             listOf(
-                HapticFeedbackType.ContextClick,
-                HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
@@ -122,7 +120,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動", "手動", "ログ", "その他").forEach { label ->
+        listOf("自動", "手動", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -170,7 +168,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動", "手動", "ログ", "その他").forEach { label ->
+        listOf("自動", "手動", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()
@@ -179,8 +177,6 @@ class AppScreenNavigationHapticTest {
 
         assertEquals(
             listOf(
-                HapticFeedbackType.ContextClick,
-                HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
                 HapticFeedbackType.ContextClick,
@@ -230,7 +226,7 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        listOf("自動", "手動", "ログ", "その他").forEach { label ->
+        listOf("自動", "手動", "その他").forEach { label ->
             repeat(2) {
                 rule.onNode(hasText(label)).performClick()
                 rule.waitForIdle()

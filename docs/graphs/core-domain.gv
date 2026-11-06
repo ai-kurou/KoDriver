@@ -56,6 +56,8 @@ digraph G {
   ":feature:other-feedback-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-license-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-log-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-overlay-background-opacity-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-overlay-text-color-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-overlay-text-size-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -67,8 +69,6 @@ digraph G {
   ":feature:other-voice-speed-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:server-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:telemetry-log-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:telemetry-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":server" [fillcolor="#F8BBD0", color="#D81B60", penwidth=1]
   ":server" -> ":core:domain"
   ":server" -> ":core:ace-windows-domain"
@@ -180,6 +180,13 @@ digraph G {
   ":feature:other-license-detail" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
   ":feature:other-list" -> ":core:gt7-ps5-domain"
+  ":feature:other-log-detail" -> ":core:domain"
+  ":feature:other-log-detail" -> ":core:ace-windows-domain"
+  ":feature:other-log-detail" -> ":core:lmu-windows-domain"
+  ":feature:other-log-list" -> ":core:domain"
+  ":feature:other-log-list" -> ":core:ace-windows-domain"
+  ":feature:other-log-list" -> ":core:lmu-windows-domain"
+  ":feature:other-log-list" -> ":core:gt7-ps5-domain"
   ":feature:other-overlay-background-opacity-detail" -> ":core:domain"
   ":feature:other-overlay-text-color-detail" -> ":core:domain"
   ":feature:other-overlay-text-size-detail" -> ":core:domain"
@@ -192,11 +199,4 @@ digraph G {
   ":feature:other-volume-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:lmu-windows-domain"
   ":feature:server-connection" -> ":core:domain"
-  ":feature:telemetry-log-detail" -> ":core:domain"
-  ":feature:telemetry-log-detail" -> ":core:ace-windows-domain"
-  ":feature:telemetry-log-detail" -> ":core:lmu-windows-domain"
-  ":feature:telemetry-log-list" -> ":core:domain"
-  ":feature:telemetry-log-list" -> ":core:ace-windows-domain"
-  ":feature:telemetry-log-list" -> ":core:lmu-windows-domain"
-  ":feature:telemetry-log-list" -> ":core:gt7-ps5-domain"
 }
