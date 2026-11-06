@@ -23,6 +23,12 @@ class LmuWindowsManualReadoutPhrasesTest {
     }
 
     @Test
+    fun `同一の語句を複数の項目に持たせない`() {
+        val allPhrases = lmuWindowsManualReadoutItemPhrases.values.flatten()
+        assertEquals(allPhrases.size, allPhrases.toSet().size)
+    }
+
+    @Test
     fun `項目キーから語句を引け未知キーは空リスト`() {
         lmuWindowsManualReadoutItemDefinitions.keys.forEach { key ->
             assertEquals(lmuWindowsManualReadoutItemPhrases.getValue(key), lmuWindowsManualReadoutItemPhrases(key))

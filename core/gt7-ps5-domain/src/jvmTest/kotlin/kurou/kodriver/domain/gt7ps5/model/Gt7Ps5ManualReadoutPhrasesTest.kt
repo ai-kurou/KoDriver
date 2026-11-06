@@ -23,6 +23,12 @@ class Gt7Ps5ManualReadoutPhrasesTest {
     }
 
     @Test
+    fun `同一の語句を複数の項目に持たせない`() {
+        val allPhrases = gt7Ps5ManualReadoutItemPhrases.values.flatten()
+        assertEquals(allPhrases.size, allPhrases.toSet().size)
+    }
+
+    @Test
     fun `項目キーから語句を引け未知キーは空リスト`() {
         gt7Ps5ManualReadoutItemDefinitions.keys.forEach { key ->
             assertEquals(gt7Ps5ManualReadoutItemPhrases.getValue(key), gt7Ps5ManualReadoutItemPhrases(key))
