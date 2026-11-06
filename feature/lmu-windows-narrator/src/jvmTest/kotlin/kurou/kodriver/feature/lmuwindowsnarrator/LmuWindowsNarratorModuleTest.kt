@@ -15,10 +15,12 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelRe
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUseCase
+import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
+import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
@@ -33,6 +35,7 @@ class LmuWindowsNarratorModuleTest {
     private val setRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val manualHotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val requestRepository: ManualReadoutRequestRepository = mockk()
+    private val itemRequestRepository: ManualReadoutItemRequestRepository = mockk()
     private val lmuWindowsRepository: LmuWindowsRepository = mockk()
     private val observeEnergy: ObserveLmuWindowsVirtualEnergyUseCase = mockk()
     private val observeHotkey: ObserveReadoutHotkeyUseCase = mockk()
@@ -47,6 +50,8 @@ class LmuWindowsNarratorModuleTest {
             val sets = listOf(ManualReadoutSet("set-1"))
             every { manualHotkeyRepository.pressStream() } returns flowOf(request)
             every { requestRepository.observeRequests() } returns flowOf(request)
+            val itemRequest = ManualReadoutItemRequest(Simulator.LmuWindows.id, "item-1")
+            every { itemRequestRepository.observeRequests() } returns flowOf(itemRequest)
             every { setRepository.observeSets() } returns flowOf(sets)
             val application =
                 koinApplication {
@@ -55,6 +60,7 @@ class LmuWindowsNarratorModuleTest {
                         module {
                             single<ManualReadoutHotkeyRepository> { manualHotkeyRepository }
                             single<ManualReadoutRequestRepository> { requestRepository }
+                            single<ManualReadoutItemRequestRepository> { itemRequestRepository }
                             single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) {
                                 setRepository
                             }
@@ -82,12 +88,14 @@ class LmuWindowsNarratorModuleTest {
                 )
                 application.koin.get<DetermineLmuWindowsFuelReadoutUseCase>()
                 assertEquals(listOf(request), useCases.observeManualReadoutRequests().toList())
+                assertEquals(listOf(itemRequest), useCases.observeManualReadoutItemRequests().toList())
                 assertEquals(listOf(request), useCases.observeManualReadoutHotkeyPresses().toList())
                 assertEquals(listOf(sets), useCases.observeManualReadoutSets().toList())
                 verify(exactly = 1) { setRepository.observeSets() }
                 verify(exactly = 1) { requestRepository.observeRequests() }
+                verify(exactly = 1) { itemRequestRepository.observeRequests() }
                 verify(exactly = 1) { manualHotkeyRepository.pressStream() }
-                confirmVerified(requestRepository, setRepository, manualHotkeyRepository)
+                confirmVerified(requestRepository, itemRequestRepository, setRepository, manualHotkeyRepository)
             } finally {
                 application.close()
             }

@@ -93,6 +93,7 @@ import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutItemRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -153,6 +154,7 @@ internal data class RemainingVirtualEnergyUseCases(
     val observeReadoutHotkey: ObserveReadoutHotkeyUseCase,
     val observeManualReadoutHotkeyPresses: ObserveManualReadoutHotkeyPressesUseCase,
     val observeManualReadoutRequests: ObserveManualReadoutRequestsUseCase,
+    val observeManualReadoutItemRequests: ObserveManualReadoutItemRequestsUseCase,
     val observeManualReadoutSets: ObserveManualReadoutSetsUseCase,
     val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
 )
@@ -883,6 +885,17 @@ internal class LmuWindowsNarratorViewModel(
                 }
             }
         }.launchIn(viewModelScope)
+
+    /** 音声認識の発話から届く項目単位の依頼。1項目だけの一時セットとして既存の手動読み上げに渡す（保存済みセットの編集文言は使わない）。 */
+    @Suppress("UnusedPrivateProperty")
+    private val manualReadoutItemRequestJob =
+        remainingVirtualEnergyUseCases
+            .observeManualReadoutItemRequests()
+            .onEach { request ->
+                if (request.simulatorId == Simulator.LmuWindows.id) {
+                    readManualReadout(ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)))
+                }
+            }.launchIn(viewModelScope)
 
     private suspend fun readManualReadout(set: ManualReadoutSet) {
         if (selectedSimulator.value !is Simulator.LmuWindows) return

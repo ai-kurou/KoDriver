@@ -11,10 +11,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutItemKey
+import kurou.kodriver.domain.model.ManualReadoutItemRequest
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
+import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 
 /** 認識途中の文字列も確定結果も届かないまま経つと、聞き取りを自動で止めるまでの時間。つけっぱなしを防ぐ。 */
 internal const val SPEECH_RECOGNITION_IDLE_TIMEOUT_MS = 5 * 60 * 1_000L
@@ -23,6 +27,7 @@ internal const val SPEECH_RECOGNITION_IDLE_TIMEOUT_MS = 5 * 60 * 1_000L
 internal class SpeechRecognitionViewModel(
     private val observeSpeechRecognition: ObserveSpeechRecognitionUseCase,
     private val checkRecordAudioPermissionGranted: CheckRecordAudioPermissionGrantedUseCase,
+    private val requestManualReadoutItem: RequestManualReadoutItemUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SpeechRecognitionUiState())
     val uiState: StateFlow<SpeechRecognitionUiState> = _uiState.asStateFlow()
@@ -140,7 +145,7 @@ internal class SpeechRecognitionViewModel(
             }
     }
 
-    private fun onEvent(event: SpeechRecognitionEvent) {
+    private suspend fun onEvent(event: SpeechRecognitionEvent) {
         when (event) {
             SpeechRecognitionEvent.Listening -> {
                 _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
@@ -163,6 +168,10 @@ internal class SpeechRecognitionViewModel(
                         partialText = "",
                         recognized = (listOf(event.candidates) + it.recognized).take(SPEECH_RECOGNITION_HISTORY_MAX),
                     )
+                }
+                // 現在はLMUの語句だけを照合する。選択中のシミュレーターがLMUでなければ、LMUのNarrator側が依頼を無視する。
+                matchLmuWindowsManualReadoutItemKey(event.candidates)?.let { itemKey ->
+                    requestManualReadoutItem(ManualReadoutItemRequest(Simulator.LmuWindows.id, itemKey))
                 }
             }
 

@@ -20,7 +20,7 @@ AppScreen の UI 状態の合成は `AppScreenFlow` が cold Flow として担�
 - `rememberSpeechRecognitionSection()`: `AppScreen` から一度だけ呼ぶ。マイクの権限の要求（`rememberRecordAudioPermissionRequester`、Android のみ実行時ダイアログ）、アプリが見えなくなったとき（ON_STOP）の停止、前面に戻ったとき（ON_START）の再開を担い、デバッグ状態画面（`DebugStateDetailPane`）のグリッド先頭に差し込むカード（`SpeechRecognitionCard`）を返す。音声認識のカードは `isSpeechRecognitionSupportedOnPlatform()` が true のプラットフォーム（Android とデスクトップ）で、マイク入力の確認用カード（`MicrophoneInputCard`、後述）は `isMicrophoneInputSupportedOnPlatform()` が true のプラットフォーム（デスクトップ）で返す。デスクトップは両方が true で、音声認識のカードの下にマイク入力の確認用カードを並べる（認識は選択中のマイクを使う）。どちらも false なら何も出さない。
 - 見えなくなる前に聞き取り中だった場合だけ、前面に戻ったときに再開する（権限が外されていれば再開しない）。スイッチを OFF にした場合や失敗・無発話の自動停止の後は再開しない。ON/OFF の状態はメモリ上にのみ持つため、アプリのプロセスが終了すると OFF に戻る。
 - 認識途中の文字列も確定結果も届かないまま5分経つと自動で止める（暫定値）。
-- 認識結果の解釈や読み上げの起動はまだ行わない。
+- 確定結果（`Recognized`）の候補を `matchLmuWindowsManualReadoutItemKey`（`:core:lmu-windows-domain`）で手動読み上げ項目の語句と照合し、一致したら `ManualReadoutItemRequest`（LMU宛て）を `RequestManualReadoutItemUseCase` で発行する。LMU の Narrator が受け取り、保存済みセットの編集文言を使わず既定文言で1項目だけ読み上げる。選択中のシミュレーターが LMU でなければ Narrator 側が無視する。ACE・GT7 の照合は未対応。ウェイクワードは持たないため、常時聞き取り中の会話にも反応する。
 
 ## マイク入力の確認（Windows）
 

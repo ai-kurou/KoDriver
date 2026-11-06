@@ -29,6 +29,7 @@ import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
+import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -61,6 +62,7 @@ class SpeechRecognitionSectionTest {
 
     private val speechRepository: SpeechRecognitionRepository = mockk()
     private val permissionRepository: RecordAudioPermissionRepository = mockk()
+    private val itemRequestRepository = FakeManualReadoutItemRequestRepository()
     private val microphoneRepository: MicrophoneRepository = mockk()
     private val audioInputDeviceRepository: AudioInputDeviceRepository = mockk()
     private val events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = 16)
@@ -86,6 +88,7 @@ class SpeechRecognitionSectionTest {
             SpeechRecognitionViewModel(
                 observeSpeechRecognition = ObserveSpeechRecognitionUseCase(speechRepository),
                 checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(permissionRepository),
+                requestManualReadoutItem = RequestManualReadoutItemUseCase(itemRequestRepository),
             )
     }
 

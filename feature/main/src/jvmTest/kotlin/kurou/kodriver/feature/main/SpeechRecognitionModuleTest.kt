@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import org.koin.dsl.koinApplication
@@ -47,6 +48,7 @@ class SpeechRecognitionModuleTest {
                     module {
                         single<SpeechRecognitionRepository> { speechRepository }
                         single<RecordAudioPermissionRepository> { permissionRepository }
+                        single<ManualReadoutItemRequestRepository> { FakeManualReadoutItemRequestRepository() }
                     },
                 )
             }

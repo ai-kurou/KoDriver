@@ -22,6 +22,7 @@ import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
+import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -33,6 +34,7 @@ import kotlin.test.assertTrue
 class SpeechRecognitionViewModelTest {
     private val speechRepository: SpeechRecognitionRepository = mockk()
     private val permissionRepository: RecordAudioPermissionRepository = mockk()
+    private val itemRequestRepository = FakeManualReadoutItemRequestRepository()
     private val events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = 16)
     private val dispatcher = UnconfinedTestDispatcher()
     private var viewModel: SpeechRecognitionViewModel? = null
@@ -54,6 +56,7 @@ class SpeechRecognitionViewModelTest {
         return SpeechRecognitionViewModel(
             observeSpeechRecognition = ObserveSpeechRecognitionUseCase(speechRepository),
             checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(permissionRepository),
+            requestManualReadoutItem = RequestManualReadoutItemUseCase(itemRequestRepository),
         ).also { viewModel = it }
     }
 

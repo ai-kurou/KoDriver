@@ -76,6 +76,7 @@ import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.usecase.ObserveManualReadoutItemRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -166,6 +167,7 @@ val lmuWindowsNarratorModule: Module =
                 get(),
                 get(),
                 get(),
+                get(),
                 ObserveManualReadoutSetsUseCase(get(named(Simulator.LmuWindows.id))),
                 get(),
             )
@@ -192,6 +194,7 @@ val lmuWindowsNarratorModule: Module =
         factory { DetermineLmuWindowsRaceFlagReadoutUseCase() }
         factory { ObserveReadoutHotkeyUseCase(get()) }
         factory { ObserveManualReadoutRequestsUseCase(get()) }
+        factory { ObserveManualReadoutItemRequestsUseCase(get()) }
         factory { ObserveManualReadoutHotkeyPressesUseCase(get()) }
         factory { SaveTelemetryLogUseCase(get()) }
         factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
