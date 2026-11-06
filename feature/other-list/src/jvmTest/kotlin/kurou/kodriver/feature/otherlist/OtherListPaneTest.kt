@@ -70,7 +70,7 @@ class OtherListPaneTest {
     }
 
     @Test
-    fun `ログを表示をタップしてもコールバックは呼ばれず選択もされない`() {
+    fun `ログを表示をタップするとコールバックと触覚反応が発生する`() {
         val haptic = FakeHapticFeedback()
         val callbacks = mutableListOf<String>()
         rule.setContent {
@@ -94,7 +94,8 @@ class OtherListPaneTest {
             .assertIsNotSelected()
             .performClick()
         rule.onNodeWithText("ログを表示").assertIsNotSelected()
-        assertEquals(emptyList(), callbacks)
+        assertEquals(listOf(OtherListItemType.ShowLogs.id), callbacks)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
     }
 
     @Test

@@ -19,6 +19,7 @@ import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDet
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
+import kurou.kodriver.feature.telemetryloglist.TelemetryLogListDetailPane
 
 /**
  * `:core:domain` の `Simulator.LmuWindows.id` と一致させる、初期選択シミュレーターの ID。
@@ -161,6 +162,10 @@ internal fun DefaultOtherDetailContent(
             )
         }
 
+        OtherListItemType.ShowLogs -> {
+            TelemetryLogListDetailPane(canNavigateBack, onBack)
+        }
+
         OtherListItemType.DebugState -> {
             DebugStateDetailPane(selectedSimulatorId, canNavigateBack, onBack)
         }
@@ -169,7 +174,6 @@ internal fun DefaultOtherDetailContent(
             OtherAndroidAudioUsageDetailPane(canNavigateBack, onBack)
         }
 
-        OtherListItemType.ShowLogs,
         OtherListItemType.DeleteAllLogs,
         OtherListItemType.ResetAutoReadoutSettings,
         OtherListItemType.ResetManualReadoutSettings,

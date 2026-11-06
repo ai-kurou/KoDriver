@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
+import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverListPaneWidth
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
@@ -40,6 +41,7 @@ import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
 import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_failure
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_success
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -201,6 +203,83 @@ internal fun TelemetryLogContentScaffold(
     }
 }
 
+/**
+ * ログ一覧だけを詳細ペインとして表示する Composable。ログの選択やログ詳細は扱わない。
+ */
+@Composable
+fun TelemetryLogListDetailPane(
+    canNavigateBack: Boolean,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    scrollToTopRequest: Int = 0,
+    onFeedbackClick: (Long) -> Unit = {},
+) {
+    val viewModel = koinViewModel<TelemetryLogListViewModel>()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    TelemetryLogListDetailPaneContent(
+        uiState = uiState,
+        canNavigateBack = canNavigateBack,
+        onBack = onBack,
+        onDeleteClick = viewModel::onDeleteClick,
+        onDeleteConfirm = viewModel::onDeleteConfirm,
+        onDeleteDismiss = viewModel::onDeleteDismiss,
+        onDeleteResultConsumed = viewModel::consumeDeleteResult,
+        modifier = modifier,
+        scrollToTopRequest = scrollToTopRequest,
+        onFeedbackClick = onFeedbackClick,
+    )
+}
+
+@Composable
+internal fun TelemetryLogListDetailPaneContent(
+    uiState: TelemetryLogListUiState,
+    canNavigateBack: Boolean,
+    onBack: () -> Unit,
+    onDeleteClick: (Long) -> Unit,
+    onDeleteConfirm: () -> Unit,
+    onDeleteDismiss: () -> Unit,
+    onDeleteResultConsumed: () -> Unit,
+    modifier: Modifier = Modifier,
+    scrollToTopRequest: Int = 0,
+    onFeedbackClick: (Long) -> Unit = {},
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    TelemetryLogResultSnackbarEffect(
+        snackbarHostState = snackbarHostState,
+        succeeded = uiState.deleteSucceeded,
+        successMessage = stringResource(Res.string.telemetry_log_delete_success),
+        failureMessage = stringResource(Res.string.telemetry_log_delete_failure),
+        onResultConsumed = onDeleteResultConsumed,
+    )
+
+    if (uiState.pendingDeleteLogId != null) {
+        TelemetryLogDeleteConfirmDialog(
+            onConfirm = onDeleteConfirm,
+            onDismiss = onDeleteDismiss,
+        )
+    }
+
+    DetailPaneScaffold(
+        title = stringResource(Res.string.telemetry_log_title),
+        canNavigateBack = canNavigateBack,
+        onBack = onBack,
+        modifier = modifier,
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            TelemetryLogListPane(
+                uiState = uiState,
+                onFeedbackClick = onFeedbackClick,
+                onDeleteClick = onDeleteClick,
+                scrollToTopRequest = scrollToTopRequest,
+            )
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter),
+            )
+        }
+    }
+}
+
 @Composable
 private fun TelemetryLogResultSnackbarEffect(
     snackbarHostState: SnackbarHostState,
@@ -224,6 +303,22 @@ private fun TelemetryLogContentPreview() {
     KoDriverTheme {
         TelemetryLogContentScaffold(
             uiState = previewTelemetryLogListUiState,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TelemetryLogListDetailPanePreview() {
+    KoDriverTheme {
+        TelemetryLogListDetailPaneContent(
+            uiState = previewTelemetryLogListUiState,
+            canNavigateBack = false,
+            onBack = {},
+            onDeleteClick = {},
+            onDeleteConfirm = {},
+            onDeleteDismiss = {},
+            onDeleteResultConsumed = {},
         )
     }
 }

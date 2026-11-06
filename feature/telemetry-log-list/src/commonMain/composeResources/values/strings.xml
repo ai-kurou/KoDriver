@@ -1,4 +1,5 @@
 <resources>
+    <string name="telemetry_log_title">ログ</string>
     <string name="new_telemetry_logs">新しいログ</string>
     <string name="telemetry_log_empty_title">ログはまだありません</string>
     <string name="telemetry_log_empty_title_for_simulator">%1$sのログはまだありません</string>
