@@ -5,13 +5,18 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
@@ -171,6 +176,29 @@ class SpeechRecognitionViewModelDeviceTest {
         viewModel.onEnabledChange(true) {}
 
         assertEquals("Mic B", viewModel.uiState.value.deviceName)
+    }
+
+    @Test
+    fun `停止した聞き取りがマイクを閉じ終えるまで次の聞き取りを開始しない`() {
+        val released = CompletableDeferred<Unit>()
+        every { speechRepository.observeRecognition() } returns
+            flow {
+                try {
+                    awaitCancellation()
+                } finally {
+                    withContext(NonCancellable) { released.await() }
+                }
+            }
+        val viewModel = createViewModel()
+        viewModel.onEnabledChange(true) {}
+
+        viewModel.stop()
+        viewModel.onEnabledChange(true) {}
+        verify(exactly = 1) { speechRepository.observeRecognition() }
+
+        released.complete(Unit)
+        verify(exactly = 2) { speechRepository.observeRecognition() }
+        confirmVerified(speechRepository)
     }
 
     @Test

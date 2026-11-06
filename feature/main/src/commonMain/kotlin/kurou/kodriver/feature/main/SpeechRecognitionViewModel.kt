@@ -153,6 +153,8 @@ internal class SpeechRecognitionViewModel(
     }
 
     private fun cancelJobs() {
+        // 止めた聞き取りがマイクを閉じ終えるまで、次の開始が待てるように覚えておく
+        startWaits = (listOfNotNull(listenJob) + startWaits).filter { !it.isCompleted }
         listenJob?.cancel()
         listenJob = null
         idleJob?.cancel()
@@ -178,9 +180,8 @@ internal class SpeechRecognitionViewModel(
 
     private fun start() {
         // 待機中にキャンセルされた開始も含め、マイクを閉じ終えていない前の聞き取りをすべて待つ
-        val waits = (listOfNotNull(listenJob) + startWaits).filter { !it.isCompleted }
-        startWaits = waits
         cancelJobs()
+        val waits = startWaits
         _uiState.update {
             it.copy(enabled = true, status = SpeechRecognitionStatus.Starting, partialText = "", level = null)
         }

@@ -87,7 +87,8 @@ internal class JvmSpeechRecognitionRepository(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                captureError(e)
+                // 例外にデバイス名が含まれ得るため、固定の文言だけを記録する
+                captureError(IllegalStateException("入力デバイスの一覧を取得できません。既定のマイクを使います"))
                 emptyList()
             }
         return devices.firstOrNull { it.name == name } ?: devices.firstOrNull()
