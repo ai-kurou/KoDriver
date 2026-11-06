@@ -8,10 +8,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -311,7 +310,6 @@ private fun TelemetryLogEmptyState(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TelemetryLogListItem(
     log: TelemetryLog,
@@ -478,13 +476,10 @@ private fun TelemetryLogListItem(
         modifier =
             modifier
                 .fillMaxWidth()
-                .combinedClickable(
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        onClick()
-                    },
-                    onLongClick = { menuExpanded = true },
-                ),
+                .clickable {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onClick()
+                },
     )
 }
 

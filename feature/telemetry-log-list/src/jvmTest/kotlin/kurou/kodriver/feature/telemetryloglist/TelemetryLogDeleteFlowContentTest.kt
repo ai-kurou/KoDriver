@@ -60,7 +60,7 @@ class TelemetryLogDeleteFlowContentTest {
     }
 
     @Test
-    fun `アイテムを長押しするとメニューを表示する`() {
+    fun `アイテムを長押ししてもメニューを表示しない`() {
         rule.setContent {
             TelemetryLogContentScaffold(
                 uiState =
@@ -72,8 +72,8 @@ class TelemetryLogDeleteFlowContentTest {
 
         rule.onNodeWithText("フラッグ").performTouchInput { longClick() }
 
-        rule.onNodeWithText("フィードバック送信").assertExists()
-        rule.onNodeWithText("削除").assertExists()
+        rule.onNodeWithText("フィードバック送信").assertDoesNotExist()
+        rule.onNodeWithText("削除").assertDoesNotExist()
     }
 
     @Test

@@ -1,11 +1,14 @@
 package kurou.kodriver.feature.telemetryloglist
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -36,22 +39,57 @@ class TelemetryLogListDetailPaneTest {
     }
 
     @Test
-    fun `ログをタップしても何も起きない`() {
-        var feedbackLogId: Long? = null
-        var deleteLogId: Long? = null
+    fun `ログをタップするとonLogClickにログIDを渡す`() {
+        var clickedLogId: Long? = null
         rule.setContent {
             DetailPane(
                 uiState = TelemetryLogListUiState(logs = listOf(createTelemetryLog(id = 1))),
-                onFeedbackClick = { feedbackLogId = it },
-                onDeleteClick = { deleteLogId = it },
+                onLogClick = { clickedLogId = it },
             )
         }
 
         rule.onNodeWithText("フラッグ").performClick()
 
-        assertEquals(null, feedbackLogId)
-        assertEquals(null, deleteLogId)
-        rule.onNodeWithText("フラッグ").assertExists()
+        assertEquals(1L, clickedLogId)
+    }
+
+    @Test
+    fun `ログを選択中はボトムシートにログ詳細を表示する`() {
+        rule.setContent {
+            DetailPane(
+                uiState =
+                    TelemetryLogListUiState(
+                        logs = listOf(createTelemetryLog(id = 1)),
+                        selectedLogId = 1L,
+                    ),
+                detailContent = { id -> Text("詳細 $id") },
+            )
+        }
+
+        rule.onNodeWithText("詳細 1").assertExists()
+    }
+
+    @Test
+    fun `ログを選択していない場合はログ詳細を表示しない`() {
+        rule.setContent {
+            DetailPane(
+                uiState = TelemetryLogListUiState(logs = listOf(createTelemetryLog(id = 1))),
+                detailContent = { id -> Text("詳細 $id") },
+            )
+        }
+
+        rule.onNodeWithText("詳細 1").assertDoesNotExist()
+    }
+
+    @Test
+    fun `ログを長押ししてもメニューを開かない`() {
+        rule.setContent {
+            DetailPane(uiState = TelemetryLogListUiState(logs = listOf(createTelemetryLog(id = 1))))
+        }
+
+        rule.onNodeWithText("フラッグ").performTouchInput { longClick() }
+
+        rule.onNodeWithText("フィードバック送信").assertDoesNotExist()
     }
 
     @Test
@@ -168,7 +206,9 @@ private fun DetailPane(
     uiState: TelemetryLogListUiState,
     canNavigateBack: Boolean = false,
     onBack: () -> Unit = {},
+    onLogClick: (Long) -> Unit = {},
     onFeedbackClick: (Long) -> Unit = {},
+    detailContent: @Composable (Long) -> Unit = {},
     onDeleteClick: (Long) -> Unit = {},
     onDeleteConfirm: () -> Unit = {},
     onDeleteDismiss: () -> Unit = {},
@@ -178,10 +218,13 @@ private fun DetailPane(
         uiState = uiState,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
+        onLogClick = onLogClick,
+        onLogDetailDismiss = {},
         onDeleteClick = onDeleteClick,
         onDeleteConfirm = onDeleteConfirm,
         onDeleteDismiss = onDeleteDismiss,
         onDeleteResultConsumed = onDeleteResultConsumed,
         onFeedbackClick = onFeedbackClick,
+        detailContent = detailContent,
     )
 }
