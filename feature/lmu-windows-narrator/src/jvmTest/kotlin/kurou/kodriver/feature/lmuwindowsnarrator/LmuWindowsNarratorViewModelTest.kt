@@ -10,7 +10,9 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.slot
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +35,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
@@ -1181,6 +1184,44 @@ class LmuWindowsNarratorViewModelTest {
             telemetry.send(fakeTelemetryData(bestLapTimeMs = 83_456L))
             itemRequests.send(ManualReadoutItemRequest(Simulator.AceWindows.id, key.value))
             assertEquals(emptyList(), spoken)
+        }
+
+    @Test
+    fun `音声の項目依頼の読み上げが例外で失敗しても記録して次の依頼を処理する`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val itemRequests = Channel<ManualReadoutItemRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                manualItemRequestChannel = itemRequests,
+                manualSets = emptyList(),
+                ttsEngine = mockTts(spoken),
+                enabledOverrides = mapOf(key to false),
+                queueEnabledOverrides = mapOf(key to false),
+            )
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            val captured = slot<Throwable>()
+            mockkStatic(errorCapture)
+            every { captureError(capture(captured)) } returns Unit
+            try {
+                // NaNの残量は roundToInt が例外を投げる。
+                energy.send(remainingVirtualEnergy(remainingRatio = Double.NaN))
+                itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value))
+                assertTrue(captured.isCaptured)
+                assertEquals(emptyList(), spoken)
+                energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+                itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value))
+                assertEquals(
+                    listOf(lmuWindowsManualReadoutItemTextDefault(key.value).replace("{percent}", "80")),
+                    spoken.map { it.narratedText },
+                )
+                verify(exactly = 1) { captureError(captured.captured) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test

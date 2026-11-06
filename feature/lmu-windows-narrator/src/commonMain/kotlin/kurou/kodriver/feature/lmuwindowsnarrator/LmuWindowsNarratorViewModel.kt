@@ -2,6 +2,7 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
@@ -893,7 +895,14 @@ internal class LmuWindowsNarratorViewModel(
             .observeManualReadoutItemRequests()
             .onEach { request ->
                 if (request.simulatorId == Simulator.LmuWindows.id) {
-                    readManualReadout(ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)))
+                    // 1件の失敗で購読が止まり、以降の音声依頼が無視されないよう依頼ごとに捕捉する。
+                    try {
+                        readManualReadout(ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)))
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        captureError(e)
+                    }
                 }
             }.launchIn(viewModelScope)
 
