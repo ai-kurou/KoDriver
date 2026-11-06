@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -38,6 +41,9 @@ import org.jetbrains.compose.resources.stringResource
 
 /** 認識途中の文字列と履歴を表示する領域の最大の高さ。超えた分はスクロールする。 */
 private val HISTORY_MAX_HEIGHT = 120.dp
+
+/** 入力音量ゲージの値変化を滑らかに見せるためのアニメーション時間(ミリ秒)。 */
+private const val LEVEL_ANIMATION_MILLIS = 100
 
 /** 音声認識の聞き取りの開始・停止と、認識状況を確認するための簡易カード。 */
 @Composable
@@ -94,8 +100,12 @@ internal fun SpeechRecognitionCard(
                 )
             }
             uiState.level?.let { level ->
+                val animatedLevel by animateFloatAsState(
+                    targetValue = level,
+                    animationSpec = tween(durationMillis = LEVEL_ANIMATION_MILLIS),
+                )
                 LinearProgressIndicator(
-                    progress = { level },
+                    progress = { animatedLevel },
                     modifier =
                         Modifier
                             .fillMaxWidth()
