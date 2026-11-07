@@ -15,3 +15,4 @@
 -keepclassmembers class * extends com.sun.jna.* { public *; }
 -keep class org.vosk.** { *; }
 -dontwarn java.awt.**
+-dontwarn com.sun.jna.platform.**
