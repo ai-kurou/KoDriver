@@ -983,8 +983,6 @@ internal class LmuWindowsNarratorViewModel(
         narratorState = decision.state
         eventProcessor.processManualReadout(
             events = decision.events,
-            autoReadoutOrder = autoReadoutOrder.value,
-            queueEnabledStates = queueEnabledStates.value + (decision.events.first().readoutItemKey to true),
             observedAtMs = observedAtMs,
             logContext = LmuWindowsTelemetryLogContext(state, settings, decision.state),
         )

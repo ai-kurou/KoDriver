@@ -465,14 +465,15 @@ class Gt7Ps5NarratorViewModelTest {
                 ),
             queueEnabledOverrides = mapOf(key to false),
         )
-        every { ttsEngine.speak(event, true) } just Runs
+        every { ttsEngine.currentReadoutItemKey } returns null
+        every { ttsEngine.speak(event, false, true) } just Runs
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 100L,
                 Simulator.Gt7Ps5,
                 key,
                 event.text,
-                NarrationOutcome.QUEUED,
+                NarrationOutcome.SPOKEN,
                 NarrationSource.MANUAL,
                 capture(json),
             )
@@ -498,14 +499,15 @@ class Gt7Ps5NarratorViewModelTest {
             val logged = Json.parseToJsonElement(json.captured).jsonObject
             assertEquals(setOf("state", "settings", "observedAtMs"), logged.keys)
             assertEquals("100", logged.getValue("observedAtMs").jsonPrimitive.content)
-            verify(exactly = 1) { ttsEngine.speak(event, true) }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(event, false, true) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     100L,
                     Simulator.Gt7Ps5,
                     key,
                     event.text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     json.captured,
                 )
@@ -583,14 +585,15 @@ class Gt7Ps5NarratorViewModelTest {
                 enabledOverrides = mapOf(key to false, Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled to false),
                 queueEnabledOverrides = mapOf(key to false),
             )
-            every { ttsEngine.speak(event, true) } just Runs
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, false, true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     100L,
                     Simulator.Gt7Ps5,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
@@ -602,14 +605,15 @@ class Gt7Ps5NarratorViewModelTest {
                 runCurrent()
                 manualItemRequests.emit(ManualReadoutItemRequest(Simulator.Gt7Ps5.id, itemKey.value))
                 runCurrent()
-                verify(exactly = 1) { ttsEngine.speak(event, true) }
+                verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+                verify(exactly = 1) { ttsEngine.speak(event, false, true) }
                 coVerify(exactly = 1) {
                     telemetryLogRepository.saveTelemetryLog(
                         100L,
                         Simulator.Gt7Ps5,
                         key,
                         text,
-                        NarrationOutcome.QUEUED,
+                        NarrationOutcome.SPOKEN,
                         NarrationSource.MANUAL,
                         json.captured,
                     )
@@ -658,7 +662,8 @@ class Gt7Ps5NarratorViewModelTest {
                 queueEnabledOverrides = mapOf(key to false),
             )
             var failing = true
-            every { ttsEngine.speak(event, true) } answers {
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, false, true) } answers {
                 if (failing) error("tts error")
             }
             coEvery {
@@ -667,7 +672,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
@@ -687,7 +692,8 @@ class Gt7Ps5NarratorViewModelTest {
                 failing = false
                 manualItemRequests.emit(ManualReadoutItemRequest(Simulator.Gt7Ps5.id, itemKey.value))
                 runCurrent()
-                verify(exactly = 2) { ttsEngine.speak(event, true) }
+                verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
+                verify(exactly = 2) { ttsEngine.speak(event, false, true) }
                 verify(exactly = 1) { captureError(captured.captured) }
                 coVerify(exactly = 1) {
                     telemetryLogRepository.saveTelemetryLog(
@@ -695,7 +701,7 @@ class Gt7Ps5NarratorViewModelTest {
                         Simulator.Gt7Ps5,
                         key,
                         text,
-                        NarrationOutcome.QUEUED,
+                        NarrationOutcome.SPOKEN,
                         NarrationSource.MANUAL,
                         json.captured,
                     )
@@ -728,14 +734,15 @@ class Gt7Ps5NarratorViewModelTest {
             val text = "燃料残量はデータがありません"
             val event = Gt7Ps5ManualReadoutText(key, text, text)
             val json = slot<String>()
-            every { ttsEngine.speak(event, true) } just Runs
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, false, true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     100L,
                     Simulator.Gt7Ps5,
                     key,
                     event.text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
@@ -752,14 +759,15 @@ class Gt7Ps5NarratorViewModelTest {
                 runCurrent()
                 manualRequests.emit(ManualReadoutRequest(Simulator.Gt7Ps5.id, "set-1"))
                 runCurrent()
-                verify(exactly = 1) { ttsEngine.speak(event, true) }
+                verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+                verify(exactly = 1) { ttsEngine.speak(event, false, true) }
                 coVerify(exactly = 1) {
                     telemetryLogRepository.saveTelemetryLog(
                         100L,
                         Simulator.Gt7Ps5,
                         key,
                         event.text,
-                        NarrationOutcome.QUEUED,
+                        NarrationOutcome.SPOKEN,
                         NarrationSource.MANUAL,
                         json.captured,
                     )
@@ -1344,6 +1352,7 @@ class Gt7Ps5NarratorViewModelTest {
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
             verify(exactly = 0) { ttsEngine.stop() }
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.currentIsManual }
             verify(exactly = 1) { ttsEngine.stopCalled }
             confirmVerified(ttsEngine)
         }
@@ -1660,7 +1669,14 @@ class Gt7Ps5NarratorViewModelTest {
 
     private fun mockTts(spokenTexts: MutableList<SpeechEvent>): TextToSpeechEngine {
         every { ttsEngine.currentReadoutItemKey } returns null
-        every { ttsEngine.speak(capture(spokenTexts), capture(mutableListOf<Boolean>())) } just Runs
+        every { ttsEngine.currentIsManual } returns false
+        every {
+            ttsEngine.speak(
+                capture(spokenTexts),
+                capture(mutableListOf<Boolean>()),
+                capture(mutableListOf<Boolean>()),
+            )
+        } just Runs
         every { ttsEngine.stop() } just Runs
         return ttsEngine
     }
@@ -1672,7 +1688,14 @@ class Gt7Ps5NarratorViewModelTest {
         var currentKey = initialKey
         var stopCalled = false
         every { priorityAwareTts.currentReadoutItemKey } answers { currentKey }
-        every { priorityAwareTts.speak(capture(spokenTexts), capture(mutableListOf<Boolean>())) } just Runs
+        every { priorityAwareTts.currentIsManual } returns false
+        every {
+            priorityAwareTts.speak(
+                capture(spokenTexts),
+                capture(mutableListOf<Boolean>()),
+                capture(mutableListOf<Boolean>()),
+            )
+        } just Runs
         every { priorityAwareTts.stop() } answers {
             stopCalled = true
             currentKey = null

@@ -340,8 +340,6 @@ internal class AceWindowsNarratorViewModel(
         val decision = determineAceWindowsNarratorReadout.determineManualReadout(state, items)
         eventProcessor.processManualReadout(
             events = decision.events,
-            autoReadoutOrder = autoReadoutOrder.value,
-            queueEnabledStates = queueEnabledStates.value + (decision.events.first().readoutItemKey to true),
             observedAtMs = observedAtMs,
             logContext = AceWindowsTelemetryLogContext(state, settings, decision.state),
         )

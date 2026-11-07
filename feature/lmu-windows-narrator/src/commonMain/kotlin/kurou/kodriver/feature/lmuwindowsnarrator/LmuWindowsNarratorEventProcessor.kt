@@ -348,12 +348,10 @@ internal class LmuWindowsNarratorEventProcessor(
 
     suspend fun processManualReadout(
         events: List<ReadoutTextEvent>,
-        autoReadoutOrder: List<ReadoutItemKey>,
-        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
-        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs, NarrationSource.MANUAL) {
+        processEvents(events, emptyList(), emptyMap(), observedAtMs, NarrationSource.MANUAL) {
             """{"state":${TelemetryLogJson.encodeToString(logContext.state)},""" +
                 """"settings":${TelemetryLogJson.encodeToString(logContext.settings)},""" +
                 """"observedAtMs":$observedAtMs}"""
@@ -418,7 +416,12 @@ internal class LmuWindowsNarratorEventProcessor(
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent = event.withResolvedText(text)
-                    speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
+                    speakWithPriority(
+                        resolvedEvent,
+                        autoReadoutOrder,
+                        queueEnabledStates,
+                        isManual = narrationSource == NarrationSource.MANUAL,
+                    )
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -441,13 +444,14 @@ internal class LmuWindowsNarratorEventProcessor(
         event: SpeechEvent,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        isManual: Boolean = false,
     ): NarrationOutcome =
         speakWithOutcome(
             eventKey = event.readoutItemKey,
             currentKey = { ttsEngine.currentReadoutItemKey },
             autoReadoutOrder = autoReadoutOrder,
             queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
-            speak = { queue -> ttsEngine.speak(event, queue) },
+            speak = { queue -> ttsEngine.speak(event, queue, isManual) },
             stop = { ttsEngine.stop() },
             outcomes =
                 SpeakOutcomes(
@@ -456,6 +460,8 @@ internal class LmuWindowsNarratorEventProcessor(
                     interrupted = NarrationOutcome.INTERRUPTED,
                     spoken = NarrationOutcome.SPOKEN,
                 ),
+            isManual = isManual,
+            currentIsManual = { ttsEngine.currentIsManual },
         )
 
     /** 文言解決に失敗したイベントだけをスキップし、後続の読み上げとログ保存を継続する。 */

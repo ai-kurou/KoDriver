@@ -328,14 +328,15 @@ class AceWindowsNarratorViewModelTest {
             val json = slot<String>()
             manualSets.update { emptyList() }
             stubReadoutDefaults(thresholdPercentage = 30, queueEnabledOverrides = mapOf(key to false))
-            every { ttsEngine.speak(event, true) } just Runs
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, false, true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     100L,
                     Simulator.AceWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
@@ -354,14 +355,15 @@ class AceWindowsNarratorViewModelTest {
                 runCurrent()
                 manualItemRequests.emit(ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey.value))
                 runCurrent()
-                verify(exactly = 1) { ttsEngine.speak(event, true) }
+                verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+                verify(exactly = 1) { ttsEngine.speak(event, false, true) }
                 coVerify(exactly = 1) {
                     telemetryLogRepository.saveTelemetryLog(
                         100L,
                         Simulator.AceWindows,
                         key,
                         text,
-                        NarrationOutcome.QUEUED,
+                        NarrationOutcome.SPOKEN,
                         NarrationSource.MANUAL,
                         json.captured,
                     )
@@ -403,7 +405,8 @@ class AceWindowsNarratorViewModelTest {
             val json = slot<String>()
             stubReadoutDefaults(thresholdPercentage = 30, queueEnabledOverrides = mapOf(key to false))
             var failing = true
-            every { ttsEngine.speak(event, true) } answers {
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, false, true) } answers {
                 if (failing) error("tts error")
             }
             coEvery {
@@ -412,7 +415,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
@@ -439,7 +442,8 @@ class AceWindowsNarratorViewModelTest {
                 failing = false
                 manualItemRequests.emit(ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey.value))
                 runCurrent()
-                verify(exactly = 2) { ttsEngine.speak(event, true) }
+                verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
+                verify(exactly = 2) { ttsEngine.speak(event, false, true) }
                 verify(exactly = 1) { captureError(captured.captured) }
                 coVerify(exactly = 1) {
                     telemetryLogRepository.saveTelemetryLog(
@@ -447,7 +451,7 @@ class AceWindowsNarratorViewModelTest {
                         Simulator.AceWindows,
                         key,
                         text,
-                        NarrationOutcome.QUEUED,
+                        NarrationOutcome.SPOKEN,
                         NarrationSource.MANUAL,
                         json.captured,
                     )
@@ -637,14 +641,15 @@ class AceWindowsNarratorViewModelTest {
         }
         val json = slot<String>()
         stubReadoutDefaults(thresholdPercentage = 30, queueEnabledOverrides = mapOf(key to false))
-        every { ttsEngine.speak(event, true) } just Runs
+        every { ttsEngine.currentReadoutItemKey } returns null
+        every { ttsEngine.speak(event, false, true) } just Runs
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 100L,
                 Simulator.AceWindows,
                 key,
                 event.text,
-                NarrationOutcome.QUEUED,
+                NarrationOutcome.SPOKEN,
                 NarrationSource.MANUAL,
                 capture(json),
             )
@@ -719,14 +724,15 @@ class AceWindowsNarratorViewModelTest {
         val logged = Json.parseToJsonElement(json).jsonObject
         assertEquals(setOf("state", "settings", "observedAtMs"), logged.keys)
         assertEquals("100", logged.getValue("observedAtMs").jsonPrimitive.content)
-        verify(exactly = 1) { ttsEngine.speak(event, true) }
+        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+        verify(exactly = 1) { ttsEngine.speak(event, false, true) }
         coVerify(exactly = 1) {
             telemetryLogRepository.saveTelemetryLog(
                 100L,
                 Simulator.AceWindows,
                 event.readoutItemKey,
                 event.text,
-                NarrationOutcome.QUEUED,
+                NarrationOutcome.SPOKEN,
                 NarrationSource.MANUAL,
                 json,
             )
@@ -1783,7 +1789,14 @@ class AceWindowsNarratorViewModelTest {
 
     private fun mockTts(spokenTexts: MutableList<SpeechEvent>): TextToSpeechEngine {
         every { ttsEngine.currentReadoutItemKey } returns null
-        every { ttsEngine.speak(capture(spokenTexts), capture(mutableListOf<Boolean>())) } just Runs
+        every { ttsEngine.currentIsManual } returns false
+        every {
+            ttsEngine.speak(
+                capture(spokenTexts),
+                capture(mutableListOf<Boolean>()),
+                capture(mutableListOf<Boolean>()),
+            )
+        } just Runs
         every { ttsEngine.stop() } just Runs
         return ttsEngine
     }

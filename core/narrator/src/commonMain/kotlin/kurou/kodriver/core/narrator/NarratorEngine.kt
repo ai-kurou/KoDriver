@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
@@ -117,8 +118,10 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     fun speak(
         event: EVENT,
         queue: Boolean = false,
+        isManual: Boolean = false,
     ) {
         val body = playbackBody(event) ?: return
+        val manual = isManual || isManualEvent(event)
         if (queue) {
             // stop() 直後で playbackScope がキャンセル済みのままだと、その配下へ launch した
             // 瞬間に子ジョブごとキャンセルされてしまうため、生存中でなければ差し替える。
@@ -129,7 +132,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
                 playbackScope.launch {
                     barrier.join()
                     previousJob?.join()
-                    play(event, body)
+                    play(event, manual, body)
                 }
             return
         }
@@ -138,12 +141,12 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         // 公開しないと play() に入るまで currentKey が null になり、続けて届いた自動・手動の
         // イベントが「再生中なし」と判定されて、待機中のこのイベントをキャンセルしてしまう。
         _currentKey = eventToKey(event)
-        _currentIsManual = isManualEvent(event)
+        _currentIsManual = manual
         playbackScope = newPlaybackScope()
         playJob =
             playbackScope.launch {
                 barrier.join()
-                play(event, body)
+                play(event, manual, body)
             }
     }
 
@@ -158,19 +161,24 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
 
     private suspend fun play(
         event: EVENT,
+        manual: Boolean,
         body: suspend (Int) -> Unit,
     ) {
         val key = eventToKey(event)
         _currentKey = key
-        _currentIsManual = isManualEvent(event)
+        _currentIsManual = manual
         val vol = currentVolume
         val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
         if (startSoundEnabled) {
             startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         }
         body(vol)
-        _currentKey = null
-        _currentIsManual = false
+        // キューに後続のジョブが待機している間は、再生中の状態を消さない。消すと、次のジョブが
+        // play() に入るまでの間に届いたイベントが「再生中なし」と判定され、待機中のジョブをキャンセルする。
+        if (playJob === currentCoroutineContext().job) {
+            _currentKey = null
+            _currentIsManual = false
+        }
     }
 
     fun stop() {

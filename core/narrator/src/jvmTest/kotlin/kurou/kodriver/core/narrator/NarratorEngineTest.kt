@@ -850,6 +850,23 @@ class NarratorEngineTest {
         }
 
     @Test
+    fun `speakにisManualを渡すとisManualEventがfalseでも手動として再生する`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = RED_FLAG_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(RED_FLAG, isManual = true)
+            runCurrent()
+
+            assertEquals(true, engine.currentIsManual)
+            engine.stop()
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+        }
+
+    @Test
     fun `自動イベントの再生中はcurrentIsManualがfalseを返す`() =
         runTest {
             val cancellationSignal = CompletableDeferred<Unit>()
