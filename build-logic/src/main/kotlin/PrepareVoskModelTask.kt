@@ -101,7 +101,8 @@ abstract class PrepareVoskModelTask
                     return zip
                 } catch (e: java.io.IOException) {
                     lastError = e
-                    logger.warn("Voskモデルの取得に失敗しました（${attempt + 1}/${DOWNLOAD_MAX_ATTEMPTS}回目）: ${e.javaClass.simpleName}")
+                    val progress = "${attempt + 1}/$DOWNLOAD_MAX_ATTEMPTS"
+                    logger.warn("Voskモデルの取得に失敗しました（${progress}回目）: ${e.javaClass.simpleName}")
                     if (attempt < DOWNLOAD_MAX_ATTEMPTS - 1) Thread.sleep(DOWNLOAD_RETRY_DELAY_MILLIS * (attempt + 1))
                 }
             }
