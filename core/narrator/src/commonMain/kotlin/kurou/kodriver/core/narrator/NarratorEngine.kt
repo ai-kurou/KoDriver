@@ -134,6 +134,11 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
             return
         }
         val barrier = cancelPlayback()
+        // 前の再生の停止待ち（barrier）の間も、この新しいイベントを再生中として公開する。
+        // 公開しないと play() に入るまで currentKey が null になり、続けて届いた自動・手動の
+        // イベントが「再生中なし」と判定されて、待機中のこのイベントをキャンセルしてしまう。
+        _currentKey = eventToKey(event)
+        _currentIsManual = isManualEvent(event)
         playbackScope = newPlaybackScope()
         playJob =
             playbackScope.launch {

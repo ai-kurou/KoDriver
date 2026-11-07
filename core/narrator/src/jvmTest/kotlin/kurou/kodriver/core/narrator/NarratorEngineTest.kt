@@ -887,6 +887,46 @@ class NarratorEngineTest {
             advanceUntilIdle()
         }
 
+    @Test
+    fun `手動の再生が自然に終わるとcurrentIsManualはfalseを返す`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player, isManualEvent = { it == CAR_LEFT })
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            advanceUntilIdle()
+
+            assertEquals(false, engine.currentIsManual)
+            assertEquals(null, engine.currentKey)
+        }
+
+    @Test
+    fun `手動が自動を中断した停止待ちの間も手動イベントを再生中として返す`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = RED_FLAG_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player, isManualEvent = { it == CAR_LEFT })
+            runCurrent()
+
+            engine.speak(RED_FLAG)
+            runCurrent()
+            assertEquals(false, engine.currentIsManual)
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            // 前の再生の停止待ち中で、手動イベントはまだ play() に入っていない
+            assertEquals(CAR_LEFT_KEY, engine.currentKey)
+            assertEquals(true, engine.currentIsManual)
+            assertEquals(2, player.playedSounds.size)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds.last())
+        }
+
     @Suppress("LongParameterList")
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
