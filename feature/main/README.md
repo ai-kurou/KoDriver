@@ -21,6 +21,7 @@ AppScreen の UI 状態の合成は `AppScreenFlow` が cold Flow として担�
 - 見えなくなる前に聞き取り中だった場合だけ、前面に戻ったときに再開する（権限が外されていれば再開しない）。スイッチを OFF にした場合や失敗・無発話の自動停止の後は再開しない。ON/OFF の状態はメモリ上にのみ持つため、アプリのプロセスが終了すると OFF に戻る。
 - 認識途中の文字列も確定結果も届かないまま5分経つと自動で止める（暫定値）。
 - 確定結果（`Recognized`）の候補を `matchLmuWindowsManualReadoutItemKey`（`:core:lmu-windows-domain`）・`matchGt7Ps5ManualReadoutItemKey`（`:core:gt7-ps5-domain`）・`matchAceWindowsManualReadoutItemKey`（`:core:ace-windows-domain`）で手動読み上げ項目の語句と照合し、一致したシミュレーター宛ての `ManualReadoutItemRequest` を `RequestManualReadoutItemUseCase` で発行する（照合規則は `:core:domain` の `matchManualReadoutItemKey`）。該当シミュレーターの Narrator が受け取り、保存済みセットの編集文言を使わず既定文言で1項目だけ読み上げる。選択中のシミュレーターでなければ Narrator 側が無視する。ウェイクワードは持たないため、常時聞き取り中の会話にも反応する。
+- 音声認識由来の依頼は `playStartSound = false` で発行し、Narrator は開始音を鳴らさずに本文だけを読み上げる（`TextToSpeechEngine.speak` の `playStartSound`）。自動タブの開始音スイッチには関係なく、音声認識では常に開始音を鳴らさない。ボタン・ホットキー・保存済みセットからの手動読み上げと自動読み上げは従来どおり。
 
 ## 入力デバイスの選択（デスクトップ）
 

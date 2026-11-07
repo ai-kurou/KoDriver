@@ -1175,6 +1175,35 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `音声の項目依頼が開始音なしの指定なら開始音を鳴らさず読み上げる`() =
+        runTest(testDispatcher) {
+            val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val itemRequests = Channel<ManualReadoutItemRequest>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val key = LmuWindowsReadoutItemKey.MyBestLap.Root
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.currentIsManual } returns false
+            every { ttsEngine.speak(capture(spoken), false, true, false) } just Runs
+            createViewModel(
+                telemetryChannel = telemetry,
+                manualItemRequestChannel = itemRequests,
+                manualSets = emptyList(),
+                ttsEngine = ttsEngine,
+                enabledOverrides = mapOf(key to false),
+                queueEnabledOverrides = mapOf(key to false),
+            )
+            telemetry.send(fakeTelemetryData(bestLapTimeMs = 83_456L))
+            itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value, playStartSound = false))
+            assertEquals(
+                listOf(lmuWindowsManualReadoutItemTextDefault(key.value).replace("{laptime}", "1分23秒456")),
+                spoken.map { it.narratedText },
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(spoken.single(), false, true, false) }
+            confirmVerified(ttsEngine)
+        }
+
+    @Test
     fun `音声の項目依頼はLMU以外のシミュレーター宛てなら読まない`() =
         runTest(testDispatcher) {
             val telemetry = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)

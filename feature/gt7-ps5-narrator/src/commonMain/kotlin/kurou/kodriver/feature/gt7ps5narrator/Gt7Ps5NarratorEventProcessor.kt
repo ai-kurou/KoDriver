@@ -71,6 +71,7 @@ internal class Gt7Ps5NarratorEventProcessor(
         events: List<ReadoutTextEvent>,
         observedAtMs: Long,
         logContext: Gt7Ps5TelemetryLogContext,
+        playStartSound: Boolean = true,
     ) {
         events.forEach { event ->
             val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
@@ -78,7 +79,13 @@ internal class Gt7Ps5NarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    speakWithPriority(event.withResolvedText(text), emptyList(), emptyMap(), isManual = true)
+                    speakWithPriority(
+                        event.withResolvedText(text),
+                        emptyList(),
+                        emptyMap(),
+                        isManual = true,
+                        playStartSound = playStartSound,
+                    )
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -144,13 +151,14 @@ internal class Gt7Ps5NarratorEventProcessor(
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         isManual: Boolean = false,
+        playStartSound: Boolean = true,
     ): NarrationOutcome =
         speakWithOutcome(
             eventKey = event.readoutItemKey,
             currentKey = { ttsEngine.currentReadoutItemKey },
             autoReadoutOrder = autoReadoutOrder,
             queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
-            speak = { queue -> ttsEngine.speak(event, queue, isManual) },
+            speak = { queue -> ttsEngine.speak(event, queue, isManual, playStartSound) },
             stop = { ttsEngine.stop() },
             outcomes =
                 SpeakOutcomes(

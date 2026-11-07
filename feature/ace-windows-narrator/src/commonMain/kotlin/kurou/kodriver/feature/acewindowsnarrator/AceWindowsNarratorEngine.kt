@@ -23,7 +23,8 @@ internal class AceWindowsNarratorEngine(
         event: SpeechEvent,
         queue: Boolean,
         isManual: Boolean,
-    ) = engine.speak(event, queue, isManual)
+        playStartSound: Boolean,
+    ) = engine.speak(event, queue, isManual, playStartSound)
 
     override fun stop() = engine.stop()
 

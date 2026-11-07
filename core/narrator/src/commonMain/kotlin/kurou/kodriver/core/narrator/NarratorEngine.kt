@@ -119,6 +119,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         event: EVENT,
         queue: Boolean = false,
         isManual: Boolean = false,
+        playStartSound: Boolean = true,
     ) {
         val body = playbackBody(event) ?: return
         val manual = isManual || isManualEvent(event)
@@ -132,7 +133,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
                 playbackScope.launch {
                     barrier.join()
                     previousJob?.join()
-                    play(event, manual, body)
+                    play(event, manual, body, playStartSound)
                 }
             return
         }
@@ -146,7 +147,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         playJob =
             playbackScope.launch {
                 barrier.join()
-                play(event, manual, body)
+                play(event, manual, body, playStartSound)
             }
     }
 
@@ -163,13 +164,14 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         event: EVENT,
         manual: Boolean,
         body: suspend (Int) -> Unit,
+        playStartSound: Boolean,
     ) {
         val key = eventToKey(event)
         _currentKey = key
         _currentIsManual = manual
         val vol = currentVolume
         val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
-        if (startSoundEnabled) {
+        if (playStartSound && startSoundEnabled) {
             startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         }
         body(vol)

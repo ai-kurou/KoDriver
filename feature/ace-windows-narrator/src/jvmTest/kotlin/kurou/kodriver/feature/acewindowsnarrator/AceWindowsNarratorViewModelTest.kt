@@ -375,6 +375,69 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `音声の項目依頼が開始音なしの指定なら開始音を鳴らさず読み上げる`() =
+        runTest(testDispatcher) {
+            val itemKey = AceWindowsReadoutItemKey.MyBestLap.Root
+            // 手動読み上げのイベントとログのキーは、選んだ項目に関係なく燃料残量のキーになる。
+            val key = AceWindowsReadoutItemKey.RemainingFuel.Root
+            val text = aceWindowsManualReadoutItemTextDefault(itemKey.value).replace("{laptime}", "1分23秒456")
+            val event = AceWindowsManualReadoutText(key, text, text)
+            val json = slot<String>()
+            manualSets.update { emptyList() }
+            stubReadoutDefaults(thresholdPercentage = 30, queueEnabledOverrides = mapOf(key to false))
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, false, true, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    key,
+                    text,
+                    NarrationOutcome.SPOKEN,
+                    NarrationSource.MANUAL,
+                    capture(json),
+                )
+            } just Runs
+            val bestLapChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
+            val viewModel =
+                createViewModel(
+                    Channel(Channel.UNLIMITED),
+                    ttsEngine,
+                    bestLapTimeChannel = bestLapChannel,
+                    currentTimeMs = { 100L },
+                )
+            try {
+                runCurrent()
+                bestLapChannel.send(AceWindowsBestLapTimeData(83_456))
+                runCurrent()
+                manualItemRequests.emit(
+                    ManualReadoutItemRequest(
+                        Simulator.AceWindows.id,
+                        itemKey.value,
+                        playStartSound = false,
+                    ),
+                )
+                runCurrent()
+                verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+                verify(exactly = 1) { ttsEngine.speak(event, false, true, false) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        100L,
+                        Simulator.AceWindows,
+                        key,
+                        text,
+                        NarrationOutcome.SPOKEN,
+                        NarrationSource.MANUAL,
+                        json.captured,
+                    )
+                }
+                confirmVerified(ttsEngine, telemetryLogRepository)
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
+        }
+
+    @Test
     fun `音声の項目依頼はACE以外のシミュレーター宛てなら読まない`() =
         runTest(testDispatcher) {
             val bestLapChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)

@@ -286,7 +286,10 @@ internal class AceWindowsNarratorViewModel(
                 if (request.simulatorId == Simulator.AceWindows.id) {
                     // 1件の失敗で購読が止まり、以降の音声依頼が無視されないよう依頼ごとに捕捉する。
                     try {
-                        readManualReadout(ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)))
+                        readManualReadout(
+                            ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
+                            playStartSound = request.playStartSound,
+                        )
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: Exception) {
@@ -295,7 +298,10 @@ internal class AceWindowsNarratorViewModel(
                 }
             }.launchIn(viewModelScope)
 
-    private suspend fun readManualReadout(set: ManualReadoutSet?) {
+    private suspend fun readManualReadout(
+        set: ManualReadoutSet?,
+        playStartSound: Boolean = true,
+    ) {
         if (set == null || selectedSimulator.value !is Simulator.AceWindows) return
         val observedAtMs = currentTimeMs()
         val state = narratorState
@@ -342,6 +348,7 @@ internal class AceWindowsNarratorViewModel(
             events = decision.events,
             observedAtMs = observedAtMs,
             logContext = AceWindowsTelemetryLogContext(state, settings, decision.state),
+            playStartSound = playStartSound,
         )
     }
 
