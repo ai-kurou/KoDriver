@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.matchAceWindowsManualReadoutItemKey
-import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutItemKey
 import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutItemRequest
@@ -99,7 +99,7 @@ internal class SpeechRecognitionViewModel(
                     throw e
                 } catch (e: Exception) {
                     // 保存値を読めなくても、聞き取りは止めない。次の取得で読み直す
-                    captureError(e)
+                    captureErrorTypeOnly(e)
                 }
             }
     }
@@ -117,7 +117,7 @@ internal class SpeechRecognitionViewModel(
                 throw e
             } catch (e: Exception) {
                 // 保存できなかった選択では聞き取りをやり直さず、表示も元に戻す（再度選べば保存をやり直せる）
-                captureError(e)
+                captureErrorTypeOnly(e)
                 _uiState.update { it.copy(deviceName = previousName) }
                 return@launch
             }
@@ -198,7 +198,7 @@ internal class SpeechRecognitionViewModel(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    captureError(e)
+                    captureErrorTypeOnly(e)
                     onFailed(SpeechRecognitionFailureReason.RecognitionFailed)
                 }
             }
@@ -213,7 +213,7 @@ internal class SpeechRecognitionViewModel(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            captureError(e)
+            captureErrorTypeOnly(e)
         }
     }
 

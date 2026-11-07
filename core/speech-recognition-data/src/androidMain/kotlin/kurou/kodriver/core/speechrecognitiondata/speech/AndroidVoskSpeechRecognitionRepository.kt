@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
@@ -62,7 +63,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
             }
         }.catch { e ->
             if (e !is Exception && e !is LinkageError) throw e
-            captureError(e)
+            captureErrorTypeOnly(e)
             emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.RecognitionFailed))
         }.flowOn(ioDispatcher)
 

@@ -5,6 +5,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.slot
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -275,15 +276,17 @@ class SpeechRecognitionViewModelTest {
         val viewModel = createViewModel(granted = true)
         val exception = IllegalStateException("失敗")
         every { speechRepository.observeRecognition() } returns flow { throw exception }
+        val captured = slot<Throwable>()
         val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
         mockkStatic(errorCapture)
-        every { captureError(exception) } returns Unit
+        every { captureError(capture(captured)) } returns Unit
         try {
             viewModel.onEnabledChange(true) {}
 
             assertFalse(viewModel.uiState.value.enabled)
             assertEquals(SpeechRecognitionStatus.RecognitionFailed, viewModel.uiState.value.status)
-            verify(exactly = 1) { captureError(exception) }
+            verify(exactly = 1) { captureError(captured.captured) }
+            assertEquals("IllegalStateException", captured.captured.message)
             confirmVerified(errorCapture)
         } finally {
             unmockkStatic(errorCapture)

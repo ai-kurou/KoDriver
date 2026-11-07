@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.MicrophoneAudioEvent
 import kurou.kodriver.domain.model.MicrophoneFailureReason
@@ -45,7 +46,7 @@ internal class JvmSpeechRecognitionRepository(
         }.catch { e ->
             // 設定の読み取りや認識中に想定外の例外が出ても、続行できないことをFailedで知らせて完了する
             if (e !is Exception && e !is LinkageError) throw e
-            captureError(e)
+            captureErrorTypeOnly(e)
             emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.RecognitionFailed))
         }.flowOn(computeDispatcher)
 
