@@ -155,6 +155,8 @@ internal class AndroidVoskSpeechRecognitionRepository(
             currentCoroutineContext().ensureActive()
             val size = recorder.read(buffer)
             if (size <= 0) {
+                // 収集をやめて interrupt() で戻された読み取りは、マイクの障害として記録しない
+                currentCoroutineContext().ensureActive()
                 captureError(IllegalStateException("音声認識を続けられません。マイクから音声を読み取れません"))
                 return
             }
