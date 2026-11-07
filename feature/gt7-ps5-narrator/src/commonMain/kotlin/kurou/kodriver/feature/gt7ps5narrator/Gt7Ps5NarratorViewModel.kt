@@ -251,20 +251,24 @@ internal class Gt7Ps5NarratorViewModel(
                         settings = settings,
                     )
                 narratorState = decision.state
-                eventProcessor.process(
-                    sourceKey = Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
-                    telemetry = telemetry,
-                    events = decision.events,
-                    autoReadoutOrder = autoReadoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        Gt7Ps5TelemetryLogContext(
-                            state = state,
-                            settings = settings,
-                            finalState = decision.state,
-                        ),
-                )
+                if (
+                    eventProcessor.process(
+                        sourceKey = Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
+                        telemetry = telemetry,
+                        events = decision.events,
+                        autoReadoutOrder = autoReadoutOrder.value,
+                        queueEnabledStates = queueEnabledStates.value,
+                        observedAtMs = observedAtMs,
+                        logContext =
+                            Gt7Ps5TelemetryLogContext(
+                                state = state,
+                                settings = settings,
+                                finalState = decision.state,
+                            ),
+                    )
+                ) {
+                    narratorState = narratorState.copy(remainingFuelWarned = false)
+                }
             }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
@@ -318,7 +322,10 @@ internal class Gt7Ps5NarratorViewModel(
                 if (request.simulatorId == Simulator.Gt7Ps5.id) {
                     // 1件の失敗で購読が止まり、以降の音声依頼が無視されないよう依頼ごとに捕捉する。
                     try {
-                        readManualReadout(ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)))
+                        readManualReadout(
+                            ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
+                            playStartSound = request.playStartSound,
+                        )
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: Exception) {
@@ -358,7 +365,10 @@ internal class Gt7Ps5NarratorViewModel(
             }
         }
 
-    private suspend fun readManualReadout(set: ManualReadoutSet?) {
+    private suspend fun readManualReadout(
+        set: ManualReadoutSet?,
+        playStartSound: Boolean = true,
+    ) {
         if (set == null || selectedSimulator.value !is Simulator.Gt7Ps5) return
         val observedAtMs = currentTimeMs()
         val state = narratorState
@@ -379,6 +389,7 @@ internal class Gt7Ps5NarratorViewModel(
             events = decision.events,
             observedAtMs = observedAtMs,
             logContext = Gt7Ps5TelemetryLogContext(state, settings, decision.state),
+            playStartSound = playStartSound,
         )
     }
 

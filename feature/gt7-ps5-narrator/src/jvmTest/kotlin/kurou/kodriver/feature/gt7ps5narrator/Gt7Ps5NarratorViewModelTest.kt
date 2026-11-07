@@ -626,6 +626,67 @@ class Gt7Ps5NarratorViewModelTest {
         }
 
     @Test
+    fun `音声の項目依頼が開始音なしの指定なら開始音を鳴らさず読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val itemKey = Gt7Ps5ReadoutItemKey.MyBestLap.Root
+            // 手動読み上げのイベントとログのキーは、選んだ項目に関係なく燃料残量のキーになる。
+            val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root
+            val text = gt7Ps5ManualReadoutItemTextDefault(itemKey.value).replace("{laptime}", "1分23秒456")
+            val event = Gt7Ps5ManualReadoutText(key, text, text)
+            val json = slot<String>()
+            manualSets.update { emptyList() }
+            stubReadoutDefaults(
+                enabledOverrides = mapOf(key to false, Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled to false),
+                queueEnabledOverrides = mapOf(key to false),
+            )
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, false, true, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    text,
+                    NarrationOutcome.SPOKEN,
+                    NarrationSource.MANUAL,
+                    capture(json),
+                )
+            } just Runs
+            val viewModel = createViewModel(channel, ttsEngine, currentTimeMs = { 100L })
+            try {
+                runCurrent()
+                channel.send(gt7Telemetry(bestLapTimeMs = 83_456))
+                runCurrent()
+                manualItemRequests.emit(
+                    ManualReadoutItemRequest(
+                        Simulator.Gt7Ps5.id,
+                        itemKey.value,
+                        playStartSound = false,
+                    ),
+                )
+                runCurrent()
+                verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+                verify(exactly = 1) { ttsEngine.speak(event, false, true, false) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        100L,
+                        Simulator.Gt7Ps5,
+                        key,
+                        text,
+                        NarrationOutcome.SPOKEN,
+                        NarrationSource.MANUAL,
+                        json.captured,
+                    )
+                }
+                confirmVerified(ttsEngine, telemetryLogRepository)
+            } finally {
+                viewModel.viewModelScope.cancel()
+                channel.close()
+            }
+        }
+
+    @Test
     fun `音声の項目依頼はGT7以外のシミュレーター宛てなら読まない`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
@@ -1089,6 +1150,34 @@ class Gt7Ps5NarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30%")),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `手動読み上げ中に燃料残量警告が読まれなかった場合は手動の終了後に再度判定して読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            every { ttsEngine.currentReadoutItemKey } returns Gt7Ps5ReadoutItemKey.MyBestLap.Root
+            every { ttsEngine.currentIsManual } returns true
+            stubReadoutDefaults(
+                remainingFuelThresholdPercentage = 30,
+                queueEnabledOverrides = mapOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root to false),
+            )
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.currentIsManual } returns false
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 19f, gasCapacity = 100f))
+
+            assertEquals(
+                listOf<SpeechEvent>(Gt7Ps5RemainingFuelWarning(20, resolvedText = "燃料は残り20%")),
                 spokenTexts,
             )
         }

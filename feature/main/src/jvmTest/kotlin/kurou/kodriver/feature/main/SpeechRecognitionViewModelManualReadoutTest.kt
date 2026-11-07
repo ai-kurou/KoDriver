@@ -73,15 +73,12 @@ class SpeechRecognitionViewModelManualReadoutTest {
 
         assertEquals(
             listOf(
-                ManualReadoutItemRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingFuel.Laps.value),
-                ManualReadoutItemRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value),
-                ManualReadoutItemRequest(
-                    Simulator.AceWindows.id,
-                    AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value,
-                ),
-                ManualReadoutItemRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.MyBestLap.Root.value),
-                ManualReadoutItemRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.MyBestLap.Root.value),
-                ManualReadoutItemRequest(Simulator.AceWindows.id, AceWindowsReadoutItemKey.MyBestLap.Root.value),
+                voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingFuel.Laps.value),
+                voiceRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value),
+                voiceRequest(Simulator.AceWindows.id, AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
+                voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.MyBestLap.Root.value),
+                voiceRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.MyBestLap.Root.value),
+                voiceRequest(Simulator.AceWindows.id, AceWindowsReadoutItemKey.MyBestLap.Root.value),
             ),
             itemRequestRepository.requests,
         )
@@ -97,4 +94,21 @@ class SpeechRecognitionViewModelManualReadoutTest {
         assertEquals(emptyList(), itemRequestRepository.requests)
         assertEquals(listOf(listOf("こんにちは")), viewModel.uiState.value.recognized)
     }
+
+    @Test
+    fun `音声認識由来の項目依頼は開始音を鳴らさない指定で発行する`() {
+        createListeningViewModel()
+
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
+
+        assertEquals(
+            listOf(false, false, false),
+            itemRequestRepository.requests.map { it.playStartSound },
+        )
+    }
+
+    private fun voiceRequest(
+        simulatorId: String,
+        itemKey: String,
+    ) = ManualReadoutItemRequest(simulatorId, itemKey, playStartSound = false)
 }

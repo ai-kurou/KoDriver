@@ -80,6 +80,7 @@ internal class AceWindowsNarratorEventProcessor(
         events: List<ReadoutTextEvent>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
+        playStartSound: Boolean = true,
     ) {
         events.forEach { event ->
             val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
@@ -87,7 +88,13 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    speakWithPriority(event.withResolvedText(text), emptyList(), emptyMap(), isManual = true)
+                    speakWithPriority(
+                        event.withResolvedText(text),
+                        emptyList(),
+                        emptyMap(),
+                        isManual = true,
+                        playStartSound = playStartSound,
+                    )
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -179,6 +186,10 @@ internal class AceWindowsNarratorEventProcessor(
         previousFlag = flag
     }
 
+    /**
+     * 本文を解決できたのに優先度判定で読み上げられなかったイベントが1件でもあれば true を返す。
+     * 一度きりの警告フラグを呼び出し側が戻して再試行するために使う。
+     */
     suspend fun processRemainingFuel(
         fuel: AceWindowsFuelData,
         events: List<ReadoutTextEvent>,
@@ -186,8 +197,9 @@ internal class AceWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
-    ) {
+    ): Boolean {
         val previous = previousFuel
+        var droppedByPriority = false
         events.forEach { event ->
             val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
             val narrationOutcome =
@@ -213,8 +225,10 @@ internal class AceWindowsNarratorEventProcessor(
                         finalState = logContext.finalState,
                     ),
             )
+            if (text != null && narrationOutcome == NarrationOutcome.SKIPPED) droppedByPriority = true
         }
         previousFuel = fuel
+        return droppedByPriority
     }
 
     suspend fun processRemainingFuelLaps(
@@ -342,13 +356,14 @@ internal class AceWindowsNarratorEventProcessor(
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         isManual: Boolean = false,
+        playStartSound: Boolean = true,
     ): NarrationOutcome =
         speakWithOutcome(
             eventKey = event.readoutItemKey,
             currentKey = { ttsEngine.currentReadoutItemKey },
             autoReadoutOrder = autoReadoutOrder,
             queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
-            speak = { queue -> ttsEngine.speak(event, queue, isManual) },
+            speak = { queue -> ttsEngine.speak(event, queue, isManual, playStartSound) },
             stop = { ttsEngine.stop() },
             outcomes =
                 SpeakOutcomes(

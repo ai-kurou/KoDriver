@@ -13,11 +13,15 @@ interface TextToSpeechEngine {
     /** [currentReadoutItemKey] のイベントが手動読み上げ由来か。再生も待機もない場合は false。 */
     val currentIsManual: Boolean get() = false
 
-    /** [isManual] が true の場合、手動読み上げとして再生する（[currentIsManual] に反映される）。 */
+    /**
+     * [isManual] が true の場合、手動読み上げとして再生する（[currentIsManual] に反映される）。
+     * [playStartSound] が false の場合、本文の前の開始音を鳴らさない。
+     */
     fun speak(
         event: SpeechEvent,
         queue: Boolean = false,
         isManual: Boolean = false,
+        playStartSound: Boolean = true,
     )
 
     fun stop()

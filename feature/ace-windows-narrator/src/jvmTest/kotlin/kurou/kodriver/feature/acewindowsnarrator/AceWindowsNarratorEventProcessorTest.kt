@@ -68,6 +68,44 @@ class AceWindowsNarratorEventProcessorTest {
     private val ttsEngine: TextToSpeechEngine = mockk()
 
     @Test
+    fun `手動読み上げで開始音なしを指定すると開始音を鳴らさない指定で読み上げる`() =
+        runTest {
+            val event = AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, "残り42%")
+            val resolved = event.withResolvedText(event.text)
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolved, false, true, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    event.readoutItemKey,
+                    event.text,
+                    NarrationOutcome.SPOKEN,
+                    NarrationSource.MANUAL,
+                    capture(json),
+                )
+            } just Runs
+
+            createProcessor().processManualReadout(listOf(event), 100L, logContext(), playStartSound = false)
+
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(resolved, false, true, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    event.readoutItemKey,
+                    event.text,
+                    NarrationOutcome.SPOKEN,
+                    NarrationSource.MANUAL,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `手動イベントをキューに追加しテレメトリなしのログを保存する`() =
         runTest {
             val event = AceWindowsManualReadoutText(AceWindowsReadoutItemKey.RemainingFuel.Root, "読み上げる項目がありません")

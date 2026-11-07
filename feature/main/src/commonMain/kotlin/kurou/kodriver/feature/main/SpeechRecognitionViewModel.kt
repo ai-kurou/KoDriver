@@ -243,14 +243,21 @@ internal class SpeechRecognitionViewModel(
                 }
                 // 各シミュレーターの語句を照合し、一致したシミュレーター宛てに依頼を発行する。
                 // 選択中のシミュレーターでなければ、そのNarrator側が依頼を無視する。ACEの照合は未対応。
+                // 音声認識の読み上げでは開始音を鳴らさない（playStartSound = false）。
                 matchLmuWindowsManualReadoutItemKey(event.candidates)?.let { itemKey ->
-                    requestManualReadoutItem(ManualReadoutItemRequest(Simulator.LmuWindows.id, itemKey))
+                    requestManualReadoutItem(
+                        ManualReadoutItemRequest(Simulator.LmuWindows.id, itemKey, playStartSound = false),
+                    )
                 }
                 matchGt7Ps5ManualReadoutItemKey(event.candidates)?.let { itemKey ->
-                    requestManualReadoutItem(ManualReadoutItemRequest(Simulator.Gt7Ps5.id, itemKey))
+                    requestManualReadoutItem(
+                        ManualReadoutItemRequest(Simulator.Gt7Ps5.id, itemKey, playStartSound = false),
+                    )
                 }
                 matchAceWindowsManualReadoutItemKey(event.candidates)?.let { itemKey ->
-                    requestManualReadoutItem(ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey))
+                    requestManualReadoutItem(
+                        ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey, playStartSound = false),
+                    )
                 }
             }
 
