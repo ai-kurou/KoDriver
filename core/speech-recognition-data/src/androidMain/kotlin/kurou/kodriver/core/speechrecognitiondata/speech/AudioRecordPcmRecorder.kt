@@ -38,9 +38,13 @@ internal class AudioRecordPcmRecorder : PcmRecorder {
 
     override fun read(buffer: ByteArray): Int = record?.read(buffer, 0, buffer.size) ?: -1
 
-    // 読み取りで待っているスレッドに対し、別スレッドから録音を止めて戻させる（解放済みなら何もしない）
+    // 読み取りで待っているスレッドに対し、別スレッドから録音を止めて戻させる
     override fun interrupt() {
-        runCatching { record?.stop() }
+        try {
+            record?.stop()
+        } catch (_: IllegalStateException) {
+            // 解放済み・未初期化のときは止める対象がない
+        }
     }
 
     override fun close() {

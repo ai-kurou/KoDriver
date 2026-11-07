@@ -254,10 +254,15 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
                     ioDispatcher = Dispatchers.IO,
                 )
             val job = launch { repository.observeRecognition().collect {} }
-            withTimeout(WAIT_MILLIS) { blocking.readStarted.await() }
+            try {
+                withTimeout(WAIT_MILLIS) { blocking.readStarted.await() }
 
-            job.cancel()
-            withTimeout(WAIT_MILLIS) { job.join() }
+                job.cancel()
+                withTimeout(WAIT_MILLIS) { job.join() }
+            } finally {
+                // 不具合で interrupt() が呼ばれなくても、テストが止まり続けないよう必ず解放する
+                blocking.release()
+            }
 
             assertEquals(listOf("interrupt", "close"), blocking.calls.toList())
         }
@@ -283,6 +288,8 @@ private class BlockingPcmRecorder : PcmRecorder {
         calls.add("interrupt")
         released.countDown()
     }
+
+    fun release() = released.countDown()
 
     override fun close() {
         calls.add("close")
