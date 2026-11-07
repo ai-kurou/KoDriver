@@ -70,13 +70,13 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             val event = Gt7Ps5TyreTemperatureCurrentValue(90)
             coEvery { checkAvailable() } returns true
-            coEvery { speakText("タイヤ温度90℃", volume = 80) } just Runs
+            coEvery { speakText("タイヤ温度は90℃", volume = 80) } just Runs
             coEvery { speakText("温度90℃", volume = 80) } just Runs
-            assertEquals("タイヤ温度90℃", speaker.readoutText(event))
+            assertEquals("タイヤ温度は90℃", speaker.readoutText(event))
             speaker(event, 80)
             speaker(event.withResolvedText("温度90℃"), 80)
             coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 1) { speakText("タイヤ温度90℃", volume = 80) }
+            coVerify(exactly = 1) { speakText("タイヤ温度は90℃", volume = 80) }
             coVerify(exactly = 1) { speakText("温度90℃", volume = 80) }
             confirmVerified(checkAvailable, speakText, observeText, observeEmptyText)
         }
@@ -102,13 +102,13 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             val event = Gt7Ps5RemainingFuelCurrentValue(42)
             coEvery { checkAvailable() } returns true
-            coEvery { speakText("燃料は残り42パーセント", volume = 80) } just Runs
+            coEvery { speakText("燃料は残り42%", volume = 80) } just Runs
             coEvery { speakText("残り42%", volume = 80) } just Runs
-            assertEquals("燃料は残り42パーセント", speaker.readoutText(event))
+            assertEquals("燃料は残り42%", speaker.readoutText(event))
             speaker(event, 80)
             speaker(event.withResolvedText("残り42%"), 80)
             coVerify(exactly = 2) { checkAvailable() }
-            coVerify(exactly = 1) { speakText("燃料は残り42パーセント", volume = 80) }
+            coVerify(exactly = 1) { speakText("燃料は残り42%", volume = 80) }
             coVerify(exactly = 1) { speakText("残り42%", volume = 80) }
             confirmVerified(checkAvailable, speakText, observeFuelText)
         }

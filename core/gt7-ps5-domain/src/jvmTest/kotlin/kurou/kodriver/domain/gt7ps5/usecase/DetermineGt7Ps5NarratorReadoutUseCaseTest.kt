@@ -66,7 +66,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         val cases =
             listOf(
                 Gt7Ps5ManualReadoutItem(key, gt7Ps5ManualReadoutItemTextDefault(key), ManualReadoutValue.Celsius(90)) to
-                    "タイヤ温度90℃",
+                    "タイヤ温度は90℃",
                 Gt7Ps5ManualReadoutItem(key, "温度{celsius}℃", ManualReadoutValue.Celsius(91)) to "温度91℃",
                 Gt7Ps5ManualReadoutItem(key, "温度{celsius}℃", null) to "タイヤ温度はデータがありません",
                 Gt7Ps5ManualReadoutItem(key, "", ManualReadoutValue.Celsius(90)) to "",
@@ -159,8 +159,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         val cases =
             listOf(
                 Gt7Ps5ManualReadoutItem(key, "あと{laps}周", ManualReadoutValue.RemainingLaps(3)) to "あと3周",
-                Gt7Ps5ManualReadoutItem(key, "あと{laps}周", ManualReadoutValue.RemainingLaps(0)) to "燃料残り1周未満",
-                Gt7Ps5ManualReadoutItem(key, "あと{laps}周", ManualReadoutValue.RemainingLaps(-1)) to "燃料残り1周未満",
+                Gt7Ps5ManualReadoutItem(key, "あと{laps}周", ManualReadoutValue.RemainingLaps(0)) to "燃料は残り1周未満",
+                Gt7Ps5ManualReadoutItem(key, "あと{laps}周", ManualReadoutValue.RemainingLaps(-1)) to "燃料は残り1周未満",
                 Gt7Ps5ManualReadoutItem(key, "あと{laps}周", null) to "燃料残り周回数はデータがありません",
                 Gt7Ps5ManualReadoutItem(key, " ", null) to "",
                 Gt7Ps5ManualReadoutItem(key, "", ManualReadoutValue.RemainingLaps(0)) to "",
@@ -172,14 +172,14 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             assertEquals(expected, decision.events.single().narratedText)
         }
         assertEquals(
-            "燃料は残り42パーセント、あと3周",
+            "燃料は残り42%、あと3周",
             useCase
                 .determineManualReadout(
                     Gt7Ps5NarratorState(),
                     listOf(
                         Gt7Ps5ManualReadoutItem(
                             Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value,
-                            "燃料は残り{percent}パーセント",
+                            "燃料は残り{percent}%",
                             ManualReadoutValue.Percent(42),
                         ),
                         Gt7Ps5ManualReadoutItem(key, "あと{laps}周", ManualReadoutValue.RemainingLaps(3)),
@@ -266,7 +266,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                         ManualReadoutValue.Percent(0),
                     ),
                 ) to
-                    "燃料は残り0パーセント",
+                    "燃料は残り0%",
                 listOf(Gt7Ps5ManualReadoutItem(key, "任意", null)) to "燃料残量はデータがありません",
                 listOf(Gt7Ps5ManualReadoutItem(key, "  ", ManualReadoutValue.Percent(100))) to "",
                 listOf(Gt7Ps5ManualReadoutItem(key, "", null)) to "",

@@ -6,9 +6,9 @@
 
 | シミュレーター | 項目 | キー（`value`） | 既定文言（定数名） | データなし時の文言 | カテゴリ・プレビュー |
 | --- | --- | --- | --- | --- | --- |
-| GT7 PS5 | 燃料残量 | `RemainingFuel.Root`（`gt7_ps5_auto_remaining_fuel`） | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | 「燃料残量はデータがありません」 | 燃料カテゴリ |
-| GT7 PS5 | 燃料残り周回数 | `RemainingFuelLaps.Root`（`gt7_ps5_auto_remaining_fuel_laps`） | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料残り1周未満」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ。プレビュー3周 |
-| GT7 PS5 | タイヤ温度 | `TyreTemperature.Root`（`gt7_ps5_auto_tyre_temperature`） | `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ。プレビュー90℃ |
+| GT7 PS5 | 燃料残量 | `RemainingFuel.Root`（`gt7_ps5_auto_remaining_fuel`） | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 「燃料残量はデータがありません」 | 燃料カテゴリ |
+| GT7 PS5 | 燃料残り周回数 | `RemainingFuelLaps.Root`（`gt7_ps5_auto_remaining_fuel_laps`） | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料は残り1周未満」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ。プレビュー3周 |
+| GT7 PS5 | タイヤ温度 | `TyreTemperature.Root`（`gt7_ps5_auto_tyre_temperature`） | `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ。プレビュー90℃ |
 | GT7 PS5 | 自己ベストラップ | `MyBestLap.Root`（`gt7_ps5_auto_my_best_lap`） | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | ラップカテゴリ。プレビュー83456ms |
 | ACE Windows | 燃料残量 | `RemainingFuel.Root`（`ace_windows_auto_remaining_fuel`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | 「燃料残量はデータがありません」 | 燃料カテゴリ。プレビューは `PREVIEW_ENERGY_PERCENT`（50） |
 | ACE Windows | 燃料残り周回数 | `RemainingFuelLaps.Root`（`ace_windows_auto_remaining_fuel_laps`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ |
@@ -116,19 +116,19 @@ LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingF
 
 ブレーキ温度・タイヤ温度の文言欄は `{celsius}` の挿入・最高温度への置換説明と、温度用の未知プレースホルダー検出を使う。1セットの選択上限は従来どおり3件。
 
-GT7 の燃料残量は `Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value` を使い、既定文言は「燃料は残り{percent}パーセント」。`{percent}` の挿入・現在の残量（%）の説明は LMU の割合項目と共通で、文言編集・リセット・試聴に対応する。保存した項目と文言は GT7 Narrator の `determineManualReadout` が参照する。未受信・受信から5秒超は「燃料残量はデータがありません」、対応項目なしは「読み上げる項目がありません」を読む。
+GT7 の燃料残量は `Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value` を使い、既定文言は「燃料は残り{percent}%」。`{percent}` の挿入・現在の残量（%）の説明は LMU の割合項目と共通で、文言編集・リセット・試聴に対応する。保存した項目と文言は GT7 Narrator の `determineManualReadout` が参照する。未受信・受信から5秒超は「燃料残量はデータがありません」、対応項目なしは「読み上げる項目がありません」を読む。
 
 
 GT7 の「燃料残り周回数」は `Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value` を使う。
 既定文言は「燃料は残り約{laps}周」。編集欄の挿入チップ・説明・未知プレースホルダーの検証は `{laps}` に対応し、
 試聴では3周に置換する。燃料カテゴリで燃料残量の次に選択できる。
-実際の手動読み上げでは0周以下は「燃料残り1周未満」、推定不能・鮮度切れは項目名付きのデータなし文言を読む。
+実際の手動読み上げでは0周以下は「燃料は残り1周未満」、推定不能・鮮度切れは項目名付きのデータなし文言を読む。
 空欄なら値の有無にかかわらず読まない。
 
 GT7 の手動「タイヤ温度」は `TyreTemperature.Root` を使い、`currentMaxTyreTemperatureCelsius(telemetry)` で
 4輪の有限値の最高温度を `roundToInt()` した整数℃を取得する。未受信・5秒超・全輪が非有限値または0（取得不能）は
 「タイヤ温度はデータがありません」。既定文言は `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`
-（「タイヤ温度{celsius}℃」）で、既存の GT7 用フォーマッターとプレースホルダー検証を使う。
+（「タイヤ温度は{celsius}℃」）で、既存の GT7 用フォーマッターとプレースホルダー検証を使う。
 詳細のカテゴリはタイヤ、プレビューは90℃。空文言は読まず、自動のしきい値・ヒステリシス・重複抑止・
 スイッチ判定は適用しない。最大3項目を「、」で連結し、開始音・ログのキーは `RemainingFuel.Root` を維持する。
 

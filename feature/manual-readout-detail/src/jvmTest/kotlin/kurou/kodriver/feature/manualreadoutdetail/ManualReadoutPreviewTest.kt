@@ -174,7 +174,7 @@ class ManualReadoutPreviewTest {
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "自己ベストラップ 1分23秒456、タイヤ温度90℃",
+            "自己ベストラップ 1分23秒456、タイヤ温度は90℃",
             manualReadoutPreview(
                 state.copy(selectedItemKeys = listOf(key, Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value)),
             ),
@@ -227,7 +227,7 @@ class ManualReadoutPreviewTest {
     fun `GT7の燃料残量の既定文言と編集文言はサンプル値に置換する`() {
         val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.Gt7Ps5.id, selectedItemKeys = listOf(key))
-        assertEquals("燃料は残り50パーセント", manualReadoutPreview(state))
+        assertEquals("燃料は残り50%", manualReadoutPreview(state))
         assertEquals(
             "残り50% {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}% {unknown}"))),
@@ -239,14 +239,14 @@ class ManualReadoutPreviewTest {
     fun `GT7のタイヤ温度の既定文言と編集文言はサンプル値に置換する`() {
         val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.Gt7Ps5.id, selectedItemKeys = listOf(key))
-        assertEquals("タイヤ温度90℃", manualReadoutPreview(state))
+        assertEquals("タイヤ温度は90℃", manualReadoutPreview(state))
         assertEquals(
             "温度90℃ {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "温度{celsius}℃ {unknown}"))),
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "タイヤ温度90℃、燃料は残り約3周",
+            "タイヤ温度は90℃、燃料は残り約3周",
             manualReadoutPreview(
                 state.copy(selectedItemKeys = listOf(key, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value)),
             ),

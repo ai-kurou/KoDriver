@@ -16,14 +16,14 @@ Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を
 `SpeakTextUseCase` からOS標準TTSで入力文言を再生する。1周以上用の `{laps}` は現在のスライダー閾値に置換し、
 燃料なし用の文言はそのまま再生する。空白文言・TTS利用不可・音量ゼロ以下では開始音・本文を再生しない。
 
-燃料残量警告も保存した自由文言をOS標準TTSで読み上げる。既定文言は「燃料は残り{percent}パーセント」。
+燃料残量警告も保存した自由文言をOS標準TTSで読み上げる。既定文言は「燃料は残り{percent}%」。
 `{percent}` は実際の残量割合を四捨五入した整数（0..100）に置換する。警告判定と有効状態は既存どおりで、
 開始音・優先度・キューは `RemainingFuel.Root` を使う。文言は判定時に確定してイベントとログに保持する。
 空白・TTS利用不可では開始音・本文を要求せず、空文字と `SKIPPED` をログに記録し、WAVへはフォールバックしない。
 燃料残量の詳細ペインで自由文言を設定でき、試聴は現在の閾値をサンプル残量として `{percent}` に置換してTTSで再生する。
 空白文言・TTS利用不可・音量0以下では本文も開始音も再生しない。開始音は `RemainingFuel.Root` を参照する。
 
-タイヤ過熱警告は自由文言のOS標準TTSのみを使用する。既定文言は「タイヤ過熱 {celsius}度」。
+タイヤ過熱警告は自由文言のOS標準TTSのみを使用する。既定文言は「タイヤ過熱{celsius}℃」。
 `{celsius}` は判定時の全輪の最高タイヤ温度を整数に丸めた摂氏に置換し、解決文言をイベントの
 `resolvedText` に保持するためキュー待機中も発話とログが一致する。判定条件・閾値・ヒステリシスは従来どおり。
 空白文言・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` を記録する。
@@ -84,7 +84,7 @@ GT7 の手動読み上げは、一覧の ▶ と Windows のセットホット�
 最新テレメトリの `gasLevel / gasCapacity * 100` を四捨五入して0〜100に制限する。
 未受信・受信から5秒超・不正な燃料値は null とし「燃料残量はデータがありません」を読む。
 既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` の
-「燃料は残り{percent}パーセント」で、既存の燃料用フォーマット関数を再利用する。
+「燃料は残り{percent}%」で、既存の燃料用フォーマット関数を再利用する。
 判定は対応項目を最大3件、保存順に空欄を除いて「、」で連結し、
 `Gt7Ps5ManualReadoutText` の1イベントを返す。現在値イベントは `Gt7Ps5RemainingFuelCurrentValue` と `Gt7Ps5RemainingFuelLapsCurrentValue`。
 対応項目なしの場合は従来どおり「読み上げる項目がありません」を読む。
@@ -103,7 +103,7 @@ GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持
 最終受信から5秒以内だけ推定値を使い、未受信・鮮度切れは「燃料残り周回数はデータがありません」を読む。
 `Gt7Ps5ManualReadoutItem.value` は `ManualReadoutValue`（Percent・Celsius・LapTimeMs・RemainingLaps）で、燃料残量が `Percent`（％）、燃料残り周回数が `RemainingLaps`（周）、タイヤ温度が `Celsius`（℃）、自己ベストが `LapTimeMs`（ms）。項目キーと種別が対応しない値はデータなしとして扱う。
 既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）で、
-`formatGt7Ps5RemainingFuelLapsReadoutText` で置換する。0周以下は「燃料残り1周未満」。
+`formatGt7Ps5RemainingFuelLapsReadoutText` で置換する。0周以下は「燃料は残り1周未満」。
 テンプレートが空欄なら、0周以下やデータなしでも読まない。
 自動側のしきい値・重複抑止・周回内タイミング・有効スイッチは手動側に適用しない。
 テレメトリごとに `determineRemainingFuelLaps` が呼ばれ、有効スイッチの判定より前に燃料追跡が更新されるため、
@@ -112,7 +112,7 @@ GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持
 GT7 の手動「タイヤ温度」は `TyreTemperature.Root` を使い、`currentMaxTyreTemperatureCelsius(telemetry)` で
 4輪の有限値の最高温度を `roundToInt()` した整数℃を取得する。未受信・5秒超・全輪が非有限値または0（取得不能）は
 「タイヤ温度はデータがありません」。既定文言は `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`
-（「タイヤ温度{celsius}℃」）で、既存の GT7 用フォーマッターとプレースホルダー検証を使う。
+（「タイヤ温度は{celsius}℃」）で、既存の GT7 用フォーマッターとプレースホルダー検証を使う。
 詳細のカテゴリはタイヤ、プレビューは90℃。空文言は読まず、自動のしきい値・ヒステリシス・重複抑止・
 スイッチ判定は適用しない。最大3項目を「、」で連結し、開始音・ログのキーは `RemainingFuel.Root` を維持する。
 
