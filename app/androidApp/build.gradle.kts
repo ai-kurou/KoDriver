@@ -140,15 +140,14 @@ androidComponents {
     }
 }
 
-// 検証用に、debugビルドだけVoskの日本語モデルをassetsへ同梱する。同梱したビルドでは、OSの音声認識の開始音が鳴らない
-// Vosk認識を使う（同梱しないreleaseビルドは従来のOSの音声認識を使う）
+// Voskの日本語モデルを全ビルドのassetsへ同梱する。OSの音声認識（SpeechRecognizer）は認識の開始ごとに開始音が鳴るため使わない
 val prepareVoskModel =
     tasks.named<PrepareVoskModelTask>("prepareVoskModel") {
         modelPath.set("vosk-model-ja")
         outputDir.set(layout.buildDirectory.dir("voskModelAssets"))
     }
 androidComponents {
-    onVariants(selector().withBuildType("debug")) { variant ->
+    onVariants { variant ->
         variant.sources.assets?.addGeneratedSourceDirectory(prepareVoskModel, PrepareVoskModelTask::outputDir)
     }
 }

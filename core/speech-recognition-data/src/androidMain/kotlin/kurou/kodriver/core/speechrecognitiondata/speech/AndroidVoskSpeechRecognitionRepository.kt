@@ -23,7 +23,7 @@ internal const val VOSK_READ_CHUNK_BYTES = 3_200
  * マイクを [PcmRecorder] で開きっぱなしにして [SpeechTranscriber]（Vosk）で認識する、Android の [SpeechRecognitionRepository]。
  *
  * OSの `SpeechRecognizer` は認識を始めるたびに開始音を鳴らすが、こちらは認識サービスを介さないため鳴らない。
- * 認識モデルがアプリに同梱されていないビルドでは利用不可になる（その場合は Koin モジュールが `SpeechRecognizer` 版を使う）。
+ * 認識モデルは全ビルドに同梱するが、読み込めなかったときは利用不可になる。
  */
 internal class AndroidVoskSpeechRecognitionRepository(
     private val transcriberFactory: SpeechTranscriberFactory,
