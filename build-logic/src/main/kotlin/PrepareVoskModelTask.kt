@@ -64,11 +64,8 @@ abstract class PrepareVoskModelTask
         private fun obtainVerifiedZip(): File {
             val expected = sha256.get()
             val cached = cacheDir.get().asFile.resolve("$expected.zip")
-            if (cached.isFile) {
-                if (sha256Of(cached) == expected) return cached
-                // 壊れたキャッシュは捨てて取得し直す
-                cached.delete()
-            }
+            // 壊れたキャッシュは削除せず、取得し直した後に原子的に置き換える（他のビルドが使用中のファイルを消さないため）
+            if (cached.isFile && sha256Of(cached) == expected) return cached
             val downloaded = downloadWithRetry()
             val actual = sha256Of(downloaded)
             check(actual == expected) {
@@ -82,7 +79,7 @@ abstract class PrepareVoskModelTask
                     downloaded.copyTo(staging, overwrite = true)
                     Files.move(staging.toPath(), cached.toPath(), StandardCopyOption.ATOMIC_MOVE)
                 } finally {
-                    staging.delete()
+                    Files.deleteIfExists(staging.toPath())
                 }
                 cached
             } catch (e: java.io.IOException) {
