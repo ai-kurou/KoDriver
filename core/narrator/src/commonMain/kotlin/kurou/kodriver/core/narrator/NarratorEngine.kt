@@ -95,15 +95,19 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
 
     // キューで再生待ちのイベント（再生順）。再生中のイベントは含まない。
     // 再生が終わった時点で次の待機イベントのキー・手動フラグへ公開状態を引き継ぐために使う。
-    // commonMain では synchronized が使えないため、不変リストを丸ごと差し替える。
-    // 更新が競合して失われても、公開状態の引き継ぎが行われず次の play() で上書きされるだけで済む。
+    // commonMain では synchronized が使えないため、不変リストの差し替えは speak() / stop() を呼ぶ側だけが行う。
+    // 再生側（play()）はリストを書き換えず、開始した項目に started を立てるだけにする。
+    // 削除を再生側と呼び出し側で競合させると、終了済みの項目が復活して誤った公開状態を引き継ぐため。
     @Volatile
     private var pendingPlays: List<PendingPlay<KEY>> = emptyList()
 
-    private class PendingPlay<KEY>(
+    private data class PendingPlay<KEY>(
         val key: KEY,
         val manual: Boolean,
-    )
+    ) {
+        @Volatile
+        var started: Boolean = false
+    }
 
     private fun newPlaybackScope(): CoroutineScope = CoroutineScope(scope.coroutineContext + SupervisorJob())
 
@@ -151,13 +155,13 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
                     _currentIsManual = manual
                     null
                 } else {
-                    PendingPlay(key, manual).also { pendingPlays = pendingPlays + it }
+                    PendingPlay(key, manual).also { pendingPlays = pendingPlays.filterNot { p -> p.started } + it }
                 }
             playJob =
                 playbackScope.launch {
                     barrier.join()
                     previousJob?.join()
-                    pending?.let { pendingPlays = pendingPlays - it }
+                    pending?.started = true
                     play(event, manual, body)
                 }
             return
@@ -207,7 +211,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
             _currentKey = null
             _currentIsManual = false
         } else {
-            pendingPlays.firstOrNull()?.let {
+            pendingPlays.firstOrNull { !it.started }?.let {
                 _currentKey = it.key
                 _currentIsManual = it.manual
             }
