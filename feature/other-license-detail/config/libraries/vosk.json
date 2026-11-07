@@ -1,0 +1,10 @@
+{
+  "uniqueId": "com.alphacephei:vosk",
+  "name": "Vosk",
+  "description": "オフライン音声認識ライブラリ（Desktop は vosk、Android は vosk-android）",
+  "website": "https://alphacephei.com/vosk/",
+  "scm": { "url": "https://github.com/alphacep/vosk-api" },
+  "developers": [{ "name": "Alpha Cephei Inc." }],
+  "licenses": ["Apache-2.0"],
+  "openSource": true
+}
