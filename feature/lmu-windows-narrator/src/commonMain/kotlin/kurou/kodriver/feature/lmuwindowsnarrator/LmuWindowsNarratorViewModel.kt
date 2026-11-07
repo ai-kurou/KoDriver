@@ -736,14 +736,18 @@ internal class LmuWindowsNarratorViewModel(
                 val settings = currentSettings
                 val decision = narratorUseCases.fuelReadout.determineRemainingFuel(state, fuel, settings)
                 narratorState = decision.state
-                eventProcessor.processRemainingFuel(
-                    fuel = fuel,
-                    events = decision.events,
-                    autoReadoutOrder = autoReadoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext = LmuWindowsTelemetryLogContext(state, settings, decision.state),
-                )
+                if (
+                    eventProcessor.processRemainingFuel(
+                        fuel = fuel,
+                        events = decision.events,
+                        autoReadoutOrder = autoReadoutOrder.value,
+                        queueEnabledStates = queueEnabledStates.value,
+                        observedAtMs = observedAtMs,
+                        logContext = LmuWindowsTelemetryLogContext(state, settings, decision.state),
+                    )
+                ) {
+                    narratorState = narratorState.copy(remainingFuelWarned = false)
+                }
             }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
@@ -789,19 +793,23 @@ internal class LmuWindowsNarratorViewModel(
                         settings = settings,
                     )
                 narratorState = decision.state
-                eventProcessor.processBrakeWear(
-                    brakeWear = brakeWear,
-                    events = decision.events,
-                    autoReadoutOrder = autoReadoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        LmuWindowsTelemetryLogContext(
-                            state = state,
-                            settings = settings,
-                            finalState = decision.state,
-                        ),
-                )
+                if (
+                    eventProcessor.processBrakeWear(
+                        brakeWear = brakeWear,
+                        events = decision.events,
+                        autoReadoutOrder = autoReadoutOrder.value,
+                        queueEnabledStates = queueEnabledStates.value,
+                        observedAtMs = observedAtMs,
+                        logContext =
+                            LmuWindowsTelemetryLogContext(
+                                state = state,
+                                settings = settings,
+                                finalState = decision.state,
+                            ),
+                    )
+                ) {
+                    narratorState = narratorState.copy(brakeWearWarned = false)
+                }
             }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
@@ -818,19 +826,23 @@ internal class LmuWindowsNarratorViewModel(
                         settings = settings,
                     )
                 narratorState = decision.state
-                eventProcessor.processTyreWear(
-                    tyreWear = tyreWear,
-                    events = decision.events,
-                    autoReadoutOrder = autoReadoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        LmuWindowsTelemetryLogContext(
-                            state = state,
-                            settings = settings,
-                            finalState = decision.state,
-                        ),
-                )
+                if (
+                    eventProcessor.processTyreWear(
+                        tyreWear = tyreWear,
+                        events = decision.events,
+                        autoReadoutOrder = autoReadoutOrder.value,
+                        queueEnabledStates = queueEnabledStates.value,
+                        observedAtMs = observedAtMs,
+                        logContext =
+                            LmuWindowsTelemetryLogContext(
+                                state = state,
+                                settings = settings,
+                                finalState = decision.state,
+                            ),
+                    )
+                ) {
+                    narratorState = narratorState.copy(tyreWearWarned = false)
+                }
             }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
@@ -847,19 +859,23 @@ internal class LmuWindowsNarratorViewModel(
                         settings = settings,
                     )
                 narratorState = decision.state
-                eventProcessor.processRemainingVirtualEnergy(
-                    remainingVirtualEnergy = remainingVirtualEnergy,
-                    events = decision.events,
-                    autoReadoutOrder = autoReadoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        LmuWindowsTelemetryLogContext(
-                            state = state,
-                            settings = settings,
-                            finalState = decision.state,
-                        ),
-                )
+                if (
+                    eventProcessor.processRemainingVirtualEnergy(
+                        remainingVirtualEnergy = remainingVirtualEnergy,
+                        events = decision.events,
+                        autoReadoutOrder = autoReadoutOrder.value,
+                        queueEnabledStates = queueEnabledStates.value,
+                        observedAtMs = observedAtMs,
+                        logContext =
+                            LmuWindowsTelemetryLogContext(
+                                state = state,
+                                settings = settings,
+                                finalState = decision.state,
+                            ),
+                    )
+                ) {
+                    narratorState = narratorState.copy(remainingVirtualEnergyWarned = false)
+                }
             }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")

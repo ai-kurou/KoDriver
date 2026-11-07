@@ -210,19 +210,21 @@ internal class LmuWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
-    ) {
+    ): Boolean {
         val previous = previousTyreWear
-        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
-            buildTelemetryLogJson(
-                state = logContext.state,
-                previous = previous,
-                current = tyreWear,
-                settings = logContext.settings,
-                observedAtMs = observedAtMs,
-                finalState = logContext.finalState,
-            )
-        }
+        val dropped =
+            processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
+                buildTelemetryLogJson(
+                    state = logContext.state,
+                    previous = previous,
+                    current = tyreWear,
+                    settings = logContext.settings,
+                    observedAtMs = observedAtMs,
+                    finalState = logContext.finalState,
+                )
+            }
         previousTyreWear = tyreWear
+        return dropped
     }
 
     suspend fun processBrakeTemperature(
@@ -254,19 +256,21 @@ internal class LmuWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
-    ) {
+    ): Boolean {
         val previous = previousBrakeWear
-        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
-            buildTelemetryLogJson(
-                state = logContext.state,
-                previous = previous,
-                current = brakeWear,
-                settings = logContext.settings,
-                observedAtMs = observedAtMs,
-                finalState = logContext.finalState,
-            )
-        }
+        val dropped =
+            processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
+                buildTelemetryLogJson(
+                    state = logContext.state,
+                    previous = previous,
+                    current = brakeWear,
+                    settings = logContext.settings,
+                    observedAtMs = observedAtMs,
+                    finalState = logContext.finalState,
+                )
+            }
         previousBrakeWear = brakeWear
+        return dropped
     }
 
     suspend fun processRemainingVirtualEnergy(
@@ -276,25 +280,27 @@ internal class LmuWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
-    ) {
+    ): Boolean {
         val previous = previousRemainingVirtualEnergy
-        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
-            if (remainingVirtualEnergy == null) {
-                """{"state":${TelemetryLogJson.encodeToString(logContext.state)},""" +
-                    """"settings":${TelemetryLogJson.encodeToString(logContext.settings)},""" +
-                    """"observedAtMs":$observedAtMs}"""
-            } else {
-                buildTelemetryLogJson(
-                    state = logContext.state,
-                    previous = previous,
-                    current = remainingVirtualEnergy,
-                    settings = logContext.settings,
-                    observedAtMs = observedAtMs,
-                    finalState = logContext.finalState,
-                )
+        val dropped =
+            processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
+                if (remainingVirtualEnergy == null) {
+                    """{"state":${TelemetryLogJson.encodeToString(logContext.state)},""" +
+                        """"settings":${TelemetryLogJson.encodeToString(logContext.settings)},""" +
+                        """"observedAtMs":$observedAtMs}"""
+                } else {
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = remainingVirtualEnergy,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    )
+                }
             }
-        }
         if (remainingVirtualEnergy != null) previousRemainingVirtualEnergy = remainingVirtualEnergy
+        return dropped
     }
 
     suspend fun processRemainingFuel(
@@ -304,19 +310,21 @@ internal class LmuWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
-    ) {
+    ): Boolean {
         val previous = previousRemainingFuel
-        processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
-            buildTelemetryLogJson(
-                state = logContext.state,
-                previous = previous,
-                current = fuel,
-                settings = logContext.settings,
-                observedAtMs = observedAtMs,
-                finalState = logContext.finalState,
-            )
-        }
+        val dropped =
+            processEvents(events, autoReadoutOrder, queueEnabledStates, observedAtMs) {
+                buildTelemetryLogJson(
+                    state = logContext.state,
+                    previous = previous,
+                    current = fuel,
+                    settings = logContext.settings,
+                    observedAtMs = observedAtMs,
+                    finalState = logContext.finalState,
+                )
+            }
         previousRemainingFuel = fuel
+        return dropped
     }
 
     suspend fun processBrakeWearCurrentValue(
@@ -400,7 +408,12 @@ internal class LmuWindowsNarratorEventProcessor(
         }
     }
 
-    /** 本文の確定・優先度つき再生・ログ保存を全LMUイベントで共有する。 */
+    /**
+     * 本文の確定・優先度つき再生・ログ保存を全LMUイベントで共有する。
+     *
+     * 本文を解決できたのに優先度判定で読み上げられなかったイベントが1件でもあれば true を返す
+     * （本文が空でスキップされた場合は含めない）。一度きりの警告フラグを呼び出し側が戻して再試行するために使う。
+     */
     private suspend fun <E : ReadoutTextEvent> processEvents(
         events: List<E>,
         autoReadoutOrder: List<ReadoutItemKey>,
@@ -408,7 +421,8 @@ internal class LmuWindowsNarratorEventProcessor(
         observedAtMs: Long,
         narrationSource: NarrationSource = NarrationSource.AUTO,
         telemetryJson: () -> String,
-    ) {
+    ): Boolean {
+        var droppedByPriority = false
         events.forEach { event ->
             val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
             val narrationOutcome =
@@ -431,7 +445,9 @@ internal class LmuWindowsNarratorEventProcessor(
                 narrationSource = narrationSource,
                 telemetryJson = telemetryJson(),
             )
+            if (text != null && narrationOutcome == NarrationOutcome.SKIPPED) droppedByPriority = true
         }
+        return droppedByPriority
     }
 
     /**

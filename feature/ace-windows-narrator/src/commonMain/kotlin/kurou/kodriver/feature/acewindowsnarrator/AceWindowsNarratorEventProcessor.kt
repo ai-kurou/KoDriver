@@ -179,6 +179,10 @@ internal class AceWindowsNarratorEventProcessor(
         previousFlag = flag
     }
 
+    /**
+     * 本文を解決できたのに優先度判定で読み上げられなかったイベントが1件でもあれば true を返す。
+     * 一度きりの警告フラグを呼び出し側が戻して再試行するために使う。
+     */
     suspend fun processRemainingFuel(
         fuel: AceWindowsFuelData,
         events: List<ReadoutTextEvent>,
@@ -186,8 +190,9 @@ internal class AceWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
-    ) {
+    ): Boolean {
         val previous = previousFuel
+        var droppedByPriority = false
         events.forEach { event ->
             val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
             val narrationOutcome =
@@ -213,8 +218,10 @@ internal class AceWindowsNarratorEventProcessor(
                         finalState = logContext.finalState,
                     ),
             )
+            if (text != null && narrationOutcome == NarrationOutcome.SKIPPED) droppedByPriority = true
         }
         previousFuel = fuel
+        return droppedByPriority
     }
 
     suspend fun processRemainingFuelLaps(

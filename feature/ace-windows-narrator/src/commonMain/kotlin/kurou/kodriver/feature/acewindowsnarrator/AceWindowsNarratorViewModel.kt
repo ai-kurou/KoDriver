@@ -391,19 +391,23 @@ internal class AceWindowsNarratorViewModel(
                         settings = settings,
                     )
                 narratorState = decision.state
-                eventProcessor.processRemainingFuel(
-                    fuel = fuel,
-                    events = decision.events,
-                    autoReadoutOrder = autoReadoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        AceWindowsTelemetryLogContext(
-                            state = state,
-                            settings = settings,
-                            finalState = decision.state,
-                        ),
-                )
+                if (
+                    eventProcessor.processRemainingFuel(
+                        fuel = fuel,
+                        events = decision.events,
+                        autoReadoutOrder = autoReadoutOrder.value,
+                        queueEnabledStates = queueEnabledStates.value,
+                        observedAtMs = observedAtMs,
+                        logContext =
+                            AceWindowsTelemetryLogContext(
+                                state = state,
+                                settings = settings,
+                                finalState = decision.state,
+                            ),
+                    )
+                ) {
+                    narratorState = narratorState.copy(remainingFuelWarned = false)
+                }
             }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")

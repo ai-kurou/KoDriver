@@ -882,6 +882,34 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `手動読み上げ中に燃料残量警告が読まれなかった場合は手動の終了後に再度判定して読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            every { ttsEngine.currentReadoutItemKey } returns AceWindowsReadoutItemKey.MyBestLap.Root
+            every { ttsEngine.currentIsManual } returns true
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                queueEnabledOverrides = mapOf(AceWindowsReadoutItemKey.RemainingFuel.Root to false),
+            )
+            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
+
+            channel.send(fuel(20.0))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.currentIsManual } returns false
+            channel.send(fuel(20.0))
+            channel.send(fuel(19.0))
+
+            assertEquals(
+                listOf<SpeechEvent>(AceWindowsRemainingFuelWarning(20, "燃料は残り20%")),
+                spokenTexts,
+            )
+        }
+
+    @Test
     fun `給油後は燃料残量警告を再度読み上げる`() =
         runTest(testDispatcher) {
             val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
