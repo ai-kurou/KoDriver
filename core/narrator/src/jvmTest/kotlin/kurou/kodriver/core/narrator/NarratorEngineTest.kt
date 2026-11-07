@@ -1039,6 +1039,41 @@ class NarratorEngineTest {
             assertEquals(null, engine.currentKey)
         }
 
+    @Test
+    fun `非キューのイベントで破棄された待機分は後から積んだキューの引き継ぎ先に残らない`() =
+        runTest {
+            val gate = CompletableDeferred<Unit>()
+            var observed: Pair<String?, Boolean>? = null
+            var engineRef: TestEngine? = null
+            val engine =
+                createEngine(
+                    FakeSoundPlayer(),
+                    isManualEvent = { it == CAR_LEFT },
+                    customSpeak = { event, _ ->
+                        if (event == LEFT_APPROACH) {
+                            gate.await()
+                            // 終了処理の後、次のジョブが再開する前に実行されるよう、ここで積んでおく
+                            launch { observed = engineRef?.let { it.currentKey to it.currentIsManual } }
+                        }
+                    },
+                )
+            engineRef = engine
+            runCurrent()
+
+            engine.speak(RED_FLAG)
+            engine.speak(CAR_LEFT, queue = true)
+            engine.speak(LEFT_APPROACH)
+            runCurrent()
+            engine.speak(RED_FLAG, queue = true)
+            runCurrent()
+
+            gate.complete(Unit)
+            advanceUntilIdle()
+
+            // 破棄された手動の CAR_LEFT ではなく、後から積んだ RED_FLAG へ引き継がれる
+            assertEquals(RED_FLAG_KEY to false, observed)
+        }
+
     @Suppress("LongParameterList")
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,

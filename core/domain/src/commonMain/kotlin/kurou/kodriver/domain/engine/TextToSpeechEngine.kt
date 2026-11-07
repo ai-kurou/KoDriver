@@ -4,10 +4,13 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 
 interface TextToSpeechEngine {
-    /** 現在再生中のイベントが属する ReadoutItemKey。再生していない場合は null。 */
+    /**
+     * 現在再生中、またはキューで再生待ちの先頭イベントが属する ReadoutItemKey。
+     * 再生待ちのイベントは、まだ音が鳴る前でもここに公開される。再生も待機もない場合は null。
+     */
     val currentReadoutItemKey: ReadoutItemKey?
 
-    /** 現在再生中のイベントが手動読み上げ由来か。再生していない場合は false。 */
+    /** [currentReadoutItemKey] のイベントが手動読み上げ由来か。再生も待機もない場合は false。 */
     val currentIsManual: Boolean get() = false
 
     /** [isManual] が true の場合、手動読み上げとして再生する（[currentIsManual] に反映される）。 */
