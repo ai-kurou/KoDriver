@@ -551,10 +551,12 @@ kover {
                 excludeCommonCoverageTargets()
                 classes("kurou.kodriver.core.windowshotkeydata.JnaHotkeyNativeApi")
                 classes("kurou.kodriver.core.windowsstartupdata.windows.JnaStartupRegistryApi")
-                // Android の SpeechRecognizer を直接呼ぶ薄いアダプター。再開ループは AndroidSpeechRecognitionRepository が検証する
+                // Android の AudioRecord・Vosk のネイティブライブラリを直接呼ぶ薄いアダプター。
+                // 読み取りと認識の流れは AndroidVoskSpeechRecognitionRepository が検証する
                 classes(
-                    "kurou.kodriver.core.speechrecognitiondata.speech.PlatformSpeechRecognitionEngine",
-                    "kurou.kodriver.core.speechrecognitiondata.speech.PlatformSpeechRecognitionEngine\$*",
+                    "kurou.kodriver.core.speechrecognitiondata.speech.AudioRecordPcmRecorder",
+                    "kurou.kodriver.core.speechrecognitiondata.speech.AndroidVoskSpeechTranscriber",
+                    "kurou.kodriver.core.speechrecognitiondata.speech.AndroidVoskSpeechTranscriberFactory",
                 )
                 // デスクトップのエントリーポイント。ウィンドウ・Sentry・サーバー起動は実機依存で単体テストできない。
                 // 同じ Koin 構成は AppTest / DesktopKoinModuleGraphTest が検証する

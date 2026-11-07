@@ -20,7 +20,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・設定永続化・リポジトリ実装（JVM / Android） | [図](graphs/core-gt7-ps5-data.svg) |
 | `:core:ace-windows-data` | Assetto Corsa EVO Windows共有メモリ読み取り・設定永続化・Android WebSocketクライアント（JVM / Android） | [図](graphs/core-ace-windows-data.svg) |
 | `:core:device-volume-data` | 端末（OS）のマスター音量取得・設定のリポジトリ実装 | [図](graphs/core-device-volume-data.svg) |
-| `:core:speech-recognition-data` | マイク入力（Desktop は Java Sound）・音声認識（Android は SpeechRecognizer）・マイク権限のリポジトリ実装 | [図](graphs/core-speech-recognition-data.svg) |
+| `:core:speech-recognition-data` | マイク入力（Desktop は Java Sound）・音声認識（Android・Desktop とも Vosk）・マイク権限のリポジトリ実装 | [図](graphs/core-speech-recognition-data.svg) |
 | `:core:text-to-speech-data` | OS標準の音声合成（Windows SAPI / Android TextToSpeech）と音声設定の起動のリポジトリ実装 | [図](graphs/core-text-to-speech-data.svg) |
 | `:core:windows-startup-data` | OS起動時のKoDriver自動起動設定（Windowsレジストリ）のリポジトリ実装 | [図](graphs/core-windows-startup-data.svg) |
 | `:core:windows-hotkey-data` | Windowsグローバルホットキーの検出・F9固定のHotkeyRepository・Koinバインド（domain依存） | [図](graphs/core-windows-hotkey-data.svg) |

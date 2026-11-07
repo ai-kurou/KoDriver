@@ -4,6 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -19,11 +20,25 @@ import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 /** 1回に読み取る音声の長さ（16kHz・モノラル・16bit PCM で100ミリ秒分のバイト数）。 */
 internal const val VOSK_READ_CHUNK_BYTES = 3_200
 
+/** マイクの取得・読み取りに連続して失敗したとき、利用不可として完了するまでの回数。 */
+internal const val VOSK_MAX_CONSECUTIVE_MICROPHONE_FAILURES = 10
+
+/** この回数（100ミリ秒ずつで5秒分）続けて読み取れたら、マイクが正常に動いているとみなして連続失敗を数え直す。 */
+internal const val VOSK_HEALTHY_READ_COUNT = 50
+
+/** マイクの失敗後に再開するまでの待ち時間の初期値。失敗が続くたびに倍にする。 */
+internal const val VOSK_RETRY_INITIAL_DELAY_MILLIS = 1_000L
+
+/** マイクの失敗後に再開するまでの待ち時間の上限。 */
+internal const val VOSK_RETRY_MAX_DELAY_MILLIS = 30_000L
+
 /**
  * マイクを [PcmRecorder] で開きっぱなしにして [SpeechTranscriber]（Vosk）で認識する、Android の [SpeechRecognitionRepository]。
  *
  * OSの `SpeechRecognizer` は認識を始めるたびに開始音を鳴らすが、こちらは認識サービスを介さないため鳴らない。
- * 認識モデルがアプリに同梱されていないビルドでは利用不可になる（その場合は Koin モジュールが `SpeechRecognizer` 版を使う）。
+ * 認識モデルは全ビルドに同梱するが、読み込めなかったときは利用不可になる。
+ * マイクを開けない・読み取れない一時的な失敗（他アプリとの競合や入力の瞬断など）は、1秒から倍々に最大30秒まで待って再開し、
+ * 5秒分の音声を読み取れたら連続失敗を数え直す。10回続けて失敗したら `Failed(MicrophoneUnavailable)` を流して完了する。
  */
 internal class AndroidVoskSpeechRecognitionRepository(
     private val transcriberFactory: SpeechTranscriberFactory,
@@ -43,7 +58,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
             if (transcriber == null) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
             } else {
-                transcriber.use { recognize(it) }
+                transcriber.use { recognizeWithRetry(it) }
             }
         }.catch { e ->
             if (e !is Exception && e !is LinkageError) throw e
@@ -69,18 +84,40 @@ internal class AndroidVoskSpeechRecognitionRepository(
         }
     }
 
-    private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(transcriber: SpeechTranscriber) {
+    private suspend fun FlowCollector<SpeechRecognitionEvent>.recognizeWithRetry(transcriber: SpeechTranscriber) {
+        var failures = 0
+        while (true) {
+            recognize(transcriber, onHealthy = { failures = 0 })
+            failures++
+            if (failures >= VOSK_MAX_CONSECUTIVE_MICROPHONE_FAILURES) {
+                emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.MicrophoneUnavailable))
+                return
+            }
+            delay(retryDelayMillis(failures))
+        }
+    }
+
+    private fun retryDelayMillis(failures: Int): Long {
+        var delayMillis = VOSK_RETRY_INITIAL_DELAY_MILLIS
+        repeat(failures - 1) { delayMillis = minOf(delayMillis * 2, VOSK_RETRY_MAX_DELAY_MILLIS) }
+        return delayMillis
+    }
+
+    /** マイクを開いて認識し、マイクを開けない・読み取れなくなったら記録して戻る（収集がやむまで戻らない場合もある）。 */
+    private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(
+        transcriber: SpeechTranscriber,
+        onHealthy: () -> Unit,
+    ) {
         val recorder = recorderFactory()
         try {
             try {
                 recorder.start()
             } catch (e: Exception) {
                 captureError(IllegalStateException("音声認識を続けられません。マイクの取得に失敗しました"))
-                emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.MicrophoneUnavailable))
                 return
             }
             emit(SpeechRecognitionEvent.Listening)
-            readChunks(recorder, transcriber)
+            readChunks(recorder, transcriber, onHealthy)
         } finally {
             recorder.close()
         }
@@ -89,17 +126,19 @@ internal class AndroidVoskSpeechRecognitionRepository(
     private suspend fun FlowCollector<SpeechRecognitionEvent>.readChunks(
         recorder: PcmRecorder,
         transcriber: SpeechTranscriber,
+        onHealthy: () -> Unit,
     ) {
         val buffer = ByteArray(VOSK_READ_CHUNK_BYTES)
+        var readCount = 0
         var lastPartial = ""
         while (true) {
             currentCoroutineContext().ensureActive()
             val size = recorder.read(buffer)
             if (size <= 0) {
                 captureError(IllegalStateException("音声認識を続けられません。マイクから音声を読み取れません"))
-                emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.MicrophoneUnavailable))
                 return
             }
+            if (++readCount == VOSK_HEALTHY_READ_COUNT) onHealthy()
             val pcm = buffer.copyOf(size)
             emit(SpeechRecognitionEvent.Level(pcm.pcmLevel()))
             when (val transcript = transcriber.accept(pcm)) {
