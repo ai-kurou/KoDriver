@@ -27,6 +27,34 @@ private typealias TestEngine = NarratorEngine<String, String, String>
 @Suppress("TooManyFunctions")
 class NarratorEngineTest {
     @Test
+    fun `playStartSoundをfalseにしたspeakは開始音を鳴らさず本文だけを読み上げる`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT, playStartSound = false)
+            runCurrent()
+
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds.single())
+        }
+
+    @Test
+    fun `playStartSoundをfalseにしたキュー追加のspeakも開始音を鳴らさない`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT, queue = true, playStartSound = false)
+            runCurrent()
+
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds.single())
+        }
+
+    @Test
     fun `soundPlayer isPlaying が true でも実行中のジョブがなければ音声を再生する`() =
         runTest {
             val player = FakeSoundPlayer(isPlaying = true)

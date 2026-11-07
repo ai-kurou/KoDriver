@@ -350,8 +350,9 @@ internal class LmuWindowsNarratorEventProcessor(
         events: List<ReadoutTextEvent>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
+        playStartSound: Boolean = true,
     ) {
-        processEvents(events, emptyList(), emptyMap(), observedAtMs, NarrationSource.MANUAL) {
+        processEvents(events, emptyList(), emptyMap(), observedAtMs, NarrationSource.MANUAL, playStartSound) {
             """{"state":${TelemetryLogJson.encodeToString(logContext.state)},""" +
                 """"settings":${TelemetryLogJson.encodeToString(logContext.settings)},""" +
                 """"observedAtMs":$observedAtMs}"""
@@ -407,6 +408,7 @@ internal class LmuWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         narrationSource: NarrationSource = NarrationSource.AUTO,
+        playStartSound: Boolean = true,
         telemetryJson: () -> String,
     ) {
         events.forEach { event ->
@@ -421,6 +423,7 @@ internal class LmuWindowsNarratorEventProcessor(
                         autoReadoutOrder,
                         queueEnabledStates,
                         isManual = narrationSource == NarrationSource.MANUAL,
+                        playStartSound = playStartSound,
                     )
                 }
             saveTelemetryLogSafely(
@@ -445,13 +448,14 @@ internal class LmuWindowsNarratorEventProcessor(
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         isManual: Boolean = false,
+        playStartSound: Boolean = true,
     ): NarrationOutcome =
         speakWithOutcome(
             eventKey = event.readoutItemKey,
             currentKey = { ttsEngine.currentReadoutItemKey },
             autoReadoutOrder = autoReadoutOrder,
             queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
-            speak = { queue -> ttsEngine.speak(event, queue, isManual) },
+            speak = { queue -> ttsEngine.speak(event, queue, isManual, playStartSound) },
             stop = { ttsEngine.stop() },
             outcomes =
                 SpeakOutcomes(
