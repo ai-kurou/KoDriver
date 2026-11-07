@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
@@ -172,8 +173,12 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
             startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         }
         body(vol)
-        _currentKey = null
-        _currentIsManual = false
+        // キューに後続のジョブが待機している間は、再生中の状態を消さない。消すと、次のジョブが
+        // play() に入るまでの間に届いたイベントが「再生中なし」と判定され、待機中のジョブをキャンセルする。
+        if (playJob === currentCoroutineContext().job) {
+            _currentKey = null
+            _currentIsManual = false
+        }
     }
 
     fun stop() {

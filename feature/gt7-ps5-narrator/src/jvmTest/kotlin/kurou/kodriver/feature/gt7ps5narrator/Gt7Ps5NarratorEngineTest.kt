@@ -50,6 +50,29 @@ class Gt7Ps5NarratorEngineTest {
     }
 
     @Test
+    fun `currentIsManualはNarratorEngineのcurrentIsManualを返す`() {
+        every { wavNarratorEngine.currentIsManual } returns true
+        val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
+
+        assertEquals(true, engine.currentIsManual)
+
+        verify(exactly = 1) { wavNarratorEngine.currentIsManual }
+        confirmVerified(wavNarratorEngine)
+    }
+
+    @Test
+    fun `speakのisManualをNarratorEngineへ渡す`() {
+        val event = DebugReadoutText(ReadoutItemKey.entries.first(), "テスト")
+        every { wavNarratorEngine.speak(event, queue = false, isManual = true) } just Runs
+        val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
+
+        engine.speak(event, queue = false, isManual = true)
+
+        verify(exactly = 1) { wavNarratorEngine.speak(event, queue = false, isManual = true) }
+        confirmVerified(wavNarratorEngine)
+    }
+
+    @Test
     fun `speakはNarratorEngineのspeakへ委譲する`() {
         every { wavNarratorEngine.speak(DebugReadoutText(ReadoutItemKey.entries.first(), "テスト"), queue = true) } just
             Runs

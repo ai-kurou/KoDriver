@@ -51,6 +51,29 @@ class LmuWindowsNarratorEngineTest {
     }
 
     @Test
+    fun `currentIsManualはNarratorEngineのcurrentIsManualを返す`() {
+        every { wavNarratorEngine.currentIsManual } returns true
+        val engine = LmuWindowsNarratorEngine(wavNarratorEngine)
+
+        assertEquals(true, engine.currentIsManual)
+
+        verify(exactly = 1) { wavNarratorEngine.currentIsManual }
+        confirmVerified(wavNarratorEngine)
+    }
+
+    @Test
+    fun `speakのisManualをNarratorEngineへ渡す`() {
+        val event = LmuWindowsCarLeft()
+        every { wavNarratorEngine.speak(event, queue = false, isManual = true) } just Runs
+        val engine = LmuWindowsNarratorEngine(wavNarratorEngine)
+
+        engine.speak(event, queue = false, isManual = true)
+
+        verify(exactly = 1) { wavNarratorEngine.speak(event, queue = false, isManual = true) }
+        confirmVerified(wavNarratorEngine)
+    }
+
+    @Test
     fun `speakはNarratorEngineのspeakへ委譲する`() {
         every { wavNarratorEngine.speak(LmuWindowsCarLeft(), queue = true) } just Runs
         val engine = LmuWindowsNarratorEngine(wavNarratorEngine)

@@ -299,6 +299,49 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `手動再生中にキュー有効の自動読み上げが来たら手動の後ろに追加する`() =
+        runTest {
+            val key = AceWindowsReadoutItemKey.RemainingFuel.Root
+            val request = DebugReadoutRequest(Simulator.AceWindows, key, "自動")
+            val event = DebugReadoutText(key, "自動")
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns key
+            every { ttsEngine.currentIsManual } returns true
+            every { ttsEngine.speak(event, true, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "自動",
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor().processDebugReadout(
+                request = request,
+                autoReadoutOrder = listOf(key),
+                queueEnabledStates = mapOf(key to true),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            verify(exactly = 1) { ttsEngine.speak(event, true, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "自動",
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `手動イベントがなければ発話もログ保存もしない`() =
         runTest {
             createProcessor().processManualReadout(emptyList(), 0L, logContext())

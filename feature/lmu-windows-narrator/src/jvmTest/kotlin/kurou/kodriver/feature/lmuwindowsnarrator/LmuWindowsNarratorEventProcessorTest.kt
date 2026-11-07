@@ -2744,6 +2744,49 @@ class LmuWindowsNarratorEventProcessorTest {
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
+    @Test
+    fun `手動再生中にキュー有効の自動読み上げが来たら手動の後ろに追加する`() =
+        runTest {
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            val request = DebugReadoutRequest(Simulator.LmuWindows, key, "自動")
+            val event = DebugReadoutText(key, "自動")
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns key
+            every { ttsEngine.currentIsManual } returns true
+            every { ttsEngine.speak(event, true, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "自動",
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor().processDebugReadout(
+                request = request,
+                autoReadoutOrder = listOf(key),
+                queueEnabledStates = mapOf(key to true),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            verify(exactly = 1) { ttsEngine.speak(event, true, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "自動",
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
     private fun createProcessor(readoutText: suspend (SpeechEvent) -> String? = { it.narratedText }) =
         LmuWindowsNarratorEventProcessor(
             ttsEngine = ttsEngine,
