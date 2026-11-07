@@ -64,7 +64,6 @@ internal class AndroidVoskSpeechRecognitionRepository(
 
     override fun observeRecognition(): Flow<SpeechRecognitionEvent> =
         flow {
-            mode.value = SpeechRecognitionMode.WakeWord
             if (!permissionRepository.isGranted()) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.PermissionDenied))
                 return@flow

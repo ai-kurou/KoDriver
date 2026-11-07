@@ -55,7 +55,8 @@ class SpeechRecognitionViewModelWakeWordTest {
         Dispatchers.resetMain()
     }
 
-    private fun createListeningViewModel(): SpeechRecognitionViewModel {
+    /** [clearModes] が true なら、開始時に伝えたモードを記録から消す（開始後のモード切り替えだけを検証するため）。 */
+    private fun createListeningViewModel(clearModes: Boolean = true): SpeechRecognitionViewModel {
         every { permissionRepository.isGranted() } returns true
         every { speechRepository.observeRecognition() } returns events
         return SpeechRecognitionViewModel(
@@ -68,6 +69,7 @@ class SpeechRecognitionViewModelWakeWordTest {
             viewModel = it
             it.onEnabledChange(true) {}
             events.tryEmit(SpeechRecognitionEvent.Listening)
+            if (clearModes) modeRepository.modes.clear()
         }
     }
 
@@ -299,12 +301,40 @@ class SpeechRecognitionViewModelWakeWordTest {
     }
 
     @Test
-    fun `聞き取りを始めた時点で読み上げ中なら最初から止める`() {
+    fun `聞き取りを始めるとウェイクワード待ちのモードを伝える`() {
+        createListeningViewModel(clearModes = false)
+
+        assertEquals(listOf(SpeechRecognitionMode.WakeWord), modeRepository.modes)
+    }
+
+    @Test
+    fun `聞き取りを始めた時点で読み上げ中ならウェイクワード待ちを伝えたあと続けて止める`() {
         playbackRepository.update("lmu_windows", true)
 
-        createListeningViewModel()
+        createListeningViewModel(clearModes = false)
 
-        assertEquals(listOf(SpeechRecognitionMode.Paused), modeRepository.modes)
+        assertEquals(listOf(SpeechRecognitionMode.WakeWord, SpeechRecognitionMode.Paused), modeRepository.modes)
+    }
+
+    @Test
+    fun `コマンド待ちのまま聞き取りをやり直すとウェイクワード待ちのモードから始める`() {
+        val viewModel = createListeningViewModel()
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        modeRepository.modes.clear()
+
+        viewModel.onEnabledChange(true) {}
+
+        assertEquals(listOf(SpeechRecognitionMode.WakeWord), modeRepository.modes)
+    }
+
+    @Test
+    fun `コマンド待ちの間にマイクの再取得でListeningが届いてもコマンド待ちの表示を保つ`() {
+        createListeningViewModel()
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+
+        events.tryEmit(SpeechRecognitionEvent.Listening)
+
+        assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
     }
 
     @Test

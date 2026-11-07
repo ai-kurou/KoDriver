@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AudioInputDevice
+import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
@@ -45,6 +46,7 @@ class SpeechRecognitionModuleTest {
     fun `解決したViewModelはRepositoryを使って聞き取りを開始する`() {
         every { permissionRepository.isGranted() } returns true
         every { speechRepository.observeRecognition() } returns emptyFlow()
+        every { speechRepository.setMode(SpeechRecognitionMode.WakeWord) } returns Unit
         val application =
             koinApplication {
                 modules(
@@ -67,6 +69,7 @@ class SpeechRecognitionModuleTest {
                 assertEquals(SpeechRecognitionStatus.Starting, viewModel.uiState.value.status)
                 verify(exactly = 1) { permissionRepository.isGranted() }
                 verify(exactly = 1) { speechRepository.observeRecognition() }
+                verify(exactly = 1) { speechRepository.setMode(SpeechRecognitionMode.WakeWord) }
                 confirmVerified(permissionRepository, speechRepository)
             } finally {
                 viewModel.viewModelScope.cancel()

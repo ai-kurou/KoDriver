@@ -19,8 +19,9 @@ interface SpeechRecognitionRepository {
     fun observeRecognition(): Flow<SpeechRecognitionEvent>
 
     /**
-     * 聞き取る内容を切り替える。聞き取りの開始時は [SpeechRecognitionMode.WakeWord] から始まり、
-     * 聞き取り中に呼ぶと次の音声から反映される。聞き取り中でないときは何もしない。
+     * 聞き取る内容を切り替える。聞き取り中に呼ぶと次の音声から反映される。
+     * 設定したモードは聞き取りを始め直しても保たれる（初期値は [SpeechRecognitionMode.WakeWord]）。
+     * 聞き取りを始める側が、開始の前に必要なモードを設定する。
      */
     fun setMode(mode: SpeechRecognitionMode)
 }

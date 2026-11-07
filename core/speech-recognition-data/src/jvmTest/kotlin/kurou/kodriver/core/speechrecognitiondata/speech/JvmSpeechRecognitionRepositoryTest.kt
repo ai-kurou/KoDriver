@@ -168,7 +168,7 @@ class JvmSpeechRecognitionRepositoryTest {
         }
 
     @Test
-    fun `聞き取りの開始時はそれまでのモードにかかわらずウェイクワード待ちから始まる`() =
+    fun `開始前に設定したモードは聞き取りの開始で上書きしない`() =
         runTest {
             val transcriber = FakeTranscriber()
             val repository = repository(FakeTranscriberFactory(available = true, transcriber = transcriber))
@@ -177,7 +177,7 @@ class JvmSpeechRecognitionRepositoryTest {
 
             repository.observeRecognition().toList()
 
-            assertEquals(emptyList(), transcriber.modes)
+            assertEquals(listOf(SpeechRecognitionMode.Command), transcriber.modes)
         }
 
     @Test

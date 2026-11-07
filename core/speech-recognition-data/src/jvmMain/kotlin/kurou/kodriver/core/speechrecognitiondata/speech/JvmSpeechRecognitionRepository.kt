@@ -46,7 +46,6 @@ internal class JvmSpeechRecognitionRepository(
 
     override fun observeRecognition(): Flow<SpeechRecognitionEvent> =
         flow {
-            mode.value = SpeechRecognitionMode.WakeWord
             val transcriber = createTranscriber()
             if (transcriber == null) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))

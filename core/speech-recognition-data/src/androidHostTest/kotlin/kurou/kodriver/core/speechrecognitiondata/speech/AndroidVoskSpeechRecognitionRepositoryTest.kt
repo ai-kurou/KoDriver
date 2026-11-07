@@ -216,7 +216,7 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
         }
 
     @Test
-    fun `聞き取りの開始時はそれまでのモードにかかわらずウェイクワード待ちから始まる`() =
+    fun `開始前に設定したモードは聞き取りの開始で上書きしない`() =
         runTest {
             val repository = createRepository()
             repository.setMode(SpeechRecognitionMode.Command)
@@ -224,7 +224,7 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
 
             repository.observeRecognition().toList()
 
-            assertEquals(emptyList(), transcriberFactory.modes)
+            assertEquals(listOf(SpeechRecognitionMode.Command), transcriberFactory.modes)
         }
 
     @Test

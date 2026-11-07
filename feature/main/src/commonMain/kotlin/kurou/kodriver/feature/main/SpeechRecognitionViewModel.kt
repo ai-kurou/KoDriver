@@ -267,6 +267,8 @@ internal class SpeechRecognitionViewModel(
         _uiState.update {
             it.copy(enabled = true, status = SpeechRecognitionStatus.Starting, partialText = "", level = null)
         }
+        // 前の聞き取りのモードを引き継がず、ウェイクワード待ちから始める。読み上げ中なら observePlayback が続けて止める
+        applyMode()
         observePlayback()
         listenJob =
             viewModelScope.launch {
@@ -300,7 +302,10 @@ internal class SpeechRecognitionViewModel(
     private suspend fun onEvent(event: SpeechRecognitionEvent) {
         when (event) {
             SpeechRecognitionEvent.Listening -> {
-                _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
+                // マイクの再取得でも届くため、コマンド待ちの間はその表示を保つ
+                val status =
+                    if (commandWaiting) SpeechRecognitionStatus.CommandWaiting else SpeechRecognitionStatus.Listening
+                _uiState.update { it.copy(status = status, partialText = "") }
             }
 
             is SpeechRecognitionEvent.Level -> {

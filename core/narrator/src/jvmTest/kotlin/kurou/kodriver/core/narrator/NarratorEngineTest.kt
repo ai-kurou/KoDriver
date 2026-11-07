@@ -2,6 +2,7 @@ package kurou.kodriver.core.narrator
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
@@ -1026,6 +1027,49 @@ class NarratorEngineTest {
         }
 
     @Test
+    fun `読み上げが例外で終わっても再生中ではないと通知し、公開状態を消す`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val engine =
+                createEngine(
+                    FakeSoundPlayer(),
+                    onPlaybackActiveChanged = { changes += it },
+                    customSpeak = { _, _ -> error("tts failed") },
+                )
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            advanceUntilIdle()
+
+            assertEquals(listOf(true, false), changes)
+            assertEquals(null, engine.currentKey)
+            assertEquals(false, engine.currentIsManual)
+        }
+
+    @Test
+    fun `キューの先頭が例外で終わっても待機中のイベントへ引き継いで再生中のままにする`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val player = FakeSoundPlayer()
+            val engine =
+                createEngine(
+                    player,
+                    onPlaybackActiveChanged = { changes += it },
+                    customSpeak = { event, volume ->
+                        if (event == CAR_LEFT) error("tts failed")
+                        player.play(bodySound(event), volume)
+                    },
+                )
+            runCurrent()
+
+            engine.speak(CAR_LEFT, queue = true)
+            engine.speak(RED_FLAG, queue = true)
+            advanceUntilIdle()
+
+            assertEquals(listOf(true, false), changes)
+        }
+
+    @Test
     fun `キューで待機中のイベントへ引き継ぐ間は再生中のまま通知を繰り返さない`() =
         runTest {
             val changes = mutableListOf<Boolean>()
@@ -1177,6 +1221,7 @@ class NarratorEngineTest {
         isCustomSpeakEvent: (String) -> Boolean = { true },
         isManualEvent: (String) -> Boolean = { false },
         onPlaybackActiveChanged: (Boolean) -> Unit = {},
+        exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { _, _ -> },
         customSpeak: suspend (String, Int) -> Unit = { event, volume -> player.play(bodySound(event), volume) },
         startSoundResourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
@@ -1206,7 +1251,7 @@ class NarratorEngineTest {
             isCustomSpeakEvent = isCustomSpeakEvent,
             isManualEvent = isManualEvent,
             onPlaybackActiveChanged = onPlaybackActiveChanged,
-            scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+            scope = CoroutineScope(StandardTestDispatcher(testScheduler) + exceptionHandler),
         )
 
     private fun bodySound(event: String): ByteArray =

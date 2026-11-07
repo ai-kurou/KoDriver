@@ -209,16 +209,32 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         val key = eventToKey(event)
         _currentKey = key
         _currentIsManual = manual
-        val vol = currentVolume
-        val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
-        if (playStartSound && startSoundEnabled) {
-            startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
+        try {
+            val vol = currentVolume
+            val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
+            if (playStartSound && startSoundEnabled) {
+                startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
+            }
+            body(vol)
+        } catch (e: CancellationException) {
+            // 中断は呼び出し側（cancelPlayback）が公開状態を消すため、ここでは触らない
+            throw e
+        } catch (e: Exception) {
+            // 読み上げが例外で終わっても再生中のまま残さない。残すと音声認識が再開しない
+            finishPlayback()
+            throw e
         }
-        body(vol)
-        // キューに後続のジョブが待機している間は、再生中の状態を消さず、次の待機イベントの
-        // キー・手動フラグへ引き継ぐ。消すと、次のジョブが play() に入るまでの間に届いたイベントが
-        // 「再生中なし」と判定され、待機中のジョブをキャンセルする。
-        // 引き継がないと、直前のイベントの手動フラグが次のイベントの優先度判定に残ってしまう。
+        finishPlayback()
+    }
+
+    /**
+     * 再生を終えたときの公開状態の更新。
+     * キューに後続のジョブが待機している間は、再生中の状態を消さず、次の待機イベントの
+     * キー・手動フラグへ引き継ぐ。消すと、次のジョブが play() に入るまでの間に届いたイベントが
+     * 「再生中なし」と判定され、待機中のジョブをキャンセルする。
+     * 引き継がないと、直前のイベントの手動フラグが次のイベントの優先度判定に残ってしまう。
+     */
+    private suspend fun finishPlayback() {
         if (playJob === currentCoroutineContext().job) {
             _currentKey = null
             _currentIsManual = false
