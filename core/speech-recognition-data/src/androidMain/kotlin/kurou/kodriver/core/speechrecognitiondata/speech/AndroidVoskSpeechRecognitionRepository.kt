@@ -2,7 +2,10 @@ package kurou.kodriver.core.speechrecognitiondata.speech
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
@@ -11,6 +14,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
@@ -118,7 +122,22 @@ internal class AndroidVoskSpeechRecognitionRepository(
                 return
             }
             emit(SpeechRecognitionEvent.Listening)
-            readChunks(recorder, transcriber, onHealthy)
+            // 読み取りで待っている間に収集がやむと、読み取りが戻るまで止まれない。キャンセルされたら録音を止めて戻させる
+            coroutineScope {
+                val watcher =
+                    launch(start = CoroutineStart.UNDISPATCHED) {
+                        try {
+                            awaitCancellation()
+                        } finally {
+                            recorder.interrupt()
+                        }
+                    }
+                try {
+                    readChunks(recorder, transcriber, onHealthy)
+                } finally {
+                    watcher.cancel()
+                }
+            }
         } finally {
             recorder.close()
         }
@@ -136,6 +155,8 @@ internal class AndroidVoskSpeechRecognitionRepository(
             currentCoroutineContext().ensureActive()
             val size = recorder.read(buffer)
             if (size <= 0) {
+                // 収集をやめて interrupt() で戻された読み取りは、マイクの障害として記録しない
+                currentCoroutineContext().ensureActive()
                 captureError(IllegalStateException("音声認識を続けられません。マイクから音声を読み取れません"))
                 return
             }

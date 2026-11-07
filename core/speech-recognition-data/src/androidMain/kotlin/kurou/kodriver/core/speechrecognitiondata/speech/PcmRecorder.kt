@@ -10,4 +10,7 @@ internal interface PcmRecorder : AutoCloseable {
 
     /** [buffer] に読み込めたバイト数を返す。音声が届くまで待つ。読み取れなくなったら 0 以下を返す。 */
     fun read(buffer: ByteArray): Int
+
+    /** 別スレッドから呼んでも安全。[read] で待っている呼び出しがあれば、すぐに戻させる。 */
+    fun interrupt()
 }
