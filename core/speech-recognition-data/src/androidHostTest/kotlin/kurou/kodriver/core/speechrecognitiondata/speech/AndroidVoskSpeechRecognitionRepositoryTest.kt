@@ -114,23 +114,18 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
         }
 
     @Test
-    fun `確定結果が得られるたびに連続失敗を数え直す`() =
+    fun `5秒分の音声を読み取れたら連続失敗を数え直す`() =
         runTest {
-            recorder.onStart = { chunks.add(SILENT_CHUNK) }
-            transcriberFactory.transcripts.addAll(
-                List(VOSK_MAX_CONSECUTIVE_MICROPHONE_FAILURES + 2) {
-                    SpeechTranscript.Final(listOf("燃料"))
-                },
-            )
+            recorder.onStart = { repeat(VOSK_HEALTHY_READ_COUNT) { chunks.add(SILENT_CHUNK) } }
 
-            val recognized =
+            val listening =
                 createRepository()
                     .observeRecognition()
-                    .filterIsInstance<SpeechRecognitionEvent.Recognized>()
+                    .filterIsInstance<SpeechRecognitionEvent.Listening>()
                     .take(VOSK_MAX_CONSECUTIVE_MICROPHONE_FAILURES + 2)
                     .toList()
 
-            assertEquals(VOSK_MAX_CONSECUTIVE_MICROPHONE_FAILURES + 2, recognized.size)
+            assertEquals(VOSK_MAX_CONSECUTIVE_MICROPHONE_FAILURES + 2, listening.size)
         }
 
     @Test
