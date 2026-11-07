@@ -65,7 +65,7 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneScreenshotTest {
                             LmuWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
                                 uiState =
                                     LmuWindowsAutoReadoutBrakeTemperatureDetailUiState(
-                                        readoutText = "ブレーキ温度{celsius}℃以上です",
+                                        readoutText = "ブレーキ温度は{celsius}℃以上です",
                                         isTextToSpeechAvailable = true,
                                     ),
                             )

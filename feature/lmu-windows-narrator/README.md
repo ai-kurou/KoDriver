@@ -11,23 +11,23 @@ LMUの4種類のフラッグ本文と車両接近開始時・継続時の左右�
 | フラッグ（4種） | `Flag.Root` / `Flag.BlueFlag` ほか | `LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT`（「ブルーフラッグ」）ほか3種 | なし | なし | 種別の有効状態 |
 | 車両接近 開始時（左右） | `VehicleApproach.Root` / `StartReadout` | `LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT`（「カーレフト」）、`..._START_RIGHT_...`（「カーライト」） | なし | `LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT`（5.0m）、`..._LATERAL_THRESHOLD_METERS_DEFAULT`（5.0m）、`..._LATERAL_MINIMUM_METERS_DEFAULT`（1.0m）、`..._SKIP_FIRST_LAP_DEFAULT`（true） | 接近判定の距離条件 |
 | 車両接近 継続時（左右） | `VehicleApproach.Root` / `Sustained` | `LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT`（「キープライト」）、`..._SUSTAINED_RIGHT_...`（「キープレフト」） | なし | `LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT`（7秒） | 左側車両は左文言、右側車両は右文言 |
-| バーチャルエネルギー残量 | `RemainingVirtualEnergy.Root` / `WarningReadout` | `LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT`（「バーチャルエネルギー残量{percent}%以下」） | `{percent}`（判定時の設定閾値に置換） | `LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT`（30） | VEクラスのみ判定 |
-| 燃料残量 | `RemainingFuel.Root` / `WarningReadout` | `LMU_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | `{percent}`（判定時の設定閾値に置換） | `LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT`（30） | 燃料クラスのみ判定 |
-| タイヤ摩耗 | `TyreWear.Root` / `WarningReadout` | `LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT`（「タイヤ残存率{percent}%以下」） | `{percent}`（設定閾値に置換） | `LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT`（30） | 残存率が閾値以下 |
-| ブレーキ摩耗 | `BrakeWear.Root` / `WarningReadout` | `LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT`（「ブレーキ残量{percent}%以下」） | `{percent}`（判定時の車両クラス閾値に置換） | `LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_*_DEFAULT`（各20） | いずれかの輪が閾値以下で1回。全輪が閾値超で再武装 |
-| ブレーキ過熱 | `BrakeTemperature.Root` / `WarningReadout` | `LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT`（「ブレーキ温度{celsius}℃以上」） | `{celsius}`（判定時の車両クラス閾値に置換） | `LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_*_DEFAULT`（クラス別） | 全クラス共通の文言 |
-| タイヤ過熱 | `TyreTemperature.Root` / `OverheatWarning` | `LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT`（「タイヤ過熱 {celsius}度」） | `{celsius}`（判定時の全輪最高カーカス温度を四捨五入） | 保存済みの高温閾値 | 過熱・解除判定は従来どおり |
-| タイヤ低温 | `TyreTemperature.Root` / `LowWarning` | `LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT`（「タイヤ低温 {celsius}度」） | `{celsius}`（判定時の全輪最高温度） | 試聴は60℃固定 | 低温判定は従来どおり |
+| バーチャルエネルギー残量 | `RemainingVirtualEnergy.Root` / `WarningReadout` | `LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT`（「バーチャルエネルギーは残り{percent}%以下」） | `{percent}`（判定時の設定閾値に置換） | `LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT`（30） | VEクラスのみ判定 |
+| 燃料残量 | `RemainingFuel.Root` / `WarningReadout` | `LMU_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り{percent}%」） | `{percent}`（判定時の設定閾値に置換） | `LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT`（30） | 燃料クラスのみ判定 |
+| タイヤ摩耗 | `TyreWear.Root` / `WarningReadout` | `LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT`（「タイヤは残り{percent}%以下」） | `{percent}`（設定閾値に置換） | `LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT`（30） | 残存率が閾値以下 |
+| ブレーキ摩耗 | `BrakeWear.Root` / `WarningReadout` | `LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT`（「ブレーキは残り{percent}%以下」） | `{percent}`（判定時の車両クラス閾値に置換） | `LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_*_DEFAULT`（各20） | いずれかの輪が閾値以下で1回。全輪が閾値超で再武装 |
+| ブレーキ過熱 | `BrakeTemperature.Root` / `WarningReadout` | `LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT`（「ブレーキ温度は{celsius}℃以上」） | `{celsius}`（判定時の車両クラス閾値に置換） | `LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_*_DEFAULT`（クラス別） | 全クラス共通の文言 |
+| タイヤ過熱 | `TyreTemperature.Root` / `OverheatWarning` | `LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT`（「タイヤ過熱{celsius}℃」） | `{celsius}`（判定時の全輪最高カーカス温度を四捨五入） | 保存済みの高温閾値 | 過熱・解除判定は従来どおり |
+| タイヤ低温 | `TyreTemperature.Root` / `LowWarning` | `LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT`（「タイヤ低温{celsius}℃」） | `{celsius}`（判定時の全輪最高温度） | 試聴は60℃固定 | 低温判定は従来どおり |
 | 車両故障 オーバーヒート | `VehicleDamage.Root` / `Overheat` | `LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT`（「オーバーヒート」） | なし | なし | `Root` と `Overheat` の有効状態 |
 | 車両故障 部品脱落 | `VehicleDamage.Root` / `PartDetached` | `LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT`（「部品脱落」） | なし | なし | `Root` と `PartDetached` の有効状態 |
 | 車両故障 タイヤ脱落 | `VehicleDamage.Root` / `TyreDetached` | `LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT`（「タイヤ脱落」） | なし | なし | `Root` と `TyreDetached` の有効状態 |
-| ピットタイミング（バーチャルエネルギー） | `PitTiming.Root` / `VirtualEnergy` | `LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT`（「エネルギー切れのため{laps}周以内にピットイン」）、切迫時 `..._IMMINENT_...`（「エネルギー切れのため必ずピットイン」） | `{laps}`（残り1周以上のとき） | `LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT`（3） | VEクラスのみ発火。0周以下は切迫時文言 |
+| ピットタイミング（バーチャルエネルギー） | `PitTiming.Root` / `VirtualEnergy` | `LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT`（「バーチャルエネルギー切れのため{laps}周以内にピットイン」）、切迫時 `..._IMMINENT_...`（「バーチャルエネルギー切れのため必ずピットイン」） | `{laps}`（残り1周以上のとき） | `LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT`（3） | VEクラスのみ発火。0周以下は切迫時文言 |
 | ピットタイミング（タイヤ摩耗） | `PitTiming.Root` / `TyreWear` | `LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT`（「タイヤ摩耗のため{laps}周以内にピットイン」）、切迫時 `..._TYRE_WEAR_IMMINENT_...`（「タイヤ摩耗のため必ずピットイン」） | `{laps}`（残り1周以上のとき） | `LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT`（3） | 0周以下は切迫時文言 |
-| ピットタイミング（燃料） | `PitTiming.Root` / `Fuel` | `LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、切迫時 `..._FUEL_IMMINENT_...`（「燃料残り1周未満」） | `{laps}`（残り1周以上のとき） | `LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT`（3、設定範囲1〜5周） | 燃料クラスのみ発火。0周以下は切迫時文言 |
+| ピットタイミング（燃料） | `PitTiming.Root` / `Fuel` | `LMU_WINDOWS_PIT_TIMING_FUEL_READOUT_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、切迫時 `..._FUEL_IMMINENT_...`（「燃料は残り1周未満」） | `{laps}`（残り1周以上のとき） | `LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT`（3、設定範囲1〜5周） | 燃料クラスのみ発火。0周以下は切迫時文言 |
 | 自己ベストラップ更新 | `MyBestLap.Root` / `DetailEnabled` | `LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT`（「自己ベストラップ更新 {laptime}」） | `{laptime}`（「1分23秒456」形式） | なし | 更新判定は従来どおり |
 
 - 上表の文言はすべて自由文字列をOS標準TTSで読み上げる。空白文言またはTTS利用不可では本文も開始音も要求せず、ログに空文字と `SKIPPED` を記録する。収録WAVは使わない。
-- 文言の保存は各 Preferences に従い、上限は `READOUT_CUSTOM_TEXT_MAX_LENGTH`（30文字）で正規化する。
+- 文言の保存は各 Preferences に従い、上限は `READOUT_CUSTOM_TEXT_MAX_LENGTH`（40文字）で正規化する。
 
 
 LMU車両故障のオーバーヒート・部品脱落・タイヤ脱落は、各1つのグローバルな自由文言をOS標準TTSで読み上げる。既定文言は「オーバーヒート」「部品脱落」「タイヤ脱落」。文言は既存の `LmuWindowsVehicleDamagePreferences` に保存し、保存時は `trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)` で正規化する。判定時に解決した本文をイベントの `resolvedText` に保持し、キュー待機中の設定変更でもログと発話を一致させる。空白文言・TTS利用不可時は本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。一覧の `VehicleDamage.Root` と詳細の `Overheat` / `PartDetached` / `TyreDetached` のスイッチ配線は維持し、開始音・優先度・キューと試聴は `VehicleDamage.Root` を参照する。旧オーバーヒート音声タイプは廃止し、3種類の警告は収録WAVへフォールバックしない。
@@ -41,7 +41,7 @@ Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を
 `RemainingFuel` 配下の手動専用項目で、TopLevel・自動タブ・スイッチには追加しない。手動項目定義の末尾（タイヤ摩耗の残り周回数の後）に並ぶ。
 `fuelLapsTrackingState` の蓄積値を `manualFuelRemainingLaps` で読み、1周以上は `formatLmuWindowsPitTimingReadoutText` で `{laps}` を置換する。
 既定文言は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、0周は
-`LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料残り1周未満」）。空欄テンプレートなら0周でも空文字にする。
+`LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料は残り1周未満」）。空欄テンプレートなら0周でも空文字にする。
 蓄積前・消費量が null／0以下／非有限・算出不能・最新燃料が未受信または受信から5秒超の場合はデータ無しとする。
 鮮度は `latestFuelReceivedAtMs` で判定し、ピットタイミングの鮮度には依存しない。
 複数項目では「燃料残り周回数はデータがありません」を連結する。
@@ -70,7 +70,7 @@ TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列�
 フラッグ・車両接近開始時・継続時のテレメトリログには、読み上げ要求時点の自由文字列を記録する。空欄・TTS利用不可の場合は本文を要求せず、空文字と `SKIPPED` を記録する。`SPOKEN` / `QUEUED` は再生要求の結果であり、非同期発話の完了を保証しない。
 
 `LmuWindowsReadoutTextSpeaker` が各設定の最新文言を取得し、OS標準TTSへ渡す。
-車両接近開始時・継続時の既定文言は左「カーレフト」、右「カーライト」。継続時は左側車両「キープライト」、右側車両「キープレフト」。旧開始時・継続時の種別は移行せず、既定文言を使用する。保存時は前後の空白を除去し、30文字までに制限する。
+車両接近開始時・継続時の既定文言は左「カーレフト」、右「カーライト」。継続時は左側車両「キープライト」、右側車両「キープレフト」。旧開始時・継続時の種別は移行せず、既定文言を使用する。保存時は前後の空白を除去し、40文字までに制限する。
 
 ピットタイミング（バーチャルエネルギー）の自動警告は `energySource == LmuWindowsEnergySource.VirtualEnergy` の場合のみ発火する。燃料クラスでも消費量の追跡・状態更新・評価周の更新は継続する。
 
@@ -78,11 +78,11 @@ TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列�
 
 バーチャルエネルギー残量警告は設定した閾値（%）をイベントに持ち、保存文言の `{percent}` をその閾値に置換する。実際の残量は置換値に使わない。空白文言・TTS利用不可時は開始音も要求せず、ログに空文字と `SKIPPED` を記録する。残量警告の収録WAVは使用しない。
 
-LMUタイヤ過熱・低温警告は保存した自由文言の `{celsius}` を、警告を発生させた判定時点の全輪の最高カーカス温度を四捨五入した整数（℃）に置換してOS標準TTSで読み上げる。低温警告も全輪の最高温度を使い、`{wheel}` は対応しない。判定時に解決した本文をイベントの `resolvedText` に保持し、キュー待機中に設定が変わっても発話とログを一致させる。既定文言は「タイヤ過熱 {celsius}度」「タイヤ低温 {celsius}度」。DataStore の保存済み文言は変更せず、未設定の場合と「デフォルトに戻す」操作で新しい既定文言を使用する。DataStore の移行は不要。詳細画面は挿入チップと未知プレースホルダーの警告を提供し、試聴では過熱は選択中車両クラスの高温閾値（スライダーの現在値）、低温は60℃固定に置換する。空白文言・TTS利用不可時は開始音も要求せず、ログに空文字と `SKIPPED` を記録する。収録WAVへのフォールバックは行わない。開始音・優先度・キュー設定と試聴の開始音は `TyreTemperature.Root` を参照する。
+LMUタイヤ過熱・低温警告は保存した自由文言の `{celsius}` を、警告を発生させた判定時点の全輪の最高カーカス温度を四捨五入した整数（℃）に置換してOS標準TTSで読み上げる。低温警告も全輪の最高温度を使い、`{wheel}` は対応しない。判定時に解決した本文をイベントの `resolvedText` に保持し、キュー待機中に設定が変わっても発話とログを一致させる。既定文言は「タイヤ過熱{celsius}℃」「タイヤ低温{celsius}℃」。DataStore の保存済み文言は変更せず、未設定の場合と「デフォルトに戻す」操作で新しい既定文言を使用する。DataStore の移行は不要。詳細画面は挿入チップと未知プレースホルダーの警告を提供し、試聴では過熱は選択中車両クラスの高温閾値（スライダーの現在値）、低温は60℃固定に置換する。空白文言・TTS利用不可時は開始音も要求せず、ログに空文字と `SKIPPED` を記録する。収録WAVへのフォールバックは行わない。開始音・優先度・キュー設定と試聴の開始音は `TyreTemperature.Root` を参照する。
 
 タイヤ摩耗警告は設定した残存率閾値（%）をイベントに持ち、保存文言の `{percent}` をその閾値に置換する。実際の残存率は置換値に使わない。判定時に解決した文言を `resolvedText` に保持し、キュー待機中の設定変更でもログと発話を一致させる。空白文言・TTS利用不可時は開始音も要求せず、ログに空文字と `SKIPPED` を記録する。`tyre_wear_caution.wav` は廃止し、WAVへはフォールバックしない。
 
-ブレーキ過熱警告は設定した車両クラスの温度閾値（℃）をイベントに持ち、全クラス共通の自由文言の `{celsius}` をその閾値に置換する。実測温度は使用しない。既定文言は「ブレーキ温度{celsius}℃以上」。判定時に文言を `resolvedText` へ保持し、キュー待機中もログと発話を一致させる。空欄・TTS利用不可では開始音も要求せず空文字と `SKIPPED` を記録する。`brake_overheat.wav` は廃止し、WAVへはフォールバックしない。
+ブレーキ過熱警告は設定した車両クラスの温度閾値（℃）をイベントに持ち、全クラス共通の自由文言の `{celsius}` をその閾値に置換する。実測温度は使用しない。既定文言は「ブレーキ温度は{celsius}℃以上」。判定時に文言を `resolvedText` へ保持し、キュー待機中もログと発話を一致させる。空欄・TTS利用不可では開始音も要求せず空文字と `SKIPPED` を記録する。`brake_overheat.wav` は廃止し、WAVへはフォールバックしない。
 
 LMU自己ベストラップ更新は自由文言のOS標準TTSを使う。既定文言は「自己ベストラップ更新 {laptime}」。`{laptime}` は更新後の `telemetry.timing.bestLapTimeMs`（Long）を「1分23秒456」形式に置換し、1分未満では分を省略、ミリ秒は3桁固定、60分以上も分で表す。判定時に本文を `resolvedText` へ保持して発話とログを一致させる。空白・TTS利用不可では開始音も本文も要求せず、ログに空文字と `SKIPPED` を記録する。更新判定と一覧の `MyBestLap.Root`・詳細の `MyBestLap.DetailEnabled` のスイッチ配線は維持し、開始音・優先度・キュー・試聴は `MyBestLap.Root` を使う。詳細画面で文言編集・`{laptime}` 挿入・未知プレースホルダー警告・リセット・サンプルタイム83456msでの試聴を提供する。LMUの口調設定は移行せず参照しない。自己ベスト用WAVは廃止し、WAVへのフォールバックは行わない。
 
@@ -139,15 +139,15 @@ JVM テストで連続依頼・警告状態の維持・未受信・鮮度の境�
 
 LMU の手動依頼（一覧の ▶・セットホットキー）で、対象セットにバーチャルエネルギー残量・燃料残量・タイヤ摩耗・ブレーキ残量・ブレーキ温度・タイヤ温度・自己ベストラップ・バーチャルエネルギーの残り周回数・タイヤ摩耗の残り周回数のいずれのキーも含まれない場合は、データの有無に関係なく「読み上げる項目がありません」を開始音付きで読み上げる。文言は編集不可の `MANUAL_READOUT_NO_ITEMS_TEXT` を使い、データ無しと同じ経路で常にキュー末尾へ追加してログを保存する。存在しないセット ID は読み上げない。
 
-タイヤ摩耗は共有前の Flow で最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。受信から5秒以内なら最小残存率を domain に渡し、UseCase で整数%に丸めて他の項目と同じ連結用イベントで処理する。既定文言は「タイヤ摩耗残り{percent}%」。未受信・鮮度切れ・空の wheels はデータ無しとして扱う。自動警告の前回値・警告済み状態は変更しない。
+タイヤ摩耗は共有前の Flow で最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。受信から5秒以内なら最小残存率を domain に渡し、UseCase で整数%に丸めて他の項目と同じ連結用イベントで処理する。既定文言は「タイヤは残り{percent}%」。未受信・鮮度切れ・空の wheels はデータ無しとして扱う。自動警告の前回値・警告済み状態は変更しない。
 
-LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingFuel.Root` を使う。受信から5秒以内の `remainingPercent` を比率（0〜1）に変換し、手動判定で四捨五入した整数％を、既定文言 `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）へ埋める。未受信・鮮度切れは「燃料残量はデータがありません」を連結する。先頭が燃料残量なら開始音・優先度・ログのキーは `RemainingFuel.Root`。自動燃料警告の `remainingFuelWarned` は変更しない。 `fuelFlow` の共有前に最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。Android の燃料は WebSocket の実受信時刻を使い、timing に伴う同じ燃料の再通知では鮮度を更新しない。ピットタイミングも実受信から5秒超の燃料は判定に使わない。
+LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingFuel.Root` を使う。受信から5秒以内の `remainingPercent` を比率（0〜1）に変換し、手動判定で四捨五入した整数％を、既定文言 `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」）へ埋める。未受信・鮮度切れは「燃料残量はデータがありません」を連結する。先頭が燃料残量なら開始音・優先度・ログのキーは `RemainingFuel.Root`。自動燃料警告の `remainingFuelWarned` は変更しない。 `fuelFlow` の共有前に最新値と受信時刻を保持し、シミュレーター切り替え時に破棄する。Android の燃料は WebSocket の実受信時刻を使い、timing に伴う同じ燃料の再通知では鮮度を更新しない。ピットタイミングも実受信から5秒超の燃料は判定に使わない。
 
-手動ブレーキ残量は `BrakeWear.Root` に対応し、4輪の `remainingPercent`（0〜100）の最小値を四捨五入して、既定文言「ブレーキ残量{percent}%」へ置換する。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。未受信・受信から5秒超・空の wheels はデータ無しとして扱い、自動警告の前回値・警告済み状態は変更しない。
+手動ブレーキ残量は `BrakeWear.Root` に対応し、4輪の `remainingPercent`（0〜100）の最小値を四捨五入して、既定文言「ブレーキは残り{percent}%」へ置換する。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。未受信・受信から5秒超・空の wheels はデータ無しとして扱い、自動警告の前回値・警告済み状態は変更しない。
 
-手動ブレーキ温度は `BrakeTemperature.Root` に対応し、`LmuWindowsBrakeTemperatureData.wheels` の最高温度を四捨五入した整数℃を、既定文言「ブレーキ温度{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱警告の前回値・警告済み状態は変更しない。
+手動ブレーキ温度は `BrakeTemperature.Root` に対応し、`LmuWindowsBrakeTemperatureData.wheels` の最高温度を四捨五入した整数℃を、既定文言「ブレーキ温度は{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱警告の前回値・警告済み状態は変更しない。
 
-手動タイヤ温度は `TyreTemperature.Root` に対応し、`LmuWindowsTyreCarcassTemperatureData.wheels` の `CelsiusReading.value` の最大カーカス温度を四捨五入した整数℃を、既定文言「タイヤ温度{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱・低温警告の前回値・警告済み状態は変更しない。
+手動タイヤ温度は `TyreTemperature.Root` に対応し、`LmuWindowsTyreCarcassTemperatureData.wheels` の `CelsiusReading.value` の最大カーカス温度を四捨五入した整数℃を、既定文言「タイヤ温度は{celsius}℃」へ置換する。未受信・受信から5秒超・空の wheels はデータ無しとして扱う。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。自動過熱・低温警告の前回値・警告済み状態は変更しない。
 
 手動自己ベストラップは `LmuWindowsReadoutItemKey.MyBestLap.Root.value` に対応し、セッションの `timing.bestLapTimeMs` を読む。既定文言は `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」）。既存の `formatLmuWindowsMyBestLapReadoutText` で `{laptime}` を「1分23秒456」形式に置換する。未受信・最後の受信から `CURRENT_VALUE_MAX_AGE_MS`（5秒）超・0以下はデータ無しとし、複数項目では「自己ベストラップはデータがありません」を連結。自動の `MyBestLap.Root` / `DetailEnabled` スイッチとは独立し、`determineMyBestLap`・`personalBestMs` の自動更新判定の状態は変更しない。保存順に連結した1イベントを常にキュー末尾へ追加し、開始音・優先度・ログには先頭項目のキーを使う。
 
@@ -174,5 +174,5 @@ VEクラス・無効設定でも燃料消費の追跡と評価周の更新を続
 `pitTimingJob` が `exactPercent / 100.0` を一度だけ追跡し、手動の燃料残り周回数と `fuelLapsTrackingState` を共有する。
 VE・タイヤ・燃料の候補の最小周回数を選び、共通の `PitTimingLapGate` を通った候補だけ読み上げ履歴へ記録する。
 給油周を消費量の推定から除外し、給油で警告履歴を再武装、周回巻き戻りで追跡・評価履歴を初期化する。
-通常の既定文言は「燃料は残り約{laps}周」、0周以下は「燃料残り1周未満」。保存文言の解決・開始音・優先度・キュー・ログは
+通常の既定文言は「燃料は残り約{laps}周」、0周以下は「燃料は残り1周未満」。保存文言の解決・開始音・優先度・キュー・ログは
 既存の `PitTiming.Root` の流儀を使い、ログに燃料スナップショットと判定状態を含める。

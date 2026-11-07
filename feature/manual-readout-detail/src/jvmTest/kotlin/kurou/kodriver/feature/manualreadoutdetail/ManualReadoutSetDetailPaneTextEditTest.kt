@@ -87,7 +87,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{laps}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("バーチャルエネルギーの残り周回数を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -153,7 +153,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{laps}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("タイヤ摩耗の残り周回数を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -219,7 +219,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{laps}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("燃料残り周回数を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -283,7 +283,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{seconds}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("クラス内後方車とのギャップを削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -349,7 +349,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{laptime}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("自己ベストラップを削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -415,7 +415,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{laptime}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("自己ベストラップを削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -458,7 +458,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("燃料残量").performScrollTo().performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50%")
         rule.onNodeWithText("{percent} は現在の残量（%）に置き換わります").assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("残り{percent}%")
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("残り50%")
@@ -470,7 +470,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText("{percent}").assertExists()
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("50")
         rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50%")
     }
 
     @Test
@@ -598,7 +598,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{laps}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("燃料残り周回数を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -664,7 +664,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{celsius}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("タイヤ温度を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -730,7 +730,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{celsius}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("タイヤ温度を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -796,7 +796,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{celsius}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("タイヤ温度を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -861,7 +861,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{celsius}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("ブレーキ温度を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
@@ -925,7 +925,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onNodeWithText("{percent}を挿入").performClick()
-        rule.onNodeWithText("30/30").assertExists()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("バーチャルエネルギー残量を削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {

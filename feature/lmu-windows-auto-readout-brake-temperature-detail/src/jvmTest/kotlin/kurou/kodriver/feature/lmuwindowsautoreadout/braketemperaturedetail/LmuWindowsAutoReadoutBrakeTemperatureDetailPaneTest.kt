@@ -34,6 +34,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -98,7 +99,7 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
         }
         rule.onNodeWithText("過熱警告").assertIsDisplayed()
         rule.onNodeWithText("ブレーキ温度が閾値以上になったときの文言").assertIsDisplayed()
-        rule.onNodeWithText("ブレーキ温度{celsius}℃以上").assertIsDisplayed()
+        rule.onNodeWithText("ブレーキ温度は{celsius}℃以上").assertIsDisplayed()
         rule.onNodeWithText("{celsius} は選択中の車両クラスの温度閾値(℃)に置き換わります").assertIsDisplayed()
         rule.onNodeWithText("{celsius}を挿入").assertIsEnabled()
     }
@@ -120,9 +121,11 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
                 )
             }
         }
-        rule.onNode(hasSetTextAction()).assertIsEnabled().performTextReplacement("あ".repeat(31))
+        rule.onNode(hasSetTextAction()).assertIsEnabled().performTextReplacement(
+            "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1),
+        )
         rule.onNodeWithContentDescription("入力した文言を再生").performClick()
-        assertEquals(listOf("あ".repeat(30)), changed)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
         assertEquals(changed, previews)
     }
 

@@ -267,7 +267,7 @@ class LmuWindowsAutoReadoutBrakeWearDetailViewModelTest {
                 textFlow.update { "残り{percent}%" }
             }
             val viewModel = createViewModel()
-            assertEquals("ブレーキ残量{percent}%以下", viewModel.uiState.first().readoutText)
+            assertEquals("ブレーキは残り{percent}%以下", viewModel.uiState.first().readoutText)
             viewModel.onReadoutTextChanged(" 残り{percent}% ")
             assertEquals("残り{percent}%", viewModel.uiState.first().readoutText)
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }

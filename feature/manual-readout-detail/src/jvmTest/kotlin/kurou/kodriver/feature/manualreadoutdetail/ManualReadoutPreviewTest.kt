@@ -82,7 +82,7 @@ class ManualReadoutPreviewTest {
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "バーチャルエネルギーは残り約3周、タイヤ温度90℃",
+            "バーチャルエネルギーは残り約3周、タイヤ温度は90℃",
             manualReadoutPreview(
                 state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.TyreTemperature.Root.value)),
             ),
@@ -100,7 +100,7 @@ class ManualReadoutPreviewTest {
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "タイヤは残り約3周、タイヤ温度90℃",
+            "タイヤは残り約3周、タイヤ温度は90℃",
             manualReadoutPreview(
                 state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.TyreTemperature.Root.value)),
             ),
@@ -118,7 +118,7 @@ class ManualReadoutPreviewTest {
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "燃料は残り約3周、タイヤ温度90℃",
+            "燃料は残り約3周、タイヤ温度は90℃",
             manualReadoutPreview(
                 state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.TyreTemperature.Root.value)),
             ),
@@ -156,7 +156,7 @@ class ManualReadoutPreviewTest {
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "自己ベストラップ 1分23秒456、タイヤ温度90℃",
+            "自己ベストラップ 1分23秒456、タイヤ温度は90℃",
             manualReadoutPreview(
                 state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.TyreTemperature.Root.value)),
             ),
@@ -194,7 +194,7 @@ class ManualReadoutPreviewTest {
     fun `LMUの燃料残量の既定文言と編集文言はサンプル値に置換する`() {
         val key = LmuWindowsReadoutItemKey.RemainingFuel.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
-        assertEquals("燃料は残り50パーセント", manualReadoutPreview(state))
+        assertEquals("燃料は残り50%", manualReadoutPreview(state))
         assertEquals(
             "残り50% {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}% {unknown}"))),
@@ -257,14 +257,14 @@ class ManualReadoutPreviewTest {
     fun `タイヤ温度の既定文言と編集文言はサンプル値に置換する`() {
         val key = LmuWindowsReadoutItemKey.TyreTemperature.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
-        assertEquals("タイヤ温度90℃", manualReadoutPreview(state))
+        assertEquals("タイヤ温度は90℃", manualReadoutPreview(state))
         assertEquals(
             "温度90℃ {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "温度{celsius}℃ {unknown}"))),
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "タイヤ温度90℃、ブレーキ温度500℃",
+            "タイヤ温度は90℃、ブレーキ温度は500℃",
             manualReadoutPreview(
                 state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.BrakeTemperature.Root.value)),
             ),
@@ -275,7 +275,7 @@ class ManualReadoutPreviewTest {
     fun `ブレーキ温度の既定文言と編集文言はサンプル値に置換する`() {
         val key = LmuWindowsReadoutItemKey.BrakeTemperature.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
-        assertEquals("ブレーキ温度500℃", manualReadoutPreview(state))
+        assertEquals("ブレーキ温度は500℃", manualReadoutPreview(state))
         assertEquals(
             "温度500℃ {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "温度{celsius}℃ {unknown}"))),
@@ -287,7 +287,7 @@ class ManualReadoutPreviewTest {
     fun `ブレーキ残量の既定文言と編集文言はサンプル値に置換する`() {
         val key = LmuWindowsReadoutItemKey.BrakeWear.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
-        assertEquals("ブレーキ残量50%", manualReadoutPreview(state))
+        assertEquals("ブレーキは残り50%", manualReadoutPreview(state))
         assertEquals(
             "残り50% {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}% {unknown}"))),
@@ -299,7 +299,7 @@ class ManualReadoutPreviewTest {
     fun `タイヤ摩耗の既定文言と編集文言はサンプル値に置換する`() {
         val key = LmuWindowsReadoutItemKey.TyreWear.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
-        assertEquals("タイヤ摩耗残り50%", manualReadoutPreview(state))
+        assertEquals("タイヤは残り50%", manualReadoutPreview(state))
         assertEquals("残り50%", manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}%"))))
     }
 
@@ -324,7 +324,7 @@ class ManualReadoutPreviewTest {
     fun `既定文言と編集文言の残量はサンプル値に置換し未知トークンは保持する`() {
         val key = lmuWindowsManualReadoutItemKeys().first()
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
-        assertEquals("バーチャルエネルギー残量は50パーセント", manualReadoutPreview(state))
+        assertEquals("バーチャルエネルギーは残り50%", manualReadoutPreview(state))
         assertEquals(
             "残り50% {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}% {unknown}"))),

@@ -213,7 +213,7 @@ class ManualReadoutSetDetailPaneItemAddTest {
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("タイヤ温度").performScrollTo().performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤ温度90℃")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤ温度は90℃")
     }
 
     @Test
@@ -237,7 +237,7 @@ class ManualReadoutSetDetailPaneItemAddTest {
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("ブレーキ温度").performScrollTo().performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("ブレーキ温度500℃")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("ブレーキ温度は500℃")
     }
 
     @Test
@@ -261,6 +261,6 @@ class ManualReadoutSetDetailPaneItemAddTest {
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("ブレーキ残量").performScrollTo().performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("ブレーキ残量50%")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("ブレーキは残り50%")
     }
 }

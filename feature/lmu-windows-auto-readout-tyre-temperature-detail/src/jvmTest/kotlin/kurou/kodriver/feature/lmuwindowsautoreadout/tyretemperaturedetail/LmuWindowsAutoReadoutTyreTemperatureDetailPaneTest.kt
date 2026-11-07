@@ -41,6 +41,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERH
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -441,9 +442,11 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
                 )
             }
         }
-        rule.onAllNodes(hasSetTextAction())[0].assertIsEnabled().performTextReplacement("あ".repeat(31))
+        rule.onAllNodes(hasSetTextAction())[0].assertIsEnabled().performTextReplacement(
+            "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1),
+        )
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performClick()
-        assertEquals(listOf("あ".repeat(30)), changed)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
         assertEquals(changed, previews)
     }
 
@@ -468,9 +471,9 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             .onAllNodes(hasSetTextAction())[1]
             .performScrollTo()
             .assertIsEnabled()
-            .performTextReplacement("あ".repeat(31))
+            .performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onAllNodesWithContentDescription("入力した文言を再生")[1].performScrollTo().performClick()
-        assertEquals(listOf("あ".repeat(30)), changed)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
         assertEquals(changed, previews)
     }
 

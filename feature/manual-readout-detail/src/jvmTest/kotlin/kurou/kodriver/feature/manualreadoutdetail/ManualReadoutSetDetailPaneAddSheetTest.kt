@@ -231,7 +231,7 @@ class ManualReadoutSetDetailPaneAddSheetTest {
             assertEquals(listOf(LmuWindowsReadoutItemKey.TyreWear.Root.value), state.value.selectedItemKeys)
         }
         rule.onNode(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss)).assertDoesNotExist()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤ摩耗残り50%")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤは残り50%")
         rule.onNodeWithText("＋ 項目を追加").assertIsEnabled()
         rule.onNodeWithText("試聴").assertExists()
         rule.onNodeWithContentDescription("セットを削除").performClick()

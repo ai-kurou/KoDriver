@@ -20,6 +20,7 @@ import androidx.compose.ui.test.performTextReplacement
 import kurou.kodriver.buildlogic.screenshottest.assertEditableTextEquals
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -81,9 +82,11 @@ class AceWindowsAutoReadoutRemainingFuelLapsDetailPaneTest {
                 )
             }
         }
-        rule.onAllNodes(hasSetTextAction())[0].assertIsEnabled().performTextReplacement("あ".repeat(31))
+        rule.onAllNodes(hasSetTextAction())[0].assertIsEnabled().performTextReplacement(
+            "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1),
+        )
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performClick()
-        assertEquals(listOf("あ".repeat(30)), changed)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
         assertEquals(changed, previews)
     }
 
@@ -169,15 +172,15 @@ class AceWindowsAutoReadoutRemainingFuelLapsDetailPaneTest {
         }
         rule.onNodeWithText("燃料がありません(0周以下)のときの文言").performScrollTo().assertIsDisplayed()
         rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].assertIsNotEnabled().performClick()
-        rule.onAllNodes(hasSetTextAction())[1].performTextReplacement("あ".repeat(31))
-        rule.onAllNodes(hasSetTextAction())[1].assertEditableTextEquals("あ".repeat(30))
+        rule.onAllNodes(hasSetTextAction())[1].performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
+        rule.onAllNodes(hasSetTextAction())[1].assertEditableTextEquals("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH))
         rule.onAllNodes(hasSetTextAction())[1].performTextReplacement("燃料なし{x}")
         rule.onAllNodesWithContentDescription("入力した文言を再生")[1].performClick()
         rule.onNodeWithText("{x} は置き換えられません。{laps} を使用してください").assertDoesNotExist()
         rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].performClick()
         rule.onAllNodes(hasSetTextAction())[1].assertEditableTextEquals("燃料残り1周未満")
         rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].assertIsNotEnabled()
-        assertEquals(listOf("あ".repeat(30), "燃料なし{x}", "燃料残り1周未満"), changes)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH), "燃料なし{x}", "燃料残り1周未満"), changes)
         assertEquals(listOf("燃料なし{x}"), previews)
     }
 

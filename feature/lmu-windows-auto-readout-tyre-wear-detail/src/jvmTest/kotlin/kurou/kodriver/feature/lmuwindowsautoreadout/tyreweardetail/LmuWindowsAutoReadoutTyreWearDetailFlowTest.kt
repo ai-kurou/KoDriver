@@ -42,9 +42,9 @@ class LmuWindowsAutoReadoutTyreWearDetailFlowTest {
             expected = expected.copy(thresholdPercentage = 45)
             assertEquals(expected, states.last())
 
-            inputs.readoutTexts.update { "タイヤ残存率{percent}%" }
+            inputs.readoutTexts.update { "タイヤは残り{percent}%" }
             testScheduler.runCurrent()
-            expected = expected.copy(readoutText = "タイヤ残存率{percent}%")
+            expected = expected.copy(readoutText = "タイヤは残り{percent}%")
             assertEquals(expected, states.last())
 
             inputs.isTextToSpeechAvailable.update { true }

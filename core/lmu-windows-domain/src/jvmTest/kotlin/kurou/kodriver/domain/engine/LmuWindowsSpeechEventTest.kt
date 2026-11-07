@@ -27,7 +27,7 @@ class LmuWindowsSpeechEventTest {
 
         assertEquals(42, event.percentage)
 
-        assertEquals("ブレーキ残量42%", event.narratedText)
+        assertEquals("ブレーキは残り42%", event.narratedText)
 
         assertEquals(LmuWindowsReadoutItemKey.BrakeWear.Root, event.readoutItemKey)
 
@@ -183,16 +183,16 @@ class LmuWindowsSpeechEventTest {
 
     @Test
     fun `LMUタイヤ・エネルギー系のnarratedTextはChipと同じ文言を返す`() {
-        assertEquals("ブレーキ温度800℃以上", LmuWindowsBrakeOverheat(800).narratedText)
+        assertEquals("ブレーキ温度は800℃以上", LmuWindowsBrakeOverheat(800).narratedText)
 
-        assertEquals("タイヤ過熱 100度", LmuWindowsTyreOverheat(100).narratedText)
+        assertEquals("タイヤ過熱100℃", LmuWindowsTyreOverheat(100).narratedText)
 
-        assertEquals("タイヤ低温 60度", LmuWindowsTyreCold(60).narratedText)
+        assertEquals("タイヤ低温60℃", LmuWindowsTyreCold(60).narratedText)
 
-        assertEquals("タイヤ残存率50%以下", LmuWindowsTyreWearWarning(50).narratedText)
+        assertEquals("タイヤは残り50%以下", LmuWindowsTyreWearWarning(50).narratedText)
 
-        assertEquals("バーチャルエネルギー残量50%以下", LmuWindowsRemainingVirtualEnergyWarning(50).narratedText)
-        assertEquals("燃料は残り50パーセント", LmuWindowsRemainingFuelWarning(50).narratedText)
+        assertEquals("バーチャルエネルギーは残り50%以下", LmuWindowsRemainingVirtualEnergyWarning(50).narratedText)
+        assertEquals("燃料は残り50%", LmuWindowsRemainingFuelWarning(50).narratedText)
         assertEquals(LmuWindowsReadoutItemKey.RemainingFuel.Root, LmuWindowsRemainingFuelWarning(50).readoutItemKey)
     }
 
@@ -206,7 +206,7 @@ class LmuWindowsSpeechEventTest {
 
         assertEquals(42, event.percentage)
 
-        assertEquals("バーチャルエネルギー残量は42パーセント", event.narratedText)
+        assertEquals("バーチャルエネルギーは残り42%", event.narratedText)
 
         assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, event.readoutItemKey)
     }
@@ -262,9 +262,9 @@ class LmuWindowsSpeechEventTest {
 
         assertEquals("低温60℃", cold.copy(resolvedText = "低温60℃").resolvedText)
 
-        assertEquals("タイヤ過熱 100度", overheat.copy(resolvedText = "過熱100℃").narratedText)
+        assertEquals("タイヤ過熱100℃", overheat.copy(resolvedText = "過熱100℃").narratedText)
 
-        assertEquals("タイヤ低温 60度", cold.copy(resolvedText = "低温60℃").narratedText)
+        assertEquals("タイヤ低温60℃", cold.copy(resolvedText = "低温60℃").narratedText)
     }
 
     @Test

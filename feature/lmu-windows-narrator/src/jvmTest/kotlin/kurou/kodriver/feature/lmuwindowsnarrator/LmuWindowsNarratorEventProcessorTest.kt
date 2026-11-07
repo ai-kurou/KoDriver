@@ -394,7 +394,7 @@ class LmuWindowsNarratorEventProcessorTest {
     fun `タイヤ温度から始まる手動セットはRootキーで一回キューへ追加しログを保存する`() =
         runTest {
             val key = LmuWindowsReadoutItemKey.TyreTemperature.Root
-            val text = "タイヤ温度91℃、VE50%"
+            val text = "タイヤ温度は91℃、VE50%"
             val event = LmuWindowsManualReadoutText(key, text)
             val resolved = event.withResolvedText(text)
             val json = slot<String>()
@@ -439,7 +439,7 @@ class LmuWindowsNarratorEventProcessorTest {
     fun `温度から始まる手動セットはRootキーで一回キューへ追加しログを保存する`() =
         runTest {
             val key = LmuWindowsReadoutItemKey.BrakeTemperature.Root
-            val text = "ブレーキ温度501℃、VE50%"
+            val text = "ブレーキ温度は501℃、VE50%"
             val event = LmuWindowsManualReadoutText(key, text)
             val resolved = event.withResolvedText(text)
             val json = slot<String>()
