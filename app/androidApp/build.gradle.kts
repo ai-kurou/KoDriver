@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 plugins {
+    id("vosk-model")
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
@@ -25,7 +26,10 @@ dependencies {
     implementation(projects.core.deviceVolumeData)
     implementation(projects.core.speechRecognitionData)
     implementation(projects.core.textToSpeechData)
-    implementation(projects.core.windowsStartupData)
+    // JVM 専用モジュール経由の JNA JAR が vosk-android の JNA AAR と重複するため除外する
+    implementation(projects.core.windowsStartupData) {
+        exclude(group = "net.java.dev.jna")
+    }
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
@@ -133,6 +137,19 @@ androidComponents {
             enable = true
             includeAndroidResources = true
         }
+    }
+}
+
+// 検証用に、debugビルドだけVoskの日本語モデルをassetsへ同梱する。同梱したビルドでは、OSの音声認識の開始音が鳴らない
+// Vosk認識を使う（同梱しないreleaseビルドは従来のOSの音声認識を使う）
+val prepareVoskModel =
+    tasks.named<PrepareVoskModelTask>("prepareVoskModel") {
+        modelPath.set("vosk-model-ja")
+        outputDir.set(layout.buildDirectory.dir("voskModelAssets"))
+    }
+androidComponents {
+    onVariants(selector().withBuildType("debug")) { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(prepareVoskModel, PrepareVoskModelTask::outputDir)
     }
 }
 
