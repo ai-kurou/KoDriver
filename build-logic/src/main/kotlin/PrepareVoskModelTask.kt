@@ -9,6 +9,8 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 import java.net.URI
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import javax.inject.Inject
 
@@ -72,10 +74,22 @@ abstract class PrepareVoskModelTask
             check(actual == expected) {
                 "Voskモデルのチェックサムが一致しません。期待値=$expected 実際=$actual"
             }
-            cached.parentFile.mkdirs()
-            // 書き込み途中のファイルをキャッシュとして読まないよう、完成してから置き換える
-            downloaded.copyTo(cached, overwrite = true)
-            return cached
+            return try {
+                cached.parentFile.mkdirs()
+                // 書き込み途中のファイルを他のビルドが読まないよう、一時ファイルに書いてから原子的に置き換える
+                val staging = File.createTempFile("vosk-model", ".part", cached.parentFile)
+                try {
+                    downloaded.copyTo(staging, overwrite = true)
+                    Files.move(staging.toPath(), cached.toPath(), StandardCopyOption.ATOMIC_MOVE)
+                } finally {
+                    staging.delete()
+                }
+                cached
+            } catch (e: java.io.IOException) {
+                // キャッシュへ保存できなくても、検証済みのzipがあるので展開は続ける
+                logger.warn("Voskモデルのキャッシュ保存に失敗しました: ${e.javaClass.simpleName}")
+                downloaded
+            }
         }
 
         private fun downloadWithRetry(): File {
