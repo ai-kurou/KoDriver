@@ -44,6 +44,17 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailPaneTest {
     }
 
     @Test
+    fun `説明文に消費量の基準を取り直す条件が表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                Gt7Ps5AutoReadoutRemainingFuelLapsDetailPaneContent()
+            }
+        }
+
+        rule.onNodeWithText("この基準は、セッションが変わったとき(周回数が戻ったとき)と、", substring = true).assertIsDisplayed()
+    }
+
+    @Test
     fun `警告カードと文言入力欄と閾値置換のヒントが表示される`() {
         rule.setContent {
             KoDriverTheme {
