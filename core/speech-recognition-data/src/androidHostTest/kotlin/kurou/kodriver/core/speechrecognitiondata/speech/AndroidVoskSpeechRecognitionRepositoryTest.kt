@@ -29,7 +29,7 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
             transcriberFactory = transcriberFactory,
             recorderFactory = { recorder },
             permissionRepository = permissionRepository,
-            computeDispatcher = StandardTestDispatcher(testScheduler),
+            ioDispatcher = StandardTestDispatcher(testScheduler),
         )
 
     @Test

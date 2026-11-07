@@ -29,7 +29,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
     private val transcriberFactory: SpeechTranscriberFactory,
     private val recorderFactory: () -> PcmRecorder,
     private val permissionRepository: RecordAudioPermissionRepository,
-    private val computeDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SpeechRecognitionRepository {
     override fun isAvailable(): Boolean = transcriberFactory.isAvailable()
 
@@ -49,7 +49,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
             if (e !is Exception && e !is LinkageError) throw e
             captureError(e)
             emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.RecognitionFailed))
-        }.flowOn(computeDispatcher)
+        }.flowOn(ioDispatcher)
 
     private fun createTranscriber(): SpeechTranscriber? {
         if (!transcriberFactory.isAvailable()) {
