@@ -29,6 +29,12 @@
 # メモリ削減のため org.gradle.workers.max=2・Kotlin in-process・Gradleヒープ2GBに設定しており、その分実行時間は延びる。
 # メモリに余裕がある環境では -Dorg.gradle.workers.max=N や ~/.gradle/gradle.properties で上書きできる。
 
+# Vosk日本語モデルの取得（:app:androidApp・:app:desktopApp のビルドで自動実行される）
+# 初回は配布元からの取得にネットワークが必要。zipはSHA-256検証のうえ Gradleユーザーホームの kodriver-vosk-model に
+# キャッシュされ、次回以降は再取得しない。取得失敗時は間隔を空けて再試行する（build-logic の PrepareVoskModelTask）。
+# CI でキャッシュを使いたい場合は ~/.gradle/kodriver-vosk-model を保存対象にする
+./gradlew :app:desktopApp:prepareVoskModel
+
 # 静的解析とモジュール依存関係の検証
 ./gradlew detekt assertModuleGraph
 

@@ -1,0 +1,9 @@
+{
+  "uniqueId": "com.alphacephei:vosk-model-small-ja",
+  "name": "vosk-model-small-ja-0.22",
+  "description": "Vosk の日本語音声認識モデル（アプリに同梱）",
+  "website": "https://alphacephei.com/vosk/models",
+  "developers": [{ "name": "Alpha Cephei Inc." }],
+  "licenses": ["Apache-2.0"],
+  "openSource": true
+}
