@@ -251,20 +251,24 @@ internal class Gt7Ps5NarratorViewModel(
                         settings = settings,
                     )
                 narratorState = decision.state
-                eventProcessor.process(
-                    sourceKey = Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
-                    telemetry = telemetry,
-                    events = decision.events,
-                    autoReadoutOrder = autoReadoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        Gt7Ps5TelemetryLogContext(
-                            state = state,
-                            settings = settings,
-                            finalState = decision.state,
-                        ),
-                )
+                if (
+                    eventProcessor.process(
+                        sourceKey = Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
+                        telemetry = telemetry,
+                        events = decision.events,
+                        autoReadoutOrder = autoReadoutOrder.value,
+                        queueEnabledStates = queueEnabledStates.value,
+                        observedAtMs = observedAtMs,
+                        logContext =
+                            Gt7Ps5TelemetryLogContext(
+                                state = state,
+                                settings = settings,
+                                finalState = decision.state,
+                            ),
+                    )
+                ) {
+                    narratorState = narratorState.copy(remainingFuelWarned = false)
+                }
             }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")

@@ -101,6 +101,10 @@ internal class Gt7Ps5NarratorEventProcessor(
         }
     }
 
+    /**
+     * 本文を解決できたのに優先度判定で読み上げられなかったイベントが1件でもあれば true を返す。
+     * 一度きりの警告フラグを呼び出し側が戻して再試行するために使う。
+     */
     suspend fun process(
         sourceKey: ReadoutItemKey,
         telemetry: Gt7Ps5TelemetryData,
@@ -109,8 +113,9 @@ internal class Gt7Ps5NarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: Gt7Ps5TelemetryLogContext,
-    ) {
+    ): Boolean {
         val previous = previousTelemetry[sourceKey]
+        var droppedByPriority = false
         events.forEach { event ->
             val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
             val narrationOutcome =
@@ -136,8 +141,10 @@ internal class Gt7Ps5NarratorEventProcessor(
                         finalState = logContext.finalState,
                     ),
             )
+            if (text != null && narrationOutcome == NarrationOutcome.SKIPPED) droppedByPriority = true
         }
         previousTelemetry[sourceKey] = telemetry
+        return droppedByPriority
     }
 
     /**

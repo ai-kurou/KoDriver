@@ -3155,6 +3155,37 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `手動読み上げ中に燃料警告が読まれなかった場合は手動の終了後に再度判定して読み上げる`() =
+        runTest(testDispatcher) {
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spoken)
+            every { tts.currentReadoutItemKey } returns LmuWindowsReadoutItemKey.MyBestLap.Root
+            every { tts.currentIsManual } returns true
+            createViewModel(
+                telemetryChannel = fuel,
+                ttsEngine = tts,
+                vehicleClass = LmuWindowsVehicleClassData.P3,
+                enabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(
+                        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
+                        LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to true,
+                    ),
+                queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingFuel.Root to false),
+            )
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            assertEquals(emptyList<SpeechEvent>(), spoken)
+
+            every { tts.currentReadoutItemKey } returns null
+            every { tts.currentIsManual } returns false
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            assertEquals(listOf<SpeechEvent>(resolvedFuelWarning), spoken)
+
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            assertEquals(listOf<SpeechEvent>(resolvedFuelWarning), spoken)
+        }
+
+    @Test
     fun `VEクラスではVE警告を出し燃料警告は出さない`() =
         runTest(testDispatcher) {
             val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
@@ -3175,6 +3206,91 @@ class LmuWindowsNarratorViewModelTest {
             )
             fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
             energy.send(remainingVirtualEnergy(remainingRatio = 0.1))
+            assertEquals(listOf<SpeechEvent>(resolvedWarning), spoken)
+        }
+
+    @Test
+    fun `手動読み上げ中にタイヤ摩耗警告が読まれなかった場合は手動の終了後に再度判定して読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            every { tts.currentReadoutItemKey } returns LmuWindowsReadoutItemKey.MyBestLap.Root
+            every { tts.currentIsManual } returns true
+            createViewModel(
+                tyreWearChannel = channel,
+                ttsEngine = tts,
+                tyreWearThresholdPercentage = 50,
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
+                queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to false),
+            )
+
+            channel.send(tyreWear(fl = 0.4))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+
+            every { tts.currentReadoutItemKey } returns null
+            every { tts.currentIsManual } returns false
+            channel.send(tyreWear(fl = 0.4))
+
+            assertEquals(
+                listOf<SpeechEvent>(LmuWindowsTyreWearWarning(50, resolvedText = "タイヤは残り50%以下")),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `手動読み上げ中にブレーキ摩耗警告が読まれなかった場合は手動の終了後に再度判定して読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            every { tts.currentReadoutItemKey } returns LmuWindowsReadoutItemKey.MyBestLap.Root
+            every { tts.currentIsManual } returns true
+            createViewModel(
+                brakeWearChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.BrakeWear.Root to true),
+                queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.BrakeWear.Root to false),
+            )
+
+            channel.send(brakeWearData(thickness = 0.026f))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+
+            every { tts.currentReadoutItemKey } returns null
+            every { tts.currentIsManual } returns false
+            channel.send(brakeWearData(thickness = 0.025f))
+
+            assertEquals(
+                listOf<SpeechEvent>(LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキは残り20%以下")),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `手動読み上げ中にVE警告が読まれなかった場合は手動の終了後に再度判定して読み上げる`() =
+        runTest(testDispatcher) {
+            val energy = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spoken)
+            every { tts.currentReadoutItemKey } returns LmuWindowsReadoutItemKey.MyBestLap.Root
+            every { tts.currentIsManual } returns true
+            createViewModel(
+                remainingVirtualEnergyChannel = energy,
+                ttsEngine = tts,
+                vehicleClass = LmuWindowsVehicleClassData.Gt3,
+                remainingVirtualEnergyThresholdPercentage = 50,
+                enabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true),
+                queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false),
+            )
+
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.1))
+            assertEquals(emptyList<SpeechEvent>(), spoken)
+
+            every { tts.currentReadoutItemKey } returns null
+            every { tts.currentIsManual } returns false
+            energy.send(remainingVirtualEnergy(remainingRatio = 0.1))
+
             assertEquals(listOf<SpeechEvent>(resolvedWarning), spoken)
         }
 
