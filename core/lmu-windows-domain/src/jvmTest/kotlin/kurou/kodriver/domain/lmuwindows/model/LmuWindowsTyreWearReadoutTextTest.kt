@@ -7,7 +7,7 @@ class LmuWindowsTyreWearReadoutTextTest {
     @Test
     fun `既定文言の閾値を置換する`() {
         assertEquals(
-            "タイヤ残存率30%以下",
+            "タイヤは残り30%以下",
             formatLmuWindowsTyreWearReadoutText(
                 LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT,
                 30,

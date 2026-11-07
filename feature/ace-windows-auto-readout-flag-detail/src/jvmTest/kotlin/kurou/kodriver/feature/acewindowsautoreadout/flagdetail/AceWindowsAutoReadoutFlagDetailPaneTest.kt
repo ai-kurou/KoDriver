@@ -19,6 +19,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -218,7 +219,7 @@ class AceWindowsAutoReadoutFlagDetailPaneTest {
         }
         rule.onNodeWithText("完走").performScrollTo().performTextReplacement("  注意  ")
         rule.onNodeWithText("注意").assertIsDisplayed()
-        rule.onNodeWithText("2/30").assertIsDisplayed()
+        rule.onNodeWithText("2/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertIsDisplayed()
         rule.onNodeWithText("注意").performTextReplacement("停止")
         assertEquals(listOf("注意", "停止"), saved)
     }

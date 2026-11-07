@@ -31,6 +31,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
@@ -721,7 +722,7 @@ class ManualReadoutSetDetailViewModelTest {
             val edited = original.copy(itemTexts = original.itemTexts + (key to "残量{percent}%"))
             val blank = edited.copy(itemTexts = edited.itemTexts + (key to ""))
             val unselected = blank.copy(itemKeys = emptyList())
-            val longText = "あ".repeat(30)
+            val longText = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)
             val limited = blank.copy(itemTexts = blank.itemTexts + (key to longText))
             val sets = MutableStateFlow(listOf(original))
             every { repository.observeSets() } returns sets

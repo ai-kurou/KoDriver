@@ -10,8 +10,8 @@ class LmuWindowsTyreTemperatureReadoutTextTest {
             LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT to "タイヤ過熱",
             LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT to "タイヤ低温",
         ).forEach { (template, warning) ->
-            assertEquals("$warning {celsius}度", template)
-            assertEquals("$warning 30度", formatLmuWindowsTyreTemperatureReadoutText(template, 30))
+            assertEquals("$warning{celsius}℃", template)
+            assertEquals("${warning}30℃", formatLmuWindowsTyreTemperatureReadoutText(template, 30))
             assertEquals(emptyList(), findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders(template))
         }
     }

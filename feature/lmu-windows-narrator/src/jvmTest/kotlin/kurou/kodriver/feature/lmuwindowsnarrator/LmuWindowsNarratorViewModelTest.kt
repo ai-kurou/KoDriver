@@ -876,7 +876,7 @@ class LmuWindowsNarratorViewModelTest {
             currentTime = 60_000L
             energy.send(remainingVirtualEnergy(remainingRatio = 0.5))
             assertEquals(
-                listOf("バーチャルエネルギーは残り約2周", "エネルギー切れのため2周以内にピットイン"),
+                listOf("バーチャルエネルギーは残り約2周", "バーチャルエネルギー切れのため2周以内にピットイン"),
                 spoken.map { it.narratedText },
             )
         }
@@ -1126,13 +1126,13 @@ class LmuWindowsNarratorViewModelTest {
             temperature.send(tyreTemperature(fl = 95.0))
             requests.send(request)
             temperature.send(tyreTemperature(fl = 100.0))
-            assertEquals(listOf("タイヤ過熱 95度", "タイヤ温度95℃"), spoken.map { it.narratedText })
+            assertEquals(listOf("タイヤ過熱95℃", "タイヤ温度は95℃"), spoken.map { it.narratedText })
             temperature.send(tyreTemperature(fl = 55.0))
             flags.send(clearFlags(gamePhase = SessionPhase.GARAGE))
             requests.send(request)
             temperature.send(tyreTemperature(fl = 55.0))
             assertEquals(
-                listOf("タイヤ過熱 95度", "タイヤ温度95℃", "タイヤ低温 55度", "タイヤ温度55℃"),
+                listOf("タイヤ過熱95℃", "タイヤ温度は95℃", "タイヤ低温55℃", "タイヤ温度は55℃"),
                 spoken.map { it.narratedText },
             )
             time = 5_001L
@@ -1140,7 +1140,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             assertEquals("タイヤ温度はデータがありません", spoken.last().narratedText)
             temperature.send(tyreTemperature(fl = 95.0))
-            assertEquals("タイヤ過熱 95度", spoken.last().narratedText)
+            assertEquals("タイヤ過熱95℃", spoken.last().narratedText)
             assertEquals(6, spoken.size)
         }
 
@@ -1259,7 +1259,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(tyreWear(fl = 0.7))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "mixed"))
             assertEquals(
-                listOf("記録1分23秒456、バーチャルエネルギー残量は80パーセント、タイヤ摩耗残り70%"),
+                listOf("記録1分23秒456、バーチャルエネルギーは残り80%、タイヤは残り70%"),
                 spoken.map { it.narratedText },
             )
             assertEquals(key, spoken.single().readoutItemKey)
@@ -1300,7 +1300,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(tyreWear(fl = 0.7))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "mixed"))
             assertEquals(
-                listOf("温度91℃、バーチャルエネルギー残量は80パーセント、タイヤ摩耗残り70%"),
+                listOf("温度91℃、バーチャルエネルギーは残り80%、タイヤは残り70%"),
                 spoken.map { it.narratedText },
             )
             assertEquals(key, spoken.single().readoutItemKey)
@@ -1341,7 +1341,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(tyreWear(fl = 0.7))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "mixed"))
             assertEquals(
-                listOf("温度501℃、バーチャルエネルギー残量は80パーセント、タイヤ摩耗残り70%"),
+                listOf("温度501℃、バーチャルエネルギーは残り80%、タイヤは残り70%"),
                 spoken.map { it.narratedText },
             )
             assertEquals(key, spoken.single().readoutItemKey)
@@ -1383,7 +1383,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(tyreWear(fl = 0.7))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "mixed"))
             assertEquals(
-                listOf("ブレーキ50%、バーチャルエネルギー残量は80パーセント、タイヤ摩耗残り70%"),
+                listOf("ブレーキ50%、バーチャルエネルギーは残り80%、タイヤは残り70%"),
                 spoken.map { it.narratedText },
             )
             assertEquals(key, spoken.single().readoutItemKey)
@@ -1423,9 +1423,9 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(
                 listOf(
                     "バーチャルエネルギー残量はデータがありません、タイヤ摩耗はデータがありません",
-                    "バーチャルエネルギー残量は50パーセント、タイヤ摩耗はデータがありません",
-                    "バーチャルエネルギー残量は50パーセント、タイヤ摩耗残り80%",
-                    "バーチャルエネルギー残量はデータがありません、タイヤ摩耗残り80%",
+                    "バーチャルエネルギーは残り50%、タイヤ摩耗はデータがありません",
+                    "バーチャルエネルギーは残り50%、タイヤは残り80%",
+                    "バーチャルエネルギー残量はデータがありません、タイヤは残り80%",
                     "バーチャルエネルギー残量はデータがありません、タイヤ摩耗はデータがありません",
                 ),
                 spoken.map { it.narratedText },
@@ -2481,7 +2481,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(tyreWear(fl = 0.4))
 
             assertEquals(
-                listOf<SpeechEvent>(LmuWindowsTyreWearWarning(50, resolvedText = "タイヤ残存率50%以下")),
+                listOf<SpeechEvent>(LmuWindowsTyreWearWarning(50, resolvedText = "タイヤは残り50%以下")),
                 spokenTexts,
             )
         }
@@ -2503,7 +2503,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(tyreWear(fl = 0.4))
 
             assertEquals(
-                listOf<SpeechEvent>(LmuWindowsTyreWearWarning(50, resolvedText = "タイヤ残存率50%以下")),
+                listOf<SpeechEvent>(LmuWindowsTyreWearWarning(50, resolvedText = "タイヤは残り50%以下")),
                 spokenTexts,
             )
         }
@@ -2527,8 +2527,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    LmuWindowsTyreWearWarning(50, resolvedText = "タイヤ残存率50%以下"),
-                    LmuWindowsTyreWearWarning(50, resolvedText = "タイヤ残存率50%以下"),
+                    LmuWindowsTyreWearWarning(50, resolvedText = "タイヤは残り50%以下"),
+                    LmuWindowsTyreWearWarning(50, resolvedText = "タイヤは残り50%以下"),
                 ),
                 spokenTexts,
             )
@@ -2600,7 +2600,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(brakeTemperature(fl = 850.0))
 
             assertEquals(
-                listOf<SpeechEvent>(LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上")),
+                listOf<SpeechEvent>(LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度は800℃以上")),
                 spokenTexts,
             )
         }
@@ -2621,7 +2621,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(brakeTemperature(fl = 850.0))
 
             assertEquals(
-                listOf<SpeechEvent>(LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上")),
+                listOf<SpeechEvent>(LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度は800℃以上")),
                 spokenTexts,
             )
         }
@@ -2644,8 +2644,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上"),
-                    LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上"),
+                    LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度は800℃以上"),
+                    LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度は800℃以上"),
                 ),
                 spokenTexts,
             )
@@ -2716,7 +2716,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(brakeWearData(thickness = 0.026f))
 
             assertEquals(
-                listOf<SpeechEvent>(LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキ残量20%以下")),
+                listOf<SpeechEvent>(LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキは残り20%以下")),
                 spokenTexts,
             )
         }
@@ -2738,7 +2738,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(brakeWearData(thickness = 0.026f))
 
             assertEquals(
-                listOf<SpeechEvent>(LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキ残量20%以下")),
+                listOf<SpeechEvent>(LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキは残り20%以下")),
                 spokenTexts,
             )
         }
@@ -2762,8 +2762,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキ残量20%以下"),
-                    LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキ残量20%以下"),
+                    LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキは残り20%以下"),
+                    LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキは残り20%以下"),
                 ),
                 spokenTexts,
             )
@@ -3469,7 +3469,7 @@ class LmuWindowsNarratorViewModelTest {
             energy.send(remainingVirtualEnergy(remainingRatio = 0.2))
 
             assertEquals(
-                listOf("バーチャルエネルギー残量は80パーセント", "バーチャルエネルギー残量は20パーセント", "バーチャルエネルギー残量は20パーセント"),
+                listOf("バーチャルエネルギーは残り80%", "バーチャルエネルギーは残り20%", "バーチャルエネルギーは残り20%"),
                 events.filterIsInstance<LmuWindowsManualReadoutText>().map { it.narratedText },
             )
             assertEquals(4, events.size)
@@ -3659,8 +3659,8 @@ class LmuWindowsNarratorViewModelTest {
                 ttsEngine.speak(
                     LmuWindowsManualReadoutText(
                         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
-                        "バーチャルエネルギー残量は80パーセント",
-                        "バーチャルエネルギー残量は80パーセント",
+                        "バーチャルエネルギーは残り80%",
+                        "バーチャルエネルギーは残り80%",
                     ),
                     queue = true,
                 )
@@ -3687,8 +3687,8 @@ class LmuWindowsNarratorViewModelTest {
                 ttsEngine.speak(
                     LmuWindowsManualReadoutText(
                         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
-                        "バーチャルエネルギー残量は80パーセント",
-                        "バーチャルエネルギー残量は80パーセント",
+                        "バーチャルエネルギーは残り80%",
+                        "バーチャルエネルギーは残り80%",
                     ),
                     queue = false,
                 )
@@ -3933,8 +3933,8 @@ class LmuWindowsNarratorViewModelTest {
                 ttsEngine.speak(
                     LmuWindowsManualReadoutText(
                         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
-                        "バーチャルエネルギー残量は80パーセント",
-                        "バーチャルエネルギー残量は80パーセント",
+                        "バーチャルエネルギーは残り80%",
+                        "バーチャルエネルギーは残り80%",
                     ),
                     queue = false,
                 )
@@ -3995,7 +3995,7 @@ class LmuWindowsNarratorViewModelTest {
             time = 5_001L
             requests.send(request)
             assertEquals(
-                listOf("燃料残量はデータがありません", "燃料は残り43パーセント", "燃料は残り43パーセント", "燃料残量はデータがありません"),
+                listOf("燃料残量はデータがありません", "燃料は残り43%", "燃料は残り43%", "燃料残量はデータがありません"),
                 spoken.map { it.narratedText },
             )
             assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
@@ -4030,7 +4030,7 @@ class LmuWindowsNarratorViewModelTest {
             telemetry.send(original.copy(fuel = original.fuel.copy(receivedAtMs = time)))
             requests.send(request)
             assertEquals(
-                listOf("燃料は残り43パーセント", "燃料残量はデータがありません", "燃料は残り43パーセント"),
+                listOf("燃料は残り43%", "燃料残量はデータがありません", "燃料は残り43%"),
                 spoken.map { it.narratedText },
             )
         }
@@ -4051,7 +4051,7 @@ class LmuWindowsNarratorViewModelTest {
             )
             fuel.send(telemetryWithFuel(currentLiters = 42.6, capacityLiters = 100.0))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "fuel"))
-            assertEquals(listOf("燃料は残り43パーセント"), spoken.map { it.narratedText })
+            assertEquals(listOf("燃料は残り43%"), spoken.map { it.narratedText })
         }
 
     @Test
@@ -4098,7 +4098,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             fuel.send(telemetryWithFuel(currentLiters = 9.0, capacityLiters = 100.0))
             assertEquals(
-                listOf(resolvedFuelWarning.narratedText, "燃料は残り10パーセント"),
+                listOf(resolvedFuelWarning.narratedText, "燃料は残り10%"),
                 spoken.map { it.narratedText },
             )
             fuel.send(telemetryWithFuel(currentLiters = 80.0, capacityLiters = 100.0))
@@ -4107,8 +4107,8 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(
                 listOf(
                     resolvedFuelWarning.narratedText,
-                    "燃料は残り10パーセント",
-                    "燃料は残り80パーセント",
+                    "燃料は残り10%",
+                    "燃料は残り80%",
                     resolvedFuelWarning.narratedText,
                 ),
                 spoken.map { it.narratedText },
@@ -4134,12 +4134,12 @@ class LmuWindowsNarratorViewModelTest {
             temperature.send(brakeTemperature(fl = 850.0))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "temperature"))
             temperature.send(brakeTemperature(fl = 900.0))
-            assertEquals(listOf("ブレーキ温度800℃以上", "ブレーキ温度850℃"), spoken.map { it.narratedText })
+            assertEquals(listOf("ブレーキ温度は800℃以上", "ブレーキ温度は850℃"), spoken.map { it.narratedText })
             temperature.send(brakeTemperature(fl = 20.0))
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "temperature"))
             temperature.send(brakeTemperature(fl = 850.0))
             assertEquals(
-                listOf("ブレーキ温度800℃以上", "ブレーキ温度850℃", "ブレーキ温度20℃", "ブレーキ温度800℃以上"),
+                listOf("ブレーキ温度は800℃以上", "ブレーキ温度は850℃", "ブレーキ温度は20℃", "ブレーキ温度は800℃以上"),
                 spoken.map { it.narratedText },
             )
             assertContains(logs.last().telemetryJson, "\"previousBrakeTemperature\":{\"wheels\":{\"FRONT_LEFT\":20.0")
@@ -4256,7 +4256,7 @@ class LmuWindowsNarratorViewModelTest {
             temperature.send(LmuWindowsTyreCarcassTemperatureData(emptyMap()))
             requests.send(request)
             assertEquals(
-                listOf("タイヤ温度はデータがありません", "タイヤ温度91℃", "タイヤ温度はデータがありません", "タイヤ温度はデータがありません"),
+                listOf("タイヤ温度はデータがありません", "タイヤ温度は91℃", "タイヤ温度はデータがありません", "タイヤ温度はデータがありません"),
                 spoken.map { it.narratedText },
             )
             assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
@@ -4264,7 +4264,7 @@ class LmuWindowsNarratorViewModelTest {
                 ttsEngine.speak(LmuWindowsManualReadoutText(key, "タイヤ温度はデータがありません", "タイヤ温度はデータがありません"), queue = true)
             }
             verify(exactly = 1) {
-                ttsEngine.speak(LmuWindowsManualReadoutText(key, "タイヤ温度91℃", "タイヤ温度91℃"), queue = true)
+                ttsEngine.speak(LmuWindowsManualReadoutText(key, "タイヤ温度は91℃", "タイヤ温度は91℃"), queue = true)
             }
             confirmVerified(ttsEngine)
         }
@@ -4296,7 +4296,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(LmuWindowsBrakeTemperatureData(emptyMap()))
             requests.send(request)
             assertEquals(
-                listOf("ブレーキ温度はデータがありません", "ブレーキ温度501℃", "ブレーキ温度はデータがありません", "ブレーキ温度はデータがありません"),
+                listOf("ブレーキ温度はデータがありません", "ブレーキ温度は501℃", "ブレーキ温度はデータがありません", "ブレーキ温度はデータがありません"),
                 spoken.map { it.narratedText },
             )
             assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
@@ -4304,7 +4304,7 @@ class LmuWindowsNarratorViewModelTest {
                 ttsEngine.speak(LmuWindowsManualReadoutText(key, "ブレーキ温度はデータがありません", "ブレーキ温度はデータがありません"), queue = true)
             }
             verify(exactly = 1) {
-                ttsEngine.speak(LmuWindowsManualReadoutText(key, "ブレーキ温度501℃", "ブレーキ温度501℃"), queue = true)
+                ttsEngine.speak(LmuWindowsManualReadoutText(key, "ブレーキ温度は501℃", "ブレーキ温度は501℃"), queue = true)
             }
             confirmVerified(ttsEngine)
         }
@@ -4376,7 +4376,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             temperature.send(tyreTemperature(fl = Double.NaN, fr = Double.NaN, rl = Double.NaN, rr = Double.NaN))
             requests.send(request)
-            assertEquals(listOf("タイヤ温度80℃", "タイヤ温度はデータがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("タイヤ温度は80℃", "タイヤ温度はデータがありません"), spoken.map { it.narratedText })
         }
 
     @Test
@@ -4398,7 +4398,7 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             temperature.send(brakeTemperature(fl = Double.NaN, fr = Double.NaN, rl = Double.NaN, rr = Double.NaN))
             requests.send(request)
-            assertEquals(listOf("ブレーキ温度400℃", "ブレーキ温度はデータがありません"), spoken.map { it.narratedText })
+            assertEquals(listOf("ブレーキ温度は400℃", "ブレーキ温度はデータがありません"), spoken.map { it.narratedText })
         }
 
     @Test
@@ -4455,7 +4455,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(null)
             requests.send(request)
             assertEquals(
-                listOf("ブレーキ残量はデータがありません", "ブレーキ残量50%", "ブレーキ残量はデータがありません", "ブレーキ残量はデータがありません", "ブレーキ残量はデータがありません"),
+                listOf("ブレーキ残量はデータがありません", "ブレーキは残り50%", "ブレーキ残量はデータがありません", "ブレーキ残量はデータがありません", "ブレーキ残量はデータがありません"),
                 spoken.map { it.narratedText },
             )
             assertEquals(listOf(key, key, key, key, key), spoken.map { it.readoutItemKey })
@@ -4485,7 +4485,7 @@ class LmuWindowsNarratorViewModelTest {
                 wear.send(null)
                 requests.send(request)
 
-                assertEquals(listOf("ブレーキ残量50%", "ブレーキ残量はデータがありません"), spoken.map { it.narratedText })
+                assertEquals(listOf("ブレーキは残り50%", "ブレーキ残量はデータがありません"), spoken.map { it.narratedText })
             } finally {
                 viewModel.viewModelScope.cancel()
             }
@@ -4542,7 +4542,7 @@ class LmuWindowsNarratorViewModelTest {
             wear.send(LmuWindowsTyreWearData(emptyMap()))
             requests.send(request)
             assertEquals(
-                listOf("タイヤ摩耗はデータがありません", "タイヤ摩耗残り42%", "タイヤ摩耗はデータがありません", "タイヤ摩耗はデータがありません"),
+                listOf("タイヤ摩耗はデータがありません", "タイヤは残り42%", "タイヤ摩耗はデータがありません", "タイヤ摩耗はデータがありません"),
                 spoken.map { it.narratedText },
             )
             assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
@@ -4642,7 +4642,7 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エネルギー切れのため必ずピットイン",
+                        resolvedText = "バーチャルエネルギー切れのため必ずピットイン",
                     ),
                 ),
                 spokenTexts,
@@ -4763,12 +4763,12 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         PitTimingSource.Fuel,
-                        resolvedText = "燃料残り1周未満",
+                        resolvedText = "燃料は残り1周未満",
                     ),
                 ),
                 spoken,
             )
-            assertEquals("燃料残り1周未満", logs.single().narratedText)
+            assertEquals("燃料は残り1周未満", logs.single().narratedText)
         }
 
     @Test
@@ -4906,12 +4906,12 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エネルギー切れのため必ずピットイン",
+                        resolvedText = "バーチャルエネルギー切れのため必ずピットイン",
                     ),
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エネルギー切れのため必ずピットイン",
+                        resolvedText = "バーチャルエネルギー切れのため必ずピットイン",
                     ),
                 ),
                 spokenTexts,
@@ -5025,7 +5025,7 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エネルギー切れのため必ずピットイン",
+                        resolvedText = "バーチャルエネルギー切れのため必ずピットイン",
                     ),
                 ),
                 spokenTexts,
@@ -5185,7 +5185,7 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エネルギー切れのため必ずピットイン",
+                        resolvedText = "バーチャルエネルギー切れのため必ずピットイン",
                     ),
                 ),
                 spokenTexts,
@@ -5233,7 +5233,7 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エネルギー切れのため必ずピットイン",
+                        resolvedText = "バーチャルエネルギー切れのため必ずピットイン",
                     ),
                 ),
                 spokenTexts,
@@ -5250,7 +5250,7 @@ class LmuWindowsNarratorViewModelTest {
                     LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
-                        resolvedText = "エネルギー切れのため必ずピットイン",
+                        resolvedText = "バーチャルエネルギー切れのため必ずピットイン",
                     ),
                     LmuWindowsPitTimingWarning(
                         0,
@@ -5559,12 +5559,12 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "blank"))
             hotkey.send(Unit)
             assertEquals(
-                listOf("残り80%、{unknown}", "バーチャルエネルギー残量は80パーセント", "バーチャルエネルギー残量は80パーセント"),
+                listOf("残り80%、{unknown}", "バーチャルエネルギーは残り80%", "バーチャルエネルギーは残り80%"),
                 spoken.map { it.narratedText },
             )
             assertEquals(5, logs.size)
             assertEquals(
-                listOf("残り80%、{unknown}", "バーチャルエネルギー残量は80パーセント", "", "", "バーチャルエネルギー残量は80パーセント"),
+                listOf("残り80%、{unknown}", "バーチャルエネルギーは残り80%", "", "", "バーチャルエネルギーは残り80%"),
                 logs.map { it.narratedText },
             )
             assertEquals(
@@ -5600,7 +5600,7 @@ class LmuWindowsNarratorViewModelTest {
             presses.send(ManualReadoutRequest(Simulator.LmuWindows.id, "set-1"))
             testScheduler.runCurrent()
             assertEquals(
-                "バーチャルエネルギー残量は80パーセント",
+                "バーチャルエネルギーは残り80%",
                 events.filterIsInstance<LmuWindowsManualReadoutText>().single().narratedText,
             )
             assertEquals(1, spoken.size)

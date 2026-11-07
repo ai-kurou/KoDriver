@@ -250,11 +250,11 @@ class LmuWindowsReadoutTextSpeakerTest {
     fun `現在のエネルギー残量は警告設定を取得せず既定文言で読み上げる`() =
         runTest {
             coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("バーチャルエネルギー残量は42パーセント", volume = VOLUME) } just Runs
+            coEvery { speakText("バーチャルエネルギーは残り42%", volume = VOLUME) } just Runs
             speaker(LmuWindowsRemainingVirtualEnergyCurrentValue(42), VOLUME)
             verify(exactly = 0) { observeRemainingText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("バーチャルエネルギー残量は42パーセント", volume = VOLUME) }
+            coVerify(exactly = 1) { speakText("バーチャルエネルギーは残り42%", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 

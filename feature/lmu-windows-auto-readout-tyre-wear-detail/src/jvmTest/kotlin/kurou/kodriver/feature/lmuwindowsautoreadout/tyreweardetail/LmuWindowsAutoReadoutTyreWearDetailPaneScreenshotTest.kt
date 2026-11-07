@@ -42,7 +42,7 @@ class LmuWindowsAutoReadoutTyreWearDetailPaneScreenshotTest {
                             LmuWindowsAutoReadoutTyreWearDetailPaneContent(
                                 uiState =
                                     LmuWindowsAutoReadoutTyreWearDetailUiState(
-                                        readoutText = "タイヤ残存率{percent}%以下です",
+                                        readoutText = "タイヤは残り{percent}%以下です",
                                         isTextToSpeechAvailable = true,
                                     ),
                             )

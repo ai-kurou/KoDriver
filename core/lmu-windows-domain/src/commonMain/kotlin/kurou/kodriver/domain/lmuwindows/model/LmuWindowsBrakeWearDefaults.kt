@@ -8,10 +8,10 @@ const val LMU_WINDOWS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_MIN = 5
 const val LMU_WINDOWS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_MAX = 50
 
 /** ブレーキ残量警告の既定文言。 */
-const val LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT = "ブレーキ残量{percent}%以下"
+const val LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT = "ブレーキは残り{percent}%以下"
 
 /** 実測の残量ではなく、設定した閾値（%）を埋め込むプレースホルダー。 */
 const val LMU_WINDOWS_BRAKE_WEAR_PERCENT_PLACEHOLDER = "{percent}"
 
 /** 手動読み上げの現在のブレーキ残量の既定文言。 */
-const val LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT = "ブレーキ残量{percent}%"
+const val LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT = "ブレーキは残り{percent}%"

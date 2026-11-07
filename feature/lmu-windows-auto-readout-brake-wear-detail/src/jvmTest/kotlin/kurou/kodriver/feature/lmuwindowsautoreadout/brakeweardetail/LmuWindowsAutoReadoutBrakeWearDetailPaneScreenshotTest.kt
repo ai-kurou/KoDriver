@@ -65,7 +65,7 @@ class LmuWindowsAutoReadoutBrakeWearDetailPaneScreenshotTest {
                             LmuWindowsAutoReadoutBrakeWearDetailPaneContent(
                                 uiState =
                                     LmuWindowsAutoReadoutBrakeWearDetailUiState(
-                                        readoutText = "ブレーキ残量{percent}%以下です",
+                                        readoutText = "ブレーキは残り{percent}%以下です",
                                         isTextToSpeechAvailable = true,
                                     ),
                             )

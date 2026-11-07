@@ -28,6 +28,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -348,12 +349,12 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             .onAllNodes(hasSetTextAction())[0]
             .performScrollTo()
             .assertIsEnabled()
-            .performTextReplacement("あ".repeat(31))
+            .performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performScrollTo().performClick()
         rule.onAllNodes(hasSetTextAction())[1].performScrollTo().performTextReplacement("必ず{laps}")
         rule.onAllNodesWithContentDescription("入力した文言を再生")[1].performScrollTo().performClick()
-        assertEquals(listOf("あ".repeat(30)), changed)
-        assertEquals(listOf("あ".repeat(30) to 1), previews)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH) to 1), previews)
         assertEquals(listOf("必ず{laps}"), imminentChanged)
         assertEquals(imminentChanged, imminentPreviews)
     }
@@ -369,7 +370,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
                 )
             }
         }
-        val text = "あ".repeat(24)
+        val text = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH - 6)
         rule.onAllNodes(hasSetTextAction())[0].performScrollTo().performTextReplacement(text)
         rule
             .onAllNodesWithText("{laps}を挿入")[0]
@@ -388,7 +389,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
                 LmuWindowsAutoReadoutPitTimingDetailPaneContent(
                     uiState =
                         LmuWindowsAutoReadoutPitTimingDetailUiState(
-                            virtualEnergyText = "あ".repeat(25),
+                            virtualEnergyText = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH - 5),
                             isTextToSpeechAvailable = true,
                         ),
                 )
@@ -441,12 +442,12 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             .onAllNodes(hasSetTextAction())[2]
             .performScrollTo()
             .assertIsEnabled()
-            .performTextReplacement("あ".repeat(31))
+            .performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onAllNodesWithContentDescription("入力した文言を再生")[2].performScrollTo().performClick()
         rule.onAllNodes(hasSetTextAction())[3].performScrollTo().performTextReplacement("必ず{laps}")
         rule.onAllNodesWithContentDescription("入力した文言を再生")[3].performScrollTo().performClick()
-        assertEquals(listOf("あ".repeat(30)), changed)
-        assertEquals(listOf("あ".repeat(30) to 3), previews)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH) to 3), previews)
         assertEquals(listOf("必ず{laps}"), imminentChanged)
         assertEquals(imminentChanged, imminentPreviews)
     }
@@ -462,7 +463,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
                 )
             }
         }
-        val text = "あ".repeat(24)
+        val text = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH - 6)
         rule.onAllNodes(hasSetTextAction())[2].performScrollTo().performTextReplacement(text)
         rule
             .onAllNodesWithText("{laps}を挿入")[1]
@@ -481,7 +482,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
                 LmuWindowsAutoReadoutPitTimingDetailPaneContent(
                     uiState =
                         LmuWindowsAutoReadoutPitTimingDetailUiState(
-                            tyreWearText = "あ".repeat(25),
+                            tyreWearText = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH - 5),
                             isTextToSpeechAvailable = true,
                         ),
                 )
@@ -619,12 +620,12 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             .onAllNodes(hasSetTextAction())[4]
             .performScrollTo()
             .assertIsEnabled()
-            .performTextReplacement("あ".repeat(31))
+            .performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onAllNodesWithContentDescription("入力した文言を再生")[4].performScrollTo().performClick()
         rule.onAllNodes(hasSetTextAction())[5].performScrollTo().performTextReplacement("必ず{laps}")
         rule.onAllNodesWithContentDescription("入力した文言を再生")[5].performScrollTo().performClick()
-        assertEquals(listOf("あ".repeat(30)), changed)
-        assertEquals(listOf("あ".repeat(30) to 3), previews)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH) to 3), previews)
         assertEquals(listOf("必ず{laps}"), imminentChanged)
         assertEquals(imminentChanged, imminentPreviews)
     }
@@ -640,7 +641,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
                 )
             }
         }
-        val text = "あ".repeat(24)
+        val text = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH - 6)
         rule.onAllNodes(hasSetTextAction())[4].performScrollTo().performTextReplacement(text)
         rule
             .onAllNodesWithText("{laps}を挿入")[2]
@@ -659,7 +660,7 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
                 LmuWindowsAutoReadoutPitTimingDetailPaneContent(
                     uiState =
                         LmuWindowsAutoReadoutPitTimingDetailUiState(
-                            fuelText = "あ".repeat(25),
+                            fuelText = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH - 5),
                             isTextToSpeechAvailable = true,
                         ),
                 )

@@ -55,7 +55,7 @@ class LmuWindowsManualReadoutItemsTest {
         assertEquals(listOf(laps.key, ahead.key, behind.key), definitions.keys.toList().takeLast(3))
         val fuel = definitions.getValue(LmuWindowsReadoutItemKey.RemainingFuel.Root.value)
         assertEquals("燃料残量", fuel.name)
-        assertEquals("燃料は残り{percent}パーセント", fuel.textDefault)
+        assertEquals("燃料は残り{percent}%", fuel.textDefault)
         assertEquals(LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT, fuel.textDefault)
         definitions.values.forEach { definition ->
             assertEquals(definition.name, lmuWindowsManualReadoutItemName(definition.key))

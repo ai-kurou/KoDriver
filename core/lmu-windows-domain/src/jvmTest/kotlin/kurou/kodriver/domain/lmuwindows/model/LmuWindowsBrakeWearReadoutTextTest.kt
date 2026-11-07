@@ -7,7 +7,7 @@ class LmuWindowsBrakeWearReadoutTextTest {
     @Test
     fun `既定文言の閾値を置換する`() {
         assertEquals(
-            "ブレーキ残量30%以下",
+            "ブレーキは残り30%以下",
             formatLmuWindowsBrakeWearReadoutText(
                 LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT,
                 30,

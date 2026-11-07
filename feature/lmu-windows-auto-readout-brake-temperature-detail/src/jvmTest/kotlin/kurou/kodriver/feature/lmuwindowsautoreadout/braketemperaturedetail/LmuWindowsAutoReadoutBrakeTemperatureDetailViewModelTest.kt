@@ -272,7 +272,7 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
                 textFlow.update { "残り{celsius}℃" }
             }
             val viewModel = createViewModel()
-            assertEquals("ブレーキ温度{celsius}℃以上", viewModel.uiState.first().readoutText)
+            assertEquals("ブレーキ温度は{celsius}℃以上", viewModel.uiState.first().readoutText)
             viewModel.onReadoutTextChanged(" 残り{celsius}℃ ")
             assertEquals("残り{celsius}℃", viewModel.uiState.first().readoutText)
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }

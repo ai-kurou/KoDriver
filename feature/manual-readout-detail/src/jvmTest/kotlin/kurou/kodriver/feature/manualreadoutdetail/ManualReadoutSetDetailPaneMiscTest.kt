@@ -51,7 +51,7 @@ class ManualReadoutSetDetailPaneMiscTest {
         rule
             .onNodeWithTag("manual_readout_preview_sentence")
             .assertExists()
-            .assertTextEquals("バーチャルエネルギー残量は50パーセント")
+            .assertTextEquals("バーチャルエネルギーは残り50%")
         rule.runOnIdle { state.value = state.value.copy(itemTexts = mapOf(key to "")) }
         rule.onNodeWithTag("manual_readout_preview_sentence").assertDoesNotExist()
     }

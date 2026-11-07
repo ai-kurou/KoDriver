@@ -30,6 +30,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -330,9 +331,9 @@ class LmuWindowsAutoReadoutVehicleApproachDetailPaneTest {
     }
 
     @Test
-    fun `空欄案内を表示し30文字に制限して入力中の文言を試聴する`() {
-        val longText = "あ".repeat(31)
-        val savedText = "あ".repeat(30)
+    fun `空欄案内を表示し上限文字数に制限して入力中の文言を試聴する`() {
+        val longText = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1)
+        val savedText = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)
         rule.setContent {
             MaterialTheme {
                 LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
@@ -351,7 +352,7 @@ class LmuWindowsAutoReadoutVehicleApproachDetailPaneTest {
         rule.onNode(hasText("空欄のままなら読み上げません")).assertExists()
         rule.onAllNodes(hasSetTextAction())[0].performScrollTo().performTextReplacement(longText)
         rule.onAllNodes(hasContentDescription("入力した文言を再生"))[0].performScrollTo().performClick()
-        rule.onNode(hasText("30/30")).assertExists()
+        rule.onNode(hasText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH")).assertExists()
         rule.onAllNodes(hasSetTextAction())[1].performScrollTo().performTextReplacement("")
         rule.onAllNodes(hasContentDescription("入力した文言を再生"))[1].performScrollTo().performClick()
         assertEquals(listOf(savedText), leftChangedTexts)

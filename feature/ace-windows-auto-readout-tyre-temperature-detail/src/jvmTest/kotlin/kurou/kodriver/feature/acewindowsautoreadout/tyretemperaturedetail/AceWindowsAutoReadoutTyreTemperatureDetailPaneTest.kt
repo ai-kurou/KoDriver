@@ -160,9 +160,11 @@ class AceWindowsAutoReadoutTyreTemperatureDetailPaneTest {
                 )
             }
         }
-        rule.onAllNodes(hasSetTextAction())[0].assertIsEnabled().performTextReplacement("あ".repeat(31))
+        rule.onAllNodes(hasSetTextAction())[0].assertIsEnabled().performTextReplacement(
+            "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1),
+        )
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performClick()
-        assertEquals(listOf("あ".repeat(30)), changed)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH)), changed)
         assertEquals(changed, previews)
     }
 
