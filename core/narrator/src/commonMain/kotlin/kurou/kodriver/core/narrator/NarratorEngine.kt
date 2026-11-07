@@ -93,6 +93,18 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     val currentIsManual: Boolean
         get() = _currentIsManual && playJob?.isActive == true
 
+    // キューで再生待ちのイベント（再生順）。再生中のイベントは含まない。
+    // 再生が終わった時点で次の待機イベントのキー・手動フラグへ公開状態を引き継ぐために使う。
+    // commonMain では synchronized が使えないため、不変リストを丸ごと差し替える。
+    // 更新が競合して失われても、公開状態の引き継ぎが行われず次の play() で上書きされるだけで済む。
+    @Volatile
+    private var pendingPlays: List<PendingPlay<KEY>> = emptyList()
+
+    private class PendingPlay<KEY>(
+        val key: KEY,
+        val manual: Boolean,
+    )
+
     private fun newPlaybackScope(): CoroutineScope = CoroutineScope(scope.coroutineContext + SupervisorJob())
 
     init {
@@ -128,10 +140,24 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
             if (!playbackScope.isActive) playbackScope = newPlaybackScope()
             val barrier = stopBarrier
             val previousJob = playJob
+            val key = eventToKey(event)
+            // 再生中も再生待ちもなければ、このイベントが次に再生される。非キュー経路と同様に今すぐ公開する。
+            // 公開しないと play() に入るまで currentKey が null になり、その間に届いた別のイベントが
+            // 「再生中なし」と判定されて、再生待ちのこのイベントをキャンセルしてしまう。
+            // すでに再生中・再生待ちがあるときは、その公開状態が先に続くため待機リストへ積むだけにする。
+            val pending =
+                if (currentKey == null) {
+                    _currentKey = key
+                    _currentIsManual = manual
+                    null
+                } else {
+                    PendingPlay(key, manual).also { pendingPlays = pendingPlays + it }
+                }
             playJob =
                 playbackScope.launch {
                     barrier.join()
                     previousJob?.join()
+                    pending?.let { pendingPlays = pendingPlays - it }
                     play(event, manual, body)
                 }
             return
@@ -173,11 +199,18 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
             startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         }
         body(vol)
-        // キューに後続のジョブが待機している間は、再生中の状態を消さない。消すと、次のジョブが
-        // play() に入るまでの間に届いたイベントが「再生中なし」と判定され、待機中のジョブをキャンセルする。
+        // キューに後続のジョブが待機している間は、再生中の状態を消さず、次の待機イベントの
+        // キー・手動フラグへ引き継ぐ。消すと、次のジョブが play() に入るまでの間に届いたイベントが
+        // 「再生中なし」と判定され、待機中のジョブをキャンセルする。
+        // 引き継がないと、直前のイベントの手動フラグが次のイベントの優先度判定に残ってしまう。
         if (playJob === currentCoroutineContext().job) {
             _currentKey = null
             _currentIsManual = false
+        } else {
+            pendingPlays.firstOrNull()?.let {
+                _currentKey = it.key
+                _currentIsManual = it.manual
+            }
         }
     }
 
@@ -202,6 +235,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         // active になった間に古いキーが currentKey として見えないようここで消す。
         _currentKey = null
         _currentIsManual = false
+        pendingPlays = emptyList()
         val previous = stopBarrier
         stopBarrier =
             scope.launch {

@@ -634,7 +634,8 @@ class NarratorEngineTest {
             engine.speak(RED_FLAG, queue = true)
             runCurrent()
 
-            assertEquals(null, engine.currentKey)
+            // 停止前のキーではなく、停止待ちの間に再生される新しいイベントのキーを返す
+            assertEquals(RED_FLAG_KEY, engine.currentKey)
 
             cancellationSignal.complete(Unit)
             advanceUntilIdle()
@@ -944,6 +945,100 @@ class NarratorEngineTest {
             assertContentEquals(CAR_LEFT_SOUND, player.playedSounds.last())
         }
 
+    @Test
+    fun `何も再生していないときにキューへ積んだイベントは再生が始まる前から再生中として返す`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player, isManualEvent = { it == CAR_LEFT })
+            runCurrent()
+
+            engine.speak(CAR_LEFT, queue = true)
+
+            // 再生ジョブはまだ実行されていない
+            assertEquals(0, player.playedSounds.size)
+            assertEquals(CAR_LEFT_KEY, engine.currentKey)
+            assertEquals(true, engine.currentIsManual)
+
+            advanceUntilIdle()
+
+            assertEquals(null, engine.currentKey)
+            assertEquals(false, engine.currentIsManual)
+        }
+
+    @Test
+    fun `再生中にキューへ積んだイベントは再生中のイベントの公開状態を変えない`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = RED_FLAG_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player, isManualEvent = { it == CAR_LEFT })
+            runCurrent()
+
+            engine.speak(RED_FLAG)
+            runCurrent()
+            engine.speak(CAR_LEFT, queue = true)
+            runCurrent()
+
+            assertEquals(RED_FLAG_KEY, engine.currentKey)
+            assertEquals(false, engine.currentIsManual)
+
+            engine.stop()
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+        }
+
+    @Test
+    fun `再生待ちのイベントがある間に届いた非キューのイベントは待機分を破棄して再生する`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT, queue = true)
+            engine.speak(RED_FLAG, queue = true)
+            engine.speak(LEFT_APPROACH)
+            advanceUntilIdle()
+
+            // 割り込みで待機中のキューも破棄され、最後の非キューのイベントだけが再生される
+            assertEquals(2, player.playedSounds.size)
+            assertContentEquals(LEFT_APPROACH_SOUND, player.playedSounds.last())
+        }
+
+    @Test
+    fun `再生が終わったらキューで待機している次のイベントのキーと手動フラグへ公開状態を引き継ぐ`() =
+        runTest {
+            val gate = CompletableDeferred<Unit>()
+            var observed: Pair<String?, Boolean>? = null
+            var engineRef: TestEngine? = null
+            val engine =
+                createEngine(
+                    FakeSoundPlayer(),
+                    isManualEvent = { it == CAR_LEFT },
+                    customSpeak = { event, _ ->
+                        if (event == RED_FLAG) {
+                            gate.await()
+                            // 先頭の再生の終了処理の後、次のジョブが再開する前に実行されるよう、ここで積んでおく
+                            launch { observed = engineRef?.let { it.currentKey to it.currentIsManual } }
+                        }
+                    },
+                )
+            engineRef = engine
+            runCurrent()
+
+            engine.speak(RED_FLAG)
+            runCurrent()
+            engine.speak(CAR_LEFT, queue = true)
+            engine.speak(LEFT_APPROACH, queue = true)
+            runCurrent()
+            assertEquals(RED_FLAG_KEY, engine.currentKey)
+            assertEquals(false, engine.currentIsManual)
+
+            gate.complete(Unit)
+            advanceUntilIdle()
+
+            assertEquals(CAR_LEFT_KEY to true, observed)
+            assertEquals(null, engine.currentKey)
+        }
+
     @Suppress("LongParameterList")
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
@@ -1001,6 +1096,7 @@ class NarratorEngineTest {
         const val FORMULA_RADIO = "formula_radio"
         const val ELECTRONIC_NOISE = "electronic_noise"
         const val CAR_LEFT_KEY = "car_left_key"
+        const val RED_FLAG_KEY = "red_flag_key"
         const val FORMULA_RADIO_PATH = "files/formula_radio.wav"
         const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
         val CAR_LEFT_SOUND = byteArrayOf(1)
