@@ -119,8 +119,18 @@ abstract class PrepareVoskModelTask
                     connectTimeout = TIMEOUT_MILLIS
                     readTimeout = TIMEOUT_MILLIS
                 }
+            // 読み取りごとの待ち時間だけでは、少しずつ送られ続けると終わらないため、全体の期限も設ける
+            val deadline = System.nanoTime() + TOTAL_TIMEOUT_NANOS
+            val buffer = ByteArray(COPY_BUFFER_BYTES)
             connection.getInputStream().use { input ->
-                zip.outputStream().use { output -> input.copyTo(output) }
+                zip.outputStream().use { output ->
+                    while (true) {
+                        val size = input.read(buffer)
+                        if (size < 0) break
+                        output.write(buffer, 0, size)
+                        if (System.nanoTime() > deadline) throw java.io.IOException("Voskモデルの取得が制限時間を超えました")
+                    }
+                }
             }
         }
 
@@ -132,6 +142,8 @@ abstract class PrepareVoskModelTask
 
         private companion object {
             const val TIMEOUT_MILLIS = 60_000
+            const val COPY_BUFFER_BYTES = 64 * 1024
+            val TOTAL_TIMEOUT_NANOS = java.util.concurrent.TimeUnit.MINUTES.toNanos(10)
             const val DOWNLOAD_MAX_ATTEMPTS = 3
             const val DOWNLOAD_RETRY_DELAY_MILLIS = 5_000L
         }
