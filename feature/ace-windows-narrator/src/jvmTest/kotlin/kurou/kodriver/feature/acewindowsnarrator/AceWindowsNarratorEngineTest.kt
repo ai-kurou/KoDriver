@@ -120,10 +120,10 @@ class AceWindowsNarratorEngineTest {
             val events =
                 listOf(
                     AceWindowsVehicleApproach(),
-                    AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"),
+                    AceWindowsRemainingFuelWarning(20, "燃料は残り20%"),
                     AceWindowsRemainingFuelLapsWarning(2, "残り2周"),
                     AceWindowsRemainingFuelLapsWarning(0, "燃料なし"),
-                    AceWindowsTyreOverheat(110, "タイヤ過熱 110度"),
+                    AceWindowsTyreOverheat(110, "タイヤ過熱110℃"),
                     AceWindowsCheckeredFlag(),
                     AceWindowsWhiteFlag(),
                     AceWindowsGreenFlag(),

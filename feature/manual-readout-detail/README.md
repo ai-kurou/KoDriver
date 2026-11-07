@@ -10,10 +10,10 @@
 | GT7 PS5 | 燃料残り周回数 | `RemainingFuelLaps.Root`（`gt7_ps5_auto_remaining_fuel_laps`） | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料は残り1周未満」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ。プレビュー3周 |
 | GT7 PS5 | タイヤ温度 | `TyreTemperature.Root`（`gt7_ps5_auto_tyre_temperature`） | `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ。プレビュー90℃ |
 | GT7 PS5 | 自己ベストラップ | `MyBestLap.Root`（`gt7_ps5_auto_my_best_lap`） | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | ラップカテゴリ。プレビュー83456ms |
-| ACE Windows | 燃料残量 | `RemainingFuel.Root`（`ace_windows_auto_remaining_fuel`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | 「燃料残量はデータがありません」 | 燃料カテゴリ。プレビューは `PREVIEW_ENERGY_PERCENT`（50） |
+| ACE Windows | 燃料残量 | `RemainingFuel.Root`（`ace_windows_auto_remaining_fuel`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 「燃料残量はデータがありません」 | 燃料カテゴリ。プレビューは `PREVIEW_ENERGY_PERCENT`（50） |
 | ACE Windows | 燃料残り周回数 | `RemainingFuelLaps.Root`（`ace_windows_auto_remaining_fuel_laps`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ |
 | ACE Windows | 自己ベストラップ | `MyBestLap.Root`（`ace_windows_auto_my_best_lap`） | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | ラップカテゴリ |
-| ACE Windows | タイヤ温度 | `TyreTemperature.Root`（`ace_windows_auto_tyre_temperature`） | `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ。プレビュー90℃ |
+| ACE Windows | タイヤ温度 | `TyreTemperature.Root`（`ace_windows_auto_tyre_temperature`） | `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ。プレビュー90℃ |
 | LMU Windows | 燃料残量 | `RemainingFuel.Root`（`lmu_windows_auto_remaining_fuel`） | `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 「燃料残量はデータがありません」 | 燃料カテゴリ |
 | LMU Windows | 燃料残り周回数 | `RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`） | `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料は残り1周未満」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ |
 | LMU Windows | バーチャルエネルギー残量 | `RemainingVirtualEnergy.Root`（`lmu_windows_auto_remaining_virtual_energy`） | `LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT`（「バーチャルエネルギーは残り{percent}%」） | 「バーチャルエネルギー残量はデータがありません」（項目名付き連結） | バーチャルエネルギーカテゴリ |
@@ -147,7 +147,7 @@ GT7 の手動「自己ベストラップ」は `MyBestLap.Root` を使い、`cur
 バーチャルエネルギーの残り周回数は「バーチャルエネルギー」、タイヤ摩耗の残り周回数は「タイヤ」カテゴリに表示し、`{laps}` 用のヒント・挿入ボタンを共用する。未知プレースホルダー検出は `findUnknownLmuWindowsPitTimingReadoutPlaceholders`、試聴は3周と `formatLmuWindowsPitTimingReadoutText` を使い、先頭項目なら `PitTiming.Root` の開始音を再生する。
 
 ACE の「燃料残量」は `AceWindowsReadoutItemKey.RemainingFuel.Root.value` を使い、燃料カテゴリに表示する。
-既定文言は `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）。
+既定文言は `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」）。
 `ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER` の挿入、
 `findUnknownAceWindowsRemainingFuelReadoutPlaceholders` による警告、文言編集・リセット・試聴に対応する。
 プレビューは `PREVIEW_ENERGY_PERCENT`（50）を既存の ACE 用フォーマッターで置換し、空白文言は除外する。
@@ -161,7 +161,7 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `currentMaxTyreTemperatureCelsius` で `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい
 最高値を四捨五入した整数℃を取得する。未受信・受信から5秒超・有効な温度なし・ACE以外への切り替え後は
 「タイヤ温度はデータがありません」を読む。既定文言は `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`
-（「タイヤ温度{celsius}℃」）。既存の `formatAceWindowsTyreTemperatureReadoutText` と
+（「タイヤ温度は{celsius}℃」）。既存の `formatAceWindowsTyreTemperatureReadoutText` と
 `findUnknownAceWindowsTyreTemperatureReadoutPlaceholders` を使い、詳細画面ではタイヤカテゴリ、プレビューは90℃。
 `AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。

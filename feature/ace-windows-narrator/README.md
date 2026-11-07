@@ -13,7 +13,7 @@ ACE (Assetto Corsa EVO) Windows版の開始音WAV再生・自由文言TTSとア�
 `AceWindowsNarratorEventProcessor` を通じて `AceWindowsRemainingFuelWarning` を
 `TextToSpeechEngine` 実装の `AceWindowsNarratorEngine`（`:core:narrator` の `NarratorEngine` に委譲する薄いアダプタ）に
 渡して、`AceWindowsReadoutTextSpeaker` の自由文言をOS標準TTSで読み上げる。
-保存先は `AceWindowsRemainingFuelPreferences` のフィールド2（`readoutText`）、既定文言は「燃料は残り{percent}パーセント」。
+保存先は `AceWindowsRemainingFuelPreferences` のフィールド2（`readoutText`）、既定文言は「燃料は残り{percent}%」。
 `{percent}` は判定時の実残量を四捨五入した整数（0〜100）に置換する。閾値・有効判定は従来どおり。
 ACEの自由文言イベントは `ReadoutTextEvent` を継承する sealed interface `AceWindowsSpeechEvent` を実装する。
 全10種類のフラッグは、その下位の sealed interface `AceWindowsFlagSpeechEvent` にまとめる。
@@ -27,7 +27,7 @@ Processorで解決した本文をイベントの `resolvedText` に保持し、�
 
 燃料残り周回数（`AceWindowsRemainingFuelLapsWarning`）も同様に、保存した自由文言をOS標準TTSで読み上げる。
 保存先は `AceWindowsRemainingFuelLapsPreferences` のフィールド2（`readoutText`、既定「燃料は残り約{laps}周」）と
-フィールド3（`emptyReadoutText`、0周以下用、既定「燃料残り1周未満」）。`{laps}` は判定時の整数周回数に置換する。
+フィールド3（`emptyReadoutText`、0周以下用、既定「燃料は残り1周未満」）。`{laps}` は判定時の整数周回数に置換する。
 Processorで解決した本文を `resolvedText` に保持し、空白・TTS利用不可では開始音も本文も要求せず `SKIPPED` を記録する。
 開始音・優先度・キューは `RemainingFuelLaps.Root` を維持する。WAVフォールバックは行わない。
 詳細画面では通常文言・0周以下用文言の自由文言編集と既定値へのリセットを提供し、通常文言には `{laps}` の末尾挿入と未知プレースホルダーの警告を表示する。試聴は通常文言を画面に表示中の閾値周回数で置換し、0周以下用文言はそのまま使い、`RemainingFuelLaps.Root` の開始音とOS標準TTSで再生する。空白文言・TTS利用不可・音量ゼロ以下では開始音も本文も再生しない。
@@ -47,7 +47,7 @@ Narratorで都度文言を解決し、空白・TTS利用不可では開始音も
 有効判定は `VehicleApproach.Root` と `StartReadout` を維持し、開始音・優先度・キューは `VehicleApproach.Root` を使う。
 WAVへのフォールバックは行わない。
 
-タイヤ過熱も保存した自由文言をOS標準TTSで読み上げる。既定文言は「タイヤ過熱 {celsius}度」で、
+タイヤ過熱も保存した自由文言をOS標準TTSで読み上げる。既定文言は「タイヤ過熱{celsius}℃」で、
 `AceWindowsTyreTemperaturePreferences` のフィールド3に保存する。`{celsius}` は判定時点の全輪最大カーカス温度を
 `roundToInt` で四捨五入した整数に置換する。過熱・解除の判定ロジックは従来どおり。
 Processorで解決した本文を `AceWindowsTyreOverheat.resolvedText` に保持し、発話とログを一致させる。
@@ -90,7 +90,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 `currentRemainingFuelPercent(data)` は `AceWindowsFuelData.remainingPercent`（0〜100）を四捨五入した整数％を返す。
 未受信・受信から5秒超・非有限・0未満・100超は null とし、シミュレーター切替時は最新値と受信時刻をクリアする。
 鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` を保存順に最大3件処理し、
-手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）か
+手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」）か
 セットの編集文言を `formatAceWindowsRemainingFuelReadoutText` で置換する。
 空白文言を除外して「、」で連結し、`AceWindowsManualReadoutText` の1イベントにまとめる。
 値が null の項目は「燃料残量はデータがありません」を読む（全項目がデータ無しでも同じ）。
@@ -99,7 +99,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 自動読み上げのスイッチ・閾値・`remainingFuelWarned` 等の判定状態は変更せず、
 開始音・ログ・常時キュー末尾追加には既存の `RemainingFuel.Root` を使う。
 `manualReadoutItemKeys(Simulator.AceWindows.id)` は続けて既存の `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`）を返し、手動の「燃料残り周回数」を選択できる。
-`currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・負値・上限超過は null（データなし）とする。ちょうど0は0周として扱い、固定文言「燃料残り1周未満」を読む。
+`currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・負値・上限超過は null（データなし）とする。ちょうど0は0周として扱い、固定文言「燃料は残り1周未満」を読む。
 手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）を `formatAceWindowsRemainingFuelLapsReadoutText` で置換し、値が null の項目は「燃料残り周回数はデータがありません」を読む。
 自己ベストラップも同じ手動セットで選択でき、最新の `bestLapTimeMs > 0` の値を（Android ではサーバーが値の変化時しか送らないため5秒の鮮度判定はせず、未受信・0以下・シミュレーター切替後はデータなし） `formatAceWindowsMyBestLapReadoutText` で整形する。自動用 `AceWindowsMyBestLap` イベントの動作は変えない。
 
@@ -111,7 +111,7 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `currentMaxTyreTemperatureCelsius` で `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい
 最高値を四捨五入した整数℃を取得する。未受信・受信から5秒超・有効な温度なし・ACE以外への切り替え後は
 「タイヤ温度はデータがありません」を読む。既定文言は `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`
-（「タイヤ温度{celsius}℃」）。既存の `formatAceWindowsTyreTemperatureReadoutText` と
+（「タイヤ温度は{celsius}℃」）。既存の `formatAceWindowsTyreTemperatureReadoutText` と
 `findUnknownAceWindowsTyreTemperatureReadoutPlaceholders` を使い、詳細画面ではタイヤカテゴリ、プレビューは90℃。
 `AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。

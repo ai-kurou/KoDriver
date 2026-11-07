@@ -7,7 +7,7 @@ class AceWindowsRemainingFuelReadoutTextTest {
     @Test
     fun `既定文言の残量パーセントを置換する`() {
         assertEquals(
-            "燃料は残り30パーセント",
+            "燃料は残り30%",
             formatAceWindowsRemainingFuelReadoutText(
                 ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT,
                 30,
