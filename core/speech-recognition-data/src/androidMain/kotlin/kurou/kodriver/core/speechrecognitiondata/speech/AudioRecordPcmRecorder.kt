@@ -11,6 +11,7 @@ import kurou.kodriver.domain.model.MICROPHONE_SAMPLE_RATE_HZ
  * プラットフォームのAPIを直接呼ぶ薄いアダプターのため、単体テストの対象にしない。
  */
 internal class AudioRecordPcmRecorder : PcmRecorder {
+    @Volatile
     private var record: AudioRecord? = null
 
     @SuppressLint("MissingPermission")
@@ -36,6 +37,11 @@ internal class AudioRecordPcmRecorder : PcmRecorder {
     }
 
     override fun read(buffer: ByteArray): Int = record?.read(buffer, 0, buffer.size) ?: -1
+
+    // 読み取りで待っているスレッドに対し、別スレッドから録音を止めて戻させる（解放済みなら何もしない）
+    override fun interrupt() {
+        runCatching { record?.stop() }
+    }
 
     override fun close() {
         record?.release()

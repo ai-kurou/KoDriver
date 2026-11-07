@@ -223,6 +223,16 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
             assertEquals(1, recorder.closeCount)
             assertEquals(1, transcriberFactory.closeCount)
         }
+
+    @Test
+    fun `収集をやめると読み取りで待っているマイクを止めて戻させる`() =
+        runTest {
+            recorder.chunks.addAll(listOf(SILENT_CHUNK, SILENT_CHUNK))
+
+            createRepository().observeRecognition().first()
+
+            assertEquals(1, recorder.interruptCount)
+        }
 }
 
 private class FakeSpeechTranscriberFactory : SpeechTranscriberFactory {
@@ -260,6 +270,7 @@ private class FakePcmRecorder : PcmRecorder {
     val chunks = ArrayDeque<ByteArray>()
     var startCount = 0
     var closeCount = 0
+    var interruptCount = 0
 
     /** 開くたびに実行する。セッションごとに [chunks] を補充するために使う。 */
     var onStart: FakePcmRecorder.() -> Unit = {}
@@ -275,6 +286,10 @@ private class FakePcmRecorder : PcmRecorder {
         val chunk = chunks.removeFirstOrNull() ?: return 0
         chunk.copyInto(buffer)
         return chunk.size
+    }
+
+    override fun interrupt() {
+        interruptCount++
     }
 
     override fun close() {
