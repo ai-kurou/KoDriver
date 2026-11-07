@@ -145,4 +145,101 @@ class NarratorPriorityTest {
         assertEquals(false, spokenQueue)
         assertTrue(stopped)
     }
+
+    @Test
+    fun `手動は再生中が自動なら優先度に関係なく停止して割り込む`() {
+        val calls = mutableListOf<String>()
+
+        val result =
+            speakWithPriority(
+                eventKey = "manual",
+                currentKey = { "auto" },
+                autoReadoutOrder = listOf("auto", "manual"),
+                queueEnabled = false,
+                speak = { queue -> calls += "speak:$queue" },
+                stop = { calls += "stop" },
+                isManual = true,
+                currentIsManual = { false },
+            )
+
+        assertTrue(result)
+        assertEquals(listOf("stop", "speak:false"), calls)
+    }
+
+    @Test
+    fun `手動は再生中が手動ならキュー末尾へ追加する`() {
+        val calls = mutableListOf<String>()
+
+        val result =
+            speakWithPriority(
+                eventKey = "manual",
+                currentKey = { "manual2" },
+                autoReadoutOrder = emptyList(),
+                queueEnabled = false,
+                speak = { queue -> calls += "speak:$queue" },
+                stop = { calls += "stop" },
+                isManual = true,
+                currentIsManual = { true },
+            )
+
+        assertTrue(result)
+        assertEquals(listOf("speak:true"), calls)
+    }
+
+    @Test
+    fun `手動は再生中がなければ停止せずそのまま読み上げる`() {
+        val calls = mutableListOf<String>()
+
+        val result =
+            speakWithPriority(
+                eventKey = "manual",
+                currentKey = { null },
+                autoReadoutOrder = emptyList(),
+                queueEnabled = true,
+                speak = { queue -> calls += "speak:$queue" },
+                stop = { calls += "stop" },
+                isManual = true,
+            )
+
+        assertTrue(result)
+        assertEquals(listOf("speak:false"), calls)
+    }
+
+    @Test
+    fun `手動の再生中にキュー無効の自動イベントが来たら優先度が上でも読み上げない`() {
+        val calls = mutableListOf<String>()
+
+        val result =
+            speakWithPriority(
+                eventKey = "high",
+                currentKey = { "low" },
+                autoReadoutOrder = listOf("high", "low"),
+                queueEnabled = false,
+                speak = { queue -> calls += "speak:$queue" },
+                stop = { calls += "stop" },
+                currentIsManual = { true },
+            )
+
+        assertFalse(result)
+        assertEquals(emptyList(), calls)
+    }
+
+    @Test
+    fun `手動の再生中でもキュー有効の自動イベントはキュー末尾へ追加する`() {
+        val calls = mutableListOf<String>()
+
+        val result =
+            speakWithPriority(
+                eventKey = "auto",
+                currentKey = { "manual" },
+                autoReadoutOrder = listOf("auto", "manual"),
+                queueEnabled = true,
+                speak = { queue -> calls += "speak:$queue" },
+                stop = { calls += "stop" },
+                currentIsManual = { true },
+            )
+
+        assertTrue(result)
+        assertEquals(listOf("speak:true"), calls)
+    }
 }

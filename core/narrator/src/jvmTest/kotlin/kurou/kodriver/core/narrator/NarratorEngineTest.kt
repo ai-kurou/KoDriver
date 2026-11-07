@@ -832,6 +832,61 @@ class NarratorEngineTest {
             assertEquals(null, engine.currentKey)
         }
 
+    @Test
+    fun `currentIsManualは手動イベントの再生中だけtrueを返す`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player, isManualEvent = { it == CAR_LEFT })
+            runCurrent()
+            assertEquals(false, engine.currentIsManual)
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+            assertEquals(true, engine.currentIsManual)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+        }
+
+    @Test
+    fun `自動イベントの再生中はcurrentIsManualがfalseを返す`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = RED_FLAG_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player, isManualEvent = { it == CAR_LEFT })
+            runCurrent()
+
+            engine.speak(RED_FLAG)
+            runCurrent()
+
+            assertEquals(false, engine.currentIsManual)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+        }
+
+    @Test
+    fun `stopで中断した後currentIsManualはfalseを返す`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player, isManualEvent = { it == CAR_LEFT })
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+            assertEquals(true, engine.currentIsManual)
+
+            engine.stop()
+            runCurrent()
+
+            assertEquals(false, engine.currentIsManual)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+        }
+
     @Suppress("LongParameterList")
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
@@ -839,6 +894,7 @@ class NarratorEngineTest {
         startSoundTypeFlow: Flow<String> = flowOf(FORMULA_RADIO),
         startSoundEnabledStatesFlow: Flow<Map<String, Boolean>> = flowOf(emptyMap()),
         isCustomSpeakEvent: (String) -> Boolean = { true },
+        isManualEvent: (String) -> Boolean = { false },
         customSpeak: suspend (String, Int) -> Unit = { event, volume -> player.play(bodySound(event), volume) },
         startSoundResourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
@@ -866,6 +922,7 @@ class NarratorEngineTest {
             startSoundEnabledStatesFlow = startSoundEnabledStatesFlow,
             customSpeak = customSpeak,
             isCustomSpeakEvent = isCustomSpeakEvent,
+            isManualEvent = isManualEvent,
             scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
         )
 

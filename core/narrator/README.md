@@ -49,6 +49,19 @@
 
 `autoReadoutOrder` に含まれないキーは最も優先度が低いものとして扱います。
 
+手動読み上げ用の引数 `isManual` / `currentIsManual` は、上の4経路とは別の分岐を持ちます。どちらも既定値は `false` で、
+指定しない呼び出しは従来の挙動のままです（現時点では各 feature は指定していません）。
+
+| 条件 | 動作 | 対応する `NarrationOutcome` |
+| --- | --- | --- |
+| `isManual`・再生中が自動 | 優先度判定をせず `stop()` してから `speak(queue = false)` | `INTERRUPTED` |
+| `isManual`・再生中が手動 | `speak(queue = true)` で末尾へ追加 | `QUEUED` |
+| `isManual`・再生中なし | `stop()` せず `speak(queue = false)` | `SPOKEN` |
+| 自動・キュー無効・再生中が手動（`currentIsManual`） | `speak` も `stop` も呼ばない | `SKIPPED` |
+
+自動イベントでキュー再生が有効な場合は、再生中が手動でも従来どおりキューへ追加します。`NarratorEngine.currentIsManual` は、
+コンストラクタの `isManualEvent` で手動と判定したイベントの再生中だけ `true` を返します（`currentKey` と同様に停止後は `false`）。
+
 **戻り値の `Boolean` だけでは4経路を区別できません**（経路1・3・4がいずれも `true` になります）。テレメトリログへ
 保存する `NarrationOutcome` のように4経路を区別したい呼び出し側は、同ファイルの
 `speakWithOutcome<KEY, OUTCOME>(...)` を利用します。`speakWithPriority` を呼び、`speak` に渡された `queue` の値と
