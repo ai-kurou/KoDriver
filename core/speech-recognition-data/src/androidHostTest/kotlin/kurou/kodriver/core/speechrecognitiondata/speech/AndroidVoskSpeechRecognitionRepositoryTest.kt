@@ -2,16 +2,24 @@
 
 package kurou.kodriver.core.speechrecognitiondata.speech
 
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
+import java.util.Collections
+import java.util.concurrent.CountDownLatch
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -233,6 +241,52 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
 
             assertEquals(1, recorder.interruptCount)
         }
+
+    @Test
+    fun `読み取りで待っている最中に収集をやめると、マイクを止めて読み取りを戻してから閉じる`() =
+        runBlocking {
+            val blocking = BlockingPcmRecorder()
+            val repository =
+                AndroidVoskSpeechRecognitionRepository(
+                    transcriberFactory = transcriberFactory,
+                    recorderFactory = { blocking },
+                    permissionRepository = permissionRepository,
+                    ioDispatcher = Dispatchers.IO,
+                )
+            val job = launch { repository.observeRecognition().collect {} }
+            withTimeout(WAIT_MILLIS) { blocking.readStarted.await() }
+
+            job.cancel()
+            withTimeout(WAIT_MILLIS) { job.join() }
+
+            assertEquals(listOf("interrupt", "close"), blocking.calls.toList())
+        }
+}
+
+private const val WAIT_MILLIS = 5_000L
+
+/** [read] は [interrupt] が呼ばれるまで戻らず、読み取りで固まったマイクを再現する。 */
+private class BlockingPcmRecorder : PcmRecorder {
+    val readStarted = CompletableDeferred<Unit>()
+    val calls: MutableList<String> = Collections.synchronizedList(mutableListOf())
+    private val released = CountDownLatch(1)
+
+    override fun start() = Unit
+
+    override fun read(buffer: ByteArray): Int {
+        readStarted.complete(Unit)
+        released.await()
+        return 0
+    }
+
+    override fun interrupt() {
+        calls.add("interrupt")
+        released.countDown()
+    }
+
+    override fun close() {
+        calls.add("close")
+    }
 }
 
 private class FakeSpeechTranscriberFactory : SpeechTranscriberFactory {
