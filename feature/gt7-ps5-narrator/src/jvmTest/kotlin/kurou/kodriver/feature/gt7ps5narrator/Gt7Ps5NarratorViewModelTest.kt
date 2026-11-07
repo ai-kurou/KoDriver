@@ -403,7 +403,7 @@ class Gt7Ps5NarratorViewModelTest {
                 false,
                 selectedFuel = true,
                 telemetry = Gt7Ps5TelemetryData(1, 5, 90_000, Gt7Ps5FuelUnit(0f), Gt7Ps5FuelUnit(100f)),
-                expectedText = "燃料は残り0パーセント",
+                expectedText = "燃料は残り0%",
             )
         }
 
@@ -1019,8 +1019,8 @@ class Gt7Ps5NarratorViewModelTest {
             )
             assertEquals(
                 listOf<SpeechEvent>(
-                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
-                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
+                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料は残り1周未満"),
+                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料は残り1周未満"),
                 ),
                 refuelSpokenTexts,
             )
@@ -1040,8 +1040,8 @@ class Gt7Ps5NarratorViewModelTest {
             )
             assertEquals(
                 listOf<SpeechEvent>(
-                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
-                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
+                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料は残り1周未満"),
+                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料は残り1周未満"),
                 ),
                 lapResetSpokenTexts,
             )
@@ -1080,7 +1080,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
 
             assertEquals(
-                listOf<SpeechEvent>(Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30パーセント")),
+                listOf<SpeechEvent>(Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30%")),
                 spokenTexts,
             )
         }
@@ -1115,7 +1115,7 @@ class Gt7Ps5NarratorViewModelTest {
                     123_456L,
                     Simulator.Gt7Ps5,
                     Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
-                    "燃料は残り30パーセント",
+                    "燃料は残り30%",
                     any(),
                     NarrationSource.AUTO,
                     capture(telemetryJsons),
@@ -1127,7 +1127,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
 
             assertEquals(
-                listOf<SpeechEvent>(Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30パーセント")),
+                listOf<SpeechEvent>(Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30%")),
                 spokenTexts,
             )
             assertEquals(1, telemetryJsons.size)
@@ -1138,7 +1138,7 @@ class Gt7Ps5NarratorViewModelTest {
                     123_456L,
                     Simulator.Gt7Ps5,
                     Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
-                    "燃料は残り30パーセント",
+                    "燃料は残り30%",
                     any(),
                     NarrationSource.AUTO,
                     telemetryJsons.single(),
@@ -1179,7 +1179,7 @@ class Gt7Ps5NarratorViewModelTest {
                 ),
             )
 
-            assertEquals(listOf<SpeechEvent>(Gt7Ps5TyreOverheat(95, "タイヤ過熱 95度")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5TyreOverheat(95, "タイヤ過熱95℃")), spokenTexts)
         }
 
     @Test
@@ -1272,7 +1272,7 @@ class Gt7Ps5NarratorViewModelTest {
                     123_456L,
                     Simulator.Gt7Ps5,
                     Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
-                    "タイヤ過熱 95度",
+                    "タイヤ過熱95℃",
                     any(),
                     NarrationSource.AUTO,
                     capture(telemetryJsons),
@@ -1303,7 +1303,7 @@ class Gt7Ps5NarratorViewModelTest {
                 ),
             )
 
-            assertEquals(listOf<SpeechEvent>(Gt7Ps5TyreOverheat(95, "タイヤ過熱 95度")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5TyreOverheat(95, "タイヤ過熱95℃")), spokenTexts)
             assertEquals(1, telemetryJsons.size)
             assertEquals(true, telemetryJsons.single().contains("tyreOverheating=false"))
             assertEquals(true, telemetryJsons.single().contains("tyreOverheating=true"))
@@ -1312,7 +1312,7 @@ class Gt7Ps5NarratorViewModelTest {
                     123_456L,
                     Simulator.Gt7Ps5,
                     Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
-                    "タイヤ過熱 95度",
+                    "タイヤ過熱95℃",
                     any(),
                     NarrationSource.AUTO,
                     telemetryJsons.single(),
@@ -1639,7 +1639,7 @@ class Gt7Ps5NarratorViewModelTest {
                 any(),
                 Simulator.Gt7Ps5,
                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
-                "燃料は残り30パーセント",
+                "燃料は残り30%",
                 any(),
                 NarrationSource.AUTO,
                 capture(telemetryJsons),
@@ -1650,7 +1650,7 @@ class Gt7Ps5NarratorViewModelTest {
                 any(),
                 Simulator.Gt7Ps5,
                 Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
-                "タイヤ過熱 95度",
+                "タイヤ過熱95℃",
                 any(),
                 NarrationSource.AUTO,
                 capture(telemetryJsons),

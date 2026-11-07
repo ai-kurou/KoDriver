@@ -101,7 +101,7 @@ LMUバーチャルエネルギー残量の閾値置換とは異なり、GT7で�
 
 LMUピットタイミングでは、一覧の `Root` と詳細の `VirtualEnergy` / `TyreWear` / `Fuel` の有効状態を既存どおり判定する。3ソースの警告は自由文言TTSで読み上げ、残り1周以上は通常文言の `{laps}` を予想残り周回数で置換し、0周以下は専用の切迫時文言を使用する。文言が空白またはTTS利用不可の場合は本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。開始音・優先度・キュー設定は `PitTiming.Root` を参照する。詳細画面で通常・切迫時文言を設定でき、試聴も `PitTiming.Root` キーの開始音と自由文言TTSを使用する（通常文言は `{laps}` を各スライダーに表示中の周回数に置換、切迫時は置換なし）。3ソースとも自由文言TTSを使用し、ピットタイミング用の収録WAVは使用しない。
 
-GT7タイヤ過熱警告は自由文言のOS標準TTSのみを使用する。既定文言は「タイヤ過熱 {celsius}度」。
+GT7タイヤ過熱警告は自由文言のOS標準TTSのみを使用する。既定文言は「タイヤ過熱{celsius}℃」。
 `{celsius}` は判定時の全輪の最高タイヤ温度を整数に丸めた摂氏に置換し、解決文言をイベントの
 `resolvedText` に保持するためキュー待機中も発話とログが一致する。判定条件・閾値・ヒステリシスは従来どおり。
 空白文言・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` を記録する。
@@ -189,9 +189,9 @@ LMU の補足は次のとおり。
 
 | 項目 | キー | データ源と単位 | 既定文言（定数名） | データなし・特殊条件 | 補足 |
 | --- | --- | --- | --- | --- | --- |
-| 燃料残量 | `RemainingFuel.Root.value`（`gt7_ps5_auto_remaining_fuel`） | 最新テレメトリの `gasLevel / gasCapacity * 100` を四捨五入し0〜100に制限した整数％ | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」） | 未受信・鮮度切れ・不正な燃料値は「燃料残量はデータがありません」 | 既存の燃料用フォーマット関数を再利用する。開始音・ログ・常時キュー追加のキーもこの項目。 |
-| 燃料残り周回数 | `RemainingFuelLaps.Root.value`（`gt7_ps5_auto_remaining_fuel_laps`） | 燃料残り周回数の推定（周）。算出式は下の補足 | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料残り1周未満」） | 未受信・鮮度切れは「燃料残り周回数はデータがありません」。開始燃料・開始周回が未設定、完走周回数が0以下、消費燃料が0以下は null | 自動側のしきい値・重複抑止・有効スイッチは適用しない。 |
-| タイヤ温度 | `TyreTemperature.Root.value`（`gt7_ps5_auto_tyre_temperature`） | 4輪の有限値の最高温度を `roundToInt()` した整数℃（`currentMaxTyreTemperatureCelsius`） | `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度{celsius}℃」） | 未受信・鮮度切れ・全輪が非有限または0（取得不能）は「タイヤ温度はデータがありません」 | 詳細画面のカテゴリはタイヤ、プレビューは90℃。自動のしきい値・ヒステリシス・スイッチ判定は適用しない。 |
+| 燃料残量 | `RemainingFuel.Root.value`（`gt7_ps5_auto_remaining_fuel`） | 最新テレメトリの `gasLevel / gasCapacity * 100` を四捨五入し0〜100に制限した整数％ | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 未受信・鮮度切れ・不正な燃料値は「燃料残量はデータがありません」 | 既存の燃料用フォーマット関数を再利用する。開始音・ログ・常時キュー追加のキーもこの項目。 |
+| 燃料残り周回数 | `RemainingFuelLaps.Root.value`（`gt7_ps5_auto_remaining_fuel_laps`） | 燃料残り周回数の推定（周）。算出式は下の補足 | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料は残り1周未満」） | 未受信・鮮度切れは「燃料残り周回数はデータがありません」。開始燃料・開始周回が未設定、完走周回数が0以下、消費燃料が0以下は null | 自動側のしきい値・重複抑止・有効スイッチは適用しない。 |
+| タイヤ温度 | `TyreTemperature.Root.value`（`gt7_ps5_auto_tyre_temperature`） | 4輪の有限値の最高温度を `roundToInt()` した整数℃（`currentMaxTyreTemperatureCelsius`） | `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 未受信・鮮度切れ・全輪が非有限または0（取得不能）は「タイヤ温度はデータがありません」 | 詳細画面のカテゴリはタイヤ、プレビューは90℃。自動のしきい値・ヒステリシス・スイッチ判定は適用しない。 |
 | 自己ベストラップ | `MyBestLap.Root.value`（`gt7_ps5_auto_my_best_lap`） | テレメトリの `bestLapTimeMs`（ms）（`currentBestLapTimeMs`）。既存の `Gt7Ps5MyBestLap` で整形 | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 未受信・鮮度切れ・0以下（未確定）は「自己ベストラップはデータがありません」 | 詳細画面のカテゴリはラップ、プレビューは83456ms。自動の `determineMyBestLap` の状態（`personalBestMs` 等）は変更しない。 |
 
 GT7 PS5 の補足は次のとおり。

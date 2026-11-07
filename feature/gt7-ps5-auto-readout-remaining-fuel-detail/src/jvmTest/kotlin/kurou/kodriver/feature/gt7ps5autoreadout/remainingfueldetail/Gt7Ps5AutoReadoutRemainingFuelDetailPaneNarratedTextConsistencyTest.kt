@@ -26,6 +26,6 @@ class Gt7Ps5AutoReadoutRemainingFuelDetailPaneNarratedTextConsistencyTest {
         }
 
         rule.onNodeWithText("燃料残量警告の文言").assertIsDisplayed()
-        assertEquals("燃料は残り30パーセント", Gt7Ps5RemainingFuelWarning(30).narratedText)
+        assertEquals("燃料は残り30%", Gt7Ps5RemainingFuelWarning(30).narratedText)
     }
 }

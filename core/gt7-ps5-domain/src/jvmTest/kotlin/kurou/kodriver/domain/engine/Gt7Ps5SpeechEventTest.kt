@@ -22,7 +22,7 @@ class Gt7Ps5SpeechEventTest {
 
         assertEquals(Gt7Ps5ReadoutItemKey.TyreTemperature.Root, event.readoutItemKey)
 
-        assertEquals("タイヤ温度90℃", event.narratedText)
+        assertEquals("タイヤ温度は90℃", event.narratedText)
 
         assertEquals("温度90℃", event.withResolvedText("温度90℃").narratedText)
 
@@ -39,9 +39,9 @@ class Gt7Ps5SpeechEventTest {
 
         assertEquals("燃料は残り約3周", event.narratedText)
 
-        assertEquals("燃料残り1周未満", Gt7Ps5RemainingFuelLapsCurrentValue(0).narratedText)
+        assertEquals("燃料は残り1周未満", Gt7Ps5RemainingFuelLapsCurrentValue(0).narratedText)
 
-        assertEquals("燃料残り1周未満", Gt7Ps5RemainingFuelLapsCurrentValue(-1).narratedText)
+        assertEquals("燃料は残り1周未満", Gt7Ps5RemainingFuelLapsCurrentValue(-1).narratedText)
 
         val resolved = event.withResolvedText("あと3周")
 
@@ -60,7 +60,7 @@ class Gt7Ps5SpeechEventTest {
 
         assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)
 
-        assertEquals("燃料は残り42パーセント", event.narratedText)
+        assertEquals("燃料は残り42%", event.narratedText)
 
         val resolved = event.withResolvedText("残り42%")
 
@@ -138,9 +138,9 @@ class Gt7Ps5SpeechEventTest {
 
     @Test
     fun `GT7のRemainingFuelLapsWarningはlapsが0以下のとき燃料切れの文言を返す`() {
-        assertEquals("燃料残り1周未満", Gt7Ps5RemainingFuelLapsWarning(laps = 0).narratedText)
+        assertEquals("燃料は残り1周未満", Gt7Ps5RemainingFuelLapsWarning(laps = 0).narratedText)
 
-        assertEquals("燃料残り1周未満", Gt7Ps5RemainingFuelLapsWarning(laps = -1).narratedText)
+        assertEquals("燃料は残り1周未満", Gt7Ps5RemainingFuelLapsWarning(laps = -1).narratedText)
     }
 
     @Test
@@ -151,18 +151,18 @@ class Gt7Ps5SpeechEventTest {
 
         assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)
 
-        assertEquals("燃料は残り29パーセント", event.narratedText)
+        assertEquals("燃料は残り29%", event.narratedText)
 
-        assertEquals("燃料は残り29パーセント", resolved.narratedText)
+        assertEquals("燃料は残り29%", resolved.narratedText)
 
         assertEquals("残り29%", resolved.resolvedText)
     }
 
     @Test
     fun `Gt7Ps5の燃料残量は整数を展開しタイヤは警告文言を返す`() {
-        assertEquals("燃料は残り30パーセント", Gt7Ps5RemainingFuelWarning(30).narratedText)
+        assertEquals("燃料は残り30%", Gt7Ps5RemainingFuelWarning(30).narratedText)
 
-        assertEquals("タイヤ過熱 107度", Gt7Ps5TyreOverheat(107).narratedText)
+        assertEquals("タイヤ過熱107℃", Gt7Ps5TyreOverheat(107).narratedText)
     }
 
     @Test
@@ -184,7 +184,7 @@ class Gt7Ps5SpeechEventTest {
     fun `GT7タイヤ過熱は既定文言とキーを維持し解決文言を保持する`() {
         val event = Gt7Ps5TyreOverheat(0, "設定文言")
 
-        assertEquals("タイヤ過熱 0度", event.narratedText)
+        assertEquals("タイヤ過熱0℃", event.narratedText)
 
         assertEquals(Gt7Ps5ReadoutItemKey.TyreTemperature.Root, event.readoutItemKey)
 

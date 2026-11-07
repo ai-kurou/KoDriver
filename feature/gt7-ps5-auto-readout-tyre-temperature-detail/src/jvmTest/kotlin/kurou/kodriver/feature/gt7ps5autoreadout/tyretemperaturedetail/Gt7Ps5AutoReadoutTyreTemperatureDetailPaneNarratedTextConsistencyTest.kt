@@ -26,6 +26,6 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailPaneNarratedTextConsistencyTest {
         }
 
         rule.onNodeWithText("タイヤ過熱警告の文言").assertIsDisplayed()
-        assertEquals("タイヤ過熱 95度", Gt7Ps5TyreOverheat(95).narratedText)
+        assertEquals("タイヤ過熱95℃", Gt7Ps5TyreOverheat(95).narratedText)
     }
 }

@@ -540,13 +540,13 @@ class ManualReadoutSetDetailPaneTextEditTest {
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("燃料残量").performScrollTo().performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50%")
         rule.onNodeWithText("{percent} は現在の残量（%）に置き換わります").assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("残り{percent}%")
         rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("残り50%")
         assertEquals("残り{percent}%", state.value.itemTexts[key])
         rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50パーセント")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("燃料は残り50%")
     }
 
     @Test

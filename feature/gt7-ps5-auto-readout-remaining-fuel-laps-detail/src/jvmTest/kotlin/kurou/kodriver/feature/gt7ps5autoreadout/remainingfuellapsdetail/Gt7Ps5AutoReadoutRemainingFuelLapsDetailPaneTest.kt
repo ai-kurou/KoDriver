@@ -58,7 +58,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailPaneTest {
         rule.onNodeWithText("{laps} は残り周回数に置き換わります").assertIsDisplayed()
         rule.onNodeWithText("{laps}を挿入").assertIsEnabled()
         rule.onNodeWithText("燃料がありません(1.0周未満)のときの文言").performScrollTo().assertIsDisplayed()
-        rule.onNodeWithText("燃料残り1周未満").assertIsDisplayed()
+        rule.onNodeWithText("燃料は残り1周未満").assertIsDisplayed()
         rule.onNodeWithText("残り約: 3 周").performScrollTo().assertIsDisplayed()
     }
 
@@ -178,9 +178,9 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailPaneTest {
         rule.onAllNodesWithContentDescription("入力した文言を再生")[1].performClick()
         rule.onNodeWithText("{x} は置き換えられません。{laps} を使用してください").assertDoesNotExist()
         rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].performClick()
-        rule.onAllNodes(hasSetTextAction())[1].assertEditableTextEquals("燃料残り1周未満")
+        rule.onAllNodes(hasSetTextAction())[1].assertEditableTextEquals("燃料は残り1周未満")
         rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].assertIsNotEnabled()
-        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH), "燃料なし{x}", "燃料残り1周未満"), changes)
+        assertEquals(listOf("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH), "燃料なし{x}", "燃料は残り1周未満"), changes)
         assertEquals(listOf("燃料なし{x}"), previews)
     }
 
