@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.model.SpeechRecognitionMode
 import java.util.Collections
 import java.util.concurrent.CountDownLatch
 import kotlin.test.Test
@@ -192,6 +193,41 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
         }
 
     @Test
+    fun `モードを変えると次の音声から文字起こしへ反映し、同じモードでは重ねて切り替えない`() =
+        runTest {
+            val repository = createRepository()
+            recorder.chunks.addAll(listOf(SILENT_CHUNK, SILENT_CHUNK, SILENT_CHUNK, SILENT_CHUNK))
+            var reads = 0
+            recorder.beforeRead = {
+                reads++
+                when (reads) {
+                    2 -> repository.setMode(SpeechRecognitionMode.Command)
+                    3 -> repository.setMode(SpeechRecognitionMode.Command)
+                    4 -> repository.setMode(SpeechRecognitionMode.WakeWord)
+                }
+            }
+
+            repository.observeRecognition().toList()
+
+            assertEquals(
+                listOf(SpeechRecognitionMode.Command, SpeechRecognitionMode.WakeWord),
+                transcriberFactory.modes,
+            )
+        }
+
+    @Test
+    fun `聞き取りの開始時はそれまでのモードにかかわらずウェイクワード待ちから始まる`() =
+        runTest {
+            val repository = createRepository()
+            repository.setMode(SpeechRecognitionMode.Command)
+            recorder.chunks.add(SILENT_CHUNK)
+
+            repository.observeRecognition().toList()
+
+            assertEquals(emptyList(), transcriberFactory.modes)
+        }
+
+    @Test
     fun `マイクから音声を読み取れない失敗が続いたらマイク取得失敗で失敗する`() =
         runTest {
             recorder.chunks.add(SILENT_CHUNK)
@@ -303,6 +339,7 @@ private class FakeSpeechTranscriberFactory : SpeechTranscriberFactory {
     var acceptError: Exception? = null
     val transcripts = ArrayDeque<SpeechTranscript?>()
     var closeCount = 0
+    val modes = mutableListOf<SpeechRecognitionMode>()
 
     override fun isAvailable(): Boolean = available
 
@@ -313,6 +350,10 @@ private class FakeSpeechTranscriberFactory : SpeechTranscriberFactory {
             override fun accept(pcm: ByteArray): SpeechTranscript? {
                 acceptError?.let { throw it }
                 return transcripts.removeFirstOrNull()
+            }
+
+            override fun setMode(mode: SpeechRecognitionMode) {
+                modes += mode
             }
 
             override fun close() {
@@ -343,7 +384,11 @@ private class FakePcmRecorder : PcmRecorder {
         onStart()
     }
 
+    /** 読み取りのたびに、読み取る前に実行する。読み取りの合間にモードを切り替えるために使う。 */
+    var beforeRead: () -> Unit = {}
+
     override fun read(buffer: ByteArray): Int {
+        beforeRead()
         val chunk = chunks.removeFirstOrNull() ?: return 0
         chunk.copyInto(buffer)
         return chunk.size

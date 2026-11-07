@@ -53,6 +53,11 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     private val isCustomSpeakEvent: (EVENT) -> Boolean = { false },
     /** 手動読み上げ由来のイベントかの判定。再生中のイベントが手動かを [currentIsManual] で参照するために使う。 */
     private val isManualEvent: (EVENT) -> Boolean = { false },
+    /**
+     * 再生中または再生待ちのイベントがあるかが変わったときに、変わった後の値で呼ぶ。
+     * 音声認識が自分の読み上げを拾わないよう、再生中は聞き取りを止めるために使う。値が変わらない更新では呼ばない。
+     */
+    private val onPlaybackActiveChanged: (Boolean) -> Unit = {},
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) {
     @Volatile
@@ -80,6 +85,11 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
 
     @Volatile
     private var _currentKey: KEY? = null
+        set(value) {
+            val wasActive = field != null
+            field = value
+            if (wasActive != (value != null)) onPlaybackActiveChanged(value != null)
+        }
 
     // playJob がアクティブな間だけ再生中のキーを返す。
     // キャンセル後に古いジョブが _currentKey を上書きしないよう playJob で二重確認する。

@@ -1,11 +1,20 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
+import kurou.kodriver.domain.model.SpeechRecognitionMode
+
 /**
  * PCM音声を文字列に変換するエンジン。OS・ライブラリ依存部分をここに閉じ込め、Repository側はフェイクで検証する。
  */
 internal interface SpeechTranscriber : AutoCloseable {
     /** 16kHz・モノラル・16bit PCM の [pcm] を渡す。発話の途中経過や確定結果が得られたときだけ返す。 */
     fun accept(pcm: ByteArray): SpeechTranscript?
+
+    /**
+     * 認識の対象を切り替える。生成直後は [SpeechRecognitionMode.WakeWord]。
+     * [SpeechRecognitionMode.WakeWord] はウェイクワードに語彙を絞り、[SpeechRecognitionMode.Command] は絞らない。
+     * [SpeechRecognitionMode.Paused] の間は [accept] が常に null を返す。切り替え前の途中経過は引き継がない。
+     */
+    fun setMode(mode: SpeechRecognitionMode)
 }
 
 /** [SpeechTranscriber] が返す認識結果。 */

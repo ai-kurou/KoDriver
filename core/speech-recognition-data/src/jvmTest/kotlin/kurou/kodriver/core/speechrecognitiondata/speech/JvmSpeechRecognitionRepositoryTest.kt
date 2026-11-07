@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.MicrophoneFailureReason
 import kurou.kodriver.domain.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
@@ -25,6 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@Suppress("TooManyFunctions")
 class JvmSpeechRecognitionRepositoryTest {
     private val preferences = FakeSelectedDevicePreferences()
     private val microphone = FakeMicrophone()
@@ -120,6 +122,62 @@ class JvmSpeechRecognitionRepositoryTest {
             )
             assertEquals(5, transcriber.acceptedChunks.size)
             assertTrue(transcriber.closed)
+        }
+
+    @Test
+    fun `モードを変えると次の音声から文字起こしへ反映し、同じモードでは重ねて切り替えない`() =
+        runTest {
+            val transcriber = FakeTranscriber()
+            val repository = repository(FakeTranscriberFactory(available = true, transcriber = transcriber))
+            microphone.events =
+                flow {
+                    emit(chunk(1))
+                    repository.setMode(SpeechRecognitionMode.Command)
+                    emit(chunk(2))
+                    emit(chunk(3))
+                    repository.setMode(SpeechRecognitionMode.Paused)
+                    emit(chunk(4))
+                    repository.setMode(SpeechRecognitionMode.WakeWord)
+                    emit(chunk(5))
+                }
+
+            repository.observeRecognition().toList()
+
+            assertEquals(
+                listOf(SpeechRecognitionMode.Command, SpeechRecognitionMode.Paused, SpeechRecognitionMode.WakeWord),
+                transcriber.modes,
+            )
+        }
+
+    @Test
+    fun `モードを切り替えると前の途中経過を引き継がず同じ途中経過でも流し直す`() =
+        runTest {
+            val transcriber =
+                FakeTranscriber(SpeechTranscript.Partial("次"), SpeechTranscript.Partial("次"))
+            val repository = repository(FakeTranscriberFactory(available = true, transcriber = transcriber))
+            microphone.events =
+                flow {
+                    emit(chunk(1))
+                    repository.setMode(SpeechRecognitionMode.Command)
+                    emit(chunk(2))
+                }
+
+            val events = repository.observeRecognition().toList()
+
+            assertEquals(2, events.count { it == SpeechRecognitionEvent.Partial("次") })
+        }
+
+    @Test
+    fun `聞き取りの開始時はそれまでのモードにかかわらずウェイクワード待ちから始まる`() =
+        runTest {
+            val transcriber = FakeTranscriber()
+            val repository = repository(FakeTranscriberFactory(available = true, transcriber = transcriber))
+            repository.setMode(SpeechRecognitionMode.Command)
+            microphone.events = flowOf(chunk(1))
+
+            repository.observeRecognition().toList()
+
+            assertEquals(emptyList(), transcriber.modes)
         }
 
     @Test
@@ -294,8 +352,13 @@ private class FakeTranscriber(
     private val queue = transcripts.toMutableList()
     val acceptedChunks = mutableListOf<ByteArray>()
     var acceptError: Throwable? = null
+    val modes = mutableListOf<SpeechRecognitionMode>()
     var closed = false
         private set
+
+    override fun setMode(mode: SpeechRecognitionMode) {
+        modes += mode
+    }
 
     override fun accept(pcm: ByteArray): SpeechTranscript? {
         acceptedChunks += pcm

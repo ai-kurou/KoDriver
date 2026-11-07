@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.main.generated.resources.Res
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_level_description
-import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_idle_stopped
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_command_waiting
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_listening
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_microphone_unavailable
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_no_signal
@@ -160,10 +160,10 @@ private fun SpeechRecognitionStatus.label(): StringResource =
         SpeechRecognitionStatus.Stopped -> Res.string.speech_recognition_status_stopped
         SpeechRecognitionStatus.Starting -> Res.string.speech_recognition_status_starting
         SpeechRecognitionStatus.Listening -> Res.string.speech_recognition_status_listening
+        SpeechRecognitionStatus.CommandWaiting -> Res.string.speech_recognition_status_command_waiting
         SpeechRecognitionStatus.PermissionDenied -> Res.string.speech_recognition_status_permission_denied
         SpeechRecognitionStatus.Unavailable -> Res.string.speech_recognition_status_unavailable
         SpeechRecognitionStatus.MicrophoneUnavailable -> Res.string.speech_recognition_status_microphone_unavailable
         SpeechRecognitionStatus.NoSignal -> Res.string.speech_recognition_status_no_signal
         SpeechRecognitionStatus.RecognitionFailed -> Res.string.speech_recognition_status_recognition_failed
-        SpeechRecognitionStatus.IdleStopped -> Res.string.speech_recognition_status_idle_stopped
     }

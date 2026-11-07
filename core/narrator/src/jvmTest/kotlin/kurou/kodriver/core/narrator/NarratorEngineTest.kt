@@ -998,6 +998,48 @@ class NarratorEngineTest {
         }
 
     @Test
+    fun `再生が始まると再生中、終わると再生中ではないと通知する`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val engine = createEngine(FakeSoundPlayer(), onPlaybackActiveChanged = { changes += it })
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            advanceUntilIdle()
+
+            assertEquals(listOf(true, false), changes)
+        }
+
+    @Test
+    fun `stopで中断すると再生中ではないと通知する`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND)
+            val engine = createEngine(player, onPlaybackActiveChanged = { changes += it })
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+            engine.stop()
+
+            assertEquals(listOf(true, false), changes)
+        }
+
+    @Test
+    fun `キューで待機中のイベントへ引き継ぐ間は再生中のまま通知を繰り返さない`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val engine = createEngine(FakeSoundPlayer(), onPlaybackActiveChanged = { changes += it })
+            runCurrent()
+
+            engine.speak(CAR_LEFT, queue = true)
+            engine.speak(RED_FLAG, queue = true)
+            advanceUntilIdle()
+
+            assertEquals(listOf(true, false), changes)
+        }
+
+    @Test
     fun `何も再生していないときにキューへ積んだイベントは再生が始まる前から再生中として返す`() =
         runTest {
             val player = FakeSoundPlayer()
@@ -1134,6 +1176,7 @@ class NarratorEngineTest {
         startSoundEnabledStatesFlow: Flow<Map<String, Boolean>> = flowOf(emptyMap()),
         isCustomSpeakEvent: (String) -> Boolean = { true },
         isManualEvent: (String) -> Boolean = { false },
+        onPlaybackActiveChanged: (Boolean) -> Unit = {},
         customSpeak: suspend (String, Int) -> Unit = { event, volume -> player.play(bodySound(event), volume) },
         startSoundResourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
@@ -1162,6 +1205,7 @@ class NarratorEngineTest {
             customSpeak = customSpeak,
             isCustomSpeakEvent = isCustomSpeakEvent,
             isManualEvent = isManualEvent,
+            onPlaybackActiveChanged = onPlaybackActiveChanged,
             scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
         )
 

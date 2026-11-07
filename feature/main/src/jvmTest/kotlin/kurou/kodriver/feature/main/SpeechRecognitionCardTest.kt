@@ -61,7 +61,7 @@ class SpeechRecognitionCardTest {
             }
         }
 
-        rule.onNodeWithText("聞き取り中(マイクを使用中)").assertExists()
+        rule.onNodeWithText("「ドライバー」の呼びかけを待っています(マイクを使用中)").assertExists()
         rule.onNodeWithText("タイ").assertExists()
         rule.onNodeWithText("燃料 / 然料").assertExists()
         rule.onNodeWithText("ブレーキ").assertExists()
@@ -110,13 +110,13 @@ class SpeechRecognitionCardTest {
         mapOf(
             SpeechRecognitionStatus.Stopped to "停止中",
             SpeechRecognitionStatus.Starting to "準備中(マイクを使用中)",
-            SpeechRecognitionStatus.Listening to "聞き取り中(マイクを使用中)",
+            SpeechRecognitionStatus.Listening to "「ドライバー」の呼びかけを待っています(マイクを使用中)",
+            SpeechRecognitionStatus.CommandWaiting to "コマンドを聞き取り中(マイクを使用中)",
             SpeechRecognitionStatus.PermissionDenied to "マイクの権限が許可されていません",
             SpeechRecognitionStatus.Unavailable to "この端末では音声認識を利用できません",
             SpeechRecognitionStatus.MicrophoneUnavailable to "マイクを開けないか、使えなくなりました",
             SpeechRecognitionStatus.NoSignal to "マイクの音声が届いていません。OSのマイク設定を確認してください",
             SpeechRecognitionStatus.RecognitionFailed to "音声認識中にエラーが発生しました",
-            SpeechRecognitionStatus.IdleStopped to "しばらく発話がなかったため停止しました",
         ).forEach { (expectedStatus, text) ->
             status.value = expectedStatus
             rule.onNodeWithText(text).assertExists()

@@ -29,8 +29,10 @@ import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
+import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -92,6 +94,8 @@ class SpeechRecognitionSectionTest {
                 observeSpeechRecognition = ObserveSpeechRecognitionUseCase(speechRepository),
                 checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(permissionRepository),
                 requestManualReadoutItem = RequestManualReadoutItemUseCase(itemRequestRepository),
+                setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(FakeSpeechRecognitionModeRepository()),
+                observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
                 audioInputDeviceSelector = deviceSelector,
             )
     }
@@ -119,7 +123,7 @@ class SpeechRecognitionSectionTest {
         rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").performClick()
         rule.runOnIdle { events.tryEmit(SpeechRecognitionEvent.Listening) }
 
-        rule.onNodeWithText("聞き取り中(マイクを使用中)").assertExists()
+        rule.onNodeWithText("「ドライバー」の呼びかけを待っています(マイクを使用中)").assertExists()
         assertEquals(0, requestCount)
     }
 

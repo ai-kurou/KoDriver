@@ -67,6 +67,8 @@
 | 自動・キュー無効・再生中が手動（`currentIsManual`） | `speak` も `stop` も呼ばない | `SKIPPED` |
 
 自動イベントでキュー再生が有効な場合は、再生中が手動でも従来どおりキューへ追加します。`NarratorEngine.currentIsManual` は、
+
+再生中または再生待ちのイベントがあるかが変わったときは、コンストラクタの `onPlaybackActiveChanged` が変わった後の値で呼ばれます（キューで次のイベントへ引き継ぐ間は再生中のままで、通知を繰り返しません）。各 narrator はこれを `ReportSpeechPlaybackActiveUseCase` へ渡し、音声認識が読み上げ中に聞き取りを止めるために使います。
 `speak(event, queue, isManual = true)` で手動として渡したイベント、またはコンストラクタの `isManualEvent` で手動と判定したイベントの再生中だけ `true` を返します（`currentKey` と同様に停止後は `false`）。LMU・GT7・ACE の各 narrator は `TextToSpeechEngine.speak(event, queue, isManual)` / `currentIsManual` を通じて手動読み上げをこの分岐に渡します。`speak(queue = false)` で割り込んだ直後は、前の再生の停止待ちの間も新しいイベントの `currentKey` / `currentIsManual` を返すため、待機中の手動読み上げが後続のイベントにキャンセルされません。
 
 **戻り値の `Boolean` だけでは4経路を区別できません**（経路1・3・4がいずれも `true` になります）。テレメトリログへ

@@ -13,14 +13,17 @@ AppScreen の UI 状態の合成は `AppScreenFlow` が cold Flow として担�
 ![Module Graph](../../docs/graphs/feature-main.svg)
 <!-- MODULE-GRAPH-END -->
 
-## 音声認識（常時聞き取り）
+## 音声認識（ウェイクワード方式）
 
-`SpeechRecognitionViewModel` が `ObserveSpeechRecognitionUseCase` の常時聞き取りを開始・停止し、状態（停止中・準備中・聞き取り中・マイクの権限が許可されていません・この端末では音声認識を利用できません・しばらく発話がなかったため停止しました）、認識途中の文字列、確定結果の履歴（新しい順に最大5件）、入力音量（`level`、0.0〜1.0。Android は認識エンジンの通知、デスクトップは取得した音声の断片ごとの音量。届いた間だけカードにゲージを表示し、停止・失敗で消す。無発話の自動停止の数え直しには使わない）、入力デバイスの一覧と選択中のデバイス名（デスクトップのみ。後述）を `SpeechRecognitionUiState` で保持します。アプリ全体で1つの ViewModel を共有するため、タブを切り替えても聞き取りは止まりません。
+`SpeechRecognitionViewModel` が `ObserveSpeechRecognitionUseCase` の聞き取りを開始・停止し、状態（停止中・準備中・ウェイクワード待ち・コマンド待ち・マイクの権限が許可されていません・この端末では音声認識を利用できません）、認識途中の文字列、確定結果の履歴（新しい順に最大5件）、入力音量（`level`、0.0〜1.0。Android は認識エンジンの通知、デスクトップは取得した音声の断片ごとの音量。届いた間だけカードにゲージを表示し、停止・失敗で消す。）、入力デバイスの一覧と選択中のデバイス名（デスクトップのみ。後述）を `SpeechRecognitionUiState` で保持します。アプリ全体で1つの ViewModel を共有するため、タブを切り替えても聞き取りは止まりません。
 
 - `rememberSpeechRecognitionSection()`: `AppScreen` から一度だけ呼ぶ。マイクの権限の要求（`rememberRecordAudioPermissionRequester`、Android のみ実行時ダイアログ）、アプリが見えなくなったとき（ON_STOP）の停止、前面に戻ったとき（ON_START）の再開を担い、デバッグ状態画面（`DebugStateDetailPane`）のグリッド先頭に差し込むカード（`SpeechRecognitionCard`）を返す。カードは `isSpeechRecognitionSupportedOnPlatform()` が true のプラットフォーム（Android とデスクトップ）で返し、false なら何も出さない。カードを出すときに入力デバイスの一覧も取得する（デスクトップのみ）。
-- 見えなくなる前に聞き取り中だった場合だけ、前面に戻ったときに再開する（権限が外されていれば再開しない）。スイッチを OFF にした場合や失敗・無発話の自動停止の後は再開しない。ON/OFF の状態はメモリ上にのみ持つため、アプリのプロセスが終了すると OFF に戻る。
-- 認識途中の文字列も確定結果も届かないまま5分経つと自動で止める（暫定値）。
-- 確定結果（`Recognized`）の候補を `matchLmuWindowsManualReadoutItemKey`（`:core:lmu-windows-domain`）・`matchGt7Ps5ManualReadoutItemKey`（`:core:gt7-ps5-domain`）・`matchAceWindowsManualReadoutItemKey`（`:core:ace-windows-domain`）で手動読み上げ項目の語句と照合し、一致したシミュレーター宛ての `ManualReadoutItemRequest` を `RequestManualReadoutItemUseCase` で発行する（照合規則は `:core:domain` の `matchManualReadoutItemKey`）。該当シミュレーターの Narrator が受け取り、保存済みセットの編集文言を使わず既定文言で1項目だけ読み上げる。選択中のシミュレーターでなければ Narrator 側が無視する。ウェイクワードは持たないため、常時聞き取り中の会話にも反応する。
+- 見えなくなる前に聞き取り中だった場合だけ、前面に戻ったときに再開する（権限が外されていれば再開しない）。スイッチを OFF にした場合や失敗の後は再開しない。ON/OFF の状態はメモリ上にのみ持つため、アプリのプロセスが終了すると OFF に戻る。
+- 発話がなくても自動では止めない（ウェイクワード待ちは発話がなくて当然のため。旧仕様の5分アイドル停止は廃止した）。
+- ウェイクワード方式は必須で、ユーザーが無効にする設定はない。聞き取りはウェイクワード待ち（語彙をウェイクワードに絞る）から始まり、ウェイクワード（`SPEECH_RECOGNITION_WAKE_WORDS`。「ドライバー」「このドライバー」とそのひらがな表記）が途中経過または確定結果に含まれたらコマンド待ちに移り、`SetSpeechRecognitionModeUseCase` でモードを `Command`（語彙を絞らない）に切り替える。コマンド待ちは `SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS`（6秒）で時間切れになり、ウェイクワード待ちへ戻る。語句が一致して依頼を出したときも戻る。語句に一致しない確定結果ではコマンド待ちを続ける。
+- コマンド待ちの間だけ、確定結果（`Recognized`）の候補を `matchLmuWindowsManualReadoutItemKey`（`:core:lmu-windows-domain`）・`matchGt7Ps5ManualReadoutItemKey`（`:core:gt7-ps5-domain`）・`matchAceWindowsManualReadoutItemKey`（`:core:ace-windows-domain`）で手動読み上げ項目の語句と照合し、一致したシミュレーター宛ての `ManualReadoutItemRequest` を `RequestManualReadoutItemUseCase` で発行する（照合規則は `:core:domain` の `matchManualReadoutItemKey`）。該当シミュレーターの Narrator が受け取り、保存済みセットの編集文言を使わず既定文言で1項目だけ読み上げる。選択中のシミュレーターでなければ Narrator 側が無視する。
+- 読み上げ中は `ObserveSpeechPlaybackActiveUseCase`（各 Narrator の `NarratorEngine` が `ReportSpeechPlaybackActiveUseCase` で再生中・再生待ちを通知し、`:core:data` の `InMemorySpeechPlaybackStateRepository` がシミュレーター横断で束ねる）を購読し、再生が始まったら `Paused` に切り替えてコマンド待ちも打ち切る。自分の読み上げをマイクが拾ってウェイクワードに反応しないための措置。再生が終わってから `SPEECH_RECOGNITION_RESUME_DELAY_MS`（500ms。残響よけ）待ってウェイクワード待ちへ戻り、待つ間に次の再生が始まれば待ちを取り消す。
+- 確認音とコマンド待ちのUI表示の作り込みは別PR（Issue #2986 のPR2）で行う。現状は状態のラベル表示だけ。
 - 音声認識由来の依頼は `playStartSound = false` で発行し、Narrator は開始音を鳴らさずに本文だけを読み上げる（`TextToSpeechEngine.speak` の `playStartSound`）。自動タブの開始音スイッチには関係なく、音声認識では常に開始音を鳴らさない。ボタン・ホットキー・保存済みセットからの手動読み上げと自動読み上げは従来どおり。
 
 ## 入力デバイスの選択（デスクトップ）

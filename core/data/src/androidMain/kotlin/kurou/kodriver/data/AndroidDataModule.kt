@@ -11,6 +11,7 @@ import kurou.kodriver.data.hotkey.UnsupportedHotkeyRepository
 import kurou.kodriver.data.hotkey.UnsupportedManualReadoutHotkeyRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemRequestRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
+import kurou.kodriver.data.manualreadout.InMemorySpeechPlaybackStateRepository
 import kurou.kodriver.data.preferences.AndroidAutoReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.AndroidHapticFeedbackEnabledRepository
@@ -78,6 +79,7 @@ import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
@@ -127,6 +129,7 @@ fun androidDataModule(context: Context) =
         }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<ManualReadoutItemRequestRepository> { InMemoryManualReadoutItemRequestRepository() }
+        single<SpeechPlaybackStateRepository> { InMemorySpeechPlaybackStateRepository() }
         single<Context> { context }
 
         // 設定永続化（DataStore。ファイルは context.filesDir 配下）

@@ -11,8 +11,11 @@ internal enum class SpeechRecognitionStatus {
     /** 聞き取りを開始し、認識の準備が整うのを待っている。 */
     Starting,
 
-    /** 発話を待っている。 */
+    /** ウェイクワードを待っている。 */
     Listening,
+
+    /** ウェイクワードを検出し、読み上げ項目のコマンドを待っている。時間切れでウェイクワード待ちへ戻る。 */
+    CommandWaiting,
 
     /** マイクの権限が許可されず、聞き取りを開始できない。 */
     PermissionDenied,
@@ -28,9 +31,6 @@ internal enum class SpeechRecognitionStatus {
 
     /** 認識中に想定外のエラーが起きた。 */
     RecognitionFailed,
-
-    /** しばらく発話がなかったため、聞き取りを自動で止めた。 */
-    IdleStopped,
 }
 
 /** 音声認識の確認用カードの表示状態。 */
