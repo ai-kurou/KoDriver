@@ -54,7 +54,7 @@ class ManualReadoutPreviewTest {
     fun `ACEタイヤ温度をサンプル温度に置換する`() {
         val key = AceWindowsReadoutItemKey.TyreTemperature.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.AceWindows.id, selectedItemKeys = listOf(key))
-        assertEquals("タイヤ温度90℃", manualReadoutPreview(state))
+        assertEquals("タイヤ温度は90℃", manualReadoutPreview(state))
         assertEquals("温度90 {other}", manualReadoutPreview(state.copy(itemTexts = mapOf(key to "温度{celsius} {other}"))))
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
     }
@@ -206,7 +206,7 @@ class ManualReadoutPreviewTest {
     fun `ACEの燃料残量の既定文言と編集文言はサンプル値に置換する`() {
         val key = AceWindowsReadoutItemKey.RemainingFuel.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.AceWindows.id, selectedItemKeys = listOf(key))
-        assertEquals("燃料は残り50パーセント", manualReadoutPreview(state))
+        assertEquals("燃料は残り50%", manualReadoutPreview(state))
         assertEquals(
             "残り50% {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "残り{percent}% {unknown}"))),

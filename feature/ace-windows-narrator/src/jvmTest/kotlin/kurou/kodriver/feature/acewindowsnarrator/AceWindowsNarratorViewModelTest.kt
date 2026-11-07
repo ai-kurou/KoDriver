@@ -462,7 +462,7 @@ class AceWindowsNarratorViewModelTest {
     @Test
     fun `手動燃料は受信から5秒以内なら現在値を読み上げる`() =
         runTest(testDispatcher) {
-            assertManualReadout(hotkey = false, fuelAgeMs = 5_000L, expectedText = "燃料は残り43パーセント")
+            assertManualReadout(hotkey = false, fuelAgeMs = 5_000L, expectedText = "燃料は残り43%")
         }
 
     @Test
@@ -572,7 +572,7 @@ class AceWindowsNarratorViewModelTest {
         runTest(testDispatcher) {
             assertManualReadout(
                 hotkey = false,
-                expectedText = "タイヤ温度85℃",
+                expectedText = "タイヤ温度は85℃",
                 valueAgeMs = 5_000L,
                 switchSimulator = false,
                 itemKeys = listOf(AceWindowsReadoutItemKey.TyreTemperature.Root.value),
@@ -892,8 +892,8 @@ class AceWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"),
-                    AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"),
+                    AceWindowsRemainingFuelWarning(20, "燃料は残り20%"),
+                    AceWindowsRemainingFuelWarning(20, "燃料は残り20%"),
                 ),
                 spokenTexts,
             )
@@ -912,7 +912,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     AceWindowsReadoutItemKey.RemainingFuel.Root,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.QUEUED,
                     NarrationSource.AUTO,
                     match { it.isNotEmpty() },
@@ -928,7 +928,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     AceWindowsReadoutItemKey.RemainingFuel.Root,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.QUEUED,
                     NarrationSource.AUTO,
                     capture(telemetryJsonSlot),
@@ -1124,7 +1124,7 @@ class AceWindowsNarratorViewModelTest {
                 0L,
                 Simulator.AceWindows,
                 AceWindowsReadoutItemKey.RemainingFuel.Root,
-                "燃料は残り20パーセント",
+                "燃料は残り20%",
                 NarrationOutcome.SPOKEN,
                 NarrationSource.AUTO,
                 "{}",
@@ -1173,9 +1173,9 @@ class AceWindowsNarratorViewModelTest {
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
             verify(exactly = 0) {
-                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false)
+                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false)
                 ttsEngine.speak(AceWindowsWhiteFlag("ホワイトフラッグ"), false)
-                ttsEngine.speak(AceWindowsTyreOverheat(95, "タイヤ過熱 95度"), false)
+                ttsEngine.speak(AceWindowsTyreOverheat(95, "タイヤ過熱95℃"), false)
                 ttsEngine.speak(AceWindowsVehicleApproach("車両接近"), false)
                 ttsEngine.speak(AceWindowsMyBestLap(89_000, "自己ベストラップ更新 1分29秒000"), false)
                 ttsEngine.speak(AceWindowsRemainingFuelLapsWarning(2, "燃料は残り約2周"), false)
@@ -1381,7 +1381,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     AceWindowsReadoutItemKey.TyreTemperature.Root,
-                    "タイヤ過熱 95度",
+                    "タイヤ過熱95℃",
                     NarrationOutcome.QUEUED,
                     NarrationSource.AUTO,
                     match { it.isNotEmpty() },
@@ -1402,7 +1402,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     AceWindowsReadoutItemKey.TyreTemperature.Root,
-                    "タイヤ過熱 95度",
+                    "タイヤ過熱95℃",
                     NarrationOutcome.QUEUED,
                     NarrationSource.AUTO,
                     capture(telemetryJsonSlot),

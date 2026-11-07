@@ -141,7 +141,7 @@ class ManualReadoutSetDetailPaneItemAddTest {
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
         rule.onNodeWithText("タイヤ温度").performScrollTo().performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤ温度90℃")
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("タイヤ温度は90℃")
     }
 
     @Test

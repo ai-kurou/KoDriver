@@ -35,7 +35,7 @@ class AceWindowsSpeechEventTest {
 
         assertEquals(90, event.celsius)
 
-        assertEquals("タイヤ温度90℃", event.narratedText)
+        assertEquals("タイヤ温度は90℃", event.narratedText)
 
         assertEquals("温度90", event.withResolvedText("温度90").narratedText)
 
@@ -71,7 +71,7 @@ class AceWindowsSpeechEventTest {
 
         assertEquals(AceWindowsReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)
 
-        assertEquals("燃料は残り42パーセント", event.narratedText)
+        assertEquals("燃料は残り42%", event.narratedText)
 
         val resolved = event.withResolvedText("残り42%")
 
@@ -173,9 +173,9 @@ class AceWindowsSpeechEventTest {
 
     @Test
     fun `AceWindowsRemainingFuelLapsWarningはlapsが0以下のとき燃料切れの文言を返す`() {
-        assertEquals("燃料残り1周未満", AceWindowsRemainingFuelLapsWarning(laps = 0).narratedText)
+        assertEquals("燃料は残り1周未満", AceWindowsRemainingFuelLapsWarning(laps = 0).narratedText)
 
-        assertEquals("燃料残り1周未満", AceWindowsRemainingFuelLapsWarning(laps = -1).narratedText)
+        assertEquals("燃料は残り1周未満", AceWindowsRemainingFuelLapsWarning(laps = -1).narratedText)
     }
 
     @Test
@@ -188,7 +188,7 @@ class AceWindowsSpeechEventTest {
 
     @Test
     fun `ACEフラッグ系のnarratedTextは画面と同じ既定文言を返す`() {
-        assertEquals("燃料は残り20パーセント", AceWindowsRemainingFuelWarning(20).narratedText)
+        assertEquals("燃料は残り20%", AceWindowsRemainingFuelWarning(20).narratedText)
 
         assertEquals("ホワイトフラッグ", AceWindowsWhiteFlag().narratedText)
 
@@ -241,7 +241,7 @@ class AceWindowsSpeechEventTest {
 
     @Test
     fun `ACEタイヤと車両接近は既定文言を返す`() {
-        assertEquals("タイヤ過熱 110度", AceWindowsTyreOverheat(110).narratedText)
+        assertEquals("タイヤ過熱110℃", AceWindowsTyreOverheat(110).narratedText)
 
         assertEquals(
             ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT,
@@ -268,14 +268,14 @@ class AceWindowsSpeechEventTest {
 
         assertEquals("過熱注意", resolved.resolvedText)
 
-        assertEquals("タイヤ過熱 111度", resolved.narratedText)
+        assertEquals("タイヤ過熱111℃", resolved.narratedText)
     }
 
     @Test
     fun `ACE燃料残量イベントは既定文言とRootキーと解決済み本文を保持する`() {
         val event = AceWindowsRemainingFuelWarning(30)
 
-        assertEquals("燃料は残り30パーセント", event.narratedText)
+        assertEquals("燃料は残り30%", event.narratedText)
 
         assertEquals(AceWindowsReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)
 

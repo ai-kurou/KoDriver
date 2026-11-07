@@ -189,13 +189,13 @@ class AceWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val key = AceWindowsReadoutItemKey.RemainingFuel.Root
-            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false) } just Runs
+            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     capture(telemetryJsons),
@@ -215,14 +215,14 @@ class AceWindowsNarratorEventProcessorTest {
             assertEquals(true, telemetryJsons.single().contains("\"previousFuel\":null"))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) {
-                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false)
+                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false)
             }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     telemetryJsons.single(),
@@ -238,13 +238,13 @@ class AceWindowsNarratorEventProcessorTest {
             every { ttsEngine.currentReadoutItemKey } returns null
             val processor = createProcessor()
             val key = AceWindowsReadoutItemKey.RemainingFuel.Root
-            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false) } just Runs
+            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     capture(telemetryJsons),
@@ -267,14 +267,14 @@ class AceWindowsNarratorEventProcessorTest {
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":200"""))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) {
-                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false)
+                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false)
             }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     telemetryJsons.single(),
@@ -295,7 +295,7 @@ class AceWindowsNarratorEventProcessorTest {
                     0L,
                     Simulator.AceWindows,
                     currentKey,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SKIPPED,
                     NarrationSource.AUTO,
                     capture(json),
@@ -319,7 +319,7 @@ class AceWindowsNarratorEventProcessorTest {
                     0L,
                     Simulator.AceWindows,
                     currentKey,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SKIPPED,
                     NarrationSource.AUTO,
                     json.captured,
@@ -383,13 +383,13 @@ class AceWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
             every { ttsEngine.stop() } just Runs
-            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false) } just Runs
+            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.INTERRUPTED,
                     NarrationSource.AUTO,
                     capture(telemetryJsons),
@@ -408,7 +408,7 @@ class AceWindowsNarratorEventProcessorTest {
 
             verify(exactly = 1) { ttsEngine.stop() }
             verify(exactly = 1) {
-                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false)
+                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false)
             }
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             coVerify(exactly = 1) {
@@ -416,7 +416,7 @@ class AceWindowsNarratorEventProcessorTest {
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.INTERRUPTED,
                     NarrationSource.AUTO,
                     telemetryJsons.single(),
@@ -431,13 +431,13 @@ class AceWindowsNarratorEventProcessorTest {
             val json = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val key = AceWindowsReadoutItemKey.RemainingFuel.Root
-            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false) } just Runs
+            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     capture(json),
@@ -455,7 +455,7 @@ class AceWindowsNarratorEventProcessorTest {
 
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) {
-                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false)
+                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false)
             }
             coVerify(
                 exactly = 1,
@@ -464,7 +464,7 @@ class AceWindowsNarratorEventProcessorTest {
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     json.captured,
@@ -479,13 +479,13 @@ class AceWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val key = AceWindowsReadoutItemKey.RemainingFuel.Root
-            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false) } just Runs
+            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     capture(telemetryJsons),
@@ -504,14 +504,14 @@ class AceWindowsNarratorEventProcessorTest {
             assertEquals(true, telemetryJsons.single().contains(""""fuel":{"remainingPercent":NaN}"""))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) {
-                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false)
+                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false)
             }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     telemetryJsons.single(),
@@ -526,13 +526,13 @@ class AceWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val key = AceWindowsReadoutItemKey.RemainingFuel.Root
-            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false) } just Runs
+            every { ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     capture(telemetryJsons),
@@ -560,14 +560,14 @@ class AceWindowsNarratorEventProcessorTest {
             assertEquals(true, telemetryJsons.single().contains(""""previousFuel":{"remainingPercent":20.0}"""))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) {
-                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false)
+                ttsEngine.speak(AceWindowsRemainingFuelWarning(20, "燃料は残り20%"), false)
             }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.AceWindows,
                     key,
-                    "燃料は残り20パーセント",
+                    "燃料は残り20%",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     telemetryJsons.single(),
@@ -952,13 +952,13 @@ class AceWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val key = AceWindowsReadoutItemKey.TyreTemperature.Root
-            every { ttsEngine.speak(AceWindowsTyreOverheat(110, "タイヤ過熱 110度"), false) } just Runs
+            every { ttsEngine.speak(AceWindowsTyreOverheat(110, "タイヤ過熱110℃"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "タイヤ過熱 110度",
+                    "タイヤ過熱110℃",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     capture(telemetryJsons),
@@ -980,13 +980,13 @@ class AceWindowsNarratorEventProcessorTest {
                 telemetryJsons.single().contains(""""tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":110.0}}"""),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(AceWindowsTyreOverheat(110, "タイヤ過熱 110度"), false) }
+            verify(exactly = 1) { ttsEngine.speak(AceWindowsTyreOverheat(110, "タイヤ過熱110℃"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "タイヤ過熱 110度",
+                    "タイヤ過熱110℃",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     telemetryJsons.single(),
@@ -1002,13 +1002,13 @@ class AceWindowsNarratorEventProcessorTest {
             every { ttsEngine.currentReadoutItemKey } returns null
             val processor = createProcessor()
             val key = AceWindowsReadoutItemKey.TyreTemperature.Root
-            every { ttsEngine.speak(AceWindowsTyreOverheat(110, "タイヤ過熱 110度"), false) } just Runs
+            every { ttsEngine.speak(AceWindowsTyreOverheat(110, "タイヤ過熱110℃"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.AceWindows,
                     key,
-                    "タイヤ過熱 110度",
+                    "タイヤ過熱110℃",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     capture(telemetryJsons),
@@ -1042,13 +1042,13 @@ class AceWindowsNarratorEventProcessorTest {
                 telemetryJsons.single().contains(""""tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":110.0}}"""),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(AceWindowsTyreOverheat(110, "タイヤ過熱 110度"), false) }
+            verify(exactly = 1) { ttsEngine.speak(AceWindowsTyreOverheat(110, "タイヤ過熱110℃"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.AceWindows,
                     key,
-                    "タイヤ過熱 110度",
+                    "タイヤ過熱110℃",
                     NarrationOutcome.SPOKEN,
                     NarrationSource.AUTO,
                     telemetryJsons.single(),

@@ -196,7 +196,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 `currentRemainingFuelPercent(data)` は `AceWindowsFuelData.remainingPercent`（0〜100）を四捨五入した整数％を返す。
 未受信・受信から5秒超・非有限・0未満・100超は null とし、シミュレーター切替時は最新値と受信時刻をクリアする。
 鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` を保存順に最大3件処理し、
-手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}パーセント」）か
+手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」）か
 セットの編集文言を `formatAceWindowsRemainingFuelReadoutText` で置換する。
 空白文言を除外して「、」で連結し、`AceWindowsManualReadoutText` の1イベントにまとめる。
 値が null の項目は「燃料残量はデータがありません」を読む（全項目がデータ無しでも同じ）。
@@ -205,7 +205,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 自動読み上げのスイッチ・閾値・`remainingFuelWarned` 等の判定状態は変更せず、
 開始音・ログ・常時キュー末尾追加には既存の `RemainingFuel.Root` を使う。
 `manualReadoutItemKeys(Simulator.AceWindows.id)` は続けて既存の `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`）を返し、手動の「燃料残り周回数」を選択できる。
-`currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・負値・1,000周超は null（データなし）とする。ちょうど0と1周未満の正数は整数部へ切り捨てて0周を返し、手動読み上げは固定文言「燃料残り1周未満」を読む。
+`currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・負値・1,000周超は null（データなし）とする。ちょうど0と1周未満の正数は整数部へ切り捨てて0周を返し、手動読み上げは固定文言「燃料は残り1周未満」を読む。
 手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）を `formatAceWindowsRemainingFuelLapsReadoutText` で置換し、値が null の項目は「燃料残り周回数はデータがありません」を読む。
 `AceWindowsReadoutItemKey.MyBestLap.Root` も手動項目に含め、最新の `AceWindowsBestLapTimeData.bestLapTimeMs` を、正値の場合に（Android ではサーバーが値の変化時しか送らないため鮮度判定はしない） `formatAceWindowsMyBestLapReadoutText` で整形する。既定文言は `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」）。
 
@@ -219,7 +219,7 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `currentMaxTyreTemperatureCelsius` で `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい
 最高値を四捨五入した整数℃を取得する。未受信・受信から5秒超・有効な温度なし・ACE以外への切り替え後は
 「タイヤ温度はデータがありません」を読む。既定文言は `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`
-（「タイヤ温度{celsius}℃」）。既存の `formatAceWindowsTyreTemperatureReadoutText` と
+（「タイヤ温度は{celsius}℃」）。既存の `formatAceWindowsTyreTemperatureReadoutText` と
 `findUnknownAceWindowsTyreTemperatureReadoutPlaceholders` を使い、詳細画面ではタイヤカテゴリ、プレビューは90℃。
 `AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
@@ -245,7 +245,7 @@ VEクラス・無効設定でも燃料消費の追跡と評価周の更新を続
 `pitTimingJob` が `exactPercent / 100.0` を一度だけ追跡し、手動の燃料残り周回数と `fuelLapsTrackingState` を共有する。
 VE・タイヤ・燃料の候補の最小周回数を選び、共通の `PitTimingLapGate` を通った候補だけ読み上げ履歴へ記録する。
 給油周を消費量の推定から除外し、給油で警告履歴を再武装、周回巻き戻りで追跡・評価履歴を初期化する。
-通常の既定文言は「燃料は残り約{laps}周」、0周以下は「燃料残り1周未満」。保存文言の解決・開始音・優先度・キュー・ログは
+通常の既定文言は「燃料は残り約{laps}周」、0周以下は「燃料は残り1周未満」。保存文言の解決・開始音・優先度・キュー・ログは
 既存の `PitTiming.Root` の流儀を使い、ログに燃料スナップショットと判定状態を含める。
 
 ## 手動読み上げの対応シミュレーター

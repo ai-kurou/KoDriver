@@ -76,7 +76,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val state = AceWindowsNarratorState(tyreOverheating = true)
         listOf(
             AceWindowsManualReadoutItem(key, "温度{celsius}℃ {other}", ManualReadoutValue.Celsius(90)) to "温度90℃ {other}",
-            AceWindowsManualReadoutItem(key, "タイヤ温度{celsius}℃", null) to "タイヤ温度はデータがありません",
+            AceWindowsManualReadoutItem(key, "タイヤ温度は{celsius}℃", null) to "タイヤ温度はデータがありません",
             AceWindowsManualReadoutItem(key, "", null) to "",
             AceWindowsManualReadoutItem(key, "", ManualReadoutValue.Celsius(90)) to "",
         ).forEach { (item, expected) ->
@@ -171,7 +171,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             listOf(
                 listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", ManualReadoutValue.RemainingLaps(5))) to "約5周",
                 listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", ManualReadoutValue.RemainingLaps(0))) to
-                    "燃料残り1周未満",
+                    "燃料は残り1周未満",
                 listOf(AceWindowsManualReadoutItem(lapsKey, "", ManualReadoutValue.RemainingLaps(0))) to "",
                 listOf(AceWindowsManualReadoutItem(lapsKey, "約{laps}周", null)) to "燃料残り周回数はデータがありません",
                 listOf(AceWindowsManualReadoutItem(lapsKey, "", ManualReadoutValue.RemainingLaps(5))) to "",
