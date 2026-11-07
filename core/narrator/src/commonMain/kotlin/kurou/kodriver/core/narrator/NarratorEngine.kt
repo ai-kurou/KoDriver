@@ -50,6 +50,8 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     private val customSpeak: suspend (EVENT, Int) -> Unit,
     /** [customSpeak] で本文を読み上げるイベントの判定。false のイベントは再生対象外。 */
     private val isCustomSpeakEvent: (EVENT) -> Boolean = { false },
+    /** 手動読み上げ由来のイベントかの判定。再生中のイベントが手動かを [currentIsManual] で参照するために使う。 */
+    private val isManualEvent: (EVENT) -> Boolean = { false },
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) {
     @Volatile
@@ -82,6 +84,13 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     // キャンセル後に古いジョブが _currentKey を上書きしないよう playJob で二重確認する。
     val currentKey: KEY?
         get() = _currentKey.takeIf { playJob?.isActive == true }
+
+    @Volatile
+    private var _currentIsManual: Boolean = false
+
+    // currentKey と同様に、再生中のイベントが手動読み上げ由来かを返す。再生中でなければ false。
+    val currentIsManual: Boolean
+        get() = _currentIsManual && playJob?.isActive == true
 
     private fun newPlaybackScope(): CoroutineScope = CoroutineScope(scope.coroutineContext + SupervisorJob())
 
@@ -125,6 +134,11 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
             return
         }
         val barrier = cancelPlayback()
+        // 前の再生の停止待ち（barrier）の間も、この新しいイベントを再生中として公開する。
+        // 公開しないと play() に入るまで currentKey が null になり、続けて届いた自動・手動の
+        // イベントが「再生中なし」と判定されて、待機中のこのイベントをキャンセルしてしまう。
+        _currentKey = eventToKey(event)
+        _currentIsManual = isManualEvent(event)
         playbackScope = newPlaybackScope()
         playJob =
             playbackScope.launch {
@@ -148,6 +162,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     ) {
         val key = eventToKey(event)
         _currentKey = key
+        _currentIsManual = isManualEvent(event)
         val vol = currentVolume
         val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
         if (startSoundEnabled) {
@@ -155,6 +170,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         }
         body(vol)
         _currentKey = null
+        _currentIsManual = false
     }
 
     fun stop() {
@@ -177,6 +193,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         // キャンセルされた play() は _currentKey のクリアまで進まないため、停止待ちで新しいジョブが
         // active になった間に古いキーが currentKey として見えないようここで消す。
         _currentKey = null
+        _currentIsManual = false
         val previous = stopBarrier
         stopBarrier =
             scope.launch {

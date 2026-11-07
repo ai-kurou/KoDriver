@@ -17,6 +17,10 @@ package kurou.kodriver.core.narrator
  *    `speak(queue = false)` で割り込み再生する。
  * 4. キュー再生が無効で、再生中のイベントがない: [stop] を呼ばず `speak(queue = false)` でそのまま読み上げる。
  *
+ * 手動読み上げ（[isManual] が true）と、手動の再生中に来た自動イベント（[currentIsManual] が true）は
+ * 上の4経路とは別に扱う。手動は優先度判定をせず、再生中が自動なら割り込み、手動ならキュー末尾へ追加する。
+ * 自動イベントは、キュー再生が無効で再生中が手動の場合に読み上げない。どちらも既定値（false）では従来の挙動のまま。
+ *
  * [autoReadoutOrder] に含まれないキーは最も優先度が低いものとして扱う。
  * [currentKey] はキュー再生が有効な場合には呼び出し不要なため、遅延評価できるよう関数で受け取る。
  *
@@ -27,6 +31,7 @@ package kurou.kodriver.core.narrator
  * @return 読み上げ（キュー追加・通常再生・割り込み再生のいずれか）を実行した場合 true、
  *   優先度に負けて読み上げなかった場合（経路2）は false
  */
+@Suppress("LongParameterList")
 fun <KEY> speakWithPriority(
     eventKey: KEY,
     currentKey: () -> KEY?,
@@ -34,19 +39,53 @@ fun <KEY> speakWithPriority(
     queueEnabled: Boolean,
     speak: (queue: Boolean) -> Unit,
     stop: () -> Unit,
+    isManual: Boolean = false,
+    currentIsManual: () -> Boolean = { false },
 ): Boolean {
+    if (isManual) return speakManual(currentKey, currentIsManual, speak, stop)
     if (queueEnabled) {
         speak(true)
         return true
     }
     val current = currentKey()
     if (current != null) {
+        if (currentIsManual()) return false
         val currentIndex = autoReadoutOrder.indexOf(current).takeIf { it != -1 } ?: Int.MAX_VALUE
         val newIndex = autoReadoutOrder.indexOf(eventKey).takeIf { it != -1 } ?: Int.MAX_VALUE
         if (newIndex >= currentIndex) return false
         stop()
     }
     speak(false)
+    return true
+}
+
+/**
+ * 手動読み上げ用の分岐。優先度判定をせず、再生中のイベントによって次のように動く。
+ *
+ * - 再生中が自動: [stop] で止めてから `speak(queue = false)` で割り込み再生する。
+ * - 再生中が手動: `speak(queue = true)` で末尾へ追加する。
+ * - 再生中なし: [stop] を呼ばず `speak(queue = false)` でそのまま読み上げる。
+ */
+private fun <KEY> speakManual(
+    currentKey: () -> KEY?,
+    currentIsManual: () -> Boolean,
+    speak: (queue: Boolean) -> Unit,
+    stop: () -> Unit,
+): Boolean {
+    when {
+        currentKey() == null -> {
+            speak(false)
+        }
+
+        currentIsManual() -> {
+            speak(true)
+        }
+
+        else -> {
+            stop()
+            speak(false)
+        }
+    }
     return true
 }
 
@@ -67,6 +106,7 @@ data class SpeakOutcomes<OUTCOME>(
  * 経路4（再生中のイベントなし）では [stop] が呼ばれないため、通常再生として扱う。
  * 経路3と取り違えると通常の読み上げが「割り込み再生」として記録される（PR #1626）。
  */
+@Suppress("LongParameterList")
 fun <KEY, OUTCOME> speakWithOutcome(
     eventKey: KEY,
     currentKey: () -> KEY?,
@@ -75,6 +115,8 @@ fun <KEY, OUTCOME> speakWithOutcome(
     speak: (queue: Boolean) -> Unit,
     stop: () -> Unit,
     outcomes: SpeakOutcomes<OUTCOME>,
+    isManual: Boolean = false,
+    currentIsManual: () -> Boolean = { false },
 ): OUTCOME {
     var wasQueued: Boolean? = null
     var didStop = false
@@ -92,6 +134,8 @@ fun <KEY, OUTCOME> speakWithOutcome(
                 didStop = true
                 stop()
             },
+            isManual = isManual,
+            currentIsManual = currentIsManual,
         )
     return when {
         !didSpeak -> outcomes.skipped
