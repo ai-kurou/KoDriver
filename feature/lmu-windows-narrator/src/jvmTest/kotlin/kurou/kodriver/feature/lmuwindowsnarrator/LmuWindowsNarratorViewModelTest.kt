@@ -1198,6 +1198,9 @@ class LmuWindowsNarratorViewModelTest {
                 listOf(lmuWindowsManualReadoutItemTextDefault(key.value).replace("{laptime}", "1分23秒456")),
                 spoken.map { it.narratedText },
             )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(spoken.single(), false, true, false) }
+            confirmVerified(ttsEngine)
         }
 
     @Test

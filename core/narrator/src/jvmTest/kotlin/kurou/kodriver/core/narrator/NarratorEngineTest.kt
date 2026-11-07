@@ -55,6 +55,30 @@ class NarratorEngineTest {
         }
 
     @Test
+    fun `playStartSoundの指定は呼び出しごとに適用され後続や待機中のspeakへ持ち越さない`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT, playStartSound = false)
+            runCurrent()
+            engine.speak(RED_FLAG)
+            runCurrent()
+            engine.speak(LEFT_APPROACH, queue = true, playStartSound = false)
+            engine.speak(CAR_LEFT, queue = true)
+            runCurrent()
+
+            assertEquals(6, player.playedSounds.size)
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[0])
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[1])
+            assertContentEquals(RED_FLAG_SOUND, player.playedSounds[2])
+            assertContentEquals(LEFT_APPROACH_SOUND, player.playedSounds[3])
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[4])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[5])
+        }
+
+    @Test
     fun `soundPlayer isPlaying が true でも実行中のジョブがなければ音声を再生する`() =
         runTest {
             val player = FakeSoundPlayer(isPlaying = true)
