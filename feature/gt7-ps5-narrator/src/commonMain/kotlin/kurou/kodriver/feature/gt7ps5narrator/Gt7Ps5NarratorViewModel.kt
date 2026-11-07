@@ -377,8 +377,6 @@ internal class Gt7Ps5NarratorViewModel(
         val decision = determineGt7Ps5NarratorReadout.determineManualReadout(state, items)
         eventProcessor.processManualReadout(
             events = decision.events,
-            autoReadoutOrder = autoReadoutOrder.value,
-            queueEnabledStates = queueEnabledStates.value + (decision.events.first().readoutItemKey to true),
             observedAtMs = observedAtMs,
             logContext = Gt7Ps5TelemetryLogContext(state, settings, decision.state),
         )

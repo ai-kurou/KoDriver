@@ -69,8 +69,6 @@ internal class Gt7Ps5NarratorEventProcessor(
     /** セット内の編集文言と現在値は判定時に解決済み。キューとログへ同じ本文を渡す。 */
     suspend fun processManualReadout(
         events: List<ReadoutTextEvent>,
-        autoReadoutOrder: List<ReadoutItemKey>,
-        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: Gt7Ps5TelemetryLogContext,
     ) {
@@ -80,7 +78,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    speakWithPriority(event.withResolvedText(text), autoReadoutOrder, queueEnabledStates)
+                    speakWithPriority(event.withResolvedText(text), emptyList(), emptyMap(), isManual = true)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -145,13 +143,14 @@ internal class Gt7Ps5NarratorEventProcessor(
         event: SpeechEvent,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        isManual: Boolean = false,
     ): NarrationOutcome =
         speakWithOutcome(
             eventKey = event.readoutItemKey,
             currentKey = { ttsEngine.currentReadoutItemKey },
             autoReadoutOrder = autoReadoutOrder,
             queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
-            speak = { queue -> ttsEngine.speak(event, queue) },
+            speak = { queue -> ttsEngine.speak(event, queue, isManual) },
             stop = { ttsEngine.stop() },
             outcomes =
                 SpeakOutcomes(
@@ -160,6 +159,8 @@ internal class Gt7Ps5NarratorEventProcessor(
                     interrupted = NarrationOutcome.INTERRUPTED,
                     spoken = NarrationOutcome.SPOKEN,
                 ),
+            isManual = isManual,
+            currentIsManual = { ttsEngine.currentIsManual },
         )
 
     /** 文言解決に失敗したイベントだけをスキップし、後続の読み上げとログ保存を継続する。 */

@@ -728,6 +728,9 @@ class LmuWindowsNarratorViewModelTest {
         every { ttsEngine.currentReadoutItemKey } returns null
         every { ttsEngine.speak(capture(spokenTexts), queue = false) } just Runs
         every { ttsEngine.speak(capture(spokenTexts), queue = true) } just Runs
+        every { ttsEngine.speak(capture(spokenTexts), queue = false, isManual = true) } just Runs
+        every { ttsEngine.speak(capture(spokenTexts), queue = true, isManual = true) } just Runs
+        every { ttsEngine.currentIsManual } returns false
         return ttsEngine
     }
 
@@ -744,6 +747,9 @@ class LmuWindowsNarratorViewModelTest {
         every { priorityAwareTts.currentReadoutItemKey } answers { currentKey }
         every { priorityAwareTts.speak(capture(spokenTexts), queue = false) } just Runs
         every { priorityAwareTts.speak(capture(spokenTexts), queue = true) } just Runs
+        every { priorityAwareTts.speak(capture(spokenTexts), queue = false, isManual = true) } just Runs
+        every { priorityAwareTts.speak(capture(spokenTexts), queue = true, isManual = true) } just Runs
+        every { priorityAwareTts.currentIsManual } returns false
         every { priorityAwareTts.stop() } answers {
             stopCalled = true
             currentKey = null
@@ -3552,7 +3558,7 @@ class LmuWindowsNarratorViewModelTest {
                     assertEquals(listOf<SpeechEvent>(expected), spoken)
                     val log = logs.last()
                     assertEquals("読み上げる項目がありません", log.narratedText)
-                    assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
+                    assertEquals(NarrationOutcome.SPOKEN, log.narrationOutcome)
                     assertContains(log.telemetryJson, "\"state\":")
                     assertContains(log.telemetryJson, "\"settings\":")
                     assertContains(log.telemetryJson, "\"observedAtMs\":5001")
@@ -3561,18 +3567,19 @@ class LmuWindowsNarratorViewModelTest {
                 }
             }
             assertEquals(4, logs.size)
-            verify(exactly = 4) { ttsEngine.speak(expected, queue = true) }
+            verify(exactly = 4) { ttsEngine.speak(expected, queue = false, isManual = true) }
             coVerify(exactly = 4) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 5_001L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = key,
                     narratedText = "読み上げる項目がありません",
-                    narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
                     narrationSource = NarrationSource.MANUAL,
                     telemetryJson = withArg { json -> assertTrue(logs.any { it.telemetryJson == json }) },
                 )
             }
+            verify(exactly = 4) { ttsEngine.currentReadoutItemKey }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
@@ -3606,7 +3613,7 @@ class LmuWindowsNarratorViewModelTest {
                     assertEquals(listOf<SpeechEvent>(expected), spoken)
                     val log = logs.last()
                     assertEquals("バーチャルエネルギー残量はデータがありません", log.narratedText)
-                    assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
+                    assertEquals(NarrationOutcome.SPOKEN, log.narrationOutcome)
                     assertContains(log.telemetryJson, "\"state\":")
                     assertContains(log.telemetryJson, "\"settings\":")
                     assertContains(log.telemetryJson, "\"observedAtMs\":5001")
@@ -3615,18 +3622,19 @@ class LmuWindowsNarratorViewModelTest {
                 }
             }
             assertEquals(4, logs.size)
-            verify(exactly = 4) { ttsEngine.speak(expected, queue = true) }
+            verify(exactly = 4) { ttsEngine.speak(expected, queue = false, isManual = true) }
             coVerify(exactly = 4) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 5_001L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = key,
                     narratedText = "バーチャルエネルギー残量はデータがありません",
-                    narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
                     narrationSource = NarrationSource.MANUAL,
                     telemetryJson = withArg { json -> assertTrue(logs.any { it.telemetryJson == json }) },
                 )
             }
+            verify(exactly = 4) { ttsEngine.currentReadoutItemKey }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
@@ -3662,9 +3670,11 @@ class LmuWindowsNarratorViewModelTest {
                         "バーチャルエネルギーは残り80%",
                         "バーチャルエネルギーは残り80%",
                     ),
-                    queue = true,
+                    queue = false,
+                    isManual = true,
                 )
             }
+            verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
             confirmVerified(ttsEngine)
         }
 
@@ -3732,7 +3742,7 @@ class LmuWindowsNarratorViewModelTest {
             val logs = mutableListOf<TelemetryLog>()
             val queued = mutableListOf<SpeechEvent>()
             val tts = mockTts(spoken)
-            every { ttsEngine.speak(capture(queued), queue = true) } just Runs
+            every { ttsEngine.speak(capture(queued), queue = false, isManual = true) } just Runs
             createViewModel(
                 remainingVirtualEnergyChannel = energy,
                 manualRequestChannel = requests,
@@ -3766,11 +3776,11 @@ class LmuWindowsNarratorViewModelTest {
                 ),
                 queued,
             )
-            verify(exactly = 1) { ttsEngine.speak(queued.single(), queue = true) }
+            verify(exactly = 1) { ttsEngine.speak(queued.single(), queue = false, isManual = true) }
             val log = logs.single()
             assertEquals("残量80%", queued.single().narratedText)
             assertEquals("残量80%", log.narratedText)
-            assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
+            assertEquals(NarrationOutcome.SPOKEN, log.narrationOutcome)
             assertContains(log.telemetryJson, "\"observedAtMs\":123")
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
@@ -3778,11 +3788,12 @@ class LmuWindowsNarratorViewModelTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = queued.single().narratedText,
-                    narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
                     narrationSource = NarrationSource.MANUAL,
                     telemetryJson = log.telemetryJson,
                 )
             }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
@@ -3795,7 +3806,7 @@ class LmuWindowsNarratorViewModelTest {
             val logs = mutableListOf<TelemetryLog>()
             val queued = mutableListOf<SpeechEvent>()
             val tts = mockTts(spoken)
-            every { ttsEngine.speak(capture(queued), queue = true) } just Runs
+            every { ttsEngine.speak(capture(queued), queue = false, isManual = true) } just Runs
             createViewModel(
                 remainingVirtualEnergyChannel = energy,
                 manualRequestChannel = requests,
@@ -3829,11 +3840,11 @@ class LmuWindowsNarratorViewModelTest {
                 ),
                 queued,
             )
-            verify(exactly = 1) { ttsEngine.speak(queued.single(), queue = true) }
+            verify(exactly = 1) { ttsEngine.speak(queued.single(), queue = false, isManual = true) }
             val log = logs.single()
             assertEquals("残量80%", queued.single().narratedText)
             assertEquals("残量80%", log.narratedText)
-            assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
+            assertEquals(NarrationOutcome.SPOKEN, log.narrationOutcome)
             assertContains(log.telemetryJson, "\"observedAtMs\":123")
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
@@ -3841,11 +3852,12 @@ class LmuWindowsNarratorViewModelTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = queued.single().narratedText,
-                    narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
                     narrationSource = NarrationSource.MANUAL,
                     telemetryJson = log.telemetryJson,
                 )
             }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
@@ -3858,7 +3870,7 @@ class LmuWindowsNarratorViewModelTest {
             val logs = mutableListOf<TelemetryLog>()
             val queued = mutableListOf<SpeechEvent>()
             val tts = mockTts(spoken)
-            every { ttsEngine.speak(capture(queued), queue = true) } just Runs
+            every { ttsEngine.speak(capture(queued), queue = false, isManual = true) } just Runs
             createViewModel(
                 remainingVirtualEnergyChannel = energy,
                 manualHotkeyChannel = presses,
@@ -3892,11 +3904,11 @@ class LmuWindowsNarratorViewModelTest {
                 ),
                 queued,
             )
-            verify(exactly = 1) { ttsEngine.speak(queued.single(), queue = true) }
+            verify(exactly = 1) { ttsEngine.speak(queued.single(), queue = false, isManual = true) }
             val log = logs.single()
             assertEquals("残量80%", queued.single().narratedText)
             assertEquals("残量80%", log.narratedText)
-            assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
+            assertEquals(NarrationOutcome.SPOKEN, log.narrationOutcome)
             assertContains(log.telemetryJson, "\"observedAtMs\":123")
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
@@ -3904,11 +3916,12 @@ class LmuWindowsNarratorViewModelTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = queued.single().narratedText,
-                    narrationOutcome = NarrationOutcome.QUEUED,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
                     narrationSource = NarrationSource.MANUAL,
                     telemetryJson = log.telemetryJson,
                 )
             }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
@@ -4220,12 +4233,16 @@ class LmuWindowsNarratorViewModelTest {
             verify(exactly = 4) {
                 ttsEngine.speak(
                     LmuWindowsManualReadoutText(key, "自己ベストラップはデータがありません", "自己ベストラップはデータがありません"),
-                    queue = true,
+                    queue = false,
+                    isManual = true,
                 )
             }
             listOf("自己ベストラップ 1分23秒456", "自己ベストラップ 1分22秒345").forEach { text ->
-                verify(exactly = 1) { ttsEngine.speak(LmuWindowsManualReadoutText(key, text, text), queue = true) }
+                verify(
+                    exactly = 1,
+                ) { ttsEngine.speak(LmuWindowsManualReadoutText(key, text, text), queue = false, isManual = true) }
             }
+            verify(exactly = 6) { ttsEngine.currentReadoutItemKey }
             confirmVerified(ttsEngine)
         }
 
@@ -4261,11 +4278,20 @@ class LmuWindowsNarratorViewModelTest {
             )
             assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
             verify(exactly = 3) {
-                ttsEngine.speak(LmuWindowsManualReadoutText(key, "タイヤ温度はデータがありません", "タイヤ温度はデータがありません"), queue = true)
+                ttsEngine.speak(
+                    LmuWindowsManualReadoutText(key, "タイヤ温度はデータがありません", "タイヤ温度はデータがありません"),
+                    queue = false,
+                    isManual = true,
+                )
             }
             verify(exactly = 1) {
-                ttsEngine.speak(LmuWindowsManualReadoutText(key, "タイヤ温度は91℃", "タイヤ温度は91℃"), queue = true)
+                ttsEngine.speak(
+                    LmuWindowsManualReadoutText(key, "タイヤ温度は91℃", "タイヤ温度は91℃"),
+                    queue = false,
+                    isManual = true,
+                )
             }
+            verify(exactly = 4) { ttsEngine.currentReadoutItemKey }
             confirmVerified(ttsEngine)
         }
 
@@ -4301,11 +4327,20 @@ class LmuWindowsNarratorViewModelTest {
             )
             assertEquals(listOf(key, key, key, key), spoken.map { it.readoutItemKey })
             verify(exactly = 3) {
-                ttsEngine.speak(LmuWindowsManualReadoutText(key, "ブレーキ温度はデータがありません", "ブレーキ温度はデータがありません"), queue = true)
+                ttsEngine.speak(
+                    LmuWindowsManualReadoutText(key, "ブレーキ温度はデータがありません", "ブレーキ温度はデータがありません"),
+                    queue = false,
+                    isManual = true,
+                )
             }
             verify(exactly = 1) {
-                ttsEngine.speak(LmuWindowsManualReadoutText(key, "ブレーキ温度は501℃", "ブレーキ温度は501℃"), queue = true)
+                ttsEngine.speak(
+                    LmuWindowsManualReadoutText(key, "ブレーキ温度は501℃", "ブレーキ温度は501℃"),
+                    queue = false,
+                    isManual = true,
+                )
             }
+            verify(exactly = 4) { ttsEngine.currentReadoutItemKey }
             confirmVerified(ttsEngine)
         }
 

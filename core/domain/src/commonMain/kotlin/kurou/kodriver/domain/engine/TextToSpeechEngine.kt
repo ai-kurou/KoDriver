@@ -7,9 +7,14 @@ interface TextToSpeechEngine {
     /** 現在再生中のイベントが属する ReadoutItemKey。再生していない場合は null。 */
     val currentReadoutItemKey: ReadoutItemKey?
 
+    /** 現在再生中のイベントが手動読み上げ由来か。再生していない場合は false。 */
+    val currentIsManual: Boolean get() = false
+
+    /** [isManual] が true の場合、手動読み上げとして再生する（[currentIsManual] に反映される）。 */
     fun speak(
         event: SpeechEvent,
         queue: Boolean = false,
+        isManual: Boolean = false,
     )
 
     fun stop()

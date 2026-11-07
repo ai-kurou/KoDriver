@@ -117,8 +117,10 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     fun speak(
         event: EVENT,
         queue: Boolean = false,
+        isManual: Boolean = false,
     ) {
         val body = playbackBody(event) ?: return
+        val manual = isManual || isManualEvent(event)
         if (queue) {
             // stop() 直後で playbackScope がキャンセル済みのままだと、その配下へ launch した
             // 瞬間に子ジョブごとキャンセルされてしまうため、生存中でなければ差し替える。
@@ -129,7 +131,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
                 playbackScope.launch {
                     barrier.join()
                     previousJob?.join()
-                    play(event, body)
+                    play(event, manual, body)
                 }
             return
         }
@@ -138,12 +140,12 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         // 公開しないと play() に入るまで currentKey が null になり、続けて届いた自動・手動の
         // イベントが「再生中なし」と判定されて、待機中のこのイベントをキャンセルしてしまう。
         _currentKey = eventToKey(event)
-        _currentIsManual = isManualEvent(event)
+        _currentIsManual = manual
         playbackScope = newPlaybackScope()
         playJob =
             playbackScope.launch {
                 barrier.join()
-                play(event, body)
+                play(event, manual, body)
             }
     }
 
@@ -158,11 +160,12 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
 
     private suspend fun play(
         event: EVENT,
+        manual: Boolean,
         body: suspend (Int) -> Unit,
     ) {
         val key = eventToKey(event)
         _currentKey = key
-        _currentIsManual = isManualEvent(event)
+        _currentIsManual = manual
         val vol = currentVolume
         val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
         if (startSoundEnabled) {

@@ -155,7 +155,7 @@ Android は非対応実装を使い、キー未割り当て・非対応時は登
 - 対応項目がない場合は「読み上げる項目がありません」（`MANUAL_READOUT_NO_ITEMS_TEXT`）を読む。
 - 自動読み上げのスイッチ・しきい値・重複抑止・周回内タイミング・警告済み状態（`remainingFuelWarned` 等）は変更しない。手動側は自動のスイッチや判定に従わない。
 - 開始音・ログ・優先度のキーは、LMU は先頭の対応項目から決まるキー、GT7 と ACE は `RemainingFuel.Root` 固定（LMU の詳細は下の補足）。
-- 1イベントは常にキュー末尾へ追加し、同じ本文をログに保存する。
+- 1イベントは手動優先で読み上げるし、同じ本文をログに保存する。
 
 ### LMU Windows（12項目）
 
@@ -217,7 +217,7 @@ ACE Windows の補足は次のとおり。
 - 対応項目は保存順に先頭 `MANUAL_READOUT_SET_ITEM_MAX`（3件）まで処理する。
 - 手動値は鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` で受け取る。シミュレーター切替時は最新値と受信時刻をクリアする。
 - 全項目の文言が空白なら空文字とする。
-- 一覧は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root` を含むため、手動の「燃料残量」を選択できる。開始音・ログ・常時キュー末尾追加には既存の `RemainingFuel.Root` を使う。
+- 一覧は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root` を含むため、手動の「燃料残量」を選択できる。開始音・ログ・手動優先の読み上げには既存の `RemainingFuel.Root` を使う。
 
 # ReadoutItemKey の配置と登録
 

@@ -97,7 +97,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 対応項目なしは
 「読み上げる項目がありません」、全項目が空白なら空文字とする。
 自動読み上げのスイッチ・閾値・`remainingFuelWarned` 等の判定状態は変更せず、
-開始音・ログ・常時キュー末尾追加には既存の `RemainingFuel.Root` を使う。
+開始音・ログ・手動優先の読み上げには既存の `RemainingFuel.Root` を使う。
 `manualReadoutItemKeys(Simulator.AceWindows.id)` は続けて既存の `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`）を返し、手動の「燃料残り周回数」を選択できる。
 `currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・負値・上限超過は null（データなし）とする。ちょうど0は0周として扱い、固定文言「燃料残り1周未満」を読む。
 手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）を `formatAceWindowsRemainingFuelLapsReadoutText` で置換し、値が null の項目は「燃料残り周回数はデータがありません」を読む。
@@ -115,7 +115,7 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `findUnknownAceWindowsTyreTemperatureReadoutPlaceholders` を使い、詳細画面ではタイヤカテゴリ、プレビューは90℃。
 `AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
-開始音とログには既存の `RemainingFuel.Root` を使い、常にキュー末尾へ追加する。
+開始音とログには既存の `RemainingFuel.Root` を使い、手動優先で読み上げるする。
 
 音声認識の発話から届く `ObserveManualReadoutItemRequestsUseCase`（`ManualReadoutItemRequest(simulatorId, itemKey)`）も別の Job で購読し、ACE 宛ての依頼だけを、指定項目1つの一時セットとして `readManualReadout` に渡す。保存済みセットの編集文言は使わず既定文言で読む。1件の失敗で購読が止まらないよう依頼ごとに例外を `captureError` で記録する。
 

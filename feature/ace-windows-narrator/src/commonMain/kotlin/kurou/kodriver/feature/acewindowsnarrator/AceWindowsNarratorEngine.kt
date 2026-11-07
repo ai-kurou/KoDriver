@@ -16,10 +16,14 @@ internal class AceWindowsNarratorEngine(
     override val currentReadoutItemKey: ReadoutItemKey?
         get() = engine.currentKey
 
+    override val currentIsManual: Boolean
+        get() = engine.currentIsManual
+
     override fun speak(
         event: SpeechEvent,
         queue: Boolean,
-    ) = engine.speak(event, queue)
+        isManual: Boolean,
+    ) = engine.speak(event, queue, isManual)
 
     override fun stop() = engine.stop()
 

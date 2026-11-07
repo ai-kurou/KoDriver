@@ -263,36 +263,36 @@ class LmuWindowsNarratorEventProcessorTest {
             val event = LmuWindowsManualReadoutText(key, text)
             val resolved = event.withResolvedText(text)
             val json = slot<String>()
-            every { ttsEngine.speak(resolved, true) } just Runs
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolved, false, true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
             createProcessor().processManualReadout(
                 listOf(event),
-                emptyList(),
-                mapOf(key to true),
                 123L,
                 logContext(),
             )
             val root = Json.parseToJsonElement(json.captured).jsonObject
             assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
             assertEquals("123", root["observedAtMs"]!!.jsonPrimitive.content)
-            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(resolved, false, true) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     json.captured,
                 )
@@ -308,36 +308,36 @@ class LmuWindowsNarratorEventProcessorTest {
             val event = LmuWindowsManualReadoutText(key, text)
             val resolved = event.withResolvedText(text)
             val json = slot<String>()
-            every { ttsEngine.speak(resolved, true) } just Runs
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolved, false, true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
             createProcessor().processManualReadout(
                 listOf(event),
-                emptyList(),
-                mapOf(key to true),
                 123L,
                 logContext(),
             )
             val root = Json.parseToJsonElement(json.captured).jsonObject
             assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
             assertEquals("123", root["observedAtMs"]!!.jsonPrimitive.content)
-            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(resolved, false, true) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     json.captured,
                 )
@@ -353,36 +353,36 @@ class LmuWindowsNarratorEventProcessorTest {
             val event = LmuWindowsManualReadoutText(key, text)
             val resolved = event.withResolvedText(text)
             val json = slot<String>()
-            every { ttsEngine.speak(resolved, true) } just Runs
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolved, false, true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
             createProcessor().processManualReadout(
                 listOf(event),
-                emptyList(),
-                mapOf(key to true),
                 123L,
                 logContext(),
             )
             val root = Json.parseToJsonElement(json.captured).jsonObject
             assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
             assertEquals("123", root["observedAtMs"]!!.jsonPrimitive.content)
-            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(resolved, false, true) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     json.captured,
                 )
@@ -398,36 +398,36 @@ class LmuWindowsNarratorEventProcessorTest {
             val event = LmuWindowsManualReadoutText(key, text)
             val resolved = event.withResolvedText(text)
             val json = slot<String>()
-            every { ttsEngine.speak(resolved, true) } just Runs
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolved, false, true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
             createProcessor().processManualReadout(
                 listOf(event),
-                emptyList(),
-                mapOf(key to true),
                 123L,
                 logContext(),
             )
             val root = Json.parseToJsonElement(json.captured).jsonObject
             assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
             assertEquals("123", root["observedAtMs"]!!.jsonPrimitive.content)
-            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(resolved, false, true) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     json.captured,
                 )
@@ -443,36 +443,36 @@ class LmuWindowsNarratorEventProcessorTest {
             val event = LmuWindowsManualReadoutText(key, text)
             val resolved = event.withResolvedText(text)
             val json = slot<String>()
-            every { ttsEngine.speak(resolved, true) } just Runs
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolved, false, true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
             createProcessor().processManualReadout(
                 listOf(event),
-                emptyList(),
-                mapOf(key to true),
                 123L,
                 logContext(),
             )
             val root = Json.parseToJsonElement(json.captured).jsonObject
             assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
             assertEquals("123", root["observedAtMs"]!!.jsonPrimitive.content)
-            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(resolved, false, true) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     json.captured,
                 )
@@ -488,36 +488,36 @@ class LmuWindowsNarratorEventProcessorTest {
             val event = LmuWindowsManualReadoutText(key, text)
             val resolved = event.withResolvedText(text)
             val json = slot<String>()
-            every { ttsEngine.speak(resolved, true) } just Runs
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolved, false, true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     capture(json),
                 )
             } just Runs
             createProcessor().processManualReadout(
                 listOf(event),
-                emptyList(),
-                mapOf(key to true),
                 123L,
                 logContext(),
             )
             val root = Json.parseToJsonElement(json.captured).jsonObject
             assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
             assertEquals("123", root["observedAtMs"]!!.jsonPrimitive.content)
-            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(resolved, false, true) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     123L,
                     Simulator.LmuWindows,
                     key,
                     text,
-                    NarrationOutcome.QUEUED,
+                    NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
                     json.captured,
                 )
@@ -603,24 +603,33 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processTyreWear(tyreWear(frontLeft = 0.9), emptyList(), emptyList(), emptyMap(), 0L, logContext())
             val manual = LmuWindowsManualReadoutText(key, "データがありません")
             val warning = LmuWindowsTyreWearWarning(50)
-            val events = listOf(manual, warning)
             val logs = mutableListOf<String>()
-            val sources = mapOf(manual to NarrationSource.MANUAL, warning to NarrationSource.AUTO)
-            events.forEach { event ->
-                every { ttsEngine.speak(event.withResolvedText(event.narratedText), true) } just Runs
-                coEvery {
-                    telemetryLogRepository.saveTelemetryLog(
-                        123L,
-                        Simulator.LmuWindows,
-                        key,
-                        event.narratedText,
-                        NarrationOutcome.QUEUED,
-                        sources.getValue(event),
-                        capture(logs),
-                    )
-                } just Runs
-            }
-            processor.processManualReadout(listOf(manual), emptyList(), mapOf(key to true), 123L, logContext())
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(manual.withResolvedText(manual.narratedText), false, true) } just Runs
+            every { ttsEngine.speak(warning.withResolvedText(warning.narratedText), true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.LmuWindows,
+                    key,
+                    manual.narratedText,
+                    NarrationOutcome.SPOKEN,
+                    NarrationSource.MANUAL,
+                    capture(logs),
+                )
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.LmuWindows,
+                    key,
+                    warning.narratedText,
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
+                    capture(logs),
+                )
+            } just Runs
+            processor.processManualReadout(listOf(manual), 123L, logContext())
             processor.processTyreWear(
                 tyreWear(frontLeft = 0.4),
                 listOf(warning),
@@ -631,19 +640,30 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             val root = Json.parseToJsonElement(logs.last()).jsonObject
             assertWheelValues(root["previousTyreWear"]!!.jsonObject["wheels"]!!.jsonObject, 0.9, 0.9, 0.9, 0.9)
-            events.forEachIndexed { index, event ->
-                verify(exactly = 1) { ttsEngine.speak(event.withResolvedText(event.narratedText), true) }
-                coVerify(exactly = 1) {
-                    telemetryLogRepository.saveTelemetryLog(
-                        123L,
-                        Simulator.LmuWindows,
-                        key,
-                        event.narratedText,
-                        NarrationOutcome.QUEUED,
-                        sources.getValue(event),
-                        logs[index],
-                    )
-                }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(manual.withResolvedText(manual.narratedText), false, true) }
+            verify(exactly = 1) { ttsEngine.speak(warning.withResolvedText(warning.narratedText), true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.LmuWindows,
+                    key,
+                    manual.narratedText,
+                    NarrationOutcome.SPOKEN,
+                    NarrationSource.MANUAL,
+                    logs[0],
+                )
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.LmuWindows,
+                    key,
+                    warning.narratedText,
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
+                    logs[1],
+                )
             }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
@@ -1492,6 +1512,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val currentKey = LmuWindowsReadoutItemKey.Flag.Root
             val newEvent = LmuWindowsCarLeft()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
+            every { ttsEngine.currentIsManual } returns false
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1522,6 +1543,7 @@ class LmuWindowsNarratorEventProcessorTest {
             verify(exactly = 0) { ttsEngine.speak(newEvent.withResolvedText("カーレフト"), false) }
             verify(exactly = 0) { ttsEngine.speak(newEvent.withResolvedText("カーレフト"), true) }
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.currentIsManual }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1586,6 +1608,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val currentKey = LmuWindowsReadoutItemKey.TyreWear.Root
             val newEvent = LmuWindowsCarLeft()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
+            every { ttsEngine.currentIsManual } returns false
             every { ttsEngine.stop() } just Runs
             every { ttsEngine.speak(newEvent.withResolvedText("カーレフト"), queue = false) } just Runs
             coEvery {
@@ -1613,6 +1636,7 @@ class LmuWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.stop() }
             verify(exactly = 1) { ttsEngine.speak(newEvent.withResolvedText("カーレフト"), queue = false) }
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.currentIsManual }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -2593,6 +2617,128 @@ class LmuWindowsNarratorEventProcessorTest {
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     narrationSource = NarrationSource.AUTO,
                     telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `自動再生中の手動読み上げは停止して割り込み再生する`() =
+        runTest {
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            val event = LmuWindowsManualReadoutText(key, "手動")
+            val resolved = event.withResolvedText("手動")
+            every { ttsEngine.currentReadoutItemKey } returns key
+            every { ttsEngine.currentIsManual } returns false
+            every { ttsEngine.stop() } just Runs
+            every { ttsEngine.speak(resolved, false, true) } just Runs
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "手動",
+                    NarrationOutcome.INTERRUPTED,
+                    NarrationSource.MANUAL,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor().processManualReadout(listOf(event), 0L, logContext())
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.currentIsManual }
+            verify(exactly = 1) { ttsEngine.stop() }
+            verify(exactly = 1) { ttsEngine.speak(resolved, false, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "手動",
+                    NarrationOutcome.INTERRUPTED,
+                    NarrationSource.MANUAL,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `手動再生中の手動読み上げはキュー末尾へ追加する`() =
+        runTest {
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            val event = LmuWindowsManualReadoutText(key, "手動")
+            val resolved = event.withResolvedText("手動")
+            every { ttsEngine.currentReadoutItemKey } returns key
+            every { ttsEngine.currentIsManual } returns true
+            every { ttsEngine.speak(resolved, true, true) } just Runs
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "手動",
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor().processManualReadout(listOf(event), 0L, logContext())
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.currentIsManual }
+            verify(exactly = 1) { ttsEngine.speak(resolved, true, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "手動",
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.MANUAL,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `手動再生中にキュー無効の自動読み上げが来たら読み上げずスキップを保存する`() =
+        runTest {
+            val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
+            val request = DebugReadoutRequest(Simulator.LmuWindows, key, "自動")
+            every { ttsEngine.currentReadoutItemKey } returns key
+            every { ttsEngine.currentIsManual } returns true
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "自動",
+                    NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
+                    capture(json),
+                )
+            } just Runs
+            createProcessor().processDebugReadout(
+                request = request,
+                autoReadoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.currentIsManual }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "自動",
+                    NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
+                    json.captured,
                 )
             }
             confirmVerified(ttsEngine, telemetryLogRepository)

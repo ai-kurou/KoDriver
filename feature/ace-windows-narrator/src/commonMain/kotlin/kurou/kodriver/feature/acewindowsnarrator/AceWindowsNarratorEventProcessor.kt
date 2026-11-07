@@ -78,8 +78,6 @@ internal class AceWindowsNarratorEventProcessor(
 
     suspend fun processManualReadout(
         events: List<ReadoutTextEvent>,
-        autoReadoutOrder: List<ReadoutItemKey>,
-        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
     ) {
@@ -89,7 +87,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    speakWithPriority(event.withResolvedText(text), autoReadoutOrder, queueEnabledStates)
+                    speakWithPriority(event.withResolvedText(text), emptyList(), emptyMap(), isManual = true)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -343,13 +341,14 @@ internal class AceWindowsNarratorEventProcessor(
         event: SpeechEvent,
         autoReadoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        isManual: Boolean = false,
     ): NarrationOutcome =
         speakWithOutcome(
             eventKey = event.readoutItemKey,
             currentKey = { ttsEngine.currentReadoutItemKey },
             autoReadoutOrder = autoReadoutOrder,
             queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
-            speak = { queue -> ttsEngine.speak(event, queue) },
+            speak = { queue -> ttsEngine.speak(event, queue, isManual) },
             stop = { ttsEngine.stop() },
             outcomes =
                 SpeakOutcomes(
@@ -358,6 +357,8 @@ internal class AceWindowsNarratorEventProcessor(
                     interrupted = NarrationOutcome.INTERRUPTED,
                     spoken = NarrationOutcome.SPOKEN,
                 ),
+            isManual = isManual,
+            currentIsManual = { ttsEngine.currentIsManual },
         )
 
     /** 文言解決に失敗したイベントだけをスキップし、後続の読み上げとログ保存を継続する。 */
