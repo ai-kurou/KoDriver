@@ -16,12 +16,10 @@ internal const val VOSK_MODEL_ASSET_DIRECTORY = "vosk-model-ja"
 /** 確定結果で返してもらう候補の最大数。 */
 private const val MAX_ALTERNATIVES = 5
 
-/** モデルの展開が最後まで終わったことを示す、展開先に置くファイル名。 */
-private const val MODEL_READY_MARKER = ".ready"
-
 /**
  * assets に同梱した日本語モデルから [SpeechTranscriber] を作る。モデルが同梱されていないビルドでは利用不可になる。
- * Vosk の `Model` は assets を直接読めずディレクトリのパスを要求するため、初回に端末の内部ストレージへ展開する。
+ * Vosk の `Model` は assets を直接読めずディレクトリのパスを要求するため、初回とアプリの更新後に端末の内部ストレージへ展開する
+ * （[VoskModelInstaller]。同梱モデルの差し替えが古いモデルのまま残らないよう、アプリの最終更新時刻を version にする）。
  * プラットフォームのAPIを直接呼ぶ薄いアダプターのため、単体テストの対象にしない。
  */
 internal class AndroidVoskSpeechTranscriberFactory(
@@ -53,14 +51,12 @@ internal class AndroidVoskSpeechTranscriberFactory(
     }
 
     private fun installModel(): File {
-        val target = File(context.filesDir, VOSK_MODEL_ASSET_DIRECTORY)
-        val marker = File(target, MODEL_READY_MARKER)
-        if (!marker.exists()) {
-            target.deleteRecursively()
-            copyAsset(context.assets, VOSK_MODEL_ASSET_DIRECTORY, target)
-            marker.createNewFile()
-        }
-        return target
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        return VoskModelInstaller(
+            target = File(context.filesDir, VOSK_MODEL_ASSET_DIRECTORY),
+            version = packageInfo.lastUpdateTime.toString(),
+            copyModel = { copyAsset(context.assets, VOSK_MODEL_ASSET_DIRECTORY, it) },
+        ).install()
     }
 
     private fun copyAsset(

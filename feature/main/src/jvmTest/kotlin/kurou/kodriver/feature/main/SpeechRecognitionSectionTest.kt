@@ -127,7 +127,7 @@ class SpeechRecognitionSectionTest {
         rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").performClick()
         rule.runOnIdle { events.tryEmit(SpeechRecognitionEvent.Listening) }
 
-        rule.onNodeWithText("「ドライバー」の呼びかけを待っています(マイクを使用中)").assertExists()
+        rule.onNodeWithText("「コドライバー」の呼びかけを待っています(マイクを使用中)").assertExists()
         assertEquals(0, requestCount)
     }
 
