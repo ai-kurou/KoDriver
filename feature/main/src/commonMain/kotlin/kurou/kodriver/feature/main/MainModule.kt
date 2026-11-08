@@ -19,6 +19,7 @@ import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryReceivingUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
@@ -27,6 +28,7 @@ import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -54,6 +56,8 @@ val mainModule =
                 observeSpeechRecognition = ObserveSpeechRecognitionUseCase(get()),
                 checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(get()),
                 requestManualReadoutItem = RequestManualReadoutItemUseCase(get()),
+                setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(get()),
+                observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(get()),
                 audioInputDeviceSelector =
                     if (deviceRepository != null && selectedDeviceRepository != null) {
                         AudioInputDeviceSelector(

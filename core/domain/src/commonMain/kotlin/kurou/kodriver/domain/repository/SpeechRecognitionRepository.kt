@@ -2,9 +2,10 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
+import kurou.kodriver.domain.model.SpeechRecognitionMode
 
 /**
- * マイクからの常時聞き取り（音声認識）を行うRepository。
+ * マイクからの常時聞き取り（音声認識）を行うRepository。ウェイクワードを待ち、検出後だけコマンドを聞き取る。
  */
 interface SpeechRecognitionRepository {
     /** 端末で音声認識を利用できるか。音声認識を提供しないプラットフォームでは常に false。 */
@@ -16,4 +17,11 @@ interface SpeechRecognitionRepository {
      * 続行できない場合は [SpeechRecognitionEvent.Failed] を流して完了する。
      */
     fun observeRecognition(): Flow<SpeechRecognitionEvent>
+
+    /**
+     * 聞き取る内容を切り替える。聞き取り中に呼ぶと次の音声から反映される。
+     * 設定したモードは聞き取りを始め直しても保たれる（初期値は [SpeechRecognitionMode.WakeWord]）。
+     * 聞き取りを始める側が、開始の前に必要なモードを設定する。
+     */
+    fun setMode(mode: SpeechRecognitionMode)
 }

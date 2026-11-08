@@ -91,6 +91,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.ReportSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
@@ -334,6 +335,7 @@ val lmuWindowsNarratorModule: Module =
         }
 
         single<TextToSpeechEngine>(named(Simulator.LmuWindows.id)) {
+            val reportSpeechPlaybackActive = ReportSpeechPlaybackActiveUseCase(get())
             LmuWindowsNarratorEngine(
                 NarratorEngine(
                     soundPlayer = get(named(Simulator.LmuWindows.id)),
@@ -347,6 +349,7 @@ val lmuWindowsNarratorModule: Module =
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
+                    onPlaybackActiveChanged = { active -> reportSpeechPlaybackActive(Simulator.LmuWindows.id, active) },
                     customSpeak = get<LmuWindowsReadoutTextSpeaker>()::invoke,
                     isCustomSpeakEvent = ::isLmuWindowsCustomSpeakEvent,
                 ),

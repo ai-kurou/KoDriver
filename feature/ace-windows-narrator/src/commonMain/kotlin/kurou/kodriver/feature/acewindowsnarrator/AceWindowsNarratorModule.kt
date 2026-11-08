@@ -49,6 +49,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.ReportSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
@@ -188,6 +189,7 @@ val aceWindowsNarratorModule: Module =
         // 音声再生（named "ace_windows" で LMU/GT7 と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
         includes(platformSoundModule(named(Simulator.AceWindows.id)))
         single<TextToSpeechEngine>(named(Simulator.AceWindows.id)) {
+            val reportSpeechPlaybackActive = ReportSpeechPlaybackActiveUseCase(get())
             AceWindowsNarratorEngine(
                 NarratorEngine(
                     soundPlayer = get(named(Simulator.AceWindows.id)),
@@ -203,6 +205,7 @@ val aceWindowsNarratorModule: Module =
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
+                    onPlaybackActiveChanged = { active -> reportSpeechPlaybackActive(Simulator.AceWindows.id, active) },
                 ),
             )
         }

@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -15,6 +16,7 @@ import kurou.kodriver.domain.model.MicrophoneAudioEvent
 import kurou.kodriver.domain.model.MicrophoneFailureReason
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
@@ -24,6 +26,7 @@ import kotlin.coroutines.cancellation.CancellationException
 /**
  * 選択中のマイクの音声を [SpeechTranscriber] に渡して常時聞き取りを行う、デスクトップ版の [SpeechRecognitionRepository]。
  *
+ * 聞き取りは [setMode] のモード（ウェイクワード待ち・コマンド待ち・読み上げ中の停止）に従う。
  * 認識モデルが配置されていない・読み込めないときは利用不可として扱う。
  */
 internal class JvmSpeechRecognitionRepository(
@@ -33,7 +36,13 @@ internal class JvmSpeechRecognitionRepository(
     private val transcriberFactory: SpeechTranscriberFactory,
     private val computeDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : SpeechRecognitionRepository {
+    private val mode = MutableStateFlow(SpeechRecognitionMode.WakeWord)
+
     override fun isAvailable(): Boolean = transcriberFactory.isAvailable()
+
+    override fun setMode(mode: SpeechRecognitionMode) {
+        this.mode.value = mode
+    }
 
     override fun observeRecognition(): Flow<SpeechRecognitionEvent> =
         flow {
@@ -99,10 +108,15 @@ internal class JvmSpeechRecognitionRepository(
         val device = resolveDevice()
         emit(SpeechRecognitionEvent.Listening)
         var lastPartial = ""
+        var lastMode = SpeechRecognitionMode.WakeWord
+        val modeSync = TranscriberModeSync(transcriber, mode)
         microphone.observeAudio(device).collect { event ->
             when (event) {
                 is MicrophoneAudioEvent.Chunk -> {
                     emit(SpeechRecognitionEvent.Level(event.pcm.pcmLevel()))
+                    val previousMode = lastMode
+                    lastMode = modeSync.sync()
+                    if (lastMode != previousMode) lastPartial = ""
                     when (val transcript = transcriber.accept(event.pcm)) {
                         is SpeechTranscript.Partial -> {
                             if (transcript.text != lastPartial) {

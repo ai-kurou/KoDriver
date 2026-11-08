@@ -40,6 +40,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.ReportSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
@@ -158,6 +159,7 @@ val gt7Ps5NarratorModule: Module =
         // 音声再生（named "gt7_ps5" で LMU/ACE と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
         includes(platformSoundModule(named(Simulator.Gt7Ps5.id)))
         single<TextToSpeechEngine>(named(Simulator.Gt7Ps5.id)) {
+            val reportSpeechPlaybackActive = ReportSpeechPlaybackActiveUseCase(get())
             Gt7Ps5NarratorEngine(
                 NarratorEngine(
                     soundPlayer = get(named(Simulator.Gt7Ps5.id)),
@@ -173,6 +175,7 @@ val gt7Ps5NarratorModule: Module =
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
+                    onPlaybackActiveChanged = { active -> reportSpeechPlaybackActive(Simulator.Gt7Ps5.id, active) },
                 ),
             )
         }

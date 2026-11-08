@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -19,18 +20,32 @@ import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.model.containsSpeechRecognitionWakeWord
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
+import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 
-/** 認識途中の文字列も確定結果も届かないまま経つと、聞き取りを自動で止めるまでの時間。つけっぱなしを防ぐ。 */
-internal const val SPEECH_RECOGNITION_IDLE_TIMEOUT_MS = 5 * 60 * 1_000L
+/** ウェイクワードを検出してから、コマンドを待つ時間。過ぎるとウェイクワード待ちへ戻る。 */
+internal const val SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS = 6_000L
 
-/** 音声認識の常時聞き取りを開始・停止し、認識状況を確認用に保持する。 */
+/** 読み上げが終わってから聞き取りを再開するまでの待ち時間。読み上げ直後の残響をウェイクワードと誤認しないための余裕。 */
+internal const val SPEECH_RECOGNITION_RESUME_DELAY_MS = 500L
+
+/**
+ * 音声認識の聞き取りを開始・停止し、認識状況を確認用に保持する。
+ *
+ * ウェイクワードを待つ→検出したらコマンドを [SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS] だけ待つ→ウェイクワード待ちへ戻る、
+ * の順に動く。コマンドは待っている間だけ読み上げ項目の語句と照合する。読み上げ中は自分の音声を拾わないよう聞き取りを止める。
+ */
 internal class SpeechRecognitionViewModel(
     private val observeSpeechRecognition: ObserveSpeechRecognitionUseCase,
     private val checkRecordAudioPermissionGranted: CheckRecordAudioPermissionGrantedUseCase,
     private val requestManualReadoutItem: RequestManualReadoutItemUseCase,
+    private val setSpeechRecognitionMode: SetSpeechRecognitionModeUseCase,
+    private val observeSpeechPlaybackActive: ObserveSpeechPlaybackActiveUseCase,
     /** 入力デバイスの一覧と選択。デバイスを選べないプラットフォーム（Android）では null。 */
     private val audioInputDeviceSelector: AudioInputDeviceSelector? = null,
 ) : ViewModel() {
@@ -43,8 +58,17 @@ internal class SpeechRecognitionViewModel(
     private var startWaits: List<Job> = emptyList()
     private var refreshJob: Job? = null
 
-    /** 発話がないまま [SPEECH_RECOGNITION_IDLE_TIMEOUT_MS] 経つと聞き取りを止める。認識途中の文字列や確定結果で数え直す。 */
-    private var idleJob: Job? = null
+    /** ウェイクワードの検出から [SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS] 経つと、ウェイクワード待ちへ戻す。 */
+    private var commandTimeoutJob: Job? = null
+
+    /** 読み上げの再生状態を購読し、再生中は聞き取りを止める。 */
+    private var playbackJob: Job? = null
+
+    /** ウェイクワードを検出し、コマンドを待っているか。 */
+    private var commandWaiting = false
+
+    /** 読み上げ中、または読み上げ終了後の再開待ちか。 */
+    private var paused = false
 
     /** アプリが見えなくなった時点で聞き取り中だったか。前面に戻ったときに聞き取りを再開するかの判断に使う。 */
     private var resumeOnForeground = false
@@ -159,25 +183,81 @@ internal class SpeechRecognitionViewModel(
         startWaits = (listOfNotNull(listenJob) + startWaits).filter { !it.isCompleted }
         listenJob?.cancel()
         listenJob = null
-        idleJob?.cancel()
-        idleJob = null
+        commandTimeoutJob?.cancel()
+        commandTimeoutJob = null
+        playbackJob?.cancel()
+        playbackJob = null
+        commandWaiting = false
+        paused = false
     }
 
-    private fun restartIdleTimer() {
-        idleJob?.cancel()
-        idleJob =
+    /** 今の状態に合うモードをRepositoryへ伝える。 */
+    private fun applyMode() {
+        setSpeechRecognitionMode(
+            when {
+                paused -> SpeechRecognitionMode.Paused
+                commandWaiting -> SpeechRecognitionMode.Command
+                else -> SpeechRecognitionMode.WakeWord
+            },
+        )
+    }
+
+    /** ウェイクワードを検出した。コマンドを待ち始め、時間切れでウェイクワード待ちへ戻す。 */
+    private fun startCommandWait() {
+        commandWaiting = true
+        applyMode()
+        _uiState.update { it.copy(status = SpeechRecognitionStatus.CommandWaiting, partialText = "") }
+        commandTimeoutJob?.cancel()
+        commandTimeoutJob =
             viewModelScope.launch {
-                delay(SPEECH_RECOGNITION_IDLE_TIMEOUT_MS)
-                cancelJobs()
-                _uiState.update {
-                    it.copy(
-                        enabled = false,
-                        status = SpeechRecognitionStatus.IdleStopped,
-                        partialText = "",
-                        level = null,
-                    )
+                delay(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
+                finishCommandWait()
+            }
+    }
+
+    /** コマンド待ちを終えてウェイクワード待ちへ戻す。 */
+    private fun finishCommandWait() {
+        commandTimeoutJob?.cancel()
+        commandTimeoutJob = null
+        commandWaiting = false
+        applyMode()
+        _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
+    }
+
+    private fun observePlayback() {
+        playbackJob?.cancel()
+        playbackJob =
+            viewModelScope.launch {
+                var wasActive = false
+                observeSpeechPlaybackActive().collectLatest { active ->
+                    if (active) {
+                        wasActive = true
+                        pause()
+                    } else if (wasActive) {
+                        wasActive = false
+                        // 読み上げの残響が消えるまで待ってから再開する。待つ間に次の読み上げが始まれば、collectLatest がこの待ちを取り消す
+                        delay(SPEECH_RECOGNITION_RESUME_DELAY_MS)
+                        paused = false
+                        applyMode()
+                    }
                 }
             }
+    }
+
+    /** 読み上げが始まった。コマンド待ちは打ち切り、聞き取りを止める。 */
+    private fun pause() {
+        commandTimeoutJob?.cancel()
+        commandTimeoutJob = null
+        commandWaiting = false
+        paused = true
+        applyMode()
+        _uiState.update {
+            if (it.status == SpeechRecognitionStatus.CommandWaiting) {
+                it.copy(status = SpeechRecognitionStatus.Listening, partialText = "")
+            } else {
+                it
+            }
+        }
     }
 
     private fun start() {
@@ -187,7 +267,9 @@ internal class SpeechRecognitionViewModel(
         _uiState.update {
             it.copy(enabled = true, status = SpeechRecognitionStatus.Starting, partialText = "", level = null)
         }
-        restartIdleTimer()
+        // 前の聞き取りのモードを引き継がず、ウェイクワード待ちから始める。読み上げ中なら observePlayback が続けて止める
+        applyMode()
+        observePlayback()
         listenJob =
             viewModelScope.launch {
                 try {
@@ -220,7 +302,10 @@ internal class SpeechRecognitionViewModel(
     private suspend fun onEvent(event: SpeechRecognitionEvent) {
         when (event) {
             SpeechRecognitionEvent.Listening -> {
-                _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
+                // マイクの再取得でも届くため、コマンド待ちの間はその表示を保つ
+                val status =
+                    if (commandWaiting) SpeechRecognitionStatus.CommandWaiting else SpeechRecognitionStatus.Listening
+                _uiState.update { it.copy(status = status, partialText = "") }
             }
 
             is SpeechRecognitionEvent.Level -> {
@@ -229,36 +314,21 @@ internal class SpeechRecognitionViewModel(
             }
 
             is SpeechRecognitionEvent.Partial -> {
-                restartIdleTimer()
                 _uiState.update { it.copy(partialText = event.text) }
+                // 呼びかけを言い終える前の途中経過で検出し、続けて話すコマンドを取りこぼさない
+                if (!paused && !commandWaiting && containsSpeechRecognitionWakeWord(listOf(event.text))) {
+                    startCommandWait()
+                }
             }
 
             is SpeechRecognitionEvent.Recognized -> {
-                restartIdleTimer()
                 _uiState.update {
                     it.copy(
                         partialText = "",
                         recognized = (listOf(event.candidates) + it.recognized).take(SPEECH_RECOGNITION_HISTORY_MAX),
                     )
                 }
-                // 各シミュレーターの語句を照合し、一致したシミュレーター宛てに依頼を発行する。
-                // 選択中のシミュレーターでなければ、そのNarrator側が依頼を無視する。ACEの照合は未対応。
-                // 音声認識の読み上げでは開始音を鳴らさない（playStartSound = false）。
-                matchLmuWindowsManualReadoutItemKey(event.candidates)?.let { itemKey ->
-                    requestManualReadoutItem(
-                        ManualReadoutItemRequest(Simulator.LmuWindows.id, itemKey, playStartSound = false),
-                    )
-                }
-                matchGt7Ps5ManualReadoutItemKey(event.candidates)?.let { itemKey ->
-                    requestManualReadoutItem(
-                        ManualReadoutItemRequest(Simulator.Gt7Ps5.id, itemKey, playStartSound = false),
-                    )
-                }
-                matchAceWindowsManualReadoutItemKey(event.candidates)?.let { itemKey ->
-                    requestManualReadoutItem(
-                        ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey, playStartSound = false),
-                    )
-                }
+                onRecognizedCandidates(event.candidates)
             }
 
             is SpeechRecognitionEvent.Failed -> {
@@ -267,9 +337,27 @@ internal class SpeechRecognitionViewModel(
         }
     }
 
+    private suspend fun onRecognizedCandidates(candidates: List<String>) {
+        when {
+            paused -> {}
+
+            !commandWaiting -> {
+                if (containsSpeechRecognitionWakeWord(candidates)) startCommandWait()
+            }
+
+            else -> {
+                if (requestManualReadoutItem.requestMatchedReadouts(candidates)) finishCommandWait()
+            }
+        }
+    }
+
     private fun onFailed(reason: SpeechRecognitionFailureReason) {
-        idleJob?.cancel()
-        idleJob = null
+        commandTimeoutJob?.cancel()
+        commandTimeoutJob = null
+        playbackJob?.cancel()
+        playbackJob = null
+        commandWaiting = false
+        paused = false
         _uiState.update {
             it.copy(
                 enabled = false,
@@ -288,4 +376,32 @@ internal class SpeechRecognitionViewModel(
             SpeechRecognitionFailureReason.NoSignal -> SpeechRecognitionStatus.NoSignal
             SpeechRecognitionFailureReason.RecognitionFailed -> SpeechRecognitionStatus.RecognitionFailed
         }
+}
+
+/**
+ * 各シミュレーターの語句を照合し、一致したシミュレーター宛てに依頼を発行する。1件でも依頼したら true。
+ * 選択中のシミュレーターでなければ、そのNarrator側が依頼を無視する。ACEの照合は未対応。
+ * 音声認識の読み上げでは開始音を鳴らさない（playStartSound = false）。
+ */
+private suspend fun RequestManualReadoutItemUseCase.requestMatchedReadouts(candidates: List<String>): Boolean {
+    var requested = false
+    matchLmuWindowsManualReadoutItemKey(candidates)?.let { itemKey ->
+        requested = true
+        this(
+            ManualReadoutItemRequest(Simulator.LmuWindows.id, itemKey, playStartSound = false),
+        )
+    }
+    matchGt7Ps5ManualReadoutItemKey(candidates)?.let { itemKey ->
+        requested = true
+        this(
+            ManualReadoutItemRequest(Simulator.Gt7Ps5.id, itemKey, playStartSound = false),
+        )
+    }
+    matchAceWindowsManualReadoutItemKey(candidates)?.let { itemKey ->
+        requested = true
+        this(
+            ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey, playStartSound = false),
+        )
+    }
+    return requested
 }

@@ -22,8 +22,10 @@ import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
+import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -58,9 +60,13 @@ class SpeechRecognitionViewModelManualReadoutTest {
             observeSpeechRecognition = ObserveSpeechRecognitionUseCase(speechRepository),
             checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(permissionRepository),
             requestManualReadoutItem = RequestManualReadoutItemUseCase(itemRequestRepository),
+            setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(FakeSpeechRecognitionModeRepository()),
+            observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
         ).also {
             viewModel = it
             it.onEnabledChange(true) {}
+            // 語句はウェイクワードの後のコマンド待ちの間だけ受け付ける
+            events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
         }
     }
 
@@ -69,6 +75,8 @@ class SpeechRecognitionViewModelManualReadoutTest {
         createListeningViewModel()
 
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
+        // 依頼を出すとウェイクワード待ちへ戻るため、次の語句にはもう一度ウェイクワードが要る
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("関係ない言葉", "じこべ")))
 
         assertEquals(
@@ -92,7 +100,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("こんにちは")))
 
         assertEquals(emptyList(), itemRequestRepository.requests)
-        assertEquals(listOf(listOf("こんにちは")), viewModel.uiState.value.recognized)
+        assertEquals(listOf(listOf("こんにちは"), listOf("ドライバー")), viewModel.uiState.value.recognized)
     }
 
     @Test
