@@ -10,6 +10,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class SimulatorDisplayTest {
     @get:Rule
@@ -128,6 +129,38 @@ class SimulatorDisplayTest {
         assertFailsWith<IllegalStateException> {
             composeRule.setContent {
                 simulatorLargeImage("unknown_simulator")
+            }
+        }
+    }
+
+    @Test
+    fun `gt7_ps5のロゴ画像を返す`() {
+        var painter by mutableStateOf<Painter?>(null)
+        composeRule.setContent {
+            painter = simulatorLogoImage("gt7_ps5")
+        }
+
+        assertNotNull(painter)
+    }
+
+    @Test
+    fun `lmu_windowsとace_windowsはロゴ画像がないためnullを返す`() {
+        var lmu by mutableStateOf<Painter?>(null)
+        var ace by mutableStateOf<Painter?>(null)
+        composeRule.setContent {
+            lmu = simulatorLogoImage("lmu_windows")
+            ace = simulatorLogoImage("ace_windows")
+        }
+
+        assertNull(lmu)
+        assertNull(ace)
+    }
+
+    @Test
+    fun `未対応のsimulatorIdを渡すとロゴ画像の取得で例外が発生する`() {
+        assertFailsWith<IllegalStateException> {
+            composeRule.setContent {
+                simulatorLogoImage("unknown_simulator")
             }
         }
     }

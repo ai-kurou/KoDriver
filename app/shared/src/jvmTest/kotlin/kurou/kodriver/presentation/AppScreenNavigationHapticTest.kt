@@ -4,6 +4,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -100,7 +101,7 @@ class AppScreenNavigationHapticTest {
         rule.onNodeWithTag("primarySimulatorNavItem").performClick()
         rule.waitForIdle()
         assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
-        rule.onNode(hasText("Gran Turismo 7（PS5）")).performClick()
+        rule.onNode(hasContentDescription("Gran Turismo 7（PS5）")).performClick()
         rule.waitForIdle()
 
         assertEquals("gt7_ps5", selectedId)
@@ -148,7 +149,7 @@ class AppScreenNavigationHapticTest {
         rule.onNodeWithTag("primarySimulatorNavItem").performClick()
         rule.waitForIdle()
         assertEquals(emptyList(), haptic.performedTypes)
-        rule.onNode(hasText("Gran Turismo 7（PS5）")).performClick()
+        rule.onNode(hasContentDescription("Gran Turismo 7（PS5）")).performClick()
         rule.waitForIdle()
 
         assertEquals("gt7_ps5", selectedId)
@@ -206,7 +207,7 @@ class AppScreenNavigationHapticTest {
         rule.onNodeWithTag("primarySimulatorNavItem").performClick()
         rule.waitForIdle()
         assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
-        rule.onNode(hasText("Gran Turismo 7（PS5）")).performClick()
+        rule.onNode(hasContentDescription("Gran Turismo 7（PS5）")).performClick()
         rule.waitForIdle()
 
         assertEquals("gt7_ps5", selectedId)
@@ -254,7 +255,7 @@ class AppScreenNavigationHapticTest {
         rule.onNodeWithTag("primarySimulatorNavItem").performClick()
         rule.waitForIdle()
         assertEquals(emptyList(), haptic.performedTypes)
-        rule.onNode(hasText("Gran Turismo 7（PS5）")).performClick()
+        rule.onNode(hasContentDescription("Gran Turismo 7（PS5）")).performClick()
         rule.waitForIdle()
 
         assertEquals("gt7_ps5", selectedId)
