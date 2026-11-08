@@ -3,7 +3,6 @@ package kurou.kodriver.core.speechrecognitiondata.speech
 import android.content.Context
 import android.content.res.AssetManager
 import kurou.kodriver.domain.model.MICROPHONE_SAMPLE_RATE_HZ
-import kurou.kodriver.domain.model.SpeechRecognitionMode
 import org.vosk.LibVosk
 import org.vosk.LogLevel
 import org.vosk.Model
@@ -12,9 +11,6 @@ import java.io.File
 
 /** アプリに同梱した日本語モデルの assets 内のディレクトリ名。 */
 internal const val VOSK_MODEL_ASSET_DIRECTORY = "vosk-model-ja"
-
-/** 確定結果で返してもらう候補の最大数。 */
-private const val MAX_ALTERNATIVES = 5
 
 /**
  * assets に同梱した日本語モデルから [SpeechTranscriber] を作る。モデルが同梱されていないビルドでは利用不可になる。
@@ -40,7 +36,11 @@ internal class AndroidVoskSpeechTranscriberFactory(
         return try {
             commandRecognizer = Recognizer(model, MICROPHONE_SAMPLE_RATE_HZ.toFloat())
             wakeWordRecognizer = Recognizer(model, MICROPHONE_SAMPLE_RATE_HZ.toFloat(), wakeWordGrammar())
-            AndroidVoskSpeechTranscriber(model, commandRecognizer, wakeWordRecognizer)
+            ModeSwitchingTranscriber(
+                VoskRecognizerAdapter(commandRecognizer),
+                VoskRecognizerAdapter(wakeWordRecognizer),
+                model::close,
+            )
         } catch (e: Exception) {
             // 呼び出し側は閉じる対象を受け取れないため、作成済みのネイティブ資源はここで解放する
             wakeWordRecognizer?.close()
@@ -74,42 +74,22 @@ internal class AndroidVoskSpeechTranscriberFactory(
     }
 }
 
-internal class AndroidVoskSpeechTranscriber(
-    private val model: Model,
-    private val commandRecognizer: Recognizer,
-    private val wakeWordRecognizer: Recognizer,
-) : SpeechTranscriber {
-    /** 現在の認識に使う Recognizer。読み上げ中は null で、音声を捨てる。 */
-    private var active: Recognizer? = wakeWordRecognizer
+/** Vosk の [Recognizer] を [VoskRecognizerPort] として扱う薄いアダプター。 */
+internal class VoskRecognizerAdapter(
+    private val recognizer: Recognizer,
+) : VoskRecognizerPort {
+    override fun setMaxAlternatives(count: Int) = recognizer.setMaxAlternatives(count)
 
-    init {
-        commandRecognizer.setMaxAlternatives(MAX_ALTERNATIVES)
-        wakeWordRecognizer.setMaxAlternatives(MAX_ALTERNATIVES)
-    }
+    override fun acceptWaveForm(
+        pcm: ByteArray,
+        size: Int,
+    ): Boolean = recognizer.acceptWaveForm(pcm, size)
 
-    override fun accept(pcm: ByteArray): SpeechTranscript? {
-        val recognizer = active ?: return null
-        return if (recognizer.acceptWaveForm(pcm, pcm.size)) {
-            parseVoskFinal(recognizer.result)
-        } else {
-            parseVoskPartial(recognizer.partialResult)
-        }
-    }
+    override fun result(): String = recognizer.result
 
-    override fun setMode(mode: SpeechRecognitionMode) {
-        active =
-            when (mode) {
-                SpeechRecognitionMode.WakeWord -> wakeWordRecognizer
-                SpeechRecognitionMode.Command -> commandRecognizer
-                SpeechRecognitionMode.Paused -> null
-            }
-        // 切り替え前の途中経過や音声を引き継がない
-        active?.reset()
-    }
+    override fun partialResult(): String = recognizer.partialResult
 
-    override fun close() {
-        wakeWordRecognizer.close()
-        commandRecognizer.close()
-        model.close()
-    }
+    override fun reset() = recognizer.reset()
+
+    override fun close() = recognizer.close()
 }
