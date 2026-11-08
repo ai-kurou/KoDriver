@@ -19,6 +19,7 @@ import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutItemKey
 import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.SpeechRecognitionChime
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.model.SpeechRecognitionMode
@@ -67,7 +68,7 @@ internal class SpeechRecognitionViewModel(
     /** ウェイクワードの検出から [SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS] 経つと、ウェイクワード待ちへ戻す。 */
     private var commandTimeoutJob: Job? = null
 
-    /** ウェイクワードの検出を知らせる確認音。コマンド待ちを遅らせないよう、別のJobで鳴らす。 */
+    /** ウェイクワードの検出やコマンド待ちの時間切れを知らせる確認音。コマンド待ちを遅らせないよう、別のJobで鳴らす。 */
     private var chimeJob: Job? = null
 
     /** 読み上げの再生状態を購読し、再生中は聞き取りを止める。 */
@@ -217,29 +218,33 @@ internal class SpeechRecognitionViewModel(
     private fun startCommandWait() {
         commandWaiting = true
         applyMode()
-        // 鳴らせなくてもコマンド待ちは続けるため、失敗は種類だけ記録して握りつぶす
+        launchChime(SpeechRecognitionChime.WakeWordDetected)
+        _uiState.update { it.copy(status = SpeechRecognitionStatus.CommandWaiting, partialText = "") }
+        commandTimeoutJob?.cancel()
+        commandTimeoutJob =
+            viewModelScope.launch {
+                delay(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
+                finishCommandWait(timedOut = true)
+            }
+    }
+
+    /** 確認音を別のJobで鳴らす。鳴らせなくてもコマンド待ちは続けるため、失敗は種類だけ記録して握りつぶす。 */
+    private fun launchChime(chime: SpeechRecognitionChime) {
         chimeJob?.cancel()
         chimeJob =
             viewModelScope.launch {
                 try {
-                    playChime()
+                    playChime(chime)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
                     captureErrorTypeOnly(e)
                 }
             }
-        _uiState.update { it.copy(status = SpeechRecognitionStatus.CommandWaiting, partialText = "") }
-        commandTimeoutJob?.cancel()
-        commandTimeoutJob =
-            viewModelScope.launch {
-                delay(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
-                finishCommandWait()
-            }
     }
 
-    /** コマンド待ちを終えてウェイクワード待ちへ戻す。 */
-    private fun finishCommandWait() {
+    /** コマンド待ちを終えてウェイクワード待ちへ戻す。[timedOut] なら、通じなかったことを下降音で知らせる。 */
+    private fun finishCommandWait(timedOut: Boolean = false) {
         commandTimeoutJob?.cancel()
         commandTimeoutJob = null
         chimeJob?.cancel()
@@ -247,6 +252,7 @@ internal class SpeechRecognitionViewModel(
         commandWaiting = false
         applyMode()
         _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
+        if (timedOut) launchChime(SpeechRecognitionChime.CommandTimedOut)
     }
 
     private fun observePlayback() {
@@ -411,16 +417,16 @@ internal class SpeechRecognitionViewModel(
             )
         }
     }
-
-    private fun SpeechRecognitionFailureReason.toStatus(): SpeechRecognitionStatus =
-        when (this) {
-            SpeechRecognitionFailureReason.PermissionDenied -> SpeechRecognitionStatus.PermissionDenied
-            SpeechRecognitionFailureReason.Unavailable -> SpeechRecognitionStatus.Unavailable
-            SpeechRecognitionFailureReason.MicrophoneUnavailable -> SpeechRecognitionStatus.MicrophoneUnavailable
-            SpeechRecognitionFailureReason.NoSignal -> SpeechRecognitionStatus.NoSignal
-            SpeechRecognitionFailureReason.RecognitionFailed -> SpeechRecognitionStatus.RecognitionFailed
-        }
 }
+
+private fun SpeechRecognitionFailureReason.toStatus(): SpeechRecognitionStatus =
+    when (this) {
+        SpeechRecognitionFailureReason.PermissionDenied -> SpeechRecognitionStatus.PermissionDenied
+        SpeechRecognitionFailureReason.Unavailable -> SpeechRecognitionStatus.Unavailable
+        SpeechRecognitionFailureReason.MicrophoneUnavailable -> SpeechRecognitionStatus.MicrophoneUnavailable
+        SpeechRecognitionFailureReason.NoSignal -> SpeechRecognitionStatus.NoSignal
+        SpeechRecognitionFailureReason.RecognitionFailed -> SpeechRecognitionStatus.RecognitionFailed
+    }
 
 /**
  * 選択中のシミュレーターの語句だけを照合し、一致したら依頼を発行する。依頼したら true。

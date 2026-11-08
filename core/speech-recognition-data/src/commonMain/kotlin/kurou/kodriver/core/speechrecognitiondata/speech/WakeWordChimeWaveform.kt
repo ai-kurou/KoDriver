@@ -1,5 +1,6 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
+import kurou.kodriver.domain.model.SpeechRecognitionChime
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -10,6 +11,10 @@ private const val FIRST_TONE_HZ = 880.0
 private const val SECOND_TONE_HZ = 1_318.5
 private const val FIRST_TONE_MS = 90
 private const val SECOND_TONE_MS = 130
+private const val TIMEOUT_FIRST_TONE_HZ = 660.0
+private const val TIMEOUT_SECOND_TONE_HZ = 440.0
+private const val TIMEOUT_FIRST_TONE_MS = 90
+private const val TIMEOUT_SECOND_TONE_MS = 110
 private const val FADE_MS = 8
 
 /** 振幅（満振幅に対する割合）。大きすぎて驚かせず、走行中でも聞き取れる程度にする。 */
@@ -25,6 +30,30 @@ internal fun wakeWordChimePcm(): ShortArray = tone(FIRST_TONE_HZ, FIRST_TONE_MS)
 
 /** [wakeWordChimePcm] の再生時間（ミリ秒）。 */
 internal const val WAKE_WORD_CHIME_DURATION_MS = FIRST_TONE_MS + SECOND_TONE_MS
+
+/**
+ * コマンドが一致しないまま待ち時間が過ぎたときの確認音（短い下降2音、モノラル16ビットPCM）を生成する。
+ * [wakeWordChimePcm] と逆向きの音程にして、画面を見なくても「通じなかった」と聞き分けられるようにする。
+ */
+internal fun commandTimeoutChimePcm(): ShortArray =
+    tone(TIMEOUT_FIRST_TONE_HZ, TIMEOUT_FIRST_TONE_MS) + tone(TIMEOUT_SECOND_TONE_HZ, TIMEOUT_SECOND_TONE_MS)
+
+/** [commandTimeoutChimePcm] の再生時間（ミリ秒）。 */
+internal const val COMMAND_TIMEOUT_CHIME_DURATION_MS = TIMEOUT_FIRST_TONE_MS + TIMEOUT_SECOND_TONE_MS
+
+/** [chime] の波形。 */
+internal fun SpeechRecognitionChime.pcm(): ShortArray =
+    when (this) {
+        SpeechRecognitionChime.WakeWordDetected -> wakeWordChimePcm()
+        SpeechRecognitionChime.CommandTimedOut -> commandTimeoutChimePcm()
+    }
+
+/** [chime] の再生時間（ミリ秒）。 */
+internal fun SpeechRecognitionChime.durationMs(): Int =
+    when (this) {
+        SpeechRecognitionChime.WakeWordDetected -> WAKE_WORD_CHIME_DURATION_MS
+        SpeechRecognitionChime.CommandTimedOut -> COMMAND_TIMEOUT_CHIME_DURATION_MS
+    }
 
 private fun tone(
     frequencyHz: Double,
