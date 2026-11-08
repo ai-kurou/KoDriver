@@ -4,7 +4,7 @@
     <string name="speech_recognition_switch_description">音声認識の聞き取りを切り替え</string>
     <string name="speech_recognition_status_stopped">停止中</string>
     <string name="speech_recognition_status_starting">準備中(マイクを使用中)</string>
-    <string name="speech_recognition_status_listening">「ドライバー」の呼びかけを待っています(マイクを使用中)</string>
+    <string name="speech_recognition_status_listening">「コドライバー」の呼びかけを待っています(マイクを使用中)</string>
     <string name="speech_recognition_status_command_waiting">コマンドを聞き取り中(マイクを使用中)</string>
     <string name="speech_recognition_status_permission_denied">マイクの権限が許可されていません</string>
     <string name="speech_recognition_status_unavailable">この端末では音声認識を利用できません</string>

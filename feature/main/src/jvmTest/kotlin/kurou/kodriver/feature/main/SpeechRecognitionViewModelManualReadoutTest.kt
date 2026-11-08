@@ -71,7 +71,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
             viewModel = it
             it.onEnabledChange(true) {}
             // 語句はウェイクワードの後のコマンド待ちの間だけ受け付ける
-            events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+            events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         }
     }
 
@@ -81,7 +81,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
 
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
         // 依頼を出すとウェイクワード待ちへ戻るため、次の語句にはもう一度ウェイクワードが要る
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("関係ない言葉", "じこべ")))
 
         assertEquals(
@@ -139,7 +139,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("こんにちは")))
 
         assertEquals(emptyList(), itemRequestRepository.requests)
-        assertEquals(listOf(listOf("こんにちは"), listOf("ドライバー")), viewModel.uiState.value.recognized)
+        assertEquals(listOf(listOf("こんにちは"), listOf("コドライバー")), viewModel.uiState.value.recognized)
     }
 
     @Test
@@ -166,7 +166,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
 
         // 次のウェイクワードとコマンドは、失敗の後でも受け付ける
         itemRequestRepository.failure = null
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
 
         assertEquals(
