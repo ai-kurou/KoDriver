@@ -17,14 +17,17 @@ internal class AndroidSpeechRecognitionChimePlayer(
     private val createTrack: (ShortArray) -> AudioTrack = ::buildStaticChimeTrack,
 ) : SpeechRecognitionChimePlayer {
     override suspend fun play() {
-        // 波形の生成とAudioTrackの確保はメインスレッドを塞がないようIOで行う
-        val track = withContext(Dispatchers.IO) { createTrack(wakeWordChimePcm()) }
+        var created: AudioTrack? = null
         try {
+            // 波形の生成とAudioTrackの確保はメインスレッドを塞がないようIOで行う。
+            // 生成中に取り消されると withContext は結果を捨てるため、作ったトラックはブロック内で控えて finally で解放する
+            withContext(Dispatchers.IO) { created = createTrack(wakeWordChimePcm()) }
+            val track = checkNotNull(created)
             track.play()
             // 静的トラックは再生完了を通知しないため、再生時間だけ待ってから解放する
             delay(WAKE_WORD_CHIME_DURATION_MS.toLong())
         } finally {
-            track.release()
+            created?.release()
         }
     }
 }

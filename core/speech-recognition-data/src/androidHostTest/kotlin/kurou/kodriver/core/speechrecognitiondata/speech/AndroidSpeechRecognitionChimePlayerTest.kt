@@ -8,6 +8,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -53,6 +55,28 @@ class AndroidSpeechRecognitionChimePlayerTest {
 
             assertEquals("play failed", error.message)
             verify(exactly = 1) { track.play() }
+            verify(exactly = 1) { track.release() }
+            confirmVerified(track)
+        }
+
+    @Test
+    fun `トラックの生成中に取り消されても再生せずにトラックを解放する`() =
+        runTest {
+            every { track.release() } returns Unit
+            var job: Job? = null
+            job =
+                launch {
+                    AndroidSpeechRecognitionChimePlayer(
+                        createTrack = {
+                            job?.cancel()
+                            track
+                        },
+                    ).play()
+                }
+
+            job.join()
+
+            assertEquals(true, job.isCancelled)
             verify(exactly = 1) { track.release() }
             confirmVerified(track)
         }
