@@ -40,6 +40,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.core.designsystem.simulatorLargeImage
+import kurou.kodriver.core.designsystem.simulatorLogoImage
 import kurou.kodriver.core.designsystem.simulatorShortName
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.main.generated.resources.Res
@@ -73,6 +74,7 @@ private val SimulatorCardWidth = 320.dp
 private val SimulatorCardHeight = 180.dp
 private val SimulatorCardSpacing = KoDriverSpacing.large
 private val SimulatorPopupMaxHeight = 480.dp
+private const val SIMULATOR_CARD_LOGO_SIZE_FRACTION = 0.7f
 private val SimulatorCardImageBlur = 2.dp
 private val SimulatorCardSelectedBorderWidth = 2.dp
 private val SimulatorCardCheckBadgeSize = 28.dp
@@ -142,6 +144,7 @@ private fun SimulatorCard(
     modifier: Modifier = Modifier,
 ) {
     val displayName = simulatorDisplayName(simulatorId)
+    val logo = simulatorLogoImage(simulatorId)
     Card(
         onClick = onClick,
         modifier = modifier.width(SimulatorCardWidth).height(SimulatorCardHeight),
@@ -157,7 +160,7 @@ private fun SimulatorCard(
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
                 painter = simulatorLargeImage(simulatorId),
-                contentDescription = displayName,
+                contentDescription = if (logo == null) displayName else null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize().blur(SimulatorCardImageBlur),
             )
@@ -169,12 +172,21 @@ private fun SimulatorCard(
                         .padding(KoDriverSpacing.medium),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = displayName,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                )
+                if (logo != null) {
+                    Image(
+                        painter = logo,
+                        contentDescription = displayName,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize(SIMULATOR_CARD_LOGO_SIZE_FRACTION),
+                    )
+                } else {
+                    Text(
+                        text = displayName,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
             if (selected) {
                 Box(
