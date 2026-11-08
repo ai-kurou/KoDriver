@@ -27,6 +27,7 @@ import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechRecognitionChimeUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 
@@ -42,6 +43,7 @@ internal const val SPEECH_RECOGNITION_RESUME_DELAY_MS = 500L
  * ウェイクワードを待つ→検出したらコマンドを [SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS] だけ待つ→ウェイクワード待ちへ戻る、
  * の順に動く。コマンドは待っている間だけ読み上げ項目の語句と照合する。読み上げ中は自分の音声を拾わないよう聞き取りを止める。
  */
+@Suppress("LongParameterList")
 internal class SpeechRecognitionViewModel(
     private val observeSpeechRecognition: ObserveSpeechRecognitionUseCase,
     private val checkRecordAudioPermissionGranted: CheckRecordAudioPermissionGrantedUseCase,
@@ -49,6 +51,7 @@ internal class SpeechRecognitionViewModel(
     private val setSpeechRecognitionMode: SetSpeechRecognitionModeUseCase,
     private val observeSpeechPlaybackActive: ObserveSpeechPlaybackActiveUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+    private val playChime: PlaySpeechRecognitionChimeUseCase,
     /** 入力デバイスの一覧と選択。デバイスを選べないプラットフォーム（Android）では null。 */
     private val audioInputDeviceSelector: AudioInputDeviceSelector? = null,
 ) : ViewModel() {
@@ -63,6 +66,9 @@ internal class SpeechRecognitionViewModel(
 
     /** ウェイクワードの検出から [SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS] 経つと、ウェイクワード待ちへ戻す。 */
     private var commandTimeoutJob: Job? = null
+
+    /** ウェイクワードの検出を知らせる確認音。コマンド待ちを遅らせないよう、別のJobで鳴らす。 */
+    private var chimeJob: Job? = null
 
     /** 読み上げの再生状態を購読し、再生中は聞き取りを止める。 */
     private var playbackJob: Job? = null
@@ -188,6 +194,8 @@ internal class SpeechRecognitionViewModel(
         listenJob = null
         commandTimeoutJob?.cancel()
         commandTimeoutJob = null
+        chimeJob?.cancel()
+        chimeJob = null
         playbackJob?.cancel()
         playbackJob = null
         commandWaiting = false
@@ -205,10 +213,22 @@ internal class SpeechRecognitionViewModel(
         )
     }
 
-    /** ウェイクワードを検出した。コマンドを待ち始め、時間切れでウェイクワード待ちへ戻す。 */
+    /** ウェイクワードを検出した。確認音を鳴らしてコマンドを待ち始め、時間切れでウェイクワード待ちへ戻す。 */
     private fun startCommandWait() {
         commandWaiting = true
         applyMode()
+        // 鳴らせなくてもコマンド待ちは続けるため、失敗は種類だけ記録して握りつぶす
+        chimeJob?.cancel()
+        chimeJob =
+            viewModelScope.launch {
+                try {
+                    playChime()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    captureErrorTypeOnly(e)
+                }
+            }
         _uiState.update { it.copy(status = SpeechRecognitionStatus.CommandWaiting, partialText = "") }
         commandTimeoutJob?.cancel()
         commandTimeoutJob =
@@ -222,6 +242,8 @@ internal class SpeechRecognitionViewModel(
     private fun finishCommandWait() {
         commandTimeoutJob?.cancel()
         commandTimeoutJob = null
+        chimeJob?.cancel()
+        chimeJob = null
         commandWaiting = false
         applyMode()
         _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
@@ -251,6 +273,9 @@ internal class SpeechRecognitionViewModel(
     private fun pause() {
         commandTimeoutJob?.cancel()
         commandTimeoutJob = null
+        // 確認音が読み上げに重ならないよう、鳴っていれば止める
+        chimeJob?.cancel()
+        chimeJob = null
         commandWaiting = false
         paused = true
         applyMode()
@@ -363,6 +388,8 @@ internal class SpeechRecognitionViewModel(
     private fun onFailed(reason: SpeechRecognitionFailureReason) {
         commandTimeoutJob?.cancel()
         commandTimeoutJob = null
+        chimeJob?.cancel()
+        chimeJob = null
         playbackJob?.cancel()
         playbackJob = null
         commandWaiting = false

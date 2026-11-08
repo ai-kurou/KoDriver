@@ -2,9 +2,11 @@ package kurou.kodriver.core.speechrecognitiondata
 
 import android.content.Context
 import kurou.kodriver.core.speechrecognitiondata.device.AndroidRecordAudioPermissionRepository
+import kurou.kodriver.core.speechrecognitiondata.speech.AndroidSpeechRecognitionChimePlayer
 import kurou.kodriver.core.speechrecognitiondata.speech.AndroidVoskSpeechRecognitionRepository
 import kurou.kodriver.core.speechrecognitiondata.speech.AndroidVoskSpeechTranscriberFactory
 import kurou.kodriver.core.speechrecognitiondata.speech.AudioRecordPcmRecorder
+import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import org.koin.dsl.module
@@ -27,4 +29,6 @@ val speechRecognitionDataModule =
                 permissionRepository = get(),
             )
         }
+        // ウェイクワード検出時の確認音（読み上げの開始音とは別の音）
+        single<SpeechRecognitionChimePlayer> { AndroidSpeechRecognitionChimePlayer() }
     }

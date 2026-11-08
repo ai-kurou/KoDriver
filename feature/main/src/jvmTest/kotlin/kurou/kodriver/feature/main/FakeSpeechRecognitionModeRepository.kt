@@ -1,9 +1,12 @@
 package kurou.kodriver.feature.main
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
@@ -32,5 +35,28 @@ internal class FakeSpeechPlaybackStateRepository : SpeechPlaybackStateRepository
         active: Boolean,
     ) {
         this.active.value = active
+    }
+}
+
+/** 確認音の再生回数を数えるフェイク。[failure] を設定すると再生時にその例外を投げる。 */
+internal class FakeSpeechRecognitionChimePlayer : SpeechRecognitionChimePlayer {
+    var playCount = 0
+    var failure: Exception? = null
+
+    /** true の間は再生が終わらず、取り消されたときに [cancelled] を立てる。 */
+    var holdPlayback = false
+    var cancelled = false
+
+    override suspend fun play() {
+        playCount++
+        failure?.let { throw it }
+        if (holdPlayback) {
+            try {
+                awaitCancellation()
+            } catch (e: CancellationException) {
+                cancelled = true
+                throw e
+            }
+        }
     }
 }

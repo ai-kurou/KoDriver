@@ -22,6 +22,7 @@ import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechRecognitionChimeUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 import kotlin.test.AfterTest
@@ -38,6 +39,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     private val itemRequestRepository = FakeManualReadoutItemRequestRepository()
     private val modeRepository = FakeSpeechRecognitionModeRepository()
     private val playbackRepository = FakeSpeechPlaybackStateRepository()
+    private val chimePlayer = FakeSpeechRecognitionChimePlayer()
     private val events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = 16)
     private val dispatcher = UnconfinedTestDispatcher()
     private var viewModel: SpeechRecognitionViewModel? = null
@@ -67,6 +69,7 @@ class SpeechRecognitionViewModelWakeWordTest {
             setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(modeRepository),
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(playbackRepository),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSelectedSimulatorRepository()),
+            playChime = PlaySpeechRecognitionChimeUseCase(chimePlayer),
         ).also {
             viewModel = it
             it.onEnabledChange(true) {}
@@ -100,6 +103,48 @@ class SpeechRecognitionViewModelWakeWordTest {
 
         assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
         assertEquals(listOf(SpeechRecognitionMode.Command), modeRepository.modes)
+    }
+
+    @Test
+    fun `ウェイクワードを検出すると確認音を1回鳴らす`() {
+        createListeningViewModel()
+
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+
+        assertEquals(1, chimePlayer.playCount)
+    }
+
+    @Test
+    fun `ウェイクワードの途中経過で検出しても確認音は1回で、続く確定結果では鳴らさない`() {
+        createListeningViewModel()
+
+        events.tryEmit(SpeechRecognitionEvent.Partial("ドライバー"))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+
+        assertEquals(1, chimePlayer.playCount)
+    }
+
+    @Test
+    fun `ウェイクワードを検出していないときは確認音を鳴らさない`() {
+        createListeningViewModel()
+
+        events.tryEmit(SpeechRecognitionEvent.Partial("燃料"))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("こんにちは")))
+
+        assertEquals(0, chimePlayer.playCount)
+    }
+
+    @Test
+    fun `確認音の再生に失敗してもコマンド待ちを続け、コマンドを受け付ける`() {
+        chimePlayer.failure = IllegalStateException("chime failed")
+        createListeningViewModel()
+
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+
+        assertEquals(1, chimePlayer.playCount)
+        assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
+        assertEquals(1, itemRequestRepository.requests.size)
     }
 
     @Test
@@ -208,6 +253,29 @@ class SpeechRecognitionViewModelWakeWordTest {
         )
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
         assertEquals(listOf(SpeechRecognitionMode.Command, SpeechRecognitionMode.Paused), modeRepository.modes)
+    }
+
+    @Test
+    fun `確認音が鳴っている間に読み上げが始まったら確認音を止める`() {
+        chimePlayer.holdPlayback = true
+        createListeningViewModel()
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        assertEquals(false, chimePlayer.cancelled)
+
+        playbackRepository.update("lmu_windows", true)
+
+        assertEquals(true, chimePlayer.cancelled)
+    }
+
+    @Test
+    fun `確認音が鳴っている間にコマンド待ちが時間切れになったら確認音を止める`() {
+        chimePlayer.holdPlayback = true
+        createListeningViewModel()
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+
+        advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
+
+        assertEquals(true, chimePlayer.cancelled)
     }
 
     @Test

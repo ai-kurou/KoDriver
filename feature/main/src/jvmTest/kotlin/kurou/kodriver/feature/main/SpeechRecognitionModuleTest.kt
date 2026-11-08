@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
@@ -58,6 +59,7 @@ class SpeechRecognitionModuleTest {
                         single<ManualReadoutItemRequestRepository> { FakeManualReadoutItemRequestRepository() }
                         single<SpeechPlaybackStateRepository> { FakeSpeechPlaybackStateRepository() }
                         single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
+                        single<SpeechRecognitionChimePlayer> { FakeSpeechRecognitionChimePlayer() }
                     },
                 )
             }
@@ -94,6 +96,7 @@ class SpeechRecognitionModuleTest {
                         single<ManualReadoutItemRequestRepository> { FakeManualReadoutItemRequestRepository() }
                         single<SpeechPlaybackStateRepository> { FakeSpeechPlaybackStateRepository() }
                         single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
+                        single<SpeechRecognitionChimePlayer> { FakeSpeechRecognitionChimePlayer() }
                         single<AudioInputDeviceRepository> { deviceRepository }
                         single<SelectedAudioInputDevicePreferencesRepository> {
                             FakeSelectedAudioInputDevicePreferencesRepository()

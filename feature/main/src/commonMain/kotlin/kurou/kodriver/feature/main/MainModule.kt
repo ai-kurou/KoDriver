@@ -22,6 +22,7 @@ import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryReceivingUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechRecognitionChimeUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
@@ -59,6 +60,7 @@ val mainModule =
                 setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(get()),
                 observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(get()),
                 observeSelectedSimulator = ObserveSelectedSimulatorUseCase(get()),
+                playChime = PlaySpeechRecognitionChimeUseCase(get()),
                 audioInputDeviceSelector =
                     if (deviceRepository != null && selectedDeviceRepository != null) {
                         AudioInputDeviceSelector(
