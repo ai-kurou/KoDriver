@@ -3,7 +3,9 @@ package kurou.kodriver.core.speechrecognitiondata.speech
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioTrack
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
 
 /**
@@ -15,7 +17,8 @@ internal class AndroidSpeechRecognitionChimePlayer(
     private val createTrack: (ShortArray) -> AudioTrack = ::buildStaticChimeTrack,
 ) : SpeechRecognitionChimePlayer {
     override suspend fun play() {
-        val track = createTrack(wakeWordChimePcm())
+        // 波形の生成とAudioTrackの確保はメインスレッドを塞がないようIOで行う
+        val track = withContext(Dispatchers.IO) { createTrack(wakeWordChimePcm()) }
         try {
             track.play()
             // 静的トラックは再生完了を通知しないため、再生時間だけ待ってから解放する

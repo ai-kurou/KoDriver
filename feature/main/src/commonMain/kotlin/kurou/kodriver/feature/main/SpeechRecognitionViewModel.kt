@@ -242,6 +242,8 @@ internal class SpeechRecognitionViewModel(
     private fun finishCommandWait() {
         commandTimeoutJob?.cancel()
         commandTimeoutJob = null
+        chimeJob?.cancel()
+        chimeJob = null
         commandWaiting = false
         applyMode()
         _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
@@ -271,6 +273,9 @@ internal class SpeechRecognitionViewModel(
     private fun pause() {
         commandTimeoutJob?.cancel()
         commandTimeoutJob = null
+        // 確認音が読み上げに重ならないよう、鳴っていれば止める
+        chimeJob?.cancel()
+        chimeJob = null
         commandWaiting = false
         paused = true
         applyMode()

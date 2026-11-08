@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.main
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,8 +43,20 @@ internal class FakeSpeechRecognitionChimePlayer : SpeechRecognitionChimePlayer {
     var playCount = 0
     var failure: Exception? = null
 
+    /** true の間は再生が終わらず、取り消されたときに [cancelled] を立てる。 */
+    var holdPlayback = false
+    var cancelled = false
+
     override suspend fun play() {
         playCount++
         failure?.let { throw it }
+        if (holdPlayback) {
+            try {
+                awaitCancellation()
+            } catch (e: CancellationException) {
+                cancelled = true
+                throw e
+            }
+        }
     }
 }

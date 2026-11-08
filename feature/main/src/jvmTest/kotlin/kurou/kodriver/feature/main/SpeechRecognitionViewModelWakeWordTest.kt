@@ -256,6 +256,29 @@ class SpeechRecognitionViewModelWakeWordTest {
     }
 
     @Test
+    fun `確認音が鳴っている間に読み上げが始まったら確認音を止める`() {
+        chimePlayer.holdPlayback = true
+        createListeningViewModel()
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        assertEquals(false, chimePlayer.cancelled)
+
+        playbackRepository.update("lmu_windows", true)
+
+        assertEquals(true, chimePlayer.cancelled)
+    }
+
+    @Test
+    fun `確認音が鳴っている間にコマンド待ちが時間切れになったら確認音を止める`() {
+        chimePlayer.holdPlayback = true
+        createListeningViewModel()
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+
+        advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
+
+        assertEquals(true, chimePlayer.cancelled)
+    }
+
+    @Test
     fun `読み上げ中はウェイクワードや語句を受け付けない`() {
         createListeningViewModel()
         playbackRepository.update("lmu_windows", true)
