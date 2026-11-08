@@ -374,11 +374,19 @@ internal class SpeechRecognitionViewModel(
             }
 
             else -> {
-                if (requestManualReadoutItem.requestMatchedReadouts(
-                        observeSelectedSimulator().first(),
-                        candidates,
-                    )
-                ) {
+                try {
+                    if (requestManualReadoutItem.requestMatchedReadouts(
+                            observeSelectedSimulator().first(),
+                            candidates,
+                        )
+                    ) {
+                        finishCommandWait()
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    // 1回の依頼に失敗しても聞き取り全体は止めない。種類だけ記録してウェイクワード待ちへ戻る
+                    captureErrorTypeOnly(e)
                     finishCommandWait()
                 }
             }
