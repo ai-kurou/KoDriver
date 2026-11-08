@@ -83,13 +83,48 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     // 再生側の待機ジョブが割り込みでキャンセルされても、過去の停止完了待ちを保持する。
     private var stopBarrier: Job = Job().apply { complete() }
 
+    // 開始音だけの再生（試聴など）は _currentKey を使わないため、別に持つ。音声認識が自分の再生音を拾わないよう、
+    // 読み上げと同じく再生中として通知する。
+    @Volatile
+    private var soundOnlyPlaying: Boolean = false
+
+    // onPlaybackActiveChanged へ最後に通知した値。_currentKey と soundOnlyPlaying のどちらかが立っている間は再生中。
+    @Volatile
+    private var reportedActive: Boolean = false
+
     @Volatile
     private var _currentKey: KEY? = null
         set(value) {
-            val wasActive = field != null
             field = value
-            if (wasActive != (value != null)) onPlaybackActiveChanged(value != null)
+            reportPlaybackActive()
         }
+
+    private fun reportPlaybackActive() {
+        val active = _currentKey != null || soundOnlyPlaying
+        if (active == reportedActive) return
+        reportedActive = active
+        onPlaybackActiveChanged(active)
+    }
+
+    /**
+     * 開始音だけを鳴らす。再生中として通知するのは、前の再生の停止完了を待った後から音が終わる（または中断される）まで。
+     * 前の再生のキャンセルで走る finally がこの再生の開始後に動かないよう、停止完了の後で立てる。
+     */
+    private suspend fun playSoundOnly(
+        sound: ByteArray,
+        barrier: Job,
+    ) {
+        barrier.join()
+        soundOnlyPlaying = true
+        try {
+            // 開始の通知が例外で失敗しても finally でフラグを戻せるよう、try の中で通知する
+            reportPlaybackActive()
+            soundPlayer.play(sound, currentVolume)
+        } finally {
+            soundOnlyPlaying = false
+            reportPlaybackActive()
+        }
+    }
 
     // playJob がアクティブな間だけ再生中のキーを返す。
     // キャンセル後に古いジョブが _currentKey を上書きしないよう playJob で二重確認する。
@@ -282,10 +317,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         val barrier = cancelPlayback()
         playbackScope = newPlaybackScope()
         playJob =
-            playbackScope.launch {
-                barrier.join()
-                soundPlayer.play(sound, currentVolume)
-            }
+            playbackScope.launch { playSoundOnly(sound, barrier) }
     }
 
     /**
@@ -299,11 +331,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         val sound = startSounds[currentStartSoundType] ?: return
         val barrier = cancelPlayback()
         playbackScope = newPlaybackScope()
-        val job =
-            playbackScope.launch {
-                barrier.join()
-                soundPlayer.play(sound, currentVolume)
-            }
+        val job = playbackScope.launch { playSoundOnly(sound, barrier) }
         playJob = job
         try {
             job.join()
