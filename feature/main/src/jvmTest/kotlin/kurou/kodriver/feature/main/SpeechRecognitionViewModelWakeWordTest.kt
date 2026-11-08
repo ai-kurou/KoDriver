@@ -99,7 +99,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     fun `ウェイクワードの確定結果でコマンド待ちになりモードを切り替える`() {
         createListeningViewModel()
 
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
         assertEquals(listOf(SpeechRecognitionMode.Command), modeRepository.modes)
@@ -109,7 +109,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     fun `ウェイクワードを検出すると確認音を1回鳴らす`() {
         createListeningViewModel()
 
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         assertEquals(1, chimePlayer.playCount)
     }
@@ -118,8 +118,8 @@ class SpeechRecognitionViewModelWakeWordTest {
     fun `ウェイクワードの途中経過で検出しても確認音は1回で、続く確定結果では鳴らさない`() {
         createListeningViewModel()
 
-        events.tryEmit(SpeechRecognitionEvent.Partial("ドライバー"))
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Partial("コドライバー"))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         assertEquals(1, chimePlayer.playCount)
     }
@@ -139,7 +139,7 @@ class SpeechRecognitionViewModelWakeWordTest {
         chimePlayer.failure = IllegalStateException("chime failed")
         createListeningViewModel()
 
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         assertEquals(1, chimePlayer.playCount)
         assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
@@ -171,7 +171,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `コマンド待ちの間に語句に一致すると依頼を発行してウェイクワード待ちへ戻る`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("じこべ")))
 
@@ -186,7 +186,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `コマンド待ちの間に語句に一致しない確定結果が来てもコマンド待ちを続ける`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("こんにちは")))
 
@@ -198,10 +198,10 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `コマンド待ちの間にもう一度ウェイクワードが来ても待ち時間は延ばさずモードも変えない`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS - 1)
 
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         advanceBy(1)
 
         assertEquals(SpeechRecognitionStatus.Listening, status)
@@ -214,7 +214,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `コマンドが来ないまま時間切れになるとウェイクワード待ちへ戻る`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS - 1)
         assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
@@ -231,7 +231,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `時間切れの後は語句に一致しても依頼を発行しない`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
 
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("じこべ")))
@@ -242,7 +242,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `読み上げが始まるとコマンド待ちを打ち切って聞き取りを止める`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         playbackRepository.update("lmu_windows", true)
 
@@ -259,7 +259,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     fun `確認音が鳴っている間に読み上げが始まったら確認音を止める`() {
         chimePlayer.holdPlayback = true
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         assertEquals(false, chimePlayer.cancelled)
 
         playbackRepository.update("lmu_windows", true)
@@ -271,7 +271,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     fun `確認音が鳴っている間にコマンド待ちが時間切れになったら確認音を止める`() {
         chimePlayer.holdPlayback = true
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
 
@@ -283,8 +283,8 @@ class SpeechRecognitionViewModelWakeWordTest {
         createListeningViewModel()
         playbackRepository.update("lmu_windows", true)
 
-        events.tryEmit(SpeechRecognitionEvent.Partial("ドライバー"))
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Partial("コドライバー"))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         assertEquals(SpeechRecognitionStatus.Listening, status)
         assertEquals(listOf(SpeechRecognitionMode.Paused), modeRepository.modes)
@@ -326,7 +326,7 @@ class SpeechRecognitionViewModelWakeWordTest {
         playbackRepository.update("lmu_windows", false)
         advanceBy(SPEECH_RECOGNITION_RESUME_DELAY_MS)
 
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
     }
@@ -334,7 +334,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `停止するとコマンド待ちの時間切れや読み上げの購読をやめる`() {
         val viewModel = createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         viewModel.stop()
         modeRepository.modes.clear()
@@ -348,7 +348,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `失敗で止まったあとは時間切れや読み上げでモードを切り替えない`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         events.tryEmit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
         modeRepository.modes.clear()
 
@@ -362,7 +362,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `聞き取りをやり直すとウェイクワード待ちから始める`() {
         val viewModel = createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         viewModel.onEnabledChange(true) {}
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("じこべ")))
@@ -389,7 +389,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `コマンド待ちのまま聞き取りをやり直すとウェイクワード待ちのモードから始める`() {
         val viewModel = createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         modeRepository.modes.clear()
 
         viewModel.onEnabledChange(true) {}
@@ -400,7 +400,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `コマンド待ちの間にマイクの再取得でListeningが届いてもコマンド待ちの表示を保つ`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         events.tryEmit(SpeechRecognitionEvent.Listening)
 
