@@ -116,8 +116,9 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     ) {
         barrier.join()
         soundOnlyPlaying = true
-        reportPlaybackActive()
         try {
+            // 開始の通知が例外で失敗しても finally でフラグを戻せるよう、try の中で通知する
+            reportPlaybackActive()
             soundPlayer.play(sound, currentVolume)
         } finally {
             soundOnlyPlaying = false

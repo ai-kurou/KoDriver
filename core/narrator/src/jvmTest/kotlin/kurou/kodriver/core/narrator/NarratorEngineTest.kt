@@ -1087,6 +1087,35 @@ class NarratorEngineTest {
         }
 
     @Test
+    fun `開始の通知が例外で失敗しても開始音だけの再生中フラグを戻し、次の再生は通常どおり通知する`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            var failNext = true
+            val engine =
+                createEngine(
+                    FakeSoundPlayer(),
+                    onPlaybackActiveChanged = {
+                        changes += it
+                        if (it && failNext) {
+                            failNext = false
+                            error("notify failed")
+                        }
+                    },
+                )
+            runCurrent()
+
+            engine.previewStartSound(FORMULA_RADIO)
+            advanceUntilIdle()
+            // 失敗した開始通知の後も、フラグが残らず再生中ではないと通知される
+            assertEquals(listOf(true, false), changes)
+
+            engine.previewStartSound(FORMULA_RADIO)
+            advanceUntilIdle()
+
+            assertEquals(listOf(true, false, true, false), changes)
+        }
+
+    @Test
     fun `開始音が未ロードで何も再生しないpreviewStartSoundは通知しない`() =
         runTest {
             val changes = mutableListOf<Boolean>()
