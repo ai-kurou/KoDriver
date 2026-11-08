@@ -154,6 +154,27 @@ class SpeechRecognitionViewModelManualReadoutTest {
         )
     }
 
+    @Test
+    fun `項目依頼に失敗しても聞き取りを止めずウェイクワード待ちへ戻る`() {
+        val viewModel = createListeningViewModel()
+        itemRequestRepository.failure = IllegalStateException("失敗")
+
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
+
+        assertEquals(true, viewModel.uiState.value.enabled)
+        assertEquals(SpeechRecognitionStatus.Listening, viewModel.uiState.value.status)
+
+        // 次のウェイクワードとコマンドは、失敗の後でも受け付ける
+        itemRequestRepository.failure = null
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
+
+        assertEquals(
+            listOf(voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingFuel.Laps.value)),
+            itemRequestRepository.requests,
+        )
+    }
+
     private fun voiceRequest(
         simulatorId: String,
         itemKey: String,
