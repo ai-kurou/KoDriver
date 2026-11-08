@@ -1012,6 +1012,99 @@ class NarratorEngineTest {
         }
 
     @Test
+    fun `previewStartSoundの開始音も再生中として通知し、終わると再生中ではないと通知する`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val engine = createEngine(FakeSoundPlayer(), onPlaybackActiveChanged = { changes += it })
+            runCurrent()
+
+            engine.previewStartSound(FORMULA_RADIO)
+            advanceUntilIdle()
+
+            assertEquals(listOf(true, false), changes)
+        }
+
+    @Test
+    fun `previewStartSoundの再生中にstopすると再生中ではないと通知する`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val player = FakeSoundPlayer(blockingSound = FORMULA_RADIO_SOUND)
+            val engine = createEngine(player, onPlaybackActiveChanged = { changes += it })
+            runCurrent()
+
+            engine.previewStartSound(FORMULA_RADIO)
+            runCurrent()
+            assertEquals(listOf(true), changes)
+            engine.stop()
+            advanceUntilIdle()
+
+            assertEquals(listOf(true, false), changes)
+        }
+
+    @Test
+    fun `previewStartSoundを続けて呼ぶと前の試聴の終了を通知してから次の試聴の開始を通知する`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val player = FakeSoundPlayer(blockingSound = FORMULA_RADIO_SOUND)
+            val engine = createEngine(player, onPlaybackActiveChanged = { changes += it })
+            runCurrent()
+
+            engine.previewStartSound(FORMULA_RADIO)
+            runCurrent()
+            engine.previewStartSound(ELECTRONIC_NOISE)
+            advanceUntilIdle()
+
+            // 最初の試聴が中断されて一度途切れ、次の試聴が始まる
+            assertEquals(listOf(true, false, true, false), changes)
+        }
+
+    @Test
+    fun `playStartSoundForKeyの開始音も再生中として通知し、終わると再生中ではないと通知する`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val engine = createEngine(FakeSoundPlayer(), onPlaybackActiveChanged = { changes += it })
+            runCurrent()
+
+            engine.playStartSoundForKey(CAR_LEFT_KEY)
+
+            assertEquals(listOf(true, false), changes)
+        }
+
+    @Test
+    fun `playStartSoundForKeyの呼び出し元をキャンセルすると再生中ではないと通知する`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val player = FakeSoundPlayer(blockingSound = FORMULA_RADIO_SOUND)
+            val engine = createEngine(player, onPlaybackActiveChanged = { changes += it })
+            runCurrent()
+
+            val job = launch { engine.playStartSoundForKey(CAR_LEFT_KEY) }
+            runCurrent()
+            job.cancel()
+            advanceUntilIdle()
+
+            assertEquals(listOf(true, false), changes)
+        }
+
+    @Test
+    fun `開始音が未ロードで何も再生しないpreviewStartSoundは通知しない`() =
+        runTest {
+            val changes = mutableListOf<Boolean>()
+            val engine =
+                createEngine(
+                    FakeSoundPlayer(),
+                    onPlaybackActiveChanged = { changes += it },
+                    startSoundResourceLoader = { error("load failed") },
+                )
+            runCurrent()
+
+            engine.previewStartSound(FORMULA_RADIO)
+            advanceUntilIdle()
+
+            assertEquals(emptyList(), changes)
+        }
+
+    @Test
     fun `stopで中断すると再生中ではないと通知する`() =
         runTest {
             val changes = mutableListOf<Boolean>()
