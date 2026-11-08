@@ -18,6 +18,7 @@ import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
+import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import org.koin.dsl.koinApplication
@@ -56,6 +57,7 @@ class SpeechRecognitionModuleTest {
                         single<RecordAudioPermissionRepository> { permissionRepository }
                         single<ManualReadoutItemRequestRepository> { FakeManualReadoutItemRequestRepository() }
                         single<SpeechPlaybackStateRepository> { FakeSpeechPlaybackStateRepository() }
+                        single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
                     },
                 )
             }
@@ -91,6 +93,7 @@ class SpeechRecognitionModuleTest {
                         single<RecordAudioPermissionRepository> { permissionRepository }
                         single<ManualReadoutItemRequestRepository> { FakeManualReadoutItemRequestRepository() }
                         single<SpeechPlaybackStateRepository> { FakeSpeechPlaybackStateRepository() }
+                        single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
                         single<AudioInputDeviceRepository> { deviceRepository }
                         single<SelectedAudioInputDevicePreferencesRepository> {
                             FakeSelectedAudioInputDevicePreferencesRepository()

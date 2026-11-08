@@ -22,6 +22,7 @@ import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
@@ -36,6 +37,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
     private val speechRepository: SpeechRecognitionRepository = mockk()
     private val permissionRepository: RecordAudioPermissionRepository = mockk()
     private val itemRequestRepository = FakeManualReadoutItemRequestRepository()
+    private val simulatorRepository = FakeSelectedSimulatorRepository()
     private val events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = 16)
     private var viewModel: SpeechRecognitionViewModel? = null
 
@@ -62,6 +64,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
             requestManualReadoutItem = RequestManualReadoutItemUseCase(itemRequestRepository),
             setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(FakeSpeechRecognitionModeRepository()),
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
         ).also {
             viewModel = it
             it.onEnabledChange(true) {}
@@ -71,7 +74,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
     }
 
     @Test
-    fun `確定結果が手動読み上げ項目の語句に一致するとLMUとGT7とACEの項目依頼を発行する`() {
+    fun `確定結果が手動読み上げ項目の語句に一致すると選択中のシミュレーターの項目依頼だけを発行する`() {
         createListeningViewModel()
 
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
@@ -82,14 +85,48 @@ class SpeechRecognitionViewModelManualReadoutTest {
         assertEquals(
             listOf(
                 voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingFuel.Laps.value),
-                voiceRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value),
-                voiceRequest(Simulator.AceWindows.id, AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value),
                 voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.MyBestLap.Root.value),
-                voiceRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.MyBestLap.Root.value),
-                voiceRequest(Simulator.AceWindows.id, AceWindowsReadoutItemKey.MyBestLap.Root.value),
             ),
             itemRequestRepository.requests,
         )
+    }
+
+    @Test
+    fun `GT7を選択中ならGT7の項目だけを依頼する`() {
+        simulatorRepository.selected.value = Simulator.Gt7Ps5
+        createListeningViewModel()
+
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
+
+        assertEquals(
+            listOf(voiceRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value)),
+            itemRequestRepository.requests,
+        )
+    }
+
+    @Test
+    fun `ACEを選択中ならACEの項目だけを依頼する`() {
+        simulatorRepository.selected.value = Simulator.AceWindows
+        createListeningViewModel()
+
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
+
+        assertEquals(
+            listOf(voiceRequest(Simulator.AceWindows.id, AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value)),
+            itemRequestRepository.requests,
+        )
+    }
+
+    @Test
+    fun `選択中でないシミュレーターの語句だけに一致したときは依頼せずコマンド待ちを続ける`() {
+        simulatorRepository.selected.value = Simulator.Gt7Ps5
+        val viewModel = createListeningViewModel()
+
+        // 「ブレーキ温度」はLMUの語句で、GT7には無い
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ブレーキ温度を教えて")))
+
+        assertEquals(emptyList(), itemRequestRepository.requests)
+        assertEquals(SpeechRecognitionStatus.CommandWaiting, viewModel.uiState.value.status)
     }
 
     @Test
@@ -110,7 +147,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
 
         assertEquals(
-            listOf(false, false, false),
+            listOf(false),
             itemRequestRepository.requests.map { it.playStartSound },
         )
     }
