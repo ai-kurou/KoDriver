@@ -3,10 +3,12 @@ package kurou.kodriver.core.speechrecognitiondata
 import kurou.kodriver.core.speechrecognitiondata.device.JvmRecordAudioPermissionRepository
 import kurou.kodriver.core.speechrecognitiondata.microphone.JvmAudioInputDeviceRepository
 import kurou.kodriver.core.speechrecognitiondata.microphone.JvmMicrophoneRepository
+import kurou.kodriver.core.speechrecognitiondata.speech.JvmSpeechRecognitionChimePlayer
 import kurou.kodriver.core.speechrecognitiondata.speech.JvmSpeechRecognitionRepository
 import kurou.kodriver.core.speechrecognitiondata.speech.SpeechTranscriberFactory
 import kurou.kodriver.core.speechrecognitiondata.speech.VoskSpeechTranscriberFactory
 import kurou.kodriver.core.speechrecognitiondata.speech.resolveVoskModelDirectory
+import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
@@ -38,6 +40,7 @@ val speechRecognitionDataModule =
                 transcriberFactory = get(),
             )
         }
+        single<SpeechRecognitionChimePlayer> { JvmSpeechRecognitionChimePlayer() }
         single<AudioInputDeviceRepository> { JvmAudioInputDeviceRepository() }
         single<MicrophoneRepository> { JvmMicrophoneRepository() }
     }

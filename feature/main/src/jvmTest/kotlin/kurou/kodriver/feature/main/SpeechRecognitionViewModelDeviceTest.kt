@@ -26,6 +26,7 @@ import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechRecognitionChimeUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 import kotlin.test.AfterTest
@@ -65,6 +66,7 @@ class SpeechRecognitionViewModelDeviceTest {
             setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(FakeSpeechRecognitionModeRepository()),
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSelectedSimulatorRepository()),
+            playChime = PlaySpeechRecognitionChimeUseCase(FakeSpeechRecognitionChimePlayer()),
             audioInputDeviceSelector =
                 if (withDevices) audioInputDeviceSelector(deviceRepository, selectedRepository) else null,
         ).also { viewModel = it }
