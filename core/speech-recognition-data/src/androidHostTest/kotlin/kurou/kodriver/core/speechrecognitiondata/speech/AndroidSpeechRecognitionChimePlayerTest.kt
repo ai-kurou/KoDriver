@@ -12,6 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.SpeechRecognitionChime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -32,11 +33,32 @@ class AndroidSpeechRecognitionChimePlayerTest {
                     received += it
                     track
                 },
-            ).play()
+            ).play(SpeechRecognitionChime.WakeWordDetected)
 
             assertEquals(1, received.size)
             assertEquals(wakeWordChimePcm().toList(), received.single().toList())
             assertEquals(WAKE_WORD_CHIME_DURATION_MS.toLong(), currentTime)
+            verify(exactly = 1) { track.play() }
+            verify(exactly = 1) { track.release() }
+            confirmVerified(track)
+        }
+
+    @Test
+    fun `時間切れの確認音は下降音の波形を載せ、その再生時間だけ待つ`() =
+        runTest {
+            val received = mutableListOf<ShortArray>()
+            every { track.play() } returns Unit
+            every { track.release() } returns Unit
+
+            AndroidSpeechRecognitionChimePlayer(
+                createTrack = {
+                    received += it
+                    track
+                },
+            ).play(SpeechRecognitionChime.CommandTimedOut)
+
+            assertEquals(commandTimeoutChimePcm().toList(), received.single().toList())
+            assertEquals(COMMAND_TIMEOUT_CHIME_DURATION_MS.toLong(), currentTime)
             verify(exactly = 1) { track.play() }
             verify(exactly = 1) { track.release() }
             confirmVerified(track)
@@ -50,7 +72,8 @@ class AndroidSpeechRecognitionChimePlayerTest {
 
             val error =
                 assertFailsWith<IllegalStateException> {
-                    AndroidSpeechRecognitionChimePlayer(createTrack = { track }).play()
+                    AndroidSpeechRecognitionChimePlayer(createTrack = { track })
+                        .play(SpeechRecognitionChime.WakeWordDetected)
                 }
 
             assertEquals("play failed", error.message)
@@ -71,7 +94,7 @@ class AndroidSpeechRecognitionChimePlayerTest {
                             job?.cancel()
                             track
                         },
-                    ).play()
+                    ).play(SpeechRecognitionChime.WakeWordDetected)
                 }
 
             job.join()

@@ -3,20 +3,21 @@ package kurou.kodriver.core.speechrecognitiondata.speech
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
+import kurou.kodriver.domain.model.SpeechRecognitionChime
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.SourceDataLine
 
 /**
- * デスクトップ版の確認音プレイヤー。既定の出力デバイスへ [wakeWordChimePcm] を書き出し、鳴り終わるまで待つ。
+ * デスクトップ版の確認音プレイヤー。既定の出力デバイスへ確認音の波形（[SpeechRecognitionChime.pcm]）を書き出し、鳴り終わるまで待つ。
  *
  * 出力ラインの取得は [openLine] で差し替えられる（出力デバイスの無いテスト環境で検証するため）。
  */
 internal class JvmSpeechRecognitionChimePlayer(
     private val openLine: () -> SourceDataLine = { AudioSystem.getSourceDataLine(CHIME_FORMAT) },
 ) : SpeechRecognitionChimePlayer {
-    override suspend fun play() {
-        val bytes = wakeWordChimePcm().toLittleEndianBytes()
+    override suspend fun play(chime: SpeechRecognitionChime) {
+        val bytes = chime.pcm().toLittleEndianBytes()
         withContext(Dispatchers.IO) {
             val line = openLine()
             try {

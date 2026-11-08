@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.SpeechRecognitionChime
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.SourceDataLine
 import kotlin.test.Test
@@ -25,11 +26,32 @@ class JvmSpeechRecognitionChimePlayerTest {
             every { line.drain() } returns Unit
             every { line.close() } returns Unit
 
-            JvmSpeechRecognitionChimePlayer(openLine = { line }).play()
+            JvmSpeechRecognitionChimePlayer(openLine = { line }).play(SpeechRecognitionChime.WakeWordDetected)
 
             verify(exactly = 1) { line.open(match { it.isChimeFormat() }) }
             verify(exactly = 1) { line.start() }
             verify(exactly = 1) { line.write(match { it.contentEquals(expectedBytes) }, 0, expectedSize) }
+            verify(exactly = 1) { line.drain() }
+            verify(exactly = 1) { line.close() }
+            confirmVerified(line)
+        }
+
+    @Test
+    fun `時間切れの確認音は下降音の波形を書き込む`() =
+        runTest {
+            val timeoutBytes = commandTimeoutChimePcm().toLittleEndianBytes()
+            val timeoutSize = timeoutBytes.size
+            every { line.open(match { it.isChimeFormat() }) } returns Unit
+            every { line.start() } returns Unit
+            every { line.write(match { it.contentEquals(timeoutBytes) }, 0, timeoutSize) } returns timeoutSize
+            every { line.drain() } returns Unit
+            every { line.close() } returns Unit
+
+            JvmSpeechRecognitionChimePlayer(openLine = { line }).play(SpeechRecognitionChime.CommandTimedOut)
+
+            verify(exactly = 1) { line.write(match { it.contentEquals(timeoutBytes) }, 0, timeoutSize) }
+            verify(exactly = 1) { line.open(match { it.isChimeFormat() }) }
+            verify(exactly = 1) { line.start() }
             verify(exactly = 1) { line.drain() }
             verify(exactly = 1) { line.close() }
             confirmVerified(line)
@@ -46,7 +68,7 @@ class JvmSpeechRecognitionChimePlayerTest {
 
             val error =
                 assertFailsWith<IllegalStateException> {
-                    JvmSpeechRecognitionChimePlayer(openLine = { line }).play()
+                    JvmSpeechRecognitionChimePlayer(openLine = { line }).play(SpeechRecognitionChime.WakeWordDetected)
                 }
 
             assertEquals("write failed", error.message)

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
+import kurou.kodriver.domain.model.SpeechRecognitionChime
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
@@ -38,23 +39,25 @@ internal class FakeSpeechPlaybackStateRepository : SpeechPlaybackStateRepository
     }
 }
 
-/** 確認音の再生回数を数えるフェイク。[failure] を設定すると再生時にその例外を投げる。 */
+/** 鳴らした確認音を記録するフェイク。[failure] を設定すると再生時にその例外を投げる。 */
 internal class FakeSpeechRecognitionChimePlayer : SpeechRecognitionChimePlayer {
-    var playCount = 0
+    val played = mutableListOf<SpeechRecognitionChime>()
+    val playCount: Int get() = played.size
     var failure: Exception? = null
 
-    /** true の間は再生が終わらず、取り消されたときに [cancelled] を立てる。 */
+    /** true の間は再生が終わらず、取り消されたときに [cancelledChimes] へ記録する。 */
     var holdPlayback = false
-    var cancelled = false
+    val cancelledChimes = mutableListOf<SpeechRecognitionChime>()
+    val cancelled: Boolean get() = cancelledChimes.isNotEmpty()
 
-    override suspend fun play() {
-        playCount++
+    override suspend fun play(chime: SpeechRecognitionChime) {
+        played += chime
         failure?.let { throw it }
         if (holdPlayback) {
             try {
                 awaitCancellation()
             } catch (e: CancellationException) {
-                cancelled = true
+                cancelledChimes += chime
                 throw e
             }
         }
