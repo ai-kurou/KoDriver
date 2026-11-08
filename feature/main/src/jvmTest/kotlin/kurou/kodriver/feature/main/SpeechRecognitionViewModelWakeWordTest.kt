@@ -152,7 +152,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     fun `ウェイクワードの途中経過でもコマンド待ちになる`() {
         createListeningViewModel()
 
-        events.tryEmit(SpeechRecognitionEvent.Partial("このどらいばー"))
+        events.tryEmit(SpeechRecognitionEvent.Partial("このドライバー"))
 
         assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
         assertEquals(listOf(SpeechRecognitionMode.Command), modeRepository.modes)
