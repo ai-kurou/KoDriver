@@ -19,6 +19,7 @@ import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
@@ -65,6 +66,7 @@ class SpeechRecognitionViewModelWakeWordTest {
             requestManualReadoutItem = RequestManualReadoutItemUseCase(itemRequestRepository),
             setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(modeRepository),
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(playbackRepository),
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSelectedSimulatorRepository()),
         ).also {
             viewModel = it
             it.onEnabledChange(true) {}
@@ -128,7 +130,7 @@ class SpeechRecognitionViewModelWakeWordTest {
 
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("じこべ")))
 
-        assertEquals(3, itemRequestRepository.requests.size)
+        assertEquals(1, itemRequestRepository.requests.size)
         assertEquals(SpeechRecognitionStatus.Listening, status)
         assertEquals(
             listOf(SpeechRecognitionMode.Command, SpeechRecognitionMode.WakeWord),

@@ -58,6 +58,7 @@ val mainModule =
                 requestManualReadoutItem = RequestManualReadoutItemUseCase(get()),
                 setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(get()),
                 observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(get()),
+                observeSelectedSimulator = ObserveSelectedSimulatorUseCase(get()),
                 audioInputDeviceSelector =
                     if (deviceRepository != null && selectedDeviceRepository != null) {
                         AudioInputDeviceSelector(

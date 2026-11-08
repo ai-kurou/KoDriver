@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -23,6 +24,7 @@ import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kurou.kodriver.domain.model.containsSpeechRecognitionWakeWord
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
@@ -46,6 +48,7 @@ internal class SpeechRecognitionViewModel(
     private val requestManualReadoutItem: RequestManualReadoutItemUseCase,
     private val setSpeechRecognitionMode: SetSpeechRecognitionModeUseCase,
     private val observeSpeechPlaybackActive: ObserveSpeechPlaybackActiveUseCase,
+    private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     /** 入力デバイスの一覧と選択。デバイスを選べないプラットフォーム（Android）では null。 */
     private val audioInputDeviceSelector: AudioInputDeviceSelector? = null,
 ) : ViewModel() {
@@ -346,7 +349,13 @@ internal class SpeechRecognitionViewModel(
             }
 
             else -> {
-                if (requestManualReadoutItem.requestMatchedReadouts(candidates)) finishCommandWait()
+                if (requestManualReadoutItem.requestMatchedReadouts(
+                        observeSelectedSimulator().first(),
+                        candidates,
+                    )
+                ) {
+                    finishCommandWait()
+                }
             }
         }
     }
@@ -379,29 +388,20 @@ internal class SpeechRecognitionViewModel(
 }
 
 /**
- * 各シミュレーターの語句を照合し、一致したシミュレーター宛てに依頼を発行する。1件でも依頼したら true。
- * 選択中のシミュレーターでなければ、そのNarrator側が依頼を無視する。ACEの照合は未対応。
+ * 選択中のシミュレーターの語句だけを照合し、一致したら依頼を発行する。依頼したら true。
+ * 選択中でないシミュレーターの語句は照合しない（そのNarratorは依頼を無視するため、コマンド待ちだけが終わってしまう）。
  * 音声認識の読み上げでは開始音を鳴らさない（playStartSound = false）。
  */
-private suspend fun RequestManualReadoutItemUseCase.requestMatchedReadouts(candidates: List<String>): Boolean {
-    var requested = false
-    matchLmuWindowsManualReadoutItemKey(candidates)?.let { itemKey ->
-        requested = true
-        this(
-            ManualReadoutItemRequest(Simulator.LmuWindows.id, itemKey, playStartSound = false),
-        )
-    }
-    matchGt7Ps5ManualReadoutItemKey(candidates)?.let { itemKey ->
-        requested = true
-        this(
-            ManualReadoutItemRequest(Simulator.Gt7Ps5.id, itemKey, playStartSound = false),
-        )
-    }
-    matchAceWindowsManualReadoutItemKey(candidates)?.let { itemKey ->
-        requested = true
-        this(
-            ManualReadoutItemRequest(Simulator.AceWindows.id, itemKey, playStartSound = false),
-        )
-    }
-    return requested
+private suspend fun RequestManualReadoutItemUseCase.requestMatchedReadouts(
+    selected: Simulator,
+    candidates: List<String>,
+): Boolean {
+    val itemKey =
+        when (selected) {
+            Simulator.LmuWindows -> matchLmuWindowsManualReadoutItemKey(candidates)
+            Simulator.Gt7Ps5 -> matchGt7Ps5ManualReadoutItemKey(candidates)
+            Simulator.AceWindows -> matchAceWindowsManualReadoutItemKey(candidates)
+        } ?: return false
+    this(ManualReadoutItemRequest(selected.id, itemKey, playStartSound = false))
+    return true
 }
