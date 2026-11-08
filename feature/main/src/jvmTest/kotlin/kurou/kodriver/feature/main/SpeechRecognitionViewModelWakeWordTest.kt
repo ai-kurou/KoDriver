@@ -282,7 +282,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `コマンドが一致しないまま時間切れになると下降音を1回鳴らす`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         assertEquals(listOf(SpeechRecognitionChime.WakeWordDetected), chimePlayer.played)
 
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
@@ -297,7 +297,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `時間切れの前に待ちを終えたときは下降音を鳴らさない`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
 
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
@@ -308,7 +308,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     @Test
     fun `時間切れの前に読み上げが始まったときは下降音を鳴らさない`() {
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         playbackRepository.update("lmu_windows", true)
 
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
@@ -320,7 +320,7 @@ class SpeechRecognitionViewModelWakeWordTest {
     fun `下降音が鳴っている間に読み上げが始まったら下降音を止める`() {
         chimePlayer.holdPlayback = true
         createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
         assertEquals(listOf(SpeechRecognitionChime.WakeWordDetected), chimePlayer.cancelledChimes)
 
@@ -336,10 +336,10 @@ class SpeechRecognitionViewModelWakeWordTest {
     fun `下降音の再生に失敗しても聞き取りを続け、次のウェイクワードを受け付ける`() {
         chimePlayer.failure = IllegalStateException("chime failed")
         val viewModel = createListeningViewModel()
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("ドライバー")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         assertEquals(true, viewModel.uiState.value.enabled)
         assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
