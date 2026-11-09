@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import org.junit.Rule
@@ -38,8 +39,9 @@ class BaselineProfileGenerator {
             // 同期的に確定する短縮名テキスト（デフォルト選択中のLMU）をクリック対象にする。
             device.requireText("LMU")
             device.findObject(By.text("LMU")).click()
-            device.requireText("Le Mans Ultimate（Windows版）")
-            device.findObjects(By.text("Le Mans Ultimate（Windows版）")).last().click()
+            // ダイアログ内のシミュレーター項目はtextではなくcontentDescriptionとして露出する。
+            device.requireObject(By.desc("Le Mans Ultimate（Windows版）"))
+            device.findObject(By.desc("Le Mans Ultimate（Windows版）")).click()
 
             device.requireText("フラッグ")
         }
@@ -47,8 +49,11 @@ class BaselineProfileGenerator {
 }
 
 /** テキストが現れるまで待ち、現れなければ原因調査用に画面の階層ダンプを添えて失敗させる。 */
-private fun UiDevice.requireText(text: String) {
-    if (wait(Until.hasObject(By.text(text)), UI_TIMEOUT_MS)) return
+private fun UiDevice.requireText(text: String) = requireObject(By.text(text))
+
+/** 条件に合う要素が現れるまで待ち、現れなければ原因調査用に画面の階層ダンプを添えて失敗させる。 */
+private fun UiDevice.requireObject(selector: BySelector) {
+    if (wait(Until.hasObject(selector), UI_TIMEOUT_MS)) return
     val hierarchy = ByteArrayOutputStream().also { dumpWindowHierarchy(it) }.toString(Charsets.UTF_8.name())
-    error("「$text」が${UI_TIMEOUT_MS}ms以内に表示されませんでした。現在の画面:\n$hierarchy")
+    error("$selector が${UI_TIMEOUT_MS}ms以内に表示されませんでした。現在の画面:\n$hierarchy")
 }
