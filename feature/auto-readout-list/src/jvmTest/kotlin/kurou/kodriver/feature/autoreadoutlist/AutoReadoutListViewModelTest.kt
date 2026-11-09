@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,6 +17,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -33,6 +36,7 @@ import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -558,5 +562,58 @@ class AutoReadoutListViewModelTest {
             viewModel.onReadoutEnabledChanged(LmuWindowsReadoutItemKey.MyBestLap.Root, true)
 
             assertEquals(true, lmuEnabledFlow.value[LmuWindowsReadoutItemKey.MyBestLap.Root])
+        }
+
+    @Test
+    fun `onReadoutEnabledChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+                val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+                every { simulatorRepository.selectedSimulator() } returns simulatorFlow
+                every { readoutRepository.observeAutoReadoutEnabledStates("lmu_windows") } returns enabledStatesFlow
+                every { readoutRepository.observeAutoReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
+                coEvery {
+                    readoutRepository.saveAutoReadoutEnabledState(
+                        "lmu_windows",
+                        LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                        false,
+                    )
+                } throws error
+                every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+                every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+                val viewModel =
+                    createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
+
+                simulatorFlow.update { Simulator.LmuWindows }
+                viewModel.onReadoutEnabledChanged(LmuWindowsReadoutItemKey.VehicleApproach.Root, false)
+
+                coVerify(exactly = 1) {
+                    readoutRepository.saveAutoReadoutEnabledState(
+                        "lmu_windows",
+                        LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                        false,
+                    )
+                }
+                verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+                verify(exactly = 1) { readoutRepository.observeAutoReadoutEnabledStates("lmu_windows") }
+                verify(exactly = 1) { readoutRepository.observeAutoReadoutOrder("lmu_windows") }
+                verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
+                verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(
+                    errorCapture,
+                    readoutRepository,
+                    simulatorRepository,
+                    queueRepository,
+                    startSoundRepository,
+                )
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

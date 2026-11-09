@@ -6,6 +6,8 @@ import io.mockk.coVerifyOrder
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5TyreTemperaturePreferencesRepository
@@ -34,6 +37,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -270,5 +274,33 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailViewModelTest {
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
             collection.cancel()
+        }
+
+    @Test
+    fun `onHighThresholdChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+                every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+                coEvery {
+                    repository.saveHighThresholdCelsius(Celsius(105))
+                } throws error
+                val viewModel = createViewModel()
+
+                viewModel.onHighThresholdChanged(105)
+
+                verify(exactly = 1) { repository.observeEnabledStates() }
+                verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+                coVerify(exactly = 1) { repository.saveHighThresholdCelsius(Celsius(105)) }
+                verify(exactly = 1) { repository.observeOverheatReadoutText() }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

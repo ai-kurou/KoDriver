@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +27,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproach
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachEnabledStateUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -32,6 +35,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -316,5 +320,33 @@ class AceWindowsAutoReadoutVehicleApproachDetailViewModelTest {
             coVerify(exactly = 1) { ttsEngine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root) }
             coVerify(exactly = 0) { speakText("周囲に注意", volume = 42) }
             confirmVerified(observeVolume, ttsEngine, speakText)
+        }
+
+    @Test
+    fun `onThresholdChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                every { repository.observeReadoutText() } returns textFlow
+                coEvery { checkAvailable() } returns true
+                every { repository.observeThresholdMeters() } returns thresholdFlow
+                every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+                coEvery { repository.saveThresholdMeters(7.0) } throws error
+                val viewModel = createViewModel()
+
+                viewModel.onThresholdChanged(7.0)
+
+                verify(exactly = 1) { repository.observeThresholdMeters() }
+                verify(exactly = 1) { repository.observeEnabledStates() }
+                coVerify(exactly = 1) { repository.saveThresholdMeters(7.0) }
+                verifyObservers()
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

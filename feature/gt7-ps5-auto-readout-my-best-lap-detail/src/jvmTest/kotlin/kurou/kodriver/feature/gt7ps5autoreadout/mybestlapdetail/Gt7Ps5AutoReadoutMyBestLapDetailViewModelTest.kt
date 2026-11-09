@@ -6,6 +6,8 @@ import io.mockk.coVerifyOrder
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +19,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
@@ -31,6 +34,7 @@ import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -207,5 +211,31 @@ class Gt7Ps5AutoReadoutMyBestLapDetailViewModelTest {
             coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
+        }
+
+    @Test
+    fun `onReadoutTextChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                every {
+                    enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                } returns MutableStateFlow(emptyMap())
+                every { repository.observeReadoutText() } returns textFlow
+                coEvery { checkAvailable() } returns true
+                coEvery { repository.saveReadoutText("更新{laptime}") } throws error
+                val viewModel = createViewModel()
+                viewModel.onReadoutTextChanged(" 更新{laptime} ")
+                verify(exactly = 1) { repository.observeReadoutText() }
+                coVerify(exactly = 1) { repository.saveReadoutText("更新{laptime}") }
+                verify(exactly = 1) { enabledRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository, enabledRepository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

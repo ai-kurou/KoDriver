@@ -7,6 +7,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +28,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStat
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsFlagReadoutTextUseCase
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -38,6 +41,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -432,5 +436,42 @@ class AceWindowsAutoReadoutFlagDetailViewModelTest {
             verify(exactly = 0) { observeVoiceSpeed() }
             verify(exactly = 0) { observeVoicePitch() }
             confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed, observeVoicePitch)
+        }
+
+    @Test
+    fun `onFlagEnabledChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+                every { repository.observeFlagEnabledStates() } returns statesFlow
+                coEvery { repository.saveFlagEnabledState(AceWindowsReadoutItemKey.Flag.BlueFlag, false) } throws error
+                every { texts.observeText(AceWindowsFlagReadoutTextKey.CHECKERED) } returns flowOf("完走")
+                every { texts.observeText(AceWindowsFlagReadoutTextKey.WHITE) } returns flowOf("ホワイトフラッグ")
+                every { texts.observeText(AceWindowsFlagReadoutTextKey.GREEN) } returns flowOf("グリーンフラッグ")
+                every { texts.observeText(AceWindowsFlagReadoutTextKey.RED) } returns flowOf("レッドフラッグ")
+                every { texts.observeText(AceWindowsFlagReadoutTextKey.BLUE) } returns flowOf("ブルーフラッグ")
+                every { texts.observeText(AceWindowsFlagReadoutTextKey.YELLOW) } returns flowOf("イエローフラッグ")
+                every { texts.observeText(AceWindowsFlagReadoutTextKey.BLACK) } returns flowOf("ブラックフラッグ")
+                every { texts.observeText(AceWindowsFlagReadoutTextKey.BLACK_WHITE) } returns flowOf("ブラック・ホワイトフラッグ")
+                every { texts.observeText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE) } returns
+                    flowOf("オレンジボールフラッグ、車両に不具合があります")
+                every { texts.observeText(AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES) } returns
+                    flowOf("レッド・イエローストライプフラッグ、路面が滑りやすいです")
+                coEvery { tts.isAvailable() } returns true
+                val viewModel = createViewModel()
+
+                viewModel.onFlagEnabledChanged(FlagReadoutItem.BlueFlag, false)
+
+                coVerify(exactly = 1) { repository.saveFlagEnabledState(AceWindowsReadoutItemKey.Flag.BlueFlag, false) }
+                verify(exactly = 1) { repository.observeFlagEnabledStates() }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }
