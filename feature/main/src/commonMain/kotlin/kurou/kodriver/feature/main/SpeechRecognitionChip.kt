@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidedValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,11 +28,27 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 private val CHIP_SIZE = 44.dp
+
+/**
+ * 右下の音声認識のチップが占める幅・高さ（チップ本体と、他の要素との間の余白を含む）。
+ * 右下に置く他の要素（FAB・Snackbar など）はこの分だけ避ける。
+ */
+val SPEECH_RECOGNITION_CHIP_OVERLAY_INSET = CHIP_SIZE + KoDriverSpacing.small
+
+/**
+ * [SPEECH_RECOGNITION_CHIP_OVERLAY_INSET] を [LocalBottomEndOverlayInset] として配下の画面へ渡す。
+ * チップを重ねるアプリ共通シェルが `CompositionLocalProvider` に渡す。
+ */
+val speechRecognitionChipOverlayInset: ProvidedValue<Dp> =
+    LocalBottomEndOverlayInset provides SPEECH_RECOGNITION_CHIP_OVERLAY_INSET
 private val CHIP_ICON_SIZE = 24.dp
 private val CHIP_SHADOW_ELEVATION = 4.dp
 private val RING_INSET = 3.dp
