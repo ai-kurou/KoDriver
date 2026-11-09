@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -8,10 +9,11 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
@@ -57,8 +59,9 @@ internal fun SpeechRecognitionUiState.toChipState(): SpeechRecognitionChipState 
     }
 
 /**
- * 音声認識の聞き取り状態を、どの画面にも重ねて出せる小さな丸いチップで表す。表示だけで操作は受け付けない。
- * 状態は色とアイコンで区別し、読み上げ用の説明には [SpeechRecognitionStatus] の文言を使う。
+ * 音声認識の聞き取り状態を、どの画面にも重ねて出せる小さな丸いチップで表す。表示だけで操作は受け付けず、
+ * 下の画面へのタップを妨げないよう `Surface` は使わない。
+ * 状態は主に色で区別し（アイコンは有効=Mic・無効やエラー=MicOff）、読み上げ用の説明には [SpeechRecognitionStatus] の文言を使う。
  */
 @Composable
 internal fun SpeechRecognitionChip(
@@ -96,19 +99,21 @@ internal fun SpeechRecognitionChip(
             icon = Icons.Filled.MicOff
         }
     }
-    Surface(
-        modifier = modifier.size(CHIP_SIZE).semantics { contentDescription = description },
-        shape = CircleShape,
-        color = containerColor,
-        contentColor = contentColor,
-        shadowElevation = CHIP_SHADOW_ELEVATION,
+    Box(
+        modifier =
+            modifier
+                .size(CHIP_SIZE)
+                .shadow(CHIP_SHADOW_ELEVATION, CircleShape)
+                .clip(CircleShape)
+                .background(containerColor)
+                .semantics { contentDescription = description },
+        contentAlignment = Alignment.Center,
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(CHIP_ICON_SIZE),
-            )
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = contentColor,
+            modifier = Modifier.size(CHIP_ICON_SIZE),
+        )
     }
 }

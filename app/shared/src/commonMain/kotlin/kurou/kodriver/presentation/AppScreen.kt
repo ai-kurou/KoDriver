@@ -69,6 +69,9 @@ import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import kurou.kodriver.feature.otherlist.rememberOpenTtsSettings
 import org.koin.compose.viewmodel.koinViewModel
 
+/** 下部ナビバー表示時に、ナビバーの直上へ重ねる要素（Snackbar・音声認識チップ）の下余白。 */
+private val NAVIGATION_BAR_OVERLAY_BOTTOM_OFFSET = 96.dp
+
 private fun withTabSwitch(
     action: (() -> Unit)?,
     switchToMore: () -> Unit,
@@ -506,7 +509,7 @@ private fun AppScreenScaffold(
                         end = AppSpacing.large,
                         bottom =
                             if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                                96.dp
+                                NAVIGATION_BAR_OVERLAY_BOTTOM_OFFSET
                             } else {
                                 AppSpacing.large
                             },
@@ -519,7 +522,7 @@ private fun AppScreenScaffold(
                     end = AppSpacing.large,
                     bottom =
                         if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                            96.dp
+                            NAVIGATION_BAR_OVERLAY_BOTTOM_OFFSET
                         } else {
                             AppSpacing.large
                         },
