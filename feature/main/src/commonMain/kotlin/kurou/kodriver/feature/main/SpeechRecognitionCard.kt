@@ -155,7 +155,7 @@ internal fun SpeechRecognitionCard(
     }
 }
 
-private fun SpeechRecognitionStatus.label(): StringResource =
+internal fun SpeechRecognitionStatus.label(): StringResource =
     when (this) {
         SpeechRecognitionStatus.Stopped -> Res.string.speech_recognition_status_stopped
         SpeechRecognitionStatus.Starting -> Res.string.speech_recognition_status_starting

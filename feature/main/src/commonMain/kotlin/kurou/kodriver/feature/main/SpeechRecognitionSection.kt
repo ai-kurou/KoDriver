@@ -23,6 +23,28 @@ fun rememberSpeechRecognitionSection(): @Composable (Modifier) -> Unit {
     return rememberSpeechRecognitionSection(viewModel, requestPermission)
 }
 
+/**
+ * 音声認識の聞き取り状態を表す小さなチップを返す。[rememberSpeechRecognitionSection] と同じ ViewModel を共有するため、
+ * 聞き取りの管理（権限の要求・停止と再開）はそちらが行い、ここでは状態の表示だけをする。
+ * 音声認識を提供しないプラットフォームでは何も表示しない。
+ */
+@Composable
+fun rememberSpeechRecognitionChip(): @Composable (Modifier) -> Unit {
+    if (!isSpeechRecognitionSupportedOnPlatform()) return NoSpeechRecognitionSection
+    val viewModel: SpeechRecognitionViewModel = koinViewModel()
+    return rememberSpeechRecognitionChip(viewModel)
+}
+
+@Composable
+internal fun rememberSpeechRecognitionChip(viewModel: SpeechRecognitionViewModel): @Composable (Modifier) -> Unit =
+    remember(viewModel) {
+        val chip: @Composable (Modifier) -> Unit = { modifier ->
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            SpeechRecognitionChip(uiState = uiState, modifier = modifier)
+        }
+        chip
+    }
+
 private val NoSpeechRecognitionSection: @Composable (Modifier) -> Unit = {}
 
 @Composable

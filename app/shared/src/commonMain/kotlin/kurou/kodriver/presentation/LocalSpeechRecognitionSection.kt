@@ -11,3 +11,10 @@ import androidx.compose.ui.Modifier
  */
 internal val LocalSpeechRecognitionSection =
     staticCompositionLocalOf<@Composable (Modifier) -> Unit> { {} }
+
+/**
+ * 全画面の右下に重ねる音声認識のチップ。聞き取りの管理は [LocalSpeechRecognitionSection] と同じく [AppScreen] が行い、
+ * 描画だけをここから渡す。提供されない場合（プレビューやテスト）は何も表示しない。
+ */
+internal val LocalSpeechRecognitionChip =
+    staticCompositionLocalOf<@Composable (Modifier) -> Unit> { {} }

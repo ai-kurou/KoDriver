@@ -59,6 +59,7 @@ import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.LowVolumeWarningUiState
 import kurou.kodriver.feature.main.LowVolumeWarningViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
+import kurou.kodriver.feature.main.rememberSpeechRecognitionChip
 import kurou.kodriver.feature.main.rememberSpeechRecognitionSection
 import kurou.kodriver.feature.manualreadoutdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
@@ -67,6 +68,9 @@ import kurou.kodriver.feature.otherlist.OtherListViewModel
 import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import kurou.kodriver.feature.otherlist.rememberOpenTtsSettings
 import org.koin.compose.viewmodel.koinViewModel
+
+/** 下部ナビバー表示時に、ナビバーの直上へ重ねる要素（Snackbar・音声認識チップ）の下余白。 */
+private val NAVIGATION_BAR_OVERLAY_BOTTOM_OFFSET = 96.dp
 
 private fun withTabSwitch(
     action: (() -> Unit)?,
@@ -191,7 +195,10 @@ fun AppScreen(
         onPauseOrDispose {}
     }
 
-    CompositionLocalProvider(LocalSpeechRecognitionSection provides rememberSpeechRecognitionSection()) {
+    CompositionLocalProvider(
+        LocalSpeechRecognitionSection provides rememberSpeechRecognitionSection(),
+        LocalSpeechRecognitionChip provides rememberSpeechRecognitionChip(),
+    ) {
         AppScreenContent(
             darkTheme = darkTheme,
             dynamicColorEnabled = uiState.dynamicColorEnabled,
@@ -502,11 +509,24 @@ private fun AppScreenScaffold(
                         end = AppSpacing.large,
                         bottom =
                             if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                                96.dp
+                                NAVIGATION_BAR_OVERLAY_BOTTOM_OFFSET
                             } else {
                                 AppSpacing.large
                             },
                     ),
+        )
+        LocalSpeechRecognitionChip.current(
+            Modifier
+                .align(Alignment.BottomEnd)
+                .padding(
+                    end = AppSpacing.large,
+                    bottom =
+                        if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                            NAVIGATION_BAR_OVERLAY_BOTTOM_OFFSET
+                        } else {
+                            AppSpacing.large
+                        },
+                ),
         )
     }
 }

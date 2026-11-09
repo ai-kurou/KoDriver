@@ -3,8 +3,10 @@ package kurou.kodriver.feature.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -107,6 +109,11 @@ class SpeechRecognitionSectionTest {
     @Composable
     private fun Section(requestPermission: () -> Unit = {}) {
         rememberSpeechRecognitionSection(viewModel, requestPermission)(Modifier)
+    }
+
+    @Composable
+    private fun Chip() {
+        rememberSpeechRecognitionChip(viewModel)(Modifier)
     }
 
     @After
@@ -228,5 +235,22 @@ class SpeechRecognitionSectionTest {
 
         rule.onNodeWithText("音声認識").assertExists()
         assertTrue(isSpeechRecognitionSupportedOnPlatform())
+    }
+
+    @Test
+    fun `チップは聞き取りの状態に合わせて説明を切り替える`() {
+        createViewModel(granted = true)
+        rule.setContent {
+            KoDriverTheme {
+                Section()
+                Chip()
+            }
+        }
+        rule.onAllNodesWithContentDescription("停止中").assertCountEquals(1)
+
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").performClick()
+        rule.runOnIdle { events.tryEmit(SpeechRecognitionEvent.Listening) }
+
+        rule.onAllNodesWithContentDescription("「コドライバー」の呼びかけを待っています(マイクを使用中)").assertCountEquals(1)
     }
 }
