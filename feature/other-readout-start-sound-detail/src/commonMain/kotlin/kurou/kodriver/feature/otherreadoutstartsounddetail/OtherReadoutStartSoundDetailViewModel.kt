@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.PreviewStartSoundUseCase
@@ -32,7 +32,7 @@ internal class OtherReadoutStartSoundDetailViewModel(
 
     fun onConfirm() {
         val type = pendingType.value ?: return
-        viewModelScope.launch { saveReadoutStartSoundType(type) }
+        viewModelScope.launchCapturingErrors { saveReadoutStartSoundType(type) }
         pendingType.update { null }
     }
 
