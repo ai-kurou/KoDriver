@@ -109,7 +109,7 @@ class Gt7Ps5DebugStateDetailPaneWiringTest {
             rule.onNodeWithText("GR3").assertIsDisplayed()
 
             val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
-            grid.performScrollToIndex(1)
+            grid.performScrollToIndex(0)
             val gridTopLeft = grid.fetchSemanticsNode().boundsInRoot.topLeft
             val from =
                 rule
@@ -168,7 +168,7 @@ class Gt7Ps5DebugStateDetailPaneWiringTest {
                 }
             }
             rule.onNodeWithText("GR3").assertIsDisplayed()
-            rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).performScrollToIndex(4)
+            rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).performScrollToIndex(3)
             rule.onNodeWithText("1:30.000").assertIsDisplayed()
             rule.onNodeWithContentDescription("戻る").performClick()
 

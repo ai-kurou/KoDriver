@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -16,7 +15,6 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,37 +48,9 @@ private val HISTORY_MAX_HEIGHT = 120.dp
 /** 入力音量ゲージの値変化を滑らかに見せるためのアニメーション時間(ミリ秒)。 */
 private const val LEVEL_ANIMATION_MILLIS = 100
 
-/** 音声認識の聞き取りの開始・停止、入力デバイスの選択（デスクトップのみ）、入力音量と認識状況を確認するための簡易カード。 */
-@Composable
-internal fun SpeechRecognitionCard(
-    uiState: SpeechRecognitionUiState,
-    onEnabledChange: (Boolean) -> Unit,
-    onDeviceMenuOpen: () -> Unit,
-    onDeviceSelected: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        modifier =
-            modifier.fillMaxWidth().padding(
-                horizontal = KoDriverSpacing.small,
-                vertical = KoDriverSpacing.small,
-            ),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    ) {
-        SpeechRecognitionDetailContent(
-            uiState = uiState,
-            onEnabledChange = onEnabledChange,
-            onDeviceMenuOpen = onDeviceMenuOpen,
-            onDeviceSelected = onDeviceSelected,
-            modifier = Modifier.padding(KoDriverSpacing.medium),
-        )
-    }
-}
-
 /**
  * 音声認識の有効/無効スイッチ・入力デバイス選択（デスクトップのみ）・入力音量・認識結果を並べた本体。
- * 「その他」のカードと、チップのタップで開く詳細（ボトムシート/ポップオーバー）で共通に使う。
+ * チップのタップで開く詳細（ボトムシート/ポップオーバー）で使う。
  * 背景や余白は呼び出し側が決める。[levelGaugeHeight] を渡すと、音量ゲージをその高さにする。
  */
 @Composable

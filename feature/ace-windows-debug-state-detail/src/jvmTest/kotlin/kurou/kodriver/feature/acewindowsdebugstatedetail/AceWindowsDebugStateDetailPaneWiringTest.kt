@@ -113,7 +113,7 @@ class AceWindowsDebugStateDetailPaneWiringTest {
             rule.onNodeWithText("Track（コース上）").assertIsDisplayed()
 
             val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
-            grid.performScrollToIndex(1)
+            grid.performScrollToIndex(0)
             val gridTopLeft = grid.fetchSemanticsNode().boundsInRoot.topLeft
             val from =
                 rule
