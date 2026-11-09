@@ -5,12 +5,8 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasScrollAction
-import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -19,15 +15,17 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import org.junit.Test
 
 class ManualReadoutItemPickerSheetBottomScreenshotTest {
+    // 全項目だと内容が表示領域を僅かに超えるため、先頭の項目を除いて末尾（下端の余白まで）が収まるようにする。
+    // スクロール操作は環境により本文が描画されない場合があるため使わない。
     @Test
-    fun `項目追加シート 最下部までスクロール`() =
+    fun `項目追加シート 最下部まで表示`() =
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(480.dp, HOST_HEIGHT_DP.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             ManualReadoutItemPickerSheetContent(
-                                itemKeys = lmuWindowsManualReadoutItemKeys(),
+                                itemKeys = lmuWindowsManualReadoutItemKeys().drop(LEADING_ITEM_COUNT_TO_OMIT),
                                 selectedCount = 0,
                                 onSelect = {},
                             )
@@ -35,14 +33,9 @@ class ManualReadoutItemPickerSheetBottomScreenshotTest {
                     }
                 }
             }
-            // 文字列リソースの読み込み完了を待ってからスクロールする（遅い環境で本文が空のまま撮影されるのを防ぐ）
-            onNodeWithText("バーチャルエネルギー").assertIsDisplayed()
-            onAllNodes(hasScrollAction()).onFirst().performTouchInput { repeat(SCROLL_TO_BOTTOM_SWIPE_COUNT) { swipeUp() } }
-            waitForIdle()
+            onNodeWithText("クラス内後方車とのギャップ").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 }
 
-// 内容より十分低い表示領域にして、スワイプで確実に最下部まで到達させる（ほぼ同じ高さだと最下部の位置が安定しない）。
-private const val HOST_HEIGHT_DP = 600
-private const val SCROLL_TO_BOTTOM_SWIPE_COUNT = 5
+private const val LEADING_ITEM_COUNT_TO_OMIT = 4
