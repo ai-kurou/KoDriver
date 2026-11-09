@@ -2,6 +2,7 @@ package kurou.kodriver.feature.main
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -89,13 +91,14 @@ internal fun SpeechRecognitionUiState.volumeRingStepOrNull(): Int? {
 
 /**
  * 音声認識の聞き取り状態を、どの画面にも重ねて出せる小さな丸いチップで表す。聞き取り中は音量を縁のリングの段階で示す。
- * 表示だけで操作は受け付けず、下の画面へのタップを妨げないよう `Surface` は使わない。
+ * タップで詳細を開く（[onClick]）。タップできるのはチップ自身だけで、下の画面へのタップは妨げない（`Surface` は使わない）。
  * 状態は主に色で区別し（アイコンは有効=Mic・無効やエラー=MicOff）、読み上げ用の説明には [SpeechRecognitionStatus] の文言を使う。
  */
 @Composable
 internal fun SpeechRecognitionChip(
     uiState: SpeechRecognitionUiState,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     val chipState = uiState.toChipState()
     val description = stringResource(uiState.status.label())
@@ -136,6 +139,7 @@ internal fun SpeechRecognitionChip(
                 .shadow(CHIP_SHADOW_ELEVATION, CircleShape)
                 .clip(CircleShape)
                 .background(containerColor)
+                .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
                 .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {

@@ -58,6 +58,7 @@ import kurou.kodriver.feature.autoreadoutlist.LmuWindowsAutoReadoutListItemType
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.LowVolumeWarningUiState
 import kurou.kodriver.feature.main.LowVolumeWarningViewModel
+import kurou.kodriver.feature.main.SpeechRecognitionDetailPresentation
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
 import kurou.kodriver.feature.main.rememberSpeechRecognitionChip
 import kurou.kodriver.feature.main.rememberSpeechRecognitionSection
@@ -527,6 +528,12 @@ private fun AppScreenScaffold(
                             AppSpacing.large
                         },
                 ),
+            // 詳細は、スマホ（下部ナビバー）ではボトムシート、広い画面ではポップオーバーで開く
+            if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                SpeechRecognitionDetailPresentation.BottomSheet
+            } else {
+                SpeechRecognitionDetailPresentation.Popover
+            },
         )
     }
 }
