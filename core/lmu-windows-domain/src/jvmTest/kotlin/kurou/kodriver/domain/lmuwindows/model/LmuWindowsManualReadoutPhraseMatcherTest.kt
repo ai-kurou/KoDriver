@@ -79,6 +79,58 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
     }
 
     @Test
+    fun `タイヤの残り・減り系の言い方はタイヤ摩耗を選ぶ`() {
+        listOf(
+            "タイヤ残り",
+            "タイヤの残り",
+            "タイヤの残量",
+            "タイヤ減り",
+            "タイヤのへり",
+            "タイヤすり減り",
+            "タイヤの減り具合",
+            "タイヤのこり",
+            "タイヤのこりりょう",
+            "タイヤへり",
+        ).forEach { phrase ->
+            assertEquals(
+                LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                matchLmuWindowsManualReadoutItemKey(listOf(phrase)),
+                phrase,
+            )
+        }
+    }
+
+    @Test
+    fun `ブレーキの残り・減り系の言い方はブレーキ摩耗を選ぶ`() {
+        listOf(
+            "ブレーキ残り",
+            "ブレーキの残り",
+            "ブレーキの残量",
+            "ブレーキ減り",
+            "ブレーキのへり",
+            "ブレーキすり減り",
+            "ブレーキの減り具合",
+            "ブレーキのこり",
+            "ブレーキのこりりょう",
+            "ブレーキへり",
+        ).forEach { phrase ->
+            assertEquals(
+                LmuWindowsReadoutItemKey.BrakeWear.Root.value,
+                matchLmuWindowsManualReadoutItemKey(listOf(phrase)),
+                phrase,
+            )
+        }
+    }
+
+    @Test
+    fun `タイヤ残り周回はタイヤ摩耗ではなく周回数項目を選ぶ`() {
+        assertEquals(
+            LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
+            matchLmuWindowsManualReadoutItemKey(listOf("タイヤ残り周回")),
+        )
+    }
+
+    @Test
     fun `一致しない・空の候補はnull`() {
         assertNull(matchLmuWindowsManualReadoutItemKey(emptyList()))
         assertNull(matchLmuWindowsManualReadoutItemKey(listOf("", "  ")))

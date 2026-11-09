@@ -15,9 +15,45 @@ val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
         LmuWindowsReadoutItemKey.RemainingFuel.Root.value to
             listOf("燃料", "ねんりょう", "ガソリン", "フューエル", "燃料残量", "燃料は"),
         LmuWindowsReadoutItemKey.TyreWear.Root.value to
-            listOf("タイヤ摩耗", "タイヤ磨耗", "タイヤの摩耗", "タイヤウェア", "タイヤの減り", "タイヤ残量"),
+            listOf(
+                "タイヤ摩耗",
+                "タイヤ磨耗",
+                "タイヤの摩耗",
+                "タイヤウェア",
+                "タイヤの減り",
+                "タイヤ残量",
+                // 「摩耗」は音声認識で拾われにくいため、残り・減り系の言い方も受け付ける。
+                "タイヤ残り",
+                "タイヤの残り",
+                "タイヤの残量",
+                "タイヤ減り",
+                "タイヤのへり",
+                "タイヤすり減り",
+                "タイヤの減り具合",
+                "タイヤのこり",
+                "タイヤのこりりょう",
+                "タイヤへり",
+            ),
         LmuWindowsReadoutItemKey.BrakeWear.Root.value to
-            listOf("ブレーキ残量", "ブレーキ摩耗", "ブレーキ磨耗", "ブレーキの摩耗", "ブレーキウェア", "ブレーキの減り"),
+            listOf(
+                "ブレーキ残量",
+                "ブレーキ摩耗",
+                "ブレーキ磨耗",
+                "ブレーキの摩耗",
+                "ブレーキウェア",
+                "ブレーキの減り",
+                // 「摩耗」は音声認識で拾われにくいため、残り・減り系の言い方も受け付ける。
+                "ブレーキ残り",
+                "ブレーキの残り",
+                "ブレーキの残量",
+                "ブレーキ減り",
+                "ブレーキのへり",
+                "ブレーキすり減り",
+                "ブレーキの減り具合",
+                "ブレーキのこり",
+                "ブレーキのこりりょう",
+                "ブレーキへり",
+            ),
         LmuWindowsReadoutItemKey.BrakeTemperature.Root.value to
             listOf("ブレーキ温度", "ブレーキの温度", "ブレーキ熱", "ブレーキテンプ"),
         LmuWindowsReadoutItemKey.TyreTemperature.Root.value to
