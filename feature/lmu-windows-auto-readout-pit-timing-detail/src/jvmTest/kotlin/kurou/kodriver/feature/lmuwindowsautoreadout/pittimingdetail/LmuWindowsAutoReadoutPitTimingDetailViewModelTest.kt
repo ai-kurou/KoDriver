@@ -6,6 +6,8 @@ import io.mockk.coVerifyOrder
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +19,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
@@ -48,6 +51,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -508,5 +512,37 @@ class LmuWindowsAutoReadoutPitTimingDetailViewModelTest {
             }
             verify(exactly = 2) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
+        }
+
+    @Test
+    fun `onFuelLapsChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                stubRepository()
+                coEvery { repository.saveFuelLaps(1) } throws error
+                val viewModel = createViewModel()
+
+                viewModel.onFuelLapsChanged(1)
+
+                verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
+                verify(exactly = 1) { repository.observeTyreWearLaps() }
+                verify(exactly = 1) { repository.observeFuelLaps() }
+                verify(exactly = 1) { repository.observeEnabledStates() }
+                coVerify(exactly = 1) { repository.saveFuelLaps(1) }
+                verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
+                verify(exactly = 1) { readoutTextRepository.observeFuelReadoutText() }
+                verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
+                verify(exactly = 1) { readoutTextRepository.observeFuelImminentReadoutText() }
+                verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyReadoutText() }
+                verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyImminentReadoutText() }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository, readoutTextRepository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

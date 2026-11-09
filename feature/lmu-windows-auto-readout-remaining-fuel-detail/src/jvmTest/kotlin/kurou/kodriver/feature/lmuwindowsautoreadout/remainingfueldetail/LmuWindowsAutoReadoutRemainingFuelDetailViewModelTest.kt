@@ -6,6 +6,8 @@ import io.mockk.coVerifyOrder
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase
@@ -33,6 +36,7 @@ import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -284,5 +288,34 @@ class LmuWindowsAutoReadoutRemainingFuelDetailViewModelTest {
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
             collection.cancel()
+        }
+
+    @Test
+    fun `onThresholdChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                stubReadout()
+                val thresholdFlow = MutableStateFlow(50)
+                every { repository.observeThresholdPercentage() } returns thresholdFlow
+                coEvery { repository.saveThresholdPercentage(30) } throws error
+                val viewModel = createViewModel()
+
+                viewModel.onThresholdChanged(30)
+
+                verify(exactly = 1) { repository.observeReadoutText() }
+                verify(exactly = 1) { repository.observeThresholdPercentage() }
+                verify(exactly = 1) {
+                    autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+                }
+                coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository, autoReadoutPreferencesRepository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

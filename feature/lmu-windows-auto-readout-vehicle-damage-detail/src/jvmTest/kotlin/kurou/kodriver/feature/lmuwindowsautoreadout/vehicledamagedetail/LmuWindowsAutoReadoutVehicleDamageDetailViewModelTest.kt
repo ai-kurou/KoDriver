@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,6 +17,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
@@ -33,6 +36,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -324,5 +328,28 @@ class LmuWindowsAutoReadoutVehicleDamageDetailViewModelTest {
             viewModel.onPreviewStopped()
             verify(exactly = 1) { stopSpeech(LmuWindowsReadoutItemKey.VehicleDamage.Root) }
             confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
+        }
+
+    @Test
+    fun `onOverheatReadoutTextChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                stubSettings()
+                coEvery { repository.saveOverheatReadoutText("自由文言") } throws error
+                val viewModel = createViewModel()
+
+                viewModel.onOverheatReadoutTextChanged(" 自由文言 ")
+
+                verifySettings()
+                coVerify(exactly = 1) { repository.saveOverheatReadoutText("自由文言") }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository, checkAvailable, stopSpeech)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }
