@@ -555,7 +555,7 @@ kover {
                 // 読み取りと認識の流れは AndroidVoskSpeechRecognitionRepository が検証する
                 classes(
                     "kurou.kodriver.core.speechrecognitiondata.speech.AudioRecordPcmRecorder",
-                    "kurou.kodriver.core.speechrecognitiondata.speech.AndroidVoskSpeechTranscriber",
+                    "kurou.kodriver.core.speechrecognitiondata.speech.VoskRecognizerAdapter",
                     "kurou.kodriver.core.speechrecognitiondata.speech.AndroidVoskSpeechTranscriberFactory",
                 )
                 // デスクトップのエントリーポイント。ウィンドウ・Sentry・サーバー起動は実機依存で単体テストできない。

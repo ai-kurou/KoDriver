@@ -5,9 +5,9 @@
 - `speech`: マイクからの聞き取り（音声認識）。
   - `setMode`（`SpeechRecognitionMode`）で聞き取る内容を切り替える。
   - モードは Repository が保持し（初期値はウェイクワード待ちで、聞き取りの開始では上書きしない。開始の前に設定するのは呼び出し側）、`SpeechTranscriber.setMode` へ `TranscriberModeSync` が断片ごとに反映する（変化したときだけ。切り替え時は途中経過を引き継がない）。
-  - 実機の Vosk（`VoskSpeechTranscriber` / `AndroidVoskSpeechTranscriber`）は、語彙を `wakeWordGrammar`（ウェイクワード・空白区切りの句と `[unk]`。モデルの語彙に無い語は無視されるため、語彙にある語だけを渡す）に絞った Recognizer（ウェイクワード待ち）と絞らない Recognizer（コマンド待ち）を持って切り替え、`Paused` の間は音声を捨てる。
+  - 実機の Vosk（Desktop・Android 共通の `ModeSwitchingTranscriber`。`Recognizer` は `VoskRecognizerAdapter` で `VoskRecognizerPort` に包む）は、語彙を `wakeWordGrammar`（ウェイクワード・空白区切りの句と `[unk]`。モデルの語彙に無い語は無視されるため、語彙にある語だけを渡す）に絞った Recognizer（ウェイクワード待ち）と絞らない Recognizer（コマンド待ち）を持って切り替え、`Paused` の間は音声を捨てる。
   - Android は下の Vosk 版を使う。
-  - Desktop は `JvmSpeechRecognitionRepository` が、選択マイク（保存済みの名前が `AudioInputDeviceRepository` の一覧にあればそれ、なければ・未選択なら一覧の先頭、一覧が空なら既定）の音声を `MicrophoneRepository` から受け取り、断片ごとに音量（`Level`）も流し（16bit PCM の RMS をフルスケールに対する dB にして、-60 dB を0、-10 dB を1として正規化する `pcmLevel`。話し声で十分に振れるようにするため線形にしない）、`SpeechTranscriber`（実機は Vosk の `VoskSpeechTranscriber`）で認識して `Partial` / `Recognized`（確定は信頼度順の最大5候補、空白は除去）として流す。
+  - Desktop は `JvmSpeechRecognitionRepository` が、選択マイク（保存済みの名前が `AudioInputDeviceRepository` の一覧にあればそれ、なければ・未選択なら一覧の先頭、一覧が空なら既定）の音声を `MicrophoneRepository` から受け取り、断片ごとに音量（`Level`）も流し（16bit PCM の RMS をフルスケールに対する dB にして、-60 dB を0、-10 dB を1として正規化する `pcmLevel`。話し声で十分に振れるようにするため線形にしない）、`SpeechTranscriber`（実機は Vosk の `ModeSwitchingTranscriber`）で認識して `Partial` / `Recognized`（確定は信頼度順の最大5候補、空白は除去）として流す。
   - 断片ごとの認識（音量・モード反映・途中経過の重複排除・確定結果）、認識器の生成失敗の扱い、認識中の想定外の例外の `Failed(RecognitionFailed)` 変換は、Desktop・Android 共通の `RecognitionPipeline` / `createOrNull` / `failRecognitionOnError`（commonMain）が担う。
   - 日本語モデル（`vosk-model-small-ja-0.22`）はデスクトップアプリのパッケージにリソースとして同梱し（`:app:desktopApp` の `prepareVoskModel` がビルド時にチェックサムを検証して取得する）、`resolveVoskModelDirectory` が `~/.kodriver/vosk-model-ja`（手動配置。あれば優先）、無ければ同梱先（`compose.application.resources.dir` 配下の `vosk-model-ja`）の順に探す。
   - どちらにも無い・読み込めない（対応外OSのネイティブライブラリを含む）ときは `Failed(Unavailable)` を流して完了する。
