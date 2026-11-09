@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
@@ -33,6 +35,8 @@ class ManualReadoutItemPickerSheetBottomScreenshotTest {
                     }
                 }
             }
+            // 文字列リソースの読み込み完了を待ってからスクロールする（遅い環境で本文が空のまま撮影されるのを防ぐ）
+            onNodeWithText("バーチャルエネルギー").assertIsDisplayed()
             onAllNodes(hasScrollAction()).onFirst().performTouchInput { repeat(SCROLL_TO_BOTTOM_SWIPE_COUNT) { swipeUp() } }
             waitForIdle()
             onRoot().captureRoboImage()
