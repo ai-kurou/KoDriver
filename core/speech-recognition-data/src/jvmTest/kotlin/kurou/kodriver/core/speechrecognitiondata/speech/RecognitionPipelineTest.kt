@@ -89,4 +89,23 @@ class RecognitionPipelineTest {
             assertEquals(2, partials.size)
             assertEquals(listOf(SpeechRecognitionMode.Command), modes)
         }
+
+    @Test
+    fun `聞き取りを作り直しても、同じ反映状態を渡せば戻されたモードを認識器へ反映する`() =
+        runTest {
+            val modeSync = TranscriberModeSync(transcriber, mode)
+            results += null
+            results += null
+
+            mode.value = SpeechRecognitionMode.Paused
+            processOnce(RecognitionPipeline(transcriber, modeSync))
+            mode.value = SpeechRecognitionMode.WakeWord
+            processOnce(RecognitionPipeline(transcriber, modeSync))
+
+            assertEquals(listOf(SpeechRecognitionMode.Paused, SpeechRecognitionMode.WakeWord), modes)
+        }
+
+    private suspend fun processOnce(pipeline: RecognitionPipeline) {
+        flow<SpeechRecognitionEvent> { with(pipeline) { process(ByteArray(4)) } }.toList()
+    }
 }

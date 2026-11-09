@@ -11,7 +11,6 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -70,18 +69,18 @@ internal class AndroidVoskSpeechRecognitionRepository(
             if (transcriber == null) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
             } else {
-                transcriber.use { recognizeWithRetry(it, mode) }
+                transcriber.use { recognizeWithRetry(it, TranscriberModeSync(it, mode)) }
             }
         }.failRecognitionOnError()
             .flowOn(ioDispatcher)
 
     private suspend fun FlowCollector<SpeechRecognitionEvent>.recognizeWithRetry(
         transcriber: SpeechTranscriber,
-        mode: StateFlow<SpeechRecognitionMode>,
+        modeSync: TranscriberModeSync,
     ) {
         var failures = 0
         while (true) {
-            recognize(transcriber, mode, onHealthy = { failures = 0 })
+            recognize(transcriber, modeSync, onHealthy = { failures = 0 })
             failures++
             if (failures >= VOSK_MAX_CONSECUTIVE_MICROPHONE_FAILURES) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.MicrophoneUnavailable))
@@ -100,7 +99,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
     /** マイクを開いて認識し、マイクを開けない・読み取れなくなったら記録して戻る（収集がやむまで戻らない場合もある）。 */
     private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(
         transcriber: SpeechTranscriber,
-        mode: StateFlow<SpeechRecognitionMode>,
+        modeSync: TranscriberModeSync,
         onHealthy: () -> Unit,
     ) {
         val recorder = recorderFactory()
@@ -123,7 +122,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
                         }
                     }
                 try {
-                    readChunks(recorder, RecognitionPipeline(transcriber, mode), onHealthy)
+                    readChunks(recorder, RecognitionPipeline(transcriber, modeSync), onHealthy)
                 } finally {
                     watcher.cancel()
                 }

@@ -17,13 +17,16 @@ import kotlin.coroutines.cancellation.CancellationException
  * 音量（[SpeechRecognitionEvent.Level]）を流し、[mode] の変化を [SpeechTranscriber] へ反映し、
  * 認識結果を [SpeechRecognitionEvent.Partial] / [SpeechRecognitionEvent.Recognized] にする。
  * 同じ途中経過は続けて流さず、モードが変わったときは途中経過を引き継がない。
- * 状態を持つため、1 回の聞き取りごとに作る。
+ * 状態を持つため、1 回の聞き取りごとに作る。ただし [modeSync] は [SpeechTranscriber] が反映済みのモードを覚えているため、
+ * 同じ [SpeechTranscriber] を使い続ける間は聞き取りをまたいで同じものを渡す。
  */
 internal class RecognitionPipeline(
     private val transcriber: SpeechTranscriber,
-    mode: StateFlow<SpeechRecognitionMode>,
+    private val modeSync: TranscriberModeSync,
 ) {
-    private val modeSync = TranscriberModeSync(transcriber, mode)
+    constructor(transcriber: SpeechTranscriber, mode: StateFlow<SpeechRecognitionMode>) :
+        this(transcriber, TranscriberModeSync(transcriber, mode))
+
     private var lastPartial = ""
     private var lastMode = SpeechRecognitionMode.WakeWord
 
