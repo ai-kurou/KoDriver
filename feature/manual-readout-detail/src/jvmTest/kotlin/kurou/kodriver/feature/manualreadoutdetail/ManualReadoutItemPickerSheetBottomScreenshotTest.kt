@@ -4,11 +4,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -33,11 +33,13 @@ class ManualReadoutItemPickerSheetBottomScreenshotTest {
                     }
                 }
             }
-            onAllNodes(
-                hasScrollAction(),
-            ).onFirst().performTouchInput { repeat(SCROLL_TO_BOTTOM_SWIPE_COUNT) { swipeUp() } }
+            onAllNodes(hasScrollAction()).onFirst().performSemanticsAction(SemanticsActions.ScrollBy) {
+                it(0f, SCROLL_TO_BOTTOM_PX)
+            }
+            waitForIdle()
             onRoot().captureRoboImage()
         }
 }
 
-private const val SCROLL_TO_BOTTOM_SWIPE_COUNT = 5
+// 内容の高さを十分に超える量を指定し、スクロール量を最下部で打ち切らせて位置を固定する
+private const val SCROLL_TO_BOTTOM_PX = 100_000f
