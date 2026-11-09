@@ -1,9 +1,12 @@
 package kurou.kodriver.feature.gt7ps5debugstatedetail
 
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,6 +19,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5VehicleClassData
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
@@ -34,6 +38,7 @@ import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -240,5 +245,35 @@ class Gt7Ps5DebugStateDetailViewModelTest {
                 observeVehicleClass,
                 cardOrderRepository,
             )
+        }
+
+    @Test
+    fun `読み上げ要求が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            every { observeTelemetry() } returns emptyFlow()
+            every { observeVehicleClass() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val keys = ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5)
+            val request = DebugReadoutRequest(Simulator.Gt7Ps5, keys.first(), "入力")
+            coEvery { requestDebugReadout(request) } throws error
+            try {
+                val viewModel = createViewModel()
+                viewModel.updateDebugReadoutText("入力")
+
+                viewModel.requestReadout()
+
+                verify(exactly = 1) { captureError(error) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            coVerify(exactly = 1) { requestDebugReadout(request) }
+            verify(exactly = 1) { observeTelemetry() }
+            verify(exactly = 1) { observeVehicleClass() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(observeTelemetry, observeVehicleClass, cardOrderRepository, requestDebugReadout)
         }
 }

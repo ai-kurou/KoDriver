@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -96,7 +96,7 @@ internal class LmuWindowsDebugStateDetailViewModel(
     fun selectHotkey(virtualKeyCode: Int) {
         hotkeyCheckJob?.cancel()
         _hotkeyCheckState.update { HotkeyCheckState.Idle }
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             hotkeyUseCases.saveVirtualKeyCode(virtualKeyCode)
             hotkeyUseCases.retryRegistration()
         }
@@ -106,7 +106,7 @@ internal class LmuWindowsDebugStateDetailViewModel(
         hotkeyCheckJob?.cancel()
         _hotkeyCheckState.update { HotkeyCheckState.Waiting }
         hotkeyCheckJob =
-            viewModelScope.launch {
+            viewModelScope.launchCapturingErrors {
                 val detected = withTimeoutOrNull(hotkeyCheckTimeoutMs) { hotkeyUseCases.observePress().first() }
                 _hotkeyCheckState.update {
                     if (detected !=
@@ -135,7 +135,7 @@ internal class LmuWindowsDebugStateDetailViewModel(
         val text = _debugReadoutText.value
         if (text.isBlank()) return
         val request = DebugReadoutRequest(Simulator.LmuWindows, _selectedReadoutItemKey.value, text)
-        viewModelScope.launch { requestDebugReadout(request) }
+        viewModelScope.launchCapturingErrors { requestDebugReadout(request) }
     }
 
     fun moveCard(
@@ -144,7 +144,7 @@ internal class LmuWindowsDebugStateDetailViewModel(
     ) {
         val newOrder = _cardOrder.value.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
         _localCardOrder.update { newOrder }
-        viewModelScope.launch { saveCardOrder(newOrder) }
+        viewModelScope.launchCapturingErrors { saveCardOrder(newOrder) }
     }
 
     private fun markCardsReceived(cardKeys: Set<LmuWindowsDebugStateCardKey>) {

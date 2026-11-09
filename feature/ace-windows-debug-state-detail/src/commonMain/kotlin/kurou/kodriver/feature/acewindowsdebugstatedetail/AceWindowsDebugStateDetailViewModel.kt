@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.ACE_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -83,7 +83,7 @@ internal class AceWindowsDebugStateDetailViewModel(
         val text = _debugReadoutText.value
         if (text.isBlank()) return
         val request = DebugReadoutRequest(Simulator.AceWindows, _selectedReadoutItemKey.value, text)
-        viewModelScope.launch { requestDebugReadout(request) }
+        viewModelScope.launchCapturingErrors { requestDebugReadout(request) }
     }
 
     fun moveCard(
@@ -92,7 +92,7 @@ internal class AceWindowsDebugStateDetailViewModel(
     ) {
         val newOrder = _cardOrder.value.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
         _localCardOrder.update { newOrder }
-        viewModelScope.launch { saveCardOrder(newOrder) }
+        viewModelScope.launchCapturingErrors { saveCardOrder(newOrder) }
     }
 
     private fun markCardsReceived(cardKeys: Set<AceWindowsDebugStateCardKey>) {
