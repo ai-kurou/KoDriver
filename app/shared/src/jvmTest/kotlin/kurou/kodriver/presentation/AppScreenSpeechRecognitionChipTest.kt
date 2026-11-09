@@ -36,7 +36,8 @@ class AppScreenSpeechRecognitionChipTest {
     private val fakeChip: @Composable (Modifier, SpeechRecognitionDetailPresentation) -> Unit =
         { modifier, presentation ->
             presentations += presentation
-            Text("chip", modifier = modifier.testTag("chip"))
+            // 実物のチップと同じ44dpの大きさにして、重なりを実寸で確認できるようにする
+            Text("chip", modifier = modifier.size(CHIP_SIZE).testTag("chip"))
         }
 
     @Test
@@ -108,7 +109,8 @@ class AppScreenSpeechRecognitionChipTest {
 
         rule.waitUntil { rule.onAllNodesWithText(LONG_MESSAGE).fetchSemanticsNodes().isNotEmpty() }
         val snackbarNode = rule.onNodeWithText(LONG_MESSAGE).fetchSemanticsNode()
-        val snackbarRight = snackbarNode.boundsInRoot.right
+        // 本文の右端ではなくSnackbar全体の右端で比べるため、本文の右に続くSnackbarの内側の余白を足す
+        val snackbarRight = snackbarNode.boundsInRoot.right + with(rule.density) { SNACKBAR_CONTENT_PADDING.toPx() }
         val chipNode = rule.onNodeWithTag("chip").fetchSemanticsNode()
         val chipLeft = chipNode.boundsInRoot.left
         assertTrue(snackbarRight <= chipLeft, "Snackbarの右端($snackbarRight)がチップの左端($chipLeft)を越えている")
@@ -116,5 +118,7 @@ class AppScreenSpeechRecognitionChipTest {
 
     private companion object {
         val LONG_MESSAGE = "とても長いメッセージ".repeat(20)
+        val CHIP_SIZE = 44.dp
+        val SNACKBAR_CONTENT_PADDING = 16.dp
     }
 }
