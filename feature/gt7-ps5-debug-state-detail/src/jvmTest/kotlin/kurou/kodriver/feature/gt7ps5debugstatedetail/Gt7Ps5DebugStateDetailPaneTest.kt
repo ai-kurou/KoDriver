@@ -45,7 +45,7 @@ class Gt7Ps5DebugStateDetailPaneTest {
 
         val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
         rule.onNodeWithTag("debug_readout_request_card").assertIsDisplayed()
-        grid.performScrollToIndex(state.cardOrder.size + 1)
+        grid.performScrollToIndex(state.cardOrder.size)
         rule.onNodeWithText("燃料消費").assertIsDisplayed()
         rule.onNodeWithTag("debug_readout_request_card").assertDoesNotExist()
         grid.performScrollToIndex(0)
@@ -166,7 +166,7 @@ class Gt7Ps5DebugStateDetailPaneTest {
             }
         }
         val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
-        grid.performScrollToIndex(1)
+        grid.performScrollToIndex(0)
         val origin = grid.fetchSemanticsNode().boundsInRoot.topLeft
         val from =
             rule

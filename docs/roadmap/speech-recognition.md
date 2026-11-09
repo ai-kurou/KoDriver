@@ -13,7 +13,7 @@ base-branch: feature/base/speech-recognition
 
 ## 背景
 
-現在、音声認識の確認用カード（`feature/main` の `SpeechRecognitionCard`）は各シミュレーターの `DebugStateDetail` にしか出ない。音声認識はどの画面からも使われるため、ユーザーが常に状態を確認できるようにする。
+これまで、音声認識の確認用カード（`feature/main` の `SpeechRecognitionCard`）は各シミュレーターの `DebugStateDetail` にしか出なかった。音声認識はどの画面からも使われるため、ユーザーが常に状態を確認できるようにする。
 
 ## 仕様（合意済み）
 
@@ -26,7 +26,7 @@ base-branch: feature/base/speech-recognition
 - 認識結果は常時表示せず、詳細を開いたときだけ見せる。
 - 音量リングは滑らかなバーにせず、段階表示にして再コンポーズの負荷を抑える。
 - 状態は既存の `SpeechRecognitionUiState` / `SpeechRecognitionViewModel` を共有する（聞き取りの管理は `AppScreen` が一度だけ行っている）。ドメインの新規追加は不要。
-- `DebugStateDetail` の `SpeechRecognitionCard` は変更せず、このロードマップの対象外とする。
+- `DebugStateDetail` の `SpeechRecognitionCard` は、チップと同じ内容を出せるようになったため削除した（チップの詳細と共通の `SpeechRecognitionDetailContent` を残す）。
 
 ## 実装済み
 

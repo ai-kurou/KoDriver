@@ -62,7 +62,6 @@ import kurou.kodriver.feature.main.SPEECH_RECOGNITION_CHIP_OVERLAY_INSET
 import kurou.kodriver.feature.main.SpeechRecognitionDetailPresentation
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
 import kurou.kodriver.feature.main.rememberSpeechRecognitionChip
-import kurou.kodriver.feature.main.rememberSpeechRecognitionSection
 import kurou.kodriver.feature.main.speechRecognitionChipOverlayInset
 import kurou.kodriver.feature.manualreadoutdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
@@ -198,10 +197,7 @@ fun AppScreen(
         onPauseOrDispose {}
     }
 
-    CompositionLocalProvider(
-        LocalSpeechRecognitionSection provides rememberSpeechRecognitionSection(),
-        LocalSpeechRecognitionChip provides rememberSpeechRecognitionChip(),
-    ) {
+    CompositionLocalProvider(LocalSpeechRecognitionChip provides rememberSpeechRecognitionChip()) {
         AppScreenContent(
             darkTheme = darkTheme,
             dynamicColorEnabled = uiState.dynamicColorEnabled,

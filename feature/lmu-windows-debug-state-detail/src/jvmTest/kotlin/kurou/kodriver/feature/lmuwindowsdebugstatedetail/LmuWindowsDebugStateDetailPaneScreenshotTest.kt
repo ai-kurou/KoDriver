@@ -214,7 +214,7 @@ class LmuWindowsDebugStateDetailPaneScreenshotTest {
                 }
             }
             // 縦に長く1080dpに収まらないため、最後のカードまでスクロールして撮影する。
-            val fixedItemCount = if (hotkeyRegistered) 3 else 2
+            val fixedItemCount = if (hotkeyRegistered) 2 else 1
             val lastIndex = fixedItemCount + uiState.cardOrder.size - 1
             onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).performScrollToIndex(lastIndex)
             waitForIdle()

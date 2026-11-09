@@ -17,7 +17,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class SpeechRecognitionCardTest {
+class SpeechRecognitionDetailContentTest {
     @get:Rule
     val rule = createComposeRule()
 
@@ -26,7 +26,7 @@ class SpeechRecognitionCardTest {
         val changes = mutableListOf<Boolean>()
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionCard(
+                SpeechRecognitionDetailContent(
                     uiState = SpeechRecognitionUiState(),
                     onEnabledChange = { changes += it },
                     onDeviceMenuOpen = {},
@@ -46,7 +46,7 @@ class SpeechRecognitionCardTest {
         val changes = mutableListOf<Boolean>()
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionCard(
+                SpeechRecognitionDetailContent(
                     uiState =
                         SpeechRecognitionUiState(
                             enabled = true,
@@ -74,7 +74,7 @@ class SpeechRecognitionCardTest {
         val level = mutableStateOf<Float?>(null)
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionCard(
+                SpeechRecognitionDetailContent(
                     uiState =
                         SpeechRecognitionUiState(
                             enabled = true,
@@ -99,7 +99,7 @@ class SpeechRecognitionCardTest {
         val status = mutableStateOf(SpeechRecognitionStatus.Stopped)
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionCard(
+                SpeechRecognitionDetailContent(
                     uiState = SpeechRecognitionUiState(status = status.value),
                     onEnabledChange = {},
                     onDeviceMenuOpen = {},
@@ -129,7 +129,7 @@ class SpeechRecognitionCardTest {
         val selected = mutableListOf<String>()
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionCard(
+                SpeechRecognitionDetailContent(
                     uiState = SpeechRecognitionUiState(deviceName = "Mic A", devices = listOf("Mic A", "Mic B")),
                     onEnabledChange = {},
                     onDeviceMenuOpen = { menuOpenCount++ },
@@ -154,7 +154,7 @@ class SpeechRecognitionCardTest {
         val uiState = mutableStateOf(SpeechRecognitionUiState(devices = listOf("Mic A")))
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionCard(
+                SpeechRecognitionDetailContent(
                     uiState = uiState.value,
                     onEnabledChange = {},
                     onDeviceMenuOpen = {},

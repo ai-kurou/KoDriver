@@ -46,25 +46,13 @@ internal fun DebugStateDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     lmuWindowsPane: @Composable (canNavigateBack: Boolean, onBack: () -> Unit) -> Unit = { canBack, back ->
-        LmuWindowsDebugStateDetailPane(
-            canBack,
-            back,
-            speechRecognitionSection = LocalSpeechRecognitionSection.current,
-        )
+        LmuWindowsDebugStateDetailPane(canBack, back)
     },
     gt7Ps5Pane: @Composable (canNavigateBack: Boolean, onBack: () -> Unit) -> Unit = { canBack, back ->
-        Gt7Ps5DebugStateDetailPane(
-            canBack,
-            back,
-            speechRecognitionSection = LocalSpeechRecognitionSection.current,
-        )
+        Gt7Ps5DebugStateDetailPane(canBack, back)
     },
     aceWindowsPane: @Composable (canNavigateBack: Boolean, onBack: () -> Unit) -> Unit = { canBack, back ->
-        AceWindowsDebugStateDetailPane(
-            canBack,
-            back,
-            speechRecognitionSection = LocalSpeechRecognitionSection.current,
-        )
+        AceWindowsDebugStateDetailPane(canBack, back)
     },
 ) {
     when (debugStateDetailType(selectedSimulatorId)) {
