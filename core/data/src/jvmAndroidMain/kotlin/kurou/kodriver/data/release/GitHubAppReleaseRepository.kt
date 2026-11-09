@@ -1,6 +1,5 @@
 package kurou.kodriver.data.release
 
-import io.sentry.Sentry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -8,6 +7,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import java.net.HttpURLConnection
@@ -36,7 +36,7 @@ internal class GitHubAppReleaseRepository(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Sentry.captureException(e)
+                captureError(e)
                 null
             }
         }
@@ -54,7 +54,7 @@ private fun fetchLatestReleaseBody(): String? {
         if (connection.responseCode != HttpURLConnection.HTTP_OK) return null
         connection.inputStream.bufferedReader().readText()
     } catch (e: Exception) {
-        Sentry.captureException(e)
+        captureError(e)
         null
     }
 }
