@@ -12,14 +12,19 @@ import androidx.compose.ui.test.onNodeWithTag
 import kurou.kodriver.feature.main.SpeechRecognitionDetailPresentation
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class AppScreenSpeechRecognitionChipTest {
     @get:Rule
     val rule = createComposeRule()
 
-    private val fakeChip: @Composable (Modifier, SpeechRecognitionDetailPresentation) -> Unit = { modifier, _ ->
-        Text("chip", modifier = modifier.testTag("chip"))
-    }
+    private val presentations = mutableListOf<SpeechRecognitionDetailPresentation>()
+
+    private val fakeChip: @Composable (Modifier, SpeechRecognitionDetailPresentation) -> Unit =
+        { modifier, presentation ->
+            presentations += presentation
+            Text("chip", modifier = modifier.testTag("chip"))
+        }
 
     @Test
     fun `チップが提供されているとき全画面に重ねて表示する`() {
@@ -32,6 +37,7 @@ class AppScreenSpeechRecognitionChipTest {
         }
 
         rule.onNodeWithTag("chip").assertIsDisplayed()
+        rule.runOnIdle { assertEquals(setOf(SpeechRecognitionDetailPresentation.BottomSheet), presentations.toSet()) }
     }
 
     @Test
@@ -45,6 +51,7 @@ class AppScreenSpeechRecognitionChipTest {
         }
 
         rule.onNodeWithTag("chip").assertIsDisplayed()
+        rule.runOnIdle { assertEquals(setOf(SpeechRecognitionDetailPresentation.Popover), presentations.toSet()) }
     }
 
     @Test

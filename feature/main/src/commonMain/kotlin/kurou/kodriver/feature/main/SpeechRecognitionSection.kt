@@ -61,25 +61,27 @@ private fun SpeechRecognitionChipWithDetail(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var detailVisible by remember { mutableStateOf(false) }
-    // ポップオーバーをチップの位置に合わせて出すため、チップと詳細を同じ Box に置く
+    // AppScreen が渡す余白はチップの外側に置き、ポップオーバーのアンカーはチップ自身の範囲にする
     Box(modifier = modifier) {
-        SpeechRecognitionChip(
-            uiState = uiState,
-            onClick = {
-                // 停止中でも選択中の入力デバイスを表示できるよう、開くときに一覧を取得する（Android では何もしない）
-                viewModel.refreshDevices()
-                detailVisible = true
-            },
-        )
-        if (detailVisible) {
-            SpeechRecognitionDetail(
-                presentation = presentation,
+        Box {
+            SpeechRecognitionChip(
                 uiState = uiState,
-                onEnabledChange = { viewModel.onEnabledChange(it, requestPermission) },
-                onDeviceMenuOpen = viewModel::refreshDevices,
-                onDeviceSelected = viewModel::onDeviceSelected,
-                onDismissRequest = { detailVisible = false },
+                onClick = {
+                    // 停止中でも選択中の入力デバイスを表示できるよう、開くときに一覧を取得する（Android では何もしない）
+                    viewModel.refreshDevices()
+                    detailVisible = true
+                },
             )
+            if (detailVisible) {
+                SpeechRecognitionDetail(
+                    presentation = presentation,
+                    uiState = uiState,
+                    onEnabledChange = { viewModel.onEnabledChange(it, requestPermission) },
+                    onDeviceMenuOpen = viewModel::refreshDevices,
+                    onDeviceSelected = viewModel::onDeviceSelected,
+                    onDismissRequest = { detailVisible = false },
+                )
+            }
         }
     }
 }

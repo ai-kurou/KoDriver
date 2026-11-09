@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Test
 
@@ -88,7 +89,7 @@ class SpeechRecognitionChipScreenshotTest {
                         onEnabledChange = {},
                         onDeviceMenuOpen = {},
                         onDeviceSelected = {},
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(KoDriverSpacing.medium),
                         levelGaugeHeight = 12.dp,
                     )
                 }

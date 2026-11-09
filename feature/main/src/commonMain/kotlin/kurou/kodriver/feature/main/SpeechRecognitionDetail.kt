@@ -1,8 +1,11 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -107,7 +110,8 @@ private fun DetailPopover(
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             shadowElevation = POPOVER_SHADOW_ELEVATION,
         ) {
-            content()
+            // 高さの足りないウィンドウでも下のスイッチや履歴に届くよう、全体をスクロールできるようにする
+            Box(modifier = Modifier.verticalScroll(rememberScrollState())) { content() }
         }
     }
 }

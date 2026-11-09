@@ -3,17 +3,21 @@ package kurou.kodriver.feature.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.click
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -320,5 +324,19 @@ class SpeechRecognitionSectionTest {
         rule.onNodeWithTag("speech_recognition_device_Mic B").performClick()
 
         rule.onNodeWithTag("speech_recognition_device").assertTextContains("Mic B")
+    }
+
+    @Test
+    fun `ポップオーバーは外側のタップで閉じて再びタップすると開く`() {
+        createViewModel(granted = true)
+        rule.setContent { KoDriverTheme { Chip(presentation = SpeechRecognitionDetailPresentation.Popover) } }
+
+        rule.onNodeWithContentDescription("停止中").performClick()
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsDisplayed()
+        rule.onAllNodes(isRoot())[1].performTouchInput { click(Offset(width - 1f, height - 1f)) }
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertDoesNotExist()
+
+        rule.onNodeWithContentDescription("停止中").performClick()
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsDisplayed()
     }
 }
