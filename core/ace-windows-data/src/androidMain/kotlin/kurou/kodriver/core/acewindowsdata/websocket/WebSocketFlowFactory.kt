@@ -4,12 +4,12 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
-import io.sentry.Sentry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
+import kurou.kodriver.domain.captureError
 import java.io.EOFException
 import java.net.ConnectException
 import java.net.ProtocolException
@@ -32,7 +32,7 @@ internal fun <T> HttpClient.webSocketFlow(
     path: String,
     retryDelayMs: Long,
     decode: (String) -> T,
-    captureException: (Throwable) -> Unit = { Sentry.captureException(it) },
+    captureException: (Throwable) -> Unit = { captureError(it) },
 ): Flow<T> =
     flow {
         while (true) {

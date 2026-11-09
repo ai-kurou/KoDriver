@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryPollingSource
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import kurou.kodriver.core.windowssharedmemory.datasource.WindowsSharedMemoryReader
+import kurou.kodriver.domain.captureError
 import java.nio.ByteBuffer
 import kotlin.time.Clock
 
@@ -18,7 +19,13 @@ internal class AceWindowsGraphicsSharedMemorySource(
     pollingIntervalMs: Long = 16L,
     reconnectIntervalMs: Long = 1_000L,
     readerFactory: (segmentName: String, sizeBytes: Int) -> SharedMemoryReader =
-        { segmentName, sizeBytes -> WindowsSharedMemoryReader(segmentName = segmentName, sizeBytes = sizeBytes) },
+        { segmentName, sizeBytes ->
+            WindowsSharedMemoryReader(
+                segmentName = segmentName,
+                sizeBytes = sizeBytes,
+                captureError = ::captureError,
+            )
+        },
     internal val reader: SharedMemoryReader =
         readerFactory("Local\\acevo_pmf_graphics", GRAPHICS_SEGMENT_SIZE_BYTES),
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },

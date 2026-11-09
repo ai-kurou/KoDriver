@@ -2,6 +2,7 @@
 
 package kurou.kodriver.core.speechrecognitiondata.speech
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -107,6 +108,21 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
             assertEquals(VOSK_MAX_CONSECUTIVE_MICROPHONE_FAILURES, recorder.closeCount)
             // 待ち時間は 1, 2, 4, 8, 16 秒と延び、上限の30秒で頭打ちになる（9回待つ）
             assertEquals(151_000L, testScheduler.currentTime)
+        }
+
+    @Test
+    fun `マイクを開く処理がキャンセル例外を投げたらマイク取得失敗として再試行せず再スローする`() =
+        runTest {
+            recorder.startError = CancellationException("cancelled")
+
+            val events = createRepository().observeRecognition().toList()
+
+            assertEquals(
+                listOf(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.RecognitionFailed)),
+                events,
+            )
+            assertEquals(1, recorder.startCount)
+            assertEquals(1, recorder.closeCount)
         }
 
     @Test

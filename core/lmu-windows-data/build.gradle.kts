@@ -35,8 +35,6 @@ kotlin {
                 implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
                 implementation(libs.kotlinx.serialization.protobuf)
                 implementation(libs.kotlinx.serialization.json)
-                implementation(project.dependencies.platform(libs.sentry.bom))
-                implementation(libs.sentry)
             }
         }
         jvmMain {
