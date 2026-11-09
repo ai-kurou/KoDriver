@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
@@ -33,9 +34,14 @@ class ManualReadoutItemPickerSheetBottomScreenshotTest {
                     }
                 }
             }
+            // 単独実行（リソース未読み込み）でも本文が組み上がるまで待つ。
+            waitUntil(timeoutMillis = RESOURCE_LOAD_TIMEOUT_MILLIS) {
+                onAllNodesWithText("クラス内後方車とのギャップ").fetchSemanticsNodes().isNotEmpty()
+            }
             onNodeWithText("クラス内後方車とのギャップ").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 }
 
+private const val RESOURCE_LOAD_TIMEOUT_MILLIS = 10_000L
 private const val LEADING_ITEM_COUNT_TO_OMIT = 4
