@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
@@ -116,7 +116,7 @@ internal class ManualReadoutSetDetailViewModel(
     }
 
     private fun mutateItems(transform: (List<String>) -> List<String>) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             mutationMutex.withLock {
                 if (deleted.value) return@withLock
                 val set = observeSets().first().find { it.id == setId } ?: return@withLock
@@ -127,7 +127,7 @@ internal class ManualReadoutSetDetailViewModel(
     }
 
     fun updateName(name: String) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             mutationMutex.withLock {
                 if (deleted.value) return@withLock
                 val set = observeSets().first().find { it.id == setId } ?: return@withLock
@@ -141,7 +141,7 @@ internal class ManualReadoutSetDetailViewModel(
         text: String,
     ) {
         if (itemKey !in availableItemKeys) return
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             mutationMutex.withLock {
                 if (deleted.value) return@withLock
                 val set = observeSets().first().find { it.id == setId } ?: return@withLock
@@ -153,7 +153,7 @@ internal class ManualReadoutSetDetailViewModel(
 
     fun assignHotkey(virtualKeyCode: Int) {
         if (!isManualReadoutHotkeyVirtualKeyCode(virtualKeyCode)) return
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             mutationMutex.withLock {
                 if (deleted.value) return@withLock
                 val sets = observeSets().first()
@@ -170,7 +170,7 @@ internal class ManualReadoutSetDetailViewModel(
     }
 
     fun selectHotkeyModifiers(modifiers: ManualReadoutHotkeyModifiers) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             mutationMutex.withLock {
                 if (deleted.value) return@withLock
                 val sets = observeSets().first()
@@ -222,11 +222,11 @@ internal class ManualReadoutSetDetailViewModel(
     }
 
     fun onRetryHotkeyRegistration() {
-        viewModelScope.launch { retryHotkeyRegistration(simulatorId, setId) }
+        viewModelScope.launchCapturingErrors { retryHotkeyRegistration(simulatorId, setId) }
     }
 
     fun clearHotkey() {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             mutationMutex.withLock {
                 if (deleted.value) return@withLock
                 val set = observeSets().first().find { it.id == setId } ?: return@withLock
@@ -237,7 +237,7 @@ internal class ManualReadoutSetDetailViewModel(
     }
 
     fun deleteSet() {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             mutationMutex.withLock {
                 if (!deleted.value) {
                     deleteSet(setId)

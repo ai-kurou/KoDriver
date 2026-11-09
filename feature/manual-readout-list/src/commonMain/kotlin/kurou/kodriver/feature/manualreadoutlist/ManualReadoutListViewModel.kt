@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
@@ -55,7 +55,7 @@ internal class ManualReadoutListViewModel(
     }
 
     fun onPlayButtonLayoutToggle() {
-        viewModelScope.launch { playButtonLayoutUseCases.save(!uiState.value.playButtonLayoutEnabled) }
+        viewModelScope.launchCapturingErrors { playButtonLayoutUseCases.save(!uiState.value.playButtonLayoutEnabled) }
     }
 
     fun clearSelectedSet() {
@@ -63,14 +63,14 @@ internal class ManualReadoutListViewModel(
     }
 
     fun readSet(setId: String) {
-        viewModelScope.launch { requestManualReadout(ManualReadoutRequest(simulatorId, setId)) }
+        viewModelScope.launchCapturingErrors { requestManualReadout(ManualReadoutRequest(simulatorId, setId)) }
     }
 
     fun deleteSet(setId: String) {
-        viewModelScope.launch { deleteManualReadoutSet(setId) }
+        viewModelScope.launchCapturingErrors { deleteManualReadoutSet(setId) }
     }
 
     fun addSet() {
-        viewModelScope.launch { addManualReadoutSet(ManualReadoutSet(id = generateSetId())) }
+        viewModelScope.launchCapturingErrors { addManualReadoutSet(ManualReadoutSet(id = generateSetId())) }
     }
 }
