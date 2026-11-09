@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
-import io.sentry.Sentry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kurou.kodriver.domain.captureError
 import java.io.IOException
 
 /**
@@ -11,13 +11,13 @@ import java.io.IOException
  *
  * 読み取りに失敗した Flow をそのまま流すと購読側へ値が1つも届かず、UI が設定待ちのまま固まる。
  * 破損（`SerializationException`）を Sentry へ送る `protoBufPreferencesSerializer` の方針に揃え、
- * 失敗そのものは [Sentry] に記録したうえでデフォルト値で動作を継続する。
+ * 失敗そのものは [captureError] で記録したうえでデフォルト値で動作を継続する。
  * [IOException] 以外の例外はこれまでどおり伝播させる。
  */
 internal fun <T> Flow<T>.fallbackOnReadError(defaultValue: T): Flow<T> =
     catch { e ->
         if (e is IOException) {
-            Sentry.captureException(e)
+            captureError(e)
             emit(defaultValue)
         } else {
             throw e
