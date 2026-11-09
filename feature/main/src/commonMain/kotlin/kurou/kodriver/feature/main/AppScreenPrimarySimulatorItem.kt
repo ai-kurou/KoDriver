@@ -211,6 +211,18 @@ private fun SimulatorCard(
                     }
                 }
             }
+            if (logo == null && platformLabel != null) {
+                // 背景画像自体にロゴがあるカードは、画像をそのまま見せたうえで下端にプラットフォーム名だけを添える。
+                Text(
+                    text = platformLabel,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White,
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = KoDriverSpacing.small),
+                )
+            }
             if (selected) {
                 Box(
                     modifier =

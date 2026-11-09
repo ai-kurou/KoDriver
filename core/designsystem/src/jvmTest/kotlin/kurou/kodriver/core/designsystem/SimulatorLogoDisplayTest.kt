@@ -47,26 +47,26 @@ class SimulatorLogoDisplayTest {
     }
 
     @Test
-    fun `lmu_windowsのプラットフォーム名はWindows版を返す`() {
-        var label by mutableStateOf<String?>(null)
+    fun `lmu_windowsとace_windowsのプラットフォーム名はWindows版を返す`() {
+        var lmu by mutableStateOf<String?>(null)
+        var ace by mutableStateOf<String?>(null)
         composeRule.setContent {
-            label = simulatorPlatformLabel("lmu_windows")
-        }
-
-        assertEquals("Windows版", label)
-    }
-
-    @Test
-    fun `gt7_ps5とace_windowsはプラットフォーム名を返さない`() {
-        var gt7 by mutableStateOf<String?>("初期値")
-        var ace by mutableStateOf<String?>("初期値")
-        composeRule.setContent {
-            gt7 = simulatorPlatformLabel("gt7_ps5")
+            lmu = simulatorPlatformLabel("lmu_windows")
             ace = simulatorPlatformLabel("ace_windows")
         }
 
+        assertEquals("Windows版", lmu)
+        assertEquals("Windows版", ace)
+    }
+
+    @Test
+    fun `gt7_ps5はプラットフォーム名を返さない`() {
+        var gt7 by mutableStateOf<String?>("初期値")
+        composeRule.setContent {
+            gt7 = simulatorPlatformLabel("gt7_ps5")
+        }
+
         assertNull(gt7)
-        assertNull(ace)
     }
 
     @Test
