@@ -40,14 +40,29 @@ jobs:
         # Gradle が以降の未実行タスクのスケジューリングを止めてしまい、他のモジュールの
         # スクリーンショット差分が実行されないまま見逃されることがある（#1395）。
         # gradle.properties の workers.max=2 はローカルのメモリ節約用。CI（4 vCPU）では 4 に上書きして短縮する
-        run: ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests --continue -Dorg.gradle.workers.max=4
+        # 失敗したモジュールだけを record するため、Gradle の出力をログに残す
+        run: |
+          set -o pipefail
+          ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests --continue -Dorg.gradle.workers.max=4 2>&1 | tee verify.log
 
       - name: Record golden images
         if: steps.verify.outcome == 'failure'
         # record タスク自体が失敗（コンパイルエラー等）しても、後続の commit ステップで
         # 正常に記録できたモジュール分の golden 画像だけはコミットできるようにする。
         continue-on-error: true
-        run: ./gradlew recordRoborazzi${{ inputs.taskSuffix }}Tests --continue -Dorg.gradle.workers.max=4
+        env:
+          TASK_SUFFIX: ${{ inputs.taskSuffix }}
+        run: |
+          # verify が失敗したモジュールのテストタスクだけを record し、全モジュールの再実行を避ける
+          failed=$(grep -oE '^> Task (:[^ ]+):(jvmTest|testAndroidHostTest) FAILED' verify.log | awk '{print $3}' | sed -E 's/:(jvmTest|testAndroidHostTest)$//' | sort -u)
+          if [ -z "$failed" ]; then
+            # 失敗モジュールを特定できない場合（コンパイルエラー等）は従来どおり全体を record する
+            ./gradlew "recordRoborazzi${TASK_SUFFIX}Tests" --continue -Dorg.gradle.workers.max=4
+          else
+            tasks=()
+            for m in $failed; do tasks+=("${m}:recordRoborazzi${TASK_SUFFIX}Test"); done
+            ./gradlew "${tasks[@]}" --continue -Dorg.gradle.workers.max=4
+          fi
 
       - name: Commit updated golden images
         if: steps.verify.outcome == 'failure'
