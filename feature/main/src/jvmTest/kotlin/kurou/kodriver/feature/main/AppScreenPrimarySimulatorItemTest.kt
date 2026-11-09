@@ -83,7 +83,8 @@ class AppScreenPrimarySimulatorItemTest {
         rule.onNode(hasText("Windows版")).assertExists()
         rule.onNode(hasContentDescription("Gran Turismo 7（PS5）")).assertExists()
         rule.onNode(hasText("Gran Turismo 7（PS5）")).assertDoesNotExist()
-        rule.onNode(hasText("Assetto Corsa EVO（Windows版）")).assertExists()
+        rule.onNode(hasContentDescription("Assetto Corsa EVO（Windows版）")).assertExists()
+        rule.onNode(hasText("Assetto Corsa EVO（Windows版）")).assertDoesNotExist()
     }
 
     @Test

@@ -59,7 +59,7 @@ fun simulatorLargeImage(simulatorId: String): Painter =
     }
 
 /**
- * シミュレーターのロゴ画像を返す。ロゴを用意していないシミュレーターは `null` を返す（その場合は表示名の文字列で代替する）。
+ * シミュレーターのロゴ画像を返す。ロゴを用意していないシミュレーターは `null` を返す（その場合は大きな背景画像自体にロゴが含まれているものとして、ぼかしや暗幕を掛けずにそのまま表示する）。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
