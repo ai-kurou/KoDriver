@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
@@ -16,8 +15,13 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import org.junit.Test
 
 class ManualReadoutItemPickerSheetBottomScreenshotTest {
+    init {
+        // 項目定義は登録済みのものだけ表示されるため、単独実行でも本文が出るよう登録する。
+        registerAllManualReadoutSimulators()
+    }
+
     // 全項目だと内容が表示領域を僅かに超えるため、先頭の項目を除いて末尾（下端の余白まで）が収まるようにする。
-    // スクロール操作は環境により本文が描画されない場合があるため使わない。
+    // スクロール位置に依存しない決定的な撮影にするため、スクロール操作は使わない。
     @Test
     fun `項目追加シート 最下部まで表示`() =
         composeScreenshotTest {
@@ -34,14 +38,9 @@ class ManualReadoutItemPickerSheetBottomScreenshotTest {
                     }
                 }
             }
-            // 単独実行（リソース未読み込み）でも本文が組み上がるまで待つ。
-            waitUntil(timeoutMillis = RESOURCE_LOAD_TIMEOUT_MILLIS) {
-                onAllNodesWithText("クラス内後方車とのギャップ").fetchSemanticsNodes().isNotEmpty()
-            }
             onNodeWithText("クラス内後方車とのギャップ").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 }
 
-private const val RESOURCE_LOAD_TIMEOUT_MILLIS = 10_000L
 private const val LEADING_ITEM_COUNT_TO_OMIT = 4
