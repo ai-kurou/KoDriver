@@ -3,6 +3,7 @@
     <string name="debug_state_unavailable">未取得</string>
     <string name="simulator_name_lmu_windows">Le Mans Ultimate（Windows版）</string>
     <string name="simulator_name_gt7_ps5">Gran Turismo 7（PS5）</string>
+    <string name="platform_label_windows">Windows版</string>
     <string name="simulator_name_ace_windows">Assetto Corsa EVO（Windows版）</string>
     <string name="readout_item_vehicle_approach">車両接近</string>
     <string name="readout_item_vehicle_approach_sustained">接近継続</string>

@@ -356,7 +356,7 @@ class MainActivityTest {
     private fun selectSimulator(simulatorName: String) {
         composeTestRule.onNodeWithTag("primarySimulatorNavItem").performClick()
         composeTestRule.waitForIdle()
-        clickLastItem(simulatorName)
+        clickLastSimulatorCard(simulatorName)
     }
 
     private fun waitUntilDisplayed(
@@ -427,9 +427,11 @@ class MainActivityTest {
         composeTestRule.waitForIdle()
     }
 
-    private fun clickLastItem(text: String) {
-        val nodeIndex = composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().lastIndex
-        val node = composeTestRule.onAllNodes(hasText(text)).get(nodeIndex)
+    // GT7のカードは表示名の文字列ではなくロゴ画像で表示するため、contentDescriptionでも探す。
+    private fun clickLastSimulatorCard(simulatorName: String) {
+        val matcher = hasText(simulatorName) or hasContentDescription(simulatorName)
+        val nodeIndex = composeTestRule.onAllNodes(matcher).fetchSemanticsNodes().lastIndex
+        val node = composeTestRule.onAllNodes(matcher).get(nodeIndex)
         node.performScrollTo()
         composeTestRule.waitForIdle()
         node.performClick()

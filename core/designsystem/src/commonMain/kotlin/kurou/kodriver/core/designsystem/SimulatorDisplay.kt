@@ -7,8 +7,11 @@ import kurou.kodriver.core.designsystem.generated.resources.ace
 import kurou.kodriver.core.designsystem.generated.resources.ace_large
 import kurou.kodriver.core.designsystem.generated.resources.gt7
 import kurou.kodriver.core.designsystem.generated.resources.gt7_large
+import kurou.kodriver.core.designsystem.generated.resources.gt7_logo
 import kurou.kodriver.core.designsystem.generated.resources.lmu
 import kurou.kodriver.core.designsystem.generated.resources.lmu_large
+import kurou.kodriver.core.designsystem.generated.resources.lmu_logo
+import kurou.kodriver.core.designsystem.generated.resources.platform_label_windows
 import kurou.kodriver.core.designsystem.generated.resources.simulator_name_ace_windows
 import kurou.kodriver.core.designsystem.generated.resources.simulator_name_gt7_ps5
 import kurou.kodriver.core.designsystem.generated.resources.simulator_name_lmu_windows
@@ -52,6 +55,32 @@ fun simulatorLargeImage(simulatorId: String): Painter =
         GT7_PS5_ID -> painterResource(Res.drawable.gt7_large)
         LMU_WINDOWS_ID -> painterResource(Res.drawable.lmu_large)
         ACE_WINDOWS_ID -> painterResource(Res.drawable.ace_large)
+        else -> error("未対応のsimulatorId: $simulatorId")
+    }
+
+/**
+ * シミュレーターのロゴ画像を返す。ロゴを用意していないシミュレーターは `null` を返す（その場合は表示名の文字列で代替する）。
+ * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
+ */
+@Composable
+fun simulatorLogoImage(simulatorId: String): Painter? =
+    when (simulatorId) {
+        GT7_PS5_ID -> painterResource(Res.drawable.gt7_logo)
+        LMU_WINDOWS_ID -> painterResource(Res.drawable.lmu_logo)
+        ACE_WINDOWS_ID -> null
+        else -> error("未対応のsimulatorId: $simulatorId")
+    }
+
+/**
+ * ロゴ画像の下に添えるプラットフォーム名（「Windows版」）を返す。添える必要のないシミュレーターは `null` を返す。
+ * [simulatorLogoImage] がロゴを返すシミュレーターに対してのみ使う（ロゴがなければ表示名にプラットフォーム名が含まれる）。
+ * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
+ */
+@Composable
+fun simulatorPlatformLabel(simulatorId: String): String? =
+    when (simulatorId) {
+        LMU_WINDOWS_ID -> stringResource(Res.string.platform_label_windows)
+        GT7_PS5_ID, ACE_WINDOWS_ID -> null
         else -> error("未対応のsimulatorId: $simulatorId")
     }
 

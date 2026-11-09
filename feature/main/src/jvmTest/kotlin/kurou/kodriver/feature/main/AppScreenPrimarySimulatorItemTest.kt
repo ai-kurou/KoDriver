@@ -78,8 +78,11 @@ class AppScreenPrimarySimulatorItemTest {
             )
         }
 
-        rule.onNode(hasText("Le Mans Ultimate（Windows版）")).assertExists()
-        rule.onNode(hasText("Gran Turismo 7（PS5）")).assertExists()
+        rule.onNode(hasContentDescription("Le Mans Ultimate（Windows版）")).assertExists()
+        rule.onNode(hasText("Le Mans Ultimate（Windows版）")).assertDoesNotExist()
+        rule.onNode(hasText("Windows版")).assertExists()
+        rule.onNode(hasContentDescription("Gran Turismo 7（PS5）")).assertExists()
+        rule.onNode(hasText("Gran Turismo 7（PS5）")).assertDoesNotExist()
         rule.onNode(hasText("Assetto Corsa EVO（Windows版）")).assertExists()
     }
 
@@ -94,7 +97,7 @@ class AppScreenPrimarySimulatorItemTest {
             )
         }
 
-        rule.onNode(hasText("Le Mans Ultimate（Windows版）")).assertDoesNotExist()
+        rule.onNode(hasContentDescription("Le Mans Ultimate（Windows版）")).assertDoesNotExist()
     }
 
     @Test
@@ -120,7 +123,7 @@ class AppScreenPrimarySimulatorItemTest {
             }
         }
 
-        val node = rule.onNode(hasText("Gran Turismo 7（PS5）"))
+        val node = rule.onNode(hasContentDescription("Gran Turismo 7（PS5）"))
         node.performScrollTo()
         node.performClick()
 
