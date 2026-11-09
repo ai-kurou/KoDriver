@@ -2,11 +2,11 @@ package kurou.kodriver.core.gt7ps5data.preferences
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
-import io.sentry.Sentry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.protobuf.ProtoBuf
+import kurou.kodriver.domain.captureError
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -30,7 +30,7 @@ internal fun <T> protoBufPreferencesSerializer(
             try {
                 ProtoBuf.decodeFromByteArray(kSerializer, input.readBytes())
             } catch (e: SerializationException) {
-                Sentry.captureException(e)
+                captureError(e)
                 throw CorruptionException("Cannot read ${kSerializer.descriptor.serialName}.", e)
             }
 

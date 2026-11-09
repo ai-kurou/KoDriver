@@ -1,9 +1,9 @@
 package kurou.kodriver.core.gt7ps5data.preferences
 
 import androidx.datastore.core.DataStore
-import io.sentry.Sentry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kurou.kodriver.domain.captureError
 import java.io.IOException
 
 /**
@@ -17,7 +17,7 @@ import java.io.IOException
 internal fun <T> Flow<T>.fallbackOnReadError(defaultValue: T): Flow<T> =
     catch { e ->
         if (e is IOException) {
-            Sentry.captureException(e)
+            captureError(e)
             emit(defaultValue)
         } else {
             throw e
