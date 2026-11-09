@@ -38,6 +38,22 @@ class SpeechRecognitionChipScreenshotTest {
             captureChip(SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.PermissionDenied))
         }
 
+    @Test
+    fun `ON待機中の音量リング小`() =
+        composeScreenshotTest {
+            captureChip(
+                SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.Listening, level = 0.4f),
+            )
+        }
+
+    @Test
+    fun `ONコマンド待ちの音量リング大`() =
+        composeScreenshotTest {
+            captureChip(
+                SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.CommandWaiting, level = 0.8f),
+            )
+        }
+
     private fun DesktopComposeUiTest.captureChip(uiState: SpeechRecognitionUiState) {
         setContent {
             KoDriverTheme {

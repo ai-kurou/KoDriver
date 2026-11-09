@@ -1,8 +1,12 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onRoot
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
@@ -95,5 +99,33 @@ class SpeechRecognitionChipTest {
         }
 
         rule.onNodeWithContentDescription("マイクの権限が許可されていません").assertIsDisplayed()
+    }
+
+    @Test
+    fun `音量は段階に変換し範囲外は端に丸める`() {
+        assertEquals(0, volumeRingStep(0f))
+        assertEquals(0, volumeRingStep(0.09f))
+        assertEquals(1, volumeRingStep(0.1f))
+        assertEquals(3, volumeRingStep(0.5f))
+        assertEquals(VOLUME_RING_STEPS, volumeRingStep(1f))
+        assertEquals(0, volumeRingStep(-1f))
+        assertEquals(VOLUME_RING_STEPS, volumeRingStep(2f))
+    }
+
+    @Test
+    fun `音量があっても全状態で表示できる`() {
+        var uiState by mutableStateOf(SpeechRecognitionUiState())
+        rule.setContent { KoDriverTheme { SpeechRecognitionChip(uiState = uiState) } }
+        listOf(
+            SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.Listening, level = 0.6f),
+            SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.Listening, level = 0f),
+            SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.CommandWaiting, level = 1f),
+            SpeechRecognitionUiState(level = 0.6f),
+            SpeechRecognitionUiState(status = SpeechRecognitionStatus.PermissionDenied, level = 0.6f),
+        ).forEach { next ->
+            uiState = next
+            rule.waitForIdle()
+            rule.onRoot().assertIsDisplayed()
+        }
     }
 }
