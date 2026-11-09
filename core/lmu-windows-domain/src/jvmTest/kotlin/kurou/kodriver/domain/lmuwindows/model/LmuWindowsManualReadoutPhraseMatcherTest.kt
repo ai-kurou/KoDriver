@@ -123,11 +123,27 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
     }
 
     @Test
-    fun `タイヤ残り周回はタイヤ摩耗ではなく周回数項目を選ぶ`() {
-        assertEquals(
-            LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
-            matchLmuWindowsManualReadoutItemKey(listOf("タイヤ残り周回")),
-        )
+    fun `タイヤの残りを含む周回数の言い方はタイヤ摩耗ではなく周回数項目を選ぶ`() {
+        listOf(
+            "タイヤ残り周回",
+            "タイヤの残り周回",
+            "タイヤのこり周回",
+            "タイヤ残りあと何周",
+            "タイヤの残りあと何周",
+            "タイヤのこりあと何周",
+            "タイヤ残り何周",
+            "タイヤの残り何周",
+            "タイヤ残りは何周",
+            "タイヤの残りは何周",
+            "タイヤ残りラップ",
+            "タイヤの残りラップ",
+        ).forEach { phrase ->
+            assertEquals(
+                LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
+                matchLmuWindowsManualReadoutItemKey(listOf(phrase)),
+                phrase,
+            )
+        }
     }
 
     @Test

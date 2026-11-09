@@ -63,7 +63,25 @@ val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to
             listOf("バーチャルエネルギー周回", "エネルギー周回", "エネルギー残り周回", "VE周回", "VEラップ"),
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to
-            listOf("タイヤ周回", "タイヤ残り周回", "タイヤあと何周", "タイヤ摩耗周回", "タイヤラップ"),
+            listOf(
+                "タイヤ周回",
+                "タイヤ残り周回",
+                "タイヤあと何周",
+                "タイヤ摩耗周回",
+                "タイヤラップ",
+                // タイヤ摩耗の「残り」系の語句を含む言い方は、より長いこちらの語句で周回数項目に解決する。
+                "タイヤの残り周回",
+                "タイヤのこり周回",
+                "タイヤ残りあと何周",
+                "タイヤの残りあと何周",
+                "タイヤのこりあと何周",
+                "タイヤ残り何周",
+                "タイヤの残り何周",
+                "タイヤ残りは何周",
+                "タイヤの残りは何周",
+                "タイヤ残りラップ",
+                "タイヤの残りラップ",
+            ),
         LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to
             listOf("燃料周回", "燃料残り周回", "燃料あと何周", "燃料ラップ", "燃料何周", "燃料はあと何周", "燃料は何周"),
         LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to
