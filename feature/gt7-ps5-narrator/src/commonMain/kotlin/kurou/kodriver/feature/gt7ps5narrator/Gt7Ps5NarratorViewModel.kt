@@ -2,14 +2,11 @@ package kurou.kodriver.feature.gt7ps5narrator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
@@ -30,6 +27,7 @@ import kurou.kodriver.domain.model.ManualReadoutValue
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.onEachCapturingErrors
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
@@ -142,7 +140,7 @@ internal class Gt7Ps5NarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val resetLatestTelemetryJob =
         selectedSimulator
-            .onEach { simulator ->
+            .onEachCapturingErrors { simulator ->
                 if (simulator !is Simulator.Gt7Ps5) {
                     resetLatestTelemetry()
                 }
@@ -161,7 +159,7 @@ internal class Gt7Ps5NarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val debugReadoutRequestJob =
         observeDebugReadoutRequest()
-            .onEach { request ->
+            .onEachCapturingErrors { request ->
                 if (request.simulator == Simulator.Gt7Ps5) {
                     val state = narratorState
                     eventProcessor.processDebugReadout(
@@ -177,7 +175,7 @@ internal class Gt7Ps5NarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob =
         telemetryFlow
-            .onEach { telemetry ->
+            .onEachCapturingErrors { telemetry ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -207,7 +205,7 @@ internal class Gt7Ps5NarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val remainingFuelLapsJob =
         telemetryFlow
-            .onEach { telemetry ->
+            .onEachCapturingErrors { telemetry ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -238,7 +236,7 @@ internal class Gt7Ps5NarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val remainingFuelJob =
         telemetryFlow
-            .onEach { telemetry ->
+            .onEachCapturingErrors { telemetry ->
                 val observedAtMs = currentTimeMs()
                 latestTelemetry = telemetry
                 latestTelemetryReceivedAtMs = observedAtMs
@@ -274,7 +272,7 @@ internal class Gt7Ps5NarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val tyreTemperatureJob =
         telemetryFlow
-            .onEach { telemetry ->
+            .onEachCapturingErrors { telemetry ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -306,7 +304,7 @@ internal class Gt7Ps5NarratorViewModel(
         mergeManualReadoutRequests(
             manualReadoutUseCases.observeRequests(),
             manualReadoutUseCases.observeHotkeyPresses(),
-        ).onEach { request ->
+        ).onEachCapturingErrors { request ->
             if (request.simulatorId == Simulator.Gt7Ps5.id) {
                 val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
                 readManualReadout(set)
@@ -318,19 +316,12 @@ internal class Gt7Ps5NarratorViewModel(
     private val manualReadoutItemRequestJob =
         manualReadoutUseCases
             .observeItemRequests()
-            .onEach { request ->
+            .onEachCapturingErrors { request ->
                 if (request.simulatorId == Simulator.Gt7Ps5.id) {
-                    // 1件の失敗で購読が止まり、以降の音声依頼が無視されないよう依頼ごとに捕捉する。
-                    try {
-                        readManualReadout(
-                            ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
-                            playStartSound = request.playStartSound,
-                        )
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: Exception) {
-                        captureError(e)
-                    }
+                    readManualReadout(
+                        ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
+                        playStartSound = request.playStartSound,
+                    )
                 }
             }.launchIn(viewModelScope)
 
