@@ -1,6 +1,6 @@
 package kurou.kodriver.core.texttospeechdata.windows
 
-import io.sentry.Sentry
+import kurou.kodriver.domain.captureError
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
@@ -69,7 +69,7 @@ internal class ResidentSpeechSession(
             process.outputStream.write((line + "\n").toByteArray(Charsets.US_ASCII))
             process.outputStream.flush()
         } catch (e: IOException) {
-            Sentry.captureException(e)
+            captureError(e)
             close()
         }
     }

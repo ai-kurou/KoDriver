@@ -1,6 +1,5 @@
 package kurou.kodriver.core.windowshotkeydata
 
-import io.sentry.Sentry
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -11,6 +10,7 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kotlin.concurrent.thread
 
@@ -18,7 +18,7 @@ import kotlin.concurrent.thread
  * 購読ごとに専用スレッドを作り、登録と解除を同じスレッドで行う。
  * キャンセル時はキューの準備を待って WM_QUIT を投稿し、解除とスレッドの終了を待つ。
  * スレッドは daemon にして、キャンセルされないままアプリが終了しても JVM の終了を妨げない。
- * WM_QUIT の投稿に失敗した場合は Sentry へ送り、終了しないスレッドを待たずに戻る。
+ * WM_QUIT の投稿に失敗した場合は captureError で記録し、終了しないスレッドを待たずに戻る。
  */
 class WindowsGlobalHotkeySource internal constructor(
     private val nativeApi: HotkeyNativeApi,
@@ -43,8 +43,10 @@ class WindowsGlobalHotkeySource internal constructor(
                                     HotkeyRegistrationState.Failed(errorCode)
                                 }
                             trySend(GlobalHotkeyEvent.Registration(state))
-                            Sentry.captureMessage(
-                                "WindowsGlobalHotkeySource: RegisterHotKey failed for '$hotkey': $errorCode",
+                            captureError(
+                                IllegalStateException(
+                                    "WindowsGlobalHotkeySource: RegisterHotKey failed for '$hotkey': $errorCode",
+                                ),
                             )
                             return@thread
                         }
@@ -81,7 +83,7 @@ class WindowsGlobalHotkeySource internal constructor(
                                     nativeApi.postQuit(threadId)
                                     true
                                 } catch (e: Exception) {
-                                    Sentry.captureException(e)
+                                    captureError(e)
                                     false
                                 }
                             }
