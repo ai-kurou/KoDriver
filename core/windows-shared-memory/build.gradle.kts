@@ -6,8 +6,6 @@ plugins {
 dependencies {
     implementation(libs.jna)
     implementation(libs.jna.platform)
-    implementation(platform(libs.sentry.bom))
-    implementation(libs.sentry)
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutinesCore)
 

@@ -14,6 +14,7 @@ import kotlin.test.assertTrue
 
 class WindowsSharedMemoryReaderTest {
     private val pointer: Pointer = mockk()
+    private val capturedErrors = mutableListOf<Throwable>()
 
     private fun reader(
         fake: FakeKernel32FileMapping = FakeKernel32FileMapping(),
@@ -23,6 +24,7 @@ class WindowsSharedMemoryReaderTest {
         sizeBytes = 1024,
         isWindows = isWindows,
         kernel32 = fake,
+        captureError = { capturedErrors += it },
     )
 
     @Test
@@ -50,6 +52,11 @@ class WindowsSharedMemoryReaderTest {
         assertFalse(r.open())
         assertFalse(r.isOpen())
         assertEquals(1, fake.closeHandleCallCount)
+        assertEquals(1, capturedErrors.size)
+        assertEquals(
+            "WindowsSharedMemoryReader: MapViewOfFile failed for segment 'TEST'",
+            capturedErrors.single().message,
+        )
     }
 
     @Test

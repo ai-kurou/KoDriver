@@ -8,6 +8,7 @@ import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryPollingSource
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import kurou.kodriver.core.windowssharedmemory.datasource.WindowsSharedMemoryReader
+import kurou.kodriver.domain.captureError
 import java.nio.ByteBuffer
 import kotlin.time.Clock
 
@@ -18,6 +19,7 @@ internal class LmuWindowsSharedMemorySource(
         WindowsSharedMemoryReader(
             segmentName = "LMU_Data",
             sizeBytes = 324_820,
+            captureError = ::captureError,
         ),
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
     scope: CoroutineScope,

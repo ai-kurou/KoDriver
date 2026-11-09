@@ -2,16 +2,18 @@ package kurou.kodriver.core.windowssharedmemory.datasource
 
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.WinNT.HANDLE
-import io.sentry.Sentry
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 /**
  * Windows 共有メモリを読み取る reader。
+ *
+ * このモジュールは `core:domain` に依存しないため、`MapViewOfFile` 失敗の記録先は [captureError] として注入する。
  */
 class WindowsSharedMemoryReader(
     private val segmentName: String,
     private val sizeBytes: Int,
+    private val captureError: (Throwable) -> Unit,
     private val isWindows: Boolean = System.getProperty("os.name").contains("Windows", ignoreCase = true),
     private val kernel32: Kernel32FileMapping = Kernel32FileMapping.INSTANCE,
 ) : SharedMemoryReader {
@@ -38,7 +40,9 @@ class WindowsSharedMemoryReader(
                 sizeBytes,
             )
         if (ptr == null) {
-            Sentry.captureMessage("WindowsSharedMemoryReader: MapViewOfFile failed for segment '$segmentName'")
+            captureError(
+                IllegalStateException("WindowsSharedMemoryReader: MapViewOfFile failed for segment '$segmentName'"),
+            )
             kernel32.CloseHandle(h)
             return false
         }
