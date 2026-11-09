@@ -1,11 +1,11 @@
 package kurou.kodriver.core.gt7ps5data.repository
 
 import androidx.datastore.core.DataStore
-import io.sentry.Sentry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.core.gt7ps5data.model.Gt7Ps5UdpPortPreferences
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import java.io.IOException
 
@@ -22,7 +22,7 @@ internal class Gt7Ps5UdpPortPreferencesRepositoryImpl(
             .map { it.port }
             .catch { e ->
                 if (e is IOException) {
-                    Sentry.captureException(e)
+                    captureError(e)
                     emit(Gt7Ps5UdpPortPreferences().port)
                 } else {
                     throw e

@@ -2,11 +2,11 @@ package kurou.kodriver.core.gt7ps5data.datasource
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
-import io.sentry.Sentry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.protobuf.ProtoBuf
 import kurou.kodriver.core.gt7ps5data.model.Gt7Ps5UdpPortPreferences
+import kurou.kodriver.domain.captureError
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -18,7 +18,7 @@ internal object Gt7Ps5UdpPortPreferencesSerializer : Serializer<Gt7Ps5UdpPortPre
         try {
             ProtoBuf.decodeFromByteArray(Gt7Ps5UdpPortPreferences.serializer(), input.readBytes())
         } catch (e: SerializationException) {
-            Sentry.captureException(e)
+            captureError(e)
             throw CorruptionException("Cannot read Gt7Ps5UdpPortPreferences.", e)
         }
 
