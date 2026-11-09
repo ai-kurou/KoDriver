@@ -5,13 +5,13 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5RemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5RemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
@@ -67,7 +67,7 @@ internal class Gt7Ps5AutoReadoutRemainingFuelDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
@@ -81,7 +81,7 @@ internal class Gt7Ps5AutoReadoutRemainingFuelDetailViewModel(
     }
 
     fun onThresholdChanged(percentage: Int) {
-        viewModelScope.launch { remainingFuelUseCases.saveThresholdPercentage(percentage) }
+        viewModelScope.launchCapturingErrors { remainingFuelUseCases.saveThresholdPercentage(percentage) }
     }
 
     fun onThresholdReset() {
@@ -89,7 +89,7 @@ internal class Gt7Ps5AutoReadoutRemainingFuelDetailViewModel(
     }
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             remainingFuelUseCases.saveAutoReadoutEnabledState(
                 Simulator.Gt7Ps5.id,
                 Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled,

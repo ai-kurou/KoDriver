@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
@@ -14,6 +13,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLa
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelLapsThresholdUseCase
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
@@ -72,7 +72,7 @@ internal class AceWindowsAutoReadoutRemainingFuelLapsDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /** 画面に表示中の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
@@ -85,7 +85,7 @@ internal class AceWindowsAutoReadoutRemainingFuelLapsDetailViewModel(
     }
 
     fun onEmptyReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveEmptyText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveEmptyText(text) }
     }
 
     fun onEmptyReadoutTextPreviewClicked(text: String) {
@@ -97,7 +97,7 @@ internal class AceWindowsAutoReadoutRemainingFuelLapsDetailViewModel(
     }
 
     fun onRemainingFuelLapsChanged(laps: Int) {
-        viewModelScope.launch { remainingFuelLapsUseCases.saveThreshold(laps) }
+        viewModelScope.launchCapturingErrors { remainingFuelLapsUseCases.saveThreshold(laps) }
     }
 
     fun onResetRemainingFuelLaps() {
@@ -105,7 +105,7 @@ internal class AceWindowsAutoReadoutRemainingFuelLapsDetailViewModel(
     }
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             remainingFuelLapsUseCases.saveAutoReadoutEnabledState(
                 Simulator.AceWindows.id,
                 AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled,

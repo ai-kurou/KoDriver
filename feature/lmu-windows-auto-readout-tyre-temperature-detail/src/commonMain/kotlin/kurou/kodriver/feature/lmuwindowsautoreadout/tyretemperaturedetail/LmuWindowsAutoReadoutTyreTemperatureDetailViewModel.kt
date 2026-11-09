@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
@@ -84,13 +84,13 @@ internal class LmuWindowsAutoReadoutTyreTemperatureDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             tyreTemperatureUseCases.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, enabled)
         }
     }
 
     fun onOverheatReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /**
@@ -109,13 +109,13 @@ internal class LmuWindowsAutoReadoutTyreTemperatureDetailViewModel(
     }
 
     fun onLowWarningEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             tyreTemperatureUseCases.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.LowWarning, enabled)
         }
     }
 
     fun onColdReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveColdText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveColdText(text) }
     }
 
     /** 入力中の低温文言を過熱文言と同じTTS設定で試聴する。 */
@@ -126,20 +126,20 @@ internal class LmuWindowsAutoReadoutTyreTemperatureDetailViewModel(
     fun onLowWarningPhaseToggled(phase: SessionPhase) {
         val currentPhases = uiState.value.lowWarningPhases
         val updatedPhases = if (phase in currentPhases) currentPhases - phase else currentPhases + phase
-        viewModelScope.launch { tyreTemperatureUseCases.saveLowWarningPhases(updatedPhases) }
+        viewModelScope.launchCapturingErrors { tyreTemperatureUseCases.saveLowWarningPhases(updatedPhases) }
     }
 
     fun onVehicleClassHighThresholdChanged(
         vehicleClass: LmuWindowsVehicleClassData,
         celsius: Int,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             tyreTemperatureUseCases.saveVehicleClassHighThreshold(vehicleClass, Celsius(celsius))
         }
     }
 
     fun onVehicleClassHighThresholdReset(vehicleClass: LmuWindowsVehicleClassData) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             tyreTemperatureUseCases.saveVehicleClassHighThreshold(
                 vehicleClass,
                 lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClass),
@@ -148,7 +148,7 @@ internal class LmuWindowsAutoReadoutTyreTemperatureDetailViewModel(
     }
 
     fun onVehicleClassSelected(vehicleClass: LmuWindowsVehicleClassData) {
-        viewModelScope.launch { tyreTemperatureUseCases.saveVehicleClassSelection(vehicleClass) }
+        viewModelScope.launchCapturingErrors { tyreTemperatureUseCases.saveVehicleClassSelection(vehicleClass) }
     }
 }
 

@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5MyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
@@ -66,7 +66,7 @@ internal class Gt7Ps5AutoReadoutMyBestLapDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             myBestLapUseCases.saveEnabledState(
                 Simulator.Gt7Ps5.id,
                 Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled,
@@ -76,7 +76,7 @@ internal class Gt7Ps5AutoReadoutMyBestLapDetailViewModel(
     }
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /** サンプルタイムに置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */

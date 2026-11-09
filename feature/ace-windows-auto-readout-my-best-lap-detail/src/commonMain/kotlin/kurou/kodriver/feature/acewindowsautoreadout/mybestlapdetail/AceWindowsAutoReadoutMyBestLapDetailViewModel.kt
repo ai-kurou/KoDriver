@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsMyBestLapReadoutTextUseCase
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
@@ -66,7 +66,7 @@ internal class AceWindowsAutoReadoutMyBestLapDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             myBestLapUseCases.saveEnabledState(
                 Simulator.AceWindows.id,
                 AceWindowsReadoutItemKey.MyBestLap.DetailEnabled,
@@ -76,7 +76,7 @@ internal class AceWindowsAutoReadoutMyBestLapDetailViewModel(
     }
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /** サンプルタイムに置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */

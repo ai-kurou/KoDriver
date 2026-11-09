@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
@@ -14,6 +13,7 @@ import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelLapsUseCas
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5RemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
@@ -72,7 +72,7 @@ internal class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /** 画面に表示中の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
@@ -85,7 +85,7 @@ internal class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModel(
     }
 
     fun onEmptyReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveEmptyText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveEmptyText(text) }
     }
 
     fun onEmptyReadoutTextPreviewClicked(text: String) {
@@ -97,11 +97,11 @@ internal class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModel(
     }
 
     fun onRemainingFuelLapsChanged(laps: Int) {
-        viewModelScope.launch { remainingFuelLapsUseCases.saveRemainingFuelLaps(laps) }
+        viewModelScope.launchCapturingErrors { remainingFuelLapsUseCases.saveRemainingFuelLaps(laps) }
     }
 
     fun onResetRemainingFuelLaps() {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             remainingFuelLapsUseCases.saveRemainingFuelLaps(
                 GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT,
             )
@@ -109,7 +109,7 @@ internal class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModel(
     }
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             remainingFuelLapsUseCases.saveAutoReadoutEnabledState(
                 Simulator.Gt7Ps5.id,
                 Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled,
