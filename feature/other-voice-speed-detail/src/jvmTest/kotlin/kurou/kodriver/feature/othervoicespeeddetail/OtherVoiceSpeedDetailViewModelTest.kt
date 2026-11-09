@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -24,11 +26,13 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withContext
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.SaveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -343,5 +347,28 @@ class OtherVoiceSpeedDetailViewModelTest {
             subscription.cancel()
             verify(exactly = 1) { repository.voiceSpeed() }
             confirmVerified(repository, observeSoundVolume, speakText)
+        }
+
+    @Test
+    fun `速度の保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            every { repository.voiceSpeed() } returns speedFlow
+            coEvery { repository.saveVoiceSpeed(0.7f) } throws error
+            try {
+                val viewModel = createViewModel()
+
+                viewModel.onSpeedChanged(0.7f)
+
+                verify(exactly = 1) { captureError(error) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            coVerify(exactly = 1) { repository.saveVoiceSpeed(0.7f) }
+            verify(exactly = 1) { repository.voiceSpeed() }
+            confirmVerified(repository)
         }
 }

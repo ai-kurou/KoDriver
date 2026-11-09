@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,12 +17,14 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.PreviewStartSoundUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundTypeUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -147,6 +151,32 @@ class OtherReadoutStartSoundDetailViewModelTest {
 
             val state = viewModel.uiState.first()
             assertEquals(ReadoutStartSoundType.ELECTRONIC_NOISE, state.selectedType)
+            verify(exactly = 1) { repository.observeType() }
+            confirmVerified(repository, ttsEngine)
+        }
+
+    @Test
+    fun `onConfirm の保存が失敗しても記録して例外を伝播させない`() =
+        runTest(dispatcher) {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            every { repository.observeType() } returns typeFlow
+            every { ttsEngine.previewStartSound(ReadoutStartSoundType.ELECTRONIC_NOISE) } returns Unit
+            coEvery { repository.saveType(ReadoutStartSoundType.ELECTRONIC_NOISE) } throws error
+            try {
+                val viewModel = createViewModel()
+
+                viewModel.onPendingTypeSelected(ReadoutStartSoundType.ELECTRONIC_NOISE)
+                viewModel.onConfirm()
+
+                verify(exactly = 1) { captureError(error) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            verify(exactly = 1) { ttsEngine.previewStartSound(ReadoutStartSoundType.ELECTRONIC_NOISE) }
+            coVerify(exactly = 1) { repository.saveType(ReadoutStartSoundType.ELECTRONIC_NOISE) }
             verify(exactly = 1) { repository.observeType() }
             confirmVerified(repository, ttsEngine)
         }

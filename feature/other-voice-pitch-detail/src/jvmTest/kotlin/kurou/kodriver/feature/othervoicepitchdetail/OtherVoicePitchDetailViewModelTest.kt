@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -24,11 +26,13 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withContext
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.SaveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -370,6 +374,29 @@ class OtherVoicePitchDetailViewModelTest {
             coVerify(exactly = 1) { repository.saveVoicePitch(0.5f) }
             coVerify(exactly = 1) { repository.saveVoicePitch(2.0f) }
             coVerify(exactly = 1) { repository.saveVoicePitch(1.0f) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `声の高さの保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            every { repository.voicePitch() } returns pitchFlow
+            coEvery { repository.saveVoicePitch(0.7f) } throws error
+            try {
+                val viewModel = createViewModel()
+
+                viewModel.onPitchChanged(0.7f)
+
+                verify(exactly = 1) { captureError(error) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            coVerify(exactly = 1) { repository.saveVoicePitch(0.7f) }
+            verify(exactly = 1) { repository.voicePitch() }
             confirmVerified(repository)
         }
 }

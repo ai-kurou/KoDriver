@@ -5,17 +5,22 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
@@ -278,6 +283,42 @@ class OtherServerIpDetailViewModelTest {
             assertFalse(viewModel.uiState.first().saveFailed)
             verify(exactly = 1) { repository.serverIp() }
             coVerify(exactly = 2) { repository.saveServerIp("10.0.0.1") }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `接続確認が例外で失敗しても記録して確認中を解除する`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            every { repository.serverIp() } returns ipFlow
+            try {
+                val viewModel =
+                    OtherServerIpDetailViewModel(
+                        observeServerIp = ObserveServerIpUseCase(repository),
+                        validateServerIpAddress = ValidateServerIpAddressUseCase(),
+                        saveServerIpWithConnectivityCheck =
+                            SaveServerIpWithConnectivityCheckUseCase(
+                                validateServerIpAddress = ValidateServerIpAddressUseCase(),
+                                connectivityChecker = ServerConnectivityChecker { throw error },
+                                saveServerIp = SaveServerIpUseCase(repository),
+                            ),
+                        windowsServerDiscovery = WindowsServerDiscovery { flowOf(emptyList()) },
+                    )
+                viewModel.uiState.launchIn(backgroundScope)
+                runCurrent()
+
+                viewModel.onSave()
+                runCurrent()
+
+                assertFalse(viewModel.uiState.value.isCheckingConnectivity)
+                verify(exactly = 1) { captureError(error) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            verify(exactly = 1) { repository.serverIp() }
             confirmVerified(repository)
         }
 }

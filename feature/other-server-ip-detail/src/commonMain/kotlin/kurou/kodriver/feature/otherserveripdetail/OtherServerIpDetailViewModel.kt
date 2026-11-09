@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 
 internal class OtherServerIpDetailViewModel(
@@ -67,17 +67,19 @@ internal class OtherServerIpDetailViewModel(
     fun onSave() {
         if (_mutable.value.isCheckingConnectivity) return
         val ip = _mutable.value.userInput ?: savedIp.value ?: ""
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             _mutable.update { it.copy(isCheckingConnectivity = true, connectivityWarning = false) }
-            val result = saveServerIpWithConnectivityCheck(ip)
-            _mutable.update { it.copy(isCheckingConnectivity = false) }
-            applySaveResult(result)
+            try {
+                applySaveResult(saveServerIpWithConnectivityCheck(ip))
+            } finally {
+                _mutable.update { it.copy(isCheckingConnectivity = false) }
+            }
         }
     }
 
     fun onSaveAnyway() {
         val ip = _mutable.value.userInput ?: savedIp.value ?: ""
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             applySaveResult(saveServerIpWithConnectivityCheck(ip, checkConnectivity = false))
         }
     }

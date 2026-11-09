@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.SaveVoiceSpeedUseCase
@@ -39,7 +40,7 @@ internal class OtherVoiceSpeedDetailViewModel(
         )
 
     fun onSpeedChanged(speed: Float) {
-        saveJob = viewModelScope.launch { saveVoiceSpeed((speed * 10).roundToInt() / 10f) }
+        saveJob = viewModelScope.launchCapturingErrors { saveVoiceSpeed((speed * 10).roundToInt() / 10f) }
     }
 
     /** ペインを離れたときに、再生中の試聴を止める。 */

@@ -6,6 +6,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -22,12 +24,14 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withContext
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SaveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -215,5 +219,28 @@ class OtherAndroidAudioUsageDetailViewModelTest {
             } finally {
                 viewModel.viewModelScope.cancel()
             }
+        }
+
+    @Test
+    fun `用途の保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            every { repository.observeAndroidAudioUsage() } returns usageFlow
+            coEvery { repository.saveAndroidAudioUsage(AndroidAudioUsage.MEDIA) } throws error
+            val viewModel = createViewModel()
+            try {
+                viewModel.onUsageSelected(AndroidAudioUsage.MEDIA)
+
+                verify(exactly = 1) { captureError(error) }
+            } finally {
+                unmockkStatic(errorCapture)
+                viewModel.viewModelScope.cancel()
+            }
+            coVerify(exactly = 1) { repository.saveAndroidAudioUsage(AndroidAudioUsage.MEDIA) }
+            verify(exactly = 1) { repository.observeAndroidAudioUsage() }
+            confirmVerified(repository)
         }
 }
