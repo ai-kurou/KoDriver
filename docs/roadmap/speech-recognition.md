@@ -13,7 +13,7 @@ base-branch: feature/base/speech-recognition
 
 ## 背景
 
-現在、音声認識の確認用カード（`feature/main` の `SpeechRecognitionCard`）は「その他」と各シミュレーターの `DebugStateDetail` にしか出ない。音声認識はどの画面からも使われるため、ユーザーが常に状態を確認できるようにする。
+現在、音声認識の確認用カード（`feature/main` の `SpeechRecognitionCard`）は各シミュレーターの `DebugStateDetail` にしか出ない。音声認識はどの画面からも使われるため、ユーザーが常に状態を確認できるようにする。
 
 ## 仕様（合意済み）
 
@@ -26,7 +26,7 @@ base-branch: feature/base/speech-recognition
 - 認識結果は常時表示せず、詳細を開いたときだけ見せる。
 - 音量リングは滑らかなバーにせず、段階表示にして再コンポーズの負荷を抑える。
 - 状態は既存の `SpeechRecognitionUiState` / `SpeechRecognitionViewModel` を共有する（聞き取りの管理は `AppScreen` が一度だけ行っている）。ドメインの新規追加は不要。
-- `DebugStateDetail` の `SpeechRecognitionCard` は変更せず、このロードマップの対象外とする。「その他」の既存カードは残す前提で、整理するかは後で決める。
+- `DebugStateDetail` の `SpeechRecognitionCard` は変更せず、このロードマップの対象外とする。
 
 ## 実装済み
 
@@ -41,13 +41,8 @@ base-branch: feature/base/speech-recognition
 - [x] チップに音量リングを追加する（#3030）
 - [x] チップのタップで開く詳細（スマホ: ボトムシート / デスクトップ: ポップオーバー）を追加する。有効/無効スイッチ・音量ゲージ・認識結果・入力デバイス選択（#3032）
 - [x] 右下の他の要素（FAB 等）との重なりを洗い出して位置を調整する（#3034）
-- [ ] 「その他」画面の既存カードの重複表示を整理するか決める（`DebugStateDetail` は対象外）
 
 ## 決定済み事項
 
 - 位置は右下のままにする（実機で確認し、使いにくければ見直す）。
 - 認識した瞬間のトースト表示は入れない（認識結果は詳細を開いたときだけ見せる）。
-
-## 未決事項（着手前にユーザーと決める）
-
-- 「その他」画面の既存カードを最終的に残すか（`DebugStateDetail` は対象外）
