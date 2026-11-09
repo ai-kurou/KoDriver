@@ -58,10 +58,12 @@ import kurou.kodriver.feature.autoreadoutlist.LmuWindowsAutoReadoutListItemType
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.LowVolumeWarningUiState
 import kurou.kodriver.feature.main.LowVolumeWarningViewModel
+import kurou.kodriver.feature.main.SPEECH_RECOGNITION_CHIP_OVERLAY_INSET
 import kurou.kodriver.feature.main.SpeechRecognitionDetailPresentation
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
 import kurou.kodriver.feature.main.rememberSpeechRecognitionChip
 import kurou.kodriver.feature.main.rememberSpeechRecognitionSection
+import kurou.kodriver.feature.main.speechRecognitionChipOverlayInset
 import kurou.kodriver.feature.manualreadoutdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
 import kurou.kodriver.feature.otherlist.OtherListItemType
@@ -341,7 +343,10 @@ internal fun AppScreenContent(
     val effectiveHapticFeedback =
         if (hapticFeedbackEnabled) ambientHapticFeedback else NoOpHapticFeedback
 
-    CompositionLocalProvider(LocalHapticFeedback provides effectiveHapticFeedback) {
+    CompositionLocalProvider(
+        LocalHapticFeedback provides effectiveHapticFeedback,
+        speechRecognitionChipOverlayInset,
+    ) {
         AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColorEnabled) {
             val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
             val resolvedLayoutType = layoutType ?: windowSizeClass.resolveNavigationSuiteType()
@@ -507,7 +512,8 @@ private fun AppScreenScaffold(
                     .align(Alignment.BottomCenter)
                     .padding(
                         start = AppSpacing.large,
-                        end = AppSpacing.large,
+                        // 右下のチップに隠れないよう、チップの幅だけ右端を空ける
+                        end = AppSpacing.large + SPEECH_RECOGNITION_CHIP_OVERLAY_INSET,
                         bottom =
                             if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
                                 NAVIGATION_BAR_OVERLAY_BOTTOM_OFFSET

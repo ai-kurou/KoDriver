@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherloglist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
@@ -19,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.feature.otherloglist.generated.resources.Res
 import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_delete_failure
 import kurou.kodriver.feature.otherloglist.generated.resources.telemetry_log_delete_success
@@ -115,7 +117,8 @@ internal fun TelemetryLogListPaneHostContent(
             )
             SnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter),
+                // 共通シェルが右下に重ねる音声認識のチップに隠れないよう、その幅だけ右端を空ける
+                modifier = Modifier.align(Alignment.BottomCenter).padding(end = LocalBottomEndOverlayInset.current),
             )
         }
     }
