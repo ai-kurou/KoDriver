@@ -41,5 +41,6 @@ class ManualReadoutItemPickerSheetBottomScreenshotTest {
         }
 }
 
-// 内容の高さを十分に超える量を指定し、スクロール量を最下部で打ち切らせて位置を固定する
-private const val SCROLL_TO_BOTTOM_PX = 100_000f
+// 内容は表示領域を十数dp超える程度のため、それを超える量を指定して最下部で打ち切らせ、位置を固定する。
+// 大きすぎる値（100_000f 等）では本文が表示領域外へ出てしまい、ヘッダーだけの画像になる。
+private const val SCROLL_TO_BOTTOM_PX = 1_000f
