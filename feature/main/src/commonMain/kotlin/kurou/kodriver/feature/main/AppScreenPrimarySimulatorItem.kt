@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -76,7 +75,6 @@ private val SimulatorCardHeight = 180.dp
 private val SimulatorCardSpacing = KoDriverSpacing.large
 private val SimulatorPopupMaxHeight = 480.dp
 private const val SIMULATOR_CARD_LOGO_SIZE_FRACTION = 0.7f
-private val SimulatorCardLogoWithLabelHeight = 84.dp
 private val SimulatorCardImageBlur = 2.dp
 private val SimulatorCardSelectedBorderWidth = 2.dp
 private val SimulatorCardCheckBadgeSize = 28.dp
@@ -183,40 +181,16 @@ private fun SimulatorCard(
                             .padding(KoDriverSpacing.medium),
                     contentAlignment = Alignment.Center,
                 ) {
-                    if (platformLabel != null) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement =
-                                Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterVertically),
-                        ) {
-                            Image(
-                                painter = logo,
-                                contentDescription = displayName,
-                                contentScale = ContentScale.Fit,
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth(
-                                            SIMULATOR_CARD_LOGO_SIZE_FRACTION,
-                                        ).height(SimulatorCardLogoWithLabelHeight),
-                            )
-                            Text(
-                                text = platformLabel,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White,
-                            )
-                        }
-                    } else {
-                        Image(
-                            painter = logo,
-                            contentDescription = displayName,
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxSize(SIMULATOR_CARD_LOGO_SIZE_FRACTION),
-                        )
-                    }
+                    Image(
+                        painter = logo,
+                        contentDescription = displayName,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize(SIMULATOR_CARD_LOGO_SIZE_FRACTION),
+                    )
                 }
             }
-            if (logo == null && platformLabel != null) {
-                // 背景画像自体にロゴがあるカードは、画像をそのまま見せたうえで下端にプラットフォーム名だけを添える。
+            if (platformLabel != null) {
+                // ロゴの有無にかかわらず、プラットフォーム名はカード下端に揃えて添える。
                 Text(
                     text = platformLabel,
                     style = MaterialTheme.typography.bodyMedium,
