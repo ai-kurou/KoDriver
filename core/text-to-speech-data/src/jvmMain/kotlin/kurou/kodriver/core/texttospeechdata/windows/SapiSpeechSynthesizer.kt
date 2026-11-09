@@ -1,6 +1,6 @@
 package kurou.kodriver.core.texttospeechdata.windows
 
-import io.sentry.Sentry
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.TTS_CULTURE_NAME
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import java.io.IOException
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit
 internal class SapiSpeechSynthesizer(
     private val isWindows: Boolean = System.getProperty("os.name").lowercase().startsWith("windows"),
     private val startProcess: (ProcessBuilder) -> Process = ProcessBuilder::start,
-    private val captureException: (Throwable) -> Unit = Sentry::captureException,
+    private val captureException: (Throwable) -> Unit = ::captureError,
     private val awaitCompletion: (CompletableFuture<Unit>) -> Unit = { it.get() },
 ) : SpeechSynthesizer {
     private val lock = Any()

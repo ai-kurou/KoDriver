@@ -1,6 +1,6 @@
 package kurou.kodriver.core.texttospeechdata.repository
 
-import io.sentry.Sentry
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import java.io.IOException
 
@@ -15,7 +15,7 @@ private const val WINDOWS_SPEECH_SETTINGS_URI = "ms-settings:speech"
 internal class WindowsSpeechSettingsSenderRepository(
     private val isWindows: Boolean = System.getProperty("os.name").startsWith("Windows", ignoreCase = true),
     private val startProcess: (List<String>) -> Unit = { command -> ProcessBuilder(command).start() },
-    private val captureException: (Throwable) -> Unit = Sentry::captureException,
+    private val captureException: (Throwable) -> Unit = ::captureError,
 ) : SpeechSettingsSenderRepository {
     override fun openWindowsSpeechSettings() {
         if (!isWindows) return

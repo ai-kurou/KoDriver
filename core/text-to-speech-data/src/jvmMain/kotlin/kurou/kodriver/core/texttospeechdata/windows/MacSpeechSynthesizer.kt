@@ -1,6 +1,6 @@
 package kurou.kodriver.core.texttospeechdata.windows
 
-import io.sentry.Sentry
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import java.io.IOException
 import java.nio.file.Files
@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 internal class MacSpeechSynthesizer(
     private val isMac: Boolean = System.getProperty("os.name").lowercase().startsWith("mac"),
     private val startProcess: (ProcessBuilder) -> Process = ProcessBuilder::start,
-    private val captureException: (Throwable) -> Unit = Sentry::captureException,
+    private val captureException: (Throwable) -> Unit = ::captureError,
 ) : SpeechSynthesizer {
     private val lock = Any()
     private var current: Process? = null
