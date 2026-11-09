@@ -2,8 +2,9 @@ package kurou.kodriver.domain.util
 
 /**
  * 音声認識の確定結果の候補から、手動読み上げ項目のキーを選ぶ。[phrasesByItemKey] は項目キーごとの語句。
- * 候補は信頼度の高い順に見て、語句に部分一致した最初の候補を採用する。
- * 1つの候補が複数項目の語句に一致する場合は、一致した語句が最も長い項目を選ぶ。
+ * すべての候補を調べ、語句に部分一致したもののうち一致した語句が最も長い項目を選ぶ。
+ * 第1候補が「燃料」のように語尾を取りこぼしていても、下位候補の「燃料周回」のような、より具体的な語句を優先するため。
+ * 一致した語句の長さが同じ場合は、信頼度の高い（先頭に近い）候補を採用する。
  * 空白は無視し、英字は大文字小文字を区別しない。英字だけの語句（例: VE）は、前後が英字でない場合だけ一致とする（have の中の ve に反応しない）。
  * どの項目にも一致しなければ null。
  */
@@ -11,22 +12,25 @@ fun matchManualReadoutItemKey(
     candidates: List<String>,
     phrasesByItemKey: Map<String, List<String>>,
 ): String? {
+    var bestKey: String? = null
+    var bestLength = 0
     for (candidate in candidates) {
         val normalized = normalizeSpokenText(candidate)
         if (normalized.isEmpty()) continue
-        val matched =
-            phrasesByItemKey
-                .map { (key, phrases) ->
-                    key to
-                        phrases
-                            .map(::normalizeSpokenText)
-                            .filter { it.isNotEmpty() && containsPhrase(normalized, it) }
-                            .maxOfOrNull { it.length }
-                }.filter { it.second != null }
-                .maxByOrNull { it.second ?: 0 }
-        if (matched != null) return matched.first
+        for ((key, phrases) in phrasesByItemKey) {
+            val length =
+                phrases
+                    .map(::normalizeSpokenText)
+                    .filter { it.isNotEmpty() && containsPhrase(normalized, it) }
+                    .maxOfOrNull { it.length }
+                    ?: continue
+            if (length > bestLength) {
+                bestKey = key
+                bestLength = length
+            }
+        }
     }
-    return null
+    return bestKey
 }
 
 private fun normalizeSpokenText(text: String): String = text.filterNot { it.isWhitespace() }.lowercase()

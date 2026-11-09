@@ -37,8 +37,14 @@ class ManualReadoutPhraseMatcherTest {
     }
 
     @Test
-    fun `候補は先頭から見て最初に一致した候補を採用する`() {
+    fun `一致した語句の長さが同じ場合は先頭に近い候補を採用する`() {
         assertEquals("fuel", matchManualReadoutItemKey(listOf("関係ない言葉", "燃料", "VE"), phrases))
+    }
+
+    @Test
+    fun `第1候補が短い語句でも下位候補のより長い語句の項目を選ぶ`() {
+        assertEquals("laps", matchManualReadoutItemKey(listOf("燃料", "燃料周回数"), phrases))
+        assertEquals("laps", matchManualReadoutItemKey(listOf("関係ない言葉", "燃料", "燃料周回"), phrases))
     }
 
     @Test
