@@ -5,12 +5,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.MicrophoneAudioEvent
 import kurou.kodriver.domain.model.MicrophoneFailureReason
@@ -46,37 +44,14 @@ internal class JvmSpeechRecognitionRepository(
 
     override fun observeRecognition(): Flow<SpeechRecognitionEvent> =
         flow {
-            val transcriber = createTranscriber()
+            val transcriber = transcriberFactory.createOrNull()
             if (transcriber == null) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
             } else {
                 transcriber.use { recognize(it) }
             }
-        }.catch { e ->
-            // 設定の読み取りや認識中に想定外の例外が出ても、続行できないことをFailedで知らせて完了する
-            if (e !is Exception && e !is LinkageError) throw e
-            captureErrorTypeOnly(e)
-            emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.RecognitionFailed))
-        }.flowOn(computeDispatcher)
-
-    private fun createTranscriber(): SpeechTranscriber? {
-        if (!transcriberFactory.isAvailable()) {
-            captureError(IllegalStateException("音声認識を利用できません。認識モデルが見つかりません"))
-            return null
-        }
-        return try {
-            transcriberFactory.create()
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            captureError(e)
-            null
-        } catch (e: LinkageError) {
-            // 対応していないOS向けのネイティブライブラリが読み込めない場合。初回失敗後のクラス初期化エラー（NoClassDefFoundError）も含む
-            captureError(e)
-            null
-        }
-    }
+        }.failRecognitionOnError()
+            .flowOn(computeDispatcher)
 
     private fun MicrophoneFailureReason.toSpeechFailureReason(): SpeechRecognitionFailureReason =
         when (this) {
@@ -107,31 +82,11 @@ internal class JvmSpeechRecognitionRepository(
     private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(transcriber: SpeechTranscriber) {
         val device = resolveDevice()
         emit(SpeechRecognitionEvent.Listening)
-        var lastPartial = ""
-        var lastMode = SpeechRecognitionMode.WakeWord
-        val modeSync = TranscriberModeSync(transcriber, mode)
+        val pipeline = RecognitionPipeline(transcriber, mode)
         microphone.observeAudio(device).collect { event ->
             when (event) {
                 is MicrophoneAudioEvent.Chunk -> {
-                    emit(SpeechRecognitionEvent.Level(event.pcm.pcmLevel()))
-                    val previousMode = lastMode
-                    lastMode = modeSync.sync()
-                    if (lastMode != previousMode) lastPartial = ""
-                    when (val transcript = transcriber.accept(event.pcm)) {
-                        is SpeechTranscript.Partial -> {
-                            if (transcript.text != lastPartial) {
-                                lastPartial = transcript.text
-                                emit(SpeechRecognitionEvent.Partial(transcript.text))
-                            }
-                        }
-
-                        is SpeechTranscript.Final -> {
-                            lastPartial = ""
-                            emit(SpeechRecognitionEvent.Recognized(transcript.candidates))
-                        }
-
-                        null -> {}
-                    }
+                    with(pipeline) { process(event.pcm) }
                 }
 
                 is MicrophoneAudioEvent.Failed -> {
