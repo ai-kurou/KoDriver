@@ -11,6 +11,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class SpeechRecognitionChipTest {
     @get:Rule
@@ -110,6 +111,19 @@ class SpeechRecognitionChipTest {
         assertEquals(VOLUME_RING_STEPS, volumeRingStep(1f))
         assertEquals(0, volumeRingStep(-1f))
         assertEquals(VOLUME_RING_STEPS, volumeRingStep(2f))
+    }
+
+    @Test
+    fun `音量リングの段階は聞き取り中だけ求め、OFFとエラーと音量なしではnullにする`() {
+        val listening =
+            SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.Listening, level = 0.5f)
+        assertEquals(3, listening.volumeRingStepOrNull())
+        val commandWaiting = listening.copy(status = SpeechRecognitionStatus.CommandWaiting, level = 1f)
+        assertEquals(VOLUME_RING_STEPS, commandWaiting.volumeRingStepOrNull())
+        assertEquals(0, listening.copy(level = 0f).volumeRingStepOrNull())
+        assertNull(listening.copy(level = null).volumeRingStepOrNull())
+        assertNull(listening.copy(enabled = false).volumeRingStepOrNull())
+        assertNull(listening.copy(status = SpeechRecognitionStatus.PermissionDenied).volumeRingStepOrNull())
     }
 
     @Test

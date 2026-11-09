@@ -78,8 +78,18 @@ internal fun SpeechRecognitionUiState.toChipState(): SpeechRecognitionChipState 
     }
 
 /**
- * 音声認識の聞き取り状態を、どの画面にも重ねて出せる小さな丸いチップで表す。表示だけで操作は受け付けず、聞き取り中は音量を縁のリングの段階で示す。操作は受け付けず、
- * 下の画面へのタップを妨げないよう `Surface` は使わない。
+ * チップに出す音量リングの段階を求める。聞き取れていない OFF とエラーでは、音量が残っていても出さない（null）。
+ * 音量を通知しないプラットフォームなど [SpeechRecognitionUiState.level] が null のときも null。
+ */
+internal fun SpeechRecognitionUiState.volumeRingStepOrNull(): Int? {
+    val chipState = toChipState()
+    val listening = chipState == SpeechRecognitionChipState.On || chipState == SpeechRecognitionChipState.CommandWaiting
+    return level?.takeIf { listening }?.let(::volumeRingStep)
+}
+
+/**
+ * 音声認識の聞き取り状態を、どの画面にも重ねて出せる小さな丸いチップで表す。聞き取り中は音量を縁のリングの段階で示す。
+ * 表示だけで操作は受け付けず、下の画面へのタップを妨げないよう `Surface` は使わない。
  * 状態は主に色で区別し（アイコンは有効=Mic・無効やエラー=MicOff）、読み上げ用の説明には [SpeechRecognitionStatus] の文言を使う。
  */
 @Composable
@@ -118,9 +128,7 @@ internal fun SpeechRecognitionChip(
             icon = Icons.Filled.MicOff
         }
     }
-    // OFF とエラーは聞き取れていないため、音量が残っていてもリングを出さない。
-    val listening = chipState == SpeechRecognitionChipState.On || chipState == SpeechRecognitionChipState.CommandWaiting
-    val ringStep = uiState.level?.takeIf { listening }?.let(::volumeRingStep)
+    val ringStep = uiState.volumeRingStepOrNull()
     Box(
         modifier =
             modifier
