@@ -392,6 +392,7 @@ class OtherVoicePitchDetailViewModelTest {
                 viewModel.onPitchChanged(0.7f)
 
                 verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture)
             } finally {
                 unmockkStatic(errorCapture)
             }

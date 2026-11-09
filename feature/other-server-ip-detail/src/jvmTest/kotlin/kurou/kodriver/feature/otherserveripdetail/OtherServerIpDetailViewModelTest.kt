@@ -315,6 +315,7 @@ class OtherServerIpDetailViewModelTest {
 
                 assertFalse(viewModel.uiState.value.isCheckingConnectivity)
                 verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture)
             } finally {
                 unmockkStatic(errorCapture)
             }

@@ -235,6 +235,7 @@ class OtherAndroidAudioUsageDetailViewModelTest {
                 viewModel.onUsageSelected(AndroidAudioUsage.MEDIA)
 
                 verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture)
             } finally {
                 unmockkStatic(errorCapture)
                 viewModel.viewModelScope.cancel()
