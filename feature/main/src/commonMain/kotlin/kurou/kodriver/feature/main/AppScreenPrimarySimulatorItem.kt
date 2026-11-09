@@ -35,7 +35,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.simulatorDisplayName
@@ -162,56 +161,67 @@ private fun SimulatorCard(
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // ロゴ画像を前面に重ねるカードのみ背景をぼかす。ロゴを持たないカードは背景画像自体がロゴなのでぼかさない。
+            val backgroundModifier =
+                if (logo != null) Modifier.fillMaxSize().blur(SimulatorCardImageBlur) else Modifier.fillMaxSize()
             Image(
                 painter = simulatorLargeImage(simulatorId),
                 contentDescription = if (logo == null) displayName else null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize().blur(SimulatorCardImageBlur),
+                modifier = backgroundModifier,
             )
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.4f))
-                        .padding(KoDriverSpacing.medium),
-                contentAlignment = Alignment.Center,
-            ) {
-                if (logo != null && platformLabel != null) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterVertically),
-                    ) {
+            if (logo != null) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.4f))
+                            .padding(KoDriverSpacing.medium),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (platformLabel != null) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement =
+                                Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterVertically),
+                        ) {
+                            Image(
+                                painter = logo,
+                                contentDescription = displayName,
+                                contentScale = ContentScale.Fit,
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth(
+                                            SIMULATOR_CARD_LOGO_SIZE_FRACTION,
+                                        ).height(SimulatorCardLogoWithLabelHeight),
+                            )
+                            Text(
+                                text = platformLabel,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White,
+                            )
+                        }
+                    } else {
                         Image(
                             painter = logo,
                             contentDescription = displayName,
                             contentScale = ContentScale.Fit,
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth(
-                                        SIMULATOR_CARD_LOGO_SIZE_FRACTION,
-                                    ).height(SimulatorCardLogoWithLabelHeight),
-                        )
-                        Text(
-                            text = platformLabel,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White,
+                            modifier = Modifier.fillMaxSize(SIMULATOR_CARD_LOGO_SIZE_FRACTION),
                         )
                     }
-                } else if (logo != null) {
-                    Image(
-                        painter = logo,
-                        contentDescription = displayName,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize(SIMULATOR_CARD_LOGO_SIZE_FRACTION),
-                    )
-                } else {
-                    Text(
-                        text = displayName,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.White,
-                        textAlign = TextAlign.Center,
-                    )
                 }
+            }
+            if (logo == null && platformLabel != null) {
+                // 背景画像自体にロゴがあるカードは、画像をそのまま見せたうえで下端にプラットフォーム名だけを添える。
+                Text(
+                    text = platformLabel,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White,
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = KoDriverSpacing.small),
+                )
             }
             if (selected) {
                 Box(

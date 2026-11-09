@@ -59,7 +59,7 @@ fun simulatorLargeImage(simulatorId: String): Painter =
     }
 
 /**
- * シミュレーターのロゴ画像を返す。ロゴを用意していないシミュレーターは `null` を返す（その場合は表示名の文字列で代替する）。
+ * シミュレーターのロゴ画像を返す。ロゴを用意していないシミュレーターは `null` を返す（その場合は大きな背景画像自体にロゴが含まれているものとして、ぼかしや暗幕を掛けずにそのまま表示する）。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
@@ -72,15 +72,14 @@ fun simulatorLogoImage(simulatorId: String): Painter? =
     }
 
 /**
- * ロゴ画像の下に添えるプラットフォーム名（「Windows版」）を返す。添える必要のないシミュレーターは `null` を返す。
- * [simulatorLogoImage] がロゴを返すシミュレーターに対してのみ使う（ロゴがなければ表示名にプラットフォーム名が含まれる）。
+ * ロゴ画像（ロゴがなければ背景画像）の下に添えるプラットフォーム名（「Windows版」）を返す。添える必要のないシミュレーターは `null` を返す。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
 fun simulatorPlatformLabel(simulatorId: String): String? =
     when (simulatorId) {
-        LMU_WINDOWS_ID -> stringResource(Res.string.platform_label_windows)
-        GT7_PS5_ID, ACE_WINDOWS_ID -> null
+        LMU_WINDOWS_ID, ACE_WINDOWS_ID -> stringResource(Res.string.platform_label_windows)
+        GT7_PS5_ID -> null
         else -> error("未対応のsimulatorId: $simulatorId")
     }
 

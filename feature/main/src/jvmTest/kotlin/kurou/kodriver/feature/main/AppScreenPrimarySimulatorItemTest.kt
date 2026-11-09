@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -80,10 +81,12 @@ class AppScreenPrimarySimulatorItemTest {
 
         rule.onNode(hasContentDescription("Le Mans Ultimate（Windows版）")).assertExists()
         rule.onNode(hasText("Le Mans Ultimate（Windows版）")).assertDoesNotExist()
-        rule.onNode(hasText("Windows版")).assertExists()
         rule.onNode(hasContentDescription("Gran Turismo 7（PS5）")).assertExists()
         rule.onNode(hasText("Gran Turismo 7（PS5）")).assertDoesNotExist()
-        rule.onNode(hasText("Assetto Corsa EVO（Windows版）")).assertExists()
+        rule.onNode(hasContentDescription("Assetto Corsa EVO（Windows版）")).assertExists()
+        rule.onNode(hasText("Assetto Corsa EVO（Windows版）")).assertDoesNotExist()
+        // プラットフォーム名はLMUとACEの2枚のカードに表示される。
+        rule.onAllNodes(hasText("Windows版")).assertCountEquals(2)
     }
 
     @Test
