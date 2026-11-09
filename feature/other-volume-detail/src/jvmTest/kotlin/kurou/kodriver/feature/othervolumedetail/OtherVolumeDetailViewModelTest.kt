@@ -256,7 +256,7 @@ class OtherVolumeDetailViewModelTest {
             }
             verify(exactly = 1) { soundVolumeRepository.volume() }
             verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
-            coVerify(atLeast = 1) { deviceVolumeRepository.getVolume() }
+            coVerify(exactly = 3) { deviceVolumeRepository.getVolume() }
             confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
         }
 
