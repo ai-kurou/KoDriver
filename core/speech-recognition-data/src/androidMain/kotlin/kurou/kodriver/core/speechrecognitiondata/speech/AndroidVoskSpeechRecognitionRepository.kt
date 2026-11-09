@@ -1,5 +1,6 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -106,6 +107,8 @@ internal class AndroidVoskSpeechRecognitionRepository(
         try {
             try {
                 recorder.start()
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 captureError(IllegalStateException("音声認識を続けられません。マイクの取得に失敗しました"))
                 return
