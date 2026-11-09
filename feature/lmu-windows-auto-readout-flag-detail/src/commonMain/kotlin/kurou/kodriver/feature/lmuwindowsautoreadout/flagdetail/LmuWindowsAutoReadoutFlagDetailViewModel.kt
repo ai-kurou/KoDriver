@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
@@ -96,18 +96,18 @@ internal class LmuWindowsAutoReadoutFlagDetailViewModel(
         item: FlagReadoutItem,
         enabled: Boolean,
     ) {
-        viewModelScope.launch { settingsUseCases.saveFlagEnabledState(item.key, enabled) }
+        viewModelScope.launchCapturingErrors { settingsUseCases.saveFlagEnabledState(item.key, enabled) }
     }
 
     fun onFlagTextChanged(
         item: FlagReadoutItem,
         text: String,
     ) {
-        viewModelScope.launch { settingsUseCases.readoutTexts.save(item, text) }
+        viewModelScope.launchCapturingErrors { settingsUseCases.readoutTexts.save(item, text) }
     }
 
     fun onFlagTextReset(item: FlagReadoutItem) {
-        viewModelScope.launch { settingsUseCases.readoutTexts.save(item, item.defaultText) }
+        viewModelScope.launchCapturingErrors { settingsUseCases.readoutTexts.save(item, item.defaultText) }
     }
 
     /**

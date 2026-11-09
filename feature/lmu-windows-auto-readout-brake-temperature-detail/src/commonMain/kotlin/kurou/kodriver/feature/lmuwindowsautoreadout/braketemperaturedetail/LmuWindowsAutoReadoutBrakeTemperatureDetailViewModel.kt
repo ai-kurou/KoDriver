@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
@@ -74,7 +74,7 @@ internal class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModel(
         )
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { brakeTemperatureUseCases.saveText(text) }
+        viewModelScope.launchCapturingErrors { brakeTemperatureUseCases.saveText(text) }
     }
 
     /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
@@ -84,7 +84,7 @@ internal class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModel(
             state.vehicleClassHighThresholdCelsius[state.selectedVehicleClass]
                 ?: lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(state.selectedVehicleClass)
         val formattedText = formatLmuWindowsBrakeTemperatureReadoutText(text, celsius)
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             previewHelper.preview(
                 formattedText,
                 LmuWindowsBrakeOverheat(
@@ -96,20 +96,20 @@ internal class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModel(
     }
 
     fun onVehicleClassSelected(vehicleClass: LmuWindowsVehicleClassData) {
-        viewModelScope.launch { brakeTemperatureUseCases.saveVehicleClassSelection(vehicleClass) }
+        viewModelScope.launchCapturingErrors { brakeTemperatureUseCases.saveVehicleClassSelection(vehicleClass) }
     }
 
     fun onVehicleClassHighThresholdChanged(
         vehicleClass: LmuWindowsVehicleClassData,
         celsius: Int,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             brakeTemperatureUseCases.saveVehicleClassHighThreshold(vehicleClass, celsius)
         }
     }
 
     fun onVehicleClassHighThresholdReset(vehicleClass: LmuWindowsVehicleClassData) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             brakeTemperatureUseCases.saveVehicleClassHighThreshold(
                 vehicleClass,
                 lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(vehicleClass),
@@ -118,7 +118,7 @@ internal class LmuWindowsAutoReadoutBrakeTemperatureDetailViewModel(
     }
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             saveAutoReadoutEnabledState(
                 Simulator.LmuWindows.id,
                 LmuWindowsReadoutItemKey.BrakeTemperature.WarningReadout,

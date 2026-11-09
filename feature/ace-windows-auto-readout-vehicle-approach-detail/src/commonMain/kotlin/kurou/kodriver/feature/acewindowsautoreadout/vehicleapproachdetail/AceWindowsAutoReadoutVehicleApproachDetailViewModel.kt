@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
@@ -14,6 +13,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproach
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachEnabledStateUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
@@ -66,25 +66,27 @@ internal class AceWindowsAutoReadoutVehicleApproachDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onThresholdChanged(meters: Double) {
-        viewModelScope.launch { thresholds.saveThresholdMeters(meters) }
+        viewModelScope.launchCapturingErrors { thresholds.saveThresholdMeters(meters) }
     }
 
     fun onResetThreshold() {
-        viewModelScope.launch { thresholds.saveThresholdMeters(ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT) }
+        viewModelScope.launchCapturingErrors {
+            thresholds.saveThresholdMeters(ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT)
+        }
     }
 
     fun onStartReadoutEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, enabled)
         }
     }
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { saveReadoutText(text) }
+        viewModelScope.launchCapturingErrors { saveReadoutText(text) }
     }
 
     fun onReadoutTextReset() {
-        viewModelScope.launch { saveReadoutText(ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT) }
+        viewModelScope.launchCapturingErrors { saveReadoutText(ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT) }
     }
 
     fun onPreviewClicked(text: String) {

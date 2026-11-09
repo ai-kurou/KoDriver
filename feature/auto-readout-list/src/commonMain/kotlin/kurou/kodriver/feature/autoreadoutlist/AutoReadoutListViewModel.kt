@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -99,7 +99,7 @@ class AutoReadoutListViewModel(
                 .toMutableList()
                 .also { it.add(toIndex, it.removeAt(fromIndex)) }
         _localOrder.update { LocalOrderState(selected, newItems) }
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             autoReadoutOrderUseCases.saveAutoReadoutOrder(selected.id, newItems)
         }
     }
@@ -119,7 +119,7 @@ class AutoReadoutListViewModel(
         enabled: Boolean,
     ) {
         val simulator = _selectedSimulator.value
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             autoReadoutEnabledUseCases.saveAutoReadoutEnabledState(simulator.id, key, enabled)
         }
     }
@@ -128,7 +128,7 @@ class AutoReadoutListViewModel(
         key: ReadoutItemKey,
         enabled: Boolean,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             queueUseCases.saveQueueEnabledState(key, enabled)
         }
     }
@@ -137,7 +137,7 @@ class AutoReadoutListViewModel(
         key: ReadoutItemKey,
         enabled: Boolean,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             startSoundUseCases.saveReadoutStartSoundEnabledState(key, enabled)
         }
     }

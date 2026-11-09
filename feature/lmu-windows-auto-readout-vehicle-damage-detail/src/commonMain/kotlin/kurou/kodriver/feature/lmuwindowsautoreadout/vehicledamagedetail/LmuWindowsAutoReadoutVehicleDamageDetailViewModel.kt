@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
@@ -73,13 +73,13 @@ internal class LmuWindowsAutoReadoutVehicleDamageDetailViewModel(
         )
 
     fun onOverheatEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             vehicleDamageUseCases.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, enabled)
         }
     }
 
     fun onOverheatReadoutTextChanged(text: String) {
-        viewModelScope.launch { vehicleDamageUseCases.saveOverheatReadoutText(text) }
+        viewModelScope.launchCapturingErrors { vehicleDamageUseCases.saveOverheatReadoutText(text) }
     }
 
     fun onOverheatReadoutTextPreviewClicked(text: String) {
@@ -87,13 +87,13 @@ internal class LmuWindowsAutoReadoutVehicleDamageDetailViewModel(
     }
 
     fun onPartDetachedEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             vehicleDamageUseCases.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached, enabled)
         }
     }
 
     fun onPartDetachedReadoutTextChanged(text: String) {
-        viewModelScope.launch { vehicleDamageUseCases.savePartDetachedReadoutText(text) }
+        viewModelScope.launchCapturingErrors { vehicleDamageUseCases.savePartDetachedReadoutText(text) }
     }
 
     fun onPartDetachedReadoutTextPreviewClicked(text: String) {
@@ -101,13 +101,13 @@ internal class LmuWindowsAutoReadoutVehicleDamageDetailViewModel(
     }
 
     fun onTyreDetachedEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             vehicleDamageUseCases.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached, enabled)
         }
     }
 
     fun onTyreDetachedReadoutTextChanged(text: String) {
-        viewModelScope.launch { vehicleDamageUseCases.saveTyreDetachedReadoutText(text) }
+        viewModelScope.launchCapturingErrors { vehicleDamageUseCases.saveTyreDetachedReadoutText(text) }
     }
 
     fun onTyreDetachedReadoutTextPreviewClicked(text: String) {
@@ -119,7 +119,7 @@ internal class LmuWindowsAutoReadoutVehicleDamageDetailViewModel(
         event: SpeechEvent,
         text: String,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             previewHelper.preview(text, event)
         }
     }

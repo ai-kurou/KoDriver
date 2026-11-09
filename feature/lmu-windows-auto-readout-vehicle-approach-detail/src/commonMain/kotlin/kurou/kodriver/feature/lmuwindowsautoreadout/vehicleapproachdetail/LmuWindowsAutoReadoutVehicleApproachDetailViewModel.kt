@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
@@ -50,15 +50,15 @@ internal class LmuWindowsAutoReadoutVehicleApproachDetailViewModel(
         )
 
     fun onLateralThresholdChanged(meters: Double) {
-        viewModelScope.launch { thresholds.saveLateralThresholdMeters(meters) }
+        viewModelScope.launchCapturingErrors { thresholds.saveLateralThresholdMeters(meters) }
     }
 
     fun onLongitudinalThresholdChanged(meters: Double) {
-        viewModelScope.launch { thresholds.saveLongitudinalThresholdMeters(meters) }
+        viewModelScope.launchCapturingErrors { thresholds.saveLongitudinalThresholdMeters(meters) }
     }
 
     fun onResetLongitudinalThreshold() {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             thresholds.saveLongitudinalThresholdMeters(
                 LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
             )
@@ -66,17 +66,17 @@ internal class LmuWindowsAutoReadoutVehicleApproachDetailViewModel(
     }
 
     fun onResetLateralThreshold() {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             thresholds.saveLateralThresholdMeters(LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT)
         }
     }
 
     fun onSustainedApproachDurationSecondsChanged(seconds: Int) {
-        viewModelScope.launch { thresholds.saveSustainedApproachDurationSeconds(seconds) }
+        viewModelScope.launchCapturingErrors { thresholds.saveSustainedApproachDurationSeconds(seconds) }
     }
 
     fun onResetSustainedApproachDurationSeconds() {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             thresholds.saveSustainedApproachDurationSeconds(
                 LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             )
@@ -84,17 +84,17 @@ internal class LmuWindowsAutoReadoutVehicleApproachDetailViewModel(
     }
 
     fun onSkipFirstLapChanged(skip: Boolean) {
-        viewModelScope.launch { vehicleApproachPreferences.saveSkipFirstLap(skip) }
+        viewModelScope.launchCapturingErrors { vehicleApproachPreferences.saveSkipFirstLap(skip) }
     }
 
     fun onStartReadoutEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout, enabled)
         }
     }
 
     fun onSustainedReadoutEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Sustained, enabled)
         }
     }

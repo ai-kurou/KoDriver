@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsMyBestLapReadoutTextUseCase
@@ -66,7 +66,7 @@ internal class LmuWindowsAutoReadoutMyBestLapDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             myBestLapUseCases.saveEnabledState(
                 Simulator.LmuWindows.id,
                 LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
@@ -76,7 +76,7 @@ internal class LmuWindowsAutoReadoutMyBestLapDetailViewModel(
     }
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /** サンプルタイムに置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */

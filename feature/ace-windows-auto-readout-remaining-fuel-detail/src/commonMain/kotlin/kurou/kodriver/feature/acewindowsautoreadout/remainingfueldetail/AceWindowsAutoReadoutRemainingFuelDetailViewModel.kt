@@ -5,13 +5,13 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
@@ -67,7 +67,7 @@ internal class AceWindowsAutoReadoutRemainingFuelDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /** 保存反映待ちの旧値を避けるため、画面に表示中の残量閾値を呼び出し側から受け取る。 */
@@ -80,7 +80,7 @@ internal class AceWindowsAutoReadoutRemainingFuelDetailViewModel(
     }
 
     fun onThresholdChanged(percentage: Int) {
-        viewModelScope.launch { remainingFuelUseCases.saveThresholdPercentage(percentage) }
+        viewModelScope.launchCapturingErrors { remainingFuelUseCases.saveThresholdPercentage(percentage) }
     }
 
     fun onThresholdReset() {
@@ -88,7 +88,7 @@ internal class AceWindowsAutoReadoutRemainingFuelDetailViewModel(
     }
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             remainingFuelUseCases.saveAutoReadoutEnabledState(
                 Simulator.AceWindows.id,
                 AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled,

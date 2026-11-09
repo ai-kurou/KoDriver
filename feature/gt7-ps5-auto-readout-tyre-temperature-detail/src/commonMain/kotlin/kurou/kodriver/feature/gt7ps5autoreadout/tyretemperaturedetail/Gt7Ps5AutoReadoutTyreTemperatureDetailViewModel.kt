@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
@@ -14,6 +13,7 @@ import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5TyreTemperatureOverheat
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5TyreTemperatureEnabledStateUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
@@ -72,13 +72,13 @@ internal class Gt7Ps5AutoReadoutTyreTemperatureDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             tyreTemperatureUseCases.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning, enabled)
         }
     }
 
     fun onHighThresholdChanged(celsius: Int) {
-        viewModelScope.launch { tyreTemperatureUseCases.saveHighThreshold(Celsius(celsius)) }
+        viewModelScope.launchCapturingErrors { tyreTemperatureUseCases.saveHighThreshold(Celsius(celsius)) }
     }
 
     fun onHighThresholdReset() {
@@ -86,7 +86,7 @@ internal class Gt7Ps5AutoReadoutTyreTemperatureDetailViewModel(
     }
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
