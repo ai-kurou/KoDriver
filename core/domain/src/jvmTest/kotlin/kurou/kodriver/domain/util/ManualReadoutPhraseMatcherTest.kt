@@ -10,6 +10,8 @@ class ManualReadoutPhraseMatcherTest {
             "fuel" to listOf("燃料", "ガソリン"),
             "laps" to listOf("燃料周回", "燃料はあと何周"),
             "ve" to listOf("VE"),
+            "behind" to listOf("後方"),
+            "brake" to listOf("ブレーキ温度"),
         )
 
     @Test
@@ -37,8 +39,26 @@ class ManualReadoutPhraseMatcherTest {
     }
 
     @Test
-    fun `候補は先頭から見て最初に一致した候補を採用する`() {
+    fun `一致した語句の長さが同じ場合は先頭に近い候補を採用する`() {
         assertEquals("fuel", matchManualReadoutItemKey(listOf("関係ない言葉", "燃料", "VE"), phrases))
+    }
+
+    @Test
+    fun `第1候補が短い語句でも下位候補のより長い語句の項目を選ぶ`() {
+        assertEquals("laps", matchManualReadoutItemKey(listOf("燃料", "燃料周回数"), phrases))
+        assertEquals("laps", matchManualReadoutItemKey(listOf("関係ない言葉", "燃料", "燃料周回"), phrases))
+    }
+
+    @Test
+    fun `下位候補の無関係な項目は語句が長くても第1候補に勝てない`() {
+        assertEquals("behind", matchManualReadoutItemKey(listOf("後方", "ブレーキ温度"), phrases))
+        assertEquals("ve", matchManualReadoutItemKey(listOf("VE", "燃料周回"), phrases))
+    }
+
+    @Test
+    fun `下位候補では現在の最良語句を含む最も長い語句の項目を選ぶ`() {
+        assertEquals("laps", matchManualReadoutItemKey(listOf("燃料", "燃料周回とブレーキ温度"), phrases))
+        assertEquals("fuel", matchManualReadoutItemKey(listOf("燃料", "燃料"), phrases))
     }
 
     @Test

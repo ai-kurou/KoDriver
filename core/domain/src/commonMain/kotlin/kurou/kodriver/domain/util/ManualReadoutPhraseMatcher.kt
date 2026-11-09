@@ -2,8 +2,11 @@ package kurou.kodriver.domain.util
 
 /**
  * 音声認識の確定結果の候補から、手動読み上げ項目のキーを選ぶ。[phrasesByItemKey] は項目キーごとの語句。
- * 候補は信頼度の高い順に見て、語句に部分一致した最初の候補を採用する。
- * 1つの候補が複数項目の語句に一致する場合は、一致した語句が最も長い項目を選ぶ。
+ * 最初に語句へ一致した候補では、部分一致したもののうち一致した語句が最も長い項目を選ぶ。
+ * 後続の（信頼度の低い）候補は、一致した語句が現在の最良語句を含み、かつより長い場合だけ採用する。
+ * 第1候補が「燃料」のように語尾を取りこぼしていても、下位候補の「燃料周回」のような、より具体的な語句を優先するため。
+ * 第1候補と無関係な項目の語句は、長くても下位候補では採用しない（信頼度順を保つ）。
+ * 一致した語句の長さが同じ場合は、信頼度の高い（先頭に近い）候補・項目を採用する。
  * 空白は無視し、英字は大文字小文字を区別しない。英字だけの語句（例: VE）は、前後が英字でない場合だけ一致とする（have の中の ve に反応しない）。
  * どの項目にも一致しなければ null。
  */
@@ -11,23 +14,34 @@ fun matchManualReadoutItemKey(
     candidates: List<String>,
     phrasesByItemKey: Map<String, List<String>>,
 ): String? {
+    var bestKey: String? = null
+    var bestPhrase: String? = null
     for (candidate in candidates) {
         val normalized = normalizeSpokenText(candidate)
         if (normalized.isEmpty()) continue
+        val current = bestPhrase
         val matched =
-            phrasesByItemKey
-                .map { (key, phrases) ->
-                    key to
-                        phrases
-                            .map(::normalizeSpokenText)
-                            .filter { it.isNotEmpty() && containsPhrase(normalized, it) }
-                            .maxOfOrNull { it.length }
-                }.filter { it.second != null }
-                .maxByOrNull { it.second ?: 0 }
-        if (matched != null) return matched.first
+            phrasesByItemKey.flatMap { (key, phrases) ->
+                phrases
+                    .map(::normalizeSpokenText)
+                    .filter { it.isNotEmpty() && containsPhrase(normalized, it) }
+                    .map { key to it }
+            }
+        val best =
+            matched
+                .filter { (_, phrase) -> current == null || isMoreSpecific(phrase, current) }
+                .maxByOrNull { (_, phrase) -> phrase.length }
+                ?: continue
+        bestKey = best.first
+        bestPhrase = best.second
     }
-    return null
+    return bestKey
 }
+
+private fun isMoreSpecific(
+    phrase: String,
+    current: String,
+): Boolean = phrase.length > current.length && phrase.contains(current)
 
 private fun normalizeSpokenText(text: String): String = text.filterNot { it.isWhitespace() }.lowercase()
 
