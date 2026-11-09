@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -178,6 +180,44 @@ class LmuWindowsDebugStateDetailPaneScreenshotTest {
                     }
                 }
             }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `デフォルト データ未取得 最下部までスクロール`() = captureScrolledToBottom(hotkeyRegistered = false)
+
+    @Test
+    fun `現在値読み上げホットキー固定カードを表示する 最下部までスクロール`() = captureScrolledToBottom(hotkeyRegistered = true)
+
+    private fun captureScrolledToBottom(hotkeyRegistered: Boolean) =
+        composeScreenshotTest {
+            val uiState =
+                LmuWindowsDebugStateDetailUiState(
+                    readoutHotkey =
+                        if (hotkeyRegistered) {
+                            ReadoutHotkeyUiState(registrationState = HotkeyRegistrationState.Registered)
+                        } else {
+                            ReadoutHotkeyUiState()
+                        },
+                )
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsDebugStateDetailPaneContent(
+                                uiState = uiState,
+                                canNavigateBack = true,
+                                onBack = {},
+                            )
+                        }
+                    }
+                }
+            }
+            // 縦に長く1080dpに収まらないため、最後のカードまでスクロールして撮影する。
+            val fixedItemCount = if (hotkeyRegistered) 3 else 2
+            val lastIndex = fixedItemCount + uiState.cardOrder.size - 1
+            onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).performScrollToIndex(lastIndex)
+            waitForIdle()
             onRoot().captureRoboImage()
         }
 

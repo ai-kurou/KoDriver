@@ -150,7 +150,11 @@ private fun SimulatorCard(
     val platformLabel = simulatorPlatformLabel(simulatorId)
     Card(
         onClick = onClick,
-        modifier = modifier.width(SimulatorCardWidth).height(SimulatorCardHeight),
+        modifier =
+            modifier
+                .testTag("simulatorCard_$simulatorId")
+                .width(SimulatorCardWidth)
+                .height(SimulatorCardHeight),
         shape = MaterialTheme.shapes.extraLarge,
         border =
             if (selected) {
