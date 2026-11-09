@@ -93,6 +93,8 @@ Kover でカバレッジを計測する。kover プラグインを適用した�
 
 CI の `unit-test` ジョブは `-PexcludeScreenshotTests=true` でスクリーンショットテストを除外している。
 
+逆に `verifyRoborazzi*` / `recordRoborazzi*` の実行ではスクリーンショットテスト（`*ScreenshotTest`）だけを実行し、通常のユニットテストは `unit-test` ジョブに任せる（`gradle/roborazzi.gradle.kts`）。PR の `*-screenshot-test-verify` で verify が失敗した場合の record は、失敗したモジュールだけを対象にする（失敗モジュールを特定できない場合のみ全体を record する）。
+
 ```bash
 # ローカルでカバレッジレポート生成
 ./gradlew koverXmlReport

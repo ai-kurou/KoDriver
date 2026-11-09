@@ -16,6 +16,15 @@ tasks.withType<Test>().configureEach {
             isFailOnNoMatchingTests = false
         }
     }
+    // verify / record ではスクリーンショットテストだけを実行する。通常のユニットテストは unit-test ジョブで実行済みのため、二重実行を避ける
+    val isScreenshotOnlyRun = isRecordMode || isVerifyMode || isRecordModeAndroid || isVerifyModeAndroid
+    if (isScreenshotOnlyRun) {
+        filter {
+            includeTestsMatching("*ScreenshotTest")
+            // スクリーンショットテストを持たないテストタスクは0件になるが、失敗扱いにしない
+            isFailOnNoMatchingTests = false
+        }
+    }
     val isAndroidHostTest = name.contains("AndroidHostTest", ignoreCase = true)
     systemProperty("skiko.renderApi", "SOFTWARE_FAST")
     systemProperty(
