@@ -4,9 +4,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -199,4 +203,26 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneScreenshotTest {
             onNodeWithText("燃料予想残り周回数").performScrollTo()
             onRoot().captureRoboImage()
         }
+
+    @Test
+    fun `デフォルト 最下部までスクロール`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsAutoReadoutPitTimingDetailPaneContent(
+                                uiState = LmuWindowsAutoReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                            )
+                        }
+                    }
+                }
+            }
+            onAllNodes(
+                hasScrollAction(),
+            ).onFirst().performTouchInput { repeat(SCROLL_TO_BOTTOM_SWIPE_COUNT) { swipeUp() } }
+            onRoot().captureRoboImage()
+        }
 }
+
+private const val SCROLL_TO_BOTTOM_SWIPE_COUNT = 5

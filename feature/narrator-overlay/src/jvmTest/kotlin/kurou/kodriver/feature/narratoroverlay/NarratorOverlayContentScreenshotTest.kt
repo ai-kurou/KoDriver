@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.DesktopComposeUiTest
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -126,6 +127,7 @@ class NarratorOverlayContentScreenshotTest {
                         latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
                         overlayTextSize = OverlayTextSize.HUGE,
                     ),
+                hostHeight = LARGE_TEXT_HOST_HEIGHT,
             )
         }
 
@@ -138,6 +140,7 @@ class NarratorOverlayContentScreenshotTest {
                         latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
                         overlayTextSize = OverlayTextSize.MAXIMUM,
                     ),
+                hostHeight = LARGE_TEXT_HOST_HEIGHT,
             )
         }
 
@@ -153,9 +156,12 @@ class NarratorOverlayContentScreenshotTest {
             )
         }
 
-    private fun DesktopComposeUiTest.captureNarratorOverlayContent(uiState: NarratorOverlayUiState) {
+    private fun DesktopComposeUiTest.captureNarratorOverlayContent(
+        uiState: NarratorOverlayUiState,
+        hostHeight: Dp = 120.dp,
+    ) {
         setContent {
-            Box(modifier = Modifier.requiredSize(400.dp, 120.dp)) {
+            Box(modifier = Modifier.requiredSize(400.dp, hostHeight)) {
                 NarratorOverlayContent(uiState = uiState)
             }
         }
@@ -174,3 +180,6 @@ class NarratorOverlayContentScreenshotTest {
             telemetryJson = "{}",
         )
 }
+
+// 超特大・最大は文字が枠に収まらず切れるため、他より高い枠で撮影する。
+private val LARGE_TEXT_HOST_HEIGHT = 240.dp

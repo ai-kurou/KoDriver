@@ -5,9 +5,13 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.DesktopComposeUiTest
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -49,6 +53,17 @@ class AceWindowsAutoReadoutFlagDetailPaneScreenshotTest {
                 enabledStates = FlagReadoutItem.entries.associate { it.key to true },
                 flagTexts = FlagReadoutItem.entries.associateWith { "" },
                 isTextToSpeechAvailable = true,
+            )
+        }
+
+    @Test
+    fun `空白文言 最下部までスクロール`() =
+        composeScreenshotTest {
+            captureAceWindowsAutoReadoutFlagDetailPane(
+                enabledStates = FlagReadoutItem.entries.associate { it.key to true },
+                flagTexts = FlagReadoutItem.entries.associateWith { "" },
+                isTextToSpeechAvailable = true,
+                scrollToBottom = true,
             )
         }
 
@@ -157,6 +172,7 @@ class AceWindowsAutoReadoutFlagDetailPaneScreenshotTest {
         flagTexts: Map<FlagReadoutItem, String> = emptyMap(),
         isTextToSpeechAvailable: Boolean = true,
         scrollToText: String? = null,
+        scrollToBottom: Boolean = false,
     ) {
         setContent {
             KoDriverTheme {
@@ -175,6 +191,13 @@ class AceWindowsAutoReadoutFlagDetailPaneScreenshotTest {
             }
         }
         scrollToText?.let { onNodeWithText(it).performScrollTo() }
+        if (scrollToBottom) {
+            onAllNodes(
+                hasScrollAction(),
+            ).onFirst().performTouchInput { repeat(SCROLL_TO_BOTTOM_SWIPE_COUNT) { swipeUp() } }
+        }
         onRoot().captureRoboImage()
     }
 }
+
+private const val SCROLL_TO_BOTTOM_SWIPE_COUNT = 5
