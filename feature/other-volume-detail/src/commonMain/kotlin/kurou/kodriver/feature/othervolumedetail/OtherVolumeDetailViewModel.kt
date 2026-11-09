@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
+import kurou.kodriver.domain.launchCapturingErrors
+import kurou.kodriver.domain.runCapturingErrors
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
@@ -73,16 +75,19 @@ internal class OtherVolumeDetailViewModel(
         deviceVolumeRequest
             .receiveAsFlow()
             .onEach { volume ->
-                deviceVolumeUseCases.setDeviceVolume(volume)
+                // 書き込みが失敗しても収集を止めず、次の要求を処理し続ける。
+                runCapturingErrors {
+                    deviceVolumeUseCases.setDeviceVolume(volume)
+                }
                 deviceVolumeRefreshTrigger.update { it + 1 }
             }.launchIn(viewModelScope)
 
     fun onVolumeChanged(volume: Int) {
-        saveJob = viewModelScope.launch { soundVolumeUseCases.saveSoundVolume(volume) }
+        saveJob = viewModelScope.launchCapturingErrors { soundVolumeUseCases.saveSoundVolume(volume) }
     }
 
     fun onLowVolumeWarningEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch { lowVolumeWarningEnabledUseCases.saveLowVolumeWarningEnabled(enabled) }
+        viewModelScope.launchCapturingErrors { lowVolumeWarningEnabledUseCases.saveLowVolumeWarningEnabled(enabled) }
     }
 
     /** ペインを離れたときに、再生中の試聴を止める。 */

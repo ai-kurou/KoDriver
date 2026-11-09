@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -28,6 +30,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withContext
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
@@ -220,6 +223,70 @@ class OtherVolumeDetailViewModelTest {
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(20) }
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(80) }
             verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
+        }
+
+    @Test
+    fun `端末音量の書き込みが失敗しても記録して次の要求を処理する`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            coEvery { deviceVolumeRepository.setVolume(50) } throws error
+            coEvery { deviceVolumeRepository.setVolume(40) } returns Unit
+            try {
+                val viewModel = createViewModel()
+                viewModel.uiState.launchIn(backgroundScope)
+                runCurrent()
+
+                viewModel.onDeviceVolumeChanged(50)
+                runCurrent()
+                viewModel.onDeviceVolumeChanged(40)
+                runCurrent()
+
+                verify(exactly = 1) { captureError(error) }
+                coVerify(exactly = 1) { deviceVolumeRepository.setVolume(50) }
+                coVerify(exactly = 1) { deviceVolumeRepository.setVolume(40) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            verify(exactly = 1) { soundVolumeRepository.volume() }
+            verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            coVerify(atLeast = 1) { deviceVolumeRepository.getVolume() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
+        }
+
+    @Test
+    fun `音量とスイッチの保存が失敗しても記録する`() =
+        runTest {
+            val volumeError = IOException("volume")
+            val warningError = IOException("warning")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
+            mockkStatic(errorCapture)
+            every { captureError(volumeError) } returns Unit
+            every { captureError(warningError) } returns Unit
+            coEvery { soundVolumeRepository.saveVolume(30) } throws volumeError
+            coEvery { warningEnabledRepository.saveLowVolumeWarningEnabled(false) } throws warningError
+            try {
+                val viewModel = createViewModel()
+                viewModel.onVolumeChanged(30)
+                viewModel.onLowVolumeWarningEnabledChanged(false)
+
+                verify(exactly = 1) { captureError(volumeError) }
+                verify(exactly = 1) { captureError(warningError) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            verify(exactly = 1) { soundVolumeRepository.volume() }
+            verify(exactly = 1) { warningEnabledRepository.observeLowVolumeWarningEnabled() }
+            coVerify(exactly = 1) { soundVolumeRepository.saveVolume(30) }
+            coVerify(exactly = 1) { warningEnabledRepository.saveLowVolumeWarningEnabled(false) }
             confirmVerified(soundVolumeRepository, deviceVolumeRepository, warningEnabledRepository)
         }
 
