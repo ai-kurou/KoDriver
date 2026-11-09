@@ -1,10 +1,13 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import androidx.lifecycle.viewModelScope
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +21,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
@@ -91,6 +95,7 @@ import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
 import org.junit.Before
+import java.io.IOException
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -1754,6 +1759,44 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
+        }
+
+    @Test
+    fun `読み上げ要求が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            every { flagRepository.flagStream() } returns emptyFlow()
+            every { virtualEnergyRepository.virtualEnergyStream() } returns emptyFlow()
+            every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
+            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
+            every { brakeWearRepository.brakeWearStream() } returns emptyFlow()
+            every { vehicleClassRepository.vehicleClassStream() } returns emptyFlow()
+            every { lmuWindowsPitStatusRepository.pitStatusStream() } returns emptyFlow()
+            every { vehicleDamageRepository.vehicleDamageStream() } returns emptyFlow()
+            every { carGapRepository.carGapStream() } returns emptyFlow()
+            every { classCarGapRepository.classCarGapStream() } returns emptyFlow()
+            every { tyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val keys = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows)
+            val request = DebugReadoutRequest(Simulator.LmuWindows, keys.first(), "入力")
+            coEvery { requestDebugReadout(request) } throws error
+            try {
+                val viewModel = createViewModel()
+                viewModel.updateDebugReadoutText("入力")
+
+                viewModel.requestReadout()
+
+                verify(exactly = 1) { captureError(error) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            coVerify(exactly = 1) { requestDebugReadout(request) }
+            confirmVerified(requestDebugReadout)
         }
 }
 

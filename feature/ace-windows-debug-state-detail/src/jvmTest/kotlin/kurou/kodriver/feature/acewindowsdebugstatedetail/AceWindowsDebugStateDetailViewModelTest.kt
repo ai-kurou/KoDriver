@@ -1,9 +1,12 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,6 +49,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLa
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.FuelPercent
@@ -60,6 +64,7 @@ import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
 import org.junit.Before
+import java.io.IOException
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -854,6 +859,62 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             coVerify(exactly = 1) { cardOrderRepository.saveCardOrder(expected.map { it.name }) }
             confirmVerified(
+                overallPositionRepository,
+                gapRepository,
+                fuelRepository,
+                flagRepository,
+                statusRepository,
+                tyreCarcassTemperatureRepository,
+                vehicleApproachRepository,
+                bestLapTimeRepository,
+                remainingFuelLapsRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `読み上げ要求が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            every { overallPositionRepository.overallPositionStream() } returns emptyFlow()
+            every { gapRepository.gapStream() } returns emptyFlow()
+            every { fuelRepository.fuelStream() } returns emptyFlow()
+            every { flagRepository.flagStream() } returns emptyFlow()
+            every { statusRepository.statusStream() } returns emptyFlow()
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
+            every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val keys = ReadoutItemKey.topLevelEntriesOf(Simulator.AceWindows)
+            val request = DebugReadoutRequest(Simulator.AceWindows, keys.first(), "入力")
+            coEvery { requestDebugReadout(request) } throws error
+            try {
+                val viewModel = createViewModel()
+                viewModel.updateDebugReadoutText("入力")
+
+                viewModel.requestReadout()
+
+                verify(exactly = 1) { captureError(error) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            coVerify(exactly = 1) { requestDebugReadout(request) }
+            verify(exactly = 1) { overallPositionRepository.overallPositionStream() }
+            verify(exactly = 1) { gapRepository.gapStream() }
+            verify(exactly = 1) { fuelRepository.fuelStream() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { statusRepository.statusStream() }
+            verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                requestDebugReadout,
                 overallPositionRepository,
                 gapRepository,
                 fuelRepository,
