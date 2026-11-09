@@ -59,6 +59,7 @@ import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.LowVolumeWarningUiState
 import kurou.kodriver.feature.main.LowVolumeWarningViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
+import kurou.kodriver.feature.main.rememberSpeechRecognitionChip
 import kurou.kodriver.feature.main.rememberSpeechRecognitionSection
 import kurou.kodriver.feature.manualreadoutdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
@@ -191,7 +192,10 @@ fun AppScreen(
         onPauseOrDispose {}
     }
 
-    CompositionLocalProvider(LocalSpeechRecognitionSection provides rememberSpeechRecognitionSection()) {
+    CompositionLocalProvider(
+        LocalSpeechRecognitionSection provides rememberSpeechRecognitionSection(),
+        LocalSpeechRecognitionChip provides rememberSpeechRecognitionChip(),
+    ) {
         AppScreenContent(
             darkTheme = darkTheme,
             dynamicColorEnabled = uiState.dynamicColorEnabled,
@@ -507,6 +511,19 @@ private fun AppScreenScaffold(
                                 AppSpacing.large
                             },
                     ),
+        )
+        LocalSpeechRecognitionChip.current(
+            Modifier
+                .align(Alignment.BottomEnd)
+                .padding(
+                    end = AppSpacing.large,
+                    bottom =
+                        if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                            96.dp
+                        } else {
+                            AppSpacing.large
+                        },
+                ),
         )
     }
 }
