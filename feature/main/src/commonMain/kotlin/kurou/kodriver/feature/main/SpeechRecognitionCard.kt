@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.main.generated.resources.Res
@@ -57,8 +59,6 @@ internal fun SpeechRecognitionCard(
     onDeviceSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val switchDescription = stringResource(Res.string.speech_recognition_switch_description)
-    val levelDescription = stringResource(Res.string.speech_recognition_level_description)
     Surface(
         modifier =
             modifier.fillMaxWidth().padding(
@@ -68,87 +68,113 @@ internal fun SpeechRecognitionCard(
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
     ) {
-        Column(
+        SpeechRecognitionDetailContent(
+            uiState = uiState,
+            onEnabledChange = onEnabledChange,
+            onDeviceMenuOpen = onDeviceMenuOpen,
+            onDeviceSelected = onDeviceSelected,
             modifier = Modifier.padding(KoDriverSpacing.medium),
-            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+        )
+    }
+}
+
+/**
+ * 音声認識の有効/無効スイッチ・入力デバイス選択（デスクトップのみ）・入力音量・認識結果を並べた本体。
+ * 「その他」のカードと、チップのタップで開く詳細（ボトムシート/ポップオーバー）で共通に使う。
+ * 背景や余白は呼び出し側が決める。[levelGaugeHeight] を渡すと、音量ゲージをその高さにする。
+ */
+@Composable
+internal fun SpeechRecognitionDetailContent(
+    uiState: SpeechRecognitionUiState,
+    onEnabledChange: (Boolean) -> Unit,
+    onDeviceMenuOpen: () -> Unit,
+    onDeviceSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    levelGaugeHeight: Dp? = null,
+) {
+    val switchDescription = stringResource(Res.string.speech_recognition_switch_description)
+    val levelDescription = stringResource(Res.string.speech_recognition_level_description)
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Mic,
-                    contentDescription = null,
-                    tint =
-                        if (uiState.enabled) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
+            Icon(
+                imageVector = Icons.Filled.Mic,
+                contentDescription = null,
+                tint =
+                    if (uiState.enabled) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(Res.string.speech_recognition_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
-                Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(uiState.status.label()),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(
+                checked = uiState.enabled,
+                onCheckedChange = onEnabledChange,
+                modifier = Modifier.semantics { contentDescription = switchDescription },
+            )
+        }
+        // 入力デバイスを選べるのはデスクトップだけ。Android では一覧が空のままなので表示しない
+        if (uiState.devices.isNotEmpty() && uiState.deviceName != null) {
+            AudioInputDeviceDropdown(
+                devices = uiState.devices,
+                selected = uiState.deviceName,
+                onMenuOpen = onDeviceMenuOpen,
+                onSelected = onDeviceSelected,
+            )
+        }
+        uiState.level?.let { level ->
+            val animatedLevel by animateFloatAsState(
+                targetValue = level,
+                animationSpec = tween(durationMillis = LEVEL_ANIMATION_MILLIS),
+            )
+            LinearProgressIndicator(
+                progress = { animatedLevel },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .then(if (levelGaugeHeight != null) Modifier.height(levelGaugeHeight) else Modifier)
+                        .semantics { contentDescription = levelDescription },
+            )
+        }
+        if (uiState.partialText.isNotEmpty() || uiState.recognized.isNotEmpty()) {
+            // 履歴が長くなっても下のセット一覧の領域を奪わないよう、高さを抑えてスクロールさせる。
+            Column(
+                modifier =
+                    Modifier
+                        .heightIn(max = HISTORY_MAX_HEIGHT)
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+            ) {
+                if (uiState.partialText.isNotEmpty()) {
                     Text(
-                        text = stringResource(Res.string.speech_recognition_title),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        text = stringResource(uiState.status.label()),
-                        style = MaterialTheme.typography.bodySmall,
+                        text = uiState.partialText,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                Switch(
-                    checked = uiState.enabled,
-                    onCheckedChange = onEnabledChange,
-                    modifier = Modifier.semantics { contentDescription = switchDescription },
-                )
-            }
-            // 入力デバイスを選べるのはデスクトップだけ。Android では一覧が空のままなので表示しない
-            if (uiState.devices.isNotEmpty() && uiState.deviceName != null) {
-                AudioInputDeviceDropdown(
-                    devices = uiState.devices,
-                    selected = uiState.deviceName,
-                    onMenuOpen = onDeviceMenuOpen,
-                    onSelected = onDeviceSelected,
-                )
-            }
-            uiState.level?.let { level ->
-                val animatedLevel by animateFloatAsState(
-                    targetValue = level,
-                    animationSpec = tween(durationMillis = LEVEL_ANIMATION_MILLIS),
-                )
-                LinearProgressIndicator(
-                    progress = { animatedLevel },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .semantics { contentDescription = levelDescription },
-                )
-            }
-            if (uiState.partialText.isNotEmpty() || uiState.recognized.isNotEmpty()) {
-                // 履歴が長くなっても下のセット一覧の領域を奪わないよう、高さを抑えてスクロールさせる。
-                Column(
-                    modifier =
-                        Modifier
-                            .heightIn(max = HISTORY_MAX_HEIGHT)
-                            .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                ) {
-                    if (uiState.partialText.isNotEmpty()) {
-                        Text(
-                            text = uiState.partialText,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    uiState.recognized.forEach { candidates ->
-                        Text(
-                            text = candidates.joinToString(separator = " / "),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
+                uiState.recognized.forEach { candidates ->
+                    Text(
+                        text = candidates.joinToString(separator = " / "),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
                 }
             }
         }

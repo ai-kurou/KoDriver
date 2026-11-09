@@ -3,10 +3,12 @@ package kurou.kodriver.feature.main
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
@@ -141,5 +143,26 @@ class SpeechRecognitionChipTest {
             rule.waitForIdle()
             rule.onRoot().assertIsDisplayed()
         }
+    }
+
+    @Test
+    fun `タップを受け取るとクリックを通知する`() {
+        var clicks = 0
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionChip(uiState = SpeechRecognitionUiState(), onClick = { clicks++ })
+            }
+        }
+
+        rule.onNodeWithContentDescription("停止中").performClick()
+
+        rule.runOnIdle { assertEquals(1, clicks) }
+    }
+
+    @Test
+    fun `クリックを渡さないときはタップできない`() {
+        rule.setContent { KoDriverTheme { SpeechRecognitionChip(uiState = SpeechRecognitionUiState()) } }
+
+        rule.onNodeWithContentDescription("停止中").assertHasNoClickAction()
     }
 }

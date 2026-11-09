@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -112,8 +115,11 @@ class SpeechRecognitionSectionTest {
     }
 
     @Composable
-    private fun Chip() {
-        rememberSpeechRecognitionChip(viewModel)(Modifier)
+    private fun Chip(
+        requestPermission: () -> Unit = {},
+        presentation: SpeechRecognitionDetailPresentation = SpeechRecognitionDetailPresentation.Popover,
+    ) {
+        rememberSpeechRecognitionChip(viewModel, requestPermission)(Modifier, presentation)
     }
 
     @After
@@ -252,5 +258,67 @@ class SpeechRecognitionSectionTest {
         rule.runOnIdle { events.tryEmit(SpeechRecognitionEvent.Listening) }
 
         rule.onAllNodesWithContentDescription("「コドライバー」の呼びかけを待っています(マイクを使用中)").assertCountEquals(1)
+    }
+
+    @Test
+    fun `チップをタップするとポップオーバーで詳細を開き操作で聞き取りを開始する`() {
+        createViewModel(granted = true)
+        rule.setContent {
+            KoDriverTheme {
+                Chip(presentation = SpeechRecognitionDetailPresentation.Popover)
+            }
+        }
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertDoesNotExist()
+
+        rule.onNodeWithContentDescription("停止中").performClick()
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsOff().performClick()
+        rule.runOnIdle { events.tryEmit(SpeechRecognitionEvent.Listening) }
+
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsOn()
+    }
+
+    @Test
+    fun `チップをタップするとボトムシートで詳細を開く`() {
+        createViewModel(granted = true)
+        rule.setContent {
+            KoDriverTheme {
+                Chip(presentation = SpeechRecognitionDetailPresentation.BottomSheet)
+            }
+        }
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertDoesNotExist()
+
+        rule.onNodeWithContentDescription("停止中").performClick()
+
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsDisplayed()
+    }
+
+    @Test
+    fun `権限が未許可のまま詳細でONにすると権限の要求を呼ぶ`() {
+        createViewModel(granted = false)
+        var requestCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                Chip(requestPermission = { requestCount++ })
+            }
+        }
+
+        rule.onNodeWithContentDescription("停止中").performClick()
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").performClick()
+
+        assertEquals(1, requestCount)
+    }
+
+    @Test
+    fun `詳細を開くと入力デバイスの一覧を取得して選んだデバイスを反映する`() {
+        audioInputDeviceRepository.devices = listOf(AudioInputDevice("Mic A"), AudioInputDevice("Mic B"))
+        createViewModel(granted = true, deviceSelector = audioInputDeviceSelector(audioInputDeviceRepository))
+        rule.setContent { KoDriverTheme { Chip() } }
+
+        rule.onNodeWithContentDescription("停止中").performClick()
+        rule.onNodeWithTag("speech_recognition_device").assertTextContains("Mic A")
+        rule.onNodeWithTag("speech_recognition_device").performClick()
+        rule.onNodeWithTag("speech_recognition_device_Mic B").performClick()
+
+        rule.onNodeWithTag("speech_recognition_device").assertTextContains("Mic B")
     }
 }

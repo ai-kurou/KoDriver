@@ -1,9 +1,12 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -24,26 +27,64 @@ fun rememberSpeechRecognitionSection(): @Composable (Modifier) -> Unit {
 }
 
 /**
- * 音声認識の聞き取り状態を表す小さなチップを返す。[rememberSpeechRecognitionSection] と同じ ViewModel を共有するため、
- * 聞き取りの管理（権限の要求・停止と再開）はそちらが行い、ここでは状態の表示だけをする。
+ * 音声認識の聞き取り状態を表す小さなチップを返す。タップすると、有効/無効スイッチ・音量・認識結果などの詳細を開く。
+ * 詳細の見せ方は、チップを描くときに渡す [SpeechRecognitionDetailPresentation]（スマホはボトムシート、広い画面はポップオーバー）で決める。
+ * [rememberSpeechRecognitionSection] と同じ ViewModel を共有し、聞き取りの管理（停止と再開）はそちらが行う。
  * 音声認識を提供しないプラットフォームでは何も表示しない。
  */
 @Composable
-fun rememberSpeechRecognitionChip(): @Composable (Modifier) -> Unit {
-    if (!isSpeechRecognitionSupportedOnPlatform()) return NoSpeechRecognitionSection
+fun rememberSpeechRecognitionChip(): @Composable (Modifier, SpeechRecognitionDetailPresentation) -> Unit {
+    if (!isSpeechRecognitionSupportedOnPlatform()) return NoSpeechRecognitionChip
     val viewModel: SpeechRecognitionViewModel = koinViewModel()
-    return rememberSpeechRecognitionChip(viewModel)
+    val requestPermission = rememberRecordAudioPermissionRequester(viewModel::onPermissionResult)
+    return rememberSpeechRecognitionChip(viewModel, requestPermission)
 }
 
 @Composable
-internal fun rememberSpeechRecognitionChip(viewModel: SpeechRecognitionViewModel): @Composable (Modifier) -> Unit =
-    remember(viewModel) {
-        val chip: @Composable (Modifier) -> Unit = { modifier ->
-            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-            SpeechRecognitionChip(uiState = uiState, modifier = modifier)
+internal fun rememberSpeechRecognitionChip(
+    viewModel: SpeechRecognitionViewModel,
+    requestPermission: () -> Unit,
+): @Composable (Modifier, SpeechRecognitionDetailPresentation) -> Unit =
+    remember(viewModel, requestPermission) {
+        val chip: @Composable (Modifier, SpeechRecognitionDetailPresentation) -> Unit = { modifier, presentation ->
+            SpeechRecognitionChipWithDetail(viewModel, requestPermission, presentation, modifier)
         }
         chip
     }
+
+@Composable
+private fun SpeechRecognitionChipWithDetail(
+    viewModel: SpeechRecognitionViewModel,
+    requestPermission: () -> Unit,
+    presentation: SpeechRecognitionDetailPresentation,
+    modifier: Modifier,
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var detailVisible by remember { mutableStateOf(false) }
+    // ポップオーバーをチップの位置に合わせて出すため、チップと詳細を同じ Box に置く
+    Box(modifier = modifier) {
+        SpeechRecognitionChip(
+            uiState = uiState,
+            onClick = {
+                // 停止中でも選択中の入力デバイスを表示できるよう、開くときに一覧を取得する（Android では何もしない）
+                viewModel.refreshDevices()
+                detailVisible = true
+            },
+        )
+        if (detailVisible) {
+            SpeechRecognitionDetail(
+                presentation = presentation,
+                uiState = uiState,
+                onEnabledChange = { viewModel.onEnabledChange(it, requestPermission) },
+                onDeviceMenuOpen = viewModel::refreshDevices,
+                onDeviceSelected = viewModel::onDeviceSelected,
+                onDismissRequest = { detailVisible = false },
+            )
+        }
+    }
+}
+
+private val NoSpeechRecognitionChip: @Composable (Modifier, SpeechRecognitionDetailPresentation) -> Unit = { _, _ -> }
 
 private val NoSpeechRecognitionSection: @Composable (Modifier) -> Unit = {}
 

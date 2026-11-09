@@ -3,6 +3,7 @@ package kurou.kodriver.feature.main
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.DesktopComposeUiTest
@@ -53,6 +54,48 @@ class SpeechRecognitionChipScreenshotTest {
                 SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.CommandWaiting, level = 0.8f),
             )
         }
+
+    @Test
+    fun `詳細の聞き取り中`() =
+        composeScreenshotTest {
+            captureDetail(
+                SpeechRecognitionUiState(
+                    enabled = true,
+                    status = SpeechRecognitionStatus.Listening,
+                    level = 0.6f,
+                    recognized = listOf(listOf("燃料", "然料"), listOf("ブレーキ")),
+                    devices = listOf("内蔵マイク", "USBマイク"),
+                    deviceName = "内蔵マイク",
+                ),
+            )
+        }
+
+    @Test
+    fun `詳細の停止中`() =
+        composeScreenshotTest {
+            captureDetail(SpeechRecognitionUiState())
+        }
+
+    private fun DesktopComposeUiTest.captureDetail(uiState: SpeechRecognitionUiState) {
+        setContent {
+            KoDriverTheme {
+                Surface(
+                    modifier = Modifier.requiredSize(360.dp, 300.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                ) {
+                    SpeechRecognitionDetailContent(
+                        uiState = uiState,
+                        onEnabledChange = {},
+                        onDeviceMenuOpen = {},
+                        onDeviceSelected = {},
+                        modifier = Modifier.padding(16.dp),
+                        levelGaugeHeight = 12.dp,
+                    )
+                }
+            }
+        }
+        onRoot().captureRoboImage()
+    }
 
     private fun DesktopComposeUiTest.captureChip(uiState: SpeechRecognitionUiState) {
         setContent {
