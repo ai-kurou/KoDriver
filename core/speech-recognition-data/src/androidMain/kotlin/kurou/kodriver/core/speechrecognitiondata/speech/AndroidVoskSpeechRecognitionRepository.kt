@@ -1,6 +1,5 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -12,12 +11,10 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.model.SpeechRecognitionMode
@@ -68,35 +65,14 @@ internal class AndroidVoskSpeechRecognitionRepository(
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.PermissionDenied))
                 return@flow
             }
-            val transcriber = createTranscriber()
+            val transcriber = transcriberFactory.createOrNull()
             if (transcriber == null) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
             } else {
                 transcriber.use { recognizeWithRetry(it, TranscriberModeSync(it, mode)) }
             }
-        }.catch { e ->
-            if (e !is Exception && e !is LinkageError) throw e
-            captureErrorTypeOnly(e)
-            emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.RecognitionFailed))
-        }.flowOn(ioDispatcher)
-
-    private fun createTranscriber(): SpeechTranscriber? {
-        if (!transcriberFactory.isAvailable()) {
-            captureError(IllegalStateException("音声認識を利用できません。認識モデルが見つかりません"))
-            return null
-        }
-        return try {
-            transcriberFactory.create()
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            captureError(e)
-            null
-        } catch (e: LinkageError) {
-            captureError(e)
-            null
-        }
-    }
+        }.failRecognitionOnError()
+            .flowOn(ioDispatcher)
 
     private suspend fun FlowCollector<SpeechRecognitionEvent>.recognizeWithRetry(
         transcriber: SpeechTranscriber,
@@ -146,7 +122,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
                         }
                     }
                 try {
-                    readChunks(recorder, transcriber, modeSync, onHealthy)
+                    readChunks(recorder, RecognitionPipeline(transcriber, modeSync), onHealthy)
                 } finally {
                     watcher.cancel()
                 }
@@ -158,14 +134,11 @@ internal class AndroidVoskSpeechRecognitionRepository(
 
     private suspend fun FlowCollector<SpeechRecognitionEvent>.readChunks(
         recorder: PcmRecorder,
-        transcriber: SpeechTranscriber,
-        modeSync: TranscriberModeSync,
+        pipeline: RecognitionPipeline,
         onHealthy: () -> Unit,
     ) {
         val buffer = ByteArray(VOSK_READ_CHUNK_BYTES)
         var readCount = 0
-        var lastPartial = ""
-        var lastMode = SpeechRecognitionMode.WakeWord
         while (true) {
             currentCoroutineContext().ensureActive()
             val size = recorder.read(buffer)
@@ -176,26 +149,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
                 return
             }
             if (++readCount == VOSK_HEALTHY_READ_COUNT) onHealthy()
-            val pcm = buffer.copyOf(size)
-            emit(SpeechRecognitionEvent.Level(pcm.pcmLevel()))
-            val previousMode = lastMode
-            lastMode = modeSync.sync()
-            if (lastMode != previousMode) lastPartial = ""
-            when (val transcript = transcriber.accept(pcm)) {
-                is SpeechTranscript.Partial -> {
-                    if (transcript.text != lastPartial) {
-                        lastPartial = transcript.text
-                        emit(SpeechRecognitionEvent.Partial(transcript.text))
-                    }
-                }
-
-                is SpeechTranscript.Final -> {
-                    lastPartial = ""
-                    emit(SpeechRecognitionEvent.Recognized(transcript.candidates))
-                }
-
-                null -> {}
-            }
+            with(pipeline) { process(buffer.copyOf(size)) }
         }
     }
 }
