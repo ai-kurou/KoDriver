@@ -70,7 +70,7 @@ class OtherContentScreenshotTest {
             setContent {
                 AppTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(840.dp, 1080.dp)) {
                             OtherContent(
                                 uiState = OtherListUiState(selectedItem = OtherListItemType.Volume),
                                 onItemSelected = {},
@@ -190,7 +190,7 @@ class OtherContentScreenshotTest {
             setContent {
                 AppTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(840.dp, 1080.dp)) {
                             OtherContent(
                                 uiState = OtherListUiState(selectedItem = OtherListItemType.Feedback),
                                 onItemSelected = {},
