@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
@@ -106,6 +107,7 @@ internal fun ManualReadoutListPaneContent(
     gridState: LazyGridState = rememberLazyGridState(),
 ) {
     val haptic = LocalHapticFeedback.current
+    val bottomEndOverlayInset = LocalBottomEndOverlayInset.current
     var additionBaseline by remember(simulatorId) { mutableStateOf<Set<String>?>(null) }
     val enteredSetIds = remember(simulatorId) { mutableSetOf<String>() }
     val addSet = {
@@ -144,7 +146,7 @@ internal fun ManualReadoutListPaneContent(
                             PaddingValues(
                                 start = KoDriverSpacing.small,
                                 end = KoDriverSpacing.small,
-                                bottom = 56.dp + KoDriverSpacing.large,
+                                bottom = 56.dp + KoDriverSpacing.large + bottomEndOverlayInset,
                             ),
                         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
@@ -221,7 +223,7 @@ internal fun ManualReadoutListPaneContent(
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.weight(1f).fillMaxWidth(),
-                        contentPadding = PaddingValues(bottom = 56.dp + KoDriverSpacing.large),
+                        contentPadding = PaddingValues(bottom = 56.dp + KoDriverSpacing.large + bottomEndOverlayInset),
                     ) {
                         itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
                             ManualReadoutSetEntry(
@@ -260,7 +262,12 @@ internal fun ManualReadoutListPaneContent(
                         )
                     },
                     text = { Text(stringResource(Res.string.manual_readout_list_add_set)) },
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(KoDriverSpacing.large),
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(KoDriverSpacing.large)
+                            // 共通シェルが右下に重ねる音声認識のチップの上に置く
+                            .padding(bottom = bottomEndOverlayInset),
                 )
             }
         }

@@ -1,6 +1,7 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.VerticalDivider
@@ -33,6 +34,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
+import kurou.kodriver.feature.main.SPEECH_RECOGNITION_CHIP_OVERLAY_INSET
 import kurou.kodriver.feature.otherlist.AutoReadoutSettingsResetConfirmDialog
 import kurou.kodriver.feature.otherlist.ManualReadoutSettingsResetConfirmDialog
 import kurou.kodriver.feature.otherlist.OtherListItemType
@@ -364,7 +366,11 @@ internal fun OtherContent(
                 }
             },
         )
-        SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter))
+        SnackbarHost(
+            hostState = snackbarHostState,
+            // 右下の音声認識のチップに隠れないよう、チップの幅だけ右端を空ける
+            modifier = Modifier.align(Alignment.BottomCenter).padding(end = SPEECH_RECOGNITION_CHIP_OVERLAY_INSET),
+        )
     }
 }
 
