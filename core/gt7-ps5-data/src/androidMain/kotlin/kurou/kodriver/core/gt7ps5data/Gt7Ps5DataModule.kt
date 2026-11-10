@@ -27,7 +27,7 @@ private const val GT7_PS5_SCOPE_QUALIFIER = "gt7_ps5_scope"
 /**
  * GT7 PS5 テレメトリの Repository バインドを行う Koin モジュール（:core:gt7-ps5-data / androidMain）。
  *
- * app エントリーポイントで束ねられ、gt7-ps5-connection / gt7-ps5-narrator の UseCase が
+ * app エントリーポイントで束ねられ、gt7-ps5-narrator などの UseCase が
  * get() で解決する Gt7Ps5Repository を提供する。UDP 受信は専用の CoroutineScope 上で行う。
  * jvmMain 版との違いは設定ファイルの保存先（context.filesDir）のみ。
  */

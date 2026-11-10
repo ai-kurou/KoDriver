@@ -31,7 +31,6 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-windows-debug-state-detail` | LMUのデバッグ状態表示（18枚のカード・状態集約・カード順序保存を備える専用モジュール。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-lmu-windows-debug-state-detail.svg) |
 | `:feature:gt7-ps5-debug-state-detail` | GT7（PS5）専用のデバッグ状態表示（6枚のカード・状態集約・カード順序保存。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-gt7-ps5-debug-state-detail.svg) |
 | `:feature:ace-windows-debug-state-detail` | ACEのデバッグ状態表示（7枚のカード・状態集約・カード順序保存を備える専用モジュール。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-ace-windows-debug-state-detail.svg) |
-| `:feature:lmu-windows-connection` | LMU との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-lmu-windows-connection.svg) |
 | `:feature:main` | アプリ全体のメイン画面状態管理 | [図](graphs/feature-main.svg) |
 | `:feature:server-connection` | KoDriver サーバー（Ktor）への接続状態確認を担当する | [図](graphs/feature-server-connection.svg) |
 | `:feature:lmu-windows-narrator` | 全読み上げ項目の自由文言によるOS標準TTS読み上げ・開始音のWAV再生とアナウンス制御を担当する | [図](graphs/feature-lmu-windows-narrator.svg) |
@@ -68,9 +67,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:gt7-ps5-auto-readout-remaining-fuel-detail` | GT7 燃料残量アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-auto-readout-remaining-fuel-detail.svg) |
 | `:feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail` | GT7 燃料残り周回数アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-auto-readout-remaining-fuel-laps-detail.svg) |
 | `:feature:gt7-ps5-auto-readout-tyre-temperature-detail` | GT7 タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-auto-readout-tyre-temperature-detail.svg) |
-| `:feature:gt7-ps5-connection` | GT7 PS5 との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-gt7-ps5-connection.svg) |
 | `:feature:gt7-ps5-narrator` | GT7 PS5 向け WAV開始音・OS標準TTS本文の音声再生とアナウンス制御を担当する | [図](graphs/feature-gt7-ps5-narrator.svg) |
-| `:feature:ace-windows-connection` | ACE (Assetto Corsa EVO) との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-ace-windows-connection.svg) |
 | `:feature:ace-windows-narrator` | ACE (Assetto Corsa EVO) 向け WAV開始音・OS標準TTS本文の音声再生とアナウンス制御を担当する | [図](graphs/feature-ace-windows-narrator.svg) |
 | `:feature:ace-windows-auto-readout-remaining-fuel-detail` | ACE 燃料残量アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-auto-readout-remaining-fuel-detail.svg) |
 | `:feature:ace-windows-auto-readout-flag-detail` | ACE フラッグアナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-auto-readout-flag-detail.svg) |

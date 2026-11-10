@@ -51,7 +51,7 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
 /**
  * LMU 共有メモリの Repository バインドを行う Koin モジュール（:core:lmu-windows-data。JVM 専用）。
  *
- * デスクトップ版 app エントリーポイントで束ねられ、lmu-windows-connection / lmu-windows-narrator の
+ * デスクトップ版 app エントリーポイントで束ねられ、lmu-windows-narrator などの
  * UseCase が get() で解決する各 LmuWindows*Repository を提供する。共有メモリ読み取りは Windows 専用のため、
  * 非 Windows では空 Flow を返す No-Op 実装（下部の private class 群）にフォールバックする。
  *

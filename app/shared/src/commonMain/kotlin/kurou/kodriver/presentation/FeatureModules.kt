@@ -6,7 +6,6 @@ import kurou.kodriver.feature.acewindowsautoreadout.remainingfueldetail.aceWindo
 import kurou.kodriver.feature.acewindowsautoreadout.remainingfuellapsdetail.aceWindowsAutoReadoutRemainingFuelLapsDetailModule
 import kurou.kodriver.feature.acewindowsautoreadout.tyretemperaturedetail.aceWindowsAutoReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.acewindowsautoreadout.vehicleapproachdetail.aceWindowsAutoReadoutVehicleApproachDetailModule
-import kurou.kodriver.feature.acewindowsconnection.aceWindowsConnectionModule
 import kurou.kodriver.feature.acewindowsdebugstatedetail.aceWindowsDebugStateDetailModule
 import kurou.kodriver.feature.acewindowsnarrator.aceWindowsNarratorModule
 import kurou.kodriver.feature.autoreadoutlist.autoReadoutListModule
@@ -14,7 +13,6 @@ import kurou.kodriver.feature.gt7ps5autoreadout.mybestlapdetail.gt7Ps5AutoReadou
 import kurou.kodriver.feature.gt7ps5autoreadout.remainingfueldetail.gt7Ps5AutoReadoutRemainingFuelDetailModule
 import kurou.kodriver.feature.gt7ps5autoreadout.remainingfuellapsdetail.gt7Ps5AutoReadoutRemainingFuelLapsDetailModule
 import kurou.kodriver.feature.gt7ps5autoreadout.tyretemperaturedetail.gt7Ps5AutoReadoutTyreTemperatureDetailModule
-import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
 import kurou.kodriver.feature.gt7ps5debugstatedetail.gt7Ps5DebugStateDetailModule
 import kurou.kodriver.feature.gt7ps5narrator.gt7Ps5NarratorModule
 import kurou.kodriver.feature.lmuwindowsautoreadout.braketemperaturedetail.lmuWindowsAutoReadoutBrakeTemperatureDetailModule
@@ -28,7 +26,6 @@ import kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail.lmuWin
 import kurou.kodriver.feature.lmuwindowsautoreadout.tyreweardetail.lmuWindowsAutoReadoutTyreWearDetailModule
 import kurou.kodriver.feature.lmuwindowsautoreadout.vehicleapproachdetail.lmuWindowsAutoReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.lmuwindowsautoreadout.vehicledamagedetail.lmuWindowsAutoReadoutVehicleDamageDetailModule
-import kurou.kodriver.feature.lmuwindowsconnection.lmuWindowsConnectionModule
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.lmuWindowsDebugStateDetailModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuWindowsNarratorModule
 import kurou.kodriver.feature.main.mainModule
@@ -67,13 +64,10 @@ val featureModules: List<Module> =
     listOf(
         mainModule,
         mainPlatformModule,
-        lmuWindowsConnectionModule,
         gt7Ps5AutoReadoutMyBestLapDetailModule,
         gt7Ps5AutoReadoutRemainingFuelDetailModule,
         gt7Ps5AutoReadoutRemainingFuelLapsDetailModule,
         gt7Ps5AutoReadoutTyreTemperatureDetailModule,
-        gt7Ps5ConnectionModule,
-        aceWindowsConnectionModule,
         serverConnectionModule,
         lmuWindowsNarratorModule,
         gt7Ps5NarratorModule,
