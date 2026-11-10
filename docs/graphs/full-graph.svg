@@ -243,7 +243,7 @@
 <title>feature</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M597.88,-975.2C597.88,-975.2 523.38,-975.2 523.38,-975.2 517.38,-975.2 511.38,-969.2 511.38,-963.2 511.38,-963.2 511.38,-944.7 511.38,-944.7 511.38,-938.7 517.38,-932.7 523.38,-932.7 523.38,-932.7 597.88,-932.7 597.88,-932.7 603.88,-932.7 609.88,-938.7 609.88,-944.7 609.88,-944.7 609.88,-963.2 609.88,-963.2 609.88,-969.2 603.88,-975.2 597.88,-975.2"/>
 <text xml:space="preserve" text-anchor="middle" x="560.62" y="-957.9" font-family="Times,serif" font-size="14.00">feature</text>
-<text xml:space="preserve" text-anchor="middle" x="560.62" y="-940.65" font-family="Times,serif" font-size="14.00">24 modules</text>
+<text xml:space="preserve" text-anchor="middle" x="560.62" y="-940.65" font-family="Times,serif" font-size="14.00">25 modules</text>
 </g>
 <!-- :app:shared&#45;&gt;feature -->
 <g id="edge24" class="edge">

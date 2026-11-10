@@ -51,6 +51,7 @@ kotlin {
             implementation(projects.feature.autoReadoutList)
             implementation(projects.feature.manualReadoutList)
             implementation(projects.feature.manualReadoutDetail)
+            implementation(projects.feature.speechRecognitionList)
             implementation(projects.feature.lmuWindowsAutoReadoutVehicleApproachDetail)
             implementation(projects.feature.lmuWindowsAutoReadoutFlagDetail)
             implementation(projects.feature.lmuWindowsAutoReadoutMyBestLapDetail)

@@ -25,7 +25,7 @@ digraph G {
   ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#FFF9C4", color="#F9A825"]
   ":core:windows-startup-data" [label=":core:windows-startup-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":server" [label=":server", fillcolor="#F8BBD0", color="#D81B60"]
-  "feature" [label="feature\n24 modules", fillcolor="#C8E6C9", color="#43A047"]
+  "feature" [label="feature\n25 modules", fillcolor="#C8E6C9", color="#43A047"]
   "feature:ace-windows*" [label="feature:ace-windows*\n8 modules", fillcolor="#C8E6C9", color="#43A047"]
   "feature:gt7-ps5*" [label="feature:gt7-ps5*\n6 modules", fillcolor="#C8E6C9", color="#43A047"]
   "feature:lmu-windows*" [label="feature:lmu-windows*\n13 modules", fillcolor="#C8E6C9", color="#43A047"]

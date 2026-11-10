@@ -55,6 +55,7 @@ digraph G {
   ":feature:other-voice-speed-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:server-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":app:androidApp" -> ":app:shared"
   ":app:desktopApp" -> ":app:shared"
   ":app:shared" -> ":feature:desktop-splash"
@@ -87,6 +88,7 @@ digraph G {
   ":app:shared" -> ":feature:auto-readout-list"
   ":app:shared" -> ":feature:manual-readout-list"
   ":app:shared" -> ":feature:manual-readout-detail"
+  ":app:shared" -> ":feature:speech-recognition-list"
   ":app:shared" -> ":feature:lmu-windows-auto-readout-vehicle-approach-detail"
   ":app:shared" -> ":feature:lmu-windows-auto-readout-flag-detail"
   ":app:shared" -> ":feature:lmu-windows-auto-readout-my-best-lap-detail"

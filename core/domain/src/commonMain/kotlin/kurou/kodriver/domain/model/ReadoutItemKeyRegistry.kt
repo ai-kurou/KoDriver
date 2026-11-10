@@ -6,10 +6,12 @@ import kotlin.concurrent.Volatile
  * 手動読み上げに対応するシミュレーターの項目定義と表示上の挙動。
  *
  * [showSimHubGuideLink] は手動読み上げのホットキー案内に SimHub の導入リンクを出すかどうか。
+ * [itemPhrases] は音声認識の発話から項目を選ぶ語句で、キーは [itemDefinitions] と同じ項目キー。語句を持たない項目は音声で読み上げられない。
  */
 class ManualReadoutSimulatorSpec(
     val itemDefinitions: Map<String, ManualReadoutItemDefinition>,
     val showSimHubGuideLink: Boolean = true,
+    val itemPhrases: Map<String, List<String>> = emptyMap(),
 )
 
 /** A simulator's complete readout key catalog and defaults. [manualReadout] は手動読み上げ非対応なら null。 */
@@ -103,7 +105,11 @@ internal class ReadoutItemKeyRegistryState {
             defaultAutoReadoutOrder = defaultAutoReadoutOrder.toList(),
             manualReadout =
                 manualReadout?.let {
-                    ManualReadoutSimulatorSpec(it.itemDefinitions.toMap(), it.showSimHubGuideLink)
+                    ManualReadoutSimulatorSpec(
+                        it.itemDefinitions.toMap(),
+                        it.showSimHubGuideLink,
+                        it.itemPhrases.mapValues { (_, phrases) -> phrases.toList() },
+                    )
                 },
         )
 }

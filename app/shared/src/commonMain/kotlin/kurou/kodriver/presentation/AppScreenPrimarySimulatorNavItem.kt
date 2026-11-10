@@ -39,6 +39,7 @@ import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_auto_readout
 import kurou.kodriver.app.shared.generated.resources.nav_manual_readout
 import kurou.kodriver.app.shared.generated.resources.nav_more
+import kurou.kodriver.app.shared.generated.resources.nav_speech_recognition
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
 import org.jetbrains.compose.resources.stringResource
@@ -64,6 +65,7 @@ internal fun AppDestination.label(): String =
     when (this) {
         AppDestination.AutoReadout -> stringResource(Res.string.nav_auto_readout)
         AppDestination.ManualReadout -> stringResource(Res.string.nav_manual_readout)
+        AppDestination.SpeechRecognition -> stringResource(Res.string.nav_speech_recognition)
         AppDestination.More -> stringResource(Res.string.nav_more)
     }
 
