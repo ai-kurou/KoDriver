@@ -1,22 +1,10 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
-import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
+import kurou.kodriver.core.designsystem.DebugStateHeadlineValueContent
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 
 @Composable
 internal fun CurrentLapContent(lmuWindowsTelemetry: LmuWindowsTelemetryData?) {
-    val currentLap = lmuWindowsTelemetry?.timing?.currentLap
-    val displayText = currentLap?.let { it.toString() }
-    if (displayText == null) {
-        DebugStateUnavailableContent()
-    } else {
-        Text(
-            text = displayText,
-            style = koDriverNumericTextStyle(MaterialTheme.typography.headlineMedium),
-        )
-    }
+    DebugStateHeadlineValueContent(lmuWindowsTelemetry?.timing?.currentLap?.toString())
 }
