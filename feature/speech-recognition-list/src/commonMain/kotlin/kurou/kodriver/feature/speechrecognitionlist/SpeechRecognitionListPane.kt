@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverPhraseChip
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
@@ -139,7 +140,7 @@ private fun WakeWordGuide() {
                             modifier = Modifier.clearAndSetSemantics {},
                         )
                     }
-                    PhraseChip(step)
+                    KoDriverPhraseChip(step)
                 }
             }
         }
@@ -169,24 +170,9 @@ private fun SpeechCommandGuideCard(item: SpeechCommandGuideItem) {
                 horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
                 verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
             ) {
-                item.phrases.forEach { PhraseChip(it) }
+                item.phrases.forEach { KoDriverPhraseChip(it) }
             }
         }
-    }
-}
-
-@Composable
-private fun PhraseChip(text: String) {
-    Surface(
-        shape = MaterialTheme.shapes.small,
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
-        )
     }
 }
 

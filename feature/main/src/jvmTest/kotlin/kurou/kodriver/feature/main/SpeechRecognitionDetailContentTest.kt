@@ -63,7 +63,8 @@ class SpeechRecognitionDetailContentTest {
 
         rule.onNodeWithText("「コドライバー」の呼びかけを待っています(マイクを使用中)").assertExists()
         rule.onNodeWithText("タイ").assertExists()
-        rule.onNodeWithText("燃料 / 然料").assertExists()
+        rule.onNodeWithText("燃料").assertExists()
+        rule.onNodeWithText("然料").assertExists()
         rule.onNodeWithText("ブレーキ").assertExists()
         rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsOn().performClick()
         rule.runOnIdle { assertEquals(listOf(false), changes) }

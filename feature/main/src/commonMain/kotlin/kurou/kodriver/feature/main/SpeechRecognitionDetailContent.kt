@@ -4,6 +4,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +27,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverPhraseChip
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.main.generated.resources.Res
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_level_description
@@ -53,6 +56,7 @@ private const val LEVEL_ANIMATION_MILLIS = 100
  * チップのタップで開く詳細（ボトムシート/ポップオーバー）で使う。
  * 背景や余白は呼び出し側が決める。[levelGaugeHeight] を渡すと、音量ゲージをその高さにする。
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun SpeechRecognitionDetailContent(
     uiState: SpeechRecognitionUiState,
@@ -140,11 +144,13 @@ internal fun SpeechRecognitionDetailContent(
                     )
                 }
                 uiState.recognized.forEach { candidates ->
-                    Text(
-                        text = candidates.joinToString(separator = " / "),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
+                    // 1行が1回の発話。候補はチップで並べ、幅を超える分は折り返す
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+                    ) {
+                        candidates.forEach { KoDriverPhraseChip(it) }
+                    }
                 }
             }
         }
