@@ -83,6 +83,8 @@ GT7 (PS5) と接続する場合は、PS5 へ直接接続する構成と SimHub �
 
 [GPL-3.0](LICENSE)
 
+音声認識には Vosk（Apache-2.0）と、アプリに同梱する日本語モデル `vosk-model-small-ja-0.22`（Apache-2.0）を使っています。詳細は [`core/speech-recognition-data/README.md`](core/speech-recognition-data/README.md#ライセンス) を参照してください。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Graph
 
