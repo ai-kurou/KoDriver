@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import kurou.kodriver.core.designsystem.DebugStateHeatTile
 import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
@@ -69,7 +70,6 @@ private fun WheelCarcassTemperatureText(
 ) {
     DebugStateHeatTile(
         text = stringResource(labelRes, wheelCarcassTemperatureText(wheels, wheelIndex)),
-        celsius = wheels[wheelIndex]?.value?.toDouble(),
         modifier = modifier,
         heatLevel = wheels[wheelIndex]?.value?.toDouble()?.let { temperatureHeatLevel(it) },
     )

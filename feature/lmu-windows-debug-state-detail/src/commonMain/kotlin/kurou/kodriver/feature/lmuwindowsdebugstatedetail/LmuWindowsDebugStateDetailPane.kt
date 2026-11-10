@@ -11,9 +11,11 @@ import kurou.kodriver.core.designsystem.DebugStateFixedCard
 import kurou.kodriver.core.designsystem.DebugStateReorderableGrid
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.SimulatorInfoContent
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_temperature_title
@@ -167,7 +169,7 @@ private val debugStateCardTitles: Map<LmuWindowsDebugStateCardKey, StringResourc
 private val debugStateCardContents:
     Map<LmuWindowsDebugStateCardKey, @Composable (LmuWindowsDebugStateDetailUiState) -> Unit> =
     mapOf(
-        LmuWindowsDebugStateCardKey.SIMULATOR to { SimulatorInfoContent() },
+        LmuWindowsDebugStateCardKey.SIMULATOR to { SimulatorInfoContent(simulatorId = Simulator.LmuWindows.id) },
         LmuWindowsDebugStateCardKey.VEHICLE_CLASS to
             { uiState ->
                 VehicleClassContent(uiState.lmuWindows.vehicleClass)

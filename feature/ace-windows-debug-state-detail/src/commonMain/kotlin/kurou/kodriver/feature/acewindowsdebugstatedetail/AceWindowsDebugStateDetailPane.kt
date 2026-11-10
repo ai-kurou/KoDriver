@@ -11,8 +11,10 @@ import kurou.kodriver.core.designsystem.DebugStateFixedCard
 import kurou.kodriver.core.designsystem.DebugStateReorderableGrid
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.SimulatorInfoContent
 import kurou.kodriver.domain.model.ACE_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_car_gap_title
@@ -126,7 +128,7 @@ private val debugStateCardTitles: Map<AceWindowsDebugStateCardKey, StringResourc
 private val debugStateCardContents:
     Map<AceWindowsDebugStateCardKey, @Composable (AceWindowsDebugStateDetailUiState) -> Unit> =
     mapOf(
-        AceWindowsDebugStateCardKey.SIMULATOR to { SimulatorInfoContent() },
+        AceWindowsDebugStateCardKey.SIMULATOR to { SimulatorInfoContent(simulatorId = Simulator.AceWindows.id) },
         AceWindowsDebugStateCardKey.VEHICLE_LOCATION to { uiState ->
             VehicleLocationContent(uiState.aceWindows.status)
         },

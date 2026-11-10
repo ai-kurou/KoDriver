@@ -1,10 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.DebugStateFadeContent
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 
 // 表示するフラッグが変わらないテレメトリの更新ではフェードし直さないよう、表示内容だけをキーにする。
@@ -13,9 +10,8 @@ internal fun flagInfoContentKey(raceFlags: LmuWindowsRaceFlagsData?): List<Activ
 
 @Composable
 internal fun FlagInfoContent(raceFlags: LmuWindowsRaceFlagsData?) {
-    AnimatedContent(
-        targetState = raceFlags,
-        transitionSpec = { fadeIn() togetherWith fadeOut() },
+    DebugStateFadeContent(
+        state = raceFlags,
         contentKey = { flagInfoContentKey(it) },
     ) { flags ->
         LmuFlagInfoContent(flags)
