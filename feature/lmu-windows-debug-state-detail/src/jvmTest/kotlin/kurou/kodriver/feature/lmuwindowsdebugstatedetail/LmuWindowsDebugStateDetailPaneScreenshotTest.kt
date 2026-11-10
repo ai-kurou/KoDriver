@@ -10,6 +10,7 @@ import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
+import kurou.kodriver.core.designsystem.DEBUG_STATE_GRID_TEST_TAG
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
