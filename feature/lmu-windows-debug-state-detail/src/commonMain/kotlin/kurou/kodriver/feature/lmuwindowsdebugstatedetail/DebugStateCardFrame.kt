@@ -1,9 +1,9 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kurou.kodriver.core.designsystem.KoDriverExtendedColors
+import kurou.kodriver.core.designsystem.DebugStateCardAccent
+import kurou.kodriver.core.designsystem.DebugStateCardStyle
 import kurou.kodriver.core.designsystem.DebugStateCardFrame as CommonDebugStateCardFrame
 
 @Composable
@@ -13,67 +13,38 @@ internal fun DebugStateCardFrame(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val colors = MaterialTheme.colorScheme
-    val accent =
-        when (cardKey) {
-            LmuWindowsDebugStateCardKey.SIMULATOR, LmuWindowsDebugStateCardKey.VEHICLE_CLASS,
-            LmuWindowsDebugStateCardKey.VEHICLE_LOCATION,
-            -> {
-                colors.primary
-            }
-
-            LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE, LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
-            LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE,
-            LmuWindowsDebugStateCardKey.BRAKE_WEAR, LmuWindowsDebugStateCardKey.TYRE_WEAR,
-            LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE,
-            -> {
-                colors.error
-            }
-
-            LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
-            LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY,
-            LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-            -> {
-                KoDriverExtendedColors.current.onWarningContainer
-            }
-
-            else -> {
-                colors.tertiary
-            }
-        }
     CommonDebugStateCardFrame(
         title = title,
-        symbol = debugStateCardSymbol(cardKey),
-        accent = accent,
+        style = debugStateCardStyles.getValue(cardKey),
         modifier = modifier,
         content = content,
     )
 }
 
-private val debugStateCardSymbols =
+private val debugStateCardStyles =
     mapOf(
-        LmuWindowsDebugStateCardKey.SIMULATOR to "🎮",
-        LmuWindowsDebugStateCardKey.VEHICLE_CLASS to "🏎",
-        LmuWindowsDebugStateCardKey.VEHICLE_LOCATION to "⌖",
-        LmuWindowsDebugStateCardKey.FLAG_INFO to "⚑",
-        LmuWindowsDebugStateCardKey.GAME_PHASE to "🚦",
-        LmuWindowsDebugStateCardKey.SESSION to "◷",
-        LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE to "⚠",
-        LmuWindowsDebugStateCardKey.CURRENT_LAP to "⏱",
-        LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to "↔",
-        LmuWindowsDebugStateCardKey.CAR_GAP to "↕",
-        LmuWindowsDebugStateCardKey.CLASS_CAR_GAP to "↕",
-        LmuWindowsDebugStateCardKey.BEST_LAP to "🏆",
-        LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE to "🔥",
-        LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to "◎",
-        LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE to "◉",
-        LmuWindowsDebugStateCardKey.BRAKE_WEAR to "◒",
-        LmuWindowsDebugStateCardKey.TYRE_WEAR to "◴",
-        LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION to "⛽",
-        LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY to "⚡",
-        LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS to "⚒",
-        LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE to "💥",
+        LmuWindowsDebugStateCardKey.SIMULATOR to DebugStateCardStyle("🎮", DebugStateCardAccent.PRIMARY),
+        LmuWindowsDebugStateCardKey.VEHICLE_CLASS to DebugStateCardStyle("🏎", DebugStateCardAccent.PRIMARY),
+        LmuWindowsDebugStateCardKey.VEHICLE_LOCATION to DebugStateCardStyle("⌖", DebugStateCardAccent.PRIMARY),
+        LmuWindowsDebugStateCardKey.FLAG_INFO to DebugStateCardStyle("⚑", DebugStateCardAccent.TERTIARY),
+        LmuWindowsDebugStateCardKey.GAME_PHASE to DebugStateCardStyle("🚦", DebugStateCardAccent.TERTIARY),
+        LmuWindowsDebugStateCardKey.SESSION to DebugStateCardStyle("◷", DebugStateCardAccent.TERTIARY),
+        LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE to DebugStateCardStyle("⚠", DebugStateCardAccent.TERTIARY),
+        LmuWindowsDebugStateCardKey.CURRENT_LAP to DebugStateCardStyle("⏱", DebugStateCardAccent.TERTIARY),
+        LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to DebugStateCardStyle("↔", DebugStateCardAccent.TERTIARY),
+        LmuWindowsDebugStateCardKey.CAR_GAP to DebugStateCardStyle("↕", DebugStateCardAccent.TERTIARY),
+        LmuWindowsDebugStateCardKey.CLASS_CAR_GAP to DebugStateCardStyle("↕", DebugStateCardAccent.TERTIARY),
+        LmuWindowsDebugStateCardKey.BEST_LAP to DebugStateCardStyle("🏆", DebugStateCardAccent.TERTIARY),
+        LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE to DebugStateCardStyle("🔥", DebugStateCardAccent.ERROR),
+        LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to DebugStateCardStyle("◎", DebugStateCardAccent.ERROR),
+        LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE to DebugStateCardStyle("◉", DebugStateCardAccent.ERROR),
+        LmuWindowsDebugStateCardKey.BRAKE_WEAR to DebugStateCardStyle("◒", DebugStateCardAccent.ERROR),
+        LmuWindowsDebugStateCardKey.TYRE_WEAR to DebugStateCardStyle("◴", DebugStateCardAccent.ERROR),
+        LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION to DebugStateCardStyle("⛽", DebugStateCardAccent.WARNING),
+        LmuWindowsDebugStateCardKey.VIRTUAL_ENERGY to DebugStateCardStyle("⚡", DebugStateCardAccent.WARNING),
+        LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS to DebugStateCardStyle("⚒", DebugStateCardAccent.WARNING),
+        LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE to DebugStateCardStyle("💥", DebugStateCardAccent.ERROR),
     )
 
 internal fun debugStateCardSymbol(cardKey: LmuWindowsDebugStateCardKey): String =
-    debugStateCardSymbols.getValue(cardKey)
+    debugStateCardStyles.getValue(cardKey).symbol

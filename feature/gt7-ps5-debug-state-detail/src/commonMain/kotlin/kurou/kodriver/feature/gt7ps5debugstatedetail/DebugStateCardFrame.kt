@@ -1,9 +1,9 @@
 package kurou.kodriver.feature.gt7ps5debugstatedetail
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kurou.kodriver.core.designsystem.KoDriverExtendedColors
+import kurou.kodriver.core.designsystem.DebugStateCardAccent
+import kurou.kodriver.core.designsystem.DebugStateCardStyle
 import kurou.kodriver.core.designsystem.DebugStateCardFrame as CommonDebugStateCardFrame
 
 @Composable
@@ -13,32 +13,24 @@ internal fun DebugStateCardFrame(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val colors = MaterialTheme.colorScheme
-    val accent =
-        when (cardKey) {
-            Gt7Ps5DebugStateCardKey.SIMULATOR, Gt7Ps5DebugStateCardKey.VEHICLE_CLASS -> colors.primary
-            Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE -> colors.error
-            Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION -> KoDriverExtendedColors.current.onWarningContainer
-            else -> colors.tertiary
-        }
     CommonDebugStateCardFrame(
         title = title,
-        symbol = debugStateCardSymbol(cardKey),
-        accent = accent,
+        style = debugStateCardStyles.getValue(cardKey),
         modifier = modifier,
         showHandle = false,
         content = content,
     )
 }
 
-private val debugStateCardSymbols =
+private val debugStateCardStyles =
     mapOf(
-        Gt7Ps5DebugStateCardKey.SIMULATOR to "🎮",
-        Gt7Ps5DebugStateCardKey.VEHICLE_CLASS to "🏎",
-        Gt7Ps5DebugStateCardKey.CURRENT_LAP to "⏱",
-        Gt7Ps5DebugStateCardKey.BEST_LAP to "🏆",
-        Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE to "🔥",
-        Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION to "⛽",
+        Gt7Ps5DebugStateCardKey.SIMULATOR to DebugStateCardStyle("🎮", DebugStateCardAccent.PRIMARY),
+        Gt7Ps5DebugStateCardKey.VEHICLE_CLASS to DebugStateCardStyle("🏎", DebugStateCardAccent.PRIMARY),
+        Gt7Ps5DebugStateCardKey.CURRENT_LAP to DebugStateCardStyle("⏱", DebugStateCardAccent.TERTIARY),
+        Gt7Ps5DebugStateCardKey.BEST_LAP to DebugStateCardStyle("🏆", DebugStateCardAccent.TERTIARY),
+        Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE to DebugStateCardStyle("🔥", DebugStateCardAccent.ERROR),
+        Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION to DebugStateCardStyle("⛽", DebugStateCardAccent.WARNING),
     )
 
-internal fun debugStateCardSymbol(cardKey: Gt7Ps5DebugStateCardKey): String = debugStateCardSymbols.getValue(cardKey)
+internal fun debugStateCardSymbol(cardKey: Gt7Ps5DebugStateCardKey): String =
+    debugStateCardStyles.getValue(cardKey).symbol
