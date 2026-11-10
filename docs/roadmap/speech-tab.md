@@ -41,7 +41,7 @@ base-branch: feature/base/speech-tab
 
 - 音声タブ用の `:feature:speech-recognition-list` モジュールと空の listPane を追加した: #3063
 - 「音声」タブを追加し、空の listPane を表示した（タブ順は 自動・手動・音声・その他）: #3072
-- 音声タブの一覧の元データを返す `SpeechCommandGuideRepository`（`:core:speech-recognition-data`）と `ObserveSpeechCommandGuideUseCase` を追加した。手動読み上げの語句を `ManualReadoutSimulatorSpec.itemPhrases` に載せた: (PR 作成後に番号を記入)
+- 音声タブの一覧の元データを返す `SpeechCommandGuideRepository`（`:core:speech-recognition-data`）と `ObserveSpeechCommandGuideUseCase` を追加した。手動読み上げの語句を `ManualReadoutSimulatorSpec.itemPhrases` に載せた: #3079
 
 ## 次以降（上から順に着手する想定）
 
