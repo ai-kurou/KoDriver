@@ -1,5 +1,7 @@
 package kurou.kodriver.domain.gt7ps5.model
 
+import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -34,5 +36,13 @@ class Gt7Ps5ManualReadoutPhrasesTest {
             assertEquals(gt7Ps5ManualReadoutItemPhrases.getValue(key), gt7Ps5ManualReadoutItemPhrases(key))
         }
         assertEquals(emptyList(), gt7Ps5ManualReadoutItemPhrases("unknown"))
+    }
+
+    @Test
+    fun `登録したspecが語句を持ち音声タブの案内に使える`() {
+        assertEquals(
+            gt7Ps5ManualReadoutItemPhrases,
+            ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.Gt7Ps5.id)?.itemPhrases,
+        )
     }
 }

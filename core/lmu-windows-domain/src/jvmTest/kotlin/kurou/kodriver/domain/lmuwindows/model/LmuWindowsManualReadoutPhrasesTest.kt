@@ -1,5 +1,7 @@
 package kurou.kodriver.domain.lmuwindows.model
 
+import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -34,5 +36,13 @@ class LmuWindowsManualReadoutPhrasesTest {
             assertEquals(lmuWindowsManualReadoutItemPhrases.getValue(key), lmuWindowsManualReadoutItemPhrases(key))
         }
         assertEquals(emptyList(), lmuWindowsManualReadoutItemPhrases("unknown"))
+    }
+
+    @Test
+    fun `登録したspecが語句を持ち音声タブの案内に使える`() {
+        assertEquals(
+            lmuWindowsManualReadoutItemPhrases,
+            ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.LmuWindows.id)?.itemPhrases,
+        )
     }
 }
