@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
@@ -14,6 +13,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperature
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsTyreTemperatureEnabledStateUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
@@ -72,13 +72,13 @@ internal class AceWindowsAutoReadoutTyreTemperatureDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             tyreTemperatureUseCases.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning, enabled)
         }
     }
 
     fun onHighThresholdChanged(celsius: Int) {
-        viewModelScope.launch { tyreTemperatureUseCases.saveHighThreshold(Celsius(celsius)) }
+        viewModelScope.launchCapturingErrors { tyreTemperatureUseCases.saveHighThreshold(Celsius(celsius)) }
     }
 
     fun onHighThresholdReset() {
@@ -86,7 +86,7 @@ internal class AceWindowsAutoReadoutTyreTemperatureDetailViewModel(
     }
 
     fun onOverheatReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /** 保存反映待ちの旧値を避けるため、画面に表示中の高温閾値を呼び出し側から受け取る。 */

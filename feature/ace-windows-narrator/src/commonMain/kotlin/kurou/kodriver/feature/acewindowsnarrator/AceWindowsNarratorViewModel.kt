@@ -2,11 +2,9 @@ package kurou.kodriver.feature.acewindowsnarrator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
@@ -34,7 +32,6 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperature
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
-import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
@@ -42,6 +39,7 @@ import kurou.kodriver.domain.model.ManualReadoutValue
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.onEachCapturingErrors
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
@@ -193,7 +191,7 @@ internal class AceWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val resetLatestTelemetryJob =
         selectedSimulator
-            .onEach { simulator ->
+            .onEachCapturingErrors { simulator ->
                 if (simulator !is Simulator.AceWindows) {
                     resetLatestTelemetry()
                 }
@@ -252,7 +250,7 @@ internal class AceWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val debugReadoutRequestJob =
         observeDebugReadoutRequest()
-            .onEach { request ->
+            .onEachCapturingErrors { request ->
                 if (request.simulator == Simulator.AceWindows) {
                     val state = narratorState
                     eventProcessor.processDebugReadout(
@@ -270,7 +268,7 @@ internal class AceWindowsNarratorViewModel(
         mergeManualReadoutRequests(
             manualReadoutUseCases.observeRequests(),
             manualReadoutUseCases.observeHotkeyPresses(),
-        ).onEach { request ->
+        ).onEachCapturingErrors { request ->
             if (request.simulatorId == Simulator.AceWindows.id) {
                 val set = manualReadoutUseCases.observeSets().first().find { it.id == request.setId }
                 readManualReadout(set)
@@ -282,19 +280,12 @@ internal class AceWindowsNarratorViewModel(
     private val manualReadoutItemRequestJob =
         manualReadoutUseCases
             .observeItemRequests()
-            .onEach { request ->
+            .onEachCapturingErrors { request ->
                 if (request.simulatorId == Simulator.AceWindows.id) {
-                    // 1件の失敗で購読が止まり、以降の音声依頼が無視されないよう依頼ごとに捕捉する。
-                    try {
-                        readManualReadout(
-                            ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
-                            playStartSound = request.playStartSound,
-                        )
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: Exception) {
-                        captureError(e)
-                    }
+                    readManualReadout(
+                        ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
+                        playStartSound = request.playStartSound,
+                    )
                 }
             }.launchIn(viewModelScope)
 
@@ -355,7 +346,7 @@ internal class AceWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob =
         bestLapTimeFlow
-            .onEach { bestLapTime ->
+            .onEachCapturingErrors { bestLapTime ->
                 val observedAtMs = currentTimeMs()
                 latestBestLap = bestLapTime
                 val state = narratorState
@@ -385,7 +376,7 @@ internal class AceWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val fuelJob =
         fuelFlow
-            .onEach { fuel ->
+            .onEachCapturingErrors { fuel ->
                 val observedAtMs = currentTimeMs()
                 latestFuel = fuel
                 latestFuelReceivedAtMs = observedAtMs
@@ -420,7 +411,7 @@ internal class AceWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val remainingFuelLapsJob =
         remainingFuelLapsFlow
-            .onEach { remainingFuelLaps ->
+            .onEachCapturingErrors { remainingFuelLaps ->
                 val observedAtMs = currentTimeMs()
                 latestFuelLaps = remainingFuelLaps
                 latestFuelLapsReceivedAtMs = observedAtMs
@@ -451,7 +442,7 @@ internal class AceWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val flagJob =
         flagFlow
-            .onEach { flag ->
+            .onEachCapturingErrors { flag ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -480,7 +471,7 @@ internal class AceWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val tyreTemperatureJob =
         tyreTemperatureFlow
-            .onEach { tyreCarcassTemperature ->
+            .onEachCapturingErrors { tyreCarcassTemperature ->
                 val observedAtMs = currentTimeMs()
                 latestTyreTemperature = tyreCarcassTemperature
                 latestTyreTemperatureReceivedAtMs = observedAtMs
@@ -511,7 +502,7 @@ internal class AceWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val vehicleApproachJob =
         vehicleApproachFlow
-            .onEach { vehicleApproach ->
+            .onEachCapturingErrors { vehicleApproach ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings

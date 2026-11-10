@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.usecase.ObserveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
@@ -38,7 +39,7 @@ internal class OtherAndroidAudioUsageDetailViewModel(
         )
 
     fun onUsageSelected(usage: AndroidAudioUsage) {
-        viewModelScope.launch { saveAndroidAudioUsage(usage) }
+        viewModelScope.launchCapturingErrors { saveAndroidAudioUsage(usage) }
     }
 
     fun onPreviewClicked(

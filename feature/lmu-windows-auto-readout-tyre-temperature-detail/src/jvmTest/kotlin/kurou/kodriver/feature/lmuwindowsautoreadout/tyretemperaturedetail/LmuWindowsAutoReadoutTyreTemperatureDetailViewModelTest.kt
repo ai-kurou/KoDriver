@@ -6,6 +6,8 @@ import io.mockk.coVerifyOrder
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
@@ -44,6 +47,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -542,5 +546,27 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailViewModelTest {
             coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("注意107℃{unknown}", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
+        }
+
+    @Test
+    fun `onOverheatReadoutTextChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                stubSettings()
+                stubReadout(available = true)
+                coEvery { saveText(" 注意 ") } throws error
+                val viewModel = createViewModel()
+                viewModel.onOverheatReadoutTextChanged(" 注意 ")
+                verify(exactly = 1) { observeText() }
+                coVerify(exactly = 1) { saveText(" 注意 ") }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, observeText, saveText)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

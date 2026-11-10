@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.usecase.CanSendFeedbackUseCase
@@ -102,7 +102,7 @@ internal class OtherFeedbackDetailViewModel(
         if (current.sendStatus == FeedbackSendStatus.Sending || uiState.value.isCoolingDown) return
         val attachedTelemetryLog = uiState.value.attachedTelemetryLog
         _uiState.update { it.copy(sendStatus = FeedbackSendStatus.Sending) }
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             try {
                 val result =
                     sendFeedback(
@@ -130,8 +130,9 @@ internal class OtherFeedbackDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                captureError(e)
+                // 送信中の表示を残さないよう失敗状態にしてから、記録は launchCapturingErrors に任せる。
                 _uiState.update { it.copy(sendStatus = FeedbackSendStatus.Failed) }
+                throw e
             }
         }
     }

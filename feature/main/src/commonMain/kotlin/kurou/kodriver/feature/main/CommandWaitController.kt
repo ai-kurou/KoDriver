@@ -6,6 +6,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureErrorTypeOnly
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.SpeechRecognitionChime
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 
@@ -55,7 +56,7 @@ internal class CommandWaitController(
         onCommandWaitStarted()
         commandTimeoutJob?.cancel()
         commandTimeoutJob =
-            scope.launch {
+            scope.launchCapturingErrors {
                 delay(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
                 finishCommandWait(timedOut = true)
             }

@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
@@ -77,7 +77,7 @@ internal class LmuWindowsAutoReadoutBrakeWearDetailViewModel(
         )
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { brakeWearUseCases.saveText(text) }
+        viewModelScope.launchCapturingErrors { brakeWearUseCases.saveText(text) }
     }
 
     /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
@@ -87,7 +87,7 @@ internal class LmuWindowsAutoReadoutBrakeWearDetailViewModel(
             state.vehicleClassLowThresholdPercent[state.selectedVehicleClass]
                 ?: lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault(state.selectedVehicleClass)
         val formattedText = formatLmuWindowsBrakeWearReadoutText(text, percent)
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             previewHelper.preview(
                 formattedText,
                 LmuWindowsBrakeWearLow(
@@ -99,20 +99,20 @@ internal class LmuWindowsAutoReadoutBrakeWearDetailViewModel(
     }
 
     fun onVehicleClassSelected(vehicleClass: LmuWindowsVehicleClassData) {
-        viewModelScope.launch { brakeWearUseCases.saveVehicleClassSelection(vehicleClass) }
+        viewModelScope.launchCapturingErrors { brakeWearUseCases.saveVehicleClassSelection(vehicleClass) }
     }
 
     fun onVehicleClassLowThresholdChanged(
         vehicleClass: LmuWindowsVehicleClassData,
         percent: Int,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             brakeWearUseCases.saveVehicleClassLowThreshold(vehicleClass, percent)
         }
     }
 
     fun onVehicleClassLowThresholdReset(vehicleClass: LmuWindowsVehicleClassData) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             brakeWearUseCases.saveVehicleClassLowThreshold(
                 vehicleClass,
                 lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault(vehicleClass),
@@ -121,7 +121,7 @@ internal class LmuWindowsAutoReadoutBrakeWearDetailViewModel(
     }
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             saveAutoReadoutEnabledState(
                 Simulator.LmuWindows.id,
                 LmuWindowsReadoutItemKey.BrakeWear.WarningReadout,

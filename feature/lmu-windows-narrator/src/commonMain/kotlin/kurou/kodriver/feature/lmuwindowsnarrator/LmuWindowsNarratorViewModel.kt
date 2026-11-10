@@ -2,7 +2,6 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -10,7 +9,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
@@ -92,6 +90,7 @@ import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
+import kurou.kodriver.domain.onEachCapturingErrors
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
@@ -394,7 +393,7 @@ internal class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val debugReadoutRequestJob =
         observeDebugReadoutRequest()
-            .onEach { request ->
+            .onEachCapturingErrors { request ->
                 if (request.simulator == Simulator.LmuWindows) {
                     val state = narratorState
                     eventProcessor.processDebugReadout(
@@ -410,7 +409,7 @@ internal class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob =
         lmuTelemetryFlow
-            .onEach { telemetry ->
+            .onEachCapturingErrors { telemetry ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -441,7 +440,7 @@ internal class LmuWindowsNarratorViewModel(
         narratorFlow
             .telemetry {
                 vehicleApproachUseCases.observeVehicleApproach()
-            }.onEach { vehicleApproach ->
+            }.onEachCapturingErrors { vehicleApproach ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -473,7 +472,7 @@ internal class LmuWindowsNarratorViewModel(
         narratorFlow
             .telemetry {
                 vehicleDamageUseCases.observeVehicleDamage()
-            }.onEach { vehicleDamage ->
+            }.onEachCapturingErrors { vehicleDamage ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -504,7 +503,7 @@ internal class LmuWindowsNarratorViewModel(
         narratorFlow
             .telemetry {
                 tyreDetachedUseCases.observeTyreDetached()
-            }.onEach { tyreDetached ->
+            }.onEachCapturingErrors { tyreDetached ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -533,7 +532,7 @@ internal class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val flagJob =
         raceFlagsFlow
-            .onEach { raceFlags ->
+            .onEachCapturingErrors { raceFlags ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -575,7 +574,7 @@ internal class LmuWindowsNarratorViewModel(
                         },
                     raceFlagsFlow,
                 )
-            }.onEach { (tyreCarcassTemperature, raceFlags) ->
+            }.onEachCapturingErrors { (tyreCarcassTemperature, raceFlags) ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -659,7 +658,7 @@ internal class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val resetLatestTelemetryJob =
         selectedSimulator
-            .onEach { simulator ->
+            .onEachCapturingErrors { simulator ->
                 if (simulator !is Simulator.LmuWindows) {
                     resetLatestTelemetry()
                 }
@@ -730,7 +729,7 @@ internal class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val remainingFuelJob =
         fuelFlow
-            .onEach { fuel ->
+            .onEachCapturingErrors { fuel ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -753,7 +752,7 @@ internal class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val brakeTemperatureJob =
         brakeTemperatureFlow
-            .onEach { brakeTemperature ->
+            .onEachCapturingErrors { brakeTemperature ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -782,7 +781,7 @@ internal class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val brakeWearJob =
         brakeWearFlow
-            .onEach { brakeWear ->
+            .onEachCapturingErrors { brakeWear ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -815,7 +814,7 @@ internal class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val tyreWearJob =
         tyreWearFlow
-            .onEach { tyreWear ->
+            .onEachCapturingErrors { tyreWear ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -848,7 +847,7 @@ internal class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val remainingVirtualEnergyJob =
         virtualEnergyFlow
-            .onEach { remainingVirtualEnergy ->
+            .onEachCapturingErrors { remainingVirtualEnergy ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -882,7 +881,7 @@ internal class LmuWindowsNarratorViewModel(
     private val readoutHotkeyJob =
         remainingVirtualEnergyUseCases
             .observeReadoutHotkey()
-            .onEach {
+            .onEachCapturingErrors {
                 readRemainingVirtualEnergyCurrentValue()
             }.launchIn(viewModelScope)
 
@@ -891,7 +890,7 @@ internal class LmuWindowsNarratorViewModel(
         mergeManualReadoutRequests(
             remainingVirtualEnergyUseCases.observeManualReadoutRequests(),
             remainingVirtualEnergyUseCases.observeManualReadoutHotkeyPresses(),
-        ).onEach { request ->
+        ).onEachCapturingErrors { request ->
             if (request.simulatorId == Simulator.LmuWindows.id) {
                 val set =
                     remainingVirtualEnergyUseCases
@@ -909,19 +908,12 @@ internal class LmuWindowsNarratorViewModel(
     private val manualReadoutItemRequestJob =
         remainingVirtualEnergyUseCases
             .observeManualReadoutItemRequests()
-            .onEach { request ->
+            .onEachCapturingErrors { request ->
                 if (request.simulatorId == Simulator.LmuWindows.id) {
-                    // 1件の失敗で購読が止まり、以降の音声依頼が無視されないよう依頼ごとに捕捉する。
-                    try {
-                        readManualReadout(
-                            ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
-                            playStartSound = request.playStartSound,
-                        )
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: Exception) {
-                        captureError(e)
-                    }
+                    readManualReadout(
+                        ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
+                        playStartSound = request.playStartSound,
+                    )
                 }
             }.launchIn(viewModelScope)
 
@@ -1116,7 +1108,7 @@ internal class LmuWindowsNarratorViewModel(
                 virtualEnergyFlow,
                 tyreWearFlow,
                 fuelFlow,
-            ).onEach { snapshot ->
+            ).onEachCapturingErrors { snapshot ->
                 val (telemetry, virtualEnergy, tyreWear, receivedFuel) = snapshot
                 val fuel =
                     receivedFuel?.takeIf {

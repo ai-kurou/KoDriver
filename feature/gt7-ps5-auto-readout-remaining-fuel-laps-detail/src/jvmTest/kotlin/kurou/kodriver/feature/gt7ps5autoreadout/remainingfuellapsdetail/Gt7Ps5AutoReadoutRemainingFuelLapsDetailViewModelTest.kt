@@ -6,6 +6,8 @@ import io.mockk.coVerifyOrder
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
@@ -37,6 +40,7 @@ import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -369,5 +373,39 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModelTest {
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
             collection.cancel()
+        }
+
+    @Test
+    fun `onRemainingFuelLapsChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                every { autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+                    enabledStatesFlow
+                every { repository.observeReadoutText() } returns textFlow
+                every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+                coEvery { checkAvailable() } returns true
+                val thresholdFlow = MutableStateFlow(4)
+                every { repository.observeRemainingFuelLaps() } returns thresholdFlow
+                coEvery { repository.saveRemainingFuelLaps(3) } throws error
+                val viewModel = createViewModel()
+
+                viewModel.onRemainingFuelLapsChanged(3)
+
+                verify(exactly = 1) { repository.observeReadoutText() }
+                verify(exactly = 1) { repository.observeEmptyReadoutText() }
+                verify(exactly = 1) { repository.observeRemainingFuelLaps() }
+                verify(exactly = 1) {
+                    autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.Gt7Ps5.id)
+                }
+                coVerify(exactly = 1) { repository.saveRemainingFuelLaps(3) }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository, autoReadoutPreferencesRepository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

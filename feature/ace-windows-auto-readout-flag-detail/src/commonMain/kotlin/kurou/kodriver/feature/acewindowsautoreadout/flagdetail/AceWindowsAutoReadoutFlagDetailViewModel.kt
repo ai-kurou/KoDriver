@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsFlagReadoutTextUseCase
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
@@ -73,19 +73,19 @@ internal class AceWindowsAutoReadoutFlagDetailViewModel(
         item: FlagReadoutItem,
         enabled: Boolean,
     ) {
-        viewModelScope.launch { settingsUseCases.saveFlagEnabledState(item.key, enabled) }
+        viewModelScope.launchCapturingErrors { settingsUseCases.saveFlagEnabledState(item.key, enabled) }
     }
 
     fun onFlagTextChanged(
         item: FlagReadoutItem,
         text: String,
     ) {
-        viewModelScope.launch { settingsUseCases.readoutTexts.save(item, text) }
+        viewModelScope.launchCapturingErrors { settingsUseCases.readoutTexts.save(item, text) }
     }
 
     fun onFlagTextReset(item: FlagReadoutItem) {
         val defaultText = item.defaultText
-        viewModelScope.launch { settingsUseCases.readoutTexts.save(item, defaultText) }
+        viewModelScope.launchCapturingErrors { settingsUseCases.readoutTexts.save(item, defaultText) }
     }
 
     /**

@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,6 +18,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
@@ -36,6 +39,7 @@ import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -368,5 +372,32 @@ class LmuWindowsAutoReadoutBrakeWearDetailViewModelTest {
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable, stopSpeech)
+        }
+
+    @Test
+    fun `onReadoutTextChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                stubReadout()
+                every { vehicleClassRepository.observeSelectedVehicleClass() } returns
+                    MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
+                every { vehicleClassRepository.observeLowThresholdPercent() } returns
+                    MutableStateFlow(mapOf(LmuWindowsVehicleClassData.Hypercar to 20))
+                coEvery { vehicleClassRepository.saveReadoutText("残り{percent}%") } throws error
+                val viewModel = createViewModel()
+                viewModel.onReadoutTextChanged(" 残り{percent}% ")
+                verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
+                verify(exactly = 1) { vehicleClassRepository.observeLowThresholdPercent() }
+                coVerify(exactly = 1) { vehicleClassRepository.saveReadoutText("残り{percent}%") }
+                verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, vehicleClassRepository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelImminentReadoutTextUseCase
@@ -103,47 +103,47 @@ internal class LmuWindowsAutoReadoutPitTimingDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onVirtualEnergyEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             pitTimingUseCases.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, enabled)
         }
     }
 
     fun onVirtualEnergyLapsChanged(laps: Int) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             pitTimingUseCases.saveVirtualEnergyLaps(laps)
         }
     }
 
     fun onTyreWearEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             pitTimingUseCases.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.TyreWear, enabled)
         }
     }
 
     fun onFuelEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             pitTimingUseCases.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Fuel, enabled)
         }
     }
 
     fun onTyreWearLapsChanged(laps: Int) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             pitTimingUseCases.saveTyreWearLaps(laps)
         }
     }
 
     fun onFuelLapsChanged(laps: Int) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             pitTimingUseCases.saveFuelLaps(laps)
         }
     }
 
     fun onVirtualEnergyTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     fun onVirtualEnergyImminentTextChanged(text: String) {
-        viewModelScope.launch { readout.saveImminentText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveImminentText(text) }
     }
 
     fun onVirtualEnergyTextPreviewClicked(
@@ -158,19 +158,19 @@ internal class LmuWindowsAutoReadoutPitTimingDetailViewModel(
     }
 
     fun onTyreWearTextChanged(text: String) {
-        viewModelScope.launch { readout.saveTyreWearText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveTyreWearText(text) }
     }
 
     fun onFuelTextChanged(text: String) {
-        viewModelScope.launch { readout.saveFuelText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveFuelText(text) }
     }
 
     fun onTyreWearImminentTextChanged(text: String) {
-        viewModelScope.launch { readout.saveTyreWearImminentText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveTyreWearImminentText(text) }
     }
 
     fun onFuelImminentTextChanged(text: String) {
-        viewModelScope.launch { readout.saveFuelImminentText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveFuelImminentText(text) }
     }
 
     fun onTyreWearTextPreviewClicked(

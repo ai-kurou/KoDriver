@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
@@ -68,14 +68,14 @@ internal class LmuWindowsAutoReadoutTyreWearDetailViewModel(
         )
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { tyreWearUseCases.saveText(text) }
+        viewModelScope.launchCapturingErrors { tyreWearUseCases.saveText(text) }
     }
 
     /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
     fun onReadoutTextPreviewClicked(text: String) {
         val percentage = uiState.value.thresholdPercentage
         val formattedText = formatLmuWindowsTyreWearReadoutText(text, percentage)
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             previewHelper.preview(
                 formattedText,
                 LmuWindowsTyreWearWarning(
@@ -87,11 +87,11 @@ internal class LmuWindowsAutoReadoutTyreWearDetailViewModel(
     }
 
     fun onThresholdChanged(percentage: Int) {
-        viewModelScope.launch { tyreWearUseCases.saveThresholdPercentage(percentage) }
+        viewModelScope.launchCapturingErrors { tyreWearUseCases.saveThresholdPercentage(percentage) }
     }
 
     fun onThresholdReset() {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             tyreWearUseCases.saveThresholdPercentage(
                 LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT,
             )
@@ -99,7 +99,7 @@ internal class LmuWindowsAutoReadoutTyreWearDetailViewModel(
     }
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             tyreWearUseCases.saveAutoReadoutEnabledState(
                 Simulator.LmuWindows.id,
                 LmuWindowsReadoutItemKey.TyreWear.WarningReadout,

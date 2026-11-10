@@ -1,8 +1,12 @@
 package kurou.kodriver.feature.main
 
 import androidx.lifecycle.viewModelScope
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -10,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.SpeechRecognitionChime
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
@@ -482,5 +487,29 @@ class SpeechRecognitionViewModelWakeWordTest {
 
         assertEquals(SpeechRecognitionStatus.Listening, status)
         assertTrue(viewModel?.uiState?.value?.enabled == true)
+    }
+
+    @Test
+    fun `読み上げ開始時のモード切り替えが失敗しても記録し、次の読み上げ終了で聞き取りを再開する`() {
+        val error = IllegalStateException("mode failed")
+        val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+        mockkStatic(errorCapture)
+        every { captureError(error) } returns Unit
+        try {
+            modeRepository.failure = error
+            modeRepository.failingMode = SpeechRecognitionMode.Paused
+            createListeningViewModel()
+
+            playbackRepository.update("lmu_windows", true)
+            playbackRepository.update("lmu_windows", false)
+            advanceBy(SPEECH_RECOGNITION_RESUME_DELAY_MS)
+
+            assertEquals(listOf(SpeechRecognitionMode.WakeWord), modeRepository.modes)
+            assertEquals(SpeechRecognitionStatus.Listening, status)
+            verify(exactly = 1) { captureError(error) }
+            confirmVerified(errorCapture)
+        } finally {
+            unmockkStatic(errorCapture)
+        }
     }
 }

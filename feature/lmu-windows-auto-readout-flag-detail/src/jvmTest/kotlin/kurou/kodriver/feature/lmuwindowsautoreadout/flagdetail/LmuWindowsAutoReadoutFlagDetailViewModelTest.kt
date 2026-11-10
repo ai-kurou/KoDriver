@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +17,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagReadoutTextPreferencesRepository
@@ -38,6 +41,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -285,5 +289,34 @@ class LmuWindowsAutoReadoutFlagDetailViewModelTest {
             verify(exactly = 0) { observeVoiceSpeed() }
             verify(exactly = 0) { observeVoicePitch() }
             confirmVerified(engine, tts, observeVoice, observeVoiceSpeed, observeVoicePitch)
+        }
+
+    @Test
+    fun `onFlagTextChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                coEvery { texts.saveBlueFlagText("注意") } throws error
+                coEvery { tts.isAvailable() } returns true
+                stubReadouts()
+                val vm = createViewModel()
+
+                vm.onFlagTextChanged(FlagReadoutItem.BlueFlag, "注意")
+
+                coVerify(exactly = 1) { texts.saveBlueFlagText("注意") }
+                verify(exactly = 1) { flags.observeFlagEnabledStates() }
+                verify(exactly = 1) { texts.observeSectorYellowFlagText() }
+                verify(exactly = 1) { texts.observeBlueFlagText() }
+                verify(exactly = 1) { texts.observeFullCourseYellowFlagText() }
+                verify(exactly = 1) { texts.observeRedFlagText() }
+                coVerify(exactly = 1) { tts.isAvailable() }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, texts, flags, tts)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

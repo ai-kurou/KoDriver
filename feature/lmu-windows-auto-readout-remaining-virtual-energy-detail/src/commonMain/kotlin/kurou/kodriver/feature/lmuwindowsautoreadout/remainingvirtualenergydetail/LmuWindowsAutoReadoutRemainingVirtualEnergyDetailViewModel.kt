@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
@@ -67,7 +67,7 @@ internal class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailViewModel(
     fun onPreviewStopped() = preview.stop()
 
     fun onReadoutTextChanged(text: String) {
-        viewModelScope.launch { readout.saveText(text) }
+        viewModelScope.launchCapturingErrors { readout.saveText(text) }
     }
 
     /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
@@ -77,11 +77,11 @@ internal class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailViewModel(
     }
 
     fun onThresholdChanged(percentage: Int) {
-        viewModelScope.launch { remainingVirtualEnergyUseCases.saveThresholdPercentage(percentage) }
+        viewModelScope.launchCapturingErrors { remainingVirtualEnergyUseCases.saveThresholdPercentage(percentage) }
     }
 
     fun onThresholdReset() {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             remainingVirtualEnergyUseCases.saveThresholdPercentage(
                 LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT,
             )
@@ -89,7 +89,7 @@ internal class LmuWindowsAutoReadoutRemainingVirtualEnergyDetailViewModel(
     }
 
     fun onEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             remainingVirtualEnergyUseCases.saveAutoReadoutEnabledState(
                 Simulator.LmuWindows.id,
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,

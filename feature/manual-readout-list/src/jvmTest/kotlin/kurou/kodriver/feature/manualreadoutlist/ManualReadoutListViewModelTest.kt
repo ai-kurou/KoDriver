@@ -6,6 +6,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +20,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
@@ -30,6 +33,7 @@ import kurou.kodriver.domain.usecase.ObserveManualReadoutPlayButtonLayoutEnabled
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
 import kurou.kodriver.domain.usecase.SaveManualReadoutPlayButtonLayoutEnabledUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -312,6 +316,125 @@ class ManualReadoutListViewModelTest {
             } finally {
                 collection.cancel()
                 viewModel.viewModelScope.cancel()
+            }
+        }
+
+    private fun captureErrorViewModel(generateSetId: () -> String = { "generated" }): ManualReadoutListViewModel {
+        every { repository.observeSets() } returns MutableStateFlow(emptyList())
+        every { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() } returns MutableStateFlow(false)
+        return ManualReadoutListViewModel(
+            simulatorId = Simulator.LmuWindows.id,
+            requestManualReadout = RequestManualReadoutUseCase(requestRepository),
+            observeManualReadoutSets = ObserveManualReadoutSetsUseCase(repository),
+            addManualReadoutSet = AddManualReadoutSetUseCase(repository),
+            deleteManualReadoutSet = DeleteManualReadoutSetUseCase(repository),
+            playButtonLayoutUseCases =
+                PlayButtonLayoutUseCases(
+                    observe = ObserveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                    save = SaveManualReadoutPlayButtonLayoutEnabledUseCase(layoutRepository),
+                ),
+            generateSetId = generateSetId,
+        )
+    }
+
+    @Test
+    fun `表示設定の保存失敗はcaptureErrorへ記録し例外を伝播させない`() =
+        runTest(dispatcher) {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val viewModel = captureErrorViewModel()
+                coEvery { layoutRepository.saveManualReadoutPlayButtonLayoutEnabled(true) } throws error
+                try {
+                    viewModel.onPlayButtonLayoutToggle()
+                    verify(exactly = 1) { captureError(error) }
+                    coVerify(exactly = 1) { layoutRepository.saveManualReadoutPlayButtonLayoutEnabled(true) }
+                    verify(exactly = 1) { repository.observeSets() }
+                    verify(exactly = 1) { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() }
+                    confirmVerified(errorCapture, repository, layoutRepository)
+                } finally {
+                    viewModel.viewModelScope.cancel()
+                }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `読み上げ依頼の失敗はcaptureErrorへ記録し例外を伝播させない`() =
+        runTest(dispatcher) {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val viewModel = captureErrorViewModel()
+                val request = ManualReadoutRequest(Simulator.LmuWindows.id, "set-1")
+                coEvery { requestRepository.request(request) } throws error
+                try {
+                    viewModel.readSet("set-1")
+                    verify(exactly = 1) { captureError(error) }
+                    coVerify(exactly = 1) { requestRepository.request(request) }
+                    verify(exactly = 1) { repository.observeSets() }
+                    verify(exactly = 1) { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() }
+                    confirmVerified(errorCapture, repository, layoutRepository, requestRepository)
+                } finally {
+                    viewModel.viewModelScope.cancel()
+                }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `セットの削除失敗はcaptureErrorへ記録し例外を伝播させない`() =
+        runTest(dispatcher) {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val viewModel = captureErrorViewModel()
+                coEvery { repository.deleteSet("set-1") } throws error
+                try {
+                    viewModel.deleteSet("set-1")
+                    verify(exactly = 1) { captureError(error) }
+                    coVerify(exactly = 1) { repository.deleteSet("set-1") }
+                    verify(exactly = 1) { repository.observeSets() }
+                    verify(exactly = 1) { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() }
+                    confirmVerified(errorCapture, repository, layoutRepository)
+                } finally {
+                    viewModel.viewModelScope.cancel()
+                }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `セットの追加失敗はcaptureErrorへ記録し例外を伝播させない`() =
+        runTest(dispatcher) {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val viewModel = captureErrorViewModel { "new-id" }
+                coEvery { repository.addSet(ManualReadoutSet(id = "new-id")) } throws error
+                try {
+                    viewModel.addSet()
+                    verify(exactly = 1) { captureError(error) }
+                    coVerify(exactly = 1) { repository.addSet(ManualReadoutSet(id = "new-id")) }
+                    verify(exactly = 1) { repository.observeSets() }
+                    verify(exactly = 1) { layoutRepository.observeManualReadoutPlayButtonLayoutEnabled() }
+                    confirmVerified(errorCapture, repository, layoutRepository)
+                } finally {
+                    viewModel.viewModelScope.cancel()
+                }
+            } finally {
+                unmockkStatic(errorCapture)
             }
         }
 }

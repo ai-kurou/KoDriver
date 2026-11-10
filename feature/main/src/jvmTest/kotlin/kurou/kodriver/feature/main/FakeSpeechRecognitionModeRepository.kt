@@ -17,11 +17,18 @@ import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 internal class FakeSpeechRecognitionModeRepository : SpeechRecognitionRepository {
     val modes = mutableListOf<SpeechRecognitionMode>()
 
+    /** [failingMode] を伝えるときに投げる例外。モードの切り替え失敗を再現する。 */
+    var failure: Throwable = IllegalStateException("mode failed")
+
+    /** この値のモードを伝えると [failure] を投げる。null なら失敗させない。 */
+    var failingMode: SpeechRecognitionMode? = null
+
     override fun isAvailable(): Boolean = true
 
     override fun observeRecognition(): Flow<SpeechRecognitionEvent> = emptyFlow()
 
     override fun setMode(mode: SpeechRecognitionMode) {
+        if (mode == failingMode) throw failure
         modes += mode
     }
 }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.GT7_PS5_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -82,7 +82,7 @@ internal class Gt7Ps5DebugStateDetailViewModel(
         val text = _debugReadoutText.value
         if (text.isBlank()) return
         val request = DebugReadoutRequest(Simulator.Gt7Ps5, _selectedReadoutItemKey.value, text)
-        viewModelScope.launch { requestDebugReadout(request) }
+        viewModelScope.launchCapturingErrors { requestDebugReadout(request) }
     }
 
     fun moveCard(
@@ -91,7 +91,7 @@ internal class Gt7Ps5DebugStateDetailViewModel(
     ) {
         val newOrder = _cardOrder.value.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
         _localCardOrder.update { newOrder }
-        viewModelScope.launch { saveCardOrder(newOrder) }
+        viewModelScope.launchCapturingErrors { saveCardOrder(newOrder) }
     }
 
     private fun markCardsReceived(cardKeys: Set<Gt7Ps5DebugStateCardKey>) {
