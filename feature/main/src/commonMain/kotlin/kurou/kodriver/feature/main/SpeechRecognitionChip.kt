@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.main
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -14,9 +16,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicOff
+import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -65,6 +70,17 @@ private const val FULL_CIRCLE_DEGREES = 360f
 private const val CHIP_COLOR_ANIMATION_MILLIS = 200
 private const val RING_RISE_ANIMATION_MILLIS = 80
 private const val RING_FALL_ANIMATION_MILLIS = 250
+private const val COMMAND_PULSE_COUNT = 3
+private const val COMMAND_PULSE_MILLIS = 700
+private const val COMMAND_PULSE_START_RADIUS_FRACTION = 0.4f
+private const val COMMAND_PULSE_START_ALPHA = 0.5f
+
+/** コマンド待ちに入った直後の波紋の、進み具合（0〜1）に対応する半径（チップの半径に対する割合）。中心付近から縁へ広がる。 */
+internal fun commandPulseRadiusFraction(progress: Float): Float =
+    COMMAND_PULSE_START_RADIUS_FRACTION + (1f - COMMAND_PULSE_START_RADIUS_FRACTION) * progress.coerceIn(0f, 1f)
+
+/** コマンド待ちに入った直後の波紋の、進み具合（0〜1）に対応する不透明度。広がるほど薄くなり、最後は消える。 */
+internal fun commandPulseAlpha(progress: Float): Float = COMMAND_PULSE_START_ALPHA * (1f - progress.coerceIn(0f, 1f))
 
 /** 音量リングの段階数。滑らかに伸ばさず段階表示にして、再コンポーズの負荷を抑える。 */
 internal const val VOLUME_RING_STEPS = 5
@@ -125,7 +141,8 @@ internal fun SpeechRecognitionUiState.volumeRingStepOrNull(): Int? {
 /**
  * 音声認識の聞き取り状態を、どの画面にも重ねて出せる小さな丸いチップで表す。聞き取り中は音量を縁のリングの段階で示す。
  * タップで詳細を開く（[onClick]）。タップできるのはチップ自身だけで、下の画面へのタップは妨げない（`Surface` は使わない）。
- * 状態は主に色で区別し（アイコンは有効=Mic・無効やエラー=MicOff）、読み上げ用の説明には [SpeechRecognitionStatus] の文言を使う。
+ * 状態は色とアイコンの形で区別する（ウェイクワード待ち=輪郭だけの Mic・コマンド待ち=塗りつぶしの Mic と、入った直後の波紋・無効やエラー=MicOff）。
+ * 読み上げ用の説明には [SpeechRecognitionStatus] の文言を使う。
  */
 @Composable
 internal fun SpeechRecognitionChip(
@@ -149,7 +166,7 @@ internal fun SpeechRecognitionChip(
         SpeechRecognitionChipState.On -> {
             containerColor = colors.surfaceContainerHigh
             contentColor = colors.primary
-            icon = Icons.Filled.Mic
+            icon = Icons.Outlined.Mic
         }
 
         SpeechRecognitionChipState.CommandWaiting -> {
@@ -169,6 +186,18 @@ internal fun SpeechRecognitionChip(
     val animatedContainerColor by animateColorAsState(containerColor, colorSpec)
     val animatedContentColor by animateColorAsState(contentColor, colorSpec)
     val ringStep = uiState.volumeRingStepOrNull()
+    val commandPulse = remember { Animatable(0f) }
+    val commandWaiting = chipState == SpeechRecognitionChipState.CommandWaiting
+    // 無限に繰り返すと画面を見ていなくても描画が続くため、コマンド待ちに入った直後だけ数回広げる
+    LaunchedEffect(commandWaiting) {
+        commandPulse.snapTo(0f)
+        if (commandWaiting) {
+            repeat(COMMAND_PULSE_COUNT) {
+                commandPulse.snapTo(0f)
+                commandPulse.animateTo(1f, tween(COMMAND_PULSE_MILLIS, easing = LinearOutSlowInEasing))
+            }
+        }
+    }
     Box(
         modifier =
             modifier
@@ -177,7 +206,16 @@ internal fun SpeechRecognitionChip(
                 .clip(CircleShape)
                 .background(animatedContainerColor)
                 .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
-                .semantics { contentDescription = description },
+                .semantics { contentDescription = description }
+                .drawBehind {
+                    val progress = commandPulse.value
+                    if (progress > 0f && progress < 1f) {
+                        drawCircle(
+                            color = animatedContentColor.copy(alpha = commandPulseAlpha(progress)),
+                            radius = size.minDimension / 2 * commandPulseRadiusFraction(progress),
+                        )
+                    }
+                },
         contentAlignment = Alignment.Center,
     ) {
         if (ringStep != null) {
