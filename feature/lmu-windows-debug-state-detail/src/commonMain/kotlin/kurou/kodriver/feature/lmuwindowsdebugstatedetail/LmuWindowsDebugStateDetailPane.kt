@@ -1,7 +1,5 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -9,9 +7,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DebugReadoutRequestCard
 import kurou.kodriver.core.designsystem.DebugStateCard
+import kurou.kodriver.core.designsystem.DebugStateFixedCard
 import kurou.kodriver.core.designsystem.DebugStateReorderableGrid
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
-import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
@@ -90,33 +88,31 @@ fun LmuWindowsDebugStateDetailPaneContent(
         val showHotkey = uiState.readoutHotkey.registrationState != HotkeyRegistrationState.Unsupported
         DebugStateReorderableGrid(
             cardOrder = uiState.cardOrder,
-            fixedItemCount = if (showHotkey) 2 else 1,
-            fixedItems = {
-                item(key = DEBUG_READOUT_REQUEST_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
-                    DebugReadoutRequestCard(
-                        readoutItemKeyValues =
-                            LMU_WINDOWS_READOUT_ITEM_KEYS
-                                .filterIsInstance<ReadoutItemKey.TopLevel>()
-                                .map { it.value },
-                        selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
-                        text = uiState.debugReadoutText,
-                        onReadoutItemSelected = onReadoutItemSelected,
-                        onTextChange = onDebugReadoutTextChange,
-                        onReadout = onRequestReadout,
-                        modifier = Modifier.padding(KoDriverSpacing.small),
-                    )
-                }
-                if (showHotkey) {
-                    item(key = READOUT_HOTKEY_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
+            fixedCards =
+                listOfNotNull(
+                    DebugStateFixedCard(DEBUG_READOUT_REQUEST_ITEM_KEY) { cardModifier ->
+                        DebugReadoutRequestCard(
+                            readoutItemKeyValues =
+                                LMU_WINDOWS_READOUT_ITEM_KEYS
+                                    .filterIsInstance<ReadoutItemKey.TopLevel>()
+                                    .map { it.value },
+                            selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
+                            text = uiState.debugReadoutText,
+                            onReadoutItemSelected = onReadoutItemSelected,
+                            onTextChange = onDebugReadoutTextChange,
+                            onReadout = onRequestReadout,
+                            modifier = cardModifier,
+                        )
+                    },
+                    DebugStateFixedCard(READOUT_HOTKEY_ITEM_KEY) { cardModifier ->
                         ReadoutHotkeyCard(
                             state = uiState.readoutHotkey,
                             onKeySelected = onHotkeySelected,
                             onCheck = onCheckHotkey,
-                            modifier = Modifier.padding(KoDriverSpacing.small),
+                            modifier = cardModifier,
                         )
-                    }
-                }
-            },
+                    }.takeIf { showHotkey },
+                ),
             onMoveCard = onMoveCard,
             card = { cardKey, cardModifier ->
                 DebugStateCard(
