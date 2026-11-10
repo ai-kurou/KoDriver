@@ -62,26 +62,36 @@ class NsdWindowsServerDiscoveryTest {
                 }.toByteArray(),
         )
 
-    private fun runDiscovery(block: suspend (List<List<DiscoveredServer>>) -> Unit) =
-        runBlocking {
-            setUpManager()
-            val emissions = mutableListOf<List<DiscoveredServer>>()
-            val job =
-                launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
-                    NsdWindowsServerDiscovery(context).discover().collect { emissions += it }
-                }
-            block(emissions)
-            job.cancel()
-            job.join()
-        }
+    private fun runDiscovery(
+        verifyAfter: () -> Unit = {},
+        block: suspend (List<List<DiscoveredServer>>) -> Unit,
+    ) = runBlocking {
+        setUpManager()
+        val emissions = mutableListOf<List<DiscoveredServer>>()
+        val job =
+            launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
+                NsdWindowsServerDiscovery(context).discover().collect { emissions += it }
+            }
+        block(emissions)
+        job.cancel()
+        job.join()
+        verifyAfter()
+    }
 
     @Test
     @Config(sdk = [28])
-    fun `旧APIではサービス発見後にresolveしたホストを通知し失敗時は通知しない`() =
-        runDiscovery { emissions ->
-            val resolveListener = slot<NsdManager.ResolveListener>()
-            every { nsdManager.resolveService(any<NsdServiceInfo>(), capture(resolveListener)) } just runs
-            val found = serviceInfo("server")
+    fun `旧APIではサービス発見後にresolveしたホストを通知し失敗時は通知しない`() {
+        val resolveListener = slot<NsdManager.ResolveListener>()
+        val found = serviceInfo("server")
+        runDiscovery(verifyAfter = {
+            verify(exactly = 1) { nsdManager.resolveService(found, resolveListener.captured) }
+            verify(exactly = 1) {
+                nsdManager.discoverServices("_kodriver._tcp.", NsdManager.PROTOCOL_DNS_SD, discoveryListener.captured)
+            }
+            verify(exactly = 1) { nsdManager.stopServiceDiscovery(discoveryListener.captured) }
+            confirmVerified(nsdManager)
+        }) { emissions ->
+            every { nsdManager.resolveService(found, capture(resolveListener)) } just runs
             val resolved = serviceInfo("server", address("192.168.0.5"))
 
             discoveryListener.captured.onServiceFound(found)
@@ -101,20 +111,29 @@ class NsdWindowsServerDiscoveryTest {
             discoveryListener.captured.onServiceLost(found)
             yield()
             assertEquals(emptyList(), emissions.last())
-
-            verify(exactly = 1) { nsdManager.resolveService(found, resolveListener.captured) }
         }
+    }
 
     @Test
     @Config(sdk = [36])
-    fun `新APIではサービス更新ごとにホストを通知し同名の再発見で古いコールバックを解除する`() =
-        runDiscovery { emissions ->
-            val callbacks = mutableListOf<NsdManager.ServiceInfoCallback>()
+    fun `新APIではサービス更新ごとにホストを通知し同名の再発見で古いコールバックを解除する`() {
+        val callbacks = mutableListOf<NsdManager.ServiceInfoCallback>()
+        val executor = slot<Executor>()
+        val found = serviceInfo("server")
+        runDiscovery(verifyAfter = {
+            verify(exactly = 1) { nsdManager.unregisterServiceInfoCallback(callbacks[1]) }
+            verify(exactly = 1) { nsdManager.registerServiceInfoCallback(found, executor.captured, callbacks[0]) }
+            verify(exactly = 1) { nsdManager.registerServiceInfoCallback(found, executor.captured, callbacks[1]) }
+            verify(exactly = 1) {
+                nsdManager.discoverServices("_kodriver._tcp.", NsdManager.PROTOCOL_DNS_SD, discoveryListener.captured)
+            }
+            verify(exactly = 1) { nsdManager.stopServiceDiscovery(discoveryListener.captured) }
+            confirmVerified(nsdManager)
+        }) { emissions ->
             every {
-                nsdManager.registerServiceInfoCallback(any<NsdServiceInfo>(), any<Executor>(), capture(callbacks))
+                nsdManager.registerServiceInfoCallback(found, capture(executor), capture(callbacks))
             } just runs
             every { nsdManager.unregisterServiceInfoCallback(any<NsdManager.ServiceInfoCallback>()) } just runs
-            val found = serviceInfo("server")
 
             discoveryListener.captured.onServiceFound(found)
             discoveryListener.captured.onServiceFound(found)
@@ -133,6 +152,7 @@ class NsdWindowsServerDiscoveryTest {
             yield()
             assertEquals(listOf(listOf(DiscoveredServer("server", "10.0.0.2"))), emissions)
         }
+    }
 
     @Test
     @Config(sdk = [36])
@@ -141,8 +161,13 @@ class NsdWindowsServerDiscoveryTest {
             setUpManager()
             val callback = slot<NsdManager.ServiceInfoCallback>()
             val executor = slot<Executor>()
+            val found = serviceInfo("a")
+            val other = serviceInfo("b")
             every {
-                nsdManager.registerServiceInfoCallback(any<NsdServiceInfo>(), capture(executor), capture(callback))
+                nsdManager.registerServiceInfoCallback(found, capture(executor), capture(callback))
+            } just runs
+            every {
+                nsdManager.registerServiceInfoCallback(other, capture(executor), capture(callback))
             } just runs
             every { nsdManager.unregisterServiceInfoCallback(any<NsdManager.ServiceInfoCallback>()) } just runs
             val emissions = mutableListOf<List<DiscoveredServer>>()
@@ -150,8 +175,6 @@ class NsdWindowsServerDiscoveryTest {
                 launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
                     NsdWindowsServerDiscovery(context).discover().collect { emissions += it }
                 }
-            val found = serviceInfo("a")
-            val other = serviceInfo("b")
 
             discoveryListener.captured.onServiceFound(found)
             var ran = false
