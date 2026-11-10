@@ -54,6 +54,8 @@ fun kotlinx.kover.gradle.plugin.dsl.KoverReportFilter.excludeCommonCoverageTarge
     classes("*DataModuleKt", "*DataModuleKt\$*")
     // Room（KSP）が生成する DAO / Database 実装（TelemetryLogDao_Impl など）。手書きのロジックではない
     classes("*Dao_Impl", "*Dao_Impl\$*", "*Database_Impl", "*Database_Impl\$*")
+    // テストダブル（jvmTestFixtures に置く Fake*）。テスト用の実装なので集計対象にしない
+    classes("*.Fake*")
     packages("*.generated.resources")
 }
 
