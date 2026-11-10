@@ -21,7 +21,6 @@ class AceWindowsManualReadoutItemsTest {
     @Test
     fun `定義はキー順に名前と既定文言を持ち未知キーは空文字`() {
         val definitions = aceWindowsManualReadoutItemDefinitions
-        assertEquals(definitions.keys.toList(), aceWindowsManualReadoutItemKeys())
         assertTrue(definitions.isNotEmpty())
         definitions.values.forEach { definition ->
             assertEquals(definition.name, aceWindowsManualReadoutItemName(definition.key))

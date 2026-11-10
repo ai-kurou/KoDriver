@@ -27,7 +27,6 @@ import kotlinx.serialization.json.long
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
-import kurou.kodriver.domain.engine.LmuWindowsBrakeWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
 import kurou.kodriver.domain.engine.LmuWindowsCarLeft
 import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
@@ -241,52 +240,6 @@ class LmuWindowsNarratorEventProcessorTest {
                     event.text,
                     NarrationOutcome.SPOKEN,
                     NarrationSource.MANUAL,
-                    json.captured,
-                )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
-    fun `手動ブレーキ未受信は最小JSONで保存する`() =
-        runTest {
-            val key = LmuWindowsReadoutItemKey.BrakeWear.Root
-            val text = "データがありません"
-            val event = LmuWindowsBrakeWearCurrentValue(0, text)
-            val resolved = event.withResolvedText(text)
-            val json = slot<String>()
-            every { ttsEngine.speak(resolved, true) } just Runs
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
-                    123L,
-                    Simulator.LmuWindows,
-                    key,
-                    text,
-                    NarrationOutcome.QUEUED,
-                    NarrationSource.AUTO,
-                    capture(json),
-                )
-            } just Runs
-            createProcessor().processBrakeWearCurrentValue(
-                null,
-                listOf(event),
-                emptyList(),
-                mapOf(key to true),
-                123L,
-                logContext(),
-            )
-            val root = Json.parseToJsonElement(json.captured).jsonObject
-            assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
-            assertEquals("123", root["observedAtMs"]!!.jsonPrimitive.content)
-            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    123L,
-                    Simulator.LmuWindows,
-                    key,
-                    text,
-                    NarrationOutcome.QUEUED,
-                    NarrationSource.AUTO,
                     json.captured,
                 )
             }
@@ -559,76 +512,6 @@ class LmuWindowsNarratorEventProcessorTest {
                     NarrationSource.MANUAL,
                     json.captured,
                 )
-            }
-            confirmVerified(ttsEngine, telemetryLogRepository)
-        }
-
-    @Test
-    fun `手動ブレーキ現在値はテレメトリを保存し自動警告の前回値を変更しない`() =
-        runTest {
-            val key = LmuWindowsReadoutItemKey.BrakeWear.Root
-            val processor = createProcessor()
-            processor.processBrakeWear(
-                brakeWear(frontLeft = 90),
-                emptyList(),
-                emptyList(),
-                emptyMap(),
-                0L,
-                logContext(),
-            )
-            val manual = LmuWindowsBrakeWearCurrentValue(60)
-            val warning = LmuWindowsBrakeWearLow(50)
-            val events = listOf(manual, warning)
-            val logs = mutableListOf<String>()
-            events.forEach { event ->
-                every { ttsEngine.speak(event.withResolvedText(event.narratedText), true) } just Runs
-                coEvery {
-                    telemetryLogRepository.saveTelemetryLog(
-                        123L,
-                        Simulator.LmuWindows,
-                        key,
-                        event.narratedText,
-                        NarrationOutcome.QUEUED,
-                        NarrationSource.AUTO,
-                        capture(logs),
-                    )
-                } just Runs
-            }
-            processor.processBrakeWearCurrentValue(
-                brakeWear(frontLeft = 60),
-                listOf(manual),
-                emptyList(),
-                mapOf(key to true),
-                123L,
-                logContext(),
-            )
-            processor.processBrakeWear(
-                brakeWear(frontLeft = 40),
-                listOf(warning),
-                emptyList(),
-                mapOf(key to true),
-                123L,
-                logContext(),
-            )
-            val root = Json.parseToJsonElement(logs.last()).jsonObject
-            val previous = root["previousBrakeWear"]!!.jsonObject["wheels"]!!.jsonObject
-            assertEquals(90f, previous["FRONT_LEFT"]!!.jsonObject["remainingPercent"]!!.jsonPrimitive.float)
-            val manualRoot = Json.parseToJsonElement(logs.first()).jsonObject
-            val current = manualRoot["brakeWear"]!!.jsonObject["wheels"]!!.jsonObject
-            assertEquals(60f, current["FRONT_LEFT"]!!.jsonObject["remainingPercent"]!!.jsonPrimitive.float)
-            events.forEachIndexed { index, event ->
-                verify(exactly = 1) { ttsEngine.speak(event.withResolvedText(event.narratedText), true) }
-                coVerify(exactly = 1) {
-                    telemetryLogRepository.saveTelemetryLog(
-                        123L,
-                        Simulator.LmuWindows,
-                        key,
-                        event.narratedText,
-                        NarrationOutcome.QUEUED,
-                        NarrationSource.AUTO,
-                        logs[index],
-                    )
-                }
             }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }

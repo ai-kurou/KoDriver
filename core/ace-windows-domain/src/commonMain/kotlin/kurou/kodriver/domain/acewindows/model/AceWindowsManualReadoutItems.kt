@@ -51,8 +51,6 @@ val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         ),
     )
 
-fun aceWindowsManualReadoutItemKeys(): List<String> = aceWindowsManualReadoutItemDefinitions.keys.toList()
-
 fun aceWindowsManualReadoutItemName(itemKey: String): String =
     aceWindowsManualReadoutItemDefinitions[itemKey]?.name.orEmpty()
 

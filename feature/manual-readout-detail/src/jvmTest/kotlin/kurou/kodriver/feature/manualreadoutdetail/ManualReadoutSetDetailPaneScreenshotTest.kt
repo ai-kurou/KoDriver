@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemKeys
-import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemKeys
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinitions
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.HotkeyRegistrationState
@@ -57,7 +57,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
         }
 
     @Test
-    fun `GT7の残り燃料と周回数の文言`() = screenshot(gt7Ps5ManualReadoutItemKeys(), selected = true)
+    fun `GT7の残り燃料と周回数の文言`() = screenshot(gt7Ps5ManualReadoutItemDefinitions.keys.toList(), selected = true)
 
     @Test
     fun `GT7の項目追加シート`() =
@@ -67,7 +67,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
                     Surface {
                         Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             ManualReadoutItemPickerSheetContent(
-                                itemKeys = gt7Ps5ManualReadoutItemKeys(),
+                                itemKeys = gt7Ps5ManualReadoutItemDefinitions.keys.toList(),
                                 selectedCount = 0,
                                 onSelect = {},
                             )
@@ -165,7 +165,7 @@ class ManualReadoutSetDetailPaneScreenshotTest {
     fun `ホットキー未割り当て`() = screenshot(emptyList(), hotkey = null to null)
 
     @Test
-    fun `GT7ではSimHub手順書リンクなし`() = screenshot(gt7Ps5ManualReadoutItemKeys(), hotkey = null to null)
+    fun `GT7ではSimHub手順書リンクなし`() = screenshot(gt7Ps5ManualReadoutItemDefinitions.keys.toList(), hotkey = null to null)
 
     @Test
     fun `ホットキー割り当て済み`() = screenshot(emptyList(), hotkey = 0x41 to null)
@@ -189,7 +189,7 @@ class ManualReadoutSetDetailPaneAceScreenshotTest {
     }
 
     @Test
-    fun `ACEの残り燃料の文言`() = screenshot(aceWindowsManualReadoutItemKeys(), selected = true)
+    fun `ACEの残り燃料の文言`() = screenshot(aceWindowsManualReadoutItemDefinitions.keys.toList(), selected = true)
 
     @Test
     fun `ACEのタイヤ温度の文言欄と連結プレビュー`() =
@@ -210,7 +210,7 @@ class ManualReadoutSetDetailPaneAceScreenshotTest {
                     Surface {
                         Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             ManualReadoutItemPickerSheetContent(
-                                itemKeys = aceWindowsManualReadoutItemKeys(),
+                                itemKeys = aceWindowsManualReadoutItemDefinitions.keys.toList(),
                                 selectedCount = 0,
                                 onSelect = {},
                             )
@@ -269,7 +269,7 @@ private fun screenshot(
 
 private fun simulatorIdForKeys(keys: List<String>): String =
     when {
-        keys.any { it in gt7Ps5ManualReadoutItemKeys() } -> Simulator.Gt7Ps5.id
-        keys.any { it in aceWindowsManualReadoutItemKeys() } -> Simulator.AceWindows.id
+        keys.any { it in gt7Ps5ManualReadoutItemDefinitions.keys.toList() } -> Simulator.Gt7Ps5.id
+        keys.any { it in aceWindowsManualReadoutItemDefinitions.keys.toList() } -> Simulator.AceWindows.id
         else -> Simulator.LmuWindows.id
     }
