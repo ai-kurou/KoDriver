@@ -82,7 +82,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
         // 依頼を出すとウェイクワード待ちへ戻るため、次の語句にはもう一度ウェイクワードが要る
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("関係ない言葉", "じこべ")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("関係ない言葉", "自己ベスト")))
 
         assertEquals(
             listOf(
