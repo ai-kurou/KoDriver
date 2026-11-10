@@ -20,5 +20,4 @@ data class ServerConnectionUiState(
         get() =
             connectionStatus != KoDriverServerConnectionStatus.NOT_CONFIGURED &&
                 connectionStatus != KoDriverServerConnectionStatus.CHECKING
-    val isIpConfigured: Boolean get() = connectionStatus != KoDriverServerConnectionStatus.NOT_CONFIGURED
 }

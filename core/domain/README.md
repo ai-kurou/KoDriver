@@ -3,7 +3,7 @@
 `ResetAutoReadoutSettingsUseCase` は受け取った `AutoReadoutSettingsResetter` を順番に実行し、全シミュレーターの自動読み上げ設定を一括で既定値に戻します。途中で失敗した場合は例外を呼び出し側に伝播します。
 `ResetManualReadoutSettingsUseCase` も同形で、受け取った `ManualReadoutSettingsResetter` を順番に実行し、手動読み上げセット（ホットキーを含む）と再生ボタン表示設定を既定値に戻します。
 
-`GetAudioInputDevicesUseCase` は `AudioInputDeviceRepository` から入力デバイス（マイク）の一覧を取得し、`ObserveMicrophoneAudioUseCase` は `MicrophoneRepository` から指定デバイス（省略時は既定）のPCM音声を `MicrophoneAudioEvent` として流す。PCM形式は `MICROPHONE_*` 定数（16kHz・モノラル・16bit）で固定する。
+`GetAudioInputDevicesUseCase` は `AudioInputDeviceRepository` から入力デバイス（マイク）の一覧を取得する。PCM形式は `MICROPHONE_*` 定数（16kHz・モノラル・16bit）で固定する。
 
 ## パッケージ構成
 
@@ -112,8 +112,8 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 `ManualReadoutSet` はセット識別子・セット名 `name`（空文字なら画面側で「セット N」を表示。上限は `MANUAL_READOUT_SET_NAME_MAX_LENGTH`）・読み上げ項目キーのリスト・項目キーごとの文言テンプレート `itemTexts` を持つ。
 文言が未保存なら `manualReadoutItemTextDefault` の既定値を使い、保存済みの空文字は読み上げない。
 LMU のバーチャルエネルギー残量・燃料残量・タイヤ摩耗・ブレーキ残量は自動側と共通の `{percent}` 置換・未知プレースホルダー検出を使う。
-`ObserveManualReadoutSetsUseCase` / `SaveManualReadoutSetsUseCase` は
-`ManualReadoutSetPreferencesRepository` を通じてセット一覧を取得・保存する。
+`ObserveManualReadoutSetsUseCase` は
+`ManualReadoutSetPreferencesRepository` を通じてセット一覧を取得する。
 `AddManualReadoutSetUseCase` は保存済み一覧の末尾へ1セットをアトミックに追加する。
 `ManualReadoutRequest(simulatorId, setId)` は Narrator にセットを読むよう依頼するモデル。
 `RequestManualReadoutUseCase` / `ObserveManualReadoutRequestsUseCase` は

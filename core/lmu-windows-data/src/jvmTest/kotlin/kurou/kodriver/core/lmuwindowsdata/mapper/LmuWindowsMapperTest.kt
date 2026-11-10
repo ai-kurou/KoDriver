@@ -230,17 +230,18 @@ class LmuWindowsMapperTest {
     }
 
     @Test
-    fun `速度がローカル速度ベクトルから計算される`() {
+    fun `ローカル速度ベクトルが読み取られる`() {
         val vb = vehicleBase()
         val buf = emptyBuffer()
-        // 3-4-0 ベクトル → speed = 5.0 m/s → 18.0 km/h
         buf.putDouble(vb + OFF_LOCAL_VEL_X, 3.0)
         buf.putDouble(vb + OFF_LOCAL_VEL_Y, 4.0)
         buf.putDouble(vb + OFF_LOCAL_VEL_Z, 0.0)
 
         val result = requireNotNull(LmuWindowsMapper.map(buf))
 
-        assertEquals(5.0, result.vehicle.speedMs, 1e-9)
+        assertEquals(3.0, result.vehicle.localVelocityX)
+        assertEquals(4.0, result.vehicle.localVelocityY)
+        assertEquals(0.0, result.vehicle.localVelocityZ)
     }
 
     @Test
