@@ -182,4 +182,47 @@ class ReadoutItemKeyRegistryTest {
             ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.LmuWindows.id)?.itemDefinitions,
         )
     }
+
+    @Test
+    fun `手動読み上げの語句は登録でき省略時は空で登録後の変更は反映されない`() {
+        val definition =
+            ManualReadoutItemDefinition(
+                "key",
+                ManualReadoutItemCategory.FUEL,
+                "名",
+                "既定",
+                "{p}",
+                { emptyList() },
+                { it },
+                ChildKey("key"),
+            )
+        val phrases = mutableListOf("燃料")
+
+        fun lmu(manual: ManualReadoutSimulatorSpec) =
+            SimulatorReadoutSpec(
+                Simulator.LmuWindows,
+                emptyList(),
+                emptyMap(),
+                emptyMap(),
+                emptyMap(),
+                emptyList(),
+                manual,
+            )
+
+        ReadoutItemKeyRegistry.register(lmu(ManualReadoutSimulatorSpec(mapOf("key" to definition))))
+        assertEquals(
+            emptyMap(),
+            ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.LmuWindows.id)?.itemPhrases,
+        )
+
+        ReadoutItemKeyRegistry.register(
+            lmu(ManualReadoutSimulatorSpec(mapOf("key" to definition), itemPhrases = mapOf("key" to phrases))),
+        )
+        phrases.add("ガソリン")
+
+        assertEquals(
+            mapOf("key" to listOf("燃料")),
+            ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.LmuWindows.id)?.itemPhrases,
+        )
+    }
 }

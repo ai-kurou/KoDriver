@@ -32,20 +32,22 @@ base-branch: feature/base/speech-tab
 
 ## 未決事項
 
-- 語句と読み上げ項目の対応を、どこで定義するか。現状、コードにあるのはウェイクワード（`SPEECH_RECOGNITION_WAKE_WORDS`）だけで、項目ごとの語句の定義はない。次の実装の前に決める。
-- 種類（グループ）の分け方と順序。手動読み上げタブのカテゴリに合わせるか。
-- シミュレーターごとに項目が違う場合の見せ方（選択中のシミュレーターの項目だけを出す想定）。
+- 語句の定義先: 解決した。各シミュレーターのドメインモジュールに手動読み上げの語句（`*ManualReadoutItemPhrases`）が既にあり、音声認識の照合と共有している。`ManualReadoutSimulatorSpec.itemPhrases` に載せて registry から引く。
+- 語句の表示: 定義には「ねんりょう」などのひらがな表記や「燃料は」のような認識の揺れ対策の語も含まれ、項目によっては十数語になる。すべて出すか、表示用に絞るかを決める。
+- 種類（グループ）の分け方と順序は、手動読み上げタブのカテゴリ（`ManualReadoutItemCategory`）の順に合わせた（UseCase で実装済み）。変えたい場合は見直す。
+- シミュレーターごとに項目が違う場合は、選択中のシミュレーターの項目だけを出す（UseCase で実装済み）。
 
 ## 実装済み
 
 - 音声タブ用の `:feature:speech-recognition-list` モジュールと空の listPane を追加した: #3063
 - 「音声」タブを追加し、空の listPane を表示した（タブ順は 自動・手動・音声・その他）: #3072
+- 音声タブの一覧の元データを返す `SpeechCommandGuideRepository`（`:core:speech-recognition-data`）と `ObserveSpeechCommandGuideUseCase` を追加した。手動読み上げの語句を `ManualReadoutSimulatorSpec.itemPhrases` に載せた: (PR 作成後に番号を記入)
 
 ## 次以降（上から順に着手する想定）
 
-- [ ] 語句と読み上げ項目の対応の定義先を決める（未決事項。決めてから下へ進む）
+- [x] 語句と読み上げ項目の対応の定義先を決め、一覧の元データを返す `SpeechCommandGuideRepository` と `ObserveSpeechCommandGuideUseCase` を実装する（選択中のシミュレーターの項目をカテゴリごとにまとめ、語句は省略しない）
 - [ ] listPane に、呼びかけの案内と、項目ごとのカード一覧（種類の見出し付き）を表示する（Preview・テスト用の仮データで見た目を確認）
-- [ ] 一覧に、選択中のシミュレーターの実際の項目と語句を反映する
+- [ ] ViewModel と Koin 登録を追加し、上記の UseCase の結果を一覧に反映する（選択中のシミュレーターの実際の項目と語句）
 - [ ] （別途判断）detailPane・検索・読み上げオン/オフの表示
 
 ## 決定済み事項

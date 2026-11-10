@@ -1,5 +1,7 @@
 package kurou.kodriver.domain.acewindows.model
 
+import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -34,5 +36,13 @@ class AceWindowsManualReadoutPhrasesTest {
             assertEquals(aceWindowsManualReadoutItemPhrases.getValue(key), aceWindowsManualReadoutItemPhrases(key))
         }
         assertEquals(emptyList(), aceWindowsManualReadoutItemPhrases("unknown"))
+    }
+
+    @Test
+    fun `登録したspecが語句を持ち音声タブの案内に使える`() {
+        assertEquals(
+            aceWindowsManualReadoutItemPhrases,
+            ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.AceWindows.id)?.itemPhrases,
+        )
     }
 }

@@ -5,6 +5,7 @@ import kurou.kodriver.core.speechrecognitiondata.microphone.JvmAudioInputDeviceR
 import kurou.kodriver.core.speechrecognitiondata.microphone.JvmMicrophoneRepository
 import kurou.kodriver.core.speechrecognitiondata.speech.JvmSpeechRecognitionChimePlayer
 import kurou.kodriver.core.speechrecognitiondata.speech.JvmSpeechRecognitionRepository
+import kurou.kodriver.core.speechrecognitiondata.speech.RegistrySpeechCommandGuideRepository
 import kurou.kodriver.core.speechrecognitiondata.speech.SpeechTranscriberFactory
 import kurou.kodriver.core.speechrecognitiondata.speech.VoskSpeechTranscriberFactory
 import kurou.kodriver.core.speechrecognitiondata.speech.resolveVoskModelDirectory
@@ -12,6 +13,7 @@ import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
+import kurou.kodriver.domain.repository.SpeechCommandGuideRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import org.koin.dsl.module
 
@@ -41,6 +43,7 @@ val speechRecognitionDataModule =
             )
         }
         single<SpeechRecognitionChimePlayer> { JvmSpeechRecognitionChimePlayer() }
+        single<SpeechCommandGuideRepository> { RegistrySpeechCommandGuideRepository() }
         single<AudioInputDeviceRepository> { JvmAudioInputDeviceRepository() }
         single<MicrophoneRepository> { JvmMicrophoneRepository() }
     }
