@@ -1,7 +1,6 @@
 package kurou.kodriver.core.designsystem
 
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -40,11 +39,8 @@ class DebugStateReorderableGridTest {
             KoDriverTheme {
                 DebugStateReorderableGrid(
                     cardOrder = listOf(SampleCardKey.SECOND, SampleCardKey.FIRST),
-                    fixedItemCount = 1,
                     onMoveCard = { _, _ -> },
-                    fixedItems = {
-                        item(key = "header", span = { GridItemSpan(maxLineSpan) }) { Text("固定ヘッダー") }
-                    },
+                    fixedCards = listOf(DebugStateFixedCard("header") { Text("固定ヘッダー", modifier = it) }),
                     card = { cardKey, modifier -> Text(text = "カード ${cardKey.name}", modifier = modifier) },
                     modifier = Modifier.requiredSize(360.dp, 640.dp),
                 )
@@ -66,11 +62,8 @@ class DebugStateReorderableGridTest {
             KoDriverTheme {
                 DebugStateReorderableGrid(
                     cardOrder = listOf(SampleCardKey.FIRST, SampleCardKey.SECOND),
-                    fixedItemCount = 1,
                     onMoveCard = onMoveCard,
-                    fixedItems = {
-                        item(key = "header", span = { GridItemSpan(maxLineSpan) }) { Text("固定ヘッダー") }
-                    },
+                    fixedCards = listOf(DebugStateFixedCard("header") { Text("固定ヘッダー", modifier = it) }),
                     card = { cardKey, modifier -> Text(text = "カード ${cardKey.name}", modifier = modifier) },
                     modifier = Modifier.requiredSize(360.dp, 640.dp),
                 )
@@ -98,11 +91,8 @@ class DebugStateReorderableGridTest {
             KoDriverTheme {
                 DebugStateReorderableGrid(
                     cardOrder = listOf(SampleCardKey.FIRST, SampleCardKey.SECOND),
-                    fixedItemCount = 1,
                     onMoveCard = onMoveCard,
-                    fixedItems = {
-                        item(key = "header", span = { GridItemSpan(maxLineSpan) }) { Text("固定ヘッダー") }
-                    },
+                    fixedCards = listOf(DebugStateFixedCard("header") { Text("固定ヘッダー", modifier = it) }),
                     card = { cardKey, modifier -> Text(text = "カード ${cardKey.name}", modifier = modifier) },
                     modifier = Modifier.requiredSize(360.dp, 640.dp),
                 )

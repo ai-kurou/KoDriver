@@ -1,7 +1,5 @@
 package kurou.kodriver.feature.gt7ps5debugstatedetail
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -9,9 +7,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DebugReadoutRequestCard
 import kurou.kodriver.core.designsystem.DebugStateCard
+import kurou.kodriver.core.designsystem.DebugStateFixedCard
 import kurou.kodriver.core.designsystem.DebugStateReorderableGrid
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
-import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.GT7_PS5_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -69,23 +67,23 @@ internal fun Gt7Ps5DebugStateDetailPaneContent(
     ) {
         DebugStateReorderableGrid(
             cardOrder = uiState.cardOrder,
-            fixedItemCount = 1,
-            fixedItems = {
-                item(key = DEBUG_READOUT_REQUEST_ITEM_KEY, span = { GridItemSpan(maxLineSpan) }) {
-                    DebugReadoutRequestCard(
-                        readoutItemKeyValues =
-                            GT7_PS5_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().map {
-                                it.value
-                            },
-                        selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
-                        text = uiState.debugReadoutText,
-                        onReadoutItemSelected = onReadoutItemSelected,
-                        onTextChange = onDebugReadoutTextChange,
-                        onReadout = onRequestReadout,
-                        modifier = Modifier.padding(KoDriverSpacing.small),
-                    )
-                }
-            },
+            fixedCards =
+                listOf(
+                    DebugStateFixedCard(DEBUG_READOUT_REQUEST_ITEM_KEY) { cardModifier ->
+                        DebugReadoutRequestCard(
+                            readoutItemKeyValues =
+                                GT7_PS5_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().map {
+                                    it.value
+                                },
+                            selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
+                            text = uiState.debugReadoutText,
+                            onReadoutItemSelected = onReadoutItemSelected,
+                            onTextChange = onDebugReadoutTextChange,
+                            onReadout = onRequestReadout,
+                            modifier = cardModifier,
+                        )
+                    },
+                ),
             onMoveCard = onMoveCard,
             card = { cardKey, cardModifier ->
                 DebugStateCard(
