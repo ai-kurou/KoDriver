@@ -39,13 +39,14 @@ class RegistrySpeechCommandGuideRepositoryTest {
     )
 
     @Test
-    fun `項目をカテゴリ順にまとめ語句を持たない項目は含めない`() {
+    fun `項目をカテゴリ順にまとめ語句が空または未登録の項目は含めない`() {
         val definitions =
             listOf(
                 definition("lap", ManualReadoutItemCategory.LAP, "ベストラップ"),
                 definition("fuel", ManualReadoutItemCategory.FUEL, "燃料残量"),
                 definition("fuel_laps", ManualReadoutItemCategory.FUEL, "燃料周回数"),
                 definition("silent", ManualReadoutItemCategory.TYRE, "語句なし"),
+                definition("unlisted", ManualReadoutItemCategory.BRAKE, "語句の登録なし"),
             )
         register(
             Simulator.LmuWindows,
