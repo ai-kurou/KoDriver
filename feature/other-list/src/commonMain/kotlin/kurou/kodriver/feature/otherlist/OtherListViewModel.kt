@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
@@ -121,7 +122,7 @@ class OtherListViewModel(
     }
 
     fun checkUpdate() {
-        viewModelScope.launch { appUpdateFlow.checkUpdate() }
+        viewModelScope.launchCapturingErrors { appUpdateFlow.checkUpdate() }
     }
 
     fun checkAccessLocalNetworkPermission() {
@@ -134,15 +135,15 @@ class OtherListViewModel(
     }
 
     fun checkStartupEnabled() {
-        viewModelScope.launch { startupRegistrationFlow.checkStartupEnabled() }
+        viewModelScope.launchCapturingErrors { startupRegistrationFlow.checkStartupEnabled() }
     }
 
     fun checkTextToSpeechAvailability() {
-        viewModelScope.launch { ttsAvailabilityFlow.checkAvailability() }
+        viewModelScope.launchCapturingErrors { ttsAvailabilityFlow.checkAvailability() }
     }
 
     fun onStartupEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { startupRegistrationFlow.onStartupEnabledChange(enabled) }
+        viewModelScope.launchCapturingErrors { startupRegistrationFlow.onStartupEnabledChange(enabled) }
     }
 
     fun onItemSelected(itemType: OtherListItemType) {
@@ -190,18 +191,18 @@ class OtherListViewModel(
     }
 
     fun onOverlayVisibleChange(visible: Boolean) {
-        viewModelScope.launch { overlaySettingsFlow.onOverlayVisibleChange(visible) }
+        viewModelScope.launchCapturingErrors { overlaySettingsFlow.onOverlayVisibleChange(visible) }
     }
 
     fun onKeepScreenOnChange(enabled: Boolean) {
-        viewModelScope.launch { deviceSettingsFlow.onKeepScreenOnChange(enabled) }
+        viewModelScope.launchCapturingErrors { deviceSettingsFlow.onKeepScreenOnChange(enabled) }
     }
 
     fun onDynamicColorEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { deviceSettingsFlow.onDynamicColorEnabledChange(enabled) }
+        viewModelScope.launchCapturingErrors { deviceSettingsFlow.onDynamicColorEnabledChange(enabled) }
     }
 
     fun onHapticFeedbackEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { deviceSettingsFlow.onHapticFeedbackEnabledChange(enabled) }
+        viewModelScope.launchCapturingErrors { deviceSettingsFlow.onHapticFeedbackEnabledChange(enabled) }
     }
 }

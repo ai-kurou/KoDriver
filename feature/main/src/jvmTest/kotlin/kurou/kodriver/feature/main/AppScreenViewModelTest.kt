@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +24,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
@@ -53,6 +56,7 @@ import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryReceivingUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -398,6 +402,52 @@ class AppScreenViewModelTest {
             viewModel.checkAccessLocalNetworkPermission()
 
             assertTrue(viewModel.uiState.first().accessLocalNetworkPermissionGranted)
+        }
+
+    @Test
+    fun `更新確認が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val viewModel = createViewModel(tagName = null)
+                coEvery { appUpdateRepository.getLatestRelease() } throws error
+
+                viewModel.checkUpdate()
+                advanceUntilIdle()
+
+                assertFalse(viewModel.uiState.first().hasAppUpdate)
+                coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, appUpdateRepository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `selectSimulatorの保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val viewModel = createViewModel()
+                coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } throws error
+
+                viewModel.selectSimulator("gt7_ps5")
+                advanceUntilIdle()
+
+                coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
+                verify(exactly = 2) { simulatorRepository.selectedSimulator() }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, simulatorRepository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     private companion object {
