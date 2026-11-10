@@ -149,7 +149,7 @@ class SpeechRecognitionDetailScreenshotTest {
             }
         }
         // 内容が撮影範囲に収まらず切れていないことを、最後の認識結果の表示で確かめる
-        uiState.recognized.lastOrNull()?.let { onNodeWithText(it.joinToString(" / ")).assertIsDisplayed() }
+        uiState.recognized.lastOrNull()?.forEach { onNodeWithText(it).assertIsDisplayed() }
         captureScene()
     }
 

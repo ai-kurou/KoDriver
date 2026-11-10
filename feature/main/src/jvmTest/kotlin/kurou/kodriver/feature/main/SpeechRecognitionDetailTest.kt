@@ -52,7 +52,8 @@ class SpeechRecognitionDetailTest {
             onEnabledChange = { changes += it },
         )
 
-        rule.onNodeWithText("燃料 / 然料").assertIsDisplayed()
+        rule.onNodeWithText("燃料").assertIsDisplayed()
+        rule.onNodeWithText("然料").assertIsDisplayed()
         rule.onNodeWithText("ブレーキ").assertIsDisplayed()
         rule.onNodeWithContentDescription("マイクの入力音量").assertIsDisplayed()
         rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsOff().performClick()
@@ -73,7 +74,8 @@ class SpeechRecognitionDetailTest {
             onEnabledChange = { changes += it },
         )
 
-        rule.onNodeWithText("燃料 / 然料").assertIsDisplayed()
+        rule.onNodeWithText("燃料").assertIsDisplayed()
+        rule.onNodeWithText("然料").assertIsDisplayed()
         rule.onNodeWithContentDescription("マイクの入力音量").assertIsDisplayed()
         rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsOff().performClick()
         rule.runOnIdle { assertEquals(listOf(true), changes) }
