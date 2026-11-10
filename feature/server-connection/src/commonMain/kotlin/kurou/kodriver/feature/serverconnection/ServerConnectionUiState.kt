@@ -2,27 +2,23 @@ package kurou.kodriver.feature.serverconnection
 
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
-
-/**
- * ServerConnection の接続状態を表す表示用ステータス。
- */
-enum class ServerConnectionStatus { NOT_CONFIGURED, CHECKING, CONNECTED, DISCONNECTED }
+import kurou.kodriver.domain.usecase.KoDriverServerConnectionStatus
 
 /**
  * ServerConnection 画面の表示状態。
  */
 data class ServerConnectionUiState(
-    val connectionStatus: ServerConnectionStatus = ServerConnectionStatus.NOT_CONFIGURED,
+    val connectionStatus: KoDriverServerConnectionStatus = KoDriverServerConnectionStatus.NOT_CONFIGURED,
     val requiresKoDriverServer: Boolean = SELECTED_SIMULATOR_DEFAULT.requiresKoDriverServer,
     val selectedSimulator: Simulator = SELECTED_SIMULATOR_DEFAULT,
     val serverVersion: String? = null,
     val showVersionMismatchBottomSheet: Boolean = false,
     val appVersion: String = "",
 ) {
-    val isConnected: Boolean get() = connectionStatus == ServerConnectionStatus.CONNECTED
+    val isConnected: Boolean get() = connectionStatus == KoDriverServerConnectionStatus.CONNECTED
     val isConnectionChecked: Boolean
         get() =
-            connectionStatus != ServerConnectionStatus.NOT_CONFIGURED &&
-                connectionStatus != ServerConnectionStatus.CHECKING
-    val isIpConfigured: Boolean get() = connectionStatus != ServerConnectionStatus.NOT_CONFIGURED
+            connectionStatus != KoDriverServerConnectionStatus.NOT_CONFIGURED &&
+                connectionStatus != KoDriverServerConnectionStatus.CHECKING
+    val isIpConfigured: Boolean get() = connectionStatus != KoDriverServerConnectionStatus.NOT_CONFIGURED
 }
