@@ -116,6 +116,36 @@ class SpeechRecognitionChipTest {
     }
 
     @Test
+    fun `音量リングの弧の角度は段階に比例する`() {
+        assertEquals(0f, volumeRingSweepAngle(0))
+        assertEquals(72f, volumeRingSweepAngle(1))
+        assertEquals(360f, volumeRingSweepAngle(VOLUME_RING_STEPS))
+    }
+
+    @Test
+    fun `音量リングは伸びるときより縮むときをゆっくり動かす`() {
+        assertEquals(80, volumeRingAnimationMillis(rising = true))
+        assertEquals(250, volumeRingAnimationMillis(rising = false))
+    }
+
+    @Test
+    fun `音量の増減とOFFへの切り替えをアニメーション中も表示し続ける`() {
+        rule.mainClock.autoAdvance = false
+        var uiState by mutableStateOf(
+            SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.Listening, level = 0f),
+        )
+        rule.setContent { KoDriverTheme { SpeechRecognitionChip(uiState = uiState) } }
+        listOf(1f, 0.2f, 0f).forEach { level ->
+            uiState = uiState.copy(level = level)
+            rule.mainClock.advanceTimeBy(40)
+            rule.onRoot().assertIsDisplayed()
+        }
+        uiState = SpeechRecognitionUiState()
+        rule.mainClock.advanceTimeBy(100)
+        rule.onNodeWithContentDescription("停止中").assertIsDisplayed()
+    }
+
+    @Test
     fun `音量リングの段階は聞き取り中だけ求め、OFFとエラーと音量なしではnullにする`() {
         val listening =
             SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.Listening, level = 0.5f)

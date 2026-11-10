@@ -1,5 +1,8 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +18,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,9 +62,19 @@ private val RING_STROKE_WIDTH = 3.dp
 private const val RING_TRACK_ALPHA = 0.2f
 private const val RING_START_ANGLE = -90f
 private const val FULL_CIRCLE_DEGREES = 360f
+private const val CHIP_COLOR_ANIMATION_MILLIS = 200
+private const val RING_RISE_ANIMATION_MILLIS = 80
+private const val RING_FALL_ANIMATION_MILLIS = 250
 
 /** 音量リングの段階数。滑らかに伸ばさず段階表示にして、再コンポーズの負荷を抑える。 */
 internal const val VOLUME_RING_STEPS = 5
+
+/** 音量リングの [step]（0〜[VOLUME_RING_STEPS]）に対応する、弧の角度（度）。 */
+internal fun volumeRingSweepAngle(step: Int): Float = FULL_CIRCLE_DEGREES * step / VOLUME_RING_STEPS
+
+/** 音量リングの弧を動かす長さ（ミリ秒）。伸びるときは素早く、縮むときはゆっくりにして、メーターのように見せる。 */
+internal fun volumeRingAnimationMillis(rising: Boolean): Int =
+    if (rising) RING_RISE_ANIMATION_MILLIS else RING_FALL_ANIMATION_MILLIS
 
 /** 音量（0.0〜1.0）を、音量リングの段階（0〜[VOLUME_RING_STEPS]）へ変換する。範囲外は端に丸める。 */
 internal fun volumeRingStep(level: Float): Int = (level.coerceIn(0f, 1f) * VOLUME_RING_STEPS).roundToInt()
@@ -148,6 +164,10 @@ internal fun SpeechRecognitionChip(
             icon = Icons.Filled.MicOff
         }
     }
+    // 状態が切り替わったときに色が急に変わらないよう、短く補間する
+    val colorSpec = tween<Color>(durationMillis = CHIP_COLOR_ANIMATION_MILLIS)
+    val animatedContainerColor by animateColorAsState(containerColor, colorSpec)
+    val animatedContentColor by animateColorAsState(contentColor, colorSpec)
     val ringStep = uiState.volumeRingStepOrNull()
     Box(
         modifier =
@@ -155,29 +175,40 @@ internal fun SpeechRecognitionChip(
                 .size(CHIP_SIZE)
                 .shadow(CHIP_SHADOW_ELEVATION, CircleShape)
                 .clip(CircleShape)
-                .background(containerColor)
+                .background(animatedContainerColor)
                 .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
                 .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {
         if (ringStep != null) {
-            VolumeRing(step = ringStep, color = contentColor)
+            VolumeRing(step = ringStep, color = animatedContentColor)
         }
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = contentColor,
+            tint = animatedContentColor,
             modifier = Modifier.size(CHIP_ICON_SIZE),
         )
     }
 }
 
-/** チップの縁に沿って、[step] に応じて時計回りに伸びるリング。薄い軌道の上に、音量の段階分だけ弧を重ねる。 */
+/**
+ * チップの縁に沿って、[step] に応じて時計回りに伸びるリング。薄い軌道の上に、音量の段階分だけ弧を重ねる。
+ * 段階が変わったときは弧の角度を補間し、伸びるときは素早く、縮むときはゆっくり動かす。
+ * 再コンポーズは段階が変わるときだけで、補間中は描画だけが走る。
+ */
 @Composable
 private fun VolumeRing(
     step: Int,
     color: Color,
 ) {
+    // 前回の段階は再コンポーズを起こさないよう、スナップショット状態ではなく単なる配列で持つ
+    val previousStep = remember { intArrayOf(step) }
+    val sweepAngle by animateFloatAsState(
+        targetValue = volumeRingSweepAngle(step),
+        animationSpec = tween(durationMillis = volumeRingAnimationMillis(rising = step > previousStep[0])),
+    )
+    SideEffect { previousStep[0] = step }
     Canvas(modifier = Modifier.fillMaxSize().padding(RING_INSET)) {
         val strokeWidth = RING_STROKE_WIDTH.toPx()
         val arcSize = Size(size.width - strokeWidth, size.height - strokeWidth)
@@ -191,11 +222,11 @@ private fun VolumeRing(
             size = arcSize,
             style = Stroke(width = strokeWidth),
         )
-        if (step > 0) {
+        if (sweepAngle > 0f) {
             drawArc(
                 color = color,
                 startAngle = RING_START_ANGLE,
-                sweepAngle = FULL_CIRCLE_DEGREES * step / VOLUME_RING_STEPS,
+                sweepAngle = sweepAngle,
                 useCenter = false,
                 topLeft = topLeft,
                 size = arcSize,
