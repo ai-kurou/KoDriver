@@ -1,8 +1,10 @@
 # speech-recognition-list
 
-「音声」タブの一覧（listPane）を担う feature モジュール。音声認識の設定・状態の表示をここへ集約する予定で、現時点では中身のない空の `SpeechRecognitionListPane` だけを公開する。アプリでは `:app:shared` の「音声」タブから、この空の listPane を表示している（中身の実装はこれから）。
+「音声」タブの一覧（listPane）を担う feature モジュール。選択中のシミュレーターについて、「コドライバー」と呼びかけたあとに言うと読み上げられる語句を、読み上げ項目ごとのカードで一覧にする。一覧の先頭には、呼びかけの案内（コドライバー → 確認音が鳴る → 語句 → 読み上げ）を固定で表示する。
 
-ロードマップは `docs/roadmap/speech-recognition.md` を参照。
+- 項目は `ManualReadoutItemCategory`（バーチャルエネルギー・燃料・タイヤ・ブレーキ・ラップ）ごとの見出しでまとめ、カードには項目名と語句をすべて並べる（省略しない）。
+- 元データは `ObserveSpeechCommandGuideUseCase`（`:core:domain`）。`SpeechRecognitionListViewModel` が購読して `SpeechRecognitionListUiState` にし、`speechRecognitionListModule` で Koin に登録する。
+- 読み上げのオン/オフ・検索・detailPane は対象外。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
