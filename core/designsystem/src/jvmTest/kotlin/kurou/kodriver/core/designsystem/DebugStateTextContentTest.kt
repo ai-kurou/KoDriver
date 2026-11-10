@@ -7,7 +7,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
 
 class DebugStateTextContentTest {
     @get:Rule
@@ -49,24 +48,33 @@ class DebugStateTextContentTest {
     }
 
     @Test
-    fun `フェード表示は現在の状態の内容を表示しキーが同じなら状態更新でも内容を維持する`() {
+    fun `フェード表示はキーが同じなら内容を切り替えずに更新しキーが変わるとフェードで切り替える`() {
         val state = mutableStateOf("A1")
-        val keys = mutableListOf<String>()
         rule.setContent {
             DebugStateFadeContent(
                 state = state.value,
-                contentKey = {
-                    keys += it
-                    it.take(1)
-                },
+                contentKey = { it.take(1) },
             ) { Text(text = "表示 $it") }
         }
         rule.onNodeWithText("表示 A1").assertIsDisplayed()
 
-        state.value = "B2"
-        rule.waitForIdle()
+        // キーが同じ間は遷移せず、古い内容と新しい内容が同時に存在しない。
+        rule.mainClock.autoAdvance = false
+        state.value = "A2"
+        rule.mainClock.advanceTimeByFrame()
+        rule.onNodeWithText("表示 A1").assertDoesNotExist()
+        rule.onNodeWithText("表示 A2").assertIsDisplayed()
 
-        rule.onNodeWithText("表示 B2").assertIsDisplayed()
-        assertEquals(true, keys.contains("B2"))
+        // キーが変わると遷移中は古い内容と新しい内容が同時に存在する。
+        state.value = "B1"
+        rule.mainClock.advanceTimeByFrame()
+        rule.mainClock.advanceTimeByFrame()
+        rule.onNodeWithText("表示 A2").assertExists()
+        rule.onNodeWithText("表示 B1").assertExists()
+
+        rule.mainClock.autoAdvance = true
+        rule.waitForIdle()
+        rule.onNodeWithText("表示 A2").assertDoesNotExist()
+        rule.onNodeWithText("表示 B1").assertIsDisplayed()
     }
 }
