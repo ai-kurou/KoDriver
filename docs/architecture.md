@@ -53,6 +53,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:auto-readout-list` | アナウンス項目の一覧表示・有効/無効の切り替え・優先度のドラッグ&リオーダー | [図](graphs/feature-auto-readout-list.svg) |
 | `:feature:manual-readout-list` | 手動読み上げセット一覧・追加・読み上げ依頼と list/detail 切替（詳細はスロットで受け取る） | [図](graphs/feature-manual-readout-list.svg) |
 | `:feature:manual-readout-detail` | 手動読み上げセット詳細（項目の選択・削除） | [図](graphs/feature-manual-readout-detail.svg) |
+| `:feature:speech-recognition-list` | 音声タブの一覧表示（現時点では空の listPane のみ） | [図](graphs/feature-speech-recognition-list.svg) |
 | `:feature:lmu-windows-auto-readout-flag-detail` | フラッグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-flag-detail.svg) |
 | `:feature:lmu-windows-auto-readout-my-best-lap-detail` | LMU 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-my-best-lap-detail.svg) |
 | `:feature:lmu-windows-auto-readout-vehicle-approach-detail` | 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-vehicle-approach-detail.svg) |
