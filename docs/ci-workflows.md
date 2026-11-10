@@ -6,7 +6,7 @@
 | --- | --- | --- | --- |
 | `on-pull-request.yml` | PR の作成・更新時 | detekt・ktlint・ユニットテスト（`unit-test` はスクリーンショットテストを除外） | 同一 PR の新しいコミットで古い CI をキャンセル |
 | `record-golden-images.yml` | `workflow_dispatch`、または PR に `record-golden-images` ラベル | Desktop・Android のゴールデン画像を記録しコミット | 記録できたモジュール分の画像は失敗があってもアップロード・コミット |
-| `on-main-merge.yml` | main へのマージ | ktlint・スクリーンショット verify・Dokka の API ドキュメント生成と GitHub Pages デプロイ | `dokka-pages` は `github-pages` environment を使用。`docs/api/` はコミットしない |
+| `on-main-merge.yml` | main へのマージ | ktlint・スクリーンショット verify・Dokka の API ドキュメント生成と GitHub Pages デプロイ | `dokka-pages` は `github-pages` environment を使用し、`concurrency` group `pages` で直列化（デプロイ競合回避）、deploy-pages の待機は20分。`docs/api/` はコミットしない |
 | `_build-android-release.yml` | `workflow_call` 専用 | 署名付き Android APK のビルド | `build-apps.yml`・`release-apps.yml` から呼び出し。単体実行不可 |
 | `_android-test.yml` | `workflow_call` 専用 | エミュレーター上で `connectedDebugAndroidTest` を実行（`api-level` を入力で指定） | `on-pull-request.yml` の `android-test`（API 36）と `android-test-min-sdk`（`minSdk` と同じ API 28）から呼び出し。単体実行不可。エミュレーターの端末プロファイルは Maestro E2E・Baseline Profile 生成と同じ `pixel_9` に揃えている。エミュレーター起動・イメージ取得失敗などの一時的な障害に備え、失敗時は 1 回だけ再実行する（テスト自体の失敗も再実行されるため、通ったのに前回失敗していた場合は不安定なテストの兆候） |
 | `_build-windows-msi.yml` | `workflow_call` 専用 | Windows MSI のビルドと `appVersion` の出力 | `build-apps.yml`・`release-apps.yml` から呼び出し。単体実行不可 |

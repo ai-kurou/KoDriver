@@ -142,6 +142,10 @@ jobs:
   dokka-pages:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    # 連続マージ時に前回のPagesデプロイが進行中のまま次を作成して失敗するのを防ぐ（実行中は待機し、待機中は最新のみ残る）
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     permissions:
       contents: read
       pages: write
@@ -167,3 +171,6 @@ jobs:
 
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        with:
+          # Pages側が syncing_files のまま進まない場合に備え、既定の10分から20分へ延長する
+          timeout: 1200000
