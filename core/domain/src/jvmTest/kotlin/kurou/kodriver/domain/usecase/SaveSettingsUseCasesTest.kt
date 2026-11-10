@@ -6,7 +6,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.MainWindowBounds
-import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.OverlayWindowBounds
 import kurou.kodriver.domain.model.ReadoutStartSoundType
@@ -20,7 +19,6 @@ import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
-import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
@@ -127,19 +125,6 @@ class SaveSettingsUseCasesTest {
                 useCaseName = "SaveVoiceUseCase",
                 save = { saveVoiceId("ja-jp-x-jab-local") },
                 useCase = { SaveVoiceUseCase(it)("ja-jp-x-jab-local") },
-            )
-            assertSaves<ManualReadoutSetPreferencesRepository>(
-                useCaseName = "SaveManualReadoutSetsUseCase",
-                save = {
-                    saveSets(
-                        listOf(ManualReadoutSet("set-1", listOf("SESSION", "SIMULATOR")), ManualReadoutSet("set-2")),
-                    )
-                },
-                useCase = {
-                    SaveManualReadoutSetsUseCase(
-                        it,
-                    )(listOf(ManualReadoutSet("set-1", listOf("SESSION", "SIMULATOR")), ManualReadoutSet("set-2")))
-                },
             )
         }
 

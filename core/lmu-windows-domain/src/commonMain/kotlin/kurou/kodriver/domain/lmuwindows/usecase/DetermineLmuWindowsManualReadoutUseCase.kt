@@ -1,6 +1,5 @@
 package kurou.kodriver.domain.lmuwindows.usecase
 
-import kurou.kodriver.domain.engine.LmuWindowsBrakeWearCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT
@@ -10,7 +9,6 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINI
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
@@ -246,26 +244,4 @@ class DetermineLmuWindowsManualReadoutUseCase {
                     ),
                 ),
         )
-
-    /** 最も残量が少ないブレーキの現在値を読み上げ、警告済み状態を維持する。 */
-    fun determineManualBrakeWearCurrentValue(
-        state: LmuWindowsNarratorState,
-        data: LmuWindowsBrakeWearRemainingData?,
-        textTemplate: String? = null,
-    ): LmuWindowsNarratorReadoutDecision {
-        val minimum = if (data == null) null else data.wheels.values.minOfOrNull { it.remainingPercent }
-        val percentage = if (minimum == null) null else minimum.roundToInt()
-        val resolvedText =
-            if (percentage == null) {
-                MANUAL_READOUT_NO_DATA_TEXT
-            } else if (textTemplate == null) {
-                null
-            } else {
-                formatLmuWindowsBrakeWearReadoutText(textTemplate, percentage)
-            }
-        return LmuWindowsNarratorReadoutDecision(
-            state = state,
-            events = listOf(LmuWindowsBrakeWearCurrentValue(percentage ?: 0, resolvedText)),
-        )
-    }
 }

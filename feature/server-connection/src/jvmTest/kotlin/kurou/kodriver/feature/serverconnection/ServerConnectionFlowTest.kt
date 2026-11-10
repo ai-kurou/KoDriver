@@ -24,7 +24,6 @@ class ServerConnectionFlowTest {
                 val status: KoDriverServerConnectionStatus,
                 val isConnected: Boolean,
                 val isConnectionChecked: Boolean,
-                val isIpConfigured: Boolean,
             )
 
             val statuses =
@@ -34,28 +33,24 @@ class ServerConnectionFlowTest {
                             status = KoDriverServerConnectionStatus.NOT_CONFIGURED,
                             isConnected = false,
                             isConnectionChecked = false,
-                            isIpConfigured = false,
                         ),
                     KoDriverServerConnectionStatus.CHECKING to
                         ExpectedState(
                             status = KoDriverServerConnectionStatus.CHECKING,
                             isConnected = false,
                             isConnectionChecked = false,
-                            isIpConfigured = true,
                         ),
                     KoDriverServerConnectionStatus.CONNECTED to
                         ExpectedState(
                             status = KoDriverServerConnectionStatus.CONNECTED,
                             isConnected = true,
                             isConnectionChecked = true,
-                            isIpConfigured = true,
                         ),
                     KoDriverServerConnectionStatus.DISCONNECTED to
                         ExpectedState(
                             status = KoDriverServerConnectionStatus.DISCONNECTED,
                             isConnected = false,
                             isConnectionChecked = true,
-                            isIpConfigured = true,
                         ),
                 )
             for ((status, expected) in statuses) {
@@ -74,7 +69,6 @@ class ServerConnectionFlowTest {
                     state.isConnectionChecked,
                     "status=$status の isConnectionChecked",
                 )
-                assertEquals(expected.isIpConfigured, state.isIpConfigured, "status=$status の isIpConfigured")
             }
         }
 

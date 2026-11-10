@@ -736,46 +736,6 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `手動ブレーキ残量は最小パーセントを四捨五入し警告状態を維持する`() {
-        val state = LmuWindowsNarratorState(brakeWearWarned = true)
-        val data =
-            LmuWindowsBrakeWearRemainingData(
-                mapOf(
-                    WheelIndex.FRONT_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80.5f),
-                    WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 42.4f),
-                    WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 42.5f),
-                    WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 90f),
-                ),
-            )
-        val decision = manualUseCase.determineManualBrakeWearCurrentValue(state, data)
-        assertEquals(state, decision.state)
-        assertEquals("ブレーキは残り42%", decision.events.single().narratedText)
-        assertEquals(
-            "残り42%",
-            manualUseCase
-                .determineManualBrakeWearCurrentValue(state, data, "残り{percent}%")
-                .events
-                .single()
-                .narratedText,
-        )
-        val rounded =
-            LmuWindowsBrakeWearRemainingData(mapOf(WheelIndex.REAR_LEFT to data.wheels.getValue(WheelIndex.REAR_LEFT)))
-        assertEquals(
-            "ブレーキは残り43%",
-            manualUseCase
-                .determineManualBrakeWearCurrentValue(state, rounded)
-                .events
-                .single()
-                .narratedText,
-        )
-        listOf(null, LmuWindowsBrakeWearRemainingData(emptyMap())).forEach { missing ->
-            val noData = manualUseCase.determineManualBrakeWearCurrentValue(state, missing, "残り{percent}%")
-            assertEquals(state, noData.state)
-            assertEquals("データがありません", noData.events.single().narratedText)
-        }
-    }
-
-    @Test
     fun `手動ブレーキ残量を含むセットは欠損名と空文言と保存順を反映する`() {
         val brake = LmuWindowsReadoutItemKey.BrakeWear.Root
         val tyre = LmuWindowsReadoutItemKey.TyreWear.Root

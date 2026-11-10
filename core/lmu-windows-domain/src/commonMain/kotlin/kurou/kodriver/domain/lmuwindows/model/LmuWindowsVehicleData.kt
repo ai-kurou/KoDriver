@@ -1,7 +1,6 @@
 package kurou.kodriver.domain.lmuwindows.model
 
 import kotlinx.serialization.Serializable
-import kotlin.math.sqrt
 
 @Serializable
 data class LmuWindowsVehicleData(
@@ -11,12 +10,4 @@ data class LmuWindowsVehicleData(
     val positionX: Double,
     val positionY: Double,
     val positionZ: Double,
-) {
-    val speedMs: Double
-        get() =
-            sqrt(
-                localVelocityX * localVelocityX +
-                    localVelocityY * localVelocityY +
-                    localVelocityZ * localVelocityZ,
-            )
-}
+)
