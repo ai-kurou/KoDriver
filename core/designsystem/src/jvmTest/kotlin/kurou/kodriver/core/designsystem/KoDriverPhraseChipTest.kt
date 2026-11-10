@@ -1,5 +1,6 @@
 package kurou.kodriver.core.designsystem
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -15,5 +16,12 @@ class KoDriverPhraseChipTest {
         rule.setContent { KoDriverTheme { KoDriverPhraseChip(text = "燃料") } }
 
         rule.onNodeWithText("燃料").assertIsDisplayed()
+    }
+
+    @Test
+    fun `アクセント色を渡しても語句を表示する`() {
+        rule.setContent { KoDriverTheme { KoDriverPhraseChip(text = "タイヤ", accent = Color.Red) } }
+
+        rule.onNodeWithText("タイヤ").assertIsDisplayed()
     }
 }
