@@ -361,22 +361,6 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.onNodeWithText("選択中のシミュレーター").assertIsDisplayed()
     }
 
-    @Test
-    fun `幅400dp未満では列数は1`() {
-        assertEquals(1, calculateDebugStateColumns(399.dp))
-    }
-
-    @Test
-    fun `幅400dp以上700dp未満では列数は2`() {
-        assertEquals(2, calculateDebugStateColumns(400.dp))
-        assertEquals(2, calculateDebugStateColumns(699.dp))
-    }
-
-    @Test
-    fun `幅700dp以上では列数は3`() {
-        assertEquals(3, calculateDebugStateColumns(700.dp))
-    }
-
     private fun sampleRaceFlags(
         gamePhase: SessionPhase = SessionPhase.GREEN_FLAG,
         yellowFlagState: SessionYellowFlagState = SessionYellowFlagState.NONE,

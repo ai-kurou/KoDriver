@@ -5,6 +5,7 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AndroidAudioUsage
+import kurou.kodriver.domain.model.MainWindowBounds
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.OverlayWindowBounds
@@ -17,6 +18,7 @@ import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
+import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
@@ -110,6 +112,15 @@ class SaveSettingsUseCasesTest {
                     SaveOverlayWindowBoundsUseCase(
                         it,
                     )(OverlayWindowBounds(x = 10, y = 20, width = 300, height = 100))
+                },
+            )
+            assertSaves<MainWindowBoundsPreferencesRepository>(
+                useCaseName = "SaveMainWindowBoundsUseCase",
+                save = { saveMainWindowBounds(MainWindowBounds(x = 10, y = 20, width = 800, height = 500)) },
+                useCase = {
+                    SaveMainWindowBoundsUseCase(
+                        it,
+                    )(MainWindowBounds(x = 10, y = 20, width = 800, height = 500))
                 },
             )
             assertSaves<VoicePreferencesRepository>(

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AndroidAudioUsage
+import kurou.kodriver.domain.model.MainWindowBounds
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.OverlayTextSize
@@ -24,6 +25,7 @@ import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
+import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
@@ -154,6 +156,12 @@ class ObserveSettingsUseCasesTest {
             OverlayWindowBounds(x = 10, y = 20, width = 300, height = 100),
             observe = { observeOverlayWindowBounds() },
             useCase = { ObserveOverlayWindowBoundsUseCase(it)() },
+        )
+        assertObserves<MainWindowBoundsPreferencesRepository, MainWindowBounds>(
+            "ObserveMainWindowBoundsUseCase",
+            MainWindowBounds(x = 10, y = 20, width = 800, height = 500),
+            observe = { observeMainWindowBounds() },
+            useCase = { ObserveMainWindowBoundsUseCase(it)() },
         )
         assertObserves<HotkeyRepository, Unit>(
             "ObserveReadoutHotkeyUseCase",

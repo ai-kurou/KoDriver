@@ -23,6 +23,7 @@ import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
 import kurou.kodriver.data.preferences.createLowVolumeWarningEnabledPreferencesRepository
+import kurou.kodriver.data.preferences.createMainWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutPlayButtonLayoutPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutSetPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
@@ -60,6 +61,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
+import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
@@ -251,6 +253,9 @@ private fun androidDataModuleAppSettings(context: Context) =
         // オーバーレイウィンドウの位置・サイズ（デスクトップ版のみ使用するが、Koin の定義は両プラットフォームで揃える）
         single<OverlayWindowBoundsPreferencesRepository> {
             createOverlayWindowBoundsPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<MainWindowBoundsPreferencesRepository> {
+            createMainWindowBoundsPreferencesRepository(context.filesDir.absolutePath)
         }
     }
 

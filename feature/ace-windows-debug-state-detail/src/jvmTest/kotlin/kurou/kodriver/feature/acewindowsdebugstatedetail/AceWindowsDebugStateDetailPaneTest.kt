@@ -13,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.DEBUG_STATE_GRID_TEST_TAG
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -135,13 +136,5 @@ class AceWindowsDebugStateDetailPaneTest {
         val flag = rule.onNodeWithText("フラッグ情報").fetchSemanticsNode().boundsInRoot
         val simulator = rule.onNodeWithText("選択中のシミュレーター").fetchSemanticsNode().boundsInRoot
         assertTrue(flag.top < simulator.top || flag.left < simulator.left)
-    }
-
-    @Test
-    fun `画面幅の境界に合わせて1列から3列に切り替える`() {
-        assertEquals(1, calculateDebugStateColumns(399.dp))
-        assertEquals(2, calculateDebugStateColumns(400.dp))
-        assertEquals(2, calculateDebugStateColumns(699.dp))
-        assertEquals(3, calculateDebugStateColumns(700.dp))
     }
 }

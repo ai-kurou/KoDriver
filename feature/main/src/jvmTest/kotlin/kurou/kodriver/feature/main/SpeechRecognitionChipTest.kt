@@ -105,6 +105,35 @@ class SpeechRecognitionChipTest {
     }
 
     @Test
+    fun `コマンド待ちの波紋は広がるほど大きく薄くなり範囲外は端に丸める`() {
+        assertEquals(0.4f, commandPulseRadiusFraction(0f))
+        assertEquals(1f, commandPulseRadiusFraction(1f))
+        assertEquals(0.4f, commandPulseRadiusFraction(-1f))
+        assertEquals(1f, commandPulseRadiusFraction(2f))
+        assertEquals(0.5f, commandPulseAlpha(0f))
+        assertEquals(0f, commandPulseAlpha(1f))
+        assertEquals(0.5f, commandPulseAlpha(-1f))
+        assertEquals(0f, commandPulseAlpha(2f))
+    }
+
+    @Test
+    fun `コマンド待ちに入ると波紋のアニメーション中も表示し続け、抜けても表示する`() {
+        rule.mainClock.autoAdvance = false
+        var uiState by mutableStateOf(
+            SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.Listening),
+        )
+        rule.setContent { KoDriverTheme { SpeechRecognitionChip(uiState = uiState) } }
+        uiState = uiState.copy(status = SpeechRecognitionStatus.CommandWaiting)
+        listOf(100L, 400L, 2000L).forEach { millis ->
+            rule.mainClock.advanceTimeBy(millis)
+            rule.onRoot().assertIsDisplayed()
+        }
+        uiState = uiState.copy(status = SpeechRecognitionStatus.Listening)
+        rule.mainClock.advanceTimeBy(100)
+        rule.onRoot().assertIsDisplayed()
+    }
+
+    @Test
     fun `音量は段階に変換し範囲外は端に丸める`() {
         assertEquals(0, volumeRingStep(0f))
         assertEquals(0, volumeRingStep(0.09f))

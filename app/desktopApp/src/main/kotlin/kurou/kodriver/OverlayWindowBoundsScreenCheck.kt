@@ -19,7 +19,20 @@ private const val MIN_VISIBLE_HEIGHT = 40
  * タイトルバーを持たずパネル自体のドラッグでしか移動できないため、位置を復元してよいのは
  * どれか一つのモニタと十分な面積が重なっている場合だけとする。
  */
-internal fun NarratorOverlayWindowBounds.restorablePosition(screenBounds: List<Rectangle>): Point? {
+internal fun NarratorOverlayWindowBounds.restorablePosition(screenBounds: List<Rectangle>): Point? =
+    restorablePosition(x = x, y = y, width = width, height = height, screenBounds = screenBounds)
+
+/**
+ * [NarratorOverlayWindowBounds.restorablePosition] の、ウィンドウの種類に依らない共通実装。
+ * [x] / [y] が `null`（位置が未保存）の場合や、どのモニタとも十分に重ならない場合は `null` を返す。
+ */
+internal fun restorablePosition(
+    x: Int?,
+    y: Int?,
+    width: Int,
+    height: Int,
+    screenBounds: List<Rectangle>,
+): Point? {
     val windowBounds = Rectangle(x ?: return null, y ?: return null, width, height)
     val isVisible =
         screenBounds.any { screen ->
