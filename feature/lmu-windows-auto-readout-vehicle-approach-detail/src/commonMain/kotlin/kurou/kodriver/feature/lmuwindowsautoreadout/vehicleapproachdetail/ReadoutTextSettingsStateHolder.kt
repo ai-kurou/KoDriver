@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsVehicleApproachPreferencesUseCases
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
@@ -107,19 +107,19 @@ internal class ReadoutTextSettingsStateHolder(
     ) {
         when (slot) {
             VehicleApproachReadoutTextSlot.StartLeft -> {
-                scope.launch { saveStartLeftText(text) }
+                scope.launchCapturingErrors { saveStartLeftText(text) }
             }
 
             VehicleApproachReadoutTextSlot.StartRight -> {
-                scope.launch { saveStartRightText(text) }
+                scope.launchCapturingErrors { saveStartRightText(text) }
             }
 
             VehicleApproachReadoutTextSlot.SustainedLeft -> {
-                scope.launch { vehicleApproachPreferences.saveSustainedLeftReadoutText(text) }
+                scope.launchCapturingErrors { vehicleApproachPreferences.saveSustainedLeftReadoutText(text) }
             }
 
             VehicleApproachReadoutTextSlot.SustainedRight -> {
-                scope.launch { vehicleApproachPreferences.saveSustainedRightReadoutText(text) }
+                scope.launchCapturingErrors { vehicleApproachPreferences.saveSustainedRightReadoutText(text) }
             }
         }
     }
