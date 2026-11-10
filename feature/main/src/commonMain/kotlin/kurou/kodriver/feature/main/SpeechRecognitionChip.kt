@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -204,12 +203,13 @@ private fun VolumeRing(
     step: Int,
     color: Color,
 ) {
-    var previousStep by remember { mutableIntStateOf(step) }
+    // 前回の段階は再コンポーズを起こさないよう、スナップショット状態ではなく単なる配列で持つ
+    val previousStep = remember { intArrayOf(step) }
     val sweepAngle by animateFloatAsState(
         targetValue = volumeRingSweepAngle(step),
-        animationSpec = tween(durationMillis = volumeRingAnimationMillis(rising = step > previousStep)),
+        animationSpec = tween(durationMillis = volumeRingAnimationMillis(rising = step > previousStep[0])),
     )
-    SideEffect { previousStep = step }
+    SideEffect { previousStep[0] = step }
     Canvas(modifier = Modifier.fillMaxSize().padding(RING_INSET)) {
         val strokeWidth = RING_STROKE_WIDTH.toPx()
         val arcSize = Size(size.width - strokeWidth, size.height - strokeWidth)
