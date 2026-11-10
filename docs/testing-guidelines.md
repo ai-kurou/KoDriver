@@ -102,6 +102,10 @@ CI の `unit-test` ジョブは `-PexcludeScreenshotTests=true` でスクリー�
 ./gradlew koverXmlReport
 ```
 
+### Koin モジュールの除外
+
+Koin モジュール定義ファイル（`*DataModule.kt` が生成する `*DataModuleKt`）は、ルートの `build.gradle.kts` の `excludeCommonCoverageTargets()` で Kover の集計から除外している。登録の配線だけで分岐や計算を持たず、登録漏れ・型不一致は「Koin モジュールグラフの検証」の `checkKoinModules()` テストで検出できるため、モジュール単体の解決テスト（`koinApplication { modules(...) }.koin.get<...>()`）は追加しない。
+
 ### Compose の生成分岐と Pane の配線
 
 Compose コンパイラが生成する変更フラグ・デフォルト引数マスクなどの分岐は、ソースの条件分岐と区別する。Kover の Composable 宣言行に残る部分カバーだけを埋めるために、生成マスクの組合せを網羅するテストは追加しない。ソースに記述した条件分岐や UI の振る舞いは引き続きテスト対象とする。

@@ -47,6 +47,9 @@ fun kotlinx.kover.gradle.plugin.dsl.KoverReportFilter.excludeCommonCoverageTarge
     classes("*PreviewKt")
     classes("*PreviewKt\$*")
     classes("*PreviewParameterProvider")
+    // Koin モジュール定義ファイル（*DataModule.kt）。登録の配線だけで分岐や計算を持たない。
+    // 登録漏れ・型不一致は DesktopKoinModuleGraphTest / AndroidKoinModuleGraphTest が検証する
+    classes("*DataModuleKt", "*DataModuleKt\$*")
     packages("*.generated.resources")
 }
 
