@@ -45,3 +45,12 @@
 
 ![Module Graph](../../docs/graphs/core-speech-recognition-data.svg)
 <!-- MODULE-GRAPH-END -->
+
+## ライセンス
+
+- Vosk 本体は Apache-2.0。Desktop は `com.alphacephei:vosk`、Android は `com.alphacephei:vosk-android`（バージョンは `gradle/libs.versions.toml` が正）。
+- 同梱の日本語モデル `vosk-model-small-ja-0.22` は Apache-2.0。配布元は https://alphacephei.com/vosk/models 。
+- Vosk が実行時に使う JNA（`net.java.dev.jna:jna`）は LGPL-2.1 と Apache-2.0 のデュアルライセンス。
+- vosk-android の AAR 内のネイティブライブラリ（Kaldi 等）の個別の表記は未確認。
+
+ライセンス画面への登録は [`feature/other-license-detail/README.md`](../../feature/other-license-detail/README.md) を参照。
