@@ -49,7 +49,7 @@ LMU のパース詳細は `core/lmu-windows-data/README.md`、REST API 調査メ
 
 ### ユーザー設定のデフォルト値
 
-デフォルト値・読み上げキーの置き場所と命名規則（`XXX_DEFAULT` など）は [`docs/project-notes.md`](docs/project-notes.md) を参照。シミュレーター固有値は各シミュレーターのドメインモジュールに置き、feature には仕様値を置かない。
+デフォルト値・読み上げキーの置き場所と命名規則（`XXX_DEFAULT` など）は [`docs/project-notes.md`](docs/project-notes.md) を参照。シミュレーター固有値は各シミュレーターのドメインモジュールに置き、feature には仕様値を置かない。`_DEFAULT` は既定値にのみ付け、`_MIN` / `_MAX` / `_UNSPECIFIED` / `_UNKNOWN_KEY` / `_ALTERNATE` などの仕様値には付けない。新しい読み上げキーを追加する際は、そのシミュレーターの `*ReadoutItemKeys.kt` のキー一覧にも追加すること。
 
 ---
 
