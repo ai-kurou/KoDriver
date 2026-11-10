@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -76,7 +77,7 @@ internal fun SpeechRecognitionListPaneContent(
         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
     ) {
         item { WakeWordGuide() }
-        if (uiState.groups.isEmpty()) {
+        if (uiState.loaded && uiState.groups.isEmpty()) {
             item {
                 Text(
                     text = stringResource(Res.string.speech_command_guide_empty),
@@ -130,7 +131,14 @@ private fun WakeWordGuide() {
                         stringResource(Res.string.speech_command_guide_wake_step_readout),
                     )
                 steps.forEachIndexed { index, step ->
-                    if (index != 0) Text(text = FLOW_ARROW, style = MaterialTheme.typography.labelMedium)
+                    if (index != 0) {
+                        // 流れを示すだけの装飾なので、読み上げの対象から外す
+                        Text(
+                            text = FLOW_ARROW,
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.clearAndSetSemantics {},
+                        )
+                    }
                     PhraseChip(step)
                 }
             }

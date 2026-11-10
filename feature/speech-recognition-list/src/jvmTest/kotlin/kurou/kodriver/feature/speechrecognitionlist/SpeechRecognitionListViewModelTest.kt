@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.speechrecognitionlist
 
 import androidx.lifecycle.viewModelScope
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -56,9 +57,13 @@ class SpeechRecognitionListViewModelTest {
             val viewModel =
                 SpeechRecognitionListViewModel(ObserveSpeechCommandGuideUseCase(simulatorRepository, guideRepository))
             try {
-                assertEquals(SpeechRecognitionListUiState(groups), viewModel.uiState.first { it.groups.isNotEmpty() })
+                assertEquals(
+                    SpeechRecognitionListUiState(groups, loaded = true),
+                    viewModel.uiState.first { it.groups.isNotEmpty() },
+                )
                 verify(exactly = 1) { simulatorRepository.selectedSimulator() }
                 verify(exactly = 1) { guideRepository.guideGroups(Simulator.LmuWindows) }
+                confirmVerified(simulatorRepository, guideRepository)
             } finally {
                 viewModel.viewModelScope.cancel()
             }

@@ -23,11 +23,25 @@ class SpeechRecognitionListPaneTest {
 
     @Test
     fun `項目がなくても呼びかけの案内と空の案内を表示する`() {
-        rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(SpeechRecognitionListUiState()) } }
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionListPaneContent(
+                    SpeechRecognitionListUiState(loaded = true),
+                )
+            }
+        }
 
         rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_PANE_TEST_TAG).assertIsDisplayed()
         rule.onNodeWithText("最初に「コドライバー」と呼びかけます。").assertIsDisplayed()
         rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG).assertIsDisplayed()
+    }
+
+    @Test
+    fun `案内の取得前は空の案内を出さない`() {
+        rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(SpeechRecognitionListUiState()) } }
+
+        rule.onNodeWithText("最初に「コドライバー」と呼びかけます。").assertIsDisplayed()
+        rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG).assertDoesNotExist()
     }
 
     @Test
@@ -36,6 +50,7 @@ class SpeechRecognitionListPaneTest {
             KoDriverTheme {
                 SpeechRecognitionListPaneContent(
                     SpeechRecognitionListUiState(
+                        loaded = true,
                         groups =
                             listOf(
                                 fuelGroup,

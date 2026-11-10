@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.speechrecognitionlist
 
 import androidx.lifecycle.viewModelScope
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -69,6 +70,7 @@ class SpeechRecognitionListModuleTest {
                 assertEquals(groups, viewModel.uiState.first { it.groups.isNotEmpty() }.groups)
                 verify(exactly = 1) { simulatorRepository.selectedSimulator() }
                 verify(exactly = 1) { guideRepository.guideGroups(Simulator.Gt7Ps5) }
+                confirmVerified(simulatorRepository, guideRepository)
             } finally {
                 viewModel.viewModelScope.cancel()
                 application.close()
