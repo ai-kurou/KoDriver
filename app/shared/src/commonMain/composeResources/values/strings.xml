@@ -1,6 +1,7 @@
 <resources>
     <string name="nav_auto_readout">自動</string>
     <string name="nav_manual_readout">手動</string>
+    <string name="nav_speech_recognition">音声</string>
     <string name="nav_more">その他</string>
     <string name="lmu_connected">LMUに接続しました</string>
     <string name="lmu_disconnected">LMUとの接続を待機しています</string>

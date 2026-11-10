@@ -2,6 +2,7 @@ package kurou.kodriver.presentation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HeadsetMic
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ internal enum class AppDestination(
 ) : NavKey {
     AutoReadout(Icons.Default.HeadsetMic),
     ManualReadout(Icons.Default.TouchApp),
+    SpeechRecognition(Icons.Default.Mic),
     More(Icons.Default.MoreHoriz),
 }
 
