@@ -108,6 +108,10 @@ Koin モジュール定義ファイル（`*DataModule.kt` が生成する `*Data
 
 登録漏れ・型不一致は「Koin モジュールグラフの検証」の `checkKoinModules()` テストで検出できるため、モジュール単体の解決テスト（`koinApplication { modules(...) }.koin.get<...>()`）は原則追加しない。ただし `lmuWindowsDataModule` / `aceWindowsDataModule`（共有メモリ）は上記グラフテストでダミーに差し替え・除外されるため、実体の登録は現状どのテストでも解決されない。OS 分岐など検証したいロジックがある場合は、`*DataModule.kt` の外に関数・クラスとして切り出してテストする。
 
+### Room 生成コードの除外
+
+Room（KSP）が生成する `*Dao_Impl` / `*Database_Impl`（例: `TelemetryLogDao_Impl`）は、ルートの `build.gradle.kts` の `excludeCommonCoverageTargets()` で Kover の集計から除外している。手書きのロジックではないため。DAO のクエリを検証したい場合は、Repository 側のテストで行う。
+
 ### Compose の生成分岐と Pane の配線
 
 Compose コンパイラが生成する変更フラグ・デフォルト引数マスクなどの分岐は、ソースの条件分岐と区別する。Kover の Composable 宣言行に残る部分カバーだけを埋めるために、生成マスクの組合せを網羅するテストは追加しない。ソースに記述した条件分岐や UI の振る舞いは引き続きテスト対象とする。

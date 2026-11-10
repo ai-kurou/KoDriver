@@ -52,6 +52,8 @@ fun kotlinx.kover.gradle.plugin.dsl.KoverReportFilter.excludeCommonCoverageTarge
     // 登録漏れ・型不一致は DesktopKoinModuleGraphTest / AndroidKoinModuleGraphTest が検証するが、
     // lmuWindowsDataModule / aceWindowsDataModule は両テストでダミーに差し替え・除外されるため、実体は解決されない
     classes("*DataModuleKt", "*DataModuleKt\$*")
+    // Room（KSP）が生成する DAO / Database 実装（TelemetryLogDao_Impl など）。手書きのロジックではない
+    classes("*Dao_Impl", "*Dao_Impl\$*", "*Database_Impl", "*Database_Impl\$*")
     packages("*.generated.resources")
 }
 
