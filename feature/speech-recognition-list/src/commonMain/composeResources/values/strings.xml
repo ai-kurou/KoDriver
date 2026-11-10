@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="speech_command_guide_wake_title">最初に「コドライバー」と呼びかけます。</string>
-    <string name="speech_command_guide_wake_word">コドライバー</string>
-    <string name="speech_command_guide_wake_step_chime">確認音が鳴る</string>
-    <string name="speech_command_guide_wake_step_phrase">下の語句</string>
+    <string name="speech_command_guide_wake_title">まずはこう呼びかけます</string>
+    <string name="speech_command_guide_wake_word">「コドライバー」</string>
+    <string name="speech_command_guide_wake_step_chime">確認音</string>
+    <string name="speech_command_guide_wake_step_phrase">下の語句を言う</string>
     <string name="speech_command_guide_wake_step_readout">読み上げ</string>
+    <string name="speech_command_guide_phrase_count">%1$d語</string>
     <string name="speech_command_guide_empty">このシミュレーターには、音声で読み上げさせられる項目がありません。</string>
     <string name="speech_command_guide_category_virtual_energy">バーチャルエネルギー</string>
     <string name="speech_command_guide_category_fuel">燃料</string>

@@ -32,7 +32,9 @@ class SpeechRecognitionListPaneTest {
         }
 
         rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_PANE_TEST_TAG).assertIsDisplayed()
-        rule.onNodeWithText("最初に「コドライバー」と呼びかけます。").assertIsDisplayed()
+        rule.onNodeWithText("まずはこう呼びかけます").assertIsDisplayed()
+        rule.onNodeWithText("「コドライバー」").assertIsDisplayed()
+        listOf("確認音", "下の語句を言う", "読み上げ").forEach { rule.onNodeWithText(it).assertIsDisplayed() }
         rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG).assertIsDisplayed()
     }
 
@@ -40,7 +42,7 @@ class SpeechRecognitionListPaneTest {
     fun `案内の取得前は空の案内を出さない`() {
         rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(SpeechRecognitionListUiState()) } }
 
-        rule.onNodeWithText("最初に「コドライバー」と呼びかけます。").assertIsDisplayed()
+        rule.onNodeWithText("まずはこう呼びかけます").assertIsDisplayed()
         rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG).assertDoesNotExist()
     }
 
@@ -79,5 +81,18 @@ class SpeechRecognitionListPaneTest {
         listOf("燃料", "タイヤ", "ブレーキ", "ラップ", "燃料残量", "フューエル", "ガス", "ゴム", "ディスク", "バーチャルエネルギー", "VE残量", "ベストラップ")
             .forEach { rule.onNodeWithText(it, useUnmergedTree = true).assertExists() }
         rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG).assertDoesNotExist()
+    }
+
+    @Test
+    fun `項目のカードに語句の数を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionListPaneContent(
+                    SpeechRecognitionListUiState(loaded = true, groups = listOf(fuelGroup)),
+                )
+            }
+        }
+
+        rule.onNodeWithText("2語", useUnmergedTree = true).assertExists()
     }
 }
