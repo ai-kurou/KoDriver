@@ -1,5 +1,5 @@
 plugins {
-    id("feature-compose")
+    id("feature-compose-screenshot")
 }
 
 kotlin {
@@ -7,6 +7,12 @@ kotlin {
         namespace = "kurou.kodriver.feature.speechrecognitionlist"
         withHostTest {
             isIncludeAndroidResources = true
+        }
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.core.designsystem)
         }
     }
 }
