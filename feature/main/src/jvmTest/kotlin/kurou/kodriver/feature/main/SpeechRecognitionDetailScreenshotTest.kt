@@ -1,15 +1,19 @@
 package kurou.kodriver.feature.main
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.DesktopComposeUiTest
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.v2.runDesktopComposeUiTest
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import io.mockk.every
@@ -22,7 +26,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
-import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
@@ -37,7 +40,7 @@ import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 import org.junit.Test
 
 /** 詳細の外枠（ボトムシート・ポップオーバー）と、チップをタップして詳細が開くまでの合成を撮る。中身単体は [SpeechRecognitionChipScreenshotTest]。 */
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTestApi::class)
 class SpeechRecognitionDetailScreenshotTest {
     private val listeningState =
         SpeechRecognitionUiState(
@@ -51,32 +54,32 @@ class SpeechRecognitionDetailScreenshotTest {
 
     @Test
     fun `ボトムシート 聞き取り中`() =
-        composeScreenshotTest {
+        sheetScreenshotTest {
             captureDetail(SpeechRecognitionDetailPresentation.BottomSheet, listeningState)
         }
 
     @Test
     fun `ボトムシート 停止中`() =
-        composeScreenshotTest {
+        sheetScreenshotTest {
             captureDetail(SpeechRecognitionDetailPresentation.BottomSheet, SpeechRecognitionUiState())
         }
 
     @Test
     fun `ポップオーバー 聞き取り中`() =
-        composeScreenshotTest {
+        popoverScreenshotTest {
             captureDetail(SpeechRecognitionDetailPresentation.Popover, listeningState)
         }
 
     @Test
     fun `ポップオーバー 停止中`() =
-        composeScreenshotTest {
+        popoverScreenshotTest {
             captureDetail(SpeechRecognitionDetailPresentation.Popover, SpeechRecognitionUiState())
         }
 
     @Test
     fun `チップ付き詳細 タップ前`() =
         withMainDispatcher {
-            composeScreenshotTest {
+            popoverScreenshotTest {
                 withChipWithDetail(SpeechRecognitionDetailPresentation.Popover) {}
             }
         }
@@ -84,7 +87,7 @@ class SpeechRecognitionDetailScreenshotTest {
     @Test
     fun `チップ付き詳細 ポップオーバーを開いた状態`() =
         withMainDispatcher {
-            composeScreenshotTest {
+            popoverScreenshotTest {
                 withChipWithDetail(SpeechRecognitionDetailPresentation.Popover) {
                     onNodeWithContentDescription("停止中").performClick()
                     waitForIdle()
@@ -95,13 +98,21 @@ class SpeechRecognitionDetailScreenshotTest {
     @Test
     fun `チップ付き詳細 ボトムシートを開いた状態`() =
         withMainDispatcher {
-            composeScreenshotTest {
+            sheetScreenshotTest {
                 withChipWithDetail(SpeechRecognitionDetailPresentation.BottomSheet) {
                     onNodeWithContentDescription("停止中").performClick()
                     waitForIdle()
                 }
             }
         }
+
+    /** 撮影用のウィンドウをポップオーバー向けの大きさにする。ポップオーバーはウィンドウ内に収まるため、画像はこの大きさになる。 */
+    private fun popoverScreenshotTest(block: suspend DesktopComposeUiTest.() -> Unit) =
+        runDesktopComposeUiTest(width = WINDOW_WIDTH_DP, height = POPOVER_WINDOW_HEIGHT_DP, block = block)
+
+    /** 撮影用のウィンドウをボトムシート向けの大きさにする。シートは下端に出る。 */
+    private fun sheetScreenshotTest(block: suspend DesktopComposeUiTest.() -> Unit) =
+        runDesktopComposeUiTest(width = WINDOW_WIDTH_DP, height = SHEET_WINDOW_HEIGHT_DP, block = block)
 
     /** ViewModel の `viewModelScope` と Compose のテストが `Dispatchers.Main` を使うため、テスト全体を包んで差し替える。 */
     private fun withMainDispatcher(block: () -> Unit) {
@@ -121,7 +132,7 @@ class SpeechRecognitionDetailScreenshotTest {
         setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(DETAIL_HOST_WIDTH, DETAIL_HOST_HEIGHT)) {
+                    Box(modifier = Modifier.fillMaxSize()) {
                         Box(modifier = Modifier.align(Alignment.BottomEnd).padding(CHIP_MARGIN)) {
                             SpeechRecognitionChip(uiState = uiState)
                             SpeechRecognitionDetail(
@@ -137,6 +148,8 @@ class SpeechRecognitionDetailScreenshotTest {
                 }
             }
         }
+        // 内容が撮影範囲に収まらず切れていないことを、最後の認識結果の表示で確かめる
+        uiState.recognized.lastOrNull()?.let { onNodeWithText(it.joinToString(" / ")).assertIsDisplayed() }
         captureScene()
     }
 
@@ -150,7 +163,7 @@ class SpeechRecognitionDetailScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(DETAIL_HOST_WIDTH, DETAIL_HOST_HEIGHT)) {
+                        Box(modifier = Modifier.fillMaxSize()) {
                             rememberSpeechRecognitionChip(viewModel, requestPermission = {})(
                                 Modifier.align(Alignment.BottomEnd).padding(CHIP_MARGIN),
                                 presentation,
@@ -193,8 +206,15 @@ class SpeechRecognitionDetailScreenshotTest {
     }
 
     private companion object {
-        val DETAIL_HOST_WIDTH = 480.dp
-        val DETAIL_HOST_HEIGHT = 640.dp
+        /** ウィンドウの幅。ボトムシートの最大幅（640dp）より狭くし、シートが幅いっぱいに出るようにする。 */
+        const val WINDOW_WIDTH_DP = 480
+
+        /** ポップオーバーの撮影用の高さ。 */
+        const val POPOVER_WINDOW_HEIGHT_DP = 640
+
+        /** ボトムシートの撮影用の高さ。シート内容のホストは 1080dp に統一する。 */
+        const val SHEET_WINDOW_HEIGHT_DP = 1080
+
         val CHIP_MARGIN = 26.dp
     }
 }
