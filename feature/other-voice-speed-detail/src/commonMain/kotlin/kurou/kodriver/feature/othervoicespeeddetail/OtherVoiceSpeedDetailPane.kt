@@ -1,32 +1,14 @@
 package kurou.kodriver.feature.othervoicespeeddetail
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kurou.kodriver.core.designsystem.DetailPaneDescription
-import kurou.kodriver.core.designsystem.DetailPaneScaffold
-import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.core.designsystem.ThresholdSlider
-import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.core.designsystem.SliderPreviewDetailPaneContent
+import kurou.kodriver.core.designsystem.SliderPreviewDetailTexts
 import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 import kurou.kodriver.domain.model.VOICE_SPEED_MAX
 import kurou.kodriver.domain.model.VOICE_SPEED_MIN
@@ -77,60 +59,28 @@ fun OtherVoiceSpeedDetailPaneContent(
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val haptic = LocalHapticFeedback.current
-    val speedLabel = stringResource(Res.string.voice_speed_label)
-    val previewSample = stringResource(Res.string.voice_speed_preview_sample)
-
-    DetailPaneScaffold(
-        title = stringResource(Res.string.voice_speed_title),
+    SliderPreviewDetailPaneContent(
+        texts =
+            SliderPreviewDetailTexts(
+                title = stringResource(Res.string.voice_speed_title),
+                description = stringResource(Res.string.voice_speed_description),
+                sliderLabel = stringResource(Res.string.voice_speed_label),
+                resetContentDescription = stringResource(Res.string.voice_speed_reset),
+                previewLabel = stringResource(Res.string.voice_speed_preview),
+                previewStopLabel = stringResource(Res.string.voice_speed_preview_stop),
+                previewSample = stringResource(Res.string.voice_speed_preview_sample),
+            ),
+        value = uiState.speed,
+        valueRange = VOICE_SPEED_MIN..VOICE_SPEED_MAX,
+        steps = 14,
+        defaultValue = VOICE_SPEED_DEFAULT,
+        isPreviewing = uiState.isPreviewing,
+        onValueChangeFinished = onSpeedChanged,
+        onPreviewClicked = onPreviewClicked,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
-    ) {
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
-        ) {
-            DetailPaneDescription(
-                text = stringResource(Res.string.voice_speed_description),
-            )
-            ThresholdSlider(
-                value = uiState.speed,
-                valueRange = VOICE_SPEED_MIN..VOICE_SPEED_MAX,
-                labelFormatter = { speedLabel.formatSliderLabel(it) },
-                onValueChangeFinished = { onSpeedChanged(it) },
-                modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
-                steps = 14,
-                defaultValue = VOICE_SPEED_DEFAULT,
-                onResetToDefault = { onSpeedChanged(VOICE_SPEED_DEFAULT) },
-                resetContentDescription = stringResource(Res.string.voice_speed_reset),
-            )
-            FilledTonalButton(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onPreviewClicked(previewSample)
-                },
-                modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
-            ) {
-                Icon(
-                    imageVector = if (uiState.isPreviewing) Icons.Default.Stop else Icons.Default.PlayArrow,
-                    contentDescription = null,
-                )
-                Spacer(Modifier.width(KoDriverSpacing.small))
-                Text(
-                    stringResource(
-                        if (uiState.isPreviewing) {
-                            Res.string.voice_speed_preview_stop
-                        } else {
-                            Res.string.voice_speed_preview
-                        },
-                    ),
-                )
-            }
-        }
-    }
+    )
 }
 
 @Preview(showBackground = true)
