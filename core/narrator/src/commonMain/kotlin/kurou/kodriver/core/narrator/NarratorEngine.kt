@@ -157,9 +157,16 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
     private fun newPlaybackScope(): CoroutineScope = CoroutineScope(scope.coroutineContext + SupervisorJob())
 
     init {
-        scope.launch { volumeFlow.collect { currentVolume = it } }
-        scope.launch { startSoundTypeFlow.collect { currentStartSoundType = it } }
-        scope.launch { startSoundEnabledStatesFlow.collect { currentStartSoundEnabledStates = it } }
+        scope.launch { runCatchingNarratorError { volumeFlow.collect { currentVolume = it } } }
+        scope.launch { runCatchingNarratorError { startSoundTypeFlow.collect { currentStartSoundType = it } } }
+        scope.launch {
+            runCatchingNarratorError {
+                startSoundEnabledStatesFlow.collect {
+                    currentStartSoundEnabledStates =
+                        it
+                }
+            }
+        }
         scope.launch {
             val loadedStartSounds = mutableMapOf<START_TYPE, ByteArray>()
             resources.startSoundTypeToFile.forEach { (type, path) ->
@@ -257,7 +264,9 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         } catch (e: Exception) {
             // 読み上げが例外で終わっても再生中のまま残さない。残すと音声認識が再開しない
             finishPlayback()
-            throw e
+            // playbackScope は親の例外ハンドラへ伝播するため、記録して握りつぶす
+            captureNarratorError(e)
+            return
         }
         finishPlayback()
     }
@@ -317,7 +326,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         val barrier = cancelPlayback()
         playbackScope = newPlaybackScope()
         playJob =
-            playbackScope.launch { playSoundOnly(sound, barrier) }
+            playbackScope.launch { runCatchingNarratorError { playSoundOnly(sound, barrier) } }
     }
 
     /**
@@ -331,7 +340,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         val sound = startSounds[currentStartSoundType] ?: return
         val barrier = cancelPlayback()
         playbackScope = newPlaybackScope()
-        val job = playbackScope.launch { playSoundOnly(sound, barrier) }
+        val job = playbackScope.launch { runCatchingNarratorError { playSoundOnly(sound, barrier) } }
         playJob = job
         try {
             job.join()

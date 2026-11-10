@@ -1,5 +1,10 @@
 package kurou.kodriver.core.narrator
 
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -9,6 +14,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -1334,6 +1340,83 @@ class NarratorEngineTest {
             assertEquals(RED_FLAG_KEY to false, observed)
         }
 
+    @Test
+    fun `読み上げが例外で終わった場合は記録して例外を伝播させない`() =
+        runTest {
+            val error = IllegalStateException("tts failed")
+            val propagated = mutableListOf<Throwable>()
+            withCapturedNarratorError(error) {
+                val engine =
+                    createEngine(
+                        FakeSoundPlayer(),
+                        exceptionHandler = CoroutineExceptionHandler { _, e -> propagated += e },
+                        customSpeak = { _, _ -> throw error },
+                    )
+                runCurrent()
+
+                engine.speak(CAR_LEFT)
+                advanceUntilIdle()
+
+                assertEquals(emptyList(), propagated)
+                verify(exactly = 1) { captureNarratorError(error) }
+            }
+        }
+
+    @Test
+    fun `設定Flowの購読が例外で終わった場合は記録して例外を伝播させない`() =
+        runTest {
+            val error = IllegalStateException("flow failed")
+            val propagated = mutableListOf<Throwable>()
+            withCapturedNarratorError(error) {
+                createEngine(
+                    FakeSoundPlayer(),
+                    volumeFlow = flow { throw error },
+                    exceptionHandler = CoroutineExceptionHandler { _, e -> propagated += e },
+                )
+
+                advanceUntilIdle()
+
+                assertEquals(emptyList(), propagated)
+                verify(exactly = 1) { captureNarratorError(error) }
+            }
+        }
+
+    @Test
+    fun `開始音のプレビュー再生が例外で終わった場合は記録して例外を伝播させない`() =
+        runTest {
+            val error = IllegalStateException("play failed")
+            val propagated = mutableListOf<Throwable>()
+            withCapturedNarratorError(error) {
+                val engine =
+                    createEngine(
+                        FakeSoundPlayer(playFailure = error),
+                        exceptionHandler = CoroutineExceptionHandler { _, e -> propagated += e },
+                    )
+                runCurrent()
+
+                engine.previewStartSound(FORMULA_RADIO)
+                advanceUntilIdle()
+
+                assertEquals(emptyList(), propagated)
+                verify(exactly = 1) { captureNarratorError(error) }
+            }
+        }
+
+    private inline fun withCapturedNarratorError(
+        error: Throwable,
+        block: () -> Unit,
+    ) {
+        val errorCapture = Class.forName("kurou.kodriver.core.narrator.NarratorErrorCaptureKt").kotlin
+        mockkStatic(errorCapture)
+        every { captureNarratorError(error) } returns Unit
+        try {
+            block()
+            confirmVerified(errorCapture)
+        } finally {
+            unmockkStatic(errorCapture)
+        }
+    }
+
     @Suppress("LongParameterList")
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
@@ -1409,6 +1492,7 @@ private class FakeSoundPlayer(
     override val isPlaying: Boolean = false,
     private val blockingSound: ByteArray? = null,
     private val cancellationSignal: CompletableDeferred<Unit>? = null,
+    private val playFailure: Throwable? = null,
 ) : SoundPlayer {
     val playedSounds = mutableListOf<ByteArray>()
     val playedVolumes = mutableListOf<Int>()
@@ -1420,6 +1504,7 @@ private class FakeSoundPlayer(
     ) {
         playedSounds += bytes
         playedVolumes += volume
+        playFailure?.let { throw it }
         if (blockingSound != null && bytes.contentEquals(blockingSound)) {
             try {
                 awaitCancellation()
