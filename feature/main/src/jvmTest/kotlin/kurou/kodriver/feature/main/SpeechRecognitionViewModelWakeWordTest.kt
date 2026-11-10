@@ -179,7 +179,7 @@ class SpeechRecognitionViewModelWakeWordTest {
         createListeningViewModel()
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("じこべ")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("自己ベスト")))
 
         assertEquals(1, itemRequestRepository.requests.size)
         assertEquals(SpeechRecognitionStatus.Listening, status)
@@ -240,7 +240,7 @@ class SpeechRecognitionViewModelWakeWordTest {
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
         advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
 
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("じこべ")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("自己ベスト")))
 
         assertEquals(emptyList(), itemRequestRepository.requests)
     }
@@ -437,7 +437,7 @@ class SpeechRecognitionViewModelWakeWordTest {
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
         viewModel.onEnabledChange(true) {}
-        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("じこべ")))
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("自己ベスト")))
 
         assertEquals(emptyList(), itemRequestRepository.requests)
     }

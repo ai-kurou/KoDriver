@@ -21,7 +21,7 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
         )
         assertEquals(
             LmuWindowsReadoutItemKey.MyBestLap.Root.value,
-            matchLmuWindowsManualReadoutItemKey(listOf("じこべ")),
+            matchLmuWindowsManualReadoutItemKey(listOf("自己ベストを教えて")),
         )
     }
 
@@ -46,23 +46,16 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
     }
 
     @Test
-    fun `英字だけの語句は英単語の途中には一致せず単独や日本語に隣接する場合は一致する`() {
+    fun `英字だけの発話はLMUの語句に一致しない`() {
         assertNull(matchLmuWindowsManualReadoutItemKey(listOf("have a nice day")))
-        assertEquals(
-            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
-            matchLmuWindowsManualReadoutItemKey(listOf("VEを教えて")),
-        )
-        assertEquals(
-            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
-            matchLmuWindowsManualReadoutItemKey(listOf("have", "VE")),
-        )
+        assertNull(matchLmuWindowsManualReadoutItemKey(listOf("VE")))
     }
 
     @Test
-    fun `空白と英字の大文字小文字を無視する`() {
+    fun `空白を無視する`() {
         assertEquals(
             LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
-            matchLmuWindowsManualReadoutItemKey(listOf("v e")),
+            matchLmuWindowsManualReadoutItemKey(listOf("バーチャル エネルギー")),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
@@ -79,18 +72,13 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
     }
 
     @Test
-    fun `タイヤの残り・減り系の言い方はタイヤ摩耗を選ぶ`() {
+    fun `タイヤの残り系の言い方はタイヤ摩耗を選ぶ`() {
         listOf(
             "タイヤ残り",
             "タイヤの残り",
             "タイヤの残量",
-            "タイヤ減り",
-            "タイヤのへり",
-            "タイヤすり減り",
-            "タイヤの減り具合",
             "タイヤのこり",
             "タイヤのこりりょう",
-            "タイヤへり",
         ).forEach { phrase ->
             assertEquals(
                 LmuWindowsReadoutItemKey.TyreWear.Root.value,
@@ -101,18 +89,12 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
     }
 
     @Test
-    fun `ブレーキの残り・減り系の言い方はブレーキ摩耗を選ぶ`() {
+    fun `ブレーキの残り系の言い方はブレーキ摩耗を選ぶ`() {
         listOf(
             "ブレーキ残り",
             "ブレーキの残り",
             "ブレーキの残量",
-            "ブレーキ減り",
-            "ブレーキのへり",
-            "ブレーキすり減り",
-            "ブレーキの減り具合",
             "ブレーキのこり",
-            "ブレーキのこりりょう",
-            "ブレーキへり",
         ).forEach { phrase ->
             assertEquals(
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value,
