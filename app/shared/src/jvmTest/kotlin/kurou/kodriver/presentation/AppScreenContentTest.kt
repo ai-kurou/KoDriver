@@ -61,6 +61,19 @@ class AppScreenContentTest {
     }
 
     @Test
+    fun `音声タブをタップするとspeechRecognitionContentを表示する`() {
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                speechRecognitionContent = { Text("音声画面") },
+            )
+        }
+
+        rule.onNodeWithText("音声").performClick()
+        rule.onNodeWithText("音声画面").assertIsDisplayed()
+    }
+
+    @Test
     fun `両バナー表示時だけ背景色の隙間を表示する`() {
         val connectionVisible = mutableStateOf(true)
         val reason = mutableStateOf<TtsUnavailableGuidance?>(TtsUnavailableGuidance.EngineMissing)

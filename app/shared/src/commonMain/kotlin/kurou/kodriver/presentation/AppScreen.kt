@@ -69,6 +69,7 @@ import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListViewModel
 import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import kurou.kodriver.feature.otherlist.rememberOpenTtsSettings
+import kurou.kodriver.feature.speechrecognitionlist.SpeechRecognitionListPane
 import org.koin.compose.viewmodel.koinViewModel
 
 /** 下部ナビバー表示時に、ナビバーの直上へ重ねる要素（Snackbar・音声認識チップ）の下余白。 */
@@ -98,11 +99,13 @@ private fun AppDestinationContent(
     destination: AppDestination,
     autoReadoutContent: @Composable () -> Unit,
     manualReadoutContent: @Composable () -> Unit,
+    speechRecognitionContent: @Composable () -> Unit,
     otherContent: @Composable () -> Unit,
 ) {
     when (destination) {
         AppDestination.AutoReadout -> autoReadoutContent()
         AppDestination.ManualReadout -> manualReadoutContent()
+        AppDestination.SpeechRecognition -> speechRecognitionContent()
         AppDestination.More -> otherContent()
     }
 }
@@ -145,6 +148,7 @@ fun AppScreen(
                 )
             }
         },
+    speechRecognitionContent: @Composable () -> Unit = { SpeechRecognitionListPane() },
     otherContent: @Composable (
         scrollToTopRequest: Int,
         selectedSimulatorId: String,
@@ -246,6 +250,7 @@ fun AppScreen(
             autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
             otherListScrollToTopRequest = otherListScrollToTopRequest,
             manualReadoutContent = manualReadoutContent,
+            speechRecognitionContent = speechRecognitionContent,
             otherContent = otherContent,
         )
     }
@@ -322,6 +327,7 @@ internal fun AppScreenContent(
     autoReadoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     autoReadoutListScrollToTopRequest: Int = 0,
     manualReadoutContent: @Composable (selectedSimulatorId: String, tabReselectRequest: Int) -> Unit = { _, _ -> },
+    speechRecognitionContent: @Composable () -> Unit = {},
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit = { _, _ -> },
     otherListScrollToTopRequest: Int = 0,
 ) {
@@ -369,6 +375,7 @@ internal fun AppScreenContent(
                 autoReadoutContent = autoReadoutContent,
                 autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
                 manualReadoutContent = manualReadoutContent,
+                speechRecognitionContent = speechRecognitionContent,
                 otherContent = otherContent,
                 otherListScrollToTopRequest = otherListScrollToTopRequest,
             )
@@ -399,6 +406,7 @@ private fun AppScreenScaffold(
     autoReadoutContent: @Composable (scrollToTopRequest: Int) -> Unit,
     autoReadoutListScrollToTopRequest: Int,
     manualReadoutContent: @Composable (selectedSimulatorId: String, tabReselectRequest: Int) -> Unit,
+    speechRecognitionContent: @Composable () -> Unit,
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit,
     otherListScrollToTopRequest: Int,
 ) {
@@ -436,6 +444,7 @@ private fun AppScreenScaffold(
                                 when (reselected) {
                                     AppDestination.AutoReadout -> onAutoReadoutTabReselected()
                                     AppDestination.ManualReadout -> onManualReadoutTabReselected()
+                                    AppDestination.SpeechRecognition -> Unit
                                     AppDestination.More -> onOtherTabReselected()
                                 }
                             }
@@ -496,6 +505,7 @@ private fun AppScreenScaffold(
                         manualReadoutContent = {
                             manualReadoutContent(selectedSimulatorId, manualReadoutTabReselectRequest)
                         },
+                        speechRecognitionContent = speechRecognitionContent,
                         otherContent = { otherContent(otherListScrollToTopRequest, selectedSimulatorId) },
                     )
                 }
