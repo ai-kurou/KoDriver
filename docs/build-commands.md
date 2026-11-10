@@ -82,3 +82,15 @@ rm -f "$LOG"
 ```
 
 detekt の閾値設定は `config/detekt/detekt.yml` を参照（`MagicNumber` は無効化済みで数値リテラルは許容、`@Composable` は `LongMethod` の対象外）。
+
+## preSubmitChecks に含まれるチェック
+
+- 全モジュールの detekt（モジュール単位の `:xxx:detekt` だけでは `app:shared` 等の連鎖的な問題を見落とすため、全体で実行される）
+- 全モジュールのコードスタイル検証（`ktlintCheck`）
+- モジュールグラフの検証（`assertModuleGraph`）
+- モジュール一覧とアーキテクチャドキュメントの一致確認（`assertArchitectureDocModuleList`）
+- 全ユニットテスト＋カバレッジレポート生成（`koverXmlReport`）
+- Android アプリの lint（`:app:androidApp:lintDebug`）
+- Android 実機テスト（androidTest）のコンパイル（`:app:androidApp:compileDebugAndroidTestKotlin`）
+- Android アプリ・デスクトップアプリのビルド確認
+- デスクトップアプリの統合テスト（Koin モジュール構成の変更は `AppTest` に影響するため）
