@@ -1,10 +1,16 @@
 package kurou.kodriver.feature.main
 
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.SpeechRecognitionChime
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kotlin.test.Test
@@ -19,11 +25,15 @@ class CommandWaitControllerTest {
     private var started = 0
     private var ended = 0
     private var chimeError: Exception? = null
+    private var setModeError: Exception? = null
 
     private fun TestScope.controller() =
         CommandWaitController(
             scope = this,
-            setMode = { modes += it },
+            setMode = {
+                setModeError?.let { e -> throw e }
+                modes += it
+            },
             playChime = {
                 chimeError?.let { e -> throw e }
                 chimes += it
@@ -136,5 +146,28 @@ class CommandWaitControllerTest {
             assertFalse(controller.paused)
             assertFalse(controller.commandWaiting)
             assertEquals(emptyList(), modes)
+        }
+
+    @Test
+    fun `時間切れの処理が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IllegalStateException("mode failed")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val controller = controller()
+                controller.startCommandWait()
+                runCurrent()
+                setModeError = error
+
+                advanceTimeBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS)
+                runCurrent()
+
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }

@@ -6,9 +6,18 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runComposeUiTest
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.OverlayWindowBounds
 import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveOverlayWindowBoundsUseCase
@@ -22,7 +31,7 @@ import kotlin.test.Test
 private const val LOADING_LABEL = "読み込み中"
 private const val POSITION_UNSPECIFIED_LABEL = "未設定"
 
-@OptIn(ExperimentalTestApi::class)
+@OptIn(ExperimentalTestApi::class, ExperimentalCoroutinesApi::class)
 class NarratorOverlayBoundsTest {
     private class FakeOverlayWindowBoundsPreferencesRepository(
         bounds: OverlayWindowBounds,
@@ -105,6 +114,32 @@ class NarratorOverlayBoundsTest {
             onNodeWithText("1,2,400,150").assertIsDisplayed()
         }
     }
+
+    @Test
+    fun `保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IllegalStateException("save failed")
+            val repository =
+                object : OverlayWindowBoundsPreferencesRepository {
+                    override fun observeOverlayWindowBounds(): Flow<OverlayWindowBounds> = flow { }
+
+                    override suspend fun saveOverlayWindowBounds(bounds: OverlayWindowBounds): Unit = throw error
+                }
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val save = createOverlayWindowBoundsSaver(SaveOverlayWindowBoundsUseCase(repository), this)
+
+                save(1, 2, 400, 150)
+                advanceUntilIdle()
+
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
 
     /**
      * 位置が未保存の場合は `x` / `y` が null で渡されることもあわせて確認するためのラベル。

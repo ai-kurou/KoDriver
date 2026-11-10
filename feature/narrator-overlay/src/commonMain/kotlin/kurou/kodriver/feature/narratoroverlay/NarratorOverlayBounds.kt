@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.OVERLAY_WINDOW_POSITION_UNSPECIFIED
 import kurou.kodriver.domain.model.OverlayWindowBounds
 import kurou.kodriver.domain.usecase.ObserveOverlayWindowBoundsUseCase
@@ -62,7 +62,7 @@ fun rememberNarratorOverlayBoundsSaver(): (x: Int, y: Int, width: Int, height: I
     }
 }
 
-private fun createOverlayWindowBoundsSaver(
+internal fun createOverlayWindowBoundsSaver(
     saveOverlayWindowBounds: SaveOverlayWindowBoundsUseCase,
     scope: CoroutineScope,
 ): (x: Int, y: Int, width: Int, height: Int) -> Unit =
@@ -72,7 +72,7 @@ private fun createOverlayWindowBoundsSaver(
         width: Int,
         height: Int,
     ) {
-        scope.launch {
+        scope.launchCapturingErrors {
             saveOverlayWindowBounds(OverlayWindowBounds(x = x, y = y, width = width, height = height))
         }
     }
