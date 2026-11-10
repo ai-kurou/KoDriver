@@ -47,7 +47,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
@@ -59,34 +58,8 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_gt7
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_set_title_lmu
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 internal const val REQUEST_FEEDBACK_MS = 1_500L
-
-/** 選択中シミュレーターの手動読み上げセット一覧を表示する。 */
-@Composable
-fun ManualReadoutListPane(
-    simulatorId: String,
-    simulatorName: String,
-    modifier: Modifier = Modifier,
-    onSetClick: (String) -> Unit = {},
-) {
-    val viewModel: ManualReadoutListViewModel =
-        koinViewModel(key = simulatorId, parameters = { parametersOf(simulatorId) })
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ManualReadoutListPaneContent(
-        uiState = uiState,
-        simulatorId = simulatorId,
-        simulatorName = simulatorName,
-        onAddSet = viewModel::addSet,
-        onReadSet = viewModel::readSet,
-        onDeleteSet = viewModel::deleteSet,
-        onTogglePlayButtonLayout = viewModel::onPlayButtonLayoutToggle,
-        onSetClick = onSetClick,
-        modifier = modifier,
-    )
-}
 
 /**
  * 標準の行一覧と、再生・編集を切り替えられる2列の再生ボタン一覧を表示する。
