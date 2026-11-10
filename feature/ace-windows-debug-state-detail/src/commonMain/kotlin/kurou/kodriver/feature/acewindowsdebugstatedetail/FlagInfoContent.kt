@@ -1,10 +1,7 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.DebugStateFadeContent
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 
@@ -13,9 +10,8 @@ internal fun flagInfoContentKey(aceWindowsFlag: AceWindowsFlagData?): AceWindows
 
 @Composable
 internal fun FlagInfoContent(aceWindowsFlag: AceWindowsFlagData?) {
-    AnimatedContent(
-        targetState = aceWindowsFlag,
-        transitionSpec = { fadeIn() togetherWith fadeOut() },
+    DebugStateFadeContent(
+        state = aceWindowsFlag,
         contentKey = { flagInfoContentKey(it) },
     ) { flags ->
         AceFlagInfoContent(flags)

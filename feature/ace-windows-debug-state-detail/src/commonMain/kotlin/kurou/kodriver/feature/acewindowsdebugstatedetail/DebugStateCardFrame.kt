@@ -1,9 +1,9 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kurou.kodriver.core.designsystem.KoDriverExtendedColors
+import kurou.kodriver.core.designsystem.DebugStateCardAccent
+import kurou.kodriver.core.designsystem.DebugStateCardStyle
 import kurou.kodriver.core.designsystem.DebugStateCardFrame as CommonDebugStateCardFrame
 
 @Composable
@@ -13,34 +13,25 @@ internal fun DebugStateCardFrame(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val colors = MaterialTheme.colorScheme
-    val accent =
-        when (cardKey) {
-            AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.VEHICLE_LOCATION -> colors.primary
-            AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE -> colors.error
-            AceWindowsDebugStateCardKey.FUEL_CONSUMPTION -> KoDriverExtendedColors.current.onWarningContainer
-            else -> colors.tertiary
-        }
     CommonDebugStateCardFrame(
         title = title,
-        symbol = debugStateCardSymbol(cardKey),
-        accent = accent,
+        style = debugStateCardStyles.getValue(cardKey),
         modifier = modifier,
         content = content,
     )
 }
 
-private val debugStateCardSymbols =
+private val debugStateCardStyles =
     mapOf(
-        AceWindowsDebugStateCardKey.SIMULATOR to "🎮",
-        AceWindowsDebugStateCardKey.VEHICLE_LOCATION to "⌖",
-        AceWindowsDebugStateCardKey.FLAG_INFO to "⚑",
-        AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to "↔",
-        AceWindowsDebugStateCardKey.BEST_LAP to "🏆",
-        AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to "◎",
-        AceWindowsDebugStateCardKey.FUEL_CONSUMPTION to "⛽",
-        AceWindowsDebugStateCardKey.CAR_GAP to "↕",
+        AceWindowsDebugStateCardKey.SIMULATOR to DebugStateCardStyle("🎮", DebugStateCardAccent.PRIMARY),
+        AceWindowsDebugStateCardKey.VEHICLE_LOCATION to DebugStateCardStyle("⌖", DebugStateCardAccent.PRIMARY),
+        AceWindowsDebugStateCardKey.FLAG_INFO to DebugStateCardStyle("⚑", DebugStateCardAccent.TERTIARY),
+        AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to DebugStateCardStyle("↔", DebugStateCardAccent.TERTIARY),
+        AceWindowsDebugStateCardKey.BEST_LAP to DebugStateCardStyle("🏆", DebugStateCardAccent.TERTIARY),
+        AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to DebugStateCardStyle("◎", DebugStateCardAccent.ERROR),
+        AceWindowsDebugStateCardKey.FUEL_CONSUMPTION to DebugStateCardStyle("⛽", DebugStateCardAccent.WARNING),
+        AceWindowsDebugStateCardKey.CAR_GAP to DebugStateCardStyle("↕", DebugStateCardAccent.TERTIARY),
     )
 
 internal fun debugStateCardSymbol(cardKey: AceWindowsDebugStateCardKey): String =
-    debugStateCardSymbols.getValue(cardKey)
+    debugStateCardStyles.getValue(cardKey).symbol

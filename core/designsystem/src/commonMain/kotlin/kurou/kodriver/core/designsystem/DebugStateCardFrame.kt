@@ -82,3 +82,48 @@ fun DebugStateCardFrame(
         }
     }
 }
+
+/** デバッグカードの枠で使うアクセント色の種別。実際の色はテーマから解決する。 */
+enum class DebugStateCardAccent {
+    PRIMARY,
+    ERROR,
+    WARNING,
+    TERTIARY,
+}
+
+/** デバッグカードの装飾記号とアクセント色種別の組。 */
+data class DebugStateCardStyle(
+    val symbol: String,
+    val accent: DebugStateCardAccent,
+)
+
+/** アクセント色種別を現在のテーマの色に解決する。 */
+@Composable
+fun DebugStateCardAccent.color(): Color {
+    val colors = MaterialTheme.colorScheme
+    return when (this) {
+        DebugStateCardAccent.PRIMARY -> colors.primary
+        DebugStateCardAccent.ERROR -> colors.error
+        DebugStateCardAccent.WARNING -> KoDriverExtendedColors.current.onWarningContainer
+        DebugStateCardAccent.TERTIARY -> colors.tertiary
+    }
+}
+
+/** [DebugStateCardStyle] で装飾記号とアクセント色を指定するデバッグカードの共通枠。 */
+@Composable
+fun DebugStateCardFrame(
+    title: String,
+    style: DebugStateCardStyle,
+    modifier: Modifier = Modifier,
+    showHandle: Boolean = true,
+    content: @Composable () -> Unit,
+) {
+    DebugStateCardFrame(
+        title = title,
+        symbol = style.symbol,
+        accent = style.accent.color(),
+        modifier = modifier,
+        showHandle = showHandle,
+        content = content,
+    )
+}

@@ -8,21 +8,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kurou.kodriver.core.designsystem.HeatLevel
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.heatColor
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
-import kurou.kodriver.core.designsystem.DebugStateHeatTile as CommonDebugStateHeatTile
-
-@Composable
-internal fun DebugStateHeatTile(
-    text: String,
-    celsius: Double?,
-    modifier: Modifier = Modifier,
-    heatLevel: HeatLevel? = celsius?.let { temperatureHeatLevel(it) },
-) {
-    CommonDebugStateHeatTile(text = text, heatLevel = heatLevel, modifier = modifier)
-}
 
 @Composable
 internal fun DebugStateWearMeter(

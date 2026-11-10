@@ -1,7 +1,10 @@
 package kurou.kodriver.feature.main
 
+import kurou.kodriver.domain.acewindows.usecase.CheckAceWindowsConnectionUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.CheckGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.lmuwindows.usecase.CheckLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
@@ -40,7 +43,7 @@ import org.koin.dsl.module
 /**
  * アプリのメイン画面（main feature）の Koin モジュール。
  *
- * 提供: AppScreenViewModel・ConnectionBannerViewModel・LowVolumeWarningViewModel・SpeechRecognitionViewModel と、それらが使うドメイン UseCase。加えて、rememberMainWindowBounds / rememberMainWindowBoundsSaver が使う ObserveMainWindowBoundsUseCase・SaveMainWindowBoundsUseCase。
+ * 提供: AppScreenViewModel・ConnectionBannerViewModel（接続確認 UseCase を含む）・LowVolumeWarningViewModel・SpeechRecognitionViewModel と、それらが使うドメイン UseCase。加えて、rememberMainWindowBounds / rememberMainWindowBoundsSaver が使う ObserveMainWindowBoundsUseCase・SaveMainWindowBoundsUseCase。
  * 消費（get で解決）: AppUpdateRepository・KeepScreenOnEnabledRepository・
  *   SimulatorPreferencesRepository（:core:data で登録）。アプリバージョンはビルド生成値を直接渡す。
  * プラットフォーム別の登録は [mainPlatformModule]（expect/actual）に分離している。
@@ -90,6 +93,10 @@ val mainModule =
         factory { CheckAccessLocalNetworkPermissionGrantedUseCase(get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { SaveSelectedSimulatorUseCase(get()) }
+        // 接続状況バナー（ConnectionBannerViewModel・各 BannerConnectionChecker）が使う接続確認 UseCase
+        factory { CheckLmuWindowsConnectionUseCase(get()) }
+        factory { CheckAceWindowsConnectionUseCase(get()) }
+        factory { CheckGt7Ps5ConnectionUseCase(get()) }
         factory { ObserveLmuWindowsUseCase(get()) }
         factory { ObserveGt7Ps5UseCase(get()) }
         factory { ObserveAceWindowsStatusUseCase(get()) }

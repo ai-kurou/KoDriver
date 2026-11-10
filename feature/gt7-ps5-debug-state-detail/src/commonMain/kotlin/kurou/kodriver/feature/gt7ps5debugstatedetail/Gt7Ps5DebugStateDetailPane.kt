@@ -11,8 +11,10 @@ import kurou.kodriver.core.designsystem.DebugStateFixedCard
 import kurou.kodriver.core.designsystem.DebugStateReorderableGrid
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.SimulatorInfoContent
 import kurou.kodriver.domain.model.GT7_PS5_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.debug_state_current_lap_title
@@ -121,7 +123,7 @@ private val debugStateCardTitles: Map<Gt7Ps5DebugStateCardKey, StringResource> =
 
 private val debugStateCardContents: Map<Gt7Ps5DebugStateCardKey, @Composable (Gt7Ps5DebugStateDetailUiState) -> Unit> =
     mapOf(
-        Gt7Ps5DebugStateCardKey.SIMULATOR to { SimulatorInfoContent() },
+        Gt7Ps5DebugStateCardKey.SIMULATOR to { SimulatorInfoContent(simulatorId = Simulator.Gt7Ps5.id) },
         Gt7Ps5DebugStateCardKey.VEHICLE_CLASS to { uiState -> VehicleClassContent(uiState.gt7Ps5.vehicleClass) },
         Gt7Ps5DebugStateCardKey.CURRENT_LAP to { uiState -> CurrentLapContent(uiState.gt7Ps5.telemetry) },
         Gt7Ps5DebugStateCardKey.BEST_LAP to { uiState -> BestLapContent(uiState.gt7Ps5.telemetry) },

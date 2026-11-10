@@ -14,6 +14,7 @@ import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.DebugStateHeatTile
 import kurou.kodriver.core.designsystem.DebugStateStatusChip
 import kurou.kodriver.core.designsystem.ExtendedColorScheme
 import kurou.kodriver.core.designsystem.HeatLevel
@@ -33,11 +34,11 @@ class DebugStateValueContentTest {
         rule.setContent {
             MaterialTheme {
                 Column(Modifier.width(360.dp)) {
-                    DebugStateHeatTile(text = "FL 69.0℃", celsius = 69.0)
-                    DebugStateHeatTile(text = "FR 85.0℃", celsius = 85.0)
-                    DebugStateHeatTile(text = "RL 100.0℃", celsius = 100.0)
-                    DebugStateHeatTile(text = "RR 110.0℃", celsius = 110.0)
-                    DebugStateHeatTile(text = "FL -℃", celsius = null)
+                    DebugStateHeatTile(text = "FL 69.0℃", heatLevel = temperatureHeatLevel(69.0))
+                    DebugStateHeatTile(text = "FR 85.0℃", heatLevel = temperatureHeatLevel(85.0))
+                    DebugStateHeatTile(text = "RL 100.0℃", heatLevel = temperatureHeatLevel(100.0))
+                    DebugStateHeatTile(text = "RR 110.0℃", heatLevel = temperatureHeatLevel(110.0))
+                    DebugStateHeatTile(text = "FL -℃", heatLevel = null)
                     DebugStateWearMeter(text = "FL 80.0%", remainingPercent = 80.0)
                     DebugStateWearMeter(text = "FR 60.0%", remainingPercent = 60.0)
                     DebugStateWearMeter(text = "RL 20.0%", remainingPercent = 20.0)

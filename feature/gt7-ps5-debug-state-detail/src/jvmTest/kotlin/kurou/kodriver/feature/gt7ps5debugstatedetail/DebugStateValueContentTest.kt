@@ -9,6 +9,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.DebugStateHeatTile
 import kurou.kodriver.core.designsystem.ExtendedColorScheme
 import kurou.kodriver.core.designsystem.HeatLevel
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
@@ -27,11 +28,11 @@ class DebugStateValueContentTest {
         rule.setContent {
             MaterialTheme {
                 Column(Modifier.width(360.dp)) {
-                    DebugStateHeatTile(text = "FL 69.0℃", celsius = 69.0)
-                    DebugStateHeatTile(text = "FR 85.0℃", celsius = 85.0)
-                    DebugStateHeatTile(text = "RL 100.0℃", celsius = 100.0)
-                    DebugStateHeatTile(text = "RR 110.0℃", celsius = 110.0)
-                    DebugStateHeatTile(text = "FL -℃", celsius = null)
+                    DebugStateHeatTile(text = "FL 69.0℃", heatLevel = tyreTemperatureHeatLevel(69.0))
+                    DebugStateHeatTile(text = "FR 85.0℃", heatLevel = tyreTemperatureHeatLevel(85.0))
+                    DebugStateHeatTile(text = "RL 100.0℃", heatLevel = tyreTemperatureHeatLevel(100.0))
+                    DebugStateHeatTile(text = "RR 110.0℃", heatLevel = tyreTemperatureHeatLevel(110.0))
+                    DebugStateHeatTile(text = "FL -℃", heatLevel = null)
                 }
             }
         }
