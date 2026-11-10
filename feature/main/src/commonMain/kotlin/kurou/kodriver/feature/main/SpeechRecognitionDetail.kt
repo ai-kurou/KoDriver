@@ -63,7 +63,8 @@ internal fun SpeechRecognitionDetail(
                     modifier =
                         Modifier
                             .navigationBarsPadding()
-                            .padding(horizontal = KoDriverSpacing.medium, vertical = KoDriverSpacing.small),
+                            .padding(horizontal = KoDriverSpacing.large)
+                            .padding(top = KoDriverSpacing.small, bottom = KoDriverSpacing.large),
                     levelGaugeHeight = DETAIL_LEVEL_GAUGE_HEIGHT,
                 )
             }
