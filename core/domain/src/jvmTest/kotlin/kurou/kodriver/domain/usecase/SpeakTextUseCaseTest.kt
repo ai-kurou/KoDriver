@@ -104,4 +104,27 @@ class SpeakTextUseCaseTest {
             verify(exactly = 0) { observeVoicePitch() }
             confirmVerified(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
         }
+
+    @Test
+    fun `摂氏記号は必ずどと読めるテキストに置き換えてRepositoryへ渡す`() =
+        runTest {
+            every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoicePitch() } returns flowOf(1.0f)
+            every { observeVoice() } returns flowOf(VOICE_ID_UNSPECIFIED)
+            coEvery {
+                repository.speak("タイヤ温度は100ど、ブレーキ温度は800ど", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f, null)
+            } returns Unit
+
+            SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)(
+                "タイヤ温度は100\u2103、ブレーキ温度は800\u2103",
+            )
+
+            verify(exactly = 1) { observeVoice() }
+            coVerify(exactly = 1) {
+                repository.speak("タイヤ温度は100ど、ブレーキ温度は800ど", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f, null)
+            }
+            verify(exactly = 1) { observeVoiceSpeed() }
+            verify(exactly = 1) { observeVoicePitch() }
+            confirmVerified(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
+        }
 }
