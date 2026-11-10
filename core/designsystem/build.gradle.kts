@@ -43,6 +43,7 @@ kotlin {
             implementation(libs.compose.uiTest)
             implementation(libs.compose.uiTestJunit4)
             implementation(libs.kotlin.testJunit)
+            implementation(libs.mockk)
             implementation(compose.desktop.currentOs)
             implementation(libs.roborazzi.composeDesktop)
         }

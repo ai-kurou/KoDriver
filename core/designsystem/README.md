@@ -70,6 +70,10 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 - `ThresholdSlider` の `onValueChange` は操作中の表示値を通知する。試聴など兄弟要素で同じ値が必要な画面はPane側で保持し、`value` にも渡す。保存は従来どおり `onValueChangeFinished` で操作完了時に行う。
 - `onValueChange` は省略可能で、既存の呼び出し元は内部の表示状態と操作完了時の保存通知をそのまま使用できる。
 
+## スライダーと試聴の設定詳細
+
+`SliderPreviewDetailPaneContent` は、1本のスライダーと試聴ボタンだけで構成される設定詳細画面（読み上げ速度・声の高さ）の共通本体。タイトル・説明・ラベル書式・リセット説明・試聴ボタン文言・試聴用文言は `SliderPreviewDetailTexts` として呼び出し側で解決して渡す。値・範囲・`steps`・デフォルト値も引数で受け取るため、ドメイン上の定数や保存先は知らない。スライダー操作の完了とリセットは `onValueChangeFinished` で、試聴は `onPreviewClicked` で通知する。
+
 ## 閾値の保存待ち状態
 
 - `PendingThresholdState.kt` の `rememberPendingThreshold` は操作中の整数閾値と操作完了・リセット後の保存待ちを保持する。`change` は表示だけを更新し、`finishChange` は保存待ちを追加する。
