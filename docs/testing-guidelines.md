@@ -112,6 +112,10 @@ Koin モジュール定義ファイル（`*DataModule.kt` が生成する `*Data
 
 Room（KSP）が生成する `*Dao_Impl` / `*Database_Impl`（例: `TelemetryLogDao_Impl`）は、ルートの `build.gradle.kts` の `excludeCommonCoverageTargets()` で Kover の集計から除外している。手書きのロジックではないため。DAO のクエリを検証したい場合は、Repository 側のテストで行う。
 
+### テストダブルの除外
+
+`jvmTestFixtures` などに置く `Fake*` クラス（例: `FakeTelemetryLogRepository`）は、ルートの `build.gradle.kts` の `excludeCommonCoverageTargets()`（`*.Fake*`）で Kover の集計から除外している。テスト用の実装であり、未カバーの行が本番コードのカバレッジを下げるのを防ぐ。クラス名が `Fake` で始まらないテストダブルは対象外のため、除外したい場合は命名を `Fake*` に揃える。
+
 ### Compose の生成分岐と Pane の配線
 
 Compose コンパイラが生成する変更フラグ・デフォルト引数マスクなどの分岐は、ソースの条件分岐と区別する。Kover の Composable 宣言行に残る部分カバーだけを埋めるために、生成マスクの組合せを網羅するテストは追加しない。ソースに記述した条件分岐や UI の振る舞いは引き続きテスト対象とする。
