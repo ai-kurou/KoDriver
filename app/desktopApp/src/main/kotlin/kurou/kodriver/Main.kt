@@ -33,6 +33,8 @@ import kurou.kodriver.generated.resources.launcher
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.DesktopSplashHost
 import kurou.kodriver.presentation.featureModules
+import kurou.kodriver.presentation.rememberMainWindowBounds
+import kurou.kodriver.presentation.rememberMainWindowBoundsSaver
 import org.jetbrains.compose.resources.painterResource
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
@@ -119,6 +121,12 @@ fun main() {
             // application スコープ内で開くため、exitApplication() 時にこのウィンドウも一緒に閉じる。
             // 表示ON/OFFはその他タブの「オーバーレイ設定」で切り替えられる。
             if (koinReady) {
+                // Koin はウィンドウより後に初期化されるため、位置・サイズの復元と保存は準備完了後に始める
+                MainWindowBoundsPersistence(
+                    windowState = windowState,
+                    savedBounds = rememberMainWindowBounds(),
+                    onBoundsChange = rememberMainWindowBoundsSaver(),
+                )
                 NarratorOverlayWindowHost()
             }
         }
