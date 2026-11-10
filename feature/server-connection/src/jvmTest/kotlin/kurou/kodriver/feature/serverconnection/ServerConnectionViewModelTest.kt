@@ -24,6 +24,7 @@ import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
+import kurou.kodriver.domain.usecase.KoDriverServerConnectionStatus
 import kurou.kodriver.domain.usecase.ObserveKoDriverServerConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
@@ -78,7 +79,7 @@ class ServerConnectionViewModelTest {
 
             dispatcher.scheduler.runCurrent()
 
-            assertEquals(ServerConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+            assertEquals(KoDriverServerConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
             verify(exactly = 1) { serverIpRepository.serverIp() }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
@@ -96,7 +97,7 @@ class ServerConnectionViewModelTest {
 
             dispatcher.scheduler.runCurrent()
 
-            assertEquals(ServerConnectionStatus.NOT_CONFIGURED, viewModel.uiState.first().connectionStatus)
+            assertEquals(KoDriverServerConnectionStatus.NOT_CONFIGURED, viewModel.uiState.first().connectionStatus)
             verify(exactly = 1) { serverIpRepository.serverIp() }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             confirmVerified(serverIpRepository, versionRepository, simulatorRepository)
@@ -140,7 +141,7 @@ class ServerConnectionViewModelTest {
             serverIpRepository.saveServerIp("192.168.1.100")
             dispatcher.scheduler.runCurrent()
 
-            assertEquals(ServerConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+            assertEquals(KoDriverServerConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
             verify(exactly = 1) { serverIpRepository.serverIp() }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             coVerify(exactly = 1) { serverIpRepository.saveServerIp("192.168.1.100") }
@@ -159,12 +160,12 @@ class ServerConnectionViewModelTest {
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
             dispatcher.scheduler.runCurrent()
-            assertEquals(ServerConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
+            assertEquals(KoDriverServerConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
 
             dispatcher.scheduler.advanceTimeBy(1_000L)
             dispatcher.scheduler.runCurrent()
 
-            assertEquals(ServerConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+            assertEquals(KoDriverServerConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
             verify(exactly = 1) { serverIpRepository.serverIp() }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             coVerify(exactly = 2) { versionRepository.fetchVersion("192.168.1.1") }
@@ -182,12 +183,12 @@ class ServerConnectionViewModelTest {
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
             dispatcher.scheduler.runCurrent()
-            assertEquals(ServerConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
+            assertEquals(KoDriverServerConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
 
             dispatcher.scheduler.advanceTimeBy(1_000L)
             dispatcher.scheduler.runCurrent()
 
-            assertEquals(ServerConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+            assertEquals(KoDriverServerConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
             verify(exactly = 1) { serverIpRepository.serverIp() }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             coVerify(exactly = 2) { versionRepository.fetchVersion("192.168.1.1") }

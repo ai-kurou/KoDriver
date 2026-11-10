@@ -21,7 +21,7 @@ class ServerConnectionFlowTest {
     fun `すべての接続状態を表示用ステータスに変換する`() =
         runTest {
             data class ExpectedState(
-                val status: ServerConnectionStatus,
+                val status: KoDriverServerConnectionStatus,
                 val isConnected: Boolean,
                 val isConnectionChecked: Boolean,
                 val isIpConfigured: Boolean,
@@ -31,28 +31,28 @@ class ServerConnectionFlowTest {
                 listOf(
                     KoDriverServerConnectionStatus.NOT_CONFIGURED to
                         ExpectedState(
-                            status = ServerConnectionStatus.NOT_CONFIGURED,
+                            status = KoDriverServerConnectionStatus.NOT_CONFIGURED,
                             isConnected = false,
                             isConnectionChecked = false,
                             isIpConfigured = false,
                         ),
                     KoDriverServerConnectionStatus.CHECKING to
                         ExpectedState(
-                            status = ServerConnectionStatus.CHECKING,
+                            status = KoDriverServerConnectionStatus.CHECKING,
                             isConnected = false,
                             isConnectionChecked = false,
                             isIpConfigured = true,
                         ),
                     KoDriverServerConnectionStatus.CONNECTED to
                         ExpectedState(
-                            status = ServerConnectionStatus.CONNECTED,
+                            status = KoDriverServerConnectionStatus.CONNECTED,
                             isConnected = true,
                             isConnectionChecked = true,
                             isIpConfigured = true,
                         ),
                     KoDriverServerConnectionStatus.DISCONNECTED to
                         ExpectedState(
-                            status = ServerConnectionStatus.DISCONNECTED,
+                            status = KoDriverServerConnectionStatus.DISCONNECTED,
                             isConnected = false,
                             isConnectionChecked = true,
                             isIpConfigured = true,
@@ -87,7 +87,7 @@ class ServerConnectionFlowTest {
             assertEquals(ServerConnectionUiState(appVersion = "1.0.0"), flow.uiState.first())
             val expected =
                 ServerConnectionUiState(
-                    connectionStatus = ServerConnectionStatus.CONNECTED,
+                    connectionStatus = KoDriverServerConnectionStatus.CONNECTED,
                     requiresKoDriverServer = false,
                     selectedSimulator = Simulator.Gt7Ps5,
                     serverVersion = "2.0.0",
