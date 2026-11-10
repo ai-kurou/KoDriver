@@ -49,7 +49,7 @@ internal fun TelemetryLogDetailContent(
     LazyColumn(
         modifier = modifier.fillMaxSize(),
     ) {
-        items(uiState.items) { item ->
+        items(uiState.items, key = { it.kind.name }) { item ->
             TelemetryLogDetailItem(item = item)
             HorizontalDivider()
         }
