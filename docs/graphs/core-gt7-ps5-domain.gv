@@ -10,7 +10,6 @@ digraph G {
   ":feature:gt7-ps5-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:gt7-ps5-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -34,8 +33,6 @@ digraph G {
   ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail" -> ":core:gt7-ps5-domain"
   ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" -> ":core:domain"
   ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" -> ":core:gt7-ps5-domain"
-  ":feature:gt7-ps5-connection" -> ":core:domain"
-  ":feature:gt7-ps5-connection" -> ":core:gt7-ps5-domain"
   ":feature:gt7-ps5-debug-state-detail" -> ":core:domain"
   ":feature:gt7-ps5-debug-state-detail" -> ":core:gt7-ps5-domain"
   ":feature:gt7-ps5-narrator" -> ":core:domain"

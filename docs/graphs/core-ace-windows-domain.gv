@@ -11,7 +11,6 @@ digraph G {
   ":feature:ace-windows-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -41,8 +40,6 @@ digraph G {
   ":feature:ace-windows-auto-readout-tyre-temperature-detail" -> ":core:ace-windows-domain"
   ":feature:ace-windows-auto-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:ace-windows-auto-readout-vehicle-approach-detail" -> ":core:ace-windows-domain"
-  ":feature:ace-windows-connection" -> ":core:domain"
-  ":feature:ace-windows-connection" -> ":core:ace-windows-domain"
   ":feature:ace-windows-debug-state-detail" -> ":core:domain"
   ":feature:ace-windows-debug-state-detail" -> ":core:ace-windows-domain"
   ":feature:ace-windows-narrator" -> ":core:domain"
