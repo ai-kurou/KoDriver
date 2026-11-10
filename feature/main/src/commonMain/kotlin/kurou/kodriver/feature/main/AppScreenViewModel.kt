@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
@@ -50,7 +50,7 @@ class AppScreenViewModel(
     fun checkUpdate() {
         if (currentVersion.isBlank() || updateCheckStarted) return
         updateCheckStarted = true
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             val hasUpdate = checkAppUpdateAvailable(currentVersion)
             _hasAppUpdate.update { hasUpdate }
         }
@@ -66,7 +66,7 @@ class AppScreenViewModel(
      */
     fun selectSimulator(simulatorId: String) {
         val simulator = Simulator.fromId(simulatorId) ?: return
-        viewModelScope.launch {
+        viewModelScope.launchCapturingErrors {
             settingsUseCases.saveSelectedSimulator(simulator)
         }
     }

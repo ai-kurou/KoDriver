@@ -16,12 +16,14 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.acewindows.model.matchAceWindowsManualReadoutItemKey
 import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutItemKey
+import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.model.containsSpeechRecognitionWakeWord
+import kurou.kodriver.domain.runCapturingErrors
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
@@ -200,17 +202,19 @@ internal class SpeechRecognitionViewModel(
     private fun observePlayback() {
         playbackJob?.cancel()
         playbackJob =
-            viewModelScope.launch {
+            viewModelScope.launchCapturingErrors {
                 var wasActive = false
                 observeSpeechPlaybackActive().collectLatest { active ->
-                    if (active) {
-                        wasActive = true
-                        commandWait.pause()
-                    } else if (wasActive) {
-                        wasActive = false
-                        // 読み上げの残響が消えるまで待ってから再開する。待つ間に次の読み上げが始まれば、collectLatest がこの待ちを取り消す
-                        delay(SPEECH_RECOGNITION_RESUME_DELAY_MS)
-                        commandWait.resume()
+                    runCapturingErrors {
+                        if (active) {
+                            wasActive = true
+                            commandWait.pause()
+                        } else if (wasActive) {
+                            wasActive = false
+                            // 読み上げの残響が消えるまで待ってから再開する。待つ間に次の読み上げが始まれば、collectLatest がこの待ちを取り消す
+                            delay(SPEECH_RECOGNITION_RESUME_DELAY_MS)
+                            commandWait.resume()
+                        }
                     }
                 }
             }
