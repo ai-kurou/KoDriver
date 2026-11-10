@@ -47,8 +47,10 @@ fun kotlinx.kover.gradle.plugin.dsl.KoverReportFilter.excludeCommonCoverageTarge
     classes("*PreviewKt")
     classes("*PreviewKt\$*")
     classes("*PreviewParameterProvider")
-    // Koin モジュール定義ファイル（*DataModule.kt）。登録の配線だけで分岐や計算を持たない。
-    // 登録漏れ・型不一致は DesktopKoinModuleGraphTest / AndroidKoinModuleGraphTest が検証する
+    // Koin モジュール定義ファイル（*DataModule.kt）。登録の配線が中心で、計算ロジックは持たない。
+    // `if (isWindows) 実装 else NoOp` のような OS 分岐も除外に含まれる。
+    // 登録漏れ・型不一致は DesktopKoinModuleGraphTest / AndroidKoinModuleGraphTest が検証するが、
+    // lmuWindowsDataModule / aceWindowsDataModule は両テストでダミーに差し替え・除外されるため、実体は解決されない
     classes("*DataModuleKt", "*DataModuleKt\$*")
     packages("*.generated.resources")
 }

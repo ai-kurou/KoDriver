@@ -104,7 +104,9 @@ CI の `unit-test` ジョブは `-PexcludeScreenshotTests=true` でスクリー�
 
 ### Koin モジュールの除外
 
-Koin モジュール定義ファイル（`*DataModule.kt` が生成する `*DataModuleKt`）は、ルートの `build.gradle.kts` の `excludeCommonCoverageTargets()` で Kover の集計から除外している。登録の配線だけで分岐や計算を持たず、登録漏れ・型不一致は「Koin モジュールグラフの検証」の `checkKoinModules()` テストで検出できるため、モジュール単体の解決テスト（`koinApplication { modules(...) }.koin.get<...>()`）は追加しない。
+Koin モジュール定義ファイル（`*DataModule.kt` が生成する `*DataModuleKt`）は、ルートの `build.gradle.kts` の `excludeCommonCoverageTargets()` で Kover の集計から除外している。登録の配線が中心で計算ロジックを持たないためで、`if (isWindows) 実装 else NoOp` のような OS 分岐や `createSpeechSynthesizer()` のようなファクトリも、同じファイルにある限り除外に含まれる。
+
+登録漏れ・型不一致は「Koin モジュールグラフの検証」の `checkKoinModules()` テストで検出できるため、モジュール単体の解決テスト（`koinApplication { modules(...) }.koin.get<...>()`）は原則追加しない。ただし `lmuWindowsDataModule` / `aceWindowsDataModule`（共有メモリ）は上記グラフテストでダミーに差し替え・除外されるため、実体の登録は現状どのテストでも解決されない。OS 分岐など検証したいロジックがある場合は、`*DataModule.kt` の外に関数・クラスとして切り出してテストする。
 
 ### Compose の生成分岐と Pane の配線
 
