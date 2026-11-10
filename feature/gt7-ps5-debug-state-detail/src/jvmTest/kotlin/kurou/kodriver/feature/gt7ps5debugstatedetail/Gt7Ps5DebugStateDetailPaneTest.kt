@@ -20,6 +20,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.DEBUG_STATE_GRID_TEST_TAG
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -110,14 +111,6 @@ class Gt7Ps5DebugStateDetailPaneTest {
                             !hasAnyAncestor(hasTestTag("debug_readout_request_card")),
                     ).assertIsDisplayed()
             }
-    }
-
-    @Test
-    fun `画面幅の境界で1から3列に切り替える`() {
-        assertEquals(1, calculateDebugStateColumns(399.dp))
-        assertEquals(2, calculateDebugStateColumns(400.dp))
-        assertEquals(2, calculateDebugStateColumns(699.dp))
-        assertEquals(3, calculateDebugStateColumns(700.dp))
     }
 
     @Test

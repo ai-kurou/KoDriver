@@ -46,7 +46,7 @@
 list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWidth.kt` の `KoDriverListPaneWidth`（400.dp）で定義し、`PaneExpansionAnchor.Offset.fromStart` に渡す。
 
 - `app:shared` は `:core:*` に依存できないため、`AppPaneWidth.kt` に同値を別定義している。幅を変更する場合は両方を同期させる。
-- デバッグ状態詳細画面の `NARROW_WIDTH_UPPER_BOUND` は表示列数を切り替える境界値であり、この初期幅とは別の定義として扱う。
+- デバッグ状態詳細画面の表示列数を切り替える境界値（`calculateDebugStateColumns` 内の 400dp / 700dp）は、この初期幅とは別の定義として扱う。
 
 ## 文言入力の状態
 
@@ -101,6 +101,7 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 - `DebugStateUnavailableContent` は未取得文言を文字列で受け取り、装飾とともに表示する。リソースの解決は feature が行う。
 - `DebugStateHeatTile` は必須の `heatLevel: HeatLevel?` を受け取り、`null` は中立色で表示する。`HeatLevel` とテーマ色への変換 `heatColor` は共通とし、温度・摩耗の閾値判定は各 feature に残す。
 - `DebugStateStatusChip` は文言とアクセント色を受け取る。
+- `DebugStateReorderableGrid` は長押しで並べ替えられるカードのグリッド（LMU / ACE / GT7 のデバッグ状態詳細が共通利用）。列数は `calculateDebugStateColumns`（幅400dp未満で1列、700dp未満で2列、それ以上で3列）で決める。先頭の固定項目（デバッグ読み上げ依頼カードなど）は `fixedItems` と `fixedItemCount` で渡し、並べ替えの対象にしない。`onMoveCard` には固定項目を除いたインデックスを通知する。テスト用に `DEBUG_STATE_GRID_TEST_TAG` を公開している。カードの中身・タイトル・枠は feature が `card` で組み立てる。
 - `DebugStateCardFrame` はタイトル・記号・アクセント色を受け取る。カードキーから色・記号への変換は各 feature の責務とする。`showHandle` で右上の点状装飾を切り替え、GT7 は非表示を維持する。
 - `SimulatorInfoContent` は `simulatorId` を受け取り、既存の `simulatorDisplayName` で表示名を解決する。
 - 各 feature の既存関数は薄いラッパーとして維持し、温度判定の既定引数と既存テストの呼び出しを保つ。LMU 固有の `DebugStateWearMeter` は共通化しない。

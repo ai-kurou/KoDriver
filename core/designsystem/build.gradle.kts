@@ -35,6 +35,7 @@ kotlin {
             implementation(libs.compose.material.icons.extended)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.components.resources)
+            implementation(libs.reorderable)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
