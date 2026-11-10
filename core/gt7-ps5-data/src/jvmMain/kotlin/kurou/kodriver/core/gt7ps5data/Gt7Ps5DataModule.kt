@@ -27,7 +27,7 @@ private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
 /**
  * GT7 PS5 テレメトリの Repository バインドを行う Koin モジュール（:core:gt7-ps5-data / jvmMain）。
  *
- * app エントリーポイントで束ねられ、gt7-ps5-connection / gt7-ps5-narrator の UseCase が
+ * app エントリーポイントで束ねられ、gt7-ps5-narrator などの UseCase が
  * get() で解決する Gt7Ps5Repository を提供する。UDP 受信は専用の CoroutineScope 上で行う。
  * Android 版は androidMain の同名モジュールを参照。
  */

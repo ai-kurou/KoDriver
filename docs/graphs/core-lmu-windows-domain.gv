@@ -18,7 +18,6 @@ digraph G {
   ":feature:lmu-windows-auto-readout-tyre-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-auto-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-auto-readout-vehicle-damage-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -62,8 +61,6 @@ digraph G {
   ":feature:lmu-windows-auto-readout-vehicle-approach-detail" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-auto-readout-vehicle-damage-detail" -> ":core:domain"
   ":feature:lmu-windows-auto-readout-vehicle-damage-detail" -> ":core:lmu-windows-domain"
-  ":feature:lmu-windows-connection" -> ":core:domain"
-  ":feature:lmu-windows-connection" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-debug-state-detail" -> ":core:domain"
   ":feature:lmu-windows-debug-state-detail" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-narrator" -> ":core:domain"

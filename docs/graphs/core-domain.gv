@@ -21,7 +21,6 @@ digraph G {
   ":feature:ace-windows-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:ace-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -30,7 +29,6 @@ digraph G {
   ":feature:gt7-ps5-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:gt7-ps5-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-auto-readout-brake-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -44,7 +42,6 @@ digraph G {
   ":feature:lmu-windows-auto-readout-tyre-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-auto-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-auto-readout-vehicle-damage-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:lmu-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -105,8 +102,6 @@ digraph G {
   ":feature:ace-windows-auto-readout-tyre-temperature-detail" -> ":core:ace-windows-domain"
   ":feature:ace-windows-auto-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:ace-windows-auto-readout-vehicle-approach-detail" -> ":core:ace-windows-domain"
-  ":feature:ace-windows-connection" -> ":core:domain"
-  ":feature:ace-windows-connection" -> ":core:ace-windows-domain"
   ":feature:ace-windows-debug-state-detail" -> ":core:domain"
   ":feature:ace-windows-debug-state-detail" -> ":core:ace-windows-domain"
   ":feature:ace-windows-narrator" -> ":core:domain"
@@ -124,8 +119,6 @@ digraph G {
   ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail" -> ":core:gt7-ps5-domain"
   ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" -> ":core:domain"
   ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" -> ":core:gt7-ps5-domain"
-  ":feature:gt7-ps5-connection" -> ":core:domain"
-  ":feature:gt7-ps5-connection" -> ":core:gt7-ps5-domain"
   ":feature:gt7-ps5-debug-state-detail" -> ":core:domain"
   ":feature:gt7-ps5-debug-state-detail" -> ":core:gt7-ps5-domain"
   ":feature:gt7-ps5-narrator" -> ":core:domain"
@@ -152,8 +145,6 @@ digraph G {
   ":feature:lmu-windows-auto-readout-vehicle-approach-detail" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-auto-readout-vehicle-damage-detail" -> ":core:domain"
   ":feature:lmu-windows-auto-readout-vehicle-damage-detail" -> ":core:lmu-windows-domain"
-  ":feature:lmu-windows-connection" -> ":core:domain"
-  ":feature:lmu-windows-connection" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-debug-state-detail" -> ":core:domain"
   ":feature:lmu-windows-debug-state-detail" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-narrator" -> ":core:domain"
