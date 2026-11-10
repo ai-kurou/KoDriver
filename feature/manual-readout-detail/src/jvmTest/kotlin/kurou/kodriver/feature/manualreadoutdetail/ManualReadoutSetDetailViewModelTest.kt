@@ -23,9 +23,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemKeys
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinitions
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemKeys
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
@@ -293,7 +293,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    gt7Ps5ManualReadoutItemKeys(),
+                    gt7Ps5ManualReadoutItemDefinitions.keys.toList(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -325,7 +325,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    aceWindowsManualReadoutItemKeys(),
+                    aceWindowsManualReadoutItemDefinitions.keys.toList(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -357,7 +357,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    gt7Ps5ManualReadoutItemKeys(),
+                    gt7Ps5ManualReadoutItemDefinitions.keys.toList(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -436,7 +436,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    gt7Ps5ManualReadoutItemKeys(),
+                    gt7Ps5ManualReadoutItemDefinitions.keys.toList(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -500,7 +500,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    aceWindowsManualReadoutItemKeys(),
+                    aceWindowsManualReadoutItemDefinitions.keys.toList(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)
@@ -532,7 +532,7 @@ class ManualReadoutSetDetailViewModelTest {
             val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
             try {
                 assertEquals(
-                    gt7Ps5ManualReadoutItemKeys(),
+                    gt7Ps5ManualReadoutItemDefinitions.keys.toList(),
                     vm.uiState.first { !it.isLoading }.availableItemKeys,
                 )
                 vm.addItem(key)

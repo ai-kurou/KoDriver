@@ -21,7 +21,6 @@ class Gt7Ps5ManualReadoutItemsTest {
     @Test
     fun `定義はキー順に名前と既定文言を持ち未知キーは空文字`() {
         val definitions = gt7Ps5ManualReadoutItemDefinitions
-        assertEquals(definitions.keys.toList(), gt7Ps5ManualReadoutItemKeys())
         assertTrue(definitions.isNotEmpty())
         definitions.values.forEach { definition ->
             assertEquals(definition.name, gt7Ps5ManualReadoutItemName(definition.key))

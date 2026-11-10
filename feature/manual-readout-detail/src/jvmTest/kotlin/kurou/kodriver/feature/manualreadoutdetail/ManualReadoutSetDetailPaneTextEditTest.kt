@@ -14,9 +14,9 @@ import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextRange
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemKeys
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinitions
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemTextDefault
-import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemKeys
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemTextDefault
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemTextDefault
@@ -481,7 +481,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
                 ManualReadoutSetDetailUiState(
                     simulatorId = Simulator.AceWindows.id,
                     setNumber = 1,
-                    availableItemKeys = aceWindowsManualReadoutItemKeys(),
+                    availableItemKeys = aceWindowsManualReadoutItemDefinitions.keys.toList(),
                 ),
             )
         rule.setContent {
@@ -522,7 +522,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
                 ManualReadoutSetDetailUiState(
                     simulatorId = Simulator.Gt7Ps5.id,
                     setNumber = 1,
-                    availableItemKeys = gt7Ps5ManualReadoutItemKeys(),
+                    availableItemKeys = gt7Ps5ManualReadoutItemDefinitions.keys.toList(),
                 ),
             )
         rule.setContent {

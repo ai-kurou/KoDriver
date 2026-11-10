@@ -15,8 +15,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemKeys
-import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemKeys
+import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinitions
+import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
@@ -70,7 +70,7 @@ class ManualReadoutSetDetailPaneAddSheetTest {
     @Test
     fun `ACEの追加候補はカテゴリ見出しの下に項目を順番に表示する`() {
         rule.assertPickerCategories(
-            itemKeys = aceWindowsManualReadoutItemKeys(),
+            itemKeys = aceWindowsManualReadoutItemDefinitions.keys.toList(),
             expectedTexts =
                 listOf(
                     "読み上げる項目を選択",
@@ -92,7 +92,7 @@ class ManualReadoutSetDetailPaneAddSheetTest {
     @Test
     fun `GT7の追加候補はカテゴリ見出しの下に項目を順番に表示する`() {
         rule.assertPickerCategories(
-            itemKeys = gt7Ps5ManualReadoutItemKeys(),
+            itemKeys = gt7Ps5ManualReadoutItemDefinitions.keys.toList(),
             expectedTexts =
                 listOf(
                     "読み上げる項目を選択",
@@ -117,7 +117,7 @@ class ManualReadoutSetDetailPaneAddSheetTest {
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutItemPickerSheetContent(
-                    itemKeys = gt7Ps5ManualReadoutItemKeys(),
+                    itemKeys = gt7Ps5ManualReadoutItemDefinitions.keys.toList(),
                     selectedCount = selectedCount.intValue,
                     onSelect = {},
                 )
@@ -132,7 +132,7 @@ class ManualReadoutSetDetailPaneAddSheetTest {
 
     @Test
     fun `選択済み項目数を追加シートの残り枠に反映する`() {
-        val keys = gt7Ps5ManualReadoutItemKeys()
+        val keys = gt7Ps5ManualReadoutItemDefinitions.keys.toList()
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutSetDetailPane(
