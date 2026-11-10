@@ -16,6 +16,7 @@ import kurou.kodriver.domain.usecase.ObserveEffectiveKeepScreenOnUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningUseCase
+import kurou.kodriver.domain.usecase.ObserveMainWindowBoundsUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
@@ -27,6 +28,7 @@ import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveMainWindowBoundsUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
@@ -38,7 +40,7 @@ import org.koin.dsl.module
 /**
  * アプリのメイン画面（main feature）の Koin モジュール。
  *
- * 提供: AppScreenViewModel・ConnectionBannerViewModel・LowVolumeWarningViewModel・SpeechRecognitionViewModel と、それらが使うドメイン UseCase。
+ * 提供: AppScreenViewModel・ConnectionBannerViewModel・LowVolumeWarningViewModel・SpeechRecognitionViewModel と、それらが使うドメイン UseCase。加えて、rememberMainWindowBounds / rememberMainWindowBoundsSaver が使う ObserveMainWindowBoundsUseCase・SaveMainWindowBoundsUseCase。
  * 消費（get で解決）: AppUpdateRepository・KeepScreenOnEnabledRepository・
  *   SimulatorPreferencesRepository（:core:data で登録）。アプリバージョンはビルド生成値を直接渡す。
  * プラットフォーム別の登録は [mainPlatformModule]（expect/actual）に分離している。
@@ -104,6 +106,9 @@ val mainModule =
         }
         factory { ObserveEffectiveKeepScreenOnUseCase(get(), get()) }
         factory { AppScreenSettingsUseCases(get(), get(), get(), get(), get()) }
+        // デスクトップのメインウィンドウの位置・サイズ復元（rememberMainWindowBounds / rememberMainWindowBoundsSaver が使う）
+        factory { ObserveMainWindowBoundsUseCase(get()) }
+        factory { SaveMainWindowBoundsUseCase(get()) }
     }
 
 expect val mainPlatformModule: Module
