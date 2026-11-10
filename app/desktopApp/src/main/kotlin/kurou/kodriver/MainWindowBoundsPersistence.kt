@@ -15,13 +15,16 @@ import androidx.compose.ui.window.WindowState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.filterNotNull
 import kurou.kodriver.presentation.MainWindowSavedBounds
 import java.awt.Rectangle
 import kotlin.math.roundToInt
 
 /** メインウィンドウの最小サイズ。保存値がこれを下回っていても、この値まで引き上げて復元する。 */
 internal val MAIN_WINDOW_MIN_SIZE = DpSize(600.dp, 500.dp)
+
+/** 位置の復元可否を判定する、ウィンドウ上端の帯の高さ（タイトルバーを含む）。 */
+private const val TITLE_BAR_STRIP_HEIGHT = 40
 
 /** ドラッグ・リサイズ中は座標が連続で変化するため、操作が落ち着いてから一度だけ保存するまでの待ち時間。 */
 private const val BOUNDS_SAVE_DEBOUNCE_MILLIS = 500L
@@ -47,7 +50,8 @@ internal fun restoreMainWindowBounds(
 ): RestoredMainWindowBounds {
     val width = saved.width.coerceAtLeast(MAIN_WINDOW_MIN_SIZE.width.value.toInt())
     val height = saved.height.coerceAtLeast(MAIN_WINDOW_MIN_SIZE.height.value.toInt())
-    val point = restorablePosition(saved.x, saved.y, width, height, screenBounds)
+    // タイトルバーを含む上端の帯だけで判定する。下端だけが画面内に残るとタイトルバーが掴めなくなるため。
+    val point = restorablePosition(saved.x, saved.y, width, TITLE_BAR_STRIP_HEIGHT, screenBounds)
     return RestoredMainWindowBounds(
         size = DpSize(width.dp, height.dp),
         position = point?.let { WindowPosition.Absolute(it.x.dp, it.y.dp) },
@@ -96,9 +100,9 @@ internal fun MainWindowBoundsPersistence(
             } else {
                 null
             }
-        }.mapNotNull { it }
-            .distinctUntilChanged()
+        }.distinctUntilChanged()
             .debounce(BOUNDS_SAVE_DEBOUNCE_MILLIS)
+            .filterNotNull()
             .collect { (x, y, width, height) -> onBoundsChange(x, y, width, height) }
     }
 }

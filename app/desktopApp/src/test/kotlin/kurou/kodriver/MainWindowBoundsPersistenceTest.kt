@@ -64,6 +64,17 @@ class MainWindowBoundsPersistenceTest {
     }
 
     @Test
+    fun `下端だけが画面内でタイトルバーが画面外になる位置は復元しない`() {
+        val restored =
+            restoreMainWindowBounds(
+                MainWindowSavedBounds(x = 100, y = -700, width = 1200, height = 800),
+                listOf(primaryScreen),
+            )
+
+        assertNull(restored.position)
+    }
+
+    @Test
     fun `読み込み中は復元も保存もしない`() =
         runComposeUiTest {
             val windowState = WindowState(size = DpSize(1000.dp, 600.dp))
