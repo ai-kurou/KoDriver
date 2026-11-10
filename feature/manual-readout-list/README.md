@@ -17,7 +17,7 @@ Windows デスクトップでは、各セット行の左側にセット名・項
 - `ManualReadoutListUiState.kt` / `ManualReadoutListViewModel.kt`: 保存済みセット一覧を `StateFlow` で提供し、空のセットを追加・保存し、シミュレーター ID とセット ID を指定した読み上げ依頼を送る。
 - `ManualReadoutListModule.kt`: `named(simulatorId)` の Repository を使う ViewModel の Koin 登録。
 - `ManualReadoutListViewModelTest.kt` / `ManualReadoutListModuleTest.kt`: 空一覧・一覧更新・末尾への追加保存・全シミュレーターの観測・保存・読み上げ依頼の Repository 解決を確認する JVM テスト。
-- `ManualReadoutListPaneWiringTest.kt`: Pane 経由の状態表示・セット追加・読み上げ依頼の配線とシミュレーター切り替えを確認する JVM テスト。
+- `ManualReadoutListPaneWiringTest.kt`: `ManualReadoutContent` がシミュレーターごとの選択を保持し、離脱後の再表示でも詳細を表示することを確認する JVM テスト。
 - `ManualReadoutListPane.kt` / `ManualReadoutPlayTile.kt` / `ManualReadoutSetRow.kt` / `ManualReadoutHotkeyChip.kt` / `ManualReadoutHintSheet.kt` / `ManualReadoutHeaderControls.kt`: 一覧 UI を責務ごとに分割したファイル群。Pane が一覧本体と追加 FAB／タイル、PlayTile が再生タイル、SetRow が標準行と両表示共通の長押しメニュー・削除確認、HotkeyChip がホットキーチップ、HintSheet が説明シート、HeaderControls が表示切替セグメントを持つ。全体として、手動読み上げセット一覧の見出し（表示切替セグメント・セット数）・保存済みセットの行・再生ボタンの2列グリッド・説明シート・空状態・セット追加 FAB／タイルを表示する UI。タップ直後に約1.5秒の依頼中表示を出す（再生状態は購読できないためタップ起点の擬似表示）。
 - ホットキー説明と行のチップの表示に使う対応判定（Windows デスクトップのみ true）は `:core:domain` の `kurou.kodriver.domain.util.isManualReadoutHotkeySupported` を参照する。
 - `src/commonMain/composeResources/values/strings.xml`: 見出し・セットのタイトルと項目数・読み上げボタン・説明シート・空状態・セット追加 FAB の表示文言。
