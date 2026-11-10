@@ -10,6 +10,8 @@ import kurou.kodriver.domain.repository.TextToSpeechRepository
  * 読み上げ速度は保存済み設定を使う。
  * [invoke] の音声IDが未指定なら保存済み設定を使い、指定時はその音声で読み上げる。
  * [invoke] の音声用途が未指定ならRepositoryの保存済み設定を使う。
+ * TTSが「℃」を「せっし」と読む（100℃が「ひゃくせっし」になる）ため、
+ * Repositoryへ渡す前に「℃」を「ど」へ置き換えて必ず「ど」と読ませる。
  */
 class SpeakTextUseCase(
     private val repository: TextToSpeechRepository,
@@ -27,6 +29,10 @@ class SpeakTextUseCase(
         if (text.isBlank()) return
         val speed = observeVoiceSpeed().first()
         val pitch = observeVoicePitch().first()
-        repository.speak(text, queue, volume, voiceId ?: observeVoice().first(), speed, pitch, audioUsage)
+        val readableText = text.replace(CELSIUS_SIGN, CELSIUS_READING)
+        repository.speak(readableText, queue, volume, voiceId ?: observeVoice().first(), speed, pitch, audioUsage)
     }
 }
+
+private const val CELSIUS_SIGN = "\u2103"
+private const val CELSIUS_READING = "ど"
