@@ -37,6 +37,10 @@ class CorePreferencesDataStoreFactoriesTest {
                 val dataStore = createLowVolumeWarningEnabledPreferencesDataStore(dir)
                 dataStore.updateData { it.copy(enabled = false) }
             }
+            assertWritesTo("main_window_bounds_preferences.pb") { dir ->
+                val dataStore = createMainWindowBoundsPreferencesDataStore(dir)
+                dataStore.updateData { it.copy(x = 10, y = 20) }
+            }
             assertWritesTo("manual_readout_play_button_layout_preferences.pb") { dir ->
                 val dataStore = createManualReadoutPlayButtonLayoutPreferencesDataStore(dir)
                 dataStore.updateData { it.copy(enabled = true) }

@@ -16,6 +16,7 @@ import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
 import kurou.kodriver.data.preferences.createLowVolumeWarningEnabledPreferencesRepository
+import kurou.kodriver.data.preferences.createMainWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutPlayButtonLayoutPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutSetPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
@@ -52,6 +53,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
+import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
@@ -112,6 +114,7 @@ fun desktopDataModule(directory: String): Module =
         single<ReadoutHotkeyPreferencesRepository> {
             createReadoutHotkeyPreferencesRepository(directory)
         }
+        includes(desktopDataModuleWindowBounds(directory))
         includes(desktopDataModuleCommonSimulatorPreferences(directory))
         includes(desktopDataModuleWindowsSimulatorPreferences(directory))
         // 設定永続化（DataStore。ファイルは directory 配下）
@@ -171,9 +174,6 @@ fun desktopDataModule(directory: String): Module =
         single<ManualReadoutPlayButtonLayoutEnabledPreferencesRepository> {
             createManualReadoutPlayButtonLayoutPreferencesRepository(directory = directory)
         }
-        single<OverlayWindowBoundsPreferencesRepository> {
-            createOverlayWindowBoundsPreferencesRepository(directory = directory)
-        }
         single<ConsoleAddressPreferencesRepository> {
             createConsoleAddressPreferencesRepository(directory = directory)
         }
@@ -196,6 +196,17 @@ fun desktopDataModule(directory: String): Module =
             createTelemetryLogRepository(directory = directory)
         }
         single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
+    }
+
+/** オーバーレイ・メインウィンドウの位置・サイズの DataStore Repository バインド。 */
+private fun desktopDataModuleWindowBounds(directory: String) =
+    module {
+        single<OverlayWindowBoundsPreferencesRepository> {
+            createOverlayWindowBoundsPreferencesRepository(directory = directory)
+        }
+        single<MainWindowBoundsPreferencesRepository> {
+            createMainWindowBoundsPreferencesRepository(directory = directory)
+        }
     }
 
 /** GT7 向けの共通 DataStore Repository バインド。 */
