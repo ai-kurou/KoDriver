@@ -6,6 +6,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +24,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemKeys
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemKeys
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
@@ -48,6 +51,7 @@ import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.RetryManualReadoutHotkeyRegistrationUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kurou.kodriver.domain.usecase.UpdateManualReadoutSetUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -1244,5 +1248,113 @@ class ManualReadoutSetDetailViewModelTest {
             coVerify(exactly = 0) { playStartSound(ReadoutItemKey.fromValue(key)!!) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
+        }
+
+    private fun captureErrorStub(error: IOException) {
+        every { repository.observeSets() } returns MutableStateFlow(listOf(ManualReadoutSet("target")))
+        every { captureError(error) } returns Unit
+    }
+
+    @Test
+    fun `項目の保存失敗はcaptureErrorへ記録し例外を伝播させない`() =
+        runTest(dispatcher) {
+            val error = IOException("fail")
+            val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            try {
+                captureErrorStub(error)
+                coEvery { repository.updateSet(ManualReadoutSet("target", itemKeys = listOf(key))) } throws error
+                val vm = viewModel()
+                vm.addItem(key)
+                verify(exactly = 2) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(ManualReadoutSet("target", itemKeys = listOf(key))) }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `セット名の保存失敗はcaptureErrorへ記録し例外を伝播させない`() =
+        runTest(dispatcher) {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            try {
+                captureErrorStub(error)
+                coEvery { repository.updateSet(ManualReadoutSet("target", name = "新しい名前")) } throws error
+                val vm = viewModel()
+                vm.updateName("新しい名前")
+                verify(exactly = 2) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(ManualReadoutSet("target", name = "新しい名前")) }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `ホットキーの保存失敗はcaptureErrorへ記録し例外を伝播させない`() =
+        runTest(dispatcher) {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            try {
+                captureErrorStub(error)
+                coEvery { repository.updateSet(ManualReadoutSet("target", hotkeyVirtualKeyCode = 0x41)) } throws error
+                val vm = viewModel()
+                vm.assignHotkey(0x41)
+                verify(exactly = 2) { repository.observeSets() }
+                verify(exactly = 1) { otherRepository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(ManualReadoutSet("target", hotkeyVirtualKeyCode = 0x41)) }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository, otherRepository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `ホットキーの再登録失敗はcaptureErrorへ記録し例外を伝播させない`() =
+        runTest(dispatcher) {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            try {
+                captureErrorStub(error)
+                coEvery { hotkeyRepository.retryRegistration(Simulator.LmuWindows.id, "target") } throws error
+                val vm = viewModel()
+                vm.onRetryHotkeyRegistration()
+                verify(exactly = 1) { repository.observeSets() }
+                verify(exactly = 1) { hotkeyRepository.registrationStateStream(Simulator.LmuWindows.id, "target") }
+                coVerify(exactly = 1) { hotkeyRepository.retryRegistration(Simulator.LmuWindows.id, "target") }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, hotkeyRepository, repository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `セットの削除失敗はcaptureErrorへ記録し例外を伝播させない`() =
+        runTest(dispatcher) {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            try {
+                captureErrorStub(error)
+                coEvery { repository.deleteSet("target") } throws error
+                val vm = viewModel()
+                vm.deleteSet()
+                verify(exactly = 1) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.deleteSet("target") }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }
