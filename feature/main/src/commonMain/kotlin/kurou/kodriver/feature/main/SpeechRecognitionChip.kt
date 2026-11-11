@@ -36,6 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -150,6 +152,7 @@ internal fun SpeechRecognitionChip(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
+    val haptic = LocalHapticFeedback.current
     val chipState = uiState.toChipState()
     val description = stringResource(uiState.status.label())
     val colors = MaterialTheme.colorScheme
@@ -205,8 +208,16 @@ internal fun SpeechRecognitionChip(
                 .shadow(CHIP_SHADOW_ELEVATION, CircleShape)
                 .clip(CircleShape)
                 .background(animatedContainerColor)
-                .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
-                .semantics { contentDescription = description }
+                .then(
+                    if (onClick != null) {
+                        Modifier.clickable(role = Role.Button) {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            onClick()
+                        }
+                    } else {
+                        Modifier
+                    },
+                ).semantics { contentDescription = description }
                 .drawBehind {
                     val progress = commandPulse.value
                     if (progress > 0f && progress < 1f) {

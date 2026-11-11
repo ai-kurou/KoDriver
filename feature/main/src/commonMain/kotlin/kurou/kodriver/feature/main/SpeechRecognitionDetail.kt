@@ -13,7 +13,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -52,9 +54,14 @@ internal fun SpeechRecognitionDetail(
     onDeviceSelected: (String) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onDismissWithHaptic = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onDismissRequest()
+    }
     when (presentation) {
         SpeechRecognitionDetailPresentation.BottomSheet -> {
-            DetailBottomSheet(onDismissRequest) {
+            DetailBottomSheet(onDismissWithHaptic) {
                 SpeechRecognitionDetailContent(
                     uiState = uiState,
                     onEnabledChange = onEnabledChange,
@@ -71,7 +78,7 @@ internal fun SpeechRecognitionDetail(
         }
 
         SpeechRecognitionDetailPresentation.Popover -> {
-            DetailPopover(onDismissRequest) {
+            DetailPopover(onDismissWithHaptic) {
                 SpeechRecognitionDetailContent(
                     uiState = uiState,
                     onEnabledChange = onEnabledChange,
