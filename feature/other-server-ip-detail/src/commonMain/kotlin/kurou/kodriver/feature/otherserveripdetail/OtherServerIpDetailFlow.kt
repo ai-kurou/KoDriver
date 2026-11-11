@@ -8,6 +8,7 @@ internal class OtherServerIpDetailFlow(
     savedIp: Flow<String?>,
     mutableState: Flow<OtherServerIpDetailMutableState>,
     discoveredServers: Flow<List<DiscoveredServer>>,
+    accessLocalNetworkPermissionGranted: Flow<Boolean>,
     validateServerIpAddress: ValidateServerIpAddressUseCase,
 ) {
     val initialUiState = OtherServerIpDetailUiState()
@@ -17,7 +18,8 @@ internal class OtherServerIpDetailFlow(
             savedIp,
             mutableState,
             discoveredServers,
-        ) { saved, m, discovered ->
+            accessLocalNetworkPermissionGranted,
+        ) { saved, m, discovered, permissionGranted ->
             val current = m.userInput ?: saved ?: ""
             OtherServerIpDetailUiState(
                 inputIp = current,
@@ -27,6 +29,7 @@ internal class OtherServerIpDetailFlow(
                 connectivityWarning = m.connectivityWarning,
                 isSaved = m.isSaved,
                 discoveredServers = discovered,
+                accessLocalNetworkPermissionGranted = permissionGranted,
                 isDiscoveryDialogVisible = !m.isSaved && discovered.isNotEmpty() && !m.isDiscoveryDialogDismissed,
                 selectedDiscoveredServer = m.selectedDiscoveredServer ?: discovered.firstOrNull(),
             )

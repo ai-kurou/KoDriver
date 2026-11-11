@@ -52,6 +52,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -61,6 +62,7 @@ import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_description_link
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_description_suffix
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovering
+import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_permission_required
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_show_button
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_guide_description
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_guide_link
@@ -91,6 +93,10 @@ fun OtherServerIpDetailPane(
     val viewModel: OtherServerIpDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
+    LifecycleResumeEffect(viewModel) {
+        viewModel.onResumed()
+        onPauseOrDispose {}
+    }
     OtherServerIpDetailPaneContent(
         uiState = uiState,
         onIpChanged = viewModel::onIpChanged,
@@ -258,30 +264,17 @@ fun OtherServerIpDetailPaneContent(
             Spacer(modifier = Modifier.height(KoDriverSpacing.small))
             OutlinedButton(
                 onClick = onShowDiscoveredServersWithHaptic,
-                enabled = uiState.discoveredServers.isNotEmpty(),
+                enabled = uiState.accessLocalNetworkPermissionGranted && uiState.discoveredServers.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.height(BUTTON_CONTENT_HEIGHT),
                 ) {
-                    AnimatedContent(
-                        targetState = uiState.discoveredServers.isEmpty(),
-                        transitionSpec = { fadeIn() togetherWith fadeOut() },
-                    ) { isDiscovering ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isDiscovering) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(16.dp),
-                                    strokeWidth = 2.dp,
-                                )
-                                Spacer(modifier = Modifier.width(KoDriverSpacing.small))
-                                Text(stringResource(Res.string.server_ip_discovering))
-                            } else {
-                                Text(stringResource(Res.string.server_ip_discovery_show_button))
-                            }
-                        }
-                    }
+                    DiscoveryButtonLabel(
+                        permissionGranted = uiState.accessLocalNetworkPermissionGranted,
+                        hasDiscoveredServers = uiState.discoveredServers.isNotEmpty(),
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(KoDriverSpacing.large))
@@ -422,5 +415,57 @@ private fun OtherServerIpDetailPaneDiscoveredServersPreview() {
                     isDiscoveryDialogVisible = false,
                 ),
         )
+    }
+}
+
+/** 検出ボタンの文言。権限がなければ許可が必要な旨、検出結果がなければ検出中、あれば選択を促す文言を出す。 */
+@Composable
+private fun DiscoveryButtonLabel(
+    permissionGranted: Boolean,
+    hasDiscoveredServers: Boolean,
+) {
+    AnimatedContent(
+        targetState = DiscoveryButtonLabelState.of(permissionGranted, hasDiscoveredServers),
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+    ) { state ->
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            when (state) {
+                DiscoveryButtonLabelState.PermissionRequired -> {
+                    Text(stringResource(Res.string.server_ip_discovery_permission_required))
+                }
+
+                DiscoveryButtonLabelState.Discovering -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp,
+                    )
+                    Spacer(modifier = Modifier.width(KoDriverSpacing.small))
+                    Text(stringResource(Res.string.server_ip_discovering))
+                }
+
+                DiscoveryButtonLabelState.Found -> {
+                    Text(stringResource(Res.string.server_ip_discovery_show_button))
+                }
+            }
+        }
+    }
+}
+
+private enum class DiscoveryButtonLabelState {
+    PermissionRequired,
+    Discovering,
+    Found,
+    ;
+
+    companion object {
+        fun of(
+            permissionGranted: Boolean,
+            hasDiscoveredServers: Boolean,
+        ): DiscoveryButtonLabelState =
+            when {
+                !permissionGranted -> PermissionRequired
+                hasDiscoveredServers -> Found
+                else -> Discovering
+            }
     }
 }

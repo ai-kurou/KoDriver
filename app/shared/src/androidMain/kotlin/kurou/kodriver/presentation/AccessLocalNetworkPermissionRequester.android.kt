@@ -24,11 +24,14 @@ import kurou.kodriver.feature.otherlist.rememberOpenAccessLocalNetworkPermission
  * 通常は権限のダイアログを出す。恒久的に拒否されたと判断できる場合は、次回から設定画面を開く。
  *
  * ACCESS_LOCAL_NETWORK は API 37 で追加された定数だが、コンパイル時に文字列へインライン展開されるため
- * 古い端末で参照しても実行時エラーにならない。権限が必要な端末（未許可時のみバナーから呼ばれる）でしか使われない。
+ * 古い端末で参照しても実行時エラーにならない。権限が必要な端末（未許可時のみバナーや画面を開いたときから呼ばれる）でしか使われない。
  */
 @SuppressLint("InlinedApi")
 @Composable
-actual fun rememberAccessLocalNetworkPermissionRequester(onResult: () -> Unit): () -> Unit {
+actual fun rememberAccessLocalNetworkPermissionRequester(
+    onResult: () -> Unit,
+    openSettingsWhenPermanentlyDenied: Boolean,
+): () -> Unit {
     val activity = LocalContext.current.findActivity()
     val currentOnResult by rememberUpdatedState(onResult)
     val openSettings = rememberOpenAccessLocalNetworkPermissionSettings()
@@ -56,10 +59,10 @@ actual fun rememberAccessLocalNetworkPermissionRequester(onResult: () -> Unit): 
             }
             currentOnResult()
         }
-    return remember(launcher, openSettings, activity) {
+    return remember(launcher, openSettings, activity, openSettingsWhenPermanentlyDenied) {
         {
             if (permanentlyDenied) {
-                openSettings()
+                if (openSettingsWhenPermanentlyDenied) openSettings()
             } else {
                 rationaleBeforeLaunch = activity.shouldShowRationale()
                 launcher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)

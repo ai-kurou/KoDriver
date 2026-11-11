@@ -12,6 +12,7 @@
     <string name="server_ip_save_anyway">このまま保存</string>
     <string name="server_ip_discovery_show_button">見つかったWindows版KoDriverを選択</string>
     <string name="server_ip_discovering">Windows版KoDriverを検出中…</string>
+    <string name="server_ip_discovery_permission_required">検出にはローカルネットワークの許可が必要です</string>
     <string name="server_ip_discovery_dialog_title">Windows版KoDriverを選択</string>
     <string name="server_ip_discovery_dialog_confirm">OK</string>
     <string name="server_ip_discovery_dialog_cancel">キャンセル</string>

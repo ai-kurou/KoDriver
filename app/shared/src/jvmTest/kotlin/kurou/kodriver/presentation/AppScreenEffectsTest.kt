@@ -251,4 +251,60 @@ class AppScreenEffectsTest {
         assertEquals(1, requestCount)
         assertNull(selectedItemType)
     }
+
+    @Test
+    fun `接続先IPの設定画面だけがローカルネットワークの権限を必要とする`() {
+        val expected =
+            mapOf(
+                OtherListItemType.ServerIp to true,
+                OtherListItemType.ConsoleIp to true,
+                OtherListItemType.Volume to false,
+                OtherListItemType.AccessLocalNetworkPermission to false,
+            )
+        expected.forEach { (item, needs) -> assertEquals(needs, item.needsAccessLocalNetworkPermission()) }
+        assertEquals(false, (null as OtherListItemType?).needsAccessLocalNetworkPermission())
+    }
+
+    @Test
+    fun `接続先IPの設定画面を開いて未許可のときだけ権限を要求し許可状態の変化では再要求しない`() {
+        var requestCount = 0
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
+        var granted by mutableStateOf(false)
+        rule.setContent {
+            AccessLocalNetworkPermissionOnOpenEffect(
+                selectedItem = selectedItem,
+                granted = granted,
+                request = { requestCount++ },
+            )
+        }
+        rule.waitForIdle()
+        assertEquals(0, requestCount)
+
+        rule.runOnIdle { selectedItem = OtherListItemType.Volume }
+        rule.waitForIdle()
+        assertEquals(0, requestCount)
+
+        rule.runOnIdle { selectedItem = OtherListItemType.ServerIp }
+        rule.waitForIdle()
+        assertEquals(1, requestCount)
+
+        rule.runOnIdle { granted = true }
+        rule.waitForIdle()
+        rule.runOnIdle { granted = false }
+        rule.waitForIdle()
+        assertEquals(1, requestCount)
+
+        rule.runOnIdle { selectedItem = OtherListItemType.ConsoleIp }
+        rule.waitForIdle()
+        assertEquals(2, requestCount)
+
+        rule.runOnIdle {
+            granted = true
+            selectedItem = null
+        }
+        rule.waitForIdle()
+        rule.runOnIdle { selectedItem = OtherListItemType.ServerIp }
+        rule.waitForIdle()
+        assertEquals(2, requestCount)
+    }
 }

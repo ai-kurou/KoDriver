@@ -174,6 +174,11 @@ fun AppScreen(
         )
     val requestAccessLocalNetworkPermission =
         rememberAccessLocalNetworkPermissionRequester(onResult = viewModel::checkAccessLocalNetworkPermission)
+    val requestAccessLocalNetworkPermissionOnOpen =
+        rememberAccessLocalNetworkPermissionRequester(
+            onResult = viewModel::checkAccessLocalNetworkPermission,
+            openSettingsWhenPermanentlyDenied = false,
+        )
     val autoReadoutListUiState by autoReadoutListViewModel.uiState.collectAsState()
     val otherListUiState by otherListViewModel.uiState.collectAsStateWithLifecycle()
     val lowVolumeWarning by lowVolumeWarningViewModel.uiState.collectAsStateWithLifecycle()
@@ -205,6 +210,12 @@ fun AppScreen(
     AppTtsAvailabilityEffect(otherListViewModel::checkTextToSpeechAvailability)
     val uriHandler = LocalUriHandler.current
     val openTtsSettings = rememberOpenTtsSettings()
+
+    AccessLocalNetworkPermissionOnOpenEffect(
+        selectedItem = otherListUiState.selectedItem,
+        granted = uiState.accessLocalNetworkPermissionGranted,
+        request = requestAccessLocalNetworkPermissionOnOpen,
+    )
 
     LifecycleResumeEffect(Unit) {
         viewModel.checkAccessLocalNetworkPermission()

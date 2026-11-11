@@ -22,6 +22,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
 import java.io.IOException
@@ -63,6 +64,8 @@ class OtherServerIpDetailViewModelTest {
                 saveServerIp = SaveServerIpUseCase(repository),
             ),
         windowsServerDiscovery = WindowsServerDiscovery { flowOf(discoveredServers) },
+        checkAccessLocalNetworkPermissionGranted =
+            CheckAccessLocalNetworkPermissionGrantedUseCase(FakeAccessLocalNetworkPermissionRepository()),
     )
 
     @Test
@@ -306,6 +309,10 @@ class OtherServerIpDetailViewModelTest {
                                 saveServerIp = SaveServerIpUseCase(repository),
                             ),
                         windowsServerDiscovery = WindowsServerDiscovery { flowOf(emptyList()) },
+                        checkAccessLocalNetworkPermissionGranted =
+                            CheckAccessLocalNetworkPermissionGrantedUseCase(
+                                FakeAccessLocalNetworkPermissionRepository(),
+                            ),
                     )
                 viewModel.uiState.launchIn(backgroundScope)
                 runCurrent()

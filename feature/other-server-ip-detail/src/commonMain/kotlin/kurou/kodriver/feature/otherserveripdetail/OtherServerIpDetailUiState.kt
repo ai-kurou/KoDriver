@@ -13,4 +13,5 @@ data class OtherServerIpDetailUiState(
     val discoveredServers: List<DiscoveredServer> = emptyList(),
     val isDiscoveryDialogVisible: Boolean = false,
     val selectedDiscoveredServer: DiscoveredServer? = null,
+    val accessLocalNetworkPermissionGranted: Boolean = true,
 )
