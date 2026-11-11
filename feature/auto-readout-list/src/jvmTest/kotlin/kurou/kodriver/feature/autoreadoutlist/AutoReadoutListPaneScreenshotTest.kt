@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onRoot
@@ -84,6 +85,45 @@ class AutoReadoutListPaneScreenshotTest {
                     }
                 }
             }
+            onRoot().captureRoboImage()
+            verify(exactly = 1) { repository.observeAutoReadoutEnabledStates("lmu_windows") }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `lmu_windowsを末尾までスクロールして最後の項目を表示する`() =
+        composeScreenshotTest {
+            every { repository.observeAutoReadoutEnabledStates("lmu_windows") } returns MutableStateFlow(emptyMap())
+            val enabledStates = observeAutoReadoutEnabledStates("lmu_windows")
+            val items = AutoReadoutListItemType.defaultOrder(Simulator.LmuWindows)
+            var lastItemText = ""
+
+            setContent {
+                lastItemText = autoReadoutItemDisplayName(items.last())
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            AutoReadoutListPane(
+                                uiState =
+                                    AutoReadoutListUiState(
+                                        selectedSimulator = Simulator.LmuWindows,
+                                        items = items,
+                                        autoReadoutEnabledStates = enabledStates,
+                                    ),
+                                onMove = { _, _ -> },
+                                onReadoutEnabledChanged = { _, _ -> },
+                                onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
+                                onItemClick = { _ -> },
+                            )
+                        }
+                    }
+                }
+            }
+            onNode(hasScrollAction()).performScrollToNode(hasText(lastItemText))
+            waitForIdle()
+            onNode(hasText(lastItemText)).assertIsDisplayed()
+
             onRoot().captureRoboImage()
             verify(exactly = 1) { repository.observeAutoReadoutEnabledStates("lmu_windows") }
             confirmVerified(repository)
