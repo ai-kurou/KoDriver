@@ -67,4 +67,12 @@ class AceWindowsManualReadoutPhraseMatcherTest {
         assertNull(matchAceWindowsManualReadoutItemKey(emptyList()))
         assertNull(matchAceWindowsManualReadoutItemKey(listOf("こんにちは")))
     }
+
+    @Test
+    fun `一致した語句と項目キーを返し一致がなければnullを返す`() {
+        val match = matchAceWindowsManualReadoutPhrase(listOf("自己ベストを教えて"))
+        assertEquals(AceWindowsReadoutItemKey.MyBestLap.Root.value, match?.itemKey)
+        assertEquals("自己ベスト", match?.phrase)
+        assertNull(matchAceWindowsManualReadoutPhrase(listOf("関係ない発話")))
+    }
 }

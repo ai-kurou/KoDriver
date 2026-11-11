@@ -13,8 +13,17 @@ package kurou.kodriver.domain.util
 fun matchManualReadoutItemKey(
     candidates: List<String>,
     phrasesByItemKey: Map<String, List<String>>,
-): String? {
-    var bestKey: String? = null
+): String? = matchManualReadoutPhrase(candidates, phrasesByItemKey)?.itemKey
+
+/**
+ * [matchManualReadoutItemKey] と同じ規則で照合し、選んだ項目のキーと、決め手になった語句（[phrasesByItemKey] に登録されている表記のまま）を返す。
+ * どの項目にも一致しなければ null。
+ */
+fun matchManualReadoutPhrase(
+    candidates: List<String>,
+    phrasesByItemKey: Map<String, List<String>>,
+): ManualReadoutPhraseMatch? {
+    var best: ManualReadoutPhraseMatch? = null
     var bestPhrase: String? = null
     for (candidate in candidates) {
         val normalized = normalizeSpokenText(candidate)
@@ -23,19 +32,19 @@ fun matchManualReadoutItemKey(
         val matched =
             phrasesByItemKey.flatMap { (key, phrases) ->
                 phrases
-                    .map(::normalizeSpokenText)
-                    .filter { it.isNotEmpty() && containsPhrase(normalized, it) }
-                    .map { key to it }
+                    .map { it to normalizeSpokenText(it) }
+                    .filter { (_, phrase) -> phrase.isNotEmpty() && containsPhrase(normalized, phrase) }
+                    .map { (original, phrase) -> Triple(key, original, phrase) }
             }
-        val best =
+        val found =
             matched
-                .filter { (_, phrase) -> current == null || isMoreSpecific(phrase, current) }
-                .maxByOrNull { (_, phrase) -> phrase.length }
+                .filter { (_, _, phrase) -> current == null || isMoreSpecific(phrase, current) }
+                .maxByOrNull { (_, _, phrase) -> phrase.length }
                 ?: continue
-        bestKey = best.first
-        bestPhrase = best.second
+        best = ManualReadoutPhraseMatch(found.first, found.second)
+        bestPhrase = found.third
     }
-    return bestKey
+    return best
 }
 
 private fun isMoreSpecific(

@@ -21,8 +21,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -176,11 +178,13 @@ import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
+import kurou.kodriver.domain.repository.ManualReadoutItemSpokenRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.NotifyManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
@@ -288,6 +292,15 @@ class LmuWindowsNarratorViewModelTest {
     private val manualHotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val manualRequestRepository: ManualReadoutRequestRepository = mockk()
     private val manualItemRequestRepository: ManualReadoutItemRequestRepository = mockk()
+    private val notifiedSpoken = mutableListOf<ManualReadoutItemRequest>()
+    private val manualItemSpokenRepository =
+        object : ManualReadoutItemSpokenRepository {
+            override fun observeSpoken(): Flow<ManualReadoutItemRequest> = emptyFlow()
+
+            override suspend fun notifySpoken(request: ManualReadoutItemRequest) {
+                notifiedSpoken.add(request)
+            }
+        }
     private val manualSetRepository: ManualReadoutSetPreferencesRepository = mockk()
 
     private val hotkeyRepository: HotkeyRepository = mockk()
@@ -647,6 +660,7 @@ class LmuWindowsNarratorViewModelTest {
                         ObserveManualReadoutItemRequestsUseCase(
                             manualItemRequestRepository,
                         ),
+                    notifyManualReadoutItemSpoken = NotifyManualReadoutItemSpokenUseCase(manualItemSpokenRepository),
                     observeManualReadoutSets = ObserveManualReadoutSetsUseCase(manualSetRepository),
                     observeThresholdPercentage =
                         ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(
@@ -1193,7 +1207,15 @@ class LmuWindowsNarratorViewModelTest {
                 queueEnabledOverrides = mapOf(key to false),
             )
             telemetry.send(fakeTelemetryData(bestLapTimeMs = 83_456L))
-            itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value, playStartSound = false))
+            val request =
+                ManualReadoutItemRequest(
+                    Simulator.LmuWindows.id,
+                    key.value,
+                    playStartSound = false,
+                    matchedPhrase = "自己ベスト",
+                )
+            itemRequests.send(request)
+            assertEquals(listOf(request), notifiedSpoken)
             assertEquals(
                 listOf(lmuWindowsManualReadoutItemTextDefault(key.value).replace("{laptime}", "1分23秒456")),
                 spoken.map { it.narratedText },
@@ -1219,6 +1241,7 @@ class LmuWindowsNarratorViewModelTest {
             telemetry.send(fakeTelemetryData(bestLapTimeMs = 83_456L))
             itemRequests.send(ManualReadoutItemRequest(Simulator.AceWindows.id, key.value))
             assertEquals(emptyList(), spoken)
+            assertEquals(emptyList(), notifiedSpoken)
         }
 
     @Test
@@ -1252,6 +1275,8 @@ class LmuWindowsNarratorViewModelTest {
                     listOf(lmuWindowsManualReadoutItemTextDefault(key.value).replace("{percent}", "80")),
                     spoken.map { it.narratedText },
                 )
+                // 例外で読めなかった1回目は通知せず、読めた2回目だけ通知する
+                assertEquals(1, notifiedSpoken.size)
                 verify(exactly = 1) { captureError(captured.captured) }
                 confirmVerified(errorCapture)
             } finally {

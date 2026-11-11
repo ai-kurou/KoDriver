@@ -31,6 +31,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.NotifyManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
@@ -80,6 +81,7 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveDebugReadoutRequestUseCase(get()) }
         factory { ObserveManualReadoutRequestsUseCase(get()) }
         factory { ObserveManualReadoutItemRequestsUseCase(get()) }
+        factory { NotifyManualReadoutItemSpokenUseCase(get()) }
         factory { ObserveManualReadoutHotkeyPressesUseCase(get()) }
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
         viewModel {
@@ -104,6 +106,7 @@ val aceWindowsNarratorModule: Module =
         factory { RemainingFuelLapsUseCases(get(), get()) }
         factory {
             ManualReadoutUseCases(
+                get(),
                 get(),
                 get(),
                 get(),

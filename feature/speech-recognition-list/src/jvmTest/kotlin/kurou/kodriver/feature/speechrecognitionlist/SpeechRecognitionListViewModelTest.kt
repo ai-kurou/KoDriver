@@ -8,29 +8,37 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
+import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SpeechCommandGuideGroup
 import kurou.kodriver.domain.model.SpeechCommandGuideItem
+import kurou.kodriver.domain.repository.ManualReadoutItemSpokenRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechCommandGuideRepository
+import kurou.kodriver.domain.usecase.ObserveManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechCommandGuideUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SpeechRecognitionListViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()
     private val guideRepository: SpeechCommandGuideRepository = mockk()
+    private val spokenRepository: ManualReadoutItemSpokenRepository = mockk()
+    private val spoken = MutableSharedFlow<ManualReadoutItemRequest>()
 
     @BeforeTest
     fun setUp() {
@@ -54,8 +62,8 @@ class SpeechRecognitionListViewModelTest {
                 )
             every { simulatorRepository.selectedSimulator() } returns flowOf(Simulator.LmuWindows)
             every { guideRepository.guideGroups(Simulator.LmuWindows) } returns groups
-            val viewModel =
-                SpeechRecognitionListViewModel(ObserveSpeechCommandGuideUseCase(simulatorRepository, guideRepository))
+            every { spokenRepository.observeSpoken() } returns spoken
+            val viewModel = createViewModel()
             try {
                 assertEquals(
                     SpeechRecognitionListUiState(groups),
@@ -63,9 +71,53 @@ class SpeechRecognitionListViewModelTest {
                 )
                 verify(exactly = 1) { simulatorRepository.selectedSimulator() }
                 verify(exactly = 1) { guideRepository.guideGroups(Simulator.LmuWindows) }
-                confirmVerified(simulatorRepository, guideRepository)
+                verify(exactly = 1) { spokenRepository.observeSpoken() }
+                confirmVerified(simulatorRepository, guideRepository, spokenRepository)
             } finally {
                 viewModel.viewModelScope.cancel()
             }
         }
+
+    @Test
+    fun `読み上げられた語句を強調する指示にし同じ語句を続けても指示を更新する`() =
+        runTest(dispatcher) {
+            every { simulatorRepository.selectedSimulator() } returns flowOf(Simulator.LmuWindows)
+            every { guideRepository.guideGroups(Simulator.LmuWindows) } returns emptyList()
+            every { spokenRepository.observeSpoken() } returns spoken
+            val viewModel = createViewModel()
+            val collector = launch(dispatcher) { viewModel.uiState.collect {} }
+            try {
+                assertNull(viewModel.uiState.value.highlight)
+                spoken.emit(ManualReadoutItemRequest(Simulator.LmuWindows.id, "fuel", matchedPhrase = "ガス"))
+                assertEquals(SpeechPhraseHighlight("fuel", "ガス", 1), viewModel.uiState.value.highlight)
+                spoken.emit(ManualReadoutItemRequest(Simulator.LmuWindows.id, "fuel", matchedPhrase = "ガス"))
+                assertEquals(SpeechPhraseHighlight("fuel", "ガス", 2), viewModel.uiState.value.highlight)
+            } finally {
+                collector.cancel()
+                viewModel.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `一致した語句のない依頼は強調しない`() =
+        runTest(dispatcher) {
+            every { simulatorRepository.selectedSimulator() } returns flowOf(Simulator.LmuWindows)
+            every { guideRepository.guideGroups(Simulator.LmuWindows) } returns emptyList()
+            every { spokenRepository.observeSpoken() } returns spoken
+            val viewModel = createViewModel()
+            val collector = launch(dispatcher) { viewModel.uiState.collect {} }
+            try {
+                spoken.emit(ManualReadoutItemRequest(Simulator.LmuWindows.id, "fuel"))
+                assertNull(viewModel.uiState.value.highlight)
+            } finally {
+                collector.cancel()
+                viewModel.viewModelScope.cancel()
+            }
+        }
+
+    private fun createViewModel() =
+        SpeechRecognitionListViewModel(
+            ObserveSpeechCommandGuideUseCase(simulatorRepository, guideRepository),
+            ObserveManualReadoutItemSpokenUseCase(spokenRepository),
+        )
 }

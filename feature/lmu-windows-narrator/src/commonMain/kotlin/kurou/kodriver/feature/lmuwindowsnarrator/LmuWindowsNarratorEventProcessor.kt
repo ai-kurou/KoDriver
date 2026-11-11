@@ -332,12 +332,22 @@ internal class LmuWindowsNarratorEventProcessor(
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
         playStartSound: Boolean = true,
-    ) {
-        processEvents(events, emptyList(), emptyMap(), observedAtMs, NarrationSource.MANUAL, playStartSound) {
+    ): Boolean {
+        var spoken = false
+        processEvents(
+            events,
+            emptyList(),
+            emptyMap(),
+            observedAtMs,
+            NarrationSource.MANUAL,
+            playStartSound,
+            onOutcome = { if (it != NarrationOutcome.SKIPPED) spoken = true },
+        ) {
             """{"state":${TelemetryLogJson.encodeToString(logContext.state)},""" +
                 """"settings":${TelemetryLogJson.encodeToString(logContext.settings)},""" +
                 """"observedAtMs":$observedAtMs}"""
         }
+        return spoken
     }
 
     suspend fun processTyreTemperature(
@@ -388,6 +398,7 @@ internal class LmuWindowsNarratorEventProcessor(
      * 本文を解決できたのに優先度判定で読み上げられなかったイベントが1件でもあれば true を返す
      * （本文が空でスキップされた場合は含めない）。一度きりの警告フラグを呼び出し側が戻して再試行するために使う。
      */
+    @Suppress("LongParameterList")
     private suspend fun <E : ReadoutTextEvent> processEvents(
         events: List<E>,
         autoReadoutOrder: List<ReadoutItemKey>,
@@ -395,6 +406,7 @@ internal class LmuWindowsNarratorEventProcessor(
         observedAtMs: Long,
         narrationSource: NarrationSource = NarrationSource.AUTO,
         playStartSound: Boolean = true,
+        onOutcome: (NarrationOutcome) -> Unit = {},
         telemetryJson: () -> String,
     ): Boolean {
         var droppedByPriority = false
@@ -421,6 +433,7 @@ internal class LmuWindowsNarratorEventProcessor(
                 narrationSource = narrationSource,
                 telemetryJson = telemetryJson(),
             )
+            onOutcome(narrationOutcome)
             if (text != null && narrationOutcome == NarrationOutcome.SKIPPED) droppedByPriority = true
         }
         return droppedByPriority

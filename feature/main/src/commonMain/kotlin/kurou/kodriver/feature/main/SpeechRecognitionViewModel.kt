@@ -13,11 +13,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.acewindows.model.matchAceWindowsManualReadoutItemKey
+import kurou.kodriver.domain.acewindows.model.matchAceWindowsManualReadoutPhrase
 import kurou.kodriver.domain.captureErrorTypeOnly
-import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutItemKey
+import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutPhrase
 import kurou.kodriver.domain.launchCapturingErrors
-import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutItemKey
+import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutPhrase
 import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
@@ -363,12 +363,12 @@ private suspend fun RequestManualReadoutItemUseCase.requestMatchedReadouts(
     selected: Simulator,
     candidates: List<String>,
 ): Boolean {
-    val itemKey =
+    val match =
         when (selected) {
-            Simulator.LmuWindows -> matchLmuWindowsManualReadoutItemKey(candidates)
-            Simulator.Gt7Ps5 -> matchGt7Ps5ManualReadoutItemKey(candidates)
-            Simulator.AceWindows -> matchAceWindowsManualReadoutItemKey(candidates)
+            Simulator.LmuWindows -> matchLmuWindowsManualReadoutPhrase(candidates)
+            Simulator.Gt7Ps5 -> matchGt7Ps5ManualReadoutPhrase(candidates)
+            Simulator.AceWindows -> matchAceWindowsManualReadoutPhrase(candidates)
         } ?: return false
-    this(ManualReadoutItemRequest(selected.id, itemKey, playStartSound = false))
+    this(ManualReadoutItemRequest(selected.id, match.itemKey, playStartSound = false, matchedPhrase = match.phrase))
     return true
 }

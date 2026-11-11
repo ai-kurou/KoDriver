@@ -1,5 +1,8 @@
 package kurou.kodriver.feature.speechrecognitionlist
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -83,5 +86,55 @@ class SpeechRecognitionListPaneTest {
         }
 
         rule.onNodeWithText("2語", useUnmergedTree = true).assertExists()
+    }
+
+    @Test
+    fun `読み上げられた項目が画面外なら、その項目まで自動でスクロールする`() {
+        val items = (1..30).map { SpeechCommandGuideItem("item-$it", "項目$it", listOf("語句$it")) }
+        val groups = listOf(SpeechCommandGuideGroup(ManualReadoutItemCategory.FUEL, items))
+        var uiState by mutableStateOf(SpeechRecognitionListUiState(groups = groups))
+        rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(uiState) } }
+        rule.onNodeWithText("語句30", useUnmergedTree = true).assertDoesNotExist()
+
+        uiState = uiState.copy(highlight = SpeechPhraseHighlight("item-30", "語句30", 1))
+        rule.waitForIdle()
+
+        rule.onNodeWithText("語句30", useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun `読み上げられた項目が既に見えているなら、スクロールせず強調だけ行う`() {
+        var uiState by mutableStateOf(SpeechRecognitionListUiState(groups = listOf(fuelGroup)))
+        rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(uiState) } }
+
+        uiState = uiState.copy(highlight = SpeechPhraseHighlight("fuel", "ガス", 1))
+        rule.waitForIdle()
+
+        rule.onNodeWithText("まずはこう呼びかけます").assertIsDisplayed()
+        rule.onNodeWithText("ガス", useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun `案内にない項目の強調指示では何も起きない`() {
+        var uiState by mutableStateOf(SpeechRecognitionListUiState(groups = listOf(fuelGroup)))
+        rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(uiState) } }
+
+        uiState = uiState.copy(highlight = SpeechPhraseHighlight("unknown", "未登録", 1))
+        rule.waitForIdle()
+
+        rule.onNodeWithText("まずはこう呼びかけます").assertIsDisplayed()
+    }
+
+    @Test
+    fun `強調の指示を外すと元の表示に戻る`() {
+        var uiState by mutableStateOf(SpeechRecognitionListUiState(groups = listOf(fuelGroup)))
+        rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(uiState) } }
+
+        uiState = uiState.copy(highlight = SpeechPhraseHighlight("fuel", "ガス", 1))
+        rule.waitForIdle()
+        uiState = uiState.copy(highlight = null)
+        rule.waitForIdle()
+
+        rule.onNodeWithText("ガス", useUnmergedTree = true).assertIsDisplayed()
     }
 }

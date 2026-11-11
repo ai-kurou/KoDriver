@@ -22,6 +22,7 @@ import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.NotifyManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
@@ -68,6 +69,7 @@ val gt7Ps5NarratorModule: Module =
         factory { ObserveDebugReadoutRequestUseCase(get()) }
         factory { ObserveManualReadoutRequestsUseCase(get()) }
         factory { ObserveManualReadoutItemRequestsUseCase(get()) }
+        factory { NotifyManualReadoutItemSpokenUseCase(get()) }
         factory { ObserveManualReadoutHotkeyPressesUseCase(get()) }
         // ViewModel（Gt7Ps5NarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
         viewModel {
@@ -88,6 +90,7 @@ val gt7Ps5NarratorModule: Module =
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory {
             ManualReadoutUseCases(
+                get(),
                 get(),
                 get(),
                 get(),

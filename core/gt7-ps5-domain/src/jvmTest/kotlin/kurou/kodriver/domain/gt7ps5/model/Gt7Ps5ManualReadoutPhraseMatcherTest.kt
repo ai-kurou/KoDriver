@@ -68,4 +68,12 @@ class Gt7Ps5ManualReadoutPhraseMatcherTest {
         assertNull(matchGt7Ps5ManualReadoutItemKey(listOf("タイヤテンプ")))
         assertNull(matchGt7Ps5ManualReadoutItemKey(listOf("じこべ")))
     }
+
+    @Test
+    fun `一致した語句と項目キーを返し一致がなければnullを返す`() {
+        val match = matchGt7Ps5ManualReadoutPhrase(listOf("自己ベストを教えて"))
+        assertEquals(Gt7Ps5ReadoutItemKey.MyBestLap.Root.value, match?.itemKey)
+        assertEquals("自己ベスト", match?.phrase)
+        assertNull(matchGt7Ps5ManualReadoutPhrase(listOf("関係ない発話")))
+    }
 }

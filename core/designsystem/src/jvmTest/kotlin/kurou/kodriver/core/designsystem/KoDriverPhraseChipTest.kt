@@ -31,4 +31,17 @@ class KoDriverPhraseChipTest {
 
         rule.onNodeWithText("？").assertIsDisplayed()
     }
+
+    @Test
+    fun `強調してもアクセント色の有無によらず語句を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                KoDriverPhraseChip(text = "強調あり", accent = Color.Red, emphasis = 1f)
+                KoDriverPhraseChip(text = "色なし", emphasis = 0.5f)
+            }
+        }
+
+        rule.onNodeWithText("強調あり").assertIsDisplayed()
+        rule.onNodeWithText("色なし").assertIsDisplayed()
+    }
 }

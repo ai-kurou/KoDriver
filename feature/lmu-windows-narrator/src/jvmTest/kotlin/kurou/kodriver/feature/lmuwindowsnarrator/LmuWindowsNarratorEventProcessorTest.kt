@@ -118,7 +118,9 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class LmuWindowsNarratorEventProcessorTest {
     private val telemetryLogRepository: TelemetryLogRepository = mockk()
@@ -228,7 +230,15 @@ class LmuWindowsNarratorEventProcessorTest {
                 )
             } just Runs
 
-            createProcessor().processManualReadout(listOf(event), 100L, logContext(), playStartSound = false)
+            val spoken =
+                createProcessor().processManualReadout(
+                    listOf(event),
+                    100L,
+                    logContext(),
+                    playStartSound = false,
+                )
+
+            assertTrue(spoken)
 
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(resolved, false, true, false) }
@@ -239,6 +249,39 @@ class LmuWindowsNarratorEventProcessorTest {
                     event.readoutItemKey,
                     event.text,
                     NarrationOutcome.SPOKEN,
+                    NarrationSource.MANUAL,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `手動文言が空白なら読み上げずログにスキップを保存し読み上げていないことを返す`() =
+        runTest {
+            val event = LmuWindowsManualReadoutText(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, " ")
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    NarrationSource.MANUAL,
+                    capture(json),
+                )
+            } just Runs
+
+            assertFalse(createProcessor().processManualReadout(listOf(event), 0L, logContext()))
+
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
                     NarrationSource.MANUAL,
                     json.captured,
                 )

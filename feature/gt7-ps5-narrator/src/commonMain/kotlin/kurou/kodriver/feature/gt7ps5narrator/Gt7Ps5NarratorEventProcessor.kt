@@ -72,7 +72,8 @@ internal class Gt7Ps5NarratorEventProcessor(
         observedAtMs: Long,
         logContext: Gt7Ps5TelemetryLogContext,
         playStartSound: Boolean = true,
-    ) {
+    ): Boolean {
+        var spoken = false
         events.forEach { event ->
             val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
             val outcome =
@@ -87,6 +88,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                         playStartSound = playStartSound,
                     )
                 }
+            if (outcome != NarrationOutcome.SKIPPED) spoken = true
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
@@ -99,6 +101,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                         """"observedAtMs":$observedAtMs}""",
             )
         }
+        return spoken
     }
 
     /**

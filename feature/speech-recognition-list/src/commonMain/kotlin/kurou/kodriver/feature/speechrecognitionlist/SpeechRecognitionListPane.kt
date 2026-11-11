@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.speechrecognitionlist
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
@@ -28,7 +32,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -71,6 +77,8 @@ private val STRIPE_WIDTH = 5.dp
 private val CATEGORY_ICON_SIZE = 18.dp
 private val STEP_NUMBER_SIZE = 20.dp
 private const val FLOW_LINE_ALPHA = 0.35f
+private const val BLINK_COUNT = 3
+private const val BLINK_HALF_PERIOD_MS = 300
 
 /**
  * 「音声」タブの一覧（listPane）。選択中のシミュレーターについて、「コドライバー」と呼びかけたあとに言うと読み上げられる語句を、
@@ -89,7 +97,13 @@ internal fun SpeechRecognitionListPaneContent(
     modifier: Modifier = Modifier,
 ) {
     val bottomEndOverlayInset = LocalBottomEndOverlayInset.current
+    val listState = rememberLazyListState()
+    val highlight = uiState.highlight
+    LaunchedEffect(highlight) {
+        if (highlight != null) listState.scrollToSpeechCommandItem(uiState.groups, highlight.itemKey)
+    }
     LazyColumn(
+        state = listState,
         modifier = modifier.fillMaxSize().testTag(SPEECH_RECOGNITION_LIST_PANE_TEST_TAG),
         contentPadding =
             PaddingValues(
@@ -105,8 +119,43 @@ internal fun SpeechRecognitionListPaneContent(
             item(key = "category-${group.category.name}") {
                 CategoryHeader(group.category, group.items.size)
             }
-            items(group.items, key = { "item-${it.key}" }) { SpeechCommandGuideCard(group.category, it) }
+            items(group.items, key = { speechCommandItemListKey(it.key) }) { item ->
+                SpeechCommandGuideCard(
+                    category = group.category,
+                    item = item,
+                    highlight = highlight?.takeIf { it.itemKey == item.key },
+                )
+            }
         }
+    }
+}
+
+private fun speechCommandItemListKey(itemKey: String) = "item-$itemKey"
+
+/**
+ * 読み上げられた項目のカードが見える位置までスクロールする。既に全体が見えているときは動かさない。
+ * 案内にない項目は何もしない。
+ */
+private suspend fun LazyListState.scrollToSpeechCommandItem(
+    groups: List<SpeechCommandGuideGroup>,
+    itemKey: String,
+) {
+    // 先頭は呼びかけの案内、続いて種類ごとに「見出し + 項目」が並ぶ
+    var index = 1
+    for (group in groups) {
+        index += 1
+        val offset = group.items.indexOfFirst { it.key == itemKey }
+        if (offset >= 0) {
+            val key = speechCommandItemListKey(itemKey)
+            val info = layoutInfo.visibleItemsInfo.firstOrNull { it.key == key }
+            val fullyVisible =
+                info != null &&
+                    info.offset >= layoutInfo.viewportStartOffset &&
+                    info.offset + info.size <= layoutInfo.viewportEndOffset
+            if (!fullyVisible) animateScrollToItem(index + offset)
+            return
+        }
+        index += group.items.size
     }
 }
 
@@ -234,6 +283,7 @@ private fun CategoryHeader(
 private fun SpeechCommandGuideCard(
     category: ManualReadoutItemCategory,
     item: SpeechCommandGuideItem,
+    highlight: SpeechPhraseHighlight?,
 ) {
     val color = speechCommandGuideCategoryColor(category)
     ElevatedCard(
@@ -279,10 +329,37 @@ private fun SpeechCommandGuideCard(
                 horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                 verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
             ) {
-                item.phrases.forEach { KoDriverPhraseChip(it, accent = color) }
+                item.phrases.forEach { phrase ->
+                    PhraseChip(
+                        phrase = phrase,
+                        accent = color,
+                        highlight = highlight?.takeIf { it.phrase == phrase },
+                    )
+                }
             }
         }
     }
+}
+
+/** 語句のチップ。読み上げの決め手になった語句は、指示のたびに数回点滅させる。 */
+@Composable
+private fun PhraseChip(
+    phrase: String,
+    accent: Color,
+    highlight: SpeechPhraseHighlight?,
+) {
+    val emphasis = remember { Animatable(0f) }
+    LaunchedEffect(highlight) {
+        if (highlight == null) {
+            emphasis.snapTo(0f)
+        } else {
+            repeat(BLINK_COUNT) {
+                emphasis.animateTo(1f, tween(BLINK_HALF_PERIOD_MS))
+                emphasis.animateTo(0f, tween(BLINK_HALF_PERIOD_MS))
+            }
+        }
+    }
+    KoDriverPhraseChip(phrase, accent = accent, emphasis = emphasis.value)
 }
 
 /** 読み上げカテゴリ専用の拡張カラー。手動タブと同じ色にそろえる。 */

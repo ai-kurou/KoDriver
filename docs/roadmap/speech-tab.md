@@ -43,12 +43,14 @@ base-branch: feature/base/speech-tab
 - 「音声」タブを追加し、空の listPane を表示した（タブ順は 自動・手動・音声・その他）: #3072
 - 音声タブの一覧の元データを返す `SpeechCommandGuideRepository`（`:core:speech-recognition-data`）と `ObserveSpeechCommandGuideUseCase` を追加した。手動読み上げの語句を `ManualReadoutSimulatorSpec.itemPhrases` に載せた: #3079
 - 音声タブの listPane に、呼びかけの案内と項目ごとのカード一覧（種類の見出し付き）を表示し、`SpeechRecognitionListViewModel` と Koin 登録で UseCase の結果を一覧に反映した: （このPR）
+- 音声認識の語句で読み上げに至ったとき、listPane がその項目へ自動スクロールし、決め手になった語句を点滅させる: （このPR）
 
 ## 次以降（上から順に着手する想定）
 
 - [x] 語句と読み上げ項目の対応の定義先を決め、一覧の元データを返す `SpeechCommandGuideRepository` と `ObserveSpeechCommandGuideUseCase` を実装する（選択中のシミュレーターの項目をカテゴリごとにまとめ、語句は省略しない）
 - [x] listPane に、呼びかけの案内と、項目ごとのカード一覧（種類の見出し付き）を表示する（Preview・テスト用の仮データで見た目を確認）
 - [x] ViewModel と Koin 登録を追加し、上記の UseCase の結果を一覧に反映する（選択中のシミュレーターの実際の項目と語句）
+- [x] 音声認識の語句で読み上げに至ったとき、listPane がその項目へ自動スクロールし、決め手になった語句を点滅させる（Narrator が読み上げ結果を通知する）
 - [ ] （別途判断）detailPane・検索・読み上げオン/オフの表示
 
 ## 決定済み事項

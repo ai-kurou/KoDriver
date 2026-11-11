@@ -86,8 +86,8 @@ class SpeechRecognitionViewModelManualReadoutTest {
 
         assertEquals(
             listOf(
-                voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingFuel.Laps.value),
-                voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.MyBestLap.Root.value),
+                voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingFuel.Laps.value, "燃料周回"),
+                voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.MyBestLap.Root.value, "自己ベスト"),
             ),
             itemRequestRepository.requests,
         )
@@ -101,7 +101,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
 
         assertEquals(
-            listOf(voiceRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value)),
+            listOf(voiceRequest(Simulator.Gt7Ps5.id, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value, "燃料周回")),
             itemRequestRepository.requests,
         )
     }
@@ -114,7 +114,9 @@ class SpeechRecognitionViewModelManualReadoutTest {
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
 
         assertEquals(
-            listOf(voiceRequest(Simulator.AceWindows.id, AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value)),
+            listOf(
+                voiceRequest(Simulator.AceWindows.id, AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value, "燃料周回"),
+            ),
             itemRequestRepository.requests,
         )
     }
@@ -155,6 +157,15 @@ class SpeechRecognitionViewModelManualReadoutTest {
     }
 
     @Test
+    fun `項目依頼には一致の決め手になった語句を添える`() {
+        createListeningViewModel()
+
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
+
+        assertEquals(listOf("燃料周回"), itemRequestRepository.requests.map { it.matchedPhrase })
+    }
+
+    @Test
     fun `項目依頼に失敗しても聞き取りを止めずウェイクワード待ちへ戻る`() {
         val viewModel = createListeningViewModel()
         itemRequestRepository.failure = IllegalStateException("失敗")
@@ -170,7 +181,7 @@ class SpeechRecognitionViewModelManualReadoutTest {
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("燃料周回を教えて")))
 
         assertEquals(
-            listOf(voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingFuel.Laps.value)),
+            listOf(voiceRequest(Simulator.LmuWindows.id, LmuWindowsReadoutItemKey.RemainingFuel.Laps.value, "燃料周回")),
             itemRequestRepository.requests,
         )
     }
@@ -178,5 +189,6 @@ class SpeechRecognitionViewModelManualReadoutTest {
     private fun voiceRequest(
         simulatorId: String,
         itemKey: String,
-    ) = ManualReadoutItemRequest(simulatorId, itemKey, playStartSound = false)
+        phrase: String,
+    ) = ManualReadoutItemRequest(simulatorId, itemKey, playStartSound = false, matchedPhrase = phrase)
 }

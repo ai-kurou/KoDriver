@@ -8,6 +8,7 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -18,6 +19,7 @@ import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SpeechCommandGuideGroup
 import kurou.kodriver.domain.model.SpeechCommandGuideItem
+import kurou.kodriver.domain.repository.ManualReadoutItemSpokenRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechCommandGuideRepository
 import org.koin.dsl.koinApplication
@@ -32,6 +34,7 @@ class SpeechRecognitionListModuleTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()
     private val guideRepository: SpeechCommandGuideRepository = mockk()
+    private val spokenRepository: ManualReadoutItemSpokenRepository = mockk()
 
     @BeforeTest
     fun setUp() {
@@ -55,6 +58,7 @@ class SpeechRecognitionListModuleTest {
                 )
             every { simulatorRepository.selectedSimulator() } returns flowOf(Simulator.Gt7Ps5)
             every { guideRepository.guideGroups(Simulator.Gt7Ps5) } returns groups
+            every { spokenRepository.observeSpoken() } returns emptyFlow()
             val application =
                 koinApplication {
                     modules(
@@ -62,6 +66,7 @@ class SpeechRecognitionListModuleTest {
                         module {
                             single<SimulatorPreferencesRepository> { simulatorRepository }
                             single<SpeechCommandGuideRepository> { guideRepository }
+                            single<ManualReadoutItemSpokenRepository> { spokenRepository }
                         },
                     )
                 }
@@ -70,7 +75,8 @@ class SpeechRecognitionListModuleTest {
                 assertEquals(groups, viewModel.uiState.first { it.groups.isNotEmpty() }.groups)
                 verify(exactly = 1) { simulatorRepository.selectedSimulator() }
                 verify(exactly = 1) { guideRepository.guideGroups(Simulator.Gt7Ps5) }
-                confirmVerified(simulatorRepository, guideRepository)
+                verify(exactly = 1) { spokenRepository.observeSpoken() }
+                confirmVerified(simulatorRepository, guideRepository, spokenRepository)
             } finally {
                 viewModel.viewModelScope.cancel()
                 application.close()

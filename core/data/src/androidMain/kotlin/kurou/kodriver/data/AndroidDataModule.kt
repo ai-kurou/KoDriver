@@ -10,6 +10,7 @@ import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.hotkey.UnsupportedHotkeyRepository
 import kurou.kodriver.data.hotkey.UnsupportedManualReadoutHotkeyRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemRequestRepository
+import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemSpokenRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.manualreadout.InMemorySpeechPlaybackStateRepository
 import kurou.kodriver.data.preferences.AndroidAutoReadoutPreferencesRepository
@@ -64,6 +65,7 @@ import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesReposi
 import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
+import kurou.kodriver.domain.repository.ManualReadoutItemSpokenRepository
 import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
@@ -131,6 +133,7 @@ fun androidDataModule(context: Context) =
         }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<ManualReadoutItemRequestRepository> { InMemoryManualReadoutItemRequestRepository() }
+        single<ManualReadoutItemSpokenRepository> { InMemoryManualReadoutItemSpokenRepository() }
         single<SpeechPlaybackStateRepository> { InMemorySpeechPlaybackStateRepository() }
         single<Context> { context }
 
