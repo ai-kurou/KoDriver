@@ -5,6 +5,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key
@@ -21,6 +22,7 @@ import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.pressKey
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -83,6 +85,40 @@ class ManualReadoutHapticTest {
         assertEquals(listOf(key), removed)
         assertEquals(2, previews)
         verify(exactly = 4) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `並べ替えハンドルのドラッグは開始と終了で触覚を1回ずつ通知する`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate) } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.GestureEnd) } returns Unit
+        val key = lmuWindowsManualReadoutItemKeys().first()
+        rule.setContent {
+            HapticContent {
+                ManualReadoutItemsCard(
+                    ManualReadoutSetDetailUiState(
+                        simulatorId = Simulator.LmuWindows.id,
+                        availableItemKeys = listOf(key),
+                        selectedItemKeys = listOf(key),
+                        isTextToSpeechAvailable = true,
+                    ),
+                    {},
+                    {},
+                    { _, _ -> },
+                    { _, _ -> },
+                    {},
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("バーチャルエネルギー残量を並べ替え").performTouchInput {
+            down(center)
+            repeat(10) { moveBy(Offset(0f, 30f)) }
+            up()
+        }
+        rule.waitForIdle()
+
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate) }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.GestureEnd) }
         confirmVerified(haptic)
     }
 
