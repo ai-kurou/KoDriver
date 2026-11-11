@@ -42,8 +42,8 @@ base-branch: feature/base/speech-tab
 - 音声タブ用の `:feature:speech-recognition-list` モジュールと空の listPane を追加した: #3063
 - 「音声」タブを追加し、空の listPane を表示した（タブ順は 自動・手動・音声・その他）: #3072
 - 音声タブの一覧の元データを返す `SpeechCommandGuideRepository`（`:core:speech-recognition-data`）と `ObserveSpeechCommandGuideUseCase` を追加した。手動読み上げの語句を `ManualReadoutSimulatorSpec.itemPhrases` に載せた: #3079
-- 音声タブの listPane に、呼びかけの案内と項目ごとのカード一覧（種類の見出し付き）を表示し、`SpeechRecognitionListViewModel` と Koin 登録で UseCase の結果を一覧に反映した: （このPR）
-- 音声認識の語句で読み上げに至ったとき、listPane がその項目へ自動スクロールし、決め手になった語句を点滅させる: （このPR）
+- 音声タブの listPane に、呼びかけの案内と項目ごとのカード一覧（種類の見出し付き）を表示し、`SpeechRecognitionListViewModel` と Koin 登録で UseCase の結果を一覧に反映した: #3069
+- 音声認識の語句で読み上げに至ったとき、listPane がその項目へ自動スクロールし、決め手になった語句を点滅させる: #3116
 
 ## 次以降（上から順に着手する想定）
 
