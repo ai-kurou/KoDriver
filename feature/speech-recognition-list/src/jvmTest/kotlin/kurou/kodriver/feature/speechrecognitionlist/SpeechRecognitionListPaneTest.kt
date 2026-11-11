@@ -7,6 +7,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.domain.model.SpeechCommandGuideGroup
@@ -136,5 +138,21 @@ class SpeechRecognitionListPaneTest {
         rule.waitForIdle()
 
         rule.onNodeWithText("ガス", useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun `先頭側が見切れている項目や上へ通り過ぎた項目も、強調の指示で見える位置へ戻す`() {
+        val items = (1..30).map { SpeechCommandGuideItem("item-$it", "項目$it", listOf("語句$it")) }
+        val groups = listOf(SpeechCommandGuideGroup(ManualReadoutItemCategory.FUEL, items))
+        var uiState by mutableStateOf(SpeechRecognitionListUiState(groups = groups))
+        rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(uiState) } }
+
+        // 一覧を下へ送り、先頭付近の項目を画面の上へ通り過ぎさせる
+        rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_PANE_TEST_TAG).performTouchInput { swipeUp() }
+        rule.waitForIdle()
+        uiState = uiState.copy(highlight = SpeechPhraseHighlight("item-1", "語句1", 1))
+        rule.waitForIdle()
+
+        rule.onNodeWithText("語句1", useUnmergedTree = true).assertIsDisplayed()
     }
 }
