@@ -21,7 +21,6 @@ class SpeechRecognitionListPaneScreenshotTest {
         composeScreenshotTest {
             setPane(
                 SpeechRecognitionListUiState(
-                    loaded = true,
                     groups =
                         listOf(
                             SpeechCommandGuideGroup(
@@ -49,20 +48,6 @@ class SpeechRecognitionListPaneScreenshotTest {
                         ),
                 ),
             )
-            onRoot().captureRoboImage()
-        }
-
-    @Test
-    fun `項目なし`() =
-        composeScreenshotTest {
-            setPane(SpeechRecognitionListUiState(loaded = true))
-            onRoot().captureRoboImage()
-        }
-
-    @Test
-    fun `案内の取得前`() =
-        composeScreenshotTest {
-            setPane(SpeechRecognitionListUiState())
             onRoot().captureRoboImage()
         }
 }

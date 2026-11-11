@@ -13,6 +13,6 @@ internal class SpeechRecognitionListViewModel(
 ) : ViewModel() {
     val uiState =
         observeSpeechCommandGuide()
-            .map { SpeechRecognitionListUiState(groups = it, loaded = true) }
+            .map { SpeechRecognitionListUiState(groups = it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SpeechRecognitionListUiState())
 }
