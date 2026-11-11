@@ -15,6 +15,11 @@ class SpeechRecognitionListPaneTest {
     @get:Rule
     val rule = createComposeRule()
 
+    private companion object {
+        const val LONGEST_PHRASE_NOTE =
+            "語句の一部だけでなく、できるだけ最後まではっきり言ってください。「タイヤ残り」より「タイヤ残り周回」のように、長い語句のほうが優先されます。"
+    }
+
     private val fuelGroup =
         SpeechCommandGuideGroup(
             category = ManualReadoutItemCategory.FUEL,
@@ -35,6 +40,7 @@ class SpeechRecognitionListPaneTest {
         rule.onNodeWithText("まずはこう呼びかけます").assertIsDisplayed()
         rule.onNodeWithText("「コドライバー」").assertIsDisplayed()
         listOf("確認音", "下の語句を言う", "読み上げ").forEach { rule.onNodeWithText(it).assertIsDisplayed() }
+        rule.onNodeWithText(LONGEST_PHRASE_NOTE).assertIsDisplayed()
         rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG).assertIsDisplayed()
     }
 
