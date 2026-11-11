@@ -7,7 +7,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDialog
+import androidx.compose.ui.test.isPopup
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -23,6 +25,7 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
+import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Test
 
@@ -181,6 +184,40 @@ class ManualReadoutSetDetailPaneScreenshotTest {
     @Test
     fun `ホットキー登録競合と再試行`() =
         screenshot(emptyList(), hotkey = 0x41 to null, registration = HotkeyRegistrationState.Conflict)
+}
+
+class ManualReadoutHotkeyMenuScreenshotTest {
+    init {
+        registerAllManualReadoutSimulators()
+    }
+
+    @Test
+    fun `ホットキーの修飾キー選択メニューを開いた状態`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            ManualReadoutSetDetailPane(
+                                uiState =
+                                    ManualReadoutSetDetailUiState(
+                                        simulatorId = Simulator.LmuWindows.id,
+                                        setNumber = 1,
+                                        hotkeyVirtualKeyCode = 0x41,
+                                    ),
+                                showHotkey = true,
+                                onAddItem = {},
+                                onDelete = {},
+                            )
+                        }
+                    }
+                }
+            }
+            onNodeWithTag("manual_readout_hotkey_modifiers").performClick()
+            onNodeWithTag("manual_readout_hotkey_modifiers_${ManualReadoutHotkeyModifiers.entries.last().name}")
+                .assertIsDisplayed()
+            onNode(isPopup()).captureRoboImage()
+        }
 }
 
 class ManualReadoutSetDetailPaneAceScreenshotTest {
