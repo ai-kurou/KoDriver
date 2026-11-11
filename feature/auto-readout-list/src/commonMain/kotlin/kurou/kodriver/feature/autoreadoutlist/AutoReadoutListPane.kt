@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -85,6 +86,7 @@ import kurou.kodriver.core.designsystem.KoDriverHintRow
 import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
@@ -209,6 +211,8 @@ internal fun AutoReadoutListPane(
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 state = listState,
+                // 右下に重なる音声認識のチップに、末尾の項目が隠れないよう下端を空ける
+                contentPadding = PaddingValues(bottom = LocalBottomEndOverlayInset.current),
                 modifier =
                     Modifier
                         .fillMaxSize()

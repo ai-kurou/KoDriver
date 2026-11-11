@@ -43,6 +43,7 @@ import kurou.kodriver.core.designsystem.DetailPaneTopAppBar
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.root_disabled_banner_enable
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.root_disabled_banner_message
@@ -94,6 +95,8 @@ internal fun AutoReadoutDetailPane(
                 modifier =
                     Modifier
                         .weight(1f)
+                        // 右下に重なる音声認識のチップに、スクロール末尾の内容が隠れないよう、その高さだけ下端を空ける
+                        .padding(bottom = LocalBottomEndOverlayInset.current)
                         .alpha(contentAlpha),
             ) {
                 content()
