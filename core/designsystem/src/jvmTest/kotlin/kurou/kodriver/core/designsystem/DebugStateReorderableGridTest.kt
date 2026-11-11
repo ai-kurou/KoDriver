@@ -2,15 +2,23 @@ package kurou.kodriver.core.designsystem
 
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -83,6 +91,43 @@ class DebugStateReorderableGridTest {
         rule.waitForIdle()
 
         assertEquals(listOf(0 to 1), moves)
+    }
+
+    @Test
+    fun `長押し並べ替えの開始と終了で触覚を1回ずつ通知し入れ替わりでは通知しない`() {
+        val haptic: HapticFeedback = mockk()
+        every { haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate) } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.GestureEnd) } returns Unit
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    DebugStateReorderableGrid(
+                        cardOrder = listOf(SampleCardKey.FIRST, SampleCardKey.SECOND),
+                        onMoveCard = onMoveCard,
+                        fixedCards = listOf(DebugStateFixedCard("header") { Text("固定ヘッダー", modifier = it) }),
+                        card = { cardKey, modifier -> Text(text = "カード ${cardKey.name}", modifier = modifier) },
+                        modifier = Modifier.requiredSize(360.dp, 640.dp),
+                    )
+                }
+            }
+        }
+
+        val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
+        val gridTopLeft = grid.fetchSemanticsNode().boundsInRoot.topLeft
+        val from = rule.onNodeWithText("カード FIRST").fetchBounds().center - gridTopLeft
+        val to = rule.onNodeWithText("カード SECOND").fetchBounds().center - gridTopLeft
+        grid.performTouchInput { down(from) }
+        rule.mainClock.advanceTimeBy(1_000)
+        grid.performTouchInput {
+            repeat(10) { step -> moveTo(from + Offset(0f, (to.y - from.y) * (step + 1) / 10)) }
+            up()
+        }
+        rule.waitForIdle()
+
+        assertEquals(listOf(0 to 1), moves)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate) }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.GestureEnd) }
+        confirmVerified(haptic)
     }
 
     @Test

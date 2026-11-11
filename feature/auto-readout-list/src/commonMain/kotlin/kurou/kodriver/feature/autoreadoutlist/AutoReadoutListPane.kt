@@ -185,6 +185,7 @@ internal fun AutoReadoutListPane(
             listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
         }
     }
+    val haptic = LocalHapticFeedback.current
     val reorderableState =
         rememberReorderableLazyListState(listState) { from, to ->
             onMove(
@@ -261,7 +262,15 @@ internal fun AutoReadoutListPane(
                             item = item,
                             index = index,
                             itemName = itemName,
-                            dragHandleModifier = Modifier.draggableHandle(),
+                            dragHandleModifier =
+                                Modifier.draggableHandle(
+                                    onDragStarted = { _ ->
+                                        haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+                                    },
+                                    onDragStopped = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.GestureEnd)
+                                    },
+                                ),
                             readoutEnabled = readoutEnabled,
                             queueEnabled = uiState.queueEnabledStates[item] ?: false,
                             startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,

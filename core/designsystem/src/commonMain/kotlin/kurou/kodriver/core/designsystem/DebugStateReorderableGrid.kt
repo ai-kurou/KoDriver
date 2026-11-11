@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -60,6 +62,7 @@ fun <K : Enum<K>> DebugStateReorderableGrid(
     modifier: Modifier = Modifier,
 ) {
     val fixedItemCount = fixedCards.size
+    val haptic = LocalHapticFeedback.current
     BoxWithConstraints(modifier = modifier) {
         val gridState = rememberLazyGridState()
         val reorderableState =
@@ -78,7 +81,17 @@ fun <K : Enum<K>> DebugStateReorderableGrid(
             }
             items(cardOrder, key = { it.name }) { cardKey ->
                 ReorderableItem(reorderableState, key = cardKey.name) {
-                    card(cardKey, Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle())
+                    card(
+                        cardKey,
+                        Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle(
+                            onDragStarted = { _ ->
+                                haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+                            },
+                            onDragStopped = {
+                                haptic.performHapticFeedback(HapticFeedbackType.GestureEnd)
+                            },
+                        ),
+                    )
                 }
             }
         }

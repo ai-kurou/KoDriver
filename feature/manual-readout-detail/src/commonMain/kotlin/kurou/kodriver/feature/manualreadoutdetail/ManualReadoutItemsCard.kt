@@ -116,7 +116,17 @@ internal fun ManualReadoutItemsCard(
                                     Icon(
                                         Icons.Default.DragIndicator,
                                         stringResource(Res.string.manual_readout_drag_item, name),
-                                        Modifier.draggableHandle().size(20.dp),
+                                        Modifier
+                                            .draggableHandle(
+                                                onDragStarted = { _ ->
+                                                    haptic.performHapticFeedback(
+                                                        HapticFeedbackType.GestureThresholdActivate,
+                                                    )
+                                                },
+                                                onDragStopped = { _ ->
+                                                    haptic.performHapticFeedback(HapticFeedbackType.GestureEnd)
+                                                },
+                                            ).size(20.dp),
                                     )
                                     Text(name, modifier = Modifier.weight(1f))
                                     IconButton(onClick = {

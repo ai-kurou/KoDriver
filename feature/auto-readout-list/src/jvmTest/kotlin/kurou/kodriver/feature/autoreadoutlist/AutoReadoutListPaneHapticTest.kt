@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.autoreadoutlist
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -8,6 +9,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -75,6 +77,24 @@ class AutoReadoutListPaneHapticTest {
 
         assertEquals(listOf<ReadoutItemKey>(item), selections)
         verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
+    fun `ドラッグハンドルの並べ替えは開始と終了で触覚を1回ずつ返す`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate) } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.GestureEnd) } returns Unit
+        showPane()
+
+        rule.onNodeWithContentDescription("ドラッグして並び替え").performTouchInput {
+            down(center)
+            repeat(10) { moveBy(Offset(0f, 30f)) }
+            up()
+        }
+        rule.waitForIdle()
+
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate) }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.GestureEnd) }
         confirmVerified(haptic)
     }
 
