@@ -1,13 +1,18 @@
 package kurou.kodriver.feature.main
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.click
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performMouseInput
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
@@ -83,6 +88,29 @@ class SpeechRecognitionHapticTest {
 
         rule.runOnIdle {
             assertEquals(listOf("Mic B"), selected)
+            assertEquals(listOf(HapticFeedbackType.ContextClick), feedback)
+        }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `ボトムシートを閉じるとハプティックと閉じる通知が呼ばれる`() {
+        var dismissed = 0
+        setContent {
+            SpeechRecognitionDetail(
+                presentation = SpeechRecognitionDetailPresentation.BottomSheet,
+                uiState = SpeechRecognitionUiState(),
+                onEnabledChange = {},
+                onDeviceMenuOpen = {},
+                onDeviceSelected = {},
+                onDismissRequest = { dismissed++ },
+            )
+        }
+
+        rule.onAllNodes(isRoot())[1].performMouseInput { click(Offset(1f, 1f)) }
+
+        rule.runOnIdle {
+            assertEquals(1, dismissed)
             assertEquals(listOf(HapticFeedbackType.ContextClick), feedback)
         }
     }
