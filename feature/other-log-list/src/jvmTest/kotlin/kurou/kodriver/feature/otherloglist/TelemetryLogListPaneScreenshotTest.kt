@@ -7,8 +7,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
@@ -38,6 +42,26 @@ class TelemetryLogListPaneScreenshotTest {
                 }
             }
 
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `ログ項目のメニューを開いた状態`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            TelemetryLogListPane(
+                                uiState = previewTelemetryLogListUiState,
+                            )
+                        }
+                    }
+                }
+            }
+            onAllNodesWithContentDescription("その他の操作")[0].performClick()
+            onNodeWithText("フィードバック送信").assertIsDisplayed()
+            onNodeWithText("削除").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
