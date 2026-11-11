@@ -299,6 +299,29 @@ class MainActivityTest {
         assertManualReadoutEmptyState("Assetto Corsa EVO（Windows版）", "ACE")
     }
 
+    @Test
+    fun `LMU選択時に音声タブを開くと呼びかけの案内を表示する`() {
+        assertSpeechRecognitionGuide("Le Mans Ultimate（Windows版）")
+    }
+
+    @Test
+    fun `GT7選択時に音声タブを開くと呼びかけの案内を表示する`() {
+        assertSpeechRecognitionGuide("Gran Turismo 7（PS5）")
+    }
+
+    @Test
+    fun `ACE選択時に音声タブを開くと呼びかけの案内を表示する`() {
+        assertSpeechRecognitionGuide("Assetto Corsa EVO（Windows版）")
+    }
+
+    private fun assertSpeechRecognitionGuide(simulatorDisplayName: String) {
+        launchActivity()
+        selectSimulator(simulatorDisplayName)
+        waitUntilDisplayed("音声")
+        clickItem("音声")
+        waitUntilDisplayed("まずはこう呼びかけます")
+    }
+
     private fun assertManualReadoutEmptyState(
         simulatorDisplayName: String,
         simulatorShortName: String,
