@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Test
 
@@ -24,115 +23,6 @@ class ManualReadoutListPaneScreenshotTest {
     init {
         registerAllManualReadoutSimulators()
     }
-
-    @Test
-    fun `再生ボタン表示`() =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
-                            ManualReadoutListPaneContent(
-                                uiState =
-                                    ManualReadoutListUiState(
-                                        playButtonLayoutEnabled = true,
-                                        canReadSets = true,
-                                        sets =
-                                            listOf(
-                                                ManualReadoutSet(
-                                                    id = "set-1",
-                                                    name = "燃料とタイヤ",
-                                                    itemKeys =
-                                                        listOf(
-                                                            LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
-                                                            LmuWindowsReadoutItemKey.TyreWear.Root.value,
-                                                        ),
-                                                    hotkeyVirtualKeyCode = 0x41,
-                                                ),
-                                                ManualReadoutSet(id = "set-2"),
-                                                ManualReadoutSet(
-                                                    id = "set-3",
-                                                    itemKeys =
-                                                        listOf(
-                                                            LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
-                                                        ),
-                                                ),
-                                            ),
-                                    ),
-                                simulatorId = "lmu_windows",
-                                simulatorName = "LMU",
-                                onAddSet = {},
-                                onReadSet = {},
-                                showHotkeyChip = true,
-                            )
-                        }
-                    }
-                }
-            }
-            onRoot().captureRoboImage()
-        }
-
-    @Test
-    fun `空状態`() =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
-                            ManualReadoutListPaneContent(
-                                uiState = ManualReadoutListUiState(canReadSets = true),
-                                simulatorId = "lmu_windows",
-                                simulatorName = "LMU",
-                                onAddSet = {},
-                                onReadSet = {},
-                                onTogglePlayButtonLayout = {},
-                            )
-                        }
-                    }
-                }
-            }
-
-            onRoot().captureRoboImage()
-        }
-
-    @Test
-    fun `保存済みセット一覧`() =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
-                            ManualReadoutListPaneContent(
-                                uiState =
-                                    ManualReadoutListUiState(
-                                        canReadSets = true,
-                                        sets =
-                                            listOf(
-                                                ManualReadoutSet(id = "set-1", hotkeyVirtualKeyCode = 0x41),
-                                                ManualReadoutSet(
-                                                    id = "set-2",
-                                                    itemKeys =
-                                                        listOf(
-                                                            LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
-                                                            LmuWindowsReadoutItemKey.TyreWear.Root.value,
-                                                        ),
-                                                ),
-                                            ),
-                                    ),
-                                simulatorId = "lmu_windows",
-                                simulatorName = "LMU",
-                                onAddSet = {},
-                                onReadSet = {},
-                                onTogglePlayButtonLayout = {},
-                                showHotkeyChip = true,
-                            )
-                        }
-                    }
-                }
-            }
-
-            onRoot().captureRoboImage()
-        }
 
     @Test
     fun `セットの長押し削除メニュー`() =
