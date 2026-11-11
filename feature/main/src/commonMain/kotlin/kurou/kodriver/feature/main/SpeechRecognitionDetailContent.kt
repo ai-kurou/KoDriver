@@ -137,14 +137,14 @@ internal fun SpeechRecognitionDetailContent(
                         .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
             ) {
+                val unknownWord = stringResource(Res.string.speech_recognition_unknown_word)
                 if (uiState.partialText.isNotEmpty()) {
                     Text(
-                        text = uiState.partialText,
+                        text = uiState.partialText.replace(VOSK_UNKNOWN_WORD, unknownWord),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                val unknownWord = stringResource(Res.string.speech_recognition_unknown_word)
                 uiState.recognized.forEach { candidates ->
                     // 1行が1回の発話。候補はチップで並べ、幅を超える分は折り返す
                     FlowRow(
