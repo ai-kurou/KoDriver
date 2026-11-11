@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.otherlist
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 
 /**
@@ -39,6 +41,8 @@ fun OtherListPane(
 
     LazyColumn(
         state = listState,
+        // 右下に重なる音声認識のチップに、末尾の項目が隠れないよう下端を空ける
+        contentPadding = PaddingValues(bottom = LocalBottomEndOverlayInset.current),
         modifier =
             modifier
                 .fillMaxSize()

@@ -50,7 +50,12 @@ fun DetailPaneScaffold(
         },
     ) { paddingValues ->
         Box(
-            modifier = Modifier.padding(paddingValues).fillMaxSize(),
+            // 右下に重なる音声認識のチップに、スクロール末尾の内容が隠れないよう、その高さだけ下端を空ける
+            modifier =
+                Modifier
+                    .padding(paddingValues)
+                    .padding(bottom = LocalBottomEndOverlayInset.current)
+                    .fillMaxSize(),
             contentAlignment = Alignment.TopCenter,
         ) {
             Box(modifier = Modifier.widthIn(max = DETAIL_PANE_CONTENT_MAX_WIDTH).fillMaxWidth()) {
