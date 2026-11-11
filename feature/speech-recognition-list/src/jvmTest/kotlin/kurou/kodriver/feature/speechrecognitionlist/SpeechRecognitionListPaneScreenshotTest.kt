@@ -28,7 +28,7 @@ class SpeechRecognitionListPaneScreenshotTest {
                                 category = ManualReadoutItemCategory.FUEL,
                                 items =
                                     listOf(
-                                        SpeechCommandGuideItem("fuel", "燃料残量", listOf("燃料", "ガス", "フューエル", "残り燃料")),
+                                        SpeechCommandGuideItem("fuel", "燃料残量", listOf("燃料", "ガス", "残り燃料")),
                                     ),
                             ),
                             SpeechCommandGuideGroup(

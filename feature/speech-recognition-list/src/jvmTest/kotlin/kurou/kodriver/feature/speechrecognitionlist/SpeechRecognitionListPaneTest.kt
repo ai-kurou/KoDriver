@@ -18,7 +18,7 @@ class SpeechRecognitionListPaneTest {
     private val fuelGroup =
         SpeechCommandGuideGroup(
             category = ManualReadoutItemCategory.FUEL,
-            items = listOf(SpeechCommandGuideItem("fuel", "燃料残量", listOf("フューエル", "ガス"))),
+            items = listOf(SpeechCommandGuideItem("fuel", "燃料残量", listOf("残り燃料", "ガス"))),
         )
 
     @Test
@@ -78,7 +78,7 @@ class SpeechRecognitionListPaneTest {
             }
         }
 
-        listOf("燃料", "タイヤ", "ブレーキ", "ラップ", "燃料残量", "フューエル", "ガス", "ゴム", "ディスク", "バーチャルエネルギー", "VE残量", "ベストラップ")
+        listOf("燃料", "タイヤ", "ブレーキ", "ラップ", "燃料残量", "残り燃料", "ガス", "ゴム", "ディスク", "バーチャルエネルギー", "VE残量", "ベストラップ")
             .forEach { rule.onNodeWithText(it, useUnmergedTree = true).assertExists() }
         rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG).assertDoesNotExist()
     }
