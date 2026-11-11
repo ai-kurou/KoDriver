@@ -21,7 +21,7 @@ class Gt7Ps5ManualReadoutPhraseMatcherTest {
         )
         assertEquals(
             Gt7Ps5ReadoutItemKey.MyBestLap.Root.value,
-            matchGt7Ps5ManualReadoutItemKey(listOf("じこべ")),
+            matchGt7Ps5ManualReadoutItemKey(listOf("自己ベスト")),
         )
         assertEquals(
             Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value,
@@ -45,5 +45,13 @@ class Gt7Ps5ManualReadoutPhraseMatcherTest {
     fun `一致しない・空の候補はnull`() {
         assertNull(matchGt7Ps5ManualReadoutItemKey(emptyList()))
         assertNull(matchGt7Ps5ManualReadoutItemKey(listOf("こんにちは")))
+    }
+
+    @Test
+    fun `削除した語句は項目キーに一致せずnull`() {
+        assertNull(matchGt7Ps5ManualReadoutItemKey(listOf("フューエル")))
+        assertNull(matchGt7Ps5ManualReadoutItemKey(listOf("タイヤ熱")))
+        assertNull(matchGt7Ps5ManualReadoutItemKey(listOf("タイヤテンプ")))
+        assertNull(matchGt7Ps5ManualReadoutItemKey(listOf("じこべ")))
     }
 }
