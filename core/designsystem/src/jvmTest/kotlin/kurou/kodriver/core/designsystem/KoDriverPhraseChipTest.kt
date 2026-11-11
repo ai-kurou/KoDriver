@@ -24,4 +24,11 @@ class KoDriverPhraseChipTest {
 
         rule.onNodeWithText("タイヤ").assertIsDisplayed()
     }
+
+    @Test
+    fun `控えめ表示でも語句を表示する`() {
+        rule.setContent { KoDriverTheme { KoDriverPhraseChip(text = "？", muted = true) } }
+
+        rule.onNodeWithText("？").assertIsDisplayed()
+    }
 }

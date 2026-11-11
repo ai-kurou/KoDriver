@@ -47,7 +47,7 @@ class SpeechRecognitionDetailScreenshotTest {
             enabled = true,
             status = SpeechRecognitionStatus.Listening,
             level = 0.6f,
-            recognized = listOf(listOf("燃料", "然料"), listOf("ブレーキ")),
+            recognized = listOf(listOf("燃料", "然料"), listOf("[unk]", "ドライバー"), listOf("ブレーキ")),
             devices = listOf("内蔵マイク", "USBマイク"),
             deviceName = "内蔵マイク",
         )
