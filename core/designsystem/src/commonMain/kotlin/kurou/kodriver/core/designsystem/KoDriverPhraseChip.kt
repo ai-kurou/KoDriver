@@ -17,19 +17,22 @@ private const val ACCENT_BORDER_ALPHA = 0.28f
 /**
  * 語句を1つ表示する小さなチップ。音声タブの語句一覧と、音声認識の認識結果で同じ見た目に揃える。
  * [accent] を渡すと、その色で薄く染めて細い枠を付ける（音声タブの語句一覧でカテゴリ色を見せるため）。
+ * [muted] が true のときは、聞き取れなかった部分などを示すため、背景と文字を控えめな色にする。
  */
 @Composable
 fun KoDriverPhraseChip(
     text: String,
     modifier: Modifier = Modifier,
     accent: Color? = null,
+    muted: Boolean = false,
 ) {
-    val base = MaterialTheme.colorScheme.surfaceContainerHighest
+    val colors = MaterialTheme.colorScheme
+    val base = if (muted) colors.surfaceContainerLow else colors.surfaceContainerHighest
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.small,
         color = accent?.copy(alpha = ACCENT_FILL_ALPHA)?.compositeOver(base) ?: base,
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        contentColor = if (muted) colors.onSurfaceVariant else colors.onSurface,
         border = accent?.let { BorderStroke(1.dp, it.copy(alpha = ACCENT_BORDER_ALPHA)) },
     ) {
         Text(

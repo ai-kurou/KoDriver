@@ -42,6 +42,29 @@ class SpeechRecognitionDetailContentTest {
     }
 
     @Test
+    fun `認識結果の未知語記号は分かりやすい記号に置き換えて表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionDetailContent(
+                    uiState =
+                        SpeechRecognitionUiState(
+                            enabled = true,
+                            status = SpeechRecognitionStatus.Listening,
+                            recognized = listOf(listOf("[unk]", "燃料")),
+                        ),
+                    onEnabledChange = {},
+                    onDeviceMenuOpen = {},
+                    onDeviceSelected = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("？").assertExists()
+        rule.onNodeWithText("[unk]").assertDoesNotExist()
+        rule.onNodeWithText("燃料").assertExists()
+    }
+
+    @Test
     fun `聞き取り中はONのスイッチと認識途中の文字列と結果の履歴を表示し操作でOFFを通知する`() {
         val changes = mutableListOf<Boolean>()
         rule.setContent {

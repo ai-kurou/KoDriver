@@ -13,4 +13,5 @@
     <string name="speech_recognition_status_recognition_failed">音声認識中にエラーが発生しました</string>
     <string name="speech_recognition_level_description">マイクの入力音量</string>
     <string name="speech_recognition_device_label">入力デバイス</string>
+    <string name="speech_recognition_unknown_word">？</string>
 </resources>

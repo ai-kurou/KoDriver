@@ -42,6 +42,7 @@ import kurou.kodriver.feature.main.generated.resources.speech_recognition_status
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_unavailable
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_switch_description
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_title
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_unknown_word
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -143,19 +144,28 @@ internal fun SpeechRecognitionDetailContent(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+                val unknownWord = stringResource(Res.string.speech_recognition_unknown_word)
                 uiState.recognized.forEach { candidates ->
                     // 1行が1回の発話。候補はチップで並べ、幅を超える分は折り返す
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
                         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
                     ) {
-                        candidates.forEach { KoDriverPhraseChip(it) }
+                        candidates.forEach {
+                            KoDriverPhraseChip(
+                                text = it.replace(VOSK_UNKNOWN_WORD, unknownWord),
+                                muted = it.contains(VOSK_UNKNOWN_WORD),
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+
+/** Voskが語彙に無い音を表す記号。そのまま見せると分かりにくいため、表示時に置き換える。 */
+private const val VOSK_UNKNOWN_WORD = "[unk]"
 
 internal fun SpeechRecognitionStatus.label(): StringResource =
     when (this) {
