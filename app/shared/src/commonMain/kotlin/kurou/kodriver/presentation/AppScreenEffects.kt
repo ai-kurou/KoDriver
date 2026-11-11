@@ -43,15 +43,22 @@ internal fun handleTtsUnavailableAction(
 internal fun rememberConnectionBannerTap(
     bannerUiState: ConnectionBannerUiState,
     onSelectOtherItem: (OtherListItemType) -> Unit,
+    onRequestAccessLocalNetworkPermission: () -> Unit,
 ): (() -> Unit)? =
     remember(
         bannerUiState.isTappable,
         bannerUiState.tapNavigationTarget,
         onSelectOtherItem,
+        onRequestAccessLocalNetworkPermission,
     ) {
-        if (bannerUiState.isTappable && bannerUiState.tapNavigationTarget != null) {
+        val target = bannerUiState.tapNavigationTarget
+        if (bannerUiState.isTappable && target != null) {
             {
-                onSelectOtherItem(bannerUiState.tapNavigationTarget.toOtherListItemType())
+                if (target == ConnectionBannerNavigationTarget.AccessLocalNetworkPermission) {
+                    onRequestAccessLocalNetworkPermission()
+                } else {
+                    onSelectOtherItem(target.toOtherListItemType())
+                }
             }
         } else {
             null

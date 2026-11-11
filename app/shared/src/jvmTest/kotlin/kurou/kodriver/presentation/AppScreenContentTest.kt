@@ -61,6 +61,56 @@ class AppScreenContentTest {
     }
 
     @Test
+    fun `IPアドレスの設定へ誘導する接続バナーをタップするとその他タブに切り替えてから処理する`() {
+        var tapCount = 0
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                bannerUiState =
+                    ConnectionBannerUiState(
+                        message = "接続バナー",
+                        isTappable = true,
+                        tapNavigationTarget = ConnectionBannerNavigationTarget.ServerIp,
+                    ),
+                onBannerTap = { tapCount++ },
+                autoReadoutContent = { Text("自動画面") },
+                otherContent = { _, _ -> Text("その他画面") },
+            )
+        }
+
+        rule.onNodeWithText("自動画面").assertIsDisplayed()
+        rule.onNodeWithText("接続バナー").performClick()
+
+        rule.onNodeWithText("その他画面").assertIsDisplayed()
+        assertEquals(1, tapCount)
+    }
+
+    @Test
+    fun `ローカルネットワーク権限の接続バナーをタップしてもタブを切り替えずに処理する`() {
+        var tapCount = 0
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                bannerUiState =
+                    ConnectionBannerUiState(
+                        message = "接続バナー",
+                        isTappable = true,
+                        tapNavigationTarget = ConnectionBannerNavigationTarget.AccessLocalNetworkPermission,
+                    ),
+                onBannerTap = { tapCount++ },
+                autoReadoutContent = { Text("自動画面") },
+                otherContent = { _, _ -> Text("その他画面") },
+            )
+        }
+
+        rule.onNodeWithText("接続バナー").performClick()
+
+        rule.onNodeWithText("自動画面").assertIsDisplayed()
+        rule.onNodeWithText("その他画面").assertDoesNotExist()
+        assertEquals(1, tapCount)
+    }
+
+    @Test
     fun `音声タブをタップするとspeechRecognitionContentを表示する`() {
         rule.setContent {
             AppScreenContent(
