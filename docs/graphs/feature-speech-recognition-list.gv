@@ -2,13 +2,19 @@ digraph G {
   rankdir=TB
   node [shape=box, style="rounded,filled"]
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
+  ":core:ace-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:designsystem" [fillcolor="#FFF9C4", color="#F9A825", penwidth=1]
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:gt7-ps5-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:lmu-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:speech-recognition-list"
+  ":core:ace-windows-domain" -> ":core:domain"
+  ":core:gt7-ps5-domain" -> ":core:domain"
   ":core:lmu-windows-domain" -> ":core:domain"
   ":feature:speech-recognition-list" -> ":core:domain"
   ":feature:speech-recognition-list" -> ":core:designsystem"
+  ":feature:speech-recognition-list" -> ":core:ace-windows-domain"
+  ":feature:speech-recognition-list" -> ":core:gt7-ps5-domain"
   ":feature:speech-recognition-list" -> ":core:lmu-windows-domain"
 }
