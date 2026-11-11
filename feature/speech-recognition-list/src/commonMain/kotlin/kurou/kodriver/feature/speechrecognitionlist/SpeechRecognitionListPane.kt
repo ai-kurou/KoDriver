@@ -340,7 +340,7 @@ private fun SpeechRecognitionListPanePreview() {
                                 category = ManualReadoutItemCategory.FUEL,
                                 items =
                                     listOf(
-                                        SpeechCommandGuideItem("fuel", "燃料残量", listOf("燃料", "ガス", "残り燃料")),
+                                        SpeechCommandGuideItem("fuel", "燃料残量", listOf("燃料の残量", "ガス", "残り燃料")),
                                     ),
                             ),
                             SpeechCommandGuideGroup(

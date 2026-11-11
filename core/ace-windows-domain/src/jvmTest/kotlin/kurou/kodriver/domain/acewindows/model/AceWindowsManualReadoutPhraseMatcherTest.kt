@@ -17,7 +17,7 @@ class AceWindowsManualReadoutPhraseMatcherTest {
     fun `語句に一致する発話は対応する項目キーを返す`() {
         assertEquals(
             AceWindowsReadoutItemKey.RemainingFuel.Root.value,
-            matchAceWindowsManualReadoutItemKey(listOf("燃料を教えて")),
+            matchAceWindowsManualReadoutItemKey(listOf("燃料残量を教えて")),
         )
         assertEquals(
             AceWindowsReadoutItemKey.MyBestLap.Root.value,
@@ -46,6 +46,20 @@ class AceWindowsManualReadoutPhraseMatcherTest {
         assertNull(matchAceWindowsManualReadoutItemKey(listOf("フューエル")))
         assertNull(matchAceWindowsManualReadoutItemKey(listOf("タイヤテンプ")))
         assertNull(matchAceWindowsManualReadoutItemKey(listOf("じこべ")))
+    }
+
+    @Test
+    fun `燃料の残量やガソリン残量は残量に一致し燃料や燃料は単独では一致しない`() {
+        listOf("燃料の残量", "ガソリン残量").forEach { phrase ->
+            assertEquals(
+                AceWindowsReadoutItemKey.RemainingFuel.Root.value,
+                matchAceWindowsManualReadoutItemKey(listOf(phrase)),
+                phrase,
+            )
+        }
+        listOf("燃料", "燃料は").forEach { phrase ->
+            assertNull(matchAceWindowsManualReadoutItemKey(listOf(phrase)), phrase)
+        }
     }
 
     @Test

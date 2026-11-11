@@ -17,7 +17,7 @@ class Gt7Ps5ManualReadoutPhraseMatcherTest {
     fun `語句に一致する発話は対応する項目キーを返す`() {
         assertEquals(
             Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value,
-            matchGt7Ps5ManualReadoutItemKey(listOf("燃料を教えて")),
+            matchGt7Ps5ManualReadoutItemKey(listOf("燃料残量を教えて")),
         )
         assertEquals(
             Gt7Ps5ReadoutItemKey.MyBestLap.Root.value,
@@ -39,6 +39,20 @@ class Gt7Ps5ManualReadoutPhraseMatcherTest {
             Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
             matchGt7Ps5ManualReadoutItemKey(listOf("燃料はあと何周")),
         )
+    }
+
+    @Test
+    fun `燃料の残量やガソリン残量は残量に一致し燃料や燃料は単独では一致しない`() {
+        listOf("燃料の残量", "ガソリン残量").forEach { phrase ->
+            assertEquals(
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value,
+                matchGt7Ps5ManualReadoutItemKey(listOf(phrase)),
+                phrase,
+            )
+        }
+        listOf("燃料", "燃料は").forEach { phrase ->
+            assertNull(matchGt7Ps5ManualReadoutItemKey(listOf(phrase)), phrase)
+        }
     }
 
     @Test
