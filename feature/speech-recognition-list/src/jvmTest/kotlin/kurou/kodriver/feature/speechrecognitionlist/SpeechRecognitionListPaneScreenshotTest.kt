@@ -10,44 +10,25 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.ManualReadoutItemCategory
-import kurou.kodriver.domain.model.SpeechCommandGuideGroup
-import kurou.kodriver.domain.model.SpeechCommandGuideItem
+import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kurou.kodriver.domain.model.toSpeechCommandGuideGroups
 import org.junit.Test
+
+private const val PRODUCTION_GROUP_COUNT = 2
 
 class SpeechRecognitionListPaneScreenshotTest {
     @Test
     fun `項目あり`() =
         composeScreenshotTest {
-            setPane(
-                SpeechRecognitionListUiState(
-                    groups =
-                        listOf(
-                            SpeechCommandGuideGroup(
-                                category = ManualReadoutItemCategory.FUEL,
-                                items =
-                                    listOf(
-                                        SpeechCommandGuideItem("fuel", "燃料残量", listOf("燃料", "ガス", "残り燃料")),
-                                    ),
-                            ),
-                            SpeechCommandGuideGroup(
-                                category = ManualReadoutItemCategory.TYRE,
-                                items =
-                                    listOf(
-                                        SpeechCommandGuideItem("tyre_temp", "タイヤ温度", listOf("タイヤ温度", "タイヤ", "温度")),
-                                        SpeechCommandGuideItem("tyre_wear", "タイヤ摩耗", listOf("タイヤ摩耗", "摩耗", "タイヤ残り")),
-                                    ),
-                            ),
-                            SpeechCommandGuideGroup(
-                                category = ManualReadoutItemCategory.LAP,
-                                items =
-                                    listOf(
-                                        SpeechCommandGuideItem("best_lap", "ベストラップ", listOf("ベスト", "自己ベスト", "ベストラップ")),
-                                    ),
-                            ),
-                        ),
-                ),
-            )
+            // 本番の語句定義（LMU）をそのまま使う。語句を変更するとゴールデン画像も変わる。全項目は画面に収まらないため先頭の2カテゴリに絞る
+            registerLmuWindowsReadoutItemKeys()
+            val groups =
+                checkNotNull(ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.LmuWindows.id))
+                    .toSpeechCommandGuideGroups()
+                    .take(PRODUCTION_GROUP_COUNT)
+            setPane(SpeechRecognitionListUiState(groups = groups))
             onRoot().captureRoboImage()
         }
 }
