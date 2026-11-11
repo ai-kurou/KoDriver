@@ -172,13 +172,13 @@ fun AppScreen(
             granted = uiState.accessLocalNetworkPermissionGranted,
             requiredMessage = stringResource(Res.string.banner_access_local_network_permission_required),
         )
+    // 恒久拒否の判定状態を共有するため、画面を開いたときの要求とバナーのタップで同じ要求関数を使う
     val requestAccessLocalNetworkPermission =
         rememberAccessLocalNetworkPermissionRequester(onResult = viewModel::checkAccessLocalNetworkPermission)
-    val requestAccessLocalNetworkPermissionOnOpen =
-        rememberAccessLocalNetworkPermissionRequester(
-            onResult = viewModel::checkAccessLocalNetworkPermission,
-            openSettingsWhenPermanentlyDenied = false,
-        )
+    val requestAndOpenSettingsIfDenied =
+        remember(requestAccessLocalNetworkPermission) { { requestAccessLocalNetworkPermission(true) } }
+    val requestWithoutOpeningSettings =
+        remember(requestAccessLocalNetworkPermission) { { requestAccessLocalNetworkPermission(false) } }
     val autoReadoutListUiState by autoReadoutListViewModel.uiState.collectAsState()
     val otherListUiState by otherListViewModel.uiState.collectAsStateWithLifecycle()
     val lowVolumeWarning by lowVolumeWarningViewModel.uiState.collectAsStateWithLifecycle()
@@ -214,7 +214,7 @@ fun AppScreen(
     AccessLocalNetworkPermissionOnOpenEffect(
         selectedItem = otherListUiState.selectedItem,
         granted = uiState.accessLocalNetworkPermissionGranted,
-        request = requestAccessLocalNetworkPermissionOnOpen,
+        request = requestWithoutOpeningSettings,
     )
 
     LifecycleResumeEffect(Unit) {
@@ -250,7 +250,7 @@ fun AppScreen(
                 rememberConnectionBannerTap(
                     bannerUiState = bannerUiState,
                     onSelectOtherItem = otherListViewModel::selectItem,
-                    onRequestAccessLocalNetworkPermission = requestAccessLocalNetworkPermission,
+                    onRequestAccessLocalNetworkPermission = requestAndOpenSettingsIfDenied,
                 ),
             onManualReadoutTabReselected = { manualReadoutTabReselectRequest++ },
             manualReadoutTabReselectRequest = manualReadoutTabReselectRequest,

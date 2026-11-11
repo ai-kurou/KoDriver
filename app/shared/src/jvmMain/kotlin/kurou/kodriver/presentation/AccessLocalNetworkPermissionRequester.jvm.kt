@@ -6,5 +6,4 @@ import androidx.compose.runtime.Composable
 @Composable
 actual fun rememberAccessLocalNetworkPermissionRequester(
     onResult: () -> Unit,
-    openSettingsWhenPermanentlyDenied: Boolean,
-): () -> Unit = {}
+): (openSettingsWhenPermanentlyDenied: Boolean) -> Unit = {}

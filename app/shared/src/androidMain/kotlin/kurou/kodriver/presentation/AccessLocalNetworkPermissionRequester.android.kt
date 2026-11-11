@@ -30,8 +30,7 @@ import kurou.kodriver.feature.otherlist.rememberOpenAccessLocalNetworkPermission
 @Composable
 actual fun rememberAccessLocalNetworkPermissionRequester(
     onResult: () -> Unit,
-    openSettingsWhenPermanentlyDenied: Boolean,
-): () -> Unit {
+): (openSettingsWhenPermanentlyDenied: Boolean) -> Unit {
     val activity = LocalContext.current.findActivity()
     val currentOnResult by rememberUpdatedState(onResult)
     val openSettings = rememberOpenAccessLocalNetworkPermissionSettings()
@@ -59,8 +58,8 @@ actual fun rememberAccessLocalNetworkPermissionRequester(
             }
             currentOnResult()
         }
-    return remember(launcher, openSettings, activity, openSettingsWhenPermanentlyDenied) {
-        {
+    return remember(launcher, openSettings, activity) {
+        val request: (Boolean) -> Unit = { openSettingsWhenPermanentlyDenied ->
             if (permanentlyDenied) {
                 if (openSettingsWhenPermanentlyDenied) openSettings()
             } else {
@@ -68,6 +67,7 @@ actual fun rememberAccessLocalNetworkPermissionRequester(
                 launcher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
             }
         }
+        request
     }
 }
 
