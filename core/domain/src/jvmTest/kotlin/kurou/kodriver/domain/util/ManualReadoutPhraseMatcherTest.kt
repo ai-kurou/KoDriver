@@ -70,6 +70,13 @@ class ManualReadoutPhraseMatcherTest {
     }
 
     @Test
+    fun `空や空白だけの登録語句はどの発話にも一致しない`() {
+        val withBlankPhrases = mapOf("blank" to listOf("", "  "), "fuel" to listOf("燃料"))
+        assertEquals(ManualReadoutPhraseMatch("fuel", "燃料"), matchManualReadoutPhrase(listOf("燃料"), withBlankPhrases))
+        assertNull(matchManualReadoutPhrase(listOf("こんにちは"), withBlankPhrases))
+    }
+
+    @Test
     fun `一致した語句は登録されている表記のまま項目キーとともに返す`() {
         assertEquals(ManualReadoutPhraseMatch("fuel", "ガソリン"), matchManualReadoutPhrase(listOf("ガソリン を教えて"), phrases))
         assertEquals(ManualReadoutPhraseMatch("ve", "VE"), matchManualReadoutPhrase(listOf("v e"), phrases))
