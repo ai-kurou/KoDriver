@@ -124,7 +124,7 @@ class ConnectionBannerContentScreenshotTest {
                     uiState =
                         ConnectionBannerUiState(
                             status = ConnectionBannerStatus.UNCHECKED,
-                            message = "ローカルネットワークの許可が必要です（タップで設定）",
+                            message = "ローカルネットワークの許可が必要です（タップして許可）",
                             iconType = ConnectionBannerIconType.NETWORK,
                             isTappable = true,
                         ),

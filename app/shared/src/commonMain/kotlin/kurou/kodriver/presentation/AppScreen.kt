@@ -343,9 +343,14 @@ internal fun AppScreenContent(
     otherListScrollToTopRequest: Int = 0,
 ) {
     val navigationState = rememberAppNavigationState()
+    // 権限の要求はその場で行うため、その他タブへは切り替えない（IPアドレスの設定が必要な遷移のみ切り替える）
     val onBannerTapWithTabSwitch =
-        withTabSwitch(onBannerTap) {
-            navigationState.navigateTo(AppDestination.More)
+        if (bannerUiState.tapNavigationTarget == ConnectionBannerNavigationTarget.AccessLocalNetworkPermission) {
+            onBannerTap
+        } else {
+            withTabSwitch(onBannerTap) {
+                navigationState.navigateTo(AppDestination.More)
+            }
         }
     val onLowVolumeBannerClickWithTabSwitch =
         {
