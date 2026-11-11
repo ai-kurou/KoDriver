@@ -27,6 +27,7 @@ digraph G {
   ":feature:other-log-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":server" [fillcolor="#F8BBD0", color="#D81B60", penwidth=1]
   ":server" -> ":core:domain"
   ":server" -> ":core:lmu-windows-domain"
@@ -79,4 +80,6 @@ digraph G {
   ":feature:other-log-list" -> ":core:lmu-windows-domain"
   ":feature:other-volume-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:lmu-windows-domain"
+  ":feature:speech-recognition-list" -> ":core:domain"
+  ":feature:speech-recognition-list" -> ":core:lmu-windows-domain"
 }

@@ -192,4 +192,5 @@ digraph G {
   ":feature:other-volume-detail" -> ":core:lmu-windows-domain"
   ":feature:server-connection" -> ":core:domain"
   ":feature:speech-recognition-list" -> ":core:domain"
+  ":feature:speech-recognition-list" -> ":core:lmu-windows-domain"
 }
