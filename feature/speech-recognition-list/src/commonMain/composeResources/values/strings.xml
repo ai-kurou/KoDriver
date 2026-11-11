@@ -7,7 +7,6 @@
     <string name="speech_command_guide_wake_step_readout">読み上げ</string>
     <string name="speech_command_guide_longest_phrase_note">語句の一部だけでなく、できるだけ最後まではっきり言ってください。「タイヤ残り」より「タイヤ残り周回」のように、長い語句のほうが優先されます。</string>
     <string name="speech_command_guide_phrase_count">%1$d語</string>
-    <string name="speech_command_guide_empty">このシミュレーターには、音声で読み上げさせられる項目がありません。</string>
     <string name="speech_command_guide_category_virtual_energy">バーチャルエネルギー</string>
     <string name="speech_command_guide_category_fuel">燃料</string>
     <string name="speech_command_guide_category_tyre">タイヤ</string>

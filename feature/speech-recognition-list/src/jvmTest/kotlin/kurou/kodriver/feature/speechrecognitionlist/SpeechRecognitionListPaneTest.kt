@@ -27,38 +27,22 @@ class SpeechRecognitionListPaneTest {
         )
 
     @Test
-    fun `項目がなくても呼びかけの案内と空の案内を表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                SpeechRecognitionListPaneContent(
-                    SpeechRecognitionListUiState(loaded = true),
-                )
-            }
-        }
+    fun `項目がなくても呼びかけの案内を表示する`() {
+        rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(SpeechRecognitionListUiState()) } }
 
         rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_PANE_TEST_TAG).assertIsDisplayed()
         rule.onNodeWithText("まずはこう呼びかけます").assertIsDisplayed()
         rule.onNodeWithText("「コドライバー」").assertIsDisplayed()
         listOf("確認音", "下の語句を言う", "読み上げ").forEach { rule.onNodeWithText(it).assertIsDisplayed() }
         rule.onNodeWithText(LONGEST_PHRASE_NOTE).assertIsDisplayed()
-        rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG).assertIsDisplayed()
     }
 
     @Test
-    fun `案内の取得前は空の案内を出さない`() {
-        rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(SpeechRecognitionListUiState()) } }
-
-        rule.onNodeWithText("まずはこう呼びかけます").assertIsDisplayed()
-        rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG).assertDoesNotExist()
-    }
-
-    @Test
-    fun `種類の見出しと項目名と語句をすべて表示し空の案内は出さない`() {
+    fun `種類の見出しと項目名と語句をすべて表示する`() {
         rule.setContent {
             KoDriverTheme {
                 SpeechRecognitionListPaneContent(
                     SpeechRecognitionListUiState(
-                        loaded = true,
                         groups =
                             listOf(
                                 fuelGroup,
@@ -86,7 +70,6 @@ class SpeechRecognitionListPaneTest {
 
         listOf("燃料", "タイヤ", "ブレーキ", "ラップ", "燃料残量", "残り燃料", "ガス", "ゴム", "ディスク", "バーチャルエネルギー", "VE残量", "ベストラップ")
             .forEach { rule.onNodeWithText(it, useUnmergedTree = true).assertExists() }
-        rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG).assertDoesNotExist()
     }
 
     @Test
@@ -94,7 +77,7 @@ class SpeechRecognitionListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 SpeechRecognitionListPaneContent(
-                    SpeechRecognitionListUiState(loaded = true, groups = listOf(fuelGroup)),
+                    SpeechRecognitionListUiState(groups = listOf(fuelGroup)),
                 )
             }
         }

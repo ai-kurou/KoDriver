@@ -58,7 +58,7 @@ class SpeechRecognitionListViewModelTest {
                 SpeechRecognitionListViewModel(ObserveSpeechCommandGuideUseCase(simulatorRepository, guideRepository))
             try {
                 assertEquals(
-                    SpeechRecognitionListUiState(groups, loaded = true),
+                    SpeechRecognitionListUiState(groups),
                     viewModel.uiState.first { it.groups.isNotEmpty() },
                 )
                 verify(exactly = 1) { simulatorRepository.selectedSimulator() }

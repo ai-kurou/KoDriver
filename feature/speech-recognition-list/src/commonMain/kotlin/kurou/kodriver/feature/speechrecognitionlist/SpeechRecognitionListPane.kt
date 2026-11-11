@@ -54,7 +54,6 @@ import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_c
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_lap
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_tyre
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_virtual_energy
-import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_empty
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_longest_phrase_note
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_phrase_count
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_wake_step_chime
@@ -66,7 +65,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 internal const val SPEECH_RECOGNITION_LIST_PANE_TEST_TAG = "speech_recognition_list_pane"
-internal const val SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG = "speech_recognition_list_empty"
 
 private val BOTTOM_END_OVERLAY_CLEARANCE = 56.dp
 private val STRIPE_WIDTH = 5.dp
@@ -103,16 +101,6 @@ internal fun SpeechRecognitionListPaneContent(
         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
     ) {
         item { WakeWordGuide() }
-        if (uiState.loaded && uiState.groups.isEmpty()) {
-            item {
-                Text(
-                    text = stringResource(Res.string.speech_command_guide_empty),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(KoDriverSpacing.small).testTag(SPEECH_RECOGNITION_LIST_EMPTY_TEST_TAG),
-                )
-            }
-        }
         uiState.groups.forEach { group ->
             item(key = "category-${group.category.name}") {
                 CategoryHeader(group.category, group.items.size)
