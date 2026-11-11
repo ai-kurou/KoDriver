@@ -55,6 +55,7 @@ import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_c
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_tyre
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_virtual_energy
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_empty
+import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_longest_phrase_note
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_phrase_count
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_wake_step_chime
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_wake_step_phrase
@@ -175,6 +176,10 @@ private fun WakeWordGuide() {
                     WakeStep(number = index + 1, label = step)
                 }
             }
+            Text(
+                text = stringResource(Res.string.speech_command_guide_longest_phrase_note),
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 }
