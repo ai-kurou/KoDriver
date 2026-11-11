@@ -81,7 +81,8 @@ internal class AceWindowsNarratorEventProcessor(
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
         playStartSound: Boolean = true,
-    ) {
+    ): Boolean {
+        var spoken = false
         events.forEach { event ->
             val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
             val outcome =
@@ -96,6 +97,7 @@ internal class AceWindowsNarratorEventProcessor(
                         playStartSound = playStartSound,
                     )
                 }
+            if (outcome != NarrationOutcome.SKIPPED) spoken = true
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
@@ -108,6 +110,7 @@ internal class AceWindowsNarratorEventProcessor(
                         """"observedAtMs":$observedAtMs}""",
             )
         }
+        return spoken
     }
 
     suspend fun processMyBestLap(

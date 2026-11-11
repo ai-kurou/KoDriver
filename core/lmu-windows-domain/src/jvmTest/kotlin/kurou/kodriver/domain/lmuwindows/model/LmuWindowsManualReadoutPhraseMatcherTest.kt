@@ -187,4 +187,12 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
         assertNull(matchLmuWindowsManualReadoutItemKey(listOf("", "  ")))
         assertNull(matchLmuWindowsManualReadoutItemKey(listOf("こんにちは")))
     }
+
+    @Test
+    fun `一致した語句と項目キーを返し一致がなければnullを返す`() {
+        val match = matchLmuWindowsManualReadoutPhrase(listOf("自己ベストを教えて"))
+        assertEquals(matchLmuWindowsManualReadoutItemKey(listOf("自己ベストを教えて")), match?.itemKey)
+        assertEquals("自己ベスト", match?.phrase)
+        assertNull(matchLmuWindowsManualReadoutPhrase(listOf("関係ない発話")))
+    }
 }

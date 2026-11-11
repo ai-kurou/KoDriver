@@ -68,4 +68,19 @@ class ManualReadoutPhraseMatcherTest {
         assertNull(matchManualReadoutItemKey(listOf("こんにちは"), phrases))
         assertNull(matchManualReadoutItemKey(listOf("燃料"), emptyMap()))
     }
+
+    @Test
+    fun `一致した語句は登録されている表記のまま項目キーとともに返す`() {
+        assertEquals(ManualReadoutPhraseMatch("fuel", "ガソリン"), matchManualReadoutPhrase(listOf("ガソリン を教えて"), phrases))
+        assertEquals(ManualReadoutPhraseMatch("ve", "VE"), matchManualReadoutPhrase(listOf("v e"), phrases))
+    }
+
+    @Test
+    fun `最も長い語句の項目とその語句を返し一致がなければnullを返す`() {
+        assertEquals(
+            ManualReadoutPhraseMatch("laps", "燃料周回"),
+            matchManualReadoutPhrase(listOf("燃料周回を教えて"), phrases),
+        )
+        assertNull(matchManualReadoutPhrase(listOf("関係ない発話"), phrases))
+    }
 }

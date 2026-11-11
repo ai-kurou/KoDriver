@@ -18,8 +18,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
@@ -101,11 +103,13 @@ import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
+import kurou.kodriver.domain.repository.ManualReadoutItemSpokenRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.NotifyManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
@@ -138,6 +142,15 @@ class AceWindowsNarratorViewModelTest {
     private val manualRequestRepository: ManualReadoutRequestRepository = mockk()
     private val manualHotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val manualItemRequestRepository: ManualReadoutItemRequestRepository = mockk()
+    private val notifiedSpoken = mutableListOf<ManualReadoutItemRequest>()
+    private val manualItemSpokenRepository =
+        object : ManualReadoutItemSpokenRepository {
+            override fun observeSpoken(): Flow<ManualReadoutItemRequest> = emptyFlow()
+
+            override suspend fun notifySpoken(request: ManualReadoutItemRequest) {
+                notifiedSpoken.add(request)
+            }
+        }
     private val manualSetRepository: ManualReadoutSetPreferencesRepository = mockk()
 
     private val debugRequests = MutableSharedFlow<DebugReadoutRequest>()
@@ -222,6 +235,7 @@ class AceWindowsNarratorViewModelTest {
                     ObserveManualReadoutRequestsUseCase(manualRequestRepository),
                     ObserveManualReadoutHotkeyPressesUseCase(manualHotkeyRepository),
                     ObserveManualReadoutItemRequestsUseCase(manualItemRequestRepository),
+                    NotifyManualReadoutItemSpokenUseCase(manualItemSpokenRepository),
                     ObserveManualReadoutSetsUseCase(manualSetRepository),
                 ),
             observeDebugReadoutRequest = ObserveDebugReadoutRequestUseCase(debugRequestRepository),
@@ -410,14 +424,16 @@ class AceWindowsNarratorViewModelTest {
                 runCurrent()
                 bestLapChannel.send(AceWindowsBestLapTimeData(83_456))
                 runCurrent()
-                manualItemRequests.emit(
+                val request =
                     ManualReadoutItemRequest(
                         Simulator.AceWindows.id,
                         itemKey.value,
                         playStartSound = false,
-                    ),
-                )
+                        matchedPhrase = "自己ベスト",
+                    )
+                manualItemRequests.emit(request)
                 runCurrent()
+                assertEquals(listOf(request), notifiedSpoken)
                 verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
                 verify(exactly = 1) { ttsEngine.speak(event, false, true, false) }
                 coVerify(exactly = 1) {
@@ -453,6 +469,7 @@ class AceWindowsNarratorViewModelTest {
                 )
                 runCurrent()
                 confirmVerified(ttsEngine, telemetryLogRepository)
+                assertEquals(emptyList(), notifiedSpoken)
             } finally {
                 viewModel.viewModelScope.cancel()
             }

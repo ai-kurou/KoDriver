@@ -36,7 +36,9 @@ import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class Gt7Ps5NarratorEventProcessorTest {
@@ -64,7 +66,9 @@ class Gt7Ps5NarratorEventProcessorTest {
                 )
             } just Runs
 
-            createProcessor().processManualReadout(listOf(event), 100L, logContext, playStartSound = false)
+            val spoken = createProcessor().processManualReadout(listOf(event), 100L, logContext, playStartSound = false)
+
+            assertTrue(spoken)
 
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(resolved, false, true, false) }
@@ -150,7 +154,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     capture(json),
                 )
             } just Runs
-            createProcessor().processManualReadout(listOf(event), 0L, logContext)
+            assertFalse(createProcessor().processManualReadout(listOf(event), 0L, logContext))
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,

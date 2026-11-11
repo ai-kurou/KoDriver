@@ -91,6 +91,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.onEachCapturingErrors
+import kurou.kodriver.domain.usecase.NotifyManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
@@ -156,6 +157,7 @@ internal data class RemainingVirtualEnergyUseCases(
     val observeManualReadoutHotkeyPresses: ObserveManualReadoutHotkeyPressesUseCase,
     val observeManualReadoutRequests: ObserveManualReadoutRequestsUseCase,
     val observeManualReadoutItemRequests: ObserveManualReadoutItemRequestsUseCase,
+    val notifyManualReadoutItemSpoken: NotifyManualReadoutItemSpokenUseCase,
     val observeManualReadoutSets: ObserveManualReadoutSetsUseCase,
     val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
 )
@@ -910,18 +912,21 @@ internal class LmuWindowsNarratorViewModel(
             .observeManualReadoutItemRequests()
             .onEachCapturingErrors { request ->
                 if (request.simulatorId == Simulator.LmuWindows.id) {
-                    readManualReadout(
-                        ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
-                        playStartSound = request.playStartSound,
-                    )
+                    val spoken =
+                        readManualReadout(
+                            ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
+                            playStartSound = request.playStartSound,
+                        )
+                    // 読み上げに至った場合だけ、音声タブが一致した語句を強調できるよう知らせる
+                    if (spoken) remainingVirtualEnergyUseCases.notifyManualReadoutItemSpoken(request)
                 }
             }.launchIn(viewModelScope)
 
     private suspend fun readManualReadout(
         set: ManualReadoutSet,
         playStartSound: Boolean = true,
-    ) {
-        if (selectedSimulator.value !is Simulator.LmuWindows) return
+    ): Boolean {
+        if (selectedSimulator.value !is Simulator.LmuWindows) return false
         val observedAtMs = currentTimeMs()
         val energy =
             latestVirtualEnergy?.takeIf {
@@ -995,7 +1000,7 @@ internal class LmuWindowsNarratorViewModel(
         val settings = currentSettings
         val decision = narratorUseCases.manualReadout.determineManualReadout(state, items)
         narratorState = decision.state
-        eventProcessor.processManualReadout(
+        return eventProcessor.processManualReadout(
             events = decision.events,
             observedAtMs = observedAtMs,
             logContext = LmuWindowsTelemetryLogContext(state, settings, decision.state),

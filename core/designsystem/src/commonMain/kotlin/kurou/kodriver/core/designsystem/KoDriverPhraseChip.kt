@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
 
 private const val ACCENT_FILL_ALPHA = 0.14f
@@ -18,6 +19,7 @@ private const val ACCENT_BORDER_ALPHA = 0.28f
  * 語句を1つ表示する小さなチップ。音声タブの語句一覧と、音声認識の認識結果で同じ見た目に揃える。
  * [accent] を渡すと、その色で薄く染めて細い枠を付ける（音声タブの語句一覧でカテゴリ色を見せるため）。
  * [muted] が true のときは、聞き取れなかった部分などを示すため、背景と文字を控えめな色にする。
+ * [emphasis]（0〜1）は、読み上げの決め手になった語句を点滅で目立たせるための強調の度合い。大きいほど主色に寄せる。
  */
 @Composable
 fun KoDriverPhraseChip(
@@ -25,15 +27,23 @@ fun KoDriverPhraseChip(
     modifier: Modifier = Modifier,
     accent: Color? = null,
     muted: Boolean = false,
+    emphasis: Float = 0f,
 ) {
     val colors = MaterialTheme.colorScheme
     val base = if (muted) colors.surfaceContainerLow else colors.surfaceContainerHighest
+    val fill = accent?.copy(alpha = ACCENT_FILL_ALPHA)?.compositeOver(base) ?: base
+    val borderColor = accent?.copy(alpha = ACCENT_BORDER_ALPHA)
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.small,
-        color = accent?.copy(alpha = ACCENT_FILL_ALPHA)?.compositeOver(base) ?: base,
+        color = if (emphasis > 0f) lerp(fill, colors.primaryContainer, emphasis) else fill,
         contentColor = if (muted) colors.onSurfaceVariant else colors.onSurface,
-        border = accent?.let { BorderStroke(1.dp, it.copy(alpha = ACCENT_BORDER_ALPHA)) },
+        border =
+            if (emphasis > 0f) {
+                BorderStroke(1.dp, lerp(borderColor ?: Color.Transparent, colors.primary, emphasis))
+            } else {
+                borderColor?.let { BorderStroke(1.dp, it) }
+            },
     ) {
         Text(
             text = text,

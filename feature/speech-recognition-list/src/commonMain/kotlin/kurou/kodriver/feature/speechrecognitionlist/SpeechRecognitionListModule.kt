@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.speechrecognitionlist
 
+import kurou.kodriver.domain.usecase.ObserveManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechCommandGuideUseCase
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -10,6 +11,7 @@ val speechRecognitionListModule =
         viewModel {
             SpeechRecognitionListViewModel(
                 observeSpeechCommandGuide = ObserveSpeechCommandGuideUseCase(get(), get()),
+                observeItemSpoken = ObserveManualReadoutItemSpokenUseCase(get()),
             )
         }
     }

@@ -40,6 +40,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.onEachCapturingErrors
+import kurou.kodriver.domain.usecase.NotifyManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
@@ -57,6 +58,7 @@ internal data class ManualReadoutUseCases(
     val observeRequests: ObserveManualReadoutRequestsUseCase,
     val observeHotkeyPresses: ObserveManualReadoutHotkeyPressesUseCase,
     val observeItemRequests: ObserveManualReadoutItemRequestsUseCase,
+    val notifyItemSpoken: NotifyManualReadoutItemSpokenUseCase,
     val observeSets: ObserveManualReadoutSetsUseCase,
 )
 
@@ -282,18 +284,21 @@ internal class AceWindowsNarratorViewModel(
             .observeItemRequests()
             .onEachCapturingErrors { request ->
                 if (request.simulatorId == Simulator.AceWindows.id) {
-                    readManualReadout(
-                        ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
-                        playStartSound = request.playStartSound,
-                    )
+                    val spoken =
+                        readManualReadout(
+                            ManualReadoutSet(id = request.itemKey, itemKeys = listOf(request.itemKey)),
+                            playStartSound = request.playStartSound,
+                        )
+                    // 読み上げに至った場合だけ、音声タブが一致した語句を強調できるよう知らせる
+                    if (spoken) manualReadoutUseCases.notifyItemSpoken(request)
                 }
             }.launchIn(viewModelScope)
 
     private suspend fun readManualReadout(
         set: ManualReadoutSet?,
         playStartSound: Boolean = true,
-    ) {
-        if (set == null || selectedSimulator.value !is Simulator.AceWindows) return
+    ): Boolean {
+        if (set == null || selectedSimulator.value !is Simulator.AceWindows) return false
         val observedAtMs = currentTimeMs()
         val state = narratorState
         val settings = currentSettings
@@ -335,7 +340,7 @@ internal class AceWindowsNarratorViewModel(
                 )
             }
         val decision = determineAceWindowsNarratorReadout.determineManualReadout(state, items)
-        eventProcessor.processManualReadout(
+        return eventProcessor.processManualReadout(
             events = decision.events,
             observedAtMs = observedAtMs,
             logContext = AceWindowsTelemetryLogContext(state, settings, decision.state),

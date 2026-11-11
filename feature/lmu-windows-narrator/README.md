@@ -116,6 +116,7 @@ JVM テストで未受信・項目無効の要求の発話とログ保存、別�
 
 `RemainingVirtualEnergyUseCases` に束ねた `ObserveManualReadoutRequestsUseCase` と `ObserveManualReadoutHotkeyPressesUseCase` を `merge` し、独立した Job で購読する。Windows のセットホットキーもタブの操作と同じ依頼経路で処理する。
 音声認識の発話から届く `ObserveManualReadoutItemRequestsUseCase`（`ManualReadoutItemRequest(simulatorId, itemKey)`）も別の Job で購読し、LMU 宛ての依頼だけを、指定項目1つの一時セットとして `readManualReadout` に渡す。保存済みセットの編集文言は使わず既定文言で読む。
+読み上げに至った（`processManualReadout` が `SKIPPED` 以外の結果を返した）依頼は、`NotifyManualReadoutItemSpokenUseCase` で通知する。音声タブがこれを受けて、一致した語句（`ManualReadoutItemRequest.matchedPhrase`）を強調する。
 依頼の `simulatorId` が `Simulator.LmuWindows.id` で、選択中のシミュレーターも LMU の場合だけ処理する。
 同じ UseCase 群の `ObserveManualReadoutSetsUseCase` は `named(Simulator.LmuWindows.id)` の Repository を参照する。
 依頼ごとに保存済みセットを取得し、`setId` に対応するセットの `itemKeys` に
