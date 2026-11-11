@@ -75,4 +75,7 @@ class AceWindowsManualReadoutPhraseMatcherTest {
         assertEquals("自己ベスト", match?.phrase)
         assertNull(matchAceWindowsManualReadoutPhrase(listOf("関係ない発話")))
     }
+
+    private fun matchAceWindowsManualReadoutItemKey(candidates: List<String>): String? =
+        matchAceWindowsManualReadoutPhrase(candidates)?.itemKey
 }

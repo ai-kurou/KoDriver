@@ -83,4 +83,9 @@ class ManualReadoutPhraseMatcherTest {
         )
         assertNull(matchManualReadoutPhrase(listOf("関係ない発話"), phrases))
     }
+
+    private fun matchManualReadoutItemKey(
+        candidates: List<String>,
+        phrasesByItemKey: Map<String, List<String>>,
+    ): String? = matchManualReadoutPhrase(candidates, phrasesByItemKey)?.itemKey
 }

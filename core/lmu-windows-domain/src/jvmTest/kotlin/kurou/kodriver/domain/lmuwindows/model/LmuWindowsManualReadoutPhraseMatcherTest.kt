@@ -195,4 +195,7 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
         assertEquals("自己ベスト", match?.phrase)
         assertNull(matchLmuWindowsManualReadoutPhrase(listOf("関係ない発話")))
     }
+
+    private fun matchLmuWindowsManualReadoutItemKey(candidates: List<String>): String? =
+        matchLmuWindowsManualReadoutPhrase(candidates)?.itemKey
 }
