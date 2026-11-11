@@ -7,6 +7,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDialog
+import androidx.compose.ui.test.isPopup
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -215,7 +216,7 @@ class ManualReadoutHotkeyMenuScreenshotTest {
             onNodeWithTag("manual_readout_hotkey_modifiers").performClick()
             onNodeWithTag("manual_readout_hotkey_modifiers_${ManualReadoutHotkeyModifiers.entries.last().name}")
                 .assertIsDisplayed()
-            onRoot().captureRoboImage()
+            onNode(isPopup()).captureRoboImage()
         }
 }
 

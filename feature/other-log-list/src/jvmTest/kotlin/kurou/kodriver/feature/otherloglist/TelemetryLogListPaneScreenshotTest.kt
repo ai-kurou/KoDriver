@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.isPopup
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -62,7 +63,7 @@ class TelemetryLogListPaneScreenshotTest {
             onAllNodesWithContentDescription("その他の操作")[0].performClick()
             onNodeWithText("フィードバック送信").assertIsDisplayed()
             onNodeWithText("削除").assertIsDisplayed()
-            onRoot().captureRoboImage()
+            onNode(isPopup()).captureRoboImage()
         }
 
     @Test
