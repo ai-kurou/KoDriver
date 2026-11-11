@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
@@ -66,6 +68,7 @@ internal fun SpeechRecognitionDetailContent(
     modifier: Modifier = Modifier,
     levelGaugeHeight: Dp? = null,
 ) {
+    val haptic = LocalHapticFeedback.current
     val switchDescription = stringResource(Res.string.speech_recognition_switch_description)
     val levelDescription = stringResource(Res.string.speech_recognition_level_description)
     Column(
@@ -100,7 +103,10 @@ internal fun SpeechRecognitionDetailContent(
             }
             Switch(
                 checked = uiState.enabled,
-                onCheckedChange = onEnabledChange,
+                onCheckedChange = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onEnabledChange(it)
+                },
                 modifier = Modifier.semantics { contentDescription = switchDescription },
             )
         }

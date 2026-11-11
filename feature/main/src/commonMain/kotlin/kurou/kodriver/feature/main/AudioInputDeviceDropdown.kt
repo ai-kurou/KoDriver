@@ -14,6 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import kurou.kodriver.feature.main.generated.resources.Res
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_device_label
@@ -28,6 +30,7 @@ internal fun AudioInputDeviceDropdown(
     onMenuOpen: () -> Unit,
     onSelected: (String) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -55,6 +58,7 @@ internal fun AudioInputDeviceDropdown(
                     text = { Text(name) },
                     modifier = Modifier.testTag("speech_recognition_device_$name"),
                     onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         onSelected(name)
                         expanded = false
                     },
