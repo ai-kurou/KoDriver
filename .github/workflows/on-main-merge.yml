@@ -9,76 +9,32 @@ permissions:
 
 jobs:
   detekt:
-    runs-on: ubuntu-latest
-    timeout-minutes: 13
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - run: ./gradlew detekt
+    uses: ./.github/workflows/_gradle-check.yml
+    with:
+      command: "./gradlew detekt"
+      timeoutMinutes: 13
 
   ktlint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 6
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - run: ./gradlew ktlintCheck
+    uses: ./.github/workflows/_gradle-check.yml
+    with:
+      command: "./gradlew ktlintCheck"
+      timeoutMinutes: 6
 
   android-lint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - run: ./gradlew :app:androidApp:lintDebug
+    uses: ./.github/workflows/_gradle-check.yml
+    with:
+      command: "./gradlew :app:androidApp:lintDebug"
+      timeoutMinutes: 10
 
   module-graph-assert:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - run: ./gradlew assertModuleGraph
+    uses: ./.github/workflows/_gradle-check.yml
+    with:
+      command: "./gradlew assertModuleGraph"
+      timeoutMinutes: 5
 
   unit-test:
-    runs-on: ubuntu-latest
-    # PR ではビルドキャッシュのミス量で所要時間が 1〜28 分と大きく変動するため、余裕を持たせて 40 分とする
-    timeout-minutes: 40
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      # スクリーンショットテストは専用の verify ジョブで実行するため、ここでは除外する
-      - run: ./gradlew koverXmlReport -Dorg.gradle.workers.max=4 -PexcludeScreenshotTests=true
-
-      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: build/reports/kover/report.xml
+    uses: ./.github/workflows/_unit-test.yml
+    secrets: inherit
 
   desktop-screenshot-test-verify:
     runs-on: ubuntu-latest
@@ -112,17 +68,10 @@ jobs:
 
   # koverXmlReport はデスクトップの JAR を生成するが、Android の APK は生成しない。
   android-build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - run: ./gradlew :app:androidApp:assembleDebug
+    uses: ./.github/workflows/_gradle-check.yml
+    with:
+      command: "./gradlew :app:androidApp:assembleDebug"
+      timeoutMinutes: 10
 
   windows-build:
     runs-on: windows-latest

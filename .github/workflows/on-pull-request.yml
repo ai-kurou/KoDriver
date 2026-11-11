@@ -12,30 +12,16 @@ permissions:
 
 jobs:
   android-lint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - run: ./gradlew :app:androidApp:lintDebug
+    uses: ./.github/workflows/_gradle-check.yml
+    with:
+      command: "./gradlew :app:androidApp:lintDebug"
+      timeoutMinutes: 10
 
   module-graph-assert:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - run: ./gradlew assertModuleGraph
+    uses: ./.github/workflows/_gradle-check.yml
+    with:
+      command: "./gradlew assertModuleGraph"
+      timeoutMinutes: 5
 
   update-module-graph:
     runs-on: ubuntu-latest
@@ -73,51 +59,20 @@ jobs:
           fi
 
   detekt:
-    runs-on: ubuntu-latest
-    timeout-minutes: 13
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - run: ./gradlew detekt
+    uses: ./.github/workflows/_gradle-check.yml
+    with:
+      command: "./gradlew detekt"
+      timeoutMinutes: 13
 
   ktlint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 6
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - run: ./gradlew ktlintCheck
+    uses: ./.github/workflows/_gradle-check.yml
+    with:
+      command: "./gradlew ktlintCheck"
+      timeoutMinutes: 6
 
   unit-test:
-    runs-on: ubuntu-latest
-    # PR ではビルドキャッシュのミス量で所要時間が 1〜28 分と大きく変動するため、余裕を持たせて 40 分とする
-    timeout-minutes: 40
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      # gradle.properties の workers.max=2 はローカルのメモリ節約用。CI（4 vCPU）では 4 に上書きして短縮する
-      # スクリーンショットテストは *-screenshot-test-verify ジョブで実行するため除外する
-      - run: ./gradlew koverXmlReport -Dorg.gradle.workers.max=4 -PexcludeScreenshotTests=true
-
-      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: build/reports/kover/report.xml
+    uses: ./.github/workflows/_unit-test.yml
+    secrets: inherit
 
   desktop-screenshot-test-verify:
     permissions:
@@ -140,17 +95,10 @@ jobs:
     secrets: inherit
 
   desktop-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 6
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - run: ./gradlew :app:desktopApp:test
+    uses: ./.github/workflows/_gradle-check.yml
+    with:
+      command: "./gradlew :app:desktopApp:test"
+      timeoutMinutes: 6
 
   android-test:
     uses: ./.github/workflows/_android-test.yml

@@ -1,0 +1,29 @@
+name: _Unit Test
+
+on:
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    # PR ではビルドキャッシュのミス量で所要時間が 1〜28 分と大きく変動するため、余裕を持たせて 40 分とする
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      # gradle.properties の workers.max=2 はローカルのメモリ節約用。CI（4 vCPU）では 4 に上書きして短縮する
+      # スクリーンショットテストは *-screenshot-test-verify ジョブで実行するため除外する
+      - run: ./gradlew koverXmlReport -Dorg.gradle.workers.max=4 -PexcludeScreenshotTests=true
+
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/kover/report.xml

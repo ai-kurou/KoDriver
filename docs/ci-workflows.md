@@ -9,6 +9,8 @@
 | `on-main-merge.yml` | main へのマージ | ktlint・スクリーンショット verify・Dokka の API ドキュメント生成と GitHub Pages デプロイ | `dokka-pages` は `github-pages` environment を使用し、`concurrency` group `pages` で直列化（デプロイ競合回避）、deploy-pages の待機は20分。`docs/api/` はコミットしない |
 | `_build-android-release.yml` | `workflow_call` 専用 | 署名付き Android APK のビルド | `build-apps.yml`・`release-apps.yml` から呼び出し。単体実行不可 |
 | `_android-test.yml` | `workflow_call` 専用 | エミュレーター上で `connectedDebugAndroidTest` を実行（`api-level` を入力で指定） | `on-pull-request.yml` の `android-test`（API 36）と `android-test-min-sdk`（`minSdk` と同じ API 28）から呼び出し。単体実行不可。エミュレーターの端末プロファイルは Maestro E2E・Baseline Profile 生成と同じ `pixel_9` に揃えている。エミュレーター起動・イメージ取得失敗などの一時的な障害に備え、失敗時は 1 回だけ再実行する（テスト自体の失敗も再実行されるため、通ったのに前回失敗していた場合は不安定なテストの兆候） |
+| `_gradle-check.yml` | `workflow_call` 専用 | 指定した Gradle コマンド（`command`）を `timeoutMinutes` の上限で実行する汎用チェック | `on-pull-request.yml`・`on-main-merge.yml` の detekt・ktlint・android-lint・module-graph-assert・desktop-test・android-build から呼び出し。単体実行不可。呼び出し側ジョブのチェック名は `<ジョブID> / run` になる |
+| `_unit-test.yml` | `workflow_call` 専用 | `koverXmlReport`（スクリーンショットテスト除外）の実行と Codecov へのアップロード | `on-pull-request.yml`・`on-main-merge.yml` の `unit-test` から `secrets: inherit` で呼び出し。単体実行不可 |
 | `_build-windows-msi.yml` | `workflow_call` 専用 | Windows MSI のビルドと `appVersion` の出力 | `build-apps.yml`・`release-apps.yml` から呼び出し。単体実行不可 |
 | `build-apps.yml` | `workflow_dispatch` | Android APK と Windows MSI を並列にビルド | `_build-android-release.yml`・`_build-windows-msi.yml` を呼び出し |
 | `release-apps.yml` | 手動リリース | E2E → バージョンバンプ → baseline profile 再生成 → MSI/APK ビルド → リリース作成 | `_e2e-android-maestro.yml`・`_build-android-release.yml`・`_build-windows-msi.yml` を呼び出し。`generate-baseline-profile` は `contents: read`、`commit-baseline-profile` は `contents: write` |
@@ -18,6 +20,7 @@
 
 ## 各ワークフローの詳細
 
+- 共通 `enable-kvm` Action（`.github/actions/enable-kvm`）: Android エミュレーター用に KVM を有効化する。`_android-test.yml`・`_e2e-android-maestro.yml`・`release-apps.yml` の `generate-baseline-profile` が、エミュレーター起動の前に呼び出す。
 - 共通setup Action（`.github/actions/setup`）: Java 17 と Gradle を準備する。`setup-gradle` の `gradle-home-cache-includes` で、既定の `caches`・`notifications` に加えて `kodriver-vosk-model`（`prepareVoskModel` が取得したVoskモデルのzip）も保存する。
 
 - `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行（Android 計装テストは `_android-test.yml` を呼び出し、`android-test`（API 36）と `android-test-min-sdk`（`minSdk` と同じ API 28）の 2 ジョブで実行する。`minSdk` を変更したら後者の `api-level` も合わせる）（`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行）。同一 PR に新しいコミットが追加された場合は、実行中の古い CI をキャンセルする。`unit-test` ジョブは `timeout-minutes: 40`（PR ではビルドキャッシュのミス量で所要時間が大きく変動するため。`on-main-merge.yml` も同じ）で、`gradle.properties` のローカル向け `org.gradle.workers.max=2` を CI（4 vCPU）では `-Dorg.gradle.workers.max=4` で上書きして実行する。`-PexcludeScreenshotTests=true` でスクリーンショットテストを除外するため、Codecov のカバレッジにはスクリーンショットテストで通る分が含まれない。`desktop-screenshot-test-verify` / `android-screenshot-test-verify`（`_screenshot-test-verify.yml` を呼び出す）は、まず verify を実行し、失敗した場合のみ golden 画像を再記録してコミット・プッシュしたうえでジョブを失敗させる。verify / record の `./gradlew` には `-Dorg.gradle.workers.max=4` を付け、`gradle.properties` の `workers.max=2`（ローカルのメモリ節約用）を CI（4 vCPU）では上書きする（`record-golden-images.yml` と `on-main-merge.yml` のスクリーンショット verify も同様）
