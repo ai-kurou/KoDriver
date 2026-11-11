@@ -21,7 +21,7 @@ class AceWindowsManualReadoutPhraseMatcherTest {
         )
         assertEquals(
             AceWindowsReadoutItemKey.MyBestLap.Root.value,
-            matchAceWindowsManualReadoutItemKey(listOf("じこべ")),
+            matchAceWindowsManualReadoutItemKey(listOf("自己ベスト")),
         )
         assertEquals(
             AceWindowsReadoutItemKey.TyreTemperature.Root.value,
@@ -39,6 +39,13 @@ class AceWindowsManualReadoutPhraseMatcherTest {
             AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value,
             matchAceWindowsManualReadoutItemKey(listOf("燃料はあと何周")),
         )
+    }
+
+    @Test
+    fun `削除した語句は一致せずnull`() {
+        assertNull(matchAceWindowsManualReadoutItemKey(listOf("フューエル")))
+        assertNull(matchAceWindowsManualReadoutItemKey(listOf("タイヤテンプ")))
+        assertNull(matchAceWindowsManualReadoutItemKey(listOf("じこべ")))
     }
 
     @Test

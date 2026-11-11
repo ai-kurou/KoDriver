@@ -11,13 +11,13 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 val aceWindowsManualReadoutItemPhrases: Map<String, List<String>> =
     mapOf(
         AceWindowsReadoutItemKey.RemainingFuel.Root.value to
-            listOf("燃料", "ねんりょう", "ガソリン", "フューエル", "燃料残量", "燃料は"),
+            listOf("燃料", "ねんりょう", "ガソリン", "燃料残量", "燃料は"),
         AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value to
             listOf("燃料周回", "燃料残り周回", "燃料あと何周", "燃料ラップ", "燃料何周", "燃料はあと何周", "燃料は何周"),
         AceWindowsReadoutItemKey.MyBestLap.Root.value to
-            listOf("自己ベスト", "じこべ", "ベストラップ", "ベストタイム", "自己ベストラップ"),
+            listOf("自己ベスト", "ベストラップ", "ベストタイム", "自己ベストラップ"),
         AceWindowsReadoutItemKey.TyreTemperature.Root.value to
-            listOf("タイヤ温度", "タイヤの温度", "タイヤ熱", "タイヤテンプ"),
+            listOf("タイヤ温度", "タイヤの温度", "タイヤ熱"),
     )
 
 fun aceWindowsManualReadoutItemPhrases(itemKey: String): List<String> =
