@@ -26,7 +26,7 @@
   - 出力デバイス・`AudioTrack` の生成は差し替え可能にしてあり、テストでは実機の出力なしで検証する（実際に音が鳴ることは実機でしか確認できない）。
 - `speech`（コマンドの案内）: 音声タブの一覧に出す「読み上げ項目と、それを読み上げさせる語句」を返す `RegistrySpeechCommandGuideRepository`（Desktop・Android 共通、commonMain）。
   - `ReadoutItemKeyRegistry` の手動読み上げ spec（`ManualReadoutSimulatorSpec`）の項目定義と `itemPhrases` から、`ManualReadoutItemCategory` の順にカテゴリでまとめ、項目は定義順に並べる。語句を持たない項目・カテゴリ、未登録・手動読み上げ非対応のシミュレーターは含めない（空を返す）。
-  - 語句は音声認識の照合（各シミュレーターの `match*ManualReadoutItemKey`）と同じ定義なので、一覧に出る言い方と実際に反応する言い方は一致する。
+  - 語句は音声認識の照合（各シミュレーターの `match*ManualReadoutPhrase`）と同じ定義なので、一覧に出る言い方と実際に反応する言い方は一致する。
 - `microphone`: Desktop（JVM）のマイク入力。
   - `JvmAudioInputDeviceRepository` が入力デバイスの名前一覧を、`JvmMicrophoneRepository` が指定デバイス（null は既定）の音声を16kHz・モノラル・16bit PCM の100ミリ秒ごとの断片（`MicrophoneAudioEvent.Chunk`）として流す。
   - OS依存部分は `AudioInputSource` / `AudioCapture` に分け、実機は `JavaSoundAudioInputSource`（`javax.sound.sampled`）が担う。

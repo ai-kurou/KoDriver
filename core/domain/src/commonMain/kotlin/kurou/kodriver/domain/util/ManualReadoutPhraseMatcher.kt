@@ -1,22 +1,14 @@
 package kurou.kodriver.domain.util
 
 /**
- * 音声認識の確定結果の候補から、手動読み上げ項目のキーを選ぶ。[phrasesByItemKey] は項目キーごとの語句。
+ * 音声認識の確定結果の候補から、一致した手動読み上げ項目のキーと、決め手になった語句を選ぶ。[phrasesByItemKey] は項目キーごとの語句。
+ * 返す語句は、[phrasesByItemKey] に登録されている表記のまま。
  * 最初に語句へ一致した候補では、部分一致したもののうち一致した語句が最も長い項目を選ぶ。
  * 後続の（信頼度の低い）候補は、一致した語句が現在の最良語句を含み、かつより長い場合だけ採用する。
  * 第1候補が「タイヤ残り」のように語尾を取りこぼしていても、下位候補の「タイヤ残り周回」のような、より具体的な語句を優先するため。
  * 第1候補と無関係な項目の語句は、長くても下位候補では採用しない（信頼度順を保つ）。
  * 一致した語句の長さが同じ場合は、信頼度の高い（先頭に近い）候補・項目を採用する。
  * 空白は無視し、英字は大文字小文字を区別しない。英字だけの語句（例: VE）は、前後が英字でない場合だけ一致とする（have の中の ve に反応しない）。
- * どの項目にも一致しなければ null。
- */
-fun matchManualReadoutItemKey(
-    candidates: List<String>,
-    phrasesByItemKey: Map<String, List<String>>,
-): String? = matchManualReadoutPhrase(candidates, phrasesByItemKey)?.itemKey
-
-/**
- * [matchManualReadoutItemKey] と同じ規則で照合し、選んだ項目のキーと、決め手になった語句（[phrasesByItemKey] に登録されている表記のまま）を返す。
  * どの項目にも一致しなければ null。
  */
 fun matchManualReadoutPhrase(

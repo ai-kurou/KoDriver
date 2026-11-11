@@ -76,4 +76,7 @@ class Gt7Ps5ManualReadoutPhraseMatcherTest {
         assertEquals("自己ベスト", match?.phrase)
         assertNull(matchGt7Ps5ManualReadoutPhrase(listOf("関係ない発話")))
     }
+
+    private fun matchGt7Ps5ManualReadoutItemKey(candidates: List<String>): String? =
+        matchGt7Ps5ManualReadoutPhrase(candidates)?.itemKey
 }
