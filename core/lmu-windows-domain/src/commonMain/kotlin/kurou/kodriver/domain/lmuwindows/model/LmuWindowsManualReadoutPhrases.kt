@@ -11,7 +11,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
     mapOf(
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
-            listOf("バーチャルエネルギー", "ばーちゃるえねるぎー", "エネルギー残量"),
+            listOf("エネルギー残量", "バーチャルエネルギー残量", "バーチャルエネルギーの残量", "エネルギーの残量"),
         LmuWindowsReadoutItemKey.RemainingFuel.Root.value to
             listOf("ガソリン", "燃料残量", "燃料の残量", "ガソリン残量"),
         LmuWindowsReadoutItemKey.TyreWear.Root.value to
@@ -46,7 +46,13 @@ val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
         LmuWindowsReadoutItemKey.MyBestLap.Root.value to
             listOf("自己ベスト", "ベストラップ", "ベストタイム", "自己ベストラップ"),
         LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to
-            listOf("バーチャルエネルギー周回", "エネルギー周回", "エネルギー残り周回"),
+            listOf(
+                "バーチャルエネルギー周回",
+                "エネルギー周回",
+                "エネルギー残り周回",
+                "バーチャルエネルギーの残り周回",
+                "エネルギーの残り周回",
+            ),
         LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to
             listOf(
                 "タイヤ周回",

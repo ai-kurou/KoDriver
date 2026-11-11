@@ -55,7 +55,7 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
     fun `空白を無視する`() {
         assertEquals(
             LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
-            matchLmuWindowsManualReadoutItemKey(listOf("バーチャル エネルギー")),
+            matchLmuWindowsManualReadoutItemKey(listOf("バーチャル エネルギー残量")),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
@@ -138,6 +138,45 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
             )
         }
         listOf("燃料", "燃料は").forEach { phrase ->
+            assertNull(matchLmuWindowsManualReadoutItemKey(listOf(phrase)), phrase)
+        }
+    }
+
+    @Test
+    fun `バーチャルエネルギーの残量やエネルギー残量は残量に一致する`() {
+        listOf(
+            "バーチャルエネルギー残量",
+            "バーチャルエネルギーの残量",
+            "エネルギー残量",
+            "エネルギーの残量",
+        ).forEach { phrase ->
+            assertEquals(
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
+                matchLmuWindowsManualReadoutItemKey(listOf(phrase)),
+                phrase,
+            )
+        }
+    }
+
+    @Test
+    fun `バーチャルエネルギーの周回数やエネルギーの残り周回数は周回数項目に一致する`() {
+        listOf(
+            "バーチャルエネルギー周回数",
+            "バーチャルエネルギーの残り周回数",
+            "エネルギーの残り周回数",
+            "エネルギー残り周回数",
+        ).forEach { phrase ->
+            assertEquals(
+                LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value,
+                matchLmuWindowsManualReadoutItemKey(listOf(phrase)),
+                phrase,
+            )
+        }
+    }
+
+    @Test
+    fun `単独のバーチャルエネルギーやエネルギーは残量にも周回数にも一致しない`() {
+        listOf("バーチャルエネルギー", "ばーちゃるえねるぎー", "エネルギー").forEach { phrase ->
             assertNull(matchLmuWindowsManualReadoutItemKey(listOf(phrase)), phrase)
         }
     }
