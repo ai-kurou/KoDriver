@@ -9,11 +9,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
 import kotlin.test.AfterTest
@@ -41,6 +44,9 @@ class OtherServerIpDetailDiscoveryViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private val permissionRepository = FakeAccessLocalNetworkPermissionRepository()
+    private var discoverCount = 0
+
     private fun createViewModel(discoveredServers: List<DiscoveredServer> = emptyList()) =
         OtherServerIpDetailViewModel(
             observeServerIp = ObserveServerIpUseCase(repository),
@@ -51,7 +57,13 @@ class OtherServerIpDetailDiscoveryViewModelTest {
                     connectivityChecker = ServerConnectivityChecker { true },
                     saveServerIp = SaveServerIpUseCase(repository),
                 ),
-            windowsServerDiscovery = WindowsServerDiscovery { flowOf(discoveredServers) },
+            windowsServerDiscovery =
+                WindowsServerDiscovery {
+                    discoverCount++
+                    flowOf(discoveredServers)
+                },
+            checkAccessLocalNetworkPermissionGranted =
+                CheckAccessLocalNetworkPermissionGrantedUseCase(permissionRepository),
         )
 
     @Test
@@ -142,5 +154,40 @@ class OtherServerIpDetailDiscoveryViewModelTest {
             assertFalse(viewModel.uiState.first().isDiscoveryDialogVisible)
             verify(exactly = 1) { repository.serverIp() }
             confirmVerified(repository)
+        }
+
+    @Test
+    fun `ローカルネットワークの権限がない間は検出を始めない`() =
+        runTest {
+            every { repository.serverIp() } returns ipFlow
+            permissionRepository.granted = false
+            val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
+            val viewModel = createViewModel(discoveredServers = listOf(server))
+
+            val state = viewModel.uiState.first()
+            assertFalse(state.accessLocalNetworkPermissionGranted)
+            assertTrue(state.discoveredServers.isEmpty())
+            assertFalse(state.isDiscoveryDialogVisible)
+            assertEquals(0, discoverCount)
+        }
+
+    @Test
+    fun `権限が許可されたあとに前面へ戻ると検出を始める`() =
+        runTest {
+            every { repository.serverIp() } returns ipFlow
+            permissionRepository.granted = false
+            val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
+            val viewModel = createViewModel(discoveredServers = listOf(server))
+            viewModel.uiState.launchIn(backgroundScope)
+            runCurrent()
+
+            permissionRepository.granted = true
+            viewModel.onResumed()
+            runCurrent()
+
+            val state = viewModel.uiState.value
+            assertTrue(state.accessLocalNetworkPermissionGranted)
+            assertEquals(listOf(server), state.discoveredServers)
+            assertEquals(1, discoverCount)
         }
 }

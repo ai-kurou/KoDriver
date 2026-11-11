@@ -51,6 +51,22 @@ class OtherServerIpDetailDiscoveryContentTest {
     }
 
     @Test
+    fun `権限がない場合は検出中ではなく許可が必要な旨を表示し検出ボタンは無効になる`() {
+        rule.setContent {
+            OtherServerIpDetailPaneContent(
+                uiState =
+                    OtherServerIpDetailUiState(
+                        inputIp = "192.168.1.1",
+                        accessLocalNetworkPermissionGranted = false,
+                    ),
+            )
+        }
+
+        rule.onNodeWithText("検出にはローカルネットワークの許可が必要です").assertIsDisplayed().assertIsNotEnabled()
+        rule.onNodeWithText("Windows版KoDriverを検出中…").assertDoesNotExist()
+    }
+
+    @Test
     fun `検出中は検出ボタンが無効になっている`() {
         var showCount = 0
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit

@@ -40,6 +40,7 @@ class OtherServerIpDetailUriHandlerTest {
     @Test
     fun `インストールガイドリンクをクリックするとインストールガイドのURLが開かれる`() {
         every { viewModel.uiState } returns MutableStateFlow(OtherServerIpDetailUiState())
+        every { viewModel.onResumed() } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
             rule.setContent {
@@ -58,6 +59,7 @@ class OtherServerIpDetailUriHandlerTest {
             )
             assertNull(shadowActivity.nextStartedActivity)
             verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.onResumed() }
             confirmVerified(viewModel)
         } finally {
             stopKoin()
@@ -67,6 +69,7 @@ class OtherServerIpDetailUriHandlerTest {
     @Test
     fun `説明文のWindows版KoDriverリンクをクリックするとインストールガイドのURLが開かれる`() {
         every { viewModel.uiState } returns MutableStateFlow(OtherServerIpDetailUiState())
+        every { viewModel.onResumed() } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
             rule.setContent {
@@ -97,6 +100,7 @@ class OtherServerIpDetailUriHandlerTest {
             )
             assertNull(shadowActivity.nextStartedActivity)
             verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.onResumed() }
             confirmVerified(viewModel)
         } finally {
             stopKoin()

@@ -55,6 +55,7 @@ class OtherServerIpDetailUriWiringTest {
     @Test
     fun `インストールガイドリンクをクリックするとインストールガイドのURLが開かれる`() {
         every { viewModel.uiState } returns MutableStateFlow(OtherServerIpDetailUiState())
+        every { viewModel.onResumed() } returns Unit
         every {
             uriHandler.openUri(
                 "https://github.com/ai-kurou/KoDriver/blob/main/docs/windows-install.md",
@@ -77,6 +78,7 @@ class OtherServerIpDetailUriWiringTest {
                 )
             }
             verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.onResumed() }
             confirmVerified(viewModel, uriHandler)
         } finally {
             stopKoin()
@@ -86,6 +88,7 @@ class OtherServerIpDetailUriWiringTest {
     @Test
     fun `説明文のWindows版KoDriverリンクをクリックするとインストールガイドのURLが開かれる`() {
         every { viewModel.uiState } returns MutableStateFlow(OtherServerIpDetailUiState())
+        every { viewModel.onResumed() } returns Unit
         every { uriHandler.openUri("https://github.com/ai-kurou/KoDriver/blob/main/docs/windows-install.md") } returns
             Unit
         startKoin { modules(module { single { viewModel } }) }
@@ -115,6 +118,7 @@ class OtherServerIpDetailUriWiringTest {
                 exactly = 1,
             ) { uriHandler.openUri("https://github.com/ai-kurou/KoDriver/blob/main/docs/windows-install.md") }
             verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.onResumed() }
             confirmVerified(viewModel, uriHandler)
         } finally {
             stopKoin()

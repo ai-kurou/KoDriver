@@ -2,29 +2,38 @@ package kurou.kodriver.feature.otherserveripdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.launchCapturingErrors
+import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class OtherServerIpDetailViewModel(
     observeServerIp: ObserveServerIpUseCase,
     validateServerIpAddress: ValidateServerIpAddressUseCase,
     private val saveServerIpWithConnectivityCheck: SaveServerIpWithConnectivityCheckUseCase,
     private val windowsServerDiscovery: WindowsServerDiscovery,
+    private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
 ) : ViewModel() {
     private val savedIp: StateFlow<String?> =
         observeServerIp()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
 
+    private val accessLocalNetworkPermissionGranted = MutableStateFlow(checkAccessLocalNetworkPermissionGranted())
+
     // pane が画面に表示されている間だけ購読され、mDNS 検出が開始・停止する
-    // （アプリ起動時ではなく WhileSubscribed により uiState の収集タイミングに連動する）
+    // （アプリ起動時ではなく WhileSubscribed により uiState の収集タイミングに連動する）。
+    // ローカルネットワークの権限がない間は検出を始めず、許可されたときに検出を始める
     private val discoveredServers: StateFlow<List<DiscoveredServer>> =
-        windowsServerDiscovery
-            .discover()
+        accessLocalNetworkPermissionGranted
+            .flatMapLatest { granted -> if (granted) windowsServerDiscovery.discover() else flowOf(emptyList()) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _mutable: MutableStateFlow<OtherServerIpDetailMutableState> =
@@ -35,11 +44,17 @@ internal class OtherServerIpDetailViewModel(
             savedIp = savedIp,
             mutableState = _mutable,
             discoveredServers = discoveredServers,
+            accessLocalNetworkPermissionGranted = accessLocalNetworkPermissionGranted,
             validateServerIpAddress = validateServerIpAddress,
         )
 
     val uiState: StateFlow<OtherServerIpDetailUiState> =
         detailFlow.uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), detailFlow.initialUiState)
+
+    /** 画面が前面に戻るたびに権限を確認し直す。権限の要求ダイアログや設定画面から戻った直後に検出を始めるため。 */
+    fun onResumed() {
+        accessLocalNetworkPermissionGranted.value = checkAccessLocalNetworkPermissionGranted()
+    }
 
     fun onIpChanged(ip: String) {
         _mutable.update { it.copy(userInput = ip, connectivityWarning = false) }

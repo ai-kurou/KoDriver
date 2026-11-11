@@ -39,6 +39,29 @@ internal fun handleTtsUnavailableAction(
     }
 }
 
+/** 接続先のIPアドレスを設定する画面か。これらの画面はローカルネットワークの権限がないと検出・接続できない。 */
+internal fun OtherListItemType?.needsAccessLocalNetworkPermission(): Boolean =
+    this == OtherListItemType.ServerIp || this == OtherListItemType.ConsoleIp
+
+/**
+ * 接続先IPの設定画面を開いたとき、ローカルネットワークの権限が未許可なら要求する。
+ * 権限の結果が出たあとに再要求しないよう、[granted] が変わっても再実行しない（画面を開き直したときだけ要求する）。
+ */
+@Composable
+internal fun AccessLocalNetworkPermissionOnOpenEffect(
+    selectedItem: OtherListItemType?,
+    granted: Boolean,
+    request: () -> Unit,
+) {
+    val currentGranted by rememberUpdatedState(granted)
+    val currentRequest by rememberUpdatedState(request)
+    LaunchedEffect(selectedItem) {
+        if (selectedItem.needsAccessLocalNetworkPermission() && !currentGranted) {
+            currentRequest()
+        }
+    }
+}
+
 @Composable
 internal fun rememberConnectionBannerTap(
     bannerUiState: ConnectionBannerUiState,

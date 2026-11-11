@@ -13,6 +13,7 @@ class OtherServerIpDetailFlowTest {
     private val savedIp = MutableStateFlow<String?>("192.168.1.1")
     private val mutableState = MutableStateFlow(OtherServerIpDetailMutableState())
     private val discoveredServers = MutableStateFlow<List<DiscoveredServer>>(emptyList())
+    private val permissionGranted = MutableStateFlow(true)
     private val serverA = DiscoveredServer("DESKTOP-A", "192.168.1.10")
     private val serverB = DiscoveredServer("DESKTOP-B", "192.168.1.20")
 
@@ -21,6 +22,7 @@ class OtherServerIpDetailFlowTest {
             savedIp = savedIp,
             mutableState = mutableState,
             discoveredServers = discoveredServers,
+            accessLocalNetworkPermissionGranted = permissionGranted,
             validateServerIpAddress = ValidateServerIpAddressUseCase(),
         )
 
@@ -35,6 +37,16 @@ class OtherServerIpDetailFlowTest {
             assertEquals(OtherServerIpDetailUiState(), flow.uiState.first())
             savedIp.update { "10.0.0.1" }
             assertEquals("10.0.0.1", flow.uiState.first().inputIp)
+        }
+
+    @Test
+    fun `ローカルネットワークの権限の許可状態をUiStateへ反映する`() =
+        runTest {
+            val flow = createFlow()
+            assertTrue(flow.uiState.first().accessLocalNetworkPermissionGranted)
+
+            permissionGranted.update { false }
+            assertFalse(flow.uiState.first().accessLocalNetworkPermissionGranted)
         }
 
     @Test
