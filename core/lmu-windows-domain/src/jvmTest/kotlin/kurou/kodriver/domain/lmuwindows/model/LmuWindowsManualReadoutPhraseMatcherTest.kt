@@ -17,7 +17,7 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
     fun `語句に一致する発話は対応する項目キーを返す`() {
         assertEquals(
             LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
-            matchLmuWindowsManualReadoutItemKey(listOf("燃料を教えて")),
+            matchLmuWindowsManualReadoutItemKey(listOf("燃料残量を教えて")),
         )
         assertEquals(
             LmuWindowsReadoutItemKey.MyBestLap.Root.value,
@@ -125,6 +125,20 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
                 matchLmuWindowsManualReadoutItemKey(listOf(phrase)),
                 phrase,
             )
+        }
+    }
+
+    @Test
+    fun `燃料の残量やガソリン残量は残量に一致し燃料や燃料は単独では一致しない`() {
+        listOf("燃料の残量", "ガソリン残量").forEach { phrase ->
+            assertEquals(
+                LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
+                matchLmuWindowsManualReadoutItemKey(listOf(phrase)),
+                phrase,
+            )
+        }
+        listOf("燃料", "燃料は").forEach { phrase ->
+            assertNull(matchLmuWindowsManualReadoutItemKey(listOf(phrase)), phrase)
         }
     }
 
