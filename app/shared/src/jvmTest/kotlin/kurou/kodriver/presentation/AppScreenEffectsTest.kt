@@ -194,6 +194,7 @@ class AppScreenEffectsTest {
                 rememberConnectionBannerTap(
                     bannerUiState = bannerUiState.value,
                     onSelectOtherItem = { selectedItemType = it },
+                    onRequestAccessLocalNetworkPermission = {},
                 )
         }
 
@@ -216,11 +217,38 @@ class AppScreenEffectsTest {
                             tapNavigationTarget = ConnectionBannerNavigationTarget.ConsoleIp,
                         ),
                     onSelectOtherItem = {},
+                    onRequestAccessLocalNetworkPermission = {},
                 )
         }
 
         rule.waitForIdle()
 
         assertNull(onBannerTap)
+    }
+
+    @Test
+    fun `接続バナーの遷移先がローカルネットワーク権限の場合は権限を要求しその他項目は選択しない`() {
+        var selectedItemType: OtherListItemType? = null
+        var requestCount = 0
+        var onBannerTap: (() -> Unit)? = null
+
+        rule.setContent {
+            onBannerTap =
+                rememberConnectionBannerTap(
+                    bannerUiState =
+                        ConnectionBannerUiState(
+                            isTappable = true,
+                            tapNavigationTarget = ConnectionBannerNavigationTarget.AccessLocalNetworkPermission,
+                        ),
+                    onSelectOtherItem = { selectedItemType = it },
+                    onRequestAccessLocalNetworkPermission = { requestCount++ },
+                )
+        }
+
+        onBannerTap?.invoke()
+        rule.waitForIdle()
+
+        assertEquals(1, requestCount)
+        assertNull(selectedItemType)
     }
 }

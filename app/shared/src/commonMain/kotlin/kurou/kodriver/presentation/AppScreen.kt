@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
+import kurou.kodriver.app.shared.generated.resources.Res
+import kurou.kodriver.app.shared.generated.resources.banner_access_local_network_permission_required
 import kurou.kodriver.feature.autoreadoutlist.AceWindowsAutoReadoutListItemType
 import kurou.kodriver.feature.autoreadoutlist.AutoReadoutContent
 import kurou.kodriver.feature.autoreadoutlist.AutoReadoutListItemType
@@ -70,6 +72,7 @@ import kurou.kodriver.feature.otherlist.OtherListViewModel
 import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import kurou.kodriver.feature.otherlist.rememberOpenTtsSettings
 import kurou.kodriver.feature.speechrecognitionlist.SpeechRecognitionListPane
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /** 下部ナビバー表示時に、ナビバーの直上へ重ねる要素（Snackbar・音声認識チップ）の下余白。 */
@@ -92,6 +95,7 @@ internal fun ConnectionBannerNavigationTarget.toOtherListItemType(): OtherListIt
     when (this) {
         ConnectionBannerNavigationTarget.ConsoleIp -> OtherListItemType.ConsoleIp
         ConnectionBannerNavigationTarget.ServerIp -> OtherListItemType.ServerIp
+        ConnectionBannerNavigationTarget.AccessLocalNetworkPermission -> OtherListItemType.AccessLocalNetworkPermission
     }
 
 @Composable
@@ -161,9 +165,15 @@ fun AppScreen(
     },
 ) {
     val darkTheme = rememberAppDarkTheme()
-    val bannerUiState = rememberConnectionBannerUiState()
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
+    val bannerUiState =
+        rememberConnectionBannerUiState().withAccessLocalNetworkPermission(
+            granted = uiState.accessLocalNetworkPermissionGranted,
+            requiredMessage = stringResource(Res.string.banner_access_local_network_permission_required),
+        )
+    val requestAccessLocalNetworkPermission =
+        rememberAccessLocalNetworkPermissionRequester(onResult = viewModel::checkAccessLocalNetworkPermission)
     val autoReadoutListUiState by autoReadoutListViewModel.uiState.collectAsState()
     val otherListUiState by otherListViewModel.uiState.collectAsStateWithLifecycle()
     val lowVolumeWarning by lowVolumeWarningViewModel.uiState.collectAsStateWithLifecycle()
@@ -229,6 +239,7 @@ fun AppScreen(
                 rememberConnectionBannerTap(
                     bannerUiState = bannerUiState,
                     onSelectOtherItem = otherListViewModel::selectItem,
+                    onRequestAccessLocalNetworkPermission = requestAccessLocalNetworkPermission,
                 ),
             onManualReadoutTabReselected = { manualReadoutTabReselectRequest++ },
             manualReadoutTabReselectRequest = manualReadoutTabReselectRequest,

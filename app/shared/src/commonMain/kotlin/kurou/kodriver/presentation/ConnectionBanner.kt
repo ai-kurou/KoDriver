@@ -36,6 +36,9 @@ sealed interface ConnectionBannerNavigationTarget {
     data object ConsoleIp : ConnectionBannerNavigationTarget
 
     data object ServerIp : ConnectionBannerNavigationTarget
+
+    /** ローカルネットワークの権限が未許可のとき。遷移ではなく権限の要求（拒否済みなら設定画面）を行う。 */
+    data object AccessLocalNetworkPermission : ConnectionBannerNavigationTarget
 }
 
 /**

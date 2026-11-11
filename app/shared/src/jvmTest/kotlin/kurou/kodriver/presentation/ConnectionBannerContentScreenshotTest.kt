@@ -117,6 +117,25 @@ class ConnectionBannerContentScreenshotTest {
         }
 
     @Test
+    fun `NETWORK ローカルネットワーク権限が必要 タップ可能`() =
+        composeScreenshotTest {
+            setThemedContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.UNCHECKED,
+                            message = "ローカルネットワークの許可が必要です（タップで設定）",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                            isTappable = true,
+                        ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                    onClick = {},
+                )
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
     fun `SIMULATOR接続待機中 ダークテーマ`() =
         composeScreenshotTest {
             setThemedContent(darkTheme = true) {
