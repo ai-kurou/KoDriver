@@ -99,6 +99,29 @@ class SpeechRecognitionListViewModelTest {
         }
 
     @Test
+    fun `強調の指示は点滅が終わる頃に取り下げ次の読み上げでまた出す`() =
+        runTest(dispatcher) {
+            every { simulatorRepository.selectedSimulator() } returns flowOf(Simulator.LmuWindows)
+            every { guideRepository.guideGroups(Simulator.LmuWindows) } returns emptyList()
+            every { spokenRepository.observeSpoken() } returns spoken
+            val viewModel = createViewModel()
+            val collector = launch(dispatcher) { viewModel.uiState.collect {} }
+            try {
+                spoken.emit(ManualReadoutItemRequest(Simulator.LmuWindows.id, "fuel", matchedPhrase = "ガス"))
+                dispatcher.scheduler.advanceTimeBy(HIGHLIGHT_DURATION_MS - 1)
+                assertEquals(SpeechPhraseHighlight("fuel", "ガス", 1), viewModel.uiState.value.highlight)
+                dispatcher.scheduler.advanceTimeBy(1)
+                dispatcher.scheduler.runCurrent()
+                assertNull(viewModel.uiState.value.highlight)
+                spoken.emit(ManualReadoutItemRequest(Simulator.LmuWindows.id, "fuel", matchedPhrase = "ガス"))
+                assertEquals(SpeechPhraseHighlight("fuel", "ガス", 2), viewModel.uiState.value.highlight)
+            } finally {
+                collector.cancel()
+                viewModel.viewModelScope.cancel()
+            }
+        }
+
+    @Test
     fun `一致した語句のない依頼は強調しない`() =
         runTest(dispatcher) {
             every { simulatorRepository.selectedSimulator() } returns flowOf(Simulator.LmuWindows)
