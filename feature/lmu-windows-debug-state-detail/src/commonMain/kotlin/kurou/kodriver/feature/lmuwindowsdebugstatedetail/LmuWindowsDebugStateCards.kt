@@ -21,7 +21,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
 import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
-import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.util.formatOneDecimal
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_flag_blue
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_flag_full_course_yellow
@@ -150,11 +150,6 @@ internal fun LmuWindowsVehicleLocationContent(lmuWindowsPitStatus: LmuWindowsPit
 
 private val SIDE_BY_SIDE_COLUMN_WIDTH = 80.dp
 
-private fun formatMeters(value: LateralDistanceMeters): String {
-    val rounded = round(value.value * 10) / 10
-    return rounded.toString()
-}
-
 @Composable
 internal fun LmuWindowsSideBySideVehiclesContent(
     vehicleApproach: LmuWindowsVehicleApproachData?,
@@ -175,7 +170,7 @@ internal fun LmuWindowsSideBySideVehiclesContent(
                     text =
                         stringResource(
                             Res.string.debug_state_side_by_side_left,
-                            formatMeters(vehicleApproach.lateralDistanceLeftMeters),
+                            formatOneDecimal(vehicleApproach.lateralDistanceLeftMeters.value),
                         ),
                 )
                 durations?.leftMillis?.let { SideBySideDurationContent(it) }
@@ -187,7 +182,7 @@ internal fun LmuWindowsSideBySideVehiclesContent(
                     text =
                         stringResource(
                             Res.string.debug_state_side_by_side_right,
-                            formatMeters(vehicleApproach.lateralDistanceRightMeters),
+                            formatOneDecimal(vehicleApproach.lateralDistanceRightMeters.value),
                         ),
                 )
                 durations?.rightMillis?.let { SideBySideDurationContent(it) }

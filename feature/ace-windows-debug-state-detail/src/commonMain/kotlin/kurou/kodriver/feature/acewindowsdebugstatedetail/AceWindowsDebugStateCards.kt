@@ -46,7 +46,6 @@ import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.deb
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_ace_track
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_ace_unassigned
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.round
 
 @Composable
 private fun aceFlagDisplayName(flag: AceWindowsFlagType): String =
@@ -163,11 +162,6 @@ internal fun AceWindowsFuelContent(
     }
 }
 
-private fun formatMeters(value: Double): String {
-    val rounded = round(value * 10) / 10
-    return rounded.toString()
-}
-
 @Composable
 internal fun AceWindowsNearbyVehiclesContent(vehicleApproach: AceWindowsVehicleApproachData?) {
     if (vehicleApproach == null) {
@@ -184,7 +178,7 @@ internal fun AceWindowsNearbyVehiclesContent(vehicleApproach: AceWindowsVehicleA
                 text =
                     stringResource(
                         Res.string.debug_state_nearby_vehicle_distance,
-                        formatMeters(nearbyVehicle.distanceMeters),
+                        formatOneDecimal(nearbyVehicle.distanceMeters),
                     ),
             )
         }
