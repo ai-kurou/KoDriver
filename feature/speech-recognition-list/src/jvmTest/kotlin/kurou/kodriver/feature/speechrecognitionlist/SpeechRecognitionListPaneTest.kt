@@ -1,9 +1,11 @@
 package kurou.kodriver.feature.speechrecognitionlist
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -40,6 +42,21 @@ class SpeechRecognitionListPaneTest {
         rule.onNodeWithText("「コドライバー」").assertIsDisplayed()
         listOf("確認音", "下の語句を言う", "読み上げ").forEach { rule.onNodeWithText(it).assertIsDisplayed() }
         rule.onNodeWithText(LONGEST_PHRASE_NOTE).assertIsDisplayed()
+    }
+
+    @Test
+    fun `渡された音声認識のカードを呼びかけの案内の下に表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionListPaneContent(
+                    SpeechRecognitionListUiState(),
+                    recognitionCard = { Text("認識カード") },
+                )
+            }
+        }
+
+        rule.onNodeWithText("まずはこう呼びかけます").assertIsDisplayed()
+        rule.onNodeWithText("認識カード").assertIsDisplayed()
     }
 
     @Test
@@ -102,6 +119,22 @@ class SpeechRecognitionListPaneTest {
         rule.waitForIdle()
 
         rule.onNodeWithText("語句30", useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun `強調の指示では対象の項目が先頭に来るまでスクロールし、1つ手前の項目は画面の外に出る`() {
+        val items = (1..30).map { SpeechCommandGuideItem("item-$it", "項目$it", listOf("語句$it")) }
+        val groups = listOf(SpeechCommandGuideGroup(ManualReadoutItemCategory.FUEL, items))
+        var uiState by mutableStateOf(SpeechRecognitionListUiState(groups = groups))
+        rule.setContent {
+            KoDriverTheme { SpeechRecognitionListPaneContent(uiState, recognitionCard = { Text("認識カード") }) }
+        }
+
+        uiState = uiState.copy(highlight = SpeechPhraseHighlight("item-15", "語句15", 1))
+        rule.waitForIdle()
+
+        rule.onNodeWithText("語句15", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithText("語句14", useUnmergedTree = true).assertIsNotDisplayed()
     }
 
     @Test

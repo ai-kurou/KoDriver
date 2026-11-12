@@ -61,9 +61,8 @@ import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.LowVolumeWarningUiState
 import kurou.kodriver.feature.main.LowVolumeWarningViewModel
 import kurou.kodriver.feature.main.SPEECH_RECOGNITION_CHIP_OVERLAY_INSET
-import kurou.kodriver.feature.main.SpeechRecognitionDetailPresentation
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
-import kurou.kodriver.feature.main.rememberSpeechRecognitionChip
+import kurou.kodriver.feature.main.rememberSpeechRecognition
 import kurou.kodriver.feature.main.speechRecognitionChipOverlayInset
 import kurou.kodriver.feature.manualreadoutdetail.ManualReadoutSetDetailContent
 import kurou.kodriver.feature.manualreadoutlist.ManualReadoutContent
@@ -152,7 +151,9 @@ fun AppScreen(
                 )
             }
         },
-    speechRecognitionContent: @Composable () -> Unit = { SpeechRecognitionListPane() },
+    speechRecognitionContent: @Composable () -> Unit = {
+        SpeechRecognitionListPane(recognitionCard = { LocalSpeechRecognition.current.card(Modifier) })
+    },
     otherContent: @Composable (
         scrollToTopRequest: Int,
         selectedSimulatorId: String,
@@ -222,7 +223,7 @@ fun AppScreen(
         onPauseOrDispose {}
     }
 
-    CompositionLocalProvider(LocalSpeechRecognitionChip provides rememberSpeechRecognitionChip()) {
+    CompositionLocalProvider(LocalSpeechRecognition provides rememberSpeechRecognition()) {
         AppScreenContent(
             darkTheme = darkTheme,
             dynamicColorEnabled = uiState.dynamicColorEnabled,
@@ -555,7 +556,7 @@ private fun AppScreenScaffold(
                             },
                     ),
         )
-        LocalSpeechRecognitionChip.current(
+        LocalSpeechRecognition.current.chip(
             Modifier
                 .align(Alignment.BottomEnd)
                 .padding(
@@ -567,12 +568,6 @@ private fun AppScreenScaffold(
                             AppSpacing.large
                         },
                 ),
-            // 詳細は、スマホ（下部ナビバー）ではボトムシート、広い画面ではポップオーバーで開く
-            if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                SpeechRecognitionDetailPresentation.BottomSheet
-            } else {
-                SpeechRecognitionDetailPresentation.Popover
-            },
         )
     }
 }

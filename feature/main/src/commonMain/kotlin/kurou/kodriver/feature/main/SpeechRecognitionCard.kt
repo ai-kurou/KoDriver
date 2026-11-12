@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -17,17 +18,14 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverPhraseChip
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -42,7 +40,6 @@ import kurou.kodriver.feature.main.generated.resources.speech_recognition_status
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_starting
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_stopped
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_unavailable
-import kurou.kodriver.feature.main.generated.resources.speech_recognition_switch_description
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_title
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_unknown_word
 import org.jetbrains.compose.resources.StringResource
@@ -51,29 +48,43 @@ import org.jetbrains.compose.resources.stringResource
 /** 認識途中の文字列と履歴を表示する領域の最大の高さ。超えた分はスクロールする。 */
 private val HISTORY_MAX_HEIGHT = 120.dp
 
+/** 入力音量ゲージの高さ。 */
+private val LEVEL_GAUGE_HEIGHT = 12.dp
+
 /** 入力音量ゲージの値変化を滑らかに見せるためのアニメーション時間(ミリ秒)。 */
 private const val LEVEL_ANIMATION_MILLIS = 100
 
 /**
- * 音声認識の有効/無効スイッチ・入力デバイス選択（デスクトップのみ）・入力音量・認識結果を並べた本体。
- * チップのタップで開く詳細（ボトムシート/ポップオーバー）で使う。
- * 背景や余白は呼び出し側が決める。[levelGaugeHeight] を渡すと、音量ゲージをその高さにする。
+ * 音声タブの一覧に置く、音声認識の状態カード。聞き取りの状態・入力デバイス選択（デスクトップのみ）・入力音量・認識結果を並べる。
+ * 有効/無効の切り替えは右下のチップ（[SpeechRecognitionChip]）のタップで行うため、このカードにはスイッチを置かない。
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun SpeechRecognitionDetailContent(
+internal fun SpeechRecognitionCard(
     uiState: SpeechRecognitionUiState,
-    onEnabledChange: (Boolean) -> Unit,
     onDeviceMenuOpen: () -> Unit,
     onDeviceSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
-    levelGaugeHeight: Dp? = null,
 ) {
-    val haptic = LocalHapticFeedback.current
-    val switchDescription = stringResource(Res.string.speech_recognition_switch_description)
     val levelDescription = stringResource(Res.string.speech_recognition_level_description)
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+    ) {
+        SpeechRecognitionCardContent(uiState, levelDescription, onDeviceMenuOpen, onDeviceSelected)
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SpeechRecognitionCardContent(
+    uiState: SpeechRecognitionUiState,
+    levelDescription: String,
+    onDeviceMenuOpen: () -> Unit,
+    onDeviceSelected: (String) -> Unit,
+) {
     Column(
-        modifier = modifier,
+        modifier = Modifier.padding(KoDriverSpacing.medium),
         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
     ) {
         Row(
@@ -102,14 +113,6 @@ internal fun SpeechRecognitionDetailContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Switch(
-                checked = uiState.enabled,
-                onCheckedChange = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onEnabledChange(it)
-                },
-                modifier = Modifier.semantics { contentDescription = switchDescription },
-            )
         }
         // 入力デバイスを選べるのはデスクトップだけ。Android では一覧が空のままなので表示しない
         if (uiState.devices.isNotEmpty() && uiState.deviceName != null) {
@@ -130,7 +133,7 @@ internal fun SpeechRecognitionDetailContent(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .then(if (levelGaugeHeight != null) Modifier.height(levelGaugeHeight) else Modifier)
+                        .height(LEVEL_GAUGE_HEIGHT)
                         .semantics { contentDescription = levelDescription },
             )
         }

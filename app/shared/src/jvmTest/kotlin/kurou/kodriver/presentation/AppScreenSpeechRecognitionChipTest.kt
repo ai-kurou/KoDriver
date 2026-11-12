@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -20,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kurou.kodriver.feature.main.SPEECH_RECOGNITION_CHIP_OVERLAY_INSET
-import kurou.kodriver.feature.main.SpeechRecognitionDetailPresentation
+import kurou.kodriver.feature.main.SpeechRecognitionSlots
 import kurou.kodriver.feature.main.speechRecognitionChipOverlayInset
 import org.junit.Rule
 import org.junit.Test
@@ -31,41 +30,37 @@ class AppScreenSpeechRecognitionChipTest {
     @get:Rule
     val rule = createComposeRule()
 
-    private val presentations = mutableListOf<SpeechRecognitionDetailPresentation>()
-
-    private val fakeChip: @Composable (Modifier, SpeechRecognitionDetailPresentation) -> Unit =
-        { modifier, presentation ->
-            presentations += presentation
+    private val fakeSlots =
+        SpeechRecognitionSlots(
             // 実物のチップと同じ44dpの大きさにして、重なりを実寸で確認できるようにする
-            Text("chip", modifier = modifier.size(CHIP_SIZE).testTag("chip"))
-        }
+            chip = { modifier -> Text("chip", modifier = modifier.size(CHIP_SIZE).testTag("chip")) },
+            card = { },
+        )
 
     @Test
     fun `チップが提供されているとき全画面に重ねて表示する`() {
         rule.setContent {
             CompositionLocalProvider(
-                LocalSpeechRecognitionChip provides fakeChip,
+                LocalSpeechRecognition provides fakeSlots,
             ) {
                 AppScreenContent(layoutType = NavigationSuiteType.NavigationBar)
             }
         }
 
         rule.onNodeWithTag("chip").assertIsDisplayed()
-        rule.runOnIdle { assertEquals(setOf(SpeechRecognitionDetailPresentation.BottomSheet), presentations.toSet()) }
     }
 
     @Test
     fun `広い画面でもチップを表示する`() {
         rule.setContent {
             CompositionLocalProvider(
-                LocalSpeechRecognitionChip provides fakeChip,
+                LocalSpeechRecognition provides fakeSlots,
             ) {
                 AppScreenContent(layoutType = NavigationSuiteType.NavigationRail)
             }
         }
 
         rule.onNodeWithTag("chip").assertIsDisplayed()
-        rule.runOnIdle { assertEquals(setOf(SpeechRecognitionDetailPresentation.Popover), presentations.toSet()) }
     }
 
     @Test
@@ -79,7 +74,7 @@ class AppScreenSpeechRecognitionChipTest {
     fun `各タブの画面へチップが占める幅と高さを渡す`() {
         val insets = mutableListOf<Dp>()
         rule.setContent {
-            CompositionLocalProvider(LocalSpeechRecognitionChip provides fakeChip) {
+            CompositionLocalProvider(LocalSpeechRecognition provides fakeSlots) {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationBar,
                     autoReadoutContent = { insets += speechRecognitionChipOverlayInset.compositionLocal.current },
@@ -94,7 +89,7 @@ class AppScreenSpeechRecognitionChipTest {
     fun `Snackbarはチップに重ならないよう右端を空けて表示する`() {
         val snackbarHostState = SnackbarHostState()
         rule.setContent {
-            CompositionLocalProvider(LocalSpeechRecognitionChip provides fakeChip) {
+            CompositionLocalProvider(LocalSpeechRecognition provides fakeSlots) {
                 Box(Modifier.size(width = 400.dp, height = 800.dp)) {
                     AppScreenContent(
                         layoutType = NavigationSuiteType.NavigationBar,

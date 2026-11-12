@@ -84,13 +84,11 @@ class SpeechRecognitionChipScreenshotTest {
                     modifier = Modifier.requiredSize(360.dp, 300.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 ) {
-                    SpeechRecognitionDetailContent(
+                    SpeechRecognitionCard(
                         uiState = uiState,
-                        onEnabledChange = {},
                         onDeviceMenuOpen = {},
                         onDeviceSelected = {},
                         modifier = Modifier.padding(KoDriverSpacing.medium),
-                        levelGaugeHeight = 12.dp,
                     )
                 }
             }

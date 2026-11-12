@@ -12,3 +12,4 @@
 
 ![Module Graph](../../docs/graphs/feature-speech-recognition-list.svg)
 <!-- MODULE-GRAPH-END -->
+- 呼びかけの案内カードの下に、音声認識の状態カード（状態・音量・認識結果・入力デバイス選択）を置くスロット `recognitionCard` を持つ。feature 同士は依存しないため、中身は `app:shared` が `:feature:main` の `SpeechRecognitionSlots.card` を渡す。
