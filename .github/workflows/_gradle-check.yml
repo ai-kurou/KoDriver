@@ -1,0 +1,29 @@
+name: _Gradle Check
+
+on:
+  workflow_call:
+    inputs:
+      command:
+        description: '実行する Gradle コマンド（例: ./gradlew detekt）'
+        type: string
+        required: true
+      timeoutMinutes:
+        type: number
+        required: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeoutMinutes }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Run Gradle
+        env:
+          GRADLE_COMMAND: ${{ inputs.command }}
+        run: $GRADLE_COMMAND
