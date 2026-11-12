@@ -77,8 +77,6 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
             "タイヤ残り",
             "タイヤの残り",
             "タイヤの残量",
-            "タイヤのこり",
-            "タイヤのこりりょう",
         ).forEach { phrase ->
             assertEquals(
                 LmuWindowsReadoutItemKey.TyreWear.Root.value,
@@ -94,7 +92,6 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
             "ブレーキ残り",
             "ブレーキの残り",
             "ブレーキの残量",
-            "ブレーキのこり",
         ).forEach { phrase ->
             assertEquals(
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value,
@@ -109,10 +106,8 @@ class LmuWindowsManualReadoutPhraseMatcherTest {
         listOf(
             "タイヤ残り周回",
             "タイヤの残り周回",
-            "タイヤのこり周回",
             "タイヤ残りあと何周",
             "タイヤの残りあと何周",
-            "タイヤのこりあと何周",
             "タイヤ残り何周",
             "タイヤの残り何周",
             "タイヤ残りは何周",

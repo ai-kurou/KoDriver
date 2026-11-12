@@ -24,8 +24,6 @@ val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
                 "タイヤ残り",
                 "タイヤの残り",
                 "タイヤの残量",
-                "タイヤのこり",
-                "タイヤのこりりょう",
             ),
         LmuWindowsReadoutItemKey.BrakeWear.Root.value to
             listOf(
@@ -37,7 +35,6 @@ val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
                 "ブレーキ残り",
                 "ブレーキの残り",
                 "ブレーキの残量",
-                "ブレーキのこり",
             ),
         LmuWindowsReadoutItemKey.BrakeTemperature.Root.value to
             listOf("ブレーキ温度", "ブレーキの温度", "ブレーキ熱"),
@@ -61,10 +58,8 @@ val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
                 "タイヤ摩耗周回",
                 // タイヤ摩耗の「残り」系の語句を含む言い方は、より長いこちらの語句で周回数項目に解決する。
                 "タイヤの残り周回",
-                "タイヤのこり周回",
                 "タイヤ残りあと何周",
                 "タイヤの残りあと何周",
-                "タイヤのこりあと何周",
                 "タイヤ残り何周",
                 "タイヤの残り何周",
                 "タイヤ残りは何周",
