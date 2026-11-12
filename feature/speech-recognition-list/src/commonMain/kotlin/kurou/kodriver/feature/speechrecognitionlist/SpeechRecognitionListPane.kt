@@ -146,8 +146,8 @@ private suspend fun LazyListState.scrollToSpeechCommandItem(
     groups: List<SpeechCommandGuideGroup>,
     itemKey: String,
 ) {
-    // 先頭は呼びかけの案内、続いて種類ごとに「見出し + 項目」が並ぶ
-    var index = 1
+    // 先頭は呼びかけの案内と音声認識の状態カード（スロットが空でも item は残る）、続いて種類ごとに「見出し + 項目」が並ぶ
+    var index = 2
     for (group in groups) {
         index += 1
         val offset = group.items.indexOfFirst { it.key == itemKey }
