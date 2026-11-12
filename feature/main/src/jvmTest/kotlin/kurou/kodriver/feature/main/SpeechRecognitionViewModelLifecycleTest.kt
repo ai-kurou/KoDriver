@@ -122,4 +122,31 @@ class SpeechRecognitionViewModelLifecycleTest {
         verify(exactly = 1) { speechRepository.observeRecognition() }
         confirmVerified(permissionRepository, speechRepository)
     }
+
+    @Test
+    fun `起動時に権限があれば聞き取りを始め二度目の呼び出しは無視する`() {
+        val viewModel = createViewModel(granted = true)
+
+        viewModel.onAppLaunched()
+        viewModel.onAppLaunched()
+
+        assertEquals(
+            SpeechRecognitionUiState(enabled = true, status = SpeechRecognitionStatus.Starting),
+            viewModel.uiState.value,
+        )
+        verify(exactly = 1) { permissionRepository.isGranted() }
+        verify(exactly = 1) { speechRepository.observeRecognition() }
+        confirmVerified(permissionRepository, speechRepository)
+    }
+
+    @Test
+    fun `起動時に権限がなければ何もしない`() {
+        val viewModel = createViewModel(granted = false)
+
+        viewModel.onAppLaunched()
+
+        assertEquals(SpeechRecognitionUiState(), viewModel.uiState.value)
+        verify(exactly = 1) { permissionRepository.isGranted() }
+        confirmVerified(permissionRepository, speechRepository)
+    }
 }

@@ -27,7 +27,7 @@ class SpeechRecognitionSlots(
 
 /**
  * 音声認識のチップとカードを返す。
- * マイクの権限の要求と、アプリが見えなくなったとき（ON_STOP）の停止・前面に戻ったとき（ON_START）の再開をここで持つため、
+ * 起動時の自動開始（[SpeechRecognitionViewModel.onAppLaunched]）、マイクの権限の要求と、アプリが見えなくなったとき（ON_STOP）の停止・前面に戻ったとき（ON_START）の再開をここで持つため、
  * `AppScreen` から一度だけ呼べば、タブを切り替えても聞き取りは止まらない。
  * 音声認識を提供しないプラットフォームでは [SpeechRecognitionSlots.None] を返す。
  */
@@ -44,6 +44,8 @@ internal fun rememberSpeechRecognition(
     viewModel: SpeechRecognitionViewModel,
     requestPermission: () -> Unit,
 ): SpeechRecognitionSlots {
+    // ON_START は前面に戻ったときにも届くため、起動時の自動開始は別に一度だけ呼ぶ
+    LaunchedEffect(viewModel) { viewModel.onAppLaunched() }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.onAppBackgrounded() }
     LifecycleEventEffect(Lifecycle.Event.ON_START) { viewModel.onAppForegrounded() }
     return remember(viewModel, requestPermission) {

@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.AudioInputDevice
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class AudioInputDeviceSelectorTest {
     private val deviceRepository =
@@ -15,7 +16,10 @@ class AudioInputDeviceSelectorTest {
     @Test
     fun `未選択なら先頭を選択中にする`() =
         runTest {
-            assertEquals(AudioInputDeviceList(listOf("Mic A", "Mic B"), "Mic A"), selector.refresh())
+            assertEquals(
+                AudioInputDeviceList(listOf("Mic A", "Mic B"), "Mic A", hasSavedSelection = false),
+                selector.refresh(),
+            )
         }
 
     @Test
@@ -31,7 +35,10 @@ class AudioInputDeviceSelectorTest {
         runTest {
             selectedRepository.saved.value = "Mic X"
 
-            assertEquals("Mic A", selector.refresh().selected)
+            val devices = selector.refresh()
+
+            assertEquals("Mic A", devices.selected)
+            assertTrue(devices.hasSavedSelection)
             assertEquals("Mic X", selectedRepository.saved.value)
         }
 
@@ -51,7 +58,7 @@ class AudioInputDeviceSelectorTest {
             selectedRepository.saved.value = "Mic B"
             deviceRepository.devices = emptyList()
 
-            assertEquals(AudioInputDeviceList(emptyList(), null), selector.refresh())
+            assertEquals(AudioInputDeviceList(emptyList(), null, hasSavedSelection = true), selector.refresh())
 
             deviceRepository.devices = listOf(AudioInputDevice("Mic A"), AudioInputDevice("Mic B"))
             assertEquals("Mic B", selector.refresh().selected)
