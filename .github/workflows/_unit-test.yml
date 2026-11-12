@@ -19,9 +19,9 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      # gradle.properties の workers.max=2 はローカルのメモリ節約用。CI（4 vCPU）では 4 に上書きして短縮する
+      # ワーカー数・ヒープは .github/actions/setup が CI 用に上書きする（gradle.properties はローカル向け）
       # スクリーンショットテストは *-screenshot-test-verify ジョブで実行するため除外する
-      - run: ./gradlew koverXmlReport -Dorg.gradle.workers.max=4 -PexcludeScreenshotTests=true
+      - run: ./gradlew koverXmlReport -PexcludeScreenshotTests=true
 
       - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
