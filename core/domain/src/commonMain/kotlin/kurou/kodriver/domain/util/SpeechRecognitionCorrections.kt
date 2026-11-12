@@ -11,4 +11,5 @@ internal val SPEECH_RECOGNITION_CORRECTIONS: List<Pair<String, String>> =
         "集会" to "周回",
         "まーも" to "摩耗",
         "ポンド" to "温度",
+        "方法" to "後方",
     )
