@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.main
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
@@ -35,8 +36,12 @@ internal class FakeAudioInputDeviceRepository(
     var getCount = 0
         private set
 
+    /** 設定すると、解除されるまで一覧の取得を待たせる。取得中の操作を試すためのもの。 */
+    var gate: CompletableDeferred<Unit>? = null
+
     override suspend fun getDevices(): List<AudioInputDevice> {
         getCount++
+        gate?.await()
         error?.let { throw it }
         return devices
     }

@@ -90,6 +90,9 @@ internal class SpeechRecognitionViewModel(
     /** 起動時の自動開始を判断済みか。画面の再生成で呼び直されても、一度しか開始しない。 */
     private var launchHandled = false
 
+    /** 起動時の自動開始が入力デバイスの取得を待っている間のジョブ。ユーザーの操作や停止で取り消し、後から開始させない。 */
+    private var launchJob: Job? = null
+
     /**
      * アプリの起動時に一度だけ呼び、条件を満たせば聞き取りを自動で始める。前面に戻ったときの再開は [onAppForegrounded] が担う。
      * 権限が未許可なら何もしない（起動時に権限ダイアログは出さない）。
@@ -105,19 +108,20 @@ internal class SpeechRecognitionViewModel(
             start()
             return
         }
-        viewModelScope.launch {
-            val devices =
-                try {
-                    selector.refresh()
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    captureErrorTypeOnly(e)
-                    return@launch
-                }
-            // 取得中にユーザーが操作して始まっていた場合は、それを優先する
-            if (devices.hasSavedSelection && devices.selected != null && listenJob == null) start()
-        }
+        launchJob =
+            viewModelScope.launch {
+                val devices =
+                    try {
+                        selector.refresh()
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        captureErrorTypeOnly(e)
+                        return@launch
+                    }
+                // 取得中の操作（スイッチ・デバイス選択・停止・背面化）はこのジョブを取り消すため、ここへ来るのは何も操作されなかった場合だけ
+                if (devices.hasSavedSelection && devices.selected != null) start()
+            }
     }
 
     /** スイッチの操作。マイクの権限が未許可なら [requestPermission] で要求し、結果を [onPermissionResult] で受ける。 */
@@ -125,6 +129,7 @@ internal class SpeechRecognitionViewModel(
         enabled: Boolean,
         requestPermission: () -> Unit,
     ) {
+        cancelLaunch()
         when {
             !enabled -> {
                 stop()
@@ -176,6 +181,7 @@ internal class SpeechRecognitionViewModel(
     fun onDeviceSelected(name: String) {
         val selector = audioInputDeviceSelector ?: return
         val previousName = _uiState.value.deviceName
+        cancelLaunch()
         refreshJob?.cancel()
         _uiState.update { it.copy(deviceName = name) }
         viewModelScope.launch {
@@ -210,6 +216,7 @@ internal class SpeechRecognitionViewModel(
 
     /** 聞き取りを止める。再開はしない。 */
     fun stop() {
+        cancelLaunch()
         resumeOnForeground = false
         permissionRequestPending = false
         cancelJobs()
@@ -220,6 +227,12 @@ internal class SpeechRecognitionViewModel(
                 it
             }
         }
+    }
+
+    /** 入力デバイスの取得を待っている起動時の自動開始を取り消す。 */
+    private fun cancelLaunch() {
+        launchJob?.cancel()
+        launchJob = null
     }
 
     private fun cancelJobs() {
