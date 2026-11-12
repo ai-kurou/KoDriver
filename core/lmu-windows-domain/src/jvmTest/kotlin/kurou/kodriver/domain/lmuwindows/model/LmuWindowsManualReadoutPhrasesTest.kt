@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.lmuwindows.model
 
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
@@ -44,5 +45,15 @@ class LmuWindowsManualReadoutPhrasesTest {
             lmuWindowsManualReadoutItemPhrases,
             ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.LmuWindows.id)?.itemPhrases,
         )
+    }
+
+    @Test
+    fun `前後車とのギャップは短く誤認識しやすい前方と後方を語句に含めない`() {
+        val ahead = lmuWindowsManualReadoutItemPhrases(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value)
+        val behind = lmuWindowsManualReadoutItemPhrases(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value)
+        assertTrue("前方" !in ahead)
+        assertTrue("後方" !in behind)
+        assertTrue("前との差" in ahead)
+        assertTrue("後ろとの差" in behind)
     }
 }
