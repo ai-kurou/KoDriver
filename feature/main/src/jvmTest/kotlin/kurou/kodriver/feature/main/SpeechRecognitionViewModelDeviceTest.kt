@@ -33,6 +33,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -233,6 +234,69 @@ class SpeechRecognitionViewModelDeviceTest {
 
         assertEquals("Mic A", viewModel.uiState.value.deviceName)
         verify(exactly = 2) { speechRepository.observeRecognition() }
+        confirmVerified(speechRepository)
+    }
+
+    @Test
+    fun `起動時に保存済みのデバイスがあれば始める`() {
+        selectedRepository.saved.value = "Mic B"
+        val viewModel = createViewModel()
+
+        viewModel.onAppLaunched()
+
+        assertTrue(viewModel.uiState.value.enabled)
+        assertEquals("Mic B", viewModel.uiState.value.deviceName)
+        verify(exactly = 1) { speechRepository.observeRecognition() }
+        confirmVerified(speechRepository)
+    }
+
+    @Test
+    fun `起動時に保存名が一覧になければ先頭のデバイスで始める`() {
+        selectedRepository.saved.value = "Mic X"
+        val viewModel = createViewModel()
+
+        viewModel.onAppLaunched()
+
+        assertTrue(viewModel.uiState.value.enabled)
+        assertEquals("Mic A", viewModel.uiState.value.deviceName)
+        verify(exactly = 1) { speechRepository.observeRecognition() }
+        confirmVerified(speechRepository)
+    }
+
+    @Test
+    fun `起動時にデバイスが未選択なら始めない`() {
+        val viewModel = createViewModel()
+
+        viewModel.onAppLaunched()
+
+        assertFalse(viewModel.uiState.value.enabled)
+        verify(exactly = 0) { speechRepository.observeRecognition() }
+        confirmVerified(speechRepository)
+    }
+
+    @Test
+    fun `起動時に保存済みでもデバイスが0件なら始めない`() {
+        selectedRepository.saved.value = "Mic B"
+        deviceRepository.devices = emptyList()
+        val viewModel = createViewModel()
+
+        viewModel.onAppLaunched()
+
+        assertFalse(viewModel.uiState.value.enabled)
+        verify(exactly = 0) { speechRepository.observeRecognition() }
+        confirmVerified(speechRepository)
+    }
+
+    @Test
+    fun `起動時に一覧の取得に失敗したら始めない`() {
+        selectedRepository.saved.value = "Mic B"
+        deviceRepository.error = IllegalStateException("devices")
+        val viewModel = createViewModel()
+
+        viewModel.onAppLaunched()
+
+        assertFalse(viewModel.uiState.value.enabled)
+        verify(exactly = 0) { speechRepository.observeRecognition() }
         confirmVerified(speechRepository)
     }
 }

@@ -12,6 +12,8 @@ internal data class AudioInputDeviceList(
     val names: List<String>,
     /** 選択中のデバイス名。保存済みの名前が一覧にない場合や未選択の場合は先頭。一覧が空なら null。 */
     val selected: String?,
+    /** ユーザーが一度でもデバイスを選んで保存しているか。保存済みの名前が一覧になくても true。 */
+    val hasSavedSelection: Boolean,
 )
 
 /**
@@ -34,7 +36,11 @@ internal class AudioInputDeviceSelector(
     suspend fun refresh(): AudioInputDeviceList {
         val names = getAudioInputDevices().map { it.name }
         loadSavedSelection()
-        return AudioInputDeviceList(names, names.firstOrNull { it == selectedDeviceName } ?: names.firstOrNull())
+        return AudioInputDeviceList(
+            names = names,
+            selected = names.firstOrNull { it == selectedDeviceName } ?: names.firstOrNull(),
+            hasSavedSelection = selectedDeviceName != null,
+        )
     }
 
     /** デバイスを選んで保存する。保存に失敗した場合は選択を元に戻し、例外を投げる（認識は保存値でデバイスを開くため）。 */

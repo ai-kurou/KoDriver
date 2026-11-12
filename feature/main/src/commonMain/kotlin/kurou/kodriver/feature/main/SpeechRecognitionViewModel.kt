@@ -87,6 +87,39 @@ internal class SpeechRecognitionViewModel(
     /** 権限の要求結果を待っている間だけ true。停止すると無効になり、後から届いた許可では聞き取りを始めない。 */
     private var permissionRequestPending = false
 
+    /** 起動時の自動開始を判断済みか。画面の再生成で呼び直されても、一度しか開始しない。 */
+    private var launchHandled = false
+
+    /**
+     * アプリの起動時に一度だけ呼び、条件を満たせば聞き取りを自動で始める。前面に戻ったときの再開は [onAppForegrounded] が担う。
+     * 権限が未許可なら何もしない（起動時に権限ダイアログは出さない）。
+     * 入力デバイスを選べるプラットフォームでは、ユーザーがデバイスを選んで保存している場合だけ始める
+     * （保存名が一覧になければ先頭のデバイスで開く）。開けなければ通常の失敗状態になり、やり直さない。
+     */
+    fun onAppLaunched() {
+        if (launchHandled) return
+        launchHandled = true
+        if (!checkRecordAudioPermissionGranted()) return
+        val selector = audioInputDeviceSelector
+        if (selector == null) {
+            start()
+            return
+        }
+        viewModelScope.launch {
+            val devices =
+                try {
+                    selector.refresh()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    captureErrorTypeOnly(e)
+                    return@launch
+                }
+            // 取得中にユーザーが操作して始まっていた場合は、それを優先する
+            if (devices.hasSavedSelection && devices.selected != null && listenJob == null) start()
+        }
+    }
+
     /** スイッチの操作。マイクの権限が未許可なら [requestPermission] で要求し、結果を [onPermissionResult] で受ける。 */
     fun onEnabledChange(
         enabled: Boolean,

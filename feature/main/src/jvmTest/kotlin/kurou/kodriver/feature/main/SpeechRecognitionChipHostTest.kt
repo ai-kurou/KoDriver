@@ -89,7 +89,8 @@ class SpeechRecognitionChipHostTest {
 
     private fun createViewModel(
         granted: Boolean,
-        deviceSelector: AudioInputDeviceSelector? = null,
+        // 既定は未選択のデバイス選択。起動時の自動開始（保存済みのデバイスがあるときだけ始める）が働かず、停止中から始まる
+        deviceSelector: AudioInputDeviceSelector? = audioInputDeviceSelector(audioInputDeviceRepository),
     ) {
         every { permissionRepository.isGranted() } returns granted
         every { speechRepository.observeRecognition() } returns events
@@ -208,6 +209,14 @@ class SpeechRecognitionChipHostTest {
         rule.onAllNodesWithContentDescription("「コドライバー」の呼びかけを待っています(マイクを使用中)")[0].performClick()
 
         rule.runOnIdle { assertFalse(viewModel.uiState.value.enabled) }
+    }
+
+    @Test
+    fun `起動時に権限があれば聞き取りを自動で始める`() {
+        createViewModel(granted = true, deviceSelector = null)
+        rule.setContent { KoDriverTheme { Chip() } }
+
+        rule.runOnIdle { assertTrue(viewModel.uiState.value.enabled) }
     }
 
     @Test
