@@ -91,6 +91,26 @@ class ManualReadoutPhraseMatcherTest {
         assertNull(matchManualReadoutPhrase(listOf("関係ない発話"), phrases))
     }
 
+    @Test
+    fun `音声認識がよく取り違える語は正しい語に置き換えてから照合し登録された語句を返す`() {
+        val corrected =
+            mapOf(
+                "wear" to listOf("タイヤ摩耗"),
+                "remaining" to listOf("VE残量"),
+                "laps" to listOf("燃料周回"),
+                "temp" to listOf("タイヤ温度"),
+            )
+        assertEquals(ManualReadoutPhraseMatch("wear", "タイヤ摩耗"), matchManualReadoutPhrase(listOf("タイヤ まーも"), corrected))
+        assertEquals(ManualReadoutPhraseMatch("remaining", "VE残量"), matchManualReadoutPhrase(listOf("VE産業"), corrected))
+        assertEquals(ManualReadoutPhraseMatch("laps", "燃料周回"), matchManualReadoutPhrase(listOf("燃料集会"), corrected))
+        assertEquals(ManualReadoutPhraseMatch("temp", "タイヤ温度"), matchManualReadoutPhrase(listOf("タイヤポンド"), corrected))
+    }
+
+    @Test
+    fun `置き換えの対象がない発話は従来どおり照合する`() {
+        assertEquals(ManualReadoutPhraseMatch("fuel", "燃料"), matchManualReadoutPhrase(listOf("燃料"), phrases))
+    }
+
     private fun matchManualReadoutItemKey(
         candidates: List<String>,
         phrasesByItemKey: Map<String, List<String>>,

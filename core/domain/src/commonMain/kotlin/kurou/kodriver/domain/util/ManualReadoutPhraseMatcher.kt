@@ -8,7 +8,7 @@ package kurou.kodriver.domain.util
  * 第1候補が「タイヤ残り」のように語尾を取りこぼしていても、下位候補の「タイヤ残り周回」のような、より具体的な語句を優先するため。
  * 第1候補と無関係な項目の語句は、長くても下位候補では採用しない（信頼度順を保つ）。
  * 一致した語句の長さが同じ場合は、信頼度の高い（先頭に近い）候補・項目を採用する。
- * 空白は無視し、英字は大文字小文字を区別しない。英字だけの語句（例: VE）は、前後が英字でない場合だけ一致とする（have の中の ve に反応しない）。
+ * 空白は無視し、英字は大文字小文字を区別しない。照合の前に、音声認識がよく取り違える語を [SPEECH_RECOGNITION_CORRECTIONS] で正しい語に置き換える（例: 「まーも」→「摩耗」）。英字だけの語句（例: VE）は、前後が英字でない場合だけ一致とする（have の中の ve に反応しない）。
  * どの項目にも一致しなければ null。
  */
 fun matchManualReadoutPhrase(
@@ -18,7 +18,7 @@ fun matchManualReadoutPhrase(
     var best: ManualReadoutPhraseMatch? = null
     var bestPhrase: String? = null
     for (candidate in candidates) {
-        val normalized = normalizeSpokenText(candidate)
+        val normalized = normalizeCandidate(candidate)
         if (normalized.isEmpty()) continue
         val current = bestPhrase
         val matched =
@@ -45,6 +45,9 @@ private fun isMoreSpecific(
 ): Boolean = phrase.length > current.length && phrase.contains(current)
 
 private fun normalizeSpokenText(text: String): String = text.filterNot { it.isWhitespace() }.lowercase()
+
+private fun normalizeCandidate(text: String): String =
+    SPEECH_RECOGNITION_CORRECTIONS.fold(normalizeSpokenText(text)) { acc, (wrong, right) -> acc.replace(wrong, right) }
 
 private fun isAsciiLetter(c: Char): Boolean = c in 'a'..'z'
 
