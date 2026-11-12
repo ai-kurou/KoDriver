@@ -1,7 +1,9 @@
 package kurou.kodriver.feature.speechrecognitionlist
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -79,6 +82,8 @@ private val STEP_NUMBER_SIZE = 20.dp
 private const val FLOW_LINE_ALPHA = 0.35f
 private const val BLINK_COUNT = 3
 private const val BLINK_HALF_PERIOD_MS = 300
+private const val SCROLL_ANIMATION_MILLIS = 500
+private const val SCROLL_NEAR_MARGIN = 2
 
 /**
  * 「音声」タブの一覧（listPane）。選択中のシミュレーターについて、「コドライバー」と呼びかけたあとに言うと読み上げられる語句を、
@@ -134,7 +139,7 @@ private fun speechCommandItemListKey(itemKey: String) = "item-$itemKey"
 
 /**
  * 読み上げられた項目のカードが見える位置までスクロールする。既に全体が見えているときは動かさない。
- * 案内にない項目は何もしない。
+ * 案内にない項目は何もしない。移動量に関係なく一定の時間（[SCROLL_ANIMATION_MILLIS]）でアニメーションさせる。
  */
 private suspend fun LazyListState.scrollToSpeechCommandItem(
     groups: List<SpeechCommandGuideGroup>,
@@ -146,18 +151,37 @@ private suspend fun LazyListState.scrollToSpeechCommandItem(
         index += 1
         val offset = group.items.indexOfFirst { it.key == itemKey }
         if (offset >= 0) {
+            val target = index + offset
             val key = speechCommandItemListKey(itemKey)
-            val info = layoutInfo.visibleItemsInfo.firstOrNull { it.key == key }
-            val fullyVisible =
-                info != null &&
-                    info.offset >= layoutInfo.viewportStartOffset &&
-                    info.offset + info.size <= layoutInfo.viewportEndOffset
-            if (!fullyVisible) animateScrollToItem(index + offset)
+            val visible = layoutInfo.visibleItemsInfo.firstOrNull { it.key == key }
+            if (visible != null && isFullyVisible(visible)) return
+            // 画面外の項目は位置が測られていないため、近くまで瞬時に寄せてから測り直す
+            val info =
+                visible ?: run {
+                    val near =
+                        if (target > firstVisibleItemIndex) {
+                            (target - SCROLL_NEAR_MARGIN).coerceAtLeast(0)
+                        } else {
+                            (target + SCROLL_NEAR_MARGIN).coerceAtMost(layoutInfo.totalItemsCount - 1)
+                        }
+                    scrollToItem(near)
+                    layoutInfo.visibleItemsInfo.firstOrNull { it.key == key }
+                }
+            if (info == null) {
+                animateScrollToItem(target)
+                return
+            }
+            // 対象が先頭付近に来るように、距離によらず一定時間で移動する
+            val delta = (info.offset - layoutInfo.beforeContentPadding).toFloat()
+            animateScrollBy(delta, tween(durationMillis = SCROLL_ANIMATION_MILLIS, easing = FastOutSlowInEasing))
             return
         }
         index += group.items.size
     }
 }
+
+private fun LazyListState.isFullyVisible(info: LazyListItemInfo): Boolean =
+    info.offset >= layoutInfo.viewportStartOffset && info.offset + info.size <= layoutInfo.viewportEndOffset
 
 /** 一覧の先頭に置く、呼びかけの案内。「コドライバー」を大きく見せ、「確認音 → 語句を言う → 読み上げ」の流れを添える。 */
 @Composable
