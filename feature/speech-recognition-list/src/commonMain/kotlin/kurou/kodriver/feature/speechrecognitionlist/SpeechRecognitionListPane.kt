@@ -82,19 +82,24 @@ private const val BLINK_HALF_PERIOD_MS = 300
 
 /**
  * 「音声」タブの一覧（listPane）。選択中のシミュレーターについて、「コドライバー」と呼びかけたあとに言うと読み上げられる語句を、
- * 読み上げ項目ごとのカードで一覧にする。
+ * 読み上げ項目ごとのカードで一覧にする。[recognitionCard] には、呼びかけの案内の下に置く音声認識の状態カードを渡す
+ * （feature 同士は依存しないため、呼び出し側が差し込む）。
  */
 @Composable
-fun SpeechRecognitionListPane(modifier: Modifier = Modifier) {
+fun SpeechRecognitionListPane(
+    modifier: Modifier = Modifier,
+    recognitionCard: @Composable () -> Unit = {},
+) {
     val viewModel: SpeechRecognitionListViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    SpeechRecognitionListPaneContent(uiState = uiState, modifier = modifier)
+    SpeechRecognitionListPaneContent(uiState = uiState, modifier = modifier, recognitionCard = recognitionCard)
 }
 
 @Composable
 internal fun SpeechRecognitionListPaneContent(
     uiState: SpeechRecognitionListUiState,
     modifier: Modifier = Modifier,
+    recognitionCard: @Composable () -> Unit = {},
 ) {
     val bottomEndOverlayInset = LocalBottomEndOverlayInset.current
     val listState = rememberLazyListState()
@@ -115,6 +120,7 @@ internal fun SpeechRecognitionListPaneContent(
         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
     ) {
         item { WakeWordGuide() }
+        item { recognitionCard() }
         uiState.groups.forEach { group ->
             item(key = "category-${group.category.name}") {
                 CategoryHeader(group.category, group.items.size)

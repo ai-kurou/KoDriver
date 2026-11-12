@@ -3,8 +3,6 @@ package kurou.kodriver.feature.main
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsOff
-import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -17,18 +15,16 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class SpeechRecognitionDetailContentTest {
+class SpeechRecognitionCardTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `停止中はOFFのスイッチと停止中を表示し操作でONを通知する`() {
-        val changes = mutableListOf<Boolean>()
+    fun `停止中は停止中を表示しスイッチは置かない`() {
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionDetailContent(
+                SpeechRecognitionCard(
                     uiState = SpeechRecognitionUiState(),
-                    onEnabledChange = { changes += it },
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
                 )
@@ -37,22 +33,20 @@ class SpeechRecognitionDetailContentTest {
 
         rule.onNodeWithText("音声認識").assertExists()
         rule.onNodeWithText("停止中").assertExists()
-        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsOff().performClick()
-        rule.runOnIdle { assertEquals(listOf(true), changes) }
+        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertDoesNotExist()
     }
 
     @Test
     fun `認識結果の未知語記号は分かりやすい記号に置き換えて表示する`() {
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionDetailContent(
+                SpeechRecognitionCard(
                     uiState =
                         SpeechRecognitionUiState(
                             enabled = true,
                             status = SpeechRecognitionStatus.Listening,
                             recognized = listOf(listOf("[unk]", "燃料")),
                         ),
-                    onEnabledChange = {},
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
                 )
@@ -68,14 +62,13 @@ class SpeechRecognitionDetailContentTest {
     fun `認識途中の文字列の未知語記号も分かりやすい記号に置き換えて表示する`() {
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionDetailContent(
+                SpeechRecognitionCard(
                     uiState =
                         SpeechRecognitionUiState(
                             enabled = true,
                             status = SpeechRecognitionStatus.Listening,
                             partialText = "[unk]タイ",
                         ),
-                    onEnabledChange = {},
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
                 )
@@ -87,11 +80,10 @@ class SpeechRecognitionDetailContentTest {
     }
 
     @Test
-    fun `聞き取り中はONのスイッチと認識途中の文字列と結果の履歴を表示し操作でOFFを通知する`() {
-        val changes = mutableListOf<Boolean>()
+    fun `聞き取り中は認識途中の文字列と結果の履歴を表示する`() {
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionDetailContent(
+                SpeechRecognitionCard(
                     uiState =
                         SpeechRecognitionUiState(
                             enabled = true,
@@ -99,7 +91,6 @@ class SpeechRecognitionDetailContentTest {
                             partialText = "タイ",
                             recognized = listOf(listOf("燃料", "然料"), listOf("ブレーキ")),
                         ),
-                    onEnabledChange = { changes += it },
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
                 )
@@ -111,8 +102,6 @@ class SpeechRecognitionDetailContentTest {
         rule.onNodeWithText("燃料").assertExists()
         rule.onNodeWithText("然料").assertExists()
         rule.onNodeWithText("ブレーキ").assertExists()
-        rule.onNodeWithContentDescription("音声認識の聞き取りを切り替え").assertIsOn().performClick()
-        rule.runOnIdle { assertEquals(listOf(false), changes) }
     }
 
     @Test
@@ -120,14 +109,13 @@ class SpeechRecognitionDetailContentTest {
         val level = mutableStateOf<Float?>(null)
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionDetailContent(
+                SpeechRecognitionCard(
                     uiState =
                         SpeechRecognitionUiState(
                             enabled = true,
                             status = SpeechRecognitionStatus.Listening,
                             level = level.value,
                         ),
-                    onEnabledChange = {},
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
                 )
@@ -145,9 +133,8 @@ class SpeechRecognitionDetailContentTest {
         val status = mutableStateOf(SpeechRecognitionStatus.Stopped)
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionDetailContent(
+                SpeechRecognitionCard(
                     uiState = SpeechRecognitionUiState(status = status.value),
-                    onEnabledChange = {},
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
                 )
@@ -175,9 +162,8 @@ class SpeechRecognitionDetailContentTest {
         val selected = mutableListOf<String>()
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionDetailContent(
+                SpeechRecognitionCard(
                     uiState = SpeechRecognitionUiState(deviceName = "Mic A", devices = listOf("Mic A", "Mic B")),
-                    onEnabledChange = {},
                     onDeviceMenuOpen = { menuOpenCount++ },
                     onDeviceSelected = { selected += it },
                 )
@@ -200,9 +186,8 @@ class SpeechRecognitionDetailContentTest {
         val uiState = mutableStateOf(SpeechRecognitionUiState(devices = listOf("Mic A")))
         rule.setContent {
             KoDriverTheme {
-                SpeechRecognitionDetailContent(
+                SpeechRecognitionCard(
                     uiState = uiState.value,
-                    onEnabledChange = {},
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
                 )

@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.speechrecognitionlist
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -40,6 +41,21 @@ class SpeechRecognitionListPaneTest {
         rule.onNodeWithText("「コドライバー」").assertIsDisplayed()
         listOf("確認音", "下の語句を言う", "読み上げ").forEach { rule.onNodeWithText(it).assertIsDisplayed() }
         rule.onNodeWithText(LONGEST_PHRASE_NOTE).assertIsDisplayed()
+    }
+
+    @Test
+    fun `渡された音声認識のカードを呼びかけの案内の下に表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionListPaneContent(
+                    SpeechRecognitionListUiState(),
+                    recognitionCard = { Text("認識カード") },
+                )
+            }
+        }
+
+        rule.onNodeWithText("まずはこう呼びかけます").assertIsDisplayed()
+        rule.onNodeWithText("認識カード").assertIsDisplayed()
     }
 
     @Test
