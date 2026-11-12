@@ -16,3 +16,17 @@ runs:
           caches
           notifications
           kodriver-vosk-model
+
+    # 公開リポジトリの標準ランナー（4 vCPU / 16 GB）に合わせ、CI だけ Gradle のヒープとワーカー数を上書きする。
+    # ローカル向けの gradle.properties（ヒープ2GB・workers.max=2）は変更せず、GRADLE_USER_HOME の
+    # gradle.properties はプロジェクトの gradle.properties より優先される。
+    # ヒープを16GBいっぱいにしないのは、テストJVM・OS・ネイティブ領域の分を残すため。
+    - name: Configure Gradle for CI runners
+      shell: bash
+      run: |
+        gradle_home="${GRADLE_USER_HOME:-$HOME/.gradle}"
+        mkdir -p "$gradle_home"
+        {
+          echo "org.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=2g -Dfile.encoding=UTF-8"
+          echo "org.gradle.workers.max=4"
+        } >> "$gradle_home/gradle.properties"
