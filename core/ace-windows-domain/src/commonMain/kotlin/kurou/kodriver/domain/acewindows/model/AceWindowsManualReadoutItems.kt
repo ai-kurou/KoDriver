@@ -10,6 +10,8 @@ private const val PREVIEW_ENERGY_PERCENT = 50
 private const val PREVIEW_REMAINING_FUEL_LAPS = 5
 private const val PREVIEW_BEST_LAP_TIME_MS = 83_456
 private const val PREVIEW_TYRE_TEMPERATURE_CELSIUS = 90
+private const val PREVIEW_CAR_GAP_AHEAD_SECONDS = 1.5f
+private const val PREVIEW_CAR_GAP_BEHIND_SECONDS = 2.3f
 
 val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition> =
     manualReadoutItemDefinitionMapOf(
@@ -48,6 +50,21 @@ val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
             ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER,
             ::findUnknownAceWindowsTyreTemperatureReadoutPlaceholders,
             { formatAceWindowsTyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS) },
+        ),
+        manualReadoutItemDefinitionOf(
+            AceWindowsReadoutItemKey.CarGap.Root,
+            ManualReadoutItemCategory.LAP,
+            "前後車とのギャップ",
+            ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT,
+            ACE_WINDOWS_CAR_GAP_PLACEHOLDERS,
+            ::findUnknownAceWindowsCarGapReadoutPlaceholders,
+            {
+                formatAceWindowsCarGapReadoutText(
+                    it,
+                    AceWindowsGapData(PREVIEW_CAR_GAP_AHEAD_SECONDS, PREVIEW_CAR_GAP_BEHIND_SECONDS),
+                )
+            },
+            AceWindowsReadoutItemKey.VehicleApproach.Root,
         ),
     )
 

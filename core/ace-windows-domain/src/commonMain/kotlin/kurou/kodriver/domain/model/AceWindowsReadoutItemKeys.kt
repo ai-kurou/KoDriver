@@ -30,6 +30,7 @@ val ACE_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
         AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
         AceWindowsReadoutItemKey.MyBestLap.Root,
         AceWindowsReadoutItemKey.MyBestLap.DetailEnabled,
+        AceWindowsReadoutItemKey.CarGap.Root,
     )
 
 val aceWindowsReadoutSpec: SimulatorReadoutSpec

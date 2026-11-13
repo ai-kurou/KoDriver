@@ -5,6 +5,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BLACK_WHITE_FLAG_READO
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT
@@ -20,6 +21,8 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_OVERH
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsCarGapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
@@ -263,4 +266,16 @@ data class AceWindowsTyreTemperatureCurrentValue(
             )
 
     override fun withResolvedText(text: String): AceWindowsTyreTemperatureCurrentValue = copy(resolvedText = text)
+}
+
+/** ACE の前後車ギャップ現在値。手動読み上げではセット内の文言を優先する。開始音・優先度は車両接近と同じキーを使う。 */
+data class AceWindowsCarGapCurrentValue(
+    val gap: AceWindowsGapData,
+    override val resolvedText: String? = null,
+) : AceWindowsSpeechEvent {
+    override val readoutItemKey = AceWindowsReadoutItemKey.VehicleApproach.Root
+    override val narratedText =
+        resolvedText ?: formatAceWindowsCarGapReadoutText(ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT, gap)
+
+    override fun withResolvedText(text: String): AceWindowsCarGapCurrentValue = copy(resolvedText = text)
 }

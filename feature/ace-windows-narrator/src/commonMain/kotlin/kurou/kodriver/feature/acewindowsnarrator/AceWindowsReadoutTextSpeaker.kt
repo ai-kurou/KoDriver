@@ -9,6 +9,7 @@ import kurou.kodriver.domain.acewindows.model.formatAceWindowsTyreTemperatureRea
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsCarGapCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsFlagSpeechEvent
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
@@ -79,6 +80,7 @@ internal class AceWindowsReadoutTextSpeaker(
                 is AceWindowsRemainingFuelLapsCurrentValue -> event.narratedText
                 is AceWindowsMyBestLapCurrentValue -> event.narratedText
                 is AceWindowsTyreTemperatureCurrentValue -> event.narratedText
+                is AceWindowsCarGapCurrentValue -> event.narratedText
                 is AceWindowsManualReadoutText -> event.text
                 is AceWindowsFlagSpeechEvent -> flagText(event)
                 is AceWindowsVehicleApproach -> readoutTexts.vehicleApproach().first()

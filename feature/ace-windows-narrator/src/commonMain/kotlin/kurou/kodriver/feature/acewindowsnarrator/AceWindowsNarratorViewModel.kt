@@ -13,6 +13,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemTextDefault
@@ -24,6 +25,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseC
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
@@ -94,6 +96,10 @@ internal data class VehicleApproachUseCases(
     val thresholds: AceWindowsVehicleApproachThresholdsUseCases,
 )
 
+internal data class CarGapUseCases(
+    val observeGap: ObserveAceWindowsGapUseCase,
+)
+
 internal data class SimulatorUseCases(
     val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 )
@@ -115,6 +121,7 @@ internal class AceWindowsNarratorViewModel(
     flagUseCases: FlagUseCases,
     tyreTemperatureUseCases: TyreTemperatureUseCases,
     vehicleApproachUseCases: VehicleApproachUseCases,
+    carGapUseCases: CarGapUseCases,
     private val eventProcessor: AceWindowsNarratorEventProcessor,
     private val determineAceWindowsNarratorReadout: DetermineAceWindowsNarratorReadoutUseCase =
         DetermineAceWindowsNarratorReadoutUseCase(),
@@ -190,6 +197,8 @@ internal class AceWindowsNarratorViewModel(
     private var latestTyreTemperature: AceWindowsTyreCarcassTemperatureData? = null
     private var latestTyreTemperatureReceivedAtMs = 0L
     private var latestBestLap: AceWindowsBestLapTimeData? = null
+    private var latestGap: AceWindowsGapData? = null
+    private var latestGapReceivedAtMs = 0L
 
     @Suppress("UnusedPrivateProperty")
     private val resetLatestTelemetryJob =
@@ -202,6 +211,8 @@ internal class AceWindowsNarratorViewModel(
 
     private fun resetLatestTelemetry() {
         latestBestLap = null
+        latestGap = null
+        latestGapReceivedAtMs = 0L
         latestFuel = null
         latestFuelReceivedAtMs = 0L
         latestFuelLaps = null
@@ -243,6 +254,11 @@ internal class AceWindowsNarratorViewModel(
     private val tyreTemperatureFlow =
         narratorFlow
             .telemetry { tyreTemperatureUseCases.observeAceWindowsTyreCarcassTemperature() }
+            .shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    private val gapFlow =
+        narratorFlow
+            .telemetry { carGapUseCases.observeGap() }
             .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val vehicleApproachFlow =
@@ -315,6 +331,7 @@ internal class AceWindowsNarratorViewModel(
         val celsius = determineAceWindowsNarratorReadout.currentMaxTyreTemperatureCelsius(tyreTemperature)
         val percent = determineAceWindowsNarratorReadout.currentRemainingFuelPercent(fuel)
         val laps = determineAceWindowsNarratorReadout.currentRemainingFuelLaps(fuelLaps)
+        val gap = latestGap?.takeIf { observedAtMs - latestGapReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS }
         // 自己ベストは変化しない間サーバーから再送されない（Android）ため、他の項目と違い鮮度判定をしない。
         val bestLapTimeMs = determineAceWindowsNarratorReadout.currentBestLapTimeMs(latestBestLap)
         val items =
@@ -341,6 +358,7 @@ internal class AceWindowsNarratorViewModel(
                     key,
                     set.itemTexts[key] ?: aceWindowsManualReadoutItemTextDefault(key),
                     value,
+                    gap = gap.takeIf { key == AceWindowsReadoutItemKey.CarGap.Root.value },
                 )
             }
         val decision = determineAceWindowsNarratorReadout.determineManualReadout(state, items)
@@ -535,5 +553,13 @@ internal class AceWindowsNarratorViewModel(
                             finalState = decision.state,
                         ),
                 )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val gapJob =
+        gapFlow
+            .onEachCapturingErrors { gapData ->
+                latestGap = gapData
+                latestGapReceivedAtMs = currentTimeMs()
             }.launchIn(viewModelScope)
 }

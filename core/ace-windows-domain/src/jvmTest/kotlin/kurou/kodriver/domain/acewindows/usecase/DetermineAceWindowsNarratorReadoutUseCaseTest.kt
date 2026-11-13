@@ -5,6 +5,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
@@ -79,6 +80,24 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             AceWindowsManualReadoutItem(key, "タイヤ温度は{celsius}℃", null) to "タイヤ温度はデータがありません",
             AceWindowsManualReadoutItem(key, "", null) to "",
             AceWindowsManualReadoutItem(key, "", ManualReadoutValue.Celsius(90)) to "",
+        ).forEach { (item, expected) ->
+            val decision = useCase.determineManualReadout(state, listOf(item))
+            assertEquals(state, decision.state)
+            assertEquals(expected, (decision.events.single() as AceWindowsManualReadoutText).text)
+        }
+    }
+
+    @Test
+    fun `手動前後車ギャップは文言とデータなしと空欄を扱い状態を維持する`() {
+        val key = AceWindowsReadoutItemKey.CarGap.Root.value
+        val state = AceWindowsNarratorState(vehicleApproaching = true)
+        val gap = AceWindowsGapData(1.5f, -2.34f)
+        listOf(
+            AceWindowsManualReadoutItem(key, "{ahead}、{behind} {other}", null, gap) to "前方1.5秒、後方2.3秒 {other}",
+            AceWindowsManualReadoutItem(key, "{ahead}、{behind}", null, AceWindowsGapData(0f, 0f)) to "前方車なし、後方車なし",
+            AceWindowsManualReadoutItem(key, "{ahead}、{behind}", null, null) to "前後車とのギャップはデータがありません",
+            AceWindowsManualReadoutItem(key, "", null, null) to "",
+            AceWindowsManualReadoutItem(key, "", null, gap) to "",
         ).forEach { (item, expected) ->
             val decision = useCase.determineManualReadout(state, listOf(item))
             assertEquals(state, decision.state)

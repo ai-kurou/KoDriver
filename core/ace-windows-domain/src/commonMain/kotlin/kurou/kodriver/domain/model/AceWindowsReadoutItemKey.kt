@@ -106,4 +106,11 @@ sealed interface AceWindowsReadoutItemKey : ReadoutItemKey {
             override val value = "ace_windows_auto_tyre_temperature_overheat_warning"
         }
     }
+
+    /** 手動読み上げ専用の前後車ギャップ項目。自動読み上げのスイッチは持たない。 */
+    sealed interface CarGap : AceWindowsReadoutItemKey {
+        data object Root : CarGap {
+            override val value = "ace_windows_auto_car_gap"
+        }
+    }
 }

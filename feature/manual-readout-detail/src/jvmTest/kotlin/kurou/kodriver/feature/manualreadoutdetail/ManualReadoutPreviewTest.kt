@@ -60,6 +60,15 @@ class ManualReadoutPreviewTest {
     }
 
     @Test
+    fun `ACE前後車ギャップをサンプル秒数に置換する`() {
+        val key = AceWindowsReadoutItemKey.CarGap.Root.value
+        val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.AceWindows.id, selectedItemKeys = listOf(key))
+        assertEquals("前方1.5秒、後方2.3秒", manualReadoutPreview(state))
+        assertEquals("後方2.3秒 {other}", manualReadoutPreview(state.copy(itemTexts = mapOf(key to "{behind} {other}"))))
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+    }
+
+    @Test
     fun `ACE自己ベストラップをサンプルタイムに置換する`() {
         val key = AceWindowsReadoutItemKey.MyBestLap.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.AceWindows.id, selectedItemKeys = listOf(key))

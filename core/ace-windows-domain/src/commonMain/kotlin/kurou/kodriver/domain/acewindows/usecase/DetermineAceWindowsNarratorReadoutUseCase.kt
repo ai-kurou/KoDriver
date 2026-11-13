@@ -9,10 +9,12 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemName
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsCarGapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
@@ -20,6 +22,7 @@ import kurou.kodriver.domain.acewindows.model.formatAceWindowsTyreTemperatureRea
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsCarGapCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
 import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
@@ -126,6 +129,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> manualRemainingFuelLapsValue(item)
             AceWindowsReadoutItemKey.MyBestLap.Root.value -> manualMyBestLapValue(item)
             AceWindowsReadoutItemKey.TyreTemperature.Root.value -> manualTyreTemperatureValue(item)
+            AceWindowsReadoutItemKey.CarGap.Root.value -> manualCarGapValue(item)
             else -> null
         }
 
@@ -186,25 +190,6 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             )
         return withManualNoDataText(item, event, data != null)
     }
-
-    private fun withManualNoDataText(
-        item: AceWindowsManualReadoutItem,
-        event: ReadoutTextEvent,
-        hasData: Boolean,
-    ): ReadoutTextEvent =
-        when {
-            item.textTemplate.isBlank() -> {
-                event.withResolvedText("")
-            }
-
-            !hasData -> {
-                event.withResolvedText(manualReadoutNoDataText(aceWindowsManualReadoutItemName(item.key)))
-            }
-
-            else -> {
-                event
-            }
-        }
 
     /** 未受信・鮮度切れ・範囲外や非有限の燃料値は手動読み上げのデータなしとして扱う。 */
     fun currentRemainingFuelPercent(data: AceWindowsFuelData?): Int? {
@@ -439,3 +424,33 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         const val REFUEL_HYSTERESIS_LAPS = 0.5f
     }
 }
+
+/** 前後車ギャップは前後2つの値を [AceWindowsManualReadoutItem.gap] で受け取る。未受信・鮮度切れ（null）はデータなし。 */
+private fun manualCarGapValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
+    val data = item.gap
+    val event =
+        AceWindowsCarGapCurrentValue(
+            data ?: AceWindowsGapData(0f, 0f),
+            data?.let { formatAceWindowsCarGapReadoutText(item.textTemplate, it) },
+        )
+    return withManualNoDataText(item, event, data != null)
+}
+
+private fun withManualNoDataText(
+    item: AceWindowsManualReadoutItem,
+    event: ReadoutTextEvent,
+    hasData: Boolean,
+): ReadoutTextEvent =
+    when {
+        item.textTemplate.isBlank() -> {
+            event.withResolvedText("")
+        }
+
+        !hasData -> {
+            event.withResolvedText(manualReadoutNoDataText(aceWindowsManualReadoutItemName(item.key)))
+        }
+
+        else -> {
+            event
+        }
+    }

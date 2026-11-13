@@ -45,6 +45,8 @@ import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_car_gap_hint
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_car_gap_insert
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_celsius_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_celsius_insert
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_class_car_gap_hint
@@ -281,6 +283,7 @@ internal fun ManualReadoutItemTextField(
 ) {
     val haptic = LocalHapticFeedback.current
     val isClassCarGap = isLmuWindowsManualReadoutClassCarGapItem(itemKey)
+    val isCarGap = itemKey == AceWindowsReadoutItemKey.CarGap.Root.value
     val isLapTime = isManualReadoutLapTimeItem(itemKey)
     val isLaps = isManualReadoutLapsItem(itemKey)
     val isTemperature = isManualReadoutTemperatureItem(itemKey)
@@ -322,7 +325,9 @@ internal fun ManualReadoutItemTextField(
                 label = {
                     Text(
                         stringResource(
-                            if (isClassCarGap) {
+                            if (isCarGap) {
+                                Res.string.manual_readout_car_gap_insert
+                            } else if (isClassCarGap) {
                                 Res.string.manual_readout_class_car_gap_insert
                             } else if (isLapTime) {
                                 Res.string.manual_readout_laptime_insert
@@ -342,7 +347,9 @@ internal fun ManualReadoutItemTextField(
             Text(
                 text =
                     stringResource(
-                        if (isClassCarGap) {
+                        if (isCarGap) {
+                            Res.string.manual_readout_car_gap_hint
+                        } else if (isClassCarGap) {
                             Res.string.manual_readout_class_car_gap_hint
                         } else if (isLapTime) {
                             Res.string.manual_readout_laptime_hint

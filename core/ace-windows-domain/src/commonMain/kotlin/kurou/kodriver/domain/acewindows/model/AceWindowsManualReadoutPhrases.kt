@@ -17,6 +17,8 @@ val aceWindowsManualReadoutItemPhrases: Map<String, List<String>> =
             listOf("自己ベスト", "ベストラップ", "ベストタイム", "自己ベストラップ"),
         AceWindowsReadoutItemKey.TyreTemperature.Root.value to
             listOf("タイヤ温度", "タイヤの温度", "タイヤ熱"),
+        AceWindowsReadoutItemKey.CarGap.Root.value to
+            listOf("ギャップ", "前後のギャップ", "前後の差", "前後の車", "前後車", "前後とのギャップ"),
     )
 
 fun aceWindowsManualReadoutItemPhrases(itemKey: String): List<String> =
