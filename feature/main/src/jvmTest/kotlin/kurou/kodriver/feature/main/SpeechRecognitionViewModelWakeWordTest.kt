@@ -404,6 +404,34 @@ class SpeechRecognitionViewModelWakeWordTest {
     }
 
     @Test
+    fun `再開の直後は途中経過のウェイクワードを無視し、確定結果なら検出する`() {
+        createListeningViewModel()
+        playbackRepository.update("lmu_windows", true)
+        playbackRepository.update("lmu_windows", false)
+        advanceBy(SPEECH_RECOGNITION_RESUME_DELAY_MS)
+
+        events.tryEmit(SpeechRecognitionEvent.Partial("コドライバー"))
+
+        assertEquals(SpeechRecognitionStatus.Listening, status)
+
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
+
+        assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
+    }
+
+    @Test
+    fun `再開から猶予が過ぎたあとは途中経過のウェイクワードを検出する`() {
+        createListeningViewModel()
+        playbackRepository.update("lmu_windows", true)
+        playbackRepository.update("lmu_windows", false)
+        advanceBy(SPEECH_RECOGNITION_RESUME_DELAY_MS + SPEECH_RECOGNITION_RESUME_GRACE_MS)
+
+        events.tryEmit(SpeechRecognitionEvent.Partial("コドライバー"))
+
+        assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
+    }
+
+    @Test
     fun `停止するとコマンド待ちの時間切れや読み上げの購読をやめる`() {
         val viewModel = createListeningViewModel()
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))

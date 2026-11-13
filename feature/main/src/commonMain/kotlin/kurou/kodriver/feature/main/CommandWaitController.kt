@@ -33,6 +33,16 @@ internal class CommandWaitController(
     var commandWaiting = false
         private set
 
+    /** 聞き取りの再開から [SPEECH_RECOGNITION_RESUME_GRACE_MS] が経つと、途中経過でのウェイクワード検出を許す。 */
+    private var resumeGraceJob: Job? = null
+
+    /**
+     * 聞き取りの再開直後で、読み上げの余韻が残りうる間か。この間は途中経過でウェイクワードを検出せず、
+     * 発話の区切りまで待った確定結果だけで検出する（余韻の雑音を途中経過で誤検出しないため）。
+     */
+    var resumeGraceActive = false
+        private set
+
     /** 読み上げ中、または読み上げ終了後の再開待ちか。 */
     var paused = false
         private set
@@ -85,6 +95,7 @@ internal class CommandWaitController(
     fun resume() {
         paused = false
         applyMode()
+        startResumeGrace()
     }
 
     /** 聞き取りの停止や失敗で、コマンド待ち・読み上げ中の状態と付随するJobを破棄する。モードは伝えない。 */
@@ -94,7 +105,20 @@ internal class CommandWaitController(
         paused = false
     }
 
+    private fun startResumeGrace() {
+        resumeGraceJob?.cancel()
+        resumeGraceActive = true
+        resumeGraceJob =
+            scope.launch {
+                delay(SPEECH_RECOGNITION_RESUME_GRACE_MS)
+                resumeGraceActive = false
+            }
+    }
+
     private fun cancelWaitJobs() {
+        resumeGraceJob?.cancel()
+        resumeGraceJob = null
+        resumeGraceActive = false
         commandTimeoutJob?.cancel()
         commandTimeoutJob = null
         chimeJob?.cancel()

@@ -132,6 +132,52 @@ class CommandWaitControllerTest {
         }
 
     @Test
+    fun `再開の直後は猶予の間だけ途中経過の検出を控える`() =
+        runTest {
+            val controller = controller()
+            assertFalse(controller.resumeGraceActive)
+            controller.pause()
+            assertFalse(controller.resumeGraceActive)
+
+            controller.resume()
+            assertTrue(controller.resumeGraceActive)
+
+            advanceTimeBy(SPEECH_RECOGNITION_RESUME_GRACE_MS - 1)
+            runCurrent()
+            assertTrue(controller.resumeGraceActive)
+
+            advanceTimeBy(1)
+            runCurrent()
+            assertFalse(controller.resumeGraceActive)
+        }
+
+    @Test
+    fun `猶予の間に再び読み上げが始まると猶予を打ち切る`() =
+        runTest {
+            val controller = controller()
+            controller.resume()
+
+            controller.pause()
+
+            assertFalse(controller.resumeGraceActive)
+        }
+
+    @Test
+    fun `猶予の間に再開し直すと猶予を数え直す`() =
+        runTest {
+            val controller = controller()
+            controller.resume()
+            advanceTimeBy(SPEECH_RECOGNITION_RESUME_GRACE_MS - 1)
+            runCurrent()
+
+            controller.resume()
+            advanceTimeBy(SPEECH_RECOGNITION_RESUME_GRACE_MS - 1)
+            runCurrent()
+
+            assertTrue(controller.resumeGraceActive)
+        }
+
+    @Test
     fun `リセットすると状態とJobを破棄し、モードは伝えない`() =
         runTest {
             val controller = controller()

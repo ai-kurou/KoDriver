@@ -39,6 +39,11 @@ internal const val SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS = 6_000L
 internal const val SPEECH_RECOGNITION_RESUME_DELAY_MS = 500L
 
 /**
+ * 聞き取りを再開してから、途中経過でのウェイクワード検出を控える時間。読み上げの余韻が残りうるため、この間は確定結果だけで検出する。
+ */
+internal const val SPEECH_RECOGNITION_RESUME_GRACE_MS = 1_000L
+
+/**
  * 音声認識の聞き取りを開始・停止し、認識状況を確認用に保持する。
  *
  * ウェイクワードを待つ→検出したらコマンドを [SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS] だけ待つ→ウェイクワード待ちへ戻る、
@@ -327,7 +332,7 @@ internal class SpeechRecognitionViewModel(
                 _uiState.update { it.copy(partialText = event.text) }
                 // 呼びかけを言い終える前の途中経過で検出し、続けて話すコマンドを取りこぼさない
                 val idle = !commandWait.paused && !commandWait.commandWaiting
-                if (idle && containsSpeechRecognitionWakeWord(listOf(event.text))) {
+                if (idle && !commandWait.resumeGraceActive && containsSpeechRecognitionWakeWord(listOf(event.text))) {
                     commandWait.startCommandWait()
                 }
             }
