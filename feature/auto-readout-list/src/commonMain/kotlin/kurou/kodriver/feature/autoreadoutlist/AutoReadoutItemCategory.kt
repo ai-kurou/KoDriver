@@ -10,7 +10,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 
 /**
  * 自動タブの項目が属する読み上げカテゴリを返す。手動タブ・音声タブと同じカテゴリ色にそろえるために使う。
- * 燃料・タイヤ・ブレーキ・ラップなどカテゴリを持たない項目（フラッグ、車両接近など）は null を返し、従来どおりの配色にする。
+ * フラッグ・車両接近・車両故障・ピットタイミング・クラス別ギャップなど、カテゴリを持たない項目は null を返し、従来どおりの配色にする。
  */
 internal fun autoReadoutItemCategory(itemId: ReadoutItemKey): ManualReadoutItemCategory? =
     when (itemId) {
