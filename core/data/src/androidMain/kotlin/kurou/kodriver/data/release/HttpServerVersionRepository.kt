@@ -6,13 +6,13 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CancellationException
+import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
 import kurou.kodriver.domain.repository.ServerVersionRepository
 
-private const val DEFAULT_PORT = 8080
 private const val PATH = "/version"
 
 internal class HttpServerVersionRepository(
-    private val port: Int = DEFAULT_PORT,
+    private val port: Int = KODRIVER_SERVER_PORT_DEFAULT,
 ) : ServerVersionRepository {
     private val client = HttpClient(OkHttp)
 
