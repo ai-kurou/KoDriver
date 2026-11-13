@@ -8,6 +8,12 @@ package kurou.kodriver.domain.acewindows.model
  */
 const val ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT = 30
 
+/** ACE の燃料残量警告の閾値（%）の設定可能な下限。 */
+const val ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MIN = 5
+
+/** ACE の燃料残量警告の閾値（%）の設定可能な上限。 */
+const val ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MAX = 90
+
 /** ACE の燃料残量警告のデフォルト読み上げ文言。 */
 const val ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT = "燃料は残り{percent}%"
 

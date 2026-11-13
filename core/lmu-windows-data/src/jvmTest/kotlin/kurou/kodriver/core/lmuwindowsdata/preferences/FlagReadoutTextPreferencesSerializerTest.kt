@@ -1,7 +1,7 @@
 package kurou.kodriver.core.lmuwindowsdata.preferences
 
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import java.io.ByteArrayInputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals

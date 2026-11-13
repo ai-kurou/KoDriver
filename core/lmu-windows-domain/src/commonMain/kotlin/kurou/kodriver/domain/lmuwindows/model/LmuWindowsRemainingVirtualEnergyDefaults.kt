@@ -8,6 +8,12 @@ package kurou.kodriver.domain.lmuwindows.model
  */
 const val LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT = 30
 
+/** バーチャルエネルギー残量警告の閾値（%）の設定可能な下限。 */
+const val LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_MIN = 10
+
+/** バーチャルエネルギー残量警告の閾値（%）の設定可能な上限。 */
+const val LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_MAX = 90
+
 /** バーチャルエネルギー残量警告の既定文言。DataStore の初期値として使用する。 */
 const val LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT = "バーチャルエネルギーは残り{percent}%以下"
 
