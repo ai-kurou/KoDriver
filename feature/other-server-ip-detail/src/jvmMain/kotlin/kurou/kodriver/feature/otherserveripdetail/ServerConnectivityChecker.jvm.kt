@@ -5,12 +5,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
+import kurou.kodriver.domain.model.SERVER_CONNECTIVITY_CHECK_TIMEOUT_MS
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
-
-private const val TIMEOUT_MS = 3000
 
 internal class TcpServerConnectivityChecker(
     private val port: Int = KODRIVER_SERVER_PORT_DEFAULT,
@@ -22,7 +21,7 @@ internal class TcpServerConnectivityChecker(
         withContext(Dispatchers.IO) {
             val address = ip.toIpv4InetAddress() ?: return@withContext false
             try {
-                connect(address, port, TIMEOUT_MS)
+                connect(address, port, SERVER_CONNECTIVITY_CHECK_TIMEOUT_MS)
                 true
             } catch (e: CancellationException) {
                 throw e
