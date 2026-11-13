@@ -1,12 +1,16 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragIndicator
@@ -128,6 +132,14 @@ internal fun ManualReadoutItemsCard(
                                                 },
                                             ).size(20.dp),
                                     )
+                                    manualReadoutItemDefinition(uiState.simulatorId, itemKey)?.let {
+                                        Box(
+                                            Modifier
+                                                .padding(end = KoDriverSpacing.small)
+                                                .size(8.dp)
+                                                .background(manualReadoutCategoryColor(it.category), CircleShape),
+                                        )
+                                    }
                                     Text(name, modifier = Modifier.weight(1f))
                                     IconButton(onClick = {
                                         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)

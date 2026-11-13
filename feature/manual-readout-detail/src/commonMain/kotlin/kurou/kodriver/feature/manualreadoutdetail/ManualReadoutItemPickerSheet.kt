@@ -132,7 +132,7 @@ internal fun ManualReadoutItemPickerSheetContent(
                         Icon(
                             category.icon(),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            tint = manualReadoutCategoryColor(category),
                             modifier = Modifier.padding(KoDriverSpacing.small),
                         )
                     }
