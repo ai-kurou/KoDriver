@@ -106,7 +106,7 @@ class LmuWindowsAutoReadoutBrakeWearDetailPaneTest {
         rule.onNodeWithText("残量警告").assertIsDisplayed()
         rule.onNodeWithText("ブレーキ残量が閾値以下になったときの文言").assertIsDisplayed()
         rule.onNodeWithText("ブレーキは残り{percent}%以下").assertIsDisplayed()
-        rule.onNodeWithText("{percent} は選択中の車両クラスの残量閾値(%)に置き換わります").assertIsDisplayed()
+        rule.onNodeWithText("{percent} は選択中の車両クラスの残量閾値（%）に置き換わります").assertIsDisplayed()
         rule.onNodeWithText("{percent}を挿入").assertIsEnabled()
     }
 
