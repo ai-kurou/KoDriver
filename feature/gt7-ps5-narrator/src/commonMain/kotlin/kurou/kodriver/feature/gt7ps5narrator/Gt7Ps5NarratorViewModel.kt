@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ManualReadoutValue
+import kurou.kodriver.domain.model.NARRATOR_CURRENT_VALUE_MAX_AGE_MS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -370,7 +371,7 @@ internal class Gt7Ps5NarratorViewModel(
         val state = narratorState
         val settings = currentSettings
         val telemetry =
-            latestTelemetry?.takeIf { observedAtMs - latestTelemetryReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
+            latestTelemetry?.takeIf { observedAtMs - latestTelemetryReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS }
         val items =
             set.itemKeys.map { key ->
                 val value = telemetry?.let { manualReadoutValue(key, it, state) }
@@ -398,5 +399,3 @@ internal class Gt7Ps5NarratorViewModel(
                 tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThreshold.value,
             )
 }
-
-private const val CURRENT_VALUE_MAX_AGE_MS = 5_000L

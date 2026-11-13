@@ -85,6 +85,7 @@ import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutValue
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
+import kurou.kodriver.domain.model.NARRATOR_CURRENT_VALUE_MAX_AGE_MS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -200,8 +201,6 @@ internal data class NarratorUseCases(
     val raceFlagReadout: DetermineLmuWindowsRaceFlagReadoutUseCase,
 )
 
-// 共有メモリは短周期で届くため、これを超えて更新がなければ切断・セッション終了とみなす。
-private const val CURRENT_VALUE_MAX_AGE_MS = 5_000L
 private const val PERCENTAGE_SCALE = 100.0
 
 @OptIn(ExperimentalTime::class)
@@ -930,35 +929,35 @@ internal class LmuWindowsNarratorViewModel(
         val observedAtMs = currentTimeMs()
         val energy =
             latestVirtualEnergy?.takeIf {
-                observedAtMs - latestVirtualEnergyReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                observedAtMs - latestVirtualEnergyReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
             }
         val fuel =
             latestFuel?.takeIf {
-                observedAtMs - latestFuelReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                observedAtMs - latestFuelReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
             }
         val classCarGap =
             latestClassCarGap?.takeIf {
-                observedAtMs - latestClassCarGapReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                observedAtMs - latestClassCarGapReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
             }
         val tyreWear =
             latestTyreWear?.takeIf {
-                observedAtMs - latestTyreWearReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                observedAtMs - latestTyreWearReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
             }
         val brakeWear =
             latestBrakeWear?.takeIf {
-                observedAtMs - latestBrakeWearReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                observedAtMs - latestBrakeWearReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
             }
         val brakeTemperature =
             latestBrakeTemperature?.takeIf {
-                observedAtMs - latestBrakeTemperatureReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                observedAtMs - latestBrakeTemperatureReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
             }
         val tyreTemperature =
             latestTyreTemperature?.takeIf {
-                observedAtMs - latestTyreTemperatureReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                observedAtMs - latestTyreTemperatureReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
             }
         val bestLapTimeMs =
             latestBestLapTimeMs?.takeIf {
-                observedAtMs - latestBestLapReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS && it > 0
+                observedAtMs - latestBestLapReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS && it > 0
             }
         val items =
             set.itemKeys.filter { it in lmuWindowsManualReadoutItemKeys() }.map { key ->
@@ -978,7 +977,7 @@ internal class LmuWindowsNarratorViewModel(
                         hasEnergy = energy != null,
                         hasTyreWear = tyreWear != null,
                         hasFuel = fuel != null,
-                        pitTimingFresh = observedAtMs - latestPitTimingUpdatedAtMs <= CURRENT_VALUE_MAX_AGE_MS,
+                        pitTimingFresh = observedAtMs - latestPitTimingUpdatedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS,
                     )
                 val value =
                     ratio?.let { LmuWindowsManualReadoutValue.Ratio(it) }
@@ -1084,7 +1083,7 @@ internal class LmuWindowsNarratorViewModel(
         val observedAtMs = currentTimeMs()
         val remainingVirtualEnergy =
             latestVirtualEnergy?.takeIf {
-                observedAtMs - latestVirtualEnergyReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                observedAtMs - latestVirtualEnergyReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
             } ?: return
         val state = narratorState
         val settings = currentSettings
@@ -1118,7 +1117,7 @@ internal class LmuWindowsNarratorViewModel(
                 val fuel =
                     receivedFuel?.takeIf {
                         it.receivedAtMs?.let { receivedAt ->
-                            currentTimeMs() - receivedAt <= CURRENT_VALUE_MAX_AGE_MS
+                            currentTimeMs() - receivedAt <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
                         } ?: true
                     }
                 val observedAtMs = currentTimeMs()

@@ -36,6 +36,7 @@ import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ManualReadoutValue
+import kurou.kodriver.domain.model.NARRATOR_CURRENT_VALUE_MAX_AGE_MS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -302,11 +303,14 @@ internal class AceWindowsNarratorViewModel(
         val observedAtMs = currentTimeMs()
         val state = narratorState
         val settings = currentSettings
-        val fuel = latestFuel?.takeIf { observedAtMs - latestFuelReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
-        val fuelLaps = latestFuelLaps?.takeIf { observedAtMs - latestFuelLapsReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS }
+        val fuel = latestFuel?.takeIf { observedAtMs - latestFuelReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS }
+        val fuelLaps =
+            latestFuelLaps?.takeIf {
+                observedAtMs - latestFuelLapsReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
+            }
         val tyreTemperature =
             latestTyreTemperature?.takeIf {
-                observedAtMs - latestTyreTemperatureReceivedAtMs <= CURRENT_VALUE_MAX_AGE_MS
+                observedAtMs - latestTyreTemperatureReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
             }
         val celsius = determineAceWindowsNarratorReadout.currentMaxTyreTemperatureCelsius(tyreTemperature)
         val percent = determineAceWindowsNarratorReadout.currentRemainingFuelPercent(fuel)
@@ -533,5 +537,3 @@ internal class AceWindowsNarratorViewModel(
                 )
             }.launchIn(viewModelScope)
 }
-
-private const val CURRENT_VALUE_MAX_AGE_MS = 5_000L

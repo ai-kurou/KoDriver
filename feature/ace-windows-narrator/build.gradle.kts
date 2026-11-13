@@ -11,6 +11,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.aceWindowsDomain)
+            implementation(projects.core.domain)
             implementation(projects.core.designsystem)
             implementation(projects.core.narrator)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))

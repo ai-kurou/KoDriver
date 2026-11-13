@@ -148,7 +148,7 @@ Android は非対応実装を使い、キー未割り当て・非対応時は登
 ### 共通ルール
 
 - 対象は保存済みセットの項目のうち、シミュレーターごとの手動項目一覧（下表）に含まれるものだけとする。
-- 最新値は受信から5秒以内（`CURRENT_VALUE_MAX_AGE_MS`）のものだけを使う。未受信・受信から5秒超・非有限・範囲外は「データ無し」として扱う。
+- 最新値は受信から5秒以内（`NARRATOR_CURRENT_VALUE_MAX_AGE_MS`）のものだけを使う。未受信・受信から5秒超・非有限・範囲外は「データ無し」として扱う。
 - データ無しの項目は「<項目名>はデータがありません」を保存順に「、」で連結する。各項目を個別に判定し、全項目がデータ無しでも項目ごとの文を連結する（先頭 `MANUAL_READOUT_SET_ITEM_MAX` 件まで）。
 - 本文は保存順に項目の文言を並べ、空欄（空白のみの文言）を除外して「、」で連結した1イベントにまとめる。全項目の文言が空欄なら空文字とする。
 - 文言はセットの `itemTexts` を使い、未保存なら手動専用の既定文言（下表の定数名）を使う。プレースホルダーは既存の `format…ReadoutText` で置換する。
@@ -249,7 +249,7 @@ VE・タイヤ・燃料の候補の最小周回数を選び、共通の `PitTimi
 
 手動の「クラス内前方車／後方車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value`（`lmu_windows_auto_class_car_gap_ahead`）・`ClassCarGap.Behind.value`（`lmu_windows_auto_class_car_gap_behind`）に対応する。
 TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料残り周回数の後）に並ぶ。
-`ObserveLmuWindowsClassCarGapUseCase` の最新値（`LmuWindowsClassCarGapData`）を `latestClassCarGap` / `latestClassCarGapReceivedAtMs` に保持し、受信から5秒（`CURRENT_VALUE_MAX_AGE_MS`）以内のものだけを項目へ渡す。未受信・鮮度切れはデータ無しとする。
+`ObserveLmuWindowsClassCarGapUseCase` の最新値（`LmuWindowsClassCarGapData`）を `latestClassCarGap` / `latestClassCarGapReceivedAtMs` に保持し、受信から5秒（`NARRATOR_CURRENT_VALUE_MAX_AGE_MS`）以内のものだけを項目へ渡す。未受信・鮮度切れはデータ無しとする。
 周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定し、固定文言
 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）・`LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）を読む（データありとして扱う。空欄テンプレートなら空文字）。
 それ以外は null・非有限・負値の秒差をデータ無しとし、0以上の有限値を `formatLmuWindowsClassCarGapReadoutText` で小数1桁に丸めて `{seconds}`（`LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER`）を置換する。
