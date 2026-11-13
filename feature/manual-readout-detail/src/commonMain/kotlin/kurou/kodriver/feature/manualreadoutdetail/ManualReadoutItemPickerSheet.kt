@@ -63,7 +63,7 @@ private fun ManualReadoutItemCategory.icon(): ImageVector =
         ManualReadoutItemCategory.LAP -> Icons.Default.Timer
     }
 
-private fun ManualReadoutItemCategory.label(): StringResource =
+internal fun ManualReadoutItemCategory.label(): StringResource =
     when (this) {
         ManualReadoutItemCategory.VIRTUAL_ENERGY -> Res.string.manual_readout_category_virtual_energy
         ManualReadoutItemCategory.FUEL -> Res.string.manual_readout_category_fuel
@@ -132,7 +132,7 @@ internal fun ManualReadoutItemPickerSheetContent(
                         Icon(
                             category.icon(),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            tint = manualReadoutCategoryColor(category),
                             modifier = Modifier.padding(KoDriverSpacing.small),
                         )
                     }
