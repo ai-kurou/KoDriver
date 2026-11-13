@@ -24,6 +24,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.FEEDBACK_EMAIL_MAX_LENGTH
+import kurou.kodriver.domain.model.FEEDBACK_MESSAGE_MAX_LENGTH
+import kurou.kodriver.domain.model.FEEDBACK_NAME_MAX_LENGTH
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey

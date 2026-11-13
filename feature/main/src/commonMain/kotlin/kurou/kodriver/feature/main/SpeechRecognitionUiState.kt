@@ -1,8 +1,5 @@
 package kurou.kodriver.feature.main
 
-/** 認識結果の履歴として残す件数。確認用の簡易表示のため少なめにしている。 */
-internal const val SPEECH_RECOGNITION_HISTORY_MAX = 5
-
 /** 音声認識の聞き取り状態。 */
 internal enum class SpeechRecognitionStatus {
     /** 聞き取りを止めている。 */

@@ -5,10 +5,6 @@ import kurou.kodriver.domain.model.TelemetryLog
 
 private val EMAIL_REGEX = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
 
-internal const val FEEDBACK_MESSAGE_MAX_LENGTH = 2000
-internal const val FEEDBACK_NAME_MAX_LENGTH = 50
-internal const val FEEDBACK_EMAIL_MAX_LENGTH = 254
-
 internal fun isValidEmail(email: String): Boolean = EMAIL_REGEX.matches(email)
 
 sealed interface FeedbackSendStatus {
