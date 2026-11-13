@@ -51,6 +51,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
@@ -82,6 +83,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverHintRow
 import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -337,8 +339,11 @@ private fun AutoReadoutListItemCard(
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onItemClick(item)
     }
-    val visualStyle = autoReadoutListItemVisualStyle(readoutEnabled, MaterialTheme.colorScheme)
+    val categoryColor =
+        autoReadoutItemCategory(item)?.let { autoReadoutCategoryColor(it, KoDriverExtendedColors.current) }
+    val visualStyle = autoReadoutListItemVisualStyle(readoutEnabled, MaterialTheme.colorScheme, categoryColor)
     val rankColor by animateColorAsState(visualStyle.rankColor, label = "rankColor")
+    val accentColor by animateColorAsState(visualStyle.accentColor, label = "accentColor")
     val accentAlpha by animateFloatAsState(visualStyle.accentAlpha, label = "accentAlpha")
     val tileColor by animateColorAsState(visualStyle.tileColor, label = "tileColor")
     val tileContentColor by animateColorAsState(visualStyle.tileContentColor, label = "tileContentColor")
@@ -375,7 +380,7 @@ private fun AutoReadoutListItemCard(
                     .fillMaxWidth()
                     .drawBehind {
                         drawRect(
-                            color = primary.copy(alpha = accentAlpha),
+                            color = accentColor.copy(alpha = accentAlpha),
                             size = Size(KoDriverSpacing.extraSmall.toPx(), size.height),
                         )
                     }.indication(itemInteractionSource, ripple())
@@ -452,6 +457,7 @@ private fun AutoReadoutListItemCard(
                     AutoReadoutListReadoutSwitch(
                         item = item,
                         checked = readoutEnabled,
+                        trackColor = visualStyle.switchTrackColor,
                         onCheckedChange = { onReadoutEnabledChanged(item, it) },
                     )
                 }
@@ -619,6 +625,7 @@ private fun AutoReadoutListQueueToggle(
 private fun AutoReadoutListReadoutSwitch(
     item: ReadoutItemKey,
     checked: Boolean,
+    trackColor: Color?,
     onCheckedChange: (Boolean) -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -642,6 +649,12 @@ private fun AutoReadoutListReadoutSwitch(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChangeWithHaptic,
+            colors =
+                if (trackColor == null) {
+                    SwitchDefaults.colors()
+                } else {
+                    SwitchDefaults.colors(checkedTrackColor = trackColor)
+                },
         )
     }
 }
