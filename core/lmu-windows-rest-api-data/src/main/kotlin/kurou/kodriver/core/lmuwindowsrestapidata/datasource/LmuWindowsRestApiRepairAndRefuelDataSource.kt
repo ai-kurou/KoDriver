@@ -6,6 +6,7 @@ import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.get
 import kotlinx.serialization.json.Json
 import kurou.kodriver.core.lmuwindowsrestapidata.dto.RepairAndRefuelResponseDto
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REST_API_BASE_URL_DEFAULT
 
 /**
  * `GET /rest/garage/UIScreen/RepairAndRefuel` を取得する。
@@ -15,7 +16,7 @@ import kurou.kodriver.core.lmuwindowsrestapidata.dto.RepairAndRefuelResponseDto
  */
 internal class LmuWindowsRestApiRepairAndRefuelDataSource(
     private val client: HttpClient,
-    private val baseUrl: String = DEFAULT_BASE_URL,
+    private val baseUrl: String = LMU_WINDOWS_REST_API_BASE_URL_DEFAULT,
 ) {
     suspend fun fetchRepairAndRefuel(): RepairAndRefuelResponseDto {
         val text =
@@ -27,7 +28,6 @@ internal class LmuWindowsRestApiRepairAndRefuelDataSource(
     }
 
     companion object {
-        private const val DEFAULT_BASE_URL = "http://localhost:6397"
         private const val REPAIR_AND_REFUEL_PATH = "/rest/garage/UIScreen/RepairAndRefuel"
         private val json = Json { ignoreUnknownKeys = true }
     }

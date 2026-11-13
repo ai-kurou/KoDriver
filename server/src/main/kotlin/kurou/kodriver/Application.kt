@@ -9,6 +9,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
+import kurou.kodriver.domain.model.KODRIVER_SERVER_HOST_DEFAULT
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
 import org.koin.core.Koin
 
@@ -43,7 +44,7 @@ fun main() {
 class KoDriverServer(
     useCases: KoDriverServerUseCases,
     private val port: Int = KODRIVER_SERVER_PORT_DEFAULT,
-    host: String = DEFAULT_HOST,
+    host: String = KODRIVER_SERVER_HOST_DEFAULT,
 ) {
     internal var serviceAdvertiser: KoDriverServiceAdvertiser = KoDriverServiceAdvertiser()
     private val server =
@@ -71,10 +72,6 @@ class KoDriverServer(
     fun stop() {
         serviceAdvertiser.stop()
         server.stop(gracePeriodMillis = 0, timeoutMillis = 0)
-    }
-
-    private companion object {
-        const val DEFAULT_HOST = "0.0.0.0"
     }
 }
 
