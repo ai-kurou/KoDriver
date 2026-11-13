@@ -8,6 +8,12 @@ package kurou.kodriver.domain.gt7ps5.model
  */
 const val GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT = 30
 
+/** 燃料残量警告閾値の設定可能な下限（残量 %）。 */
+const val GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MIN = 5
+
+/** 燃料残量警告閾値の設定可能な上限（残量 %）。 */
+const val GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MAX = 90
+
 const val GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT = "燃料は残り{percent}%"
 const val GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER = "{percent}"
 

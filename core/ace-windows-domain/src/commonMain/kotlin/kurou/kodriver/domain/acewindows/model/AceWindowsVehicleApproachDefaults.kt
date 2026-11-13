@@ -8,6 +8,12 @@ package kurou.kodriver.domain.acewindows.model
  */
 const val ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT = 6.0
 
+/** ACE 車両接近の接近判定閾値（メートル）の設定可能な下限。 */
+const val ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_MIN = 2.0
+
+/** ACE 車両接近の接近判定閾値（メートル）の設定可能な上限。 */
+const val ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_MAX = 10.0
+
 /** ACE 車両接近アナウンスの、接近開始時読み上げの有効/無効デフォルト値。 */
 const val ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_ENABLED_DEFAULT = true
 

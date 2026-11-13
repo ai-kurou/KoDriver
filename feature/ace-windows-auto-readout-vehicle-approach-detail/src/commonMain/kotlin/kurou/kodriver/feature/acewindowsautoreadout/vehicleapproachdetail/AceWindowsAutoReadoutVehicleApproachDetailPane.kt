@@ -25,6 +25,8 @@ import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_MAX
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_MIN
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.feature.acewindowsautoreadout.vehicleapproachdetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsautoreadout.vehicleapproachdetail.generated.resources.vehicle_approach
@@ -44,6 +46,9 @@ import kurou.kodriver.feature.acewindowsautoreadout.vehicleapproachdetail.genera
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+
+private const val THRESHOLD_MIN = ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_MIN.toFloat()
+private const val THRESHOLD_MAX = ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_MAX.toFloat()
 
 /**
  * AceWindowsAutoReadoutVehicleApproachDetail の画面を表示する Composable。
@@ -103,7 +108,7 @@ internal fun AceWindowsAutoReadoutVehicleApproachDetailPaneContent(
         val resetToDefaultLabel = stringResource(Res.string.vehicle_approach_threshold_reset_to_default)
         ThresholdSlider(
             value = uiState.thresholdMeters.toFloat(),
-            valueRange = 2f..10f,
+            valueRange = THRESHOLD_MIN..THRESHOLD_MAX,
             labelFormatter = { thresholdLabel.formatSliderLabel(it) },
             onValueChangeFinished = { onThresholdChanged(it.toDouble()) },
             modifier = Modifier.padding(horizontal = KoDriverSpacing.large),

@@ -30,7 +30,11 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.domain.model.DEVICE_VOLUME_MAX
+import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 import kurou.kodriver.domain.model.DEVICE_VOLUME_WARNING_THRESHOLD_DEFAULT
+import kurou.kodriver.domain.model.SOUND_VOLUME_MAX
+import kurou.kodriver.domain.model.SOUND_VOLUME_MIN
 import kurou.kodriver.domain.model.SOUND_VOLUME_WARNING_THRESHOLD_DEFAULT
 import kurou.kodriver.feature.othervolumedetail.generated.resources.Res
 import kurou.kodriver.feature.othervolumedetail.generated.resources.device_volume_description
@@ -121,7 +125,7 @@ fun OtherVolumeDetailPaneContent(
             }
             ThresholdSlider(
                 value = uiState.volume.toFloat(),
-                valueRange = 0f..100f,
+                valueRange = SOUND_VOLUME_MIN.toFloat()..SOUND_VOLUME_MAX.toFloat(),
                 labelFormatter = { volumeLabel.formatSliderLabel(it.roundToInt()) },
                 onValueChangeFinished = { onVolumeChanged(it.roundToInt()) },
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
@@ -151,7 +155,7 @@ fun OtherVolumeDetailPaneContent(
             }
             ThresholdSlider(
                 value = uiState.deviceVolume.toFloat(),
-                valueRange = 0f..100f,
+                valueRange = DEVICE_VOLUME_MIN.toFloat()..DEVICE_VOLUME_MAX.toFloat(),
                 labelFormatter = { volumeLabel.formatSliderLabel(it.roundToInt()) },
                 onValueChangeFinished = { onDeviceVolumeChanged(it.roundToInt()) },
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
