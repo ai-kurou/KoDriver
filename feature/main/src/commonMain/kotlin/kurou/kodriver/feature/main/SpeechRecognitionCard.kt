@@ -63,6 +63,7 @@ internal fun SpeechRecognitionCard(
     uiState: SpeechRecognitionUiState,
     onDeviceMenuOpen: () -> Unit,
     onDeviceSelected: (String) -> Unit,
+    onResumeDelaySelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val levelDescription = stringResource(Res.string.speech_recognition_level_description)
@@ -71,7 +72,13 @@ internal fun SpeechRecognitionCard(
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        SpeechRecognitionCardContent(uiState, levelDescription, onDeviceMenuOpen, onDeviceSelected)
+        SpeechRecognitionCardContent(
+            uiState,
+            levelDescription,
+            onDeviceMenuOpen,
+            onDeviceSelected,
+            onResumeDelaySelected,
+        )
     }
 }
 
@@ -82,6 +89,7 @@ private fun SpeechRecognitionCardContent(
     levelDescription: String,
     onDeviceMenuOpen: () -> Unit,
     onDeviceSelected: (String) -> Unit,
+    onResumeDelaySelected: (Int) -> Unit,
 ) {
     Column(
         modifier = Modifier.padding(KoDriverSpacing.medium),
@@ -123,6 +131,7 @@ private fun SpeechRecognitionCardContent(
                 onSelected = onDeviceSelected,
             )
         }
+        SpeechRecognitionResumeDelayDropdown(selectedMs = uiState.resumeDelayMs, onSelected = onResumeDelaySelected)
         uiState.level?.let { level ->
             val animatedLevel by animateFloatAsState(
                 targetValue = level,

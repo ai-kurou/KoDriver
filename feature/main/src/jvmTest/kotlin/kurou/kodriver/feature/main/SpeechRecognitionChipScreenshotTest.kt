@@ -88,6 +88,7 @@ class SpeechRecognitionChipScreenshotTest {
                         uiState = uiState,
                         onDeviceMenuOpen = {},
                         onDeviceSelected = {},
+                        onResumeDelaySelected = {},
                         modifier = Modifier.padding(KoDriverSpacing.medium),
                     )
                 }

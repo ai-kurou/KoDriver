@@ -82,6 +82,7 @@ private fun SpeechRecognitionCardWithState(
         uiState = uiState,
         onDeviceMenuOpen = viewModel::refreshDevices,
         onDeviceSelected = viewModel::onDeviceSelected,
+        onResumeDelaySelected = viewModel::onResumeDelaySelected,
         modifier = modifier,
     )
 }

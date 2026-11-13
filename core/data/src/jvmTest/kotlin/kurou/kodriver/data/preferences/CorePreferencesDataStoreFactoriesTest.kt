@@ -73,6 +73,10 @@ class CorePreferencesDataStoreFactoriesTest {
                 val dataStore = createSoundVolumePreferencesDataStore(dir)
                 dataStore.updateData { it.copy(volume = 60) }
             }
+            assertWritesTo("speech_recognition_resume_delay_preferences.pb") { dir ->
+                val dataStore = createSpeechRecognitionResumeDelayPreferencesDataStore(dir)
+                dataStore.updateData { it.copy(resumeDelayMs = 1_500) }
+            }
             assertWritesTo("voice_pitch_preferences.pb") { dir ->
                 val dataStore = createVoicePitchPreferencesDataStore(dir)
                 dataStore.updateData { it.copy(voicePitch = 1.5f) }

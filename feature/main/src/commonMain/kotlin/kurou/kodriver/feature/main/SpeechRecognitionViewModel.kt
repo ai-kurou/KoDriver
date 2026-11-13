@@ -27,16 +27,15 @@ import kurou.kodriver.domain.runCapturingErrors
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
+import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionResumeDelayUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechRecognitionChimeUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
+import kurou.kodriver.domain.usecase.SaveSpeechRecognitionResumeDelayUseCase
 import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 
 /** ウェイクワードを検出してから、コマンドを待つ時間。過ぎるとウェイクワード待ちへ戻る。 */
 internal const val SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS = 6_000L
-
-/** 読み上げが終わってから聞き取りを再開するまでの待ち時間。読み上げ直後の残響をウェイクワードと誤認しないための余裕。 */
-internal const val SPEECH_RECOGNITION_RESUME_DELAY_MS = 500L
 
 /**
  * 音声認識の聞き取りを開始・停止し、認識状況を確認用に保持する。
@@ -55,6 +54,9 @@ internal class SpeechRecognitionViewModel(
     private val playChime: PlaySpeechRecognitionChimeUseCase,
     /** 入力デバイスの一覧と選択。デバイスを選べないプラットフォーム（Android）では null。 */
     private val audioInputDeviceSelector: AudioInputDeviceSelector? = null,
+    /** 読み上げ後の再開待ち時間の読み書き。null なら既定値のまま変えられない。 */
+    private val observeResumeDelay: ObserveSpeechRecognitionResumeDelayUseCase? = null,
+    private val saveResumeDelay: SaveSpeechRecognitionResumeDelayUseCase? = null,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SpeechRecognitionUiState())
     val uiState: StateFlow<SpeechRecognitionUiState> = _uiState.asStateFlow()
@@ -64,6 +66,10 @@ internal class SpeechRecognitionViewModel(
     /** 次の聞き取りが開始前に待つ、マイクを閉じ終えていない前の聞き取り。 */
     private var startWaits: List<Job> = emptyList()
     private var refreshJob: Job? = null
+
+    init {
+        observeResumeDelay()
+    }
 
     private val commandWait =
         CommandWaitController(
@@ -77,6 +83,20 @@ internal class SpeechRecognitionViewModel(
                 _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
             },
         )
+
+    /** 保存済みの再開待ち時間を購読し、画面の表示と再開の待ちに反映する。読めなければ既定値のまま続ける。 */
+    private fun observeResumeDelay() {
+        val observe = observeResumeDelay ?: return
+        viewModelScope.launchCapturingErrors {
+            observe().collect { delayMs -> _uiState.update { it.copy(resumeDelayMs = delayMs) } }
+        }
+    }
+
+    /** ドロップダウンで読み上げ後の再開待ち時間を選ぶ。保存した値が購読で表示と再開の待ちへ反映される。 */
+    fun onResumeDelaySelected(delayMs: Int) {
+        val save = saveResumeDelay ?: return
+        viewModelScope.launchCapturingErrors { save(delayMs) }
+    }
 
     /** 読み上げの再生状態を購読し、再生中は聞き取りを止める。 */
     private var playbackJob: Job? = null
@@ -258,7 +278,7 @@ internal class SpeechRecognitionViewModel(
                         } else if (wasActive) {
                             wasActive = false
                             // 読み上げの残響が消えるまで待ってから再開する。待つ間に次の読み上げが始まれば、collectLatest がこの待ちを取り消す
-                            delay(SPEECH_RECOGNITION_RESUME_DELAY_MS)
+                            delay(_uiState.value.resumeDelayMs.toLong())
                             commandWait.resume()
                         }
                     }

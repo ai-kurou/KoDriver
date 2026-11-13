@@ -22,6 +22,7 @@ import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepos
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
+import kurou.kodriver.domain.repository.SpeechRecognitionResumeDelayPreferencesRepository
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.AfterTest
@@ -60,6 +61,9 @@ class SpeechRecognitionModuleTest {
                         single<SpeechPlaybackStateRepository> { FakeSpeechPlaybackStateRepository() }
                         single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
                         single<SpeechRecognitionChimePlayer> { FakeSpeechRecognitionChimePlayer() }
+                        single<SpeechRecognitionResumeDelayPreferencesRepository> {
+                            FakeSpeechRecognitionResumeDelayPreferencesRepository()
+                        }
                     },
                 )
             }
@@ -97,6 +101,9 @@ class SpeechRecognitionModuleTest {
                         single<SpeechPlaybackStateRepository> { FakeSpeechPlaybackStateRepository() }
                         single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
                         single<SpeechRecognitionChimePlayer> { FakeSpeechRecognitionChimePlayer() }
+                        single<SpeechRecognitionResumeDelayPreferencesRepository> {
+                            FakeSpeechRecognitionResumeDelayPreferencesRepository()
+                        }
                         single<AudioInputDeviceRepository> { deviceRepository }
                         single<SelectedAudioInputDevicePreferencesRepository> {
                             FakeSelectedAudioInputDevicePreferencesRepository()

@@ -24,6 +24,7 @@ import kurou.kodriver.domain.usecase.ObserveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
+import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionResumeDelayUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryReceivingUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechRecognitionChimeUseCase
@@ -34,6 +35,7 @@ import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveMainWindowBoundsUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.SaveSpeechRecognitionResumeDelayUseCase
 import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -66,6 +68,8 @@ val mainModule =
                 observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(get()),
                 observeSelectedSimulator = ObserveSelectedSimulatorUseCase(get()),
                 playChime = PlaySpeechRecognitionChimeUseCase(get()),
+                observeResumeDelay = ObserveSpeechRecognitionResumeDelayUseCase(get()),
+                saveResumeDelay = SaveSpeechRecognitionResumeDelayUseCase(get()),
                 audioInputDeviceSelector =
                     if (deviceRepository != null && selectedDeviceRepository != null) {
                         AudioInputDeviceSelector(

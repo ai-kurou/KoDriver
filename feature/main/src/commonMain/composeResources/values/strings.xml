@@ -12,5 +12,7 @@
     <string name="speech_recognition_status_recognition_failed">音声認識中にエラーが発生しました</string>
     <string name="speech_recognition_level_description">マイクの入力音量</string>
     <string name="speech_recognition_device_label">入力デバイス</string>
+    <string name="speech_recognition_resume_delay_label">読み上げ後の聞き取り再開までの待ち時間</string>
+    <string name="speech_recognition_resume_delay_option">%1$s秒</string>
     <string name="speech_recognition_unknown_word">？</string>
 </resources>

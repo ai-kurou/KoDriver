@@ -37,6 +37,7 @@ import kurou.kodriver.data.preferences.createReadoutHotkeyPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createSoundVolumePreferencesRepository
+import kurou.kodriver.data.preferences.createSpeechRecognitionResumeDelayPreferencesRepository
 import kurou.kodriver.data.preferences.createThemePreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePitchPreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePreferencesRepository
@@ -84,6 +85,7 @@ import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
+import kurou.kodriver.domain.repository.SpeechRecognitionResumeDelayPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
@@ -177,6 +179,9 @@ private fun androidDataModuleMisc(context: Context) =
         }
         single<SoundVolumePreferencesRepository> {
             createSoundVolumePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<SpeechRecognitionResumeDelayPreferencesRepository> {
+            createSpeechRecognitionResumeDelayPreferencesRepository(context.filesDir.absolutePath)
         }
         single<VoiceSpeedPreferencesRepository> {
             createVoiceSpeedPreferencesRepository(context.filesDir.absolutePath)

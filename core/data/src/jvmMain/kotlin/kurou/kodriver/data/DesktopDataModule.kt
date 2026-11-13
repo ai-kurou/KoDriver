@@ -32,6 +32,7 @@ import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesReposit
 import kurou.kodriver.data.preferences.createSelectedAudioInputDevicePreferencesRepository
 import kurou.kodriver.data.preferences.createSimulatorPreferencesRepository
 import kurou.kodriver.data.preferences.createSoundVolumePreferencesRepository
+import kurou.kodriver.data.preferences.createSpeechRecognitionResumeDelayPreferencesRepository
 import kurou.kodriver.data.preferences.createThemePreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePitchPreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePreferencesRepository
@@ -74,6 +75,7 @@ import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepos
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
+import kurou.kodriver.domain.repository.SpeechRecognitionResumeDelayPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
@@ -145,10 +147,7 @@ fun desktopDataModule(directory: String): Module =
         single<VoicePitchPreferencesRepository> {
             createVoicePitchPreferencesRepository(directory = directory)
         }
-        // 選択したマイク（音声入力デバイス）名
-        single<SelectedAudioInputDevicePreferencesRepository> {
-            createSelectedAudioInputDevicePreferencesRepository(directory = directory)
-        }
+        speechRecognitionPreferenceBindings(directory)
         single<VoicePreferencesRepository> {
             createVoicePreferencesRepository(directory = directory)
         }
@@ -251,3 +250,15 @@ private fun desktopDataModuleWindowsSimulatorPreferences(directory: String) =
             )
         }
     }
+
+/** desktopDataModule から分離した、音声認識まわりの DataStore バインド（LongMethod 対策）。 */
+private fun Module.speechRecognitionPreferenceBindings(directory: String) {
+    // 選択したマイク（音声入力デバイス）名
+    single<SelectedAudioInputDevicePreferencesRepository> {
+        createSelectedAudioInputDevicePreferencesRepository(directory = directory)
+    }
+    // 読み上げが終わってから聞き取りを再開するまでの待ち時間
+    single<SpeechRecognitionResumeDelayPreferencesRepository> {
+        createSpeechRecognitionResumeDelayPreferencesRepository(directory = directory)
+    }
+}

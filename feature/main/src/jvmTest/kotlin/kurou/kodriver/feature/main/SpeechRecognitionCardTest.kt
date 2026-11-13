@@ -27,6 +27,7 @@ class SpeechRecognitionCardTest {
                     uiState = SpeechRecognitionUiState(),
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
+                    onResumeDelaySelected = {},
                 )
             }
         }
@@ -49,6 +50,7 @@ class SpeechRecognitionCardTest {
                         ),
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
+                    onResumeDelaySelected = {},
                 )
             }
         }
@@ -71,6 +73,7 @@ class SpeechRecognitionCardTest {
                         ),
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
+                    onResumeDelaySelected = {},
                 )
             }
         }
@@ -93,6 +96,7 @@ class SpeechRecognitionCardTest {
                         ),
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
+                    onResumeDelaySelected = {},
                 )
             }
         }
@@ -118,6 +122,7 @@ class SpeechRecognitionCardTest {
                         ),
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
+                    onResumeDelaySelected = {},
                 )
             }
         }
@@ -137,6 +142,7 @@ class SpeechRecognitionCardTest {
                     uiState = SpeechRecognitionUiState(status = status.value),
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
+                    onResumeDelaySelected = {},
                 )
             }
         }
@@ -166,6 +172,7 @@ class SpeechRecognitionCardTest {
                     uiState = SpeechRecognitionUiState(deviceName = "Mic A", devices = listOf("Mic A", "Mic B")),
                     onDeviceMenuOpen = { menuOpenCount++ },
                     onDeviceSelected = { selected += it },
+                    onResumeDelaySelected = {},
                 )
             }
         }
@@ -182,6 +189,28 @@ class SpeechRecognitionCardTest {
     }
 
     @Test
+    fun `読み上げ後の再開待ち時間を表示し、選ぶと通知する`() {
+        val selected = mutableListOf<Int>()
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionCard(
+                    uiState = SpeechRecognitionUiState(resumeDelayMs = 1_500),
+                    onDeviceMenuOpen = {},
+                    onDeviceSelected = {},
+                    onResumeDelaySelected = { selected += it },
+                )
+            }
+        }
+
+        rule.onNodeWithTag("speech_recognition_resume_delay").assertTextContains("1.5秒")
+        rule.onNodeWithTag("speech_recognition_resume_delay").performClick()
+        rule.onNodeWithTag("speech_recognition_resume_delay_2000").performClick()
+
+        rule.runOnIdle { assertEquals(listOf(2_000), selected) }
+        rule.onNodeWithTag("speech_recognition_resume_delay_2000").assertDoesNotExist()
+    }
+
+    @Test
     fun `入力デバイスの一覧が空か選択中のデバイスが無いときはデバイスの選択を表示しない`() {
         val uiState = mutableStateOf(SpeechRecognitionUiState(devices = listOf("Mic A")))
         rule.setContent {
@@ -190,6 +219,7 @@ class SpeechRecognitionCardTest {
                     uiState = uiState.value,
                     onDeviceMenuOpen = {},
                     onDeviceSelected = {},
+                    onResumeDelaySelected = {},
                 )
             }
         }

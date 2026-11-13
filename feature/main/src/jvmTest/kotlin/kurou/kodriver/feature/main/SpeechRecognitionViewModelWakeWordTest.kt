@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.model.SPEECH_RECOGNITION_RESUME_DELAY_MS_DEFAULT
 import kurou.kodriver.domain.model.SpeechRecognitionChime
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
@@ -88,6 +89,8 @@ class SpeechRecognitionViewModelWakeWordTest {
         dispatcher.scheduler.advanceTimeBy(millis)
         dispatcher.scheduler.runCurrent()
     }
+
+    private val resumeDelayMs = SPEECH_RECOGNITION_RESUME_DELAY_MS_DEFAULT.toLong()
 
     private val status get() = viewModel?.uiState?.value?.status
 
@@ -369,7 +372,7 @@ class SpeechRecognitionViewModelWakeWordTest {
         playbackRepository.update("lmu_windows", true)
 
         playbackRepository.update("lmu_windows", false)
-        advanceBy(SPEECH_RECOGNITION_RESUME_DELAY_MS - 1)
+        advanceBy(resumeDelayMs - 1)
 
         assertEquals(listOf(SpeechRecognitionMode.Paused), modeRepository.modes)
 
@@ -383,10 +386,10 @@ class SpeechRecognitionViewModelWakeWordTest {
         createListeningViewModel()
         playbackRepository.update("lmu_windows", true)
         playbackRepository.update("lmu_windows", false)
-        advanceBy(SPEECH_RECOGNITION_RESUME_DELAY_MS - 1)
+        advanceBy(resumeDelayMs - 1)
 
         playbackRepository.update("lmu_windows", true)
-        advanceBy(SPEECH_RECOGNITION_RESUME_DELAY_MS)
+        advanceBy(resumeDelayMs)
 
         assertEquals(listOf(SpeechRecognitionMode.Paused, SpeechRecognitionMode.Paused), modeRepository.modes)
     }
@@ -396,7 +399,7 @@ class SpeechRecognitionViewModelWakeWordTest {
         createListeningViewModel()
         playbackRepository.update("lmu_windows", true)
         playbackRepository.update("lmu_windows", false)
-        advanceBy(SPEECH_RECOGNITION_RESUME_DELAY_MS)
+        advanceBy(resumeDelayMs)
 
         events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("コドライバー")))
 
@@ -502,7 +505,7 @@ class SpeechRecognitionViewModelWakeWordTest {
 
             playbackRepository.update("lmu_windows", true)
             playbackRepository.update("lmu_windows", false)
-            advanceBy(SPEECH_RECOGNITION_RESUME_DELAY_MS)
+            advanceBy(resumeDelayMs)
 
             assertEquals(listOf(SpeechRecognitionMode.WakeWord), modeRepository.modes)
             assertEquals(SpeechRecognitionStatus.Listening, status)
