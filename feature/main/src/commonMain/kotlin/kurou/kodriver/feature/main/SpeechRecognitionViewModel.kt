@@ -19,6 +19,7 @@ import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutPhrase
 import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutPhrase
 import kurou.kodriver.domain.model.ManualReadoutItemRequest
+import kurou.kodriver.domain.model.SPEECH_RECOGNITION_HISTORY_MAX
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
