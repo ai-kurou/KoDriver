@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.launchCapturingErrors
+import kurou.kodriver.domain.model.SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS
 import kurou.kodriver.domain.model.SpeechRecognitionChime
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 

@@ -19,7 +19,9 @@ import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutPhrase
 import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutPhrase
 import kurou.kodriver.domain.model.ManualReadoutItemRequest
+import kurou.kodriver.domain.model.SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS
 import kurou.kodriver.domain.model.SPEECH_RECOGNITION_HISTORY_MAX
+import kurou.kodriver.domain.model.SPEECH_RECOGNITION_RESUME_DELAY_MS
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
@@ -32,12 +34,6 @@ import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechRecognitionChimeUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
-
-/** ウェイクワードを検出してから、コマンドを待つ時間。過ぎるとウェイクワード待ちへ戻る。 */
-internal const val SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS = 6_000L
-
-/** 読み上げが終わってから聞き取りを再開するまでの待ち時間。読み上げ直後の残響をウェイクワードと誤認しないための余裕。 */
-internal const val SPEECH_RECOGNITION_RESUME_DELAY_MS = 500L
 
 /**
  * 音声認識の聞き取りを開始・停止し、認識状況を確認用に保持する。

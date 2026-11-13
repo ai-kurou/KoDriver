@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.merge
+import kurou.kodriver.domain.model.OTHER_VOLUME_DETAIL_DEVICE_VOLUME_POLLING_INTERVAL_MS
 
 /** 音量詳細画面で表示する状態を合成する冷たい Flow。共有・初期値は ViewModel が管理する。 */
 internal class OtherVolumeDetailFlow(
@@ -21,7 +22,7 @@ internal class OtherVolumeDetailFlow(
     private val deviceVolumePollingTicker: Flow<Unit> =
         flow {
             while (true) {
-                delay(DEVICE_VOLUME_POLLING_INTERVAL_MS)
+                delay(OTHER_VOLUME_DETAIL_DEVICE_VOLUME_POLLING_INTERVAL_MS)
                 emit(Unit)
             }
         }
@@ -45,8 +46,4 @@ internal class OtherVolumeDetailFlow(
                 lowVolumeWarningEnabled = warningEnabled,
             )
         }
-
-    private companion object {
-        const val DEVICE_VOLUME_POLLING_INTERVAL_MS = 500L
-    }
 }
