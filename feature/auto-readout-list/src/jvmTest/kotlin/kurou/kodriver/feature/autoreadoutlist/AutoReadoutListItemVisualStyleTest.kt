@@ -48,6 +48,7 @@ class AutoReadoutListItemVisualStyleTest {
                 val style = autoReadoutListItemVisualStyle(false, colors, category)
 
                 assertEquals(colors.onSurfaceVariant, style.rankColor)
+                assertEquals(category ?: colors.primary, style.accentColor)
                 assertEquals(0f, style.accentAlpha)
                 assertEquals(colors.surfaceContainerHighest, style.tileColor)
                 assertEquals(colors.onSurfaceVariant, style.tileContentColor)

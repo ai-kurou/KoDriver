@@ -29,7 +29,8 @@ internal fun autoReadoutListItemVisualStyle(
         !enabled -> {
             AutoReadoutListItemVisualStyle(
                 rankColor = colors.onSurfaceVariant,
-                accentColor = colors.primary,
+                // 帯は透明にするだけで色は変えない。色まで変えると、切り替え中にカテゴリ色からprimaryへ色が遷移して見える
+                accentColor = categoryColor ?: colors.primary,
                 accentAlpha = 0f,
                 tileColor = colors.surfaceContainerHighest,
                 tileContentColor = colors.onSurfaceVariant,
