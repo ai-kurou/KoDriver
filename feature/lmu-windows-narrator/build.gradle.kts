@@ -31,6 +31,7 @@ kotlin {
 
 dependencies {
     testFixturesImplementation(projects.core.domain)
+    testFixturesImplementation(projects.core.lmuWindowsDomain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
 }

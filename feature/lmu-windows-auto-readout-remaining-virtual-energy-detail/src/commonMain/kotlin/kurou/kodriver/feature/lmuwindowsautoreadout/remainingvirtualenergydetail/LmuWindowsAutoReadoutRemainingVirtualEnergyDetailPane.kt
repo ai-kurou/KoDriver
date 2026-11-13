@@ -45,6 +45,8 @@ import kurou.kodriver.core.designsystem.generated.resources.class_p3
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_MAX
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_MIN
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
@@ -75,8 +77,8 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemRes
 
-private const val THRESHOLD_MIN = 10f
-private const val THRESHOLD_MAX = 90f
+private const val THRESHOLD_MIN = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_MIN.toFloat()
+private const val THRESHOLD_MAX = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_MAX.toFloat()
 
 /**
  * LmuWindowsAutoReadoutRemainingVirtualEnergyDetail の画面を表示する Composable。

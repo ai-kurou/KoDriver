@@ -1,9 +1,9 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.flagdetail
 
-import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.lmuwindowsautoreadout.flagdetail.generated.resources.Res

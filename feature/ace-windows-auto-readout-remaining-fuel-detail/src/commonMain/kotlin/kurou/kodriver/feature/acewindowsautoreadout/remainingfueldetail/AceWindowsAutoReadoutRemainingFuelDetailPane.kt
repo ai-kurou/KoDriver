@@ -25,6 +25,8 @@ import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MAX
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MIN
 import kurou.kodriver.domain.acewindows.model.findUnknownAceWindowsRemainingFuelReadoutPlaceholders
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.feature.acewindowsautoreadout.remainingfueldetail.generated.resources.Res
@@ -47,8 +49,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
-private const val THRESHOLD_MIN = 5f
-private const val THRESHOLD_MAX = 90f
+private const val THRESHOLD_MIN = ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MIN.toFloat()
+private const val THRESHOLD_MAX = ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MAX.toFloat()
 
 /**
  * AceWindowsAutoReadoutRemainingFuelDetail の画面を表示する Composable。
