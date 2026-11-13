@@ -1,8 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_FUEL_REFILL_DETECTION_TOLERANCE_LITERS
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
-
-private const val REFILL_DETECTION_TOLERANCE_LITERS = 0.5
 
 data class LmuWindowsFuelBaseline(
     val liters: Double,
@@ -25,7 +24,7 @@ internal class LmuWindowsFuelBaselineTracker {
         val lap = telemetry.timing.currentLap
         val current = baseline
         // 給油が複数フレームに分かれて微小に増える場合も検出できるよう、起点以降の最小値からの増加量で判定する。
-        val refilled = liters - lowestLitersSinceBaseline > REFILL_DETECTION_TOLERANCE_LITERS
+        val refilled = liters - lowestLitersSinceBaseline > LMU_WINDOWS_FUEL_REFILL_DETECTION_TOLERANCE_LITERS
         if (current == null || lap < current.lap || refilled) {
             baseline = LmuWindowsFuelBaseline(liters, lap)
             lowestLitersSinceBaseline = liters

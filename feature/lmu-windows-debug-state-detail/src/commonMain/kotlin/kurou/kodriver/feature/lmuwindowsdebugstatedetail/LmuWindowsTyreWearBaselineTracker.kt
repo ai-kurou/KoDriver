@@ -1,8 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_RATIO_INCREASE_DETECTION_TOLERANCE_RATIO
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
-
-private const val INCREASE_DETECTION_TOLERANCE_RATIO = 0.005 // 残量の微小な揺れを補給・交換と誤認しないよう0.5%を許容する。
 
 data class LmuWindowsTyreWearBaseline(
     val ratio: Double,
@@ -29,7 +28,7 @@ internal class LmuWindowsTyreWearBaselineTracker {
         val lap = telemetry.timing.currentLap
         val current = baseline
         // 補給・交換が複数フレームに分かれて微小に増える場合も検出できるよう、起点以降の最小値からの増加量で判定する。
-        val refilled = ratio - lowestRatioSinceBaseline > INCREASE_DETECTION_TOLERANCE_RATIO
+        val refilled = ratio - lowestRatioSinceBaseline > LMU_WINDOWS_REMAINING_RATIO_INCREASE_DETECTION_TOLERANCE_RATIO
         if (current == null || lap < lastLap || refilled) {
             baseline = LmuWindowsTyreWearBaseline(ratio, lap)
             lowestRatioSinceBaseline = ratio
