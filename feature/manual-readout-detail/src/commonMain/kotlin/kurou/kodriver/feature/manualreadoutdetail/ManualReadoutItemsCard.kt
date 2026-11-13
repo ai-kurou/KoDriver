@@ -35,6 +35,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -133,8 +134,10 @@ internal fun ManualReadoutItemsCard(
                                             ).size(20.dp),
                                     )
                                     manualReadoutItemDefinition(uiState.simulatorId, itemKey)?.let {
+                                        val categoryLabel = stringResource(it.category.label())
                                         Box(
                                             Modifier
+                                                .semantics { contentDescription = categoryLabel }
                                                 .padding(end = KoDriverSpacing.small)
                                                 .size(8.dp)
                                                 .background(manualReadoutCategoryColor(it.category), CircleShape),

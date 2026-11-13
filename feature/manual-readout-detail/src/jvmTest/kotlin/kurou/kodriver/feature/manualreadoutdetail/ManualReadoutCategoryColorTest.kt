@@ -14,7 +14,7 @@ class ManualReadoutCategoryColorTest {
     val rule = createComposeRule()
 
     @Test
-    fun categoryColorMatchesExtendedColors() {
+    fun `カテゴリ色が拡張カラースキームの対応色と一致する`() {
         val actual = mutableMapOf<ManualReadoutItemCategory, Color>()
         lateinit var expected: Map<ManualReadoutItemCategory, Color>
         rule.setContent {
