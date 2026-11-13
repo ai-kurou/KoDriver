@@ -75,6 +75,16 @@ class AutoReadoutItemCategoryTest {
     }
 
     @Test
+    fun `どのシミュレーターにも属さないキーはnullを返す`() {
+        val key =
+            object : ReadoutItemKey {
+                override val value = "unknown"
+            }
+
+        assertNull(autoReadoutItemCategory(key))
+    }
+
+    @Test
     fun `カテゴリごとに拡張カラーの対応する色を返す`() {
         val colors =
             ExtendedColorScheme(
