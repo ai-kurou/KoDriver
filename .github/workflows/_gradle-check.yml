@@ -15,7 +15,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     timeout-minutes: ${{ inputs.timeoutMinutes }}
-    # 再利用ワークフローのジョブIDはすべて run のため、呼び出し元ごとにキャッシュ枠を分けて取り合いを防ぐ
+    # 再利用ワークフローのジョブIDはすべて run のため、command 入力（Gradleコマンド）ごとにキャッシュ枠を分け、異なるコマンドのジョブ同士の取り合いを防ぐ
     env:
       GRADLE_BUILD_ACTION_CACHE_KEY_JOB: ${{ inputs.command }}
 
