@@ -17,6 +17,8 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_MAX
+import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_MIN
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.Res
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.opacity_description
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.opacity_label
@@ -80,7 +82,7 @@ fun OtherOverlayBackgroundOpacityDetailPaneContent(
             )
             ThresholdSlider(
                 value = uiState.opacity.toFloat(),
-                valueRange = 0f..100f,
+                valueRange = OVERLAY_BACKGROUND_OPACITY_MIN.toFloat()..OVERLAY_BACKGROUND_OPACITY_MAX.toFloat(),
                 labelFormatter = { opacityLabel.formatSliderLabel(it.roundToInt()) },
                 onValueChange = { onOpacityPreview(it.roundToInt()) },
                 onValueChangeFinished = { onOpacityChanged(it.roundToInt()) },

@@ -38,10 +38,16 @@ import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_MAX
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_MIN
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_MAX
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_MIN
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_MAX
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_MIN
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
@@ -72,6 +78,13 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
+
+private const val LONGITUDINAL_THRESHOLD_MIN = LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_MIN.toFloat()
+private const val LONGITUDINAL_THRESHOLD_MAX = LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_MAX.toFloat()
+private const val LATERAL_THRESHOLD_MIN = LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_MIN.toFloat()
+private const val LATERAL_THRESHOLD_MAX = LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_MAX.toFloat()
+private const val SUSTAINED_DURATION_MIN = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_MIN.toFloat()
+private const val SUSTAINED_DURATION_MAX = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_MAX.toFloat()
 
 /**
  * LmuWindowsAutoReadoutVehicleApproachDetail の画面を表示する Composable。
@@ -177,7 +190,7 @@ internal fun LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
         val resetToDefaultLabel = stringResource(Res.string.vehicle_approach_threshold_reset_to_default)
         ThresholdSlider(
             value = uiState.longitudinalThresholdMeters.toFloat(),
-            valueRange = 0.1f..10f,
+            valueRange = LONGITUDINAL_THRESHOLD_MIN..LONGITUDINAL_THRESHOLD_MAX,
             labelFormatter = { longitudinalLabel.formatSliderLabel(it) },
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
             modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
@@ -187,7 +200,7 @@ internal fun LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
         )
         ThresholdSlider(
             value = uiState.lateralThresholdMeters.toFloat(),
-            valueRange = 2f..8f,
+            valueRange = LATERAL_THRESHOLD_MIN..LATERAL_THRESHOLD_MAX,
             labelFormatter = { lateralLabel.formatSliderLabel(it) },
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
             modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
@@ -293,7 +306,7 @@ internal fun LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
                     )
                     ThresholdSlider(
                         value = uiState.sustainedApproachDurationSeconds.toFloat(),
-                        valueRange = 4f..10f,
+                        valueRange = SUSTAINED_DURATION_MIN..SUSTAINED_DURATION_MAX,
                         steps = 5,
                         labelFormatter = { sustainedDurationLabel.formatSliderLabel(it.roundToInt().toFloat()) },
                         onValueChangeFinished = { onSustainedApproachDurationSecondsChanged(it.roundToInt()) },
