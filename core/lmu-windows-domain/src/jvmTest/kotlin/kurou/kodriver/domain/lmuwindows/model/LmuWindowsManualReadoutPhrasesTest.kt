@@ -49,11 +49,10 @@ class LmuWindowsManualReadoutPhrasesTest {
 
     @Test
     fun `前後車とのギャップは短く誤認識しやすい前方と後方を語句に含めない`() {
-        val ahead = lmuWindowsManualReadoutItemPhrases(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value)
-        val behind = lmuWindowsManualReadoutItemPhrases(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value)
-        assertTrue("前方" !in ahead)
-        assertTrue("後方" !in behind)
-        assertTrue("前との差" in ahead)
-        assertTrue("後ろとの差" in behind)
+        val phrases = lmuWindowsManualReadoutItemPhrases(LmuWindowsReadoutItemKey.ClassCarGap.Root.value)
+        assertTrue("前方" !in phrases)
+        assertTrue("後方" !in phrases)
+        assertTrue("前との差" in phrases)
+        assertTrue("後ろとの差" in phrases)
     }
 }

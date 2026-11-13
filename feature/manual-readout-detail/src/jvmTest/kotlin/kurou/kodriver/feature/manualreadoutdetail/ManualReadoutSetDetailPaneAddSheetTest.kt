@@ -59,10 +59,9 @@ class ManualReadoutSetDetailPaneAddSheetTest {
                     "ブレーキ残量",
                     "ブレーキ温度",
                     "ラップ",
-                    "3",
+                    "2",
                     "自己ベストラップ",
-                    "クラス内前方車とのギャップ",
-                    "クラス内後方車とのギャップ",
+                    "クラス内前後車とのギャップ",
                 ),
         )
     }
@@ -213,8 +212,7 @@ class ManualReadoutSetDetailPaneAddSheetTest {
         rule.onNodeWithText("バーチャルエネルギーの残り周回数").assertExists()
         rule.onNodeWithText("タイヤ摩耗の残り周回数").assertExists()
         rule.onNodeWithText("燃料残り周回数").assertExists()
-        rule.onNodeWithText("クラス内前方車とのギャップ").assertExists()
-        rule.onNodeWithText("クラス内後方車とのギャップ").assertExists()
+        rule.onNodeWithText("クラス内前後車とのギャップ").assertExists()
         rule.onNodeWithText("ブレーキ残量").assertExists()
         rule.onNodeWithText("ブレーキ温度").assertExists()
         rule.onNodeWithText("タイヤ温度").assertExists()

@@ -1,6 +1,6 @@
 # manual-readout-detail
 
-手動読み上げセットの詳細・編集を担う feature モジュール。シミュレーター ID とセット ID を受け取り、セット名（未設定時は作成時に採番された固定番号）によるタイトルと保存済みの選択項目を表示する。LMU は「バーチャルエネルギー残量」「燃料残量」「タイヤ摩耗」「ブレーキ残量」「ブレーキ温度」「タイヤ温度」「自己ベストラップ」「バーチャルエネルギーの残り周回数」「タイヤ摩耗の残り周回数」「燃料残り周回数」「クラス内前方車とのギャップ」「クラス内後方車とのギャップ」の12項目、GT7 は「燃料残量」「燃料残り周回数」「タイヤ温度」「自己ベストラップ」の4項目、ACE は「燃料残量」「燃料残り周回数」「自己ベストラップ」「タイヤ温度」の4項目に対応する。「その他」詳細と同じ `DetailPaneScaffold` を使い、`canNavigateBack` が true の場合に戻るボタンを表示し、`onBack` を通知する。「読み上げる項目」カードには `selectedItemKeys` の順で選択済み項目のみを表示し、各行にドラッグハンドル・項目名・削除ボタンと既存の文言入力欄を置く。
+手動読み上げセットの詳細・編集を担う feature モジュール。シミュレーター ID とセット ID を受け取り、セット名（未設定時は作成時に採番された固定番号）によるタイトルと保存済みの選択項目を表示する。LMU は「バーチャルエネルギー残量」「燃料残量」「タイヤ摩耗」「ブレーキ残量」「ブレーキ温度」「タイヤ温度」「自己ベストラップ」「バーチャルエネルギーの残り周回数」「タイヤ摩耗の残り周回数」「燃料残り周回数」「クラス内前後車とのギャップ」の11項目、GT7 は「燃料残量」「燃料残り周回数」「タイヤ温度」「自己ベストラップ」の4項目、ACE は「燃料残量」「燃料残り周回数」「自己ベストラップ」「タイヤ温度」の4項目に対応する。「その他」詳細と同じ `DetailPaneScaffold` を使い、`canNavigateBack` が true の場合に戻るボタンを表示し、`onBack` を通知する。「読み上げる項目」カードには `selectedItemKeys` の順で選択済み項目のみを表示し、各行にドラッグハンドル・項目名・削除ボタンと既存の文言入力欄を置く。
 
 ## 項目カタログ
 
@@ -24,8 +24,7 @@
 | LMU Windows | ブレーキ温度 | `BrakeTemperature.Root`（`lmu_windows_auto_brake_temperature`） | `LMU_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT`（「ブレーキ温度は{celsius}℃」） | 項目名付きのデータなし文言 | ブレーキカテゴリ |
 | LMU Windows | タイヤ温度 | `TyreTemperature.Root`（`lmu_windows_auto_tyre_temperature`） | `LMU_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ |
 | LMU Windows | 自己ベストラップ | `MyBestLap.Root`（`lmu_windows_auto_my_best_lap`） | `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | ラップカテゴリ |
-| LMU Windows | クラス内前方車とのギャップ | `ClassCarGap.Ahead.value`（`lmu_windows_auto_class_car_gap_ahead`） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT`（「クラス内前方{seconds}秒」）。先頭は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」） | 項目名付きのデータなし文言 | ラップカテゴリ |
-| LMU Windows | クラス内後方車とのギャップ | `ClassCarGap.Behind.value`（`lmu_windows_auto_class_car_gap_behind`） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_BEHIND_TEXT_DEFAULT`（「クラス内後方{seconds}秒」）。最後尾は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」） | 項目名付きのデータなし文言 | ラップカテゴリ |
+| LMU Windows | クラス内前後車とのギャップ | `ClassCarGap.Root.value`（`lmu_windows_auto_class_car_gap`） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「{ahead}、{behind}」）。先頭は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）、最後尾は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）に置き換える | 項目名付きのデータなし文言 | ラップカテゴリ |
 
 LMU のキーは `LmuWindowsReadoutItemKey.` の接頭辞を省略して記載している。上表の「項目名付きのデータなし文言」は、複数項目のとき「<項目名>はデータがありません」を連結する文言である。
 
@@ -39,10 +38,11 @@ LMU のキーは `LmuWindowsReadoutItemKey.` の接頭辞を省略して記載�
 | `{laps}` | 燃料残り周回数（`GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER` / `ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER`）・LMU の残り周回数（`LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER`） | 整数の周回数 | 挿入・検証（GT7 の詳細の試聴は3周に置換） |
 | `{celsius}` | タイヤ温度（`GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER` / `ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER` / `LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER`）・ブレーキ温度（`LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER`） | 最高温度（整数℃） | 挿入・温度用の未知プレースホルダー検出 |
 | `{laptime}` | 自己ベストラップ（`GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER` / `ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER` / `LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER`） | 「1分23秒456」形式 | 挿入チップ・ヒント・未知プレースホルダー検出 |
-| `{seconds}` | クラス内前方・後方ギャップ（`LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER`） | 小数1桁の秒 | 挿入・検証（「ラップ」カテゴリ） |
+| `{ahead}` | クラス内前後車とのギャップの前方部分（`LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER`） | 「クラス内前方1.5秒」または「クラス内先頭です」 | 挿入・検証（「ラップ」カテゴリ） |
+| `{behind}` | クラス内前後車とのギャップの後方部分（`LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER`） | 「後方1.5秒」または「クラス内最後尾です」 | 挿入・検証（「ラップ」カテゴリ） |
 
 
-「＋ 項目を追加」から Desktop / Android 共通の `ModalBottomSheet` を開き、未選択項目をカテゴリ別に表示する。シートのタイトルは「読み上げる項目を選択」とし、残り枠の文言と選択数のセグメントバーを表示する。カテゴリ見出しにはアイコンと候補数、カテゴリごとにまとめた選択行には丸い追加アイコンを表示する。カテゴリと項目名は domain の `ManualReadoutItemDefinition`（`category` / `name`）を唯一の定義元とし（読み上げの「○○はデータがありません」と同じ名称）、現在は「バーチャルエネルギー」の LMU「バーチャルエネルギー残量」「バーチャルエネルギーの残り周回数」と「燃料」の LMU「燃料残量」「燃料残り周回数」・GT7「燃料残量」「燃料残り周回数」・ACE「燃料残量」「燃料残り周回数」と「タイヤ」の LMU「タイヤ摩耗」「タイヤ摩耗の残り周回数」「タイヤ温度」・GT7「タイヤ温度」・ACE「タイヤ温度」、「ブレーキ」の「ブレーキ残量」「ブレーキ温度」、「ラップ」の LMU・GT7・ACE「自己ベストラップ」と LMU「クラス内前方車とのギャップ」「クラス内後方車とのギャップ」。選択すると末尾へ追加して閉じる。候補はスクロールでき、シート外のタップ・スワイプ・Esc で閉じる。選択数と上限（3件）は常時表示し、3件選択時は削除してから追加するよう案内する。未選択項目がない場合、または domain の `MANUAL_READOUT_SET_ITEM_MAX` に達した場合は追加ボタンを無効化する。未選択時は短い説明と追加ボタンを表示する。
+「＋ 項目を追加」から Desktop / Android 共通の `ModalBottomSheet` を開き、未選択項目をカテゴリ別に表示する。シートのタイトルは「読み上げる項目を選択」とし、残り枠の文言と選択数のセグメントバーを表示する。カテゴリ見出しにはアイコンと候補数、カテゴリごとにまとめた選択行には丸い追加アイコンを表示する。カテゴリと項目名は domain の `ManualReadoutItemDefinition`（`category` / `name`）を唯一の定義元とし（読み上げの「○○はデータがありません」と同じ名称）、現在は「バーチャルエネルギー」の LMU「バーチャルエネルギー残量」「バーチャルエネルギーの残り周回数」と「燃料」の LMU「燃料残量」「燃料残り周回数」・GT7「燃料残量」「燃料残り周回数」・ACE「燃料残量」「燃料残り周回数」と「タイヤ」の LMU「タイヤ摩耗」「タイヤ摩耗の残り周回数」「タイヤ温度」・GT7「タイヤ温度」・ACE「タイヤ温度」、「ブレーキ」の「ブレーキ残量」「ブレーキ温度」、「ラップ」の LMU・GT7・ACE「自己ベストラップ」と LMU「クラス内前後車とのギャップ」。選択すると末尾へ追加して閉じる。候補はスクロールでき、シート外のタップ・スワイプ・Esc で閉じる。選択数と上限（3件）は常時表示し、3件選択時は削除してから追加するよう案内する。未選択項目がない場合、または domain の `MANUAL_READOUT_SET_ITEM_MAX` に達した場合は追加ボタンを無効化する。未選択時は短い説明と追加ボタンを表示する。
 
 項目追加ボタン・ピッカーでの選択・選択項目の削除・試聴開始／停止・セット名の編集開始と明示的な確定・ホットキーの有効なキー入力／解除／再試行／修飾キー操作では、既存の `ContextClick` 触覚フィードバックを行う。文言入力・並べ替え・フォーカス喪失によるセット名の自動保存・状態更新では追加の通知を行わない。
 
@@ -82,15 +82,17 @@ OS のホットキーはシミュレーターをまたいで共有されるた�
 `LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
 自動燃料警告の設定・状態は変更せず、自動読み上げには接続しない。
 
-手動の「クラス内前方車／後方車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value`（`lmu_windows_auto_class_car_gap_ahead`）・`ClassCarGap.Behind.value`（`lmu_windows_auto_class_car_gap_behind`）に対応する。
+手動の「クラス内前後車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Root.value`（`lmu_windows_auto_class_car_gap`）に対応する。前方車の後に後方車のギャップを1文で読み上げる1項目で、統合前の「前方車」「後方車」の2項目（`lmu_windows_auto_class_car_gap_ahead` / `_behind`）は廃止した。
 TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料残り周回数の後）に並ぶ。
 `ObserveLmuWindowsClassCarGapUseCase` の最新値（`LmuWindowsClassCarGapData`）を `latestClassCarGap` / `latestClassCarGapReceivedAtMs` に保持し、受信から5秒（`NARRATOR_CURRENT_VALUE_MAX_AGE_MS`）以内のものだけを項目へ渡す。未受信・鮮度切れはデータ無しとする。
-周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定し、固定文言
-`LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）・`LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）を読む（データありとして扱う。空欄テンプレートなら空文字）。
-それ以外は null・非有限・負値の秒差をデータ無しとし、0以上の有限値を `formatLmuWindowsClassCarGapReadoutText` で小数1桁に丸めて `{seconds}`（`LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER`）を置換する。
-既定文言は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT`（「クラス内前方{seconds}秒」）・`..._BEHIND_TEXT_DEFAULT`（「クラス内後方{seconds}秒」）。
+周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定する。
+文言は1つのテンプレートで、`{ahead}`（`LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER`）が前方部分、`{behind}`（`LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER`）が後方部分に置き換わる。既定文言は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「{ahead}、{behind}」）で、前方の後に後方を読む。
+前方部分は、先頭なら固定文言 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）、それ以外は0以上の有限値の秒差を小数1桁に丸めた「クラス内前方{seconds}秒」（`formatLmuWindowsClassCarGapAheadPhrase`）。
+後方部分は、最後尾なら固定文言 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）、それ以外は同様の「後方{seconds}秒」（`formatLmuWindowsClassCarGapBehindPhrase`）。
+先頭・最後尾でない側の秒差が null・非有限・負値のときは、項目全体をデータ無しとする。空欄テンプレートなら（データがあれば）空文字を読む。
+保存済みセットに残る旧キーは、読み出し時に `migrateLmuWindowsManualReadoutLegacyClassCarGap`（`ManualReadoutSimulatorSpec.migrateLegacySet`）で新キー1つへ置き換える。旧キーが最初に現れた位置に置き、前方・後方の両方があっても1つにまとめる。旧キーの文言は新しい文言へ変換できないため破棄し、新キーには既定文言を使う。
 複数項目ではデータ無しの項目に「<項目名>はデータがありません」を連結する。
-先頭項目なら開始音・優先度・ログ・キューに `VehicleApproach.Root` を使う。編集画面は既存の「ラップ」カテゴリに配置し、`{seconds}` を挿入・検証に使う。
+先頭項目なら開始音・優先度・ログ・キューに `VehicleApproach.Root` を使う。編集画面は既存の「ラップ」カテゴリに配置し、`{ahead}` と `{behind}` を挿入・検証に使う。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

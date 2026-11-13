@@ -225,4 +225,55 @@ class ReadoutItemKeyRegistryTest {
             ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.LmuWindows.id)?.itemPhrases,
         )
     }
+
+    @Test
+    fun `手動読み上げspecの旧セット移行処理を登録後も保持し未指定なら何もしない`() {
+        val definition =
+            ManualReadoutItemDefinition(
+                "key",
+                ManualReadoutItemCategory.FUEL,
+                "名",
+                "既定",
+                "{p}",
+                { emptyList() },
+                { it },
+                ChildKey("key"),
+            )
+
+        fun lmu(manual: ManualReadoutSimulatorSpec) =
+            SimulatorReadoutSpec(
+                Simulator.LmuWindows,
+                emptyList(),
+                emptyMap(),
+                emptyMap(),
+                emptyMap(),
+                emptyList(),
+                manual,
+            )
+
+        val set = ManualReadoutSet("s", listOf("old"))
+        ReadoutItemKeyRegistry.register(lmu(ManualReadoutSimulatorSpec(mapOf("key" to definition))))
+        assertEquals(
+            set,
+            ReadoutItemKeyRegistry.manualReadoutSpecOf(Simulator.LmuWindows.id)?.migrateLegacySet?.invoke(set),
+        )
+
+        ReadoutItemKeyRegistry.register(
+            lmu(
+                ManualReadoutSimulatorSpec(
+                    mapOf("key" to definition),
+                    migrateLegacySet = { it.copy(itemKeys = listOf("new")) },
+                ),
+            ),
+        )
+        assertEquals(
+            listOf("new"),
+            ReadoutItemKeyRegistry
+                .manualReadoutSpecOf(
+                    Simulator.LmuWindows.id,
+                )?.migrateLegacySet
+                ?.invoke(set)
+                ?.itemKeys,
+        )
+    }
 }

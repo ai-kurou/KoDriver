@@ -6,6 +6,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_READOUT_START_SOUND_EN
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsDefaultAutoReadoutOrder
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemDefinitions
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemPhrases
+import kurou.kodriver.domain.lmuwindows.model.migrateLmuWindowsManualReadoutLegacyClassCarGap
 
 val LMU_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
     listOf(
@@ -41,8 +42,7 @@ val LMU_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
         LmuWindowsReadoutItemKey.BrakeWear.WarningReadout,
         LmuWindowsReadoutItemKey.MyBestLap.Root,
         LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
-        LmuWindowsReadoutItemKey.ClassCarGap.Ahead,
-        LmuWindowsReadoutItemKey.ClassCarGap.Behind,
+        LmuWindowsReadoutItemKey.ClassCarGap.Root,
     )
 
 val lmuWindowsReadoutSpec: SimulatorReadoutSpec
@@ -57,6 +57,7 @@ val lmuWindowsReadoutSpec: SimulatorReadoutSpec
             ManualReadoutSimulatorSpec(
                 lmuWindowsManualReadoutItemDefinitions,
                 itemPhrases = lmuWindowsManualReadoutItemPhrases,
+                migrateLegacySet = ::migrateLmuWindowsManualReadoutLegacyClassCarGap,
             ),
         )
 

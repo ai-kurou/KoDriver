@@ -38,7 +38,7 @@ class ManualReadoutItemPickerSheetBottomScreenshotTest {
                     }
                 }
             }
-            onNodeWithText("クラス内後方車とのギャップ").assertIsDisplayed()
+            onNodeWithText("クラス内前後車とのギャップ").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 }

@@ -37,6 +37,36 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
     }
 
     @Test
+    fun `読み出し時に注入された移行処理を適用し保存データは書き換えない`() =
+        runTest {
+            val renameOld: (ManualReadoutSet) -> ManualReadoutSet = { set ->
+                set.copy(itemKeys = set.itemKeys.map { key -> key.replace("old", "new") })
+            }
+            val migrating = ManualReadoutSetPreferencesRepositoryImpl(dataStore, migrateLegacySet = { renameOld })
+            dataStore.updateData {
+                ManualReadoutSetPreferences(
+                    listOf(ManualReadoutSetPreference("legacy", itemKeys = listOf("old", "keep"))),
+                )
+            }
+            assertEquals(
+                listOf("new", "keep"),
+                migrating
+                    .observeSets()
+                    .first()
+                    .single()
+                    .itemKeys,
+            )
+            assertEquals(
+                listOf("old", "keep"),
+                repository
+                    .observeSets()
+                    .first()
+                    .single()
+                    .itemKeys,
+            )
+        }
+
+    @Test
     fun `セット名を追加と更新と一覧保存で保持し旧データは名前なしになる`() =
         runTest {
             dataStore.updateData {

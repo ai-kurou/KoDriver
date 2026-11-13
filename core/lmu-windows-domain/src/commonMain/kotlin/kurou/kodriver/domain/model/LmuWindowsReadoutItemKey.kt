@@ -167,12 +167,8 @@ sealed interface LmuWindowsReadoutItemKey : ReadoutItemKey {
     }
 
     sealed interface ClassCarGap : LmuWindowsReadoutItemKey {
-        data object Ahead : ClassCarGap {
-            override val value = "lmu_windows_auto_class_car_gap_ahead"
-        }
-
-        data object Behind : ClassCarGap {
-            override val value = "lmu_windows_auto_class_car_gap_behind"
+        data object Root : ClassCarGap {
+            override val value = "lmu_windows_auto_class_car_gap"
         }
     }
 }

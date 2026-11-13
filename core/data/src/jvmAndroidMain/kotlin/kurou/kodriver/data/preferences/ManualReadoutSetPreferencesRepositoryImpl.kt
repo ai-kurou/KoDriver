@@ -8,20 +8,12 @@ import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 
 internal class ManualReadoutSetPreferencesRepositoryImpl(
     private val dataStore: DataStore<ManualReadoutSetPreferences>,
+    private val migrateLegacySet: () -> (ManualReadoutSet) -> ManualReadoutSet = { { it } },
 ) : ManualReadoutSetPreferencesRepository {
     override fun observeSets(): Flow<List<ManualReadoutSet>> =
         dataStore.observeProperty { prefs ->
-            prefs.sets.map {
-                ManualReadoutSet(
-                    id = it.id,
-                    name = it.name,
-                    number = it.number,
-                    itemKeys = it.itemKeys,
-                    itemTexts = it.itemTexts,
-                    hotkeyVirtualKeyCode = it.hotkeyVirtualKeyCode,
-                    hotkeyModifiers = ManualReadoutHotkeyModifiers.fromValue(it.hotkeyModifiers),
-                )
-            }
+            val migrate = migrateLegacySet()
+            prefs.sets.map { migrate(it.toDomain()) }
         }
 
     override suspend fun addSet(set: ManualReadoutSet) {
@@ -64,3 +56,14 @@ internal class ManualReadoutSetPreferencesRepositoryImpl(
 
 private fun ManualReadoutSet.toPreference() =
     ManualReadoutSetPreference(id, itemKeys, itemTexts, hotkeyVirtualKeyCode, hotkeyModifiers.value, name, number)
+
+private fun ManualReadoutSetPreference.toDomain() =
+    ManualReadoutSet(
+        id = id,
+        name = name,
+        number = number,
+        itemKeys = itemKeys,
+        itemTexts = itemTexts,
+        hotkeyVirtualKeyCode = hotkeyVirtualKeyCode,
+        hotkeyModifiers = ManualReadoutHotkeyModifiers.fromValue(hotkeyModifiers),
+    )
