@@ -104,7 +104,7 @@ class LmuWindowsAutoReadoutRemainingFuelDetailPaneTest {
         rule.onNodeWithText("残量警告").assertIsDisplayed()
         rule.onNodeWithText("残量が閾値以下になったときの文言").assertIsDisplayed()
         rule.onNodeWithText(DEFAULT_TEXT).assertIsDisplayed()
-        rule.onNodeWithText("{percent} は残量閾値(%)に置き換わります").assertIsDisplayed()
+        rule.onNodeWithText("{percent} は残量閾値（%）に置き換わります").assertIsDisplayed()
         rule.onNodeWithText("{percent}を挿入").assertIsEnabled()
     }
 

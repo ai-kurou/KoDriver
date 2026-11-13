@@ -57,7 +57,7 @@ class LmuWindowsAutoReadoutTyreWearDetailPaneTest {
         rule.onNodeWithText("摩耗警告").assertIsDisplayed()
         rule.onNodeWithText("タイヤの残りが閾値以下になったときの文言").assertIsDisplayed()
         rule.onNodeWithText("タイヤは残り{percent}%以下").assertIsDisplayed()
-        rule.onNodeWithText("{percent} は残存率閾値(%)に置き換わります").assertIsDisplayed()
+        rule.onNodeWithText("{percent} は残存率閾値（%）に置き換わります").assertIsDisplayed()
         rule.onNodeWithText("{percent}を挿入").assertIsEnabled()
     }
 
