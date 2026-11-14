@@ -115,7 +115,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
             ManualReadoutItemCategory.LAP,
             "クラス内前後車とのギャップ",
             LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT,
-            LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER,
+            LMU_WINDOWS_CLASS_CAR_GAP_PLACEHOLDERS,
             ::findUnknownLmuWindowsClassCarGapReadoutPlaceholders,
             { formatLmuWindowsClassCarGapPreviewText(it, PREVIEW_CLASS_CAR_GAP_SECONDS) },
             LmuWindowsReadoutItemKey.VehicleApproach.Root,

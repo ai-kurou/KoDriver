@@ -2,8 +2,6 @@ package kurou.kodriver.domain.lmuwindows.usecase
 
 import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE
@@ -11,10 +9,9 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WE
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.lmuwindows.model.formatClassCarGapSeconds
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsClassCarGapAheadPhrase
-import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsClassCarGapBehindPhrase
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsClassCarGapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsPitTimingReadoutText
@@ -115,24 +112,19 @@ class DetermineLmuWindowsManualReadoutUseCase {
         item: LmuWindowsManualReadoutItem,
         data: LmuWindowsClassCarGapData,
     ): String? {
-        val aheadPhrase =
-            if (data.classPosition == 1) {
-                LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT
-            } else {
-                validClassCarGapSeconds(data.gapAheadSeconds)?.let(::formatLmuWindowsClassCarGapAheadPhrase)
-            }
-        val behindPhrase =
-            if (data.classPosition != null && data.classPosition == data.classVehicleCount) {
-                LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT
-            } else {
-                validClassCarGapSeconds(data.gapBehindSeconds)?.let(::formatLmuWindowsClassCarGapBehindPhrase)
-            }
-        if (aheadPhrase == null || behindPhrase == null) return null
+        val isTop = data.classPosition == 1
+        val isLast = data.classPosition != null && data.classPosition == data.classVehicleCount
+        // 先頭・最後尾は車なし（null）として固定文言に置き換える。それ以外の欠けた秒差はデータ無しにする。
+        val aheadSeconds = if (isTop) null else formattedClassCarGapSeconds(data.gapAheadSeconds)
+        val behindSeconds = if (isLast) null else formattedClassCarGapSeconds(data.gapBehindSeconds)
+        if (!isTop && aheadSeconds == null) return null
+        if (!isLast && behindSeconds == null) return null
         if (item.textTemplate.isBlank()) return ""
-        return formatLmuWindowsClassCarGapReadoutText(item.textTemplate, aheadPhrase, behindPhrase)
+        return formatLmuWindowsClassCarGapReadoutText(item.textTemplate, aheadSeconds, behindSeconds)
     }
 
-    private fun validClassCarGapSeconds(seconds: Double?): Double? = seconds?.takeIf { it.isFinite() && it >= 0.0 }
+    private fun formattedClassCarGapSeconds(seconds: Double?): String? =
+        seconds?.takeIf { it.isFinite() && it >= 0.0 }?.let(::formatClassCarGapSeconds)
 
     /** 項目キーと値の種別が対応しない場合や値が無い場合は null（データ無し）にする。 */
     private fun manualReadoutItemText(item: LmuWindowsManualReadoutItem): String {

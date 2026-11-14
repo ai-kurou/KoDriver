@@ -139,14 +139,14 @@ class ManualReadoutPreviewTest {
         val key = LmuWindowsReadoutItemKey.ClassCarGap.Root.value
         val state =
             ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
-        assertEquals("クラス内前方1.5秒、後方1.5秒", manualReadoutPreview(state))
+        assertEquals("前方1.5秒、後方1.5秒", manualReadoutPreview(state))
         assertEquals(
-            "後ろ後方1.5秒 前クラス内前方1.5秒 {unknown}",
+            "後ろ1.5 前1.5 {unknown}",
             manualReadoutPreview(state.copy(itemTexts = mapOf(key to "後ろ{behind} 前{ahead} {unknown}"))),
         )
         assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "クラス内前方1.5秒、後方1.5秒、タイヤ温度は90℃",
+            "前方1.5秒、後方1.5秒、タイヤ温度は90℃",
             manualReadoutPreview(
                 state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.TyreTemperature.Root.value)),
             ),

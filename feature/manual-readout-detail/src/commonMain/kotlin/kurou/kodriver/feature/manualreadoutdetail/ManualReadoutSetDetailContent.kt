@@ -34,7 +34,6 @@ import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
-import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -50,7 +49,6 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_car_gap_insert
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_celsius_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_celsius_insert
-import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_class_car_gap_behind_insert
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_class_car_gap_hint
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_class_car_gap_insert
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_delete
@@ -304,7 +302,6 @@ internal fun ManualReadoutItemTextField(
     simulatorId: String,
 ) {
     val haptic = LocalHapticFeedback.current
-    val isClassCarGap = isLmuWindowsManualReadoutClassCarGapItem(itemKey)
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
     val insertState = rememberTextInsertState()
@@ -348,16 +345,6 @@ internal fun ManualReadoutItemTextField(
                 // 押下で入力欄のフォーカスが外れると選択範囲が解除されるため、チップはフォーカスを取らない。
                 modifier = Modifier.focusProperties { canFocus = false },
             )
-            if (isClassCarGap) {
-                AssistChip(
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        insertState.insert(LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER)
-                    },
-                    label = { Text(stringResource(Res.string.manual_readout_class_car_gap_behind_insert)) },
-                    modifier = Modifier.focusProperties { canFocus = false },
-                )
-            }
             Text(
                 text =
                     stringResource(hintResource(itemKey)),

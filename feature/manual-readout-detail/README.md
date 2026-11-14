@@ -25,7 +25,7 @@
 | LMU Windows | ブレーキ温度 | `BrakeTemperature.Root`（`lmu_windows_auto_brake_temperature`） | `LMU_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT`（「ブレーキ温度は{celsius}℃」） | 項目名付きのデータなし文言 | ブレーキカテゴリ |
 | LMU Windows | タイヤ温度 | `TyreTemperature.Root`（`lmu_windows_auto_tyre_temperature`） | `LMU_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ |
 | LMU Windows | 自己ベストラップ | `MyBestLap.Root`（`lmu_windows_auto_my_best_lap`） | `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | ラップカテゴリ |
-| LMU Windows | クラス内前後車とのギャップ | `ClassCarGap.Root.value`（`lmu_windows_auto_class_car_gap`） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「{ahead}、{behind}」）。先頭は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）、最後尾は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）に置き換える | 項目名付きのデータなし文言 | ラップカテゴリ |
+| LMU Windows | クラス内前後車とのギャップ | `ClassCarGap.Root.value`（`lmu_windows_auto_class_car_gap`） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「前方{ahead}秒、後方{behind}秒」）。先頭は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）、最後尾は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）に置き換える | 項目名付きのデータなし文言 | ラップカテゴリ |
 
 LMU のキーは `LmuWindowsReadoutItemKey.` の接頭辞を省略して記載している。上表の「項目名付きのデータなし文言」は、複数項目のとき「<項目名>はデータがありません」を連結する文言である。
 
@@ -39,8 +39,8 @@ LMU のキーは `LmuWindowsReadoutItemKey.` の接頭辞を省略して記載�
 | `{laps}` | 燃料残り周回数（`GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER` / `ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER`）・LMU の残り周回数（`LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER`） | 整数の周回数 | 挿入・検証（GT7 の詳細の試聴は3周に置換） |
 | `{celsius}` | タイヤ温度（`GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER` / `ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER` / `LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER`）・ブレーキ温度（`LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER`） | 最高温度（整数℃） | 挿入・温度用の未知プレースホルダー検出 |
 | `{laptime}` | 自己ベストラップ（`GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER` / `ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER` / `LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER`） | 「1分23秒456」形式 | 挿入チップ・ヒント・未知プレースホルダー検出 |
-| `{ahead}` | クラス内前後車とのギャップの前方部分（`LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER`） | 「クラス内前方1.5秒」または「クラス内先頭です」 | 挿入・検証（「ラップ」カテゴリ） |
-| `{behind}` | クラス内前後車とのギャップの後方部分（`LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER`） | 「後方1.5秒」または「クラス内最後尾です」 | 挿入・検証（「ラップ」カテゴリ） |
+| `{ahead}` | クラス内前後車とのギャップの前方の秒数（`LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER`） | 「1.5」（先頭は前方の節ごと「クラス内先頭です」、節を含まない文言では「なし」） | 挿入・検証（「ラップ」カテゴリ） |
+| `{behind}` | クラス内前後車とのギャップの後方の秒数（`LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER`） | 「2.3」（最後尾は後方の節ごと「クラス内最後尾です」、節を含まない文言では「なし」） | 挿入・検証（「ラップ」カテゴリ） |
 | `{ahead}` `{behind}` | ACE の前後車ギャップ（`ACE_WINDOWS_CAR_GAP_AHEAD_PLACEHOLDER` / `ACE_WINDOWS_CAR_GAP_BEHIND_PLACEHOLDER`） | 単位なしの数値（例 `1.5` `2.3`）。0は節ごと「前方車なし」「後方車なし」、節を含まない文言では「なし」 | 挿入チップは「前方{ahead}秒、後方{behind}秒」をまとめて挿入・`{ahead}` `{behind}` 以外は未知として警告 |
 
 
@@ -88,9 +88,9 @@ OS のホットキーはシミュレーターをまたいで共有されるた�
 TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料残り周回数の後）に並ぶ。
 `ObserveLmuWindowsClassCarGapUseCase` の最新値（`LmuWindowsClassCarGapData`）を `latestClassCarGap` / `latestClassCarGapReceivedAtMs` に保持し、受信から5秒（`NARRATOR_CURRENT_VALUE_MAX_AGE_MS`）以内のものだけを項目へ渡す。未受信・鮮度切れはデータ無しとする。
 周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定する。
-文言は1つのテンプレートで、`{ahead}`（`LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER`）が前方部分、`{behind}`（`LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER`）が後方部分に置き換わる。既定文言は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「{ahead}、{behind}」）で、前方の後に後方を読む。
-前方部分は、先頭なら固定文言 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）、それ以外は0以上の有限値の秒差を小数1桁に丸めた「クラス内前方{seconds}秒」（`formatLmuWindowsClassCarGapAheadPhrase`）。
-後方部分は、最後尾なら固定文言 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）、それ以外は同様の「後方{seconds}秒」（`formatLmuWindowsClassCarGapBehindPhrase`）。
+文言は1つのテンプレートで、`{ahead}`（`LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER`）が前方の秒数、`{behind}`（`LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER`）が後方の秒数に置き換わる（単位なしの小数1桁、例「1.5」）。既定文言は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「前方{ahead}秒、後方{behind}秒」、組は `LMU_WINDOWS_CLASS_CAR_GAP_PLACEHOLDERS`）。先頭（前方車なし）のときは前方の節「前方{ahead}秒」全体を「クラス内先頭です」（`..._TOP_TEXT_DEFAULT`）に、最後尾のときは後方の節「後方{behind}秒」全体を「クラス内最後尾です」（`..._LAST_TEXT_DEFAULT`）に置き換える。節を含まない文言で車なしのときは、プレースホルダー単体を「なし」（`LMU_WINDOWS_CLASS_CAR_GAP_NONE_VALUE_TEXT`）に置き換える。
+前方の節は、先頭なら節全体を固定文言 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）に、それ以外は0以上の有限値の秒差を小数1桁に丸めた秒数（`formatClassCarGapSeconds`）に置き換える。
+後方の節は、最後尾なら節全体を固定文言 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）に、それ以外は同様に秒数へ置き換える。
 先頭・最後尾でない側の秒差が null・非有限・負値のときは、項目全体をデータ無しとする。空欄テンプレートなら（データがあれば）空文字を読む。
 保存済みセットに残る旧キーは、読み出し時に `migrateLmuWindowsManualReadoutLegacyClassCarGap`（`ManualReadoutSimulatorSpec.migrateLegacySet`）で新キー1つへ置き換える。旧キーが最初に現れた位置に置き、前方・後方の両方があっても1つにまとめる。旧キーの文言は新しい文言へ変換できないため破棄し、新キーには既定文言を使う。
 複数項目ではデータ無しの項目に「<項目名>はデータがありません」を連結する。

@@ -937,8 +937,8 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(
                 listOf(
                     "クラス内前後車とのギャップはデータがありません",
-                    "クラス内前方1.3秒、後方3.0秒",
-                    "クラス内前方1.3秒、後方3.0秒",
+                    "前方1.3秒、後方3.0秒",
+                    "前方1.3秒、後方3.0秒",
                     "クラス内前後車とのギャップはデータがありません",
                 ),
                 spoken.map { it.narratedText },
