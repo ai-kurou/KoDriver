@@ -134,13 +134,14 @@ internal fun SpeechRecognitionListPaneContent(
         item { recognitionCard() }
         uiState.groups.forEach { group ->
             item(key = "category-${group.category.name}") {
-                CategoryHeader(group.category, group.items.size)
+                CategoryHeader(group.category, group.items.size, modifier = Modifier.animateItem())
             }
             items(group.items, key = { speechCommandItemListKey(it.key) }) { item ->
                 SpeechCommandGuideCard(
                     category = group.category,
                     item = item,
                     highlight = highlight?.takeIf { it.itemKey == item.key },
+                    modifier = Modifier.animateItem(),
                 )
             }
         }
@@ -266,10 +267,11 @@ private fun WakeStep(
 private fun CategoryHeader(
     category: ManualReadoutItemCategory,
     itemCount: Int,
+    modifier: Modifier = Modifier,
 ) {
     val color = speechCommandGuideCategoryColor(category)
     Row(
-        modifier = Modifier.fillMaxWidth().padding(start = KoDriverSpacing.extraSmall, top = KoDriverSpacing.medium),
+        modifier = modifier.fillMaxWidth().padding(start = KoDriverSpacing.extraSmall, top = KoDriverSpacing.medium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
     ) {
@@ -301,10 +303,11 @@ private fun SpeechCommandGuideCard(
     category: ManualReadoutItemCategory,
     item: SpeechCommandGuideItem,
     highlight: SpeechPhraseHighlight?,
+    modifier: Modifier = Modifier,
 ) {
     val color = speechCommandGuideCategoryColor(category)
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
         Column(
