@@ -28,4 +28,11 @@ class CarGapFormatterTest {
         assertEquals("--", formatOverallPosition(-1))
         assertEquals("--", formatOverallPosition(null))
     }
+
+    @Test
+    fun `調査用の生ワードをオフセット付きでfloatと16進で表示する`() {
+        assertEquals("+3844 1.5 / 0x3FC00000", formatGapDebugWord(3844, 1.5f.toRawBits()))
+        assertEquals("+3852 0.0 / 0x00000000", formatGapDebugWord(3852, 0))
+        assertEquals("+3848 -2.5 / 0xC0200000", formatGapDebugWord(3848, (-2.5f).toRawBits()))
+    }
 }

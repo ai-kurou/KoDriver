@@ -117,6 +117,7 @@ internal object AceWindowsMapper {
     private const val OFF_GAP_AHEAD = 3844
     private const val OFF_GAP_BEHIND = 3848
     private const val OFF_ACTIVE_CARS = 3852
+    private const val GAP_DEBUG_WINDOW_WORDS = 13
     private const val OFF_CAR_IDS = 3940
     private const val CAR_ID_STRIDE = 16
     private const val MAX_CARS = 60
@@ -178,6 +179,11 @@ internal object AceWindowsMapper {
         AceWindowsGapData(
             gapAheadSeconds = buffer.getFloat(OFF_GAP_AHEAD),
             gapBehindSeconds = buffer.getFloat(OFF_GAP_BEHIND),
+            debugActiveCars = buffer.get(OFF_ACTIVE_CARS).toInt() and BYTE_MASK,
+            debugRawWords =
+                List(GAP_DEBUG_WINDOW_WORDS) {
+                    buffer.getInt(AceWindowsGapData.GAP_DEBUG_WINDOW_START_OFFSET + it * Int.SIZE_BYTES)
+                },
         )
 
     fun mapFlag(buffer: ByteBuffer): AceWindowsFlagData =

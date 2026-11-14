@@ -25,6 +25,22 @@ class DebugStateCarGapCardTest {
     }
 
     @Test
+    fun `調査用にactive_carsと生ワードを表示する`() {
+        showCarGapCard(AceWindowsGapData(0f, 0f, 9, listOf(0, 1.5f.toRawBits())))
+
+        rule.onNodeWithText("[調査用] active_cars(+3852): 9").assertIsDisplayed()
+        rule.onNodeWithText("+3820 0.0 / 0x00000000").assertIsDisplayed()
+        rule.onNodeWithText("+3824 1.5 / 0x3FC00000").assertIsDisplayed()
+    }
+
+    @Test
+    fun `調査用のactive_carsが未提供なら表示しない`() {
+        showCarGapCard(AceWindowsGapData(0f, 0f))
+
+        rule.onNodeWithText("[調査用] active_cars(+3852): 0").assertDoesNotExist()
+    }
+
+    @Test
     fun `非有限値は欠損表示にする`() {
         showCarGapCard(AceWindowsGapData(Float.NaN, Float.POSITIVE_INFINITY))
 

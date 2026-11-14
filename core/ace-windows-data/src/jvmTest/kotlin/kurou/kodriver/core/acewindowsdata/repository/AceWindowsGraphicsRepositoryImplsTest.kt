@@ -64,7 +64,7 @@ class AceWindowsGraphicsRepositoryImplsTest {
         runTest {
             val repo = AceWindowsGapRepositoryImpl(source = makeSource())
 
-            assertEquals(AceWindowsGapData(0f, 0f), repo.gapStream().first())
+            assertEquals(AceWindowsGapData(0f, 0f, 0, List(13) { 0 }), repo.gapStream().first())
         }
 
     @Test
