@@ -275,6 +275,26 @@ private fun isManualReadoutTemperatureItem(itemKey: String): Boolean =
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value ||
         isLmuWindowsManualReadoutTemperatureItem(itemKey)
 
+private fun insertLabelResource(itemKey: String): StringResource =
+    when {
+        itemKey == AceWindowsReadoutItemKey.CarGap.Root.value -> Res.string.manual_readout_car_gap_insert
+        isLmuWindowsManualReadoutClassCarGapItem(itemKey) -> Res.string.manual_readout_class_car_gap_insert
+        isManualReadoutLapTimeItem(itemKey) -> Res.string.manual_readout_laptime_insert
+        isManualReadoutLapsItem(itemKey) -> Res.string.manual_readout_laps_insert
+        isManualReadoutTemperatureItem(itemKey) -> Res.string.manual_readout_celsius_insert
+        else -> Res.string.manual_readout_percent_insert
+    }
+
+private fun hintResource(itemKey: String): StringResource =
+    when {
+        itemKey == AceWindowsReadoutItemKey.CarGap.Root.value -> Res.string.manual_readout_car_gap_hint
+        isLmuWindowsManualReadoutClassCarGapItem(itemKey) -> Res.string.manual_readout_class_car_gap_hint
+        isManualReadoutLapTimeItem(itemKey) -> Res.string.manual_readout_laptime_hint
+        isManualReadoutLapsItem(itemKey) -> lapsHintResource(itemKey)
+        isManualReadoutTemperatureItem(itemKey) -> Res.string.manual_readout_celsius_hint
+        else -> Res.string.manual_readout_percent_hint
+    }
+
 @Composable
 internal fun ManualReadoutItemTextField(
     text: String,
@@ -285,10 +305,6 @@ internal fun ManualReadoutItemTextField(
 ) {
     val haptic = LocalHapticFeedback.current
     val isClassCarGap = isLmuWindowsManualReadoutClassCarGapItem(itemKey)
-    val isCarGap = itemKey == AceWindowsReadoutItemKey.CarGap.Root.value
-    val isLapTime = isManualReadoutLapTimeItem(itemKey)
-    val isLaps = isManualReadoutLapsItem(itemKey)
-    val isTemperature = isManualReadoutTemperatureItem(itemKey)
     val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
     val currentText = textState.currentText
     val insertState = rememberTextInsertState()
@@ -326,21 +342,7 @@ internal fun ManualReadoutItemTextField(
                 },
                 label = {
                     Text(
-                        stringResource(
-                            if (isCarGap) {
-                                Res.string.manual_readout_car_gap_insert
-                            } else if (isClassCarGap) {
-                                Res.string.manual_readout_class_car_gap_insert
-                            } else if (isLapTime) {
-                                Res.string.manual_readout_laptime_insert
-                            } else if (isLaps) {
-                                Res.string.manual_readout_laps_insert
-                            } else if (isTemperature) {
-                                Res.string.manual_readout_celsius_insert
-                            } else {
-                                Res.string.manual_readout_percent_insert
-                            },
-                        ),
+                        stringResource(insertLabelResource(itemKey)),
                     )
                 },
                 // 押下で入力欄のフォーカスが外れると選択範囲が解除されるため、チップはフォーカスを取らない。
@@ -358,21 +360,7 @@ internal fun ManualReadoutItemTextField(
             }
             Text(
                 text =
-                    stringResource(
-                        if (isCarGap) {
-                            Res.string.manual_readout_car_gap_hint
-                        } else if (isClassCarGap) {
-                            Res.string.manual_readout_class_car_gap_hint
-                        } else if (isLapTime) {
-                            Res.string.manual_readout_laptime_hint
-                        } else if (isLaps) {
-                            lapsHintResource(itemKey)
-                        } else if (isTemperature) {
-                            Res.string.manual_readout_celsius_hint
-                        } else {
-                            Res.string.manual_readout_percent_hint
-                        },
-                    ),
+                    stringResource(hintResource(itemKey)),
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
