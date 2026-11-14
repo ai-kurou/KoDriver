@@ -2,13 +2,12 @@ package kurou.kodriver.core.designsystem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -16,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * 保存待ちの入力状態と、プレースホルダーの挿入チップを備えた読み上げ文言入力欄。
- * 文字列は呼び出し側で解決し、[unknownPlaceholdersText] は保存前の現在の入力から生成する。
+ * 挿入チップの下にヒントを全幅で縦に並べる。文字列は呼び出し側で解決し、[unknownPlaceholdersText] は保存前の現在の入力から生成する。
  */
 @Suppress("LongParameterList")
 @Composable
@@ -63,10 +62,9 @@ fun PlaceholderReadoutTextField(
             supportingText = supportingText,
             unknownPlaceholdersText = unknownPlaceholdersText(currentText),
         )
-        Row(
+        Column(
             modifier = Modifier.padding(bottom = KoDriverSpacing.small),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
         ) {
             AssistChip(
                 onClick = {
@@ -78,7 +76,7 @@ fun PlaceholderReadoutTextField(
             )
             Text(
                 text = placeholderHint,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

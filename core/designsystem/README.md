@@ -35,7 +35,7 @@
 余白（padding・Spacer・`Arrangement.spacedBy` 等）は `Spacing.kt` の `KoDriverSpacing`（`extraSmall=4dp` / `small=8dp` / `medium=12dp` / `large=16dp` / `extraLarge=24dp`）で定義している。Material3 の `MaterialTheme` には spacing 用のスロットがないため、`KoDriverShapes` のようにテーマへ渡すのではなく、feature モジュール側が `KoDriverSpacing.*` を直接参照する。
 
 - feature モジュール側では 4/8/12/16/24dp の余白値を直接指定せず、`KoDriverSpacing.*` を参照する。
-- 読み上げ文言のタイトルと入力欄は `DetailPaneLabeledTextField` の4dp（`extraSmall`）で揃える。挿入チップと説明文の行には下部8dp（`small`）、同じカード内の独立した文言グループ間には16dp（`large`）を確保する。区切り線やカード内部の既存余白も含めて調整し、一律には加算しない。
+- 読み上げ文言のタイトルと入力欄は `DetailPaneLabeledTextField` の4dp（`extraSmall`）で揃える。挿入チップと説明文のまとまりには下部8dp（`small`）、同じカード内の独立した文言グループ間には16dp（`large`）を確保する。区切り線やカード内部の既存余白も含めて調整し、一律には加算しない。
 - `DetailPaneLabeledTextField` / `DetailPaneCardTextField` は `onPreviewClick = null` で試聴ボタンを非表示にできる。
 - アイコンサイズ・カード幅など「余白」ではない寸法（`Modifier.size` 等）は対象外。値がたまたま同じでも `KoDriverSpacing` は使わない。
 - `app:shared` は `moduleGraphAssert` で `core:.*` への依存が禁止されているため、`AppSpacing.kt` に同じ余白値を複製している。余白の値を変更する場合は両方を同期させる。
@@ -61,7 +61,7 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 補足文は TTS 不可の `unavailableText`、null でも空でもない `unknownPlaceholdersText`、空欄時の `supportingText` の順に優先する。入力が空白のみでなければ選択アイコンを表示し、警告がなければ補足文を隠す。リセットは `defaultText` を `onTextChanged` に通知する。
 
-`PlaceholderReadoutTextField` は `ReadoutTextField` に保存待ちの入力状態（`rememberPendingText`）とプレースホルダー挿入チップ・説明文の行を組み合わせた部品。保存値は `savedText`、挿入文字列は `placeholder`、チップと説明文は `insertLabel` / `placeholderHint` に渡す。TTS が利用可能で、現在の入力と挿入文字列の合計が `maxLength` 以下の場合だけチップを有効にする。
+`PlaceholderReadoutTextField` は `ReadoutTextField` に保存待ちの入力状態（`rememberPendingText`）とプレースホルダー挿入チップ・説明文を組み合わせた部品。チップの下に説明文を全幅で縦に並べ、長い文言でも説明文が細く折り返されないようにする。保存値は `savedText`、挿入文字列は `placeholder`、チップと説明文は `insertLabel` / `placeholderHint` に渡す。TTS が利用可能で、現在の入力と挿入文字列の合計が `maxLength` 以下の場合だけチップを有効にする。
 
 文字列リソースは呼び出し側で解決する。`unknownPlaceholdersText` は現在の入力を受け取る Composable ラムダで、保存反映前の入力からも `stringResource` を使って警告文を生成できる。入力・挿入・リセットは保存待ちの表示を更新し、`onTextChanged` に通知する。
 
