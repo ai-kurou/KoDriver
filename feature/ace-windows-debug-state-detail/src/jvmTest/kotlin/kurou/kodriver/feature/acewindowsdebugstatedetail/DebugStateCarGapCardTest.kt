@@ -34,6 +34,13 @@ class DebugStateCarGapCardTest {
     }
 
     @Test
+    fun `調査用のactive_carsが未提供なら表示しない`() {
+        showCarGapCard(AceWindowsGapData(0f, 0f))
+
+        rule.onNodeWithText("[調査用] active_cars(+3852): 0").assertDoesNotExist()
+    }
+
+    @Test
     fun `非有限値は欠損表示にする`() {
         showCarGapCard(AceWindowsGapData(Float.NaN, Float.POSITIVE_INFINITY))
 

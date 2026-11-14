@@ -61,10 +61,12 @@ internal fun CarGapContent(
 
 @Composable
 private fun GapDebugRawContent(gap: AceWindowsGapData) {
-    Text(
-        text = stringResource(Res.string.debug_state_car_gap_debug_active_cars, gap.debugActiveCars),
-        style = MaterialTheme.typography.bodySmall,
-    )
+    gap.debugActiveCars?.let {
+        Text(
+            text = stringResource(Res.string.debug_state_car_gap_debug_active_cars, it),
+            style = MaterialTheme.typography.bodySmall,
+        )
+    }
     gap.debugRawWords.forEachIndexed { index, raw ->
         Text(
             text = formatGapDebugWord(AceWindowsGapData.GAP_DEBUG_WINDOW_START_OFFSET + index * Int.SIZE_BYTES, raw),
