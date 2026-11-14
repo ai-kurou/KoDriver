@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -162,26 +163,31 @@ private fun ManualReadoutHotkeyRegistration(
     registration: HotkeyRegistrationState,
     onRetry: () -> Unit,
 ) {
-    when (registration) {
-        HotkeyRegistrationState.Unsupported -> {
-        }
+    Crossfade(targetState = registration, label = "manualReadoutHotkeyRegistration") { animatedRegistration ->
+        when (animatedRegistration) {
+            HotkeyRegistrationState.Unsupported -> {
+            }
 
-        HotkeyRegistrationState.Registering -> {
-            Text(stringResource(Res.string.manual_readout_hotkey_registration_registering))
-        }
+            HotkeyRegistrationState.Registering -> {
+                Text(stringResource(Res.string.manual_readout_hotkey_registration_registering))
+            }
 
-        HotkeyRegistrationState.Registered -> {
-            Text(stringResource(Res.string.manual_readout_hotkey_registration_registered))
-        }
+            HotkeyRegistrationState.Registered -> {
+                Text(stringResource(Res.string.manual_readout_hotkey_registration_registered))
+            }
 
-        HotkeyRegistrationState.Conflict -> {
-            Text(stringResource(Res.string.manual_readout_hotkey_registration_conflict))
-        }
+            HotkeyRegistrationState.Conflict -> {
+                Text(stringResource(Res.string.manual_readout_hotkey_registration_conflict))
+            }
 
-        is HotkeyRegistrationState.Failed -> {
-            Text(
-                stringResource(Res.string.manual_readout_hotkey_registration_failed, registration.errorCode),
-            )
+            is HotkeyRegistrationState.Failed -> {
+                Text(
+                    stringResource(
+                        Res.string.manual_readout_hotkey_registration_failed,
+                        animatedRegistration.errorCode,
+                    ),
+                )
+            }
         }
     }
     if (registration is HotkeyRegistrationState.Conflict || registration is HotkeyRegistrationState.Failed) {
