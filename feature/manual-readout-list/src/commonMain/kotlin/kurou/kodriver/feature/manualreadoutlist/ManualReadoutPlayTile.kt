@@ -1,6 +1,5 @@
 package kurou.kodriver.feature.manualreadoutlist
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -109,14 +108,12 @@ internal fun ManualReadoutSetPlayButton(
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 ManualReadoutCategoryDots(remember(set.itemKeys) { manualReadoutCategorySummary(set.itemKeys) })
-                AnimatedVisibility(
-                    visible =
-                        showHotkeyChip &&
-                            manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null,
-                    enter = ManualReadoutHotkeyChipEnter,
-                    exit = ManualReadoutHotkeyChipExit,
-                ) {
-                    ManualReadoutHotkeyChip(set, playButtonLayout = true)
+                val hasHotkeyLabel = manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null
+                // ホットキー解除後の退場アニメーション中に「未割り当て」チップが出ないよう、最後に割り当て済みだったセットを保つ。
+                var lastAssignedSet by remember { mutableStateOf(set) }
+                if (hasHotkeyLabel) lastAssignedSet = set
+                ManualReadoutHotkeyChipAnimatedVisibility(visible = showHotkeyChip && hasHotkeyLabel) {
+                    ManualReadoutHotkeyChip(lastAssignedSet, playButtonLayout = true)
                 }
             }
         }

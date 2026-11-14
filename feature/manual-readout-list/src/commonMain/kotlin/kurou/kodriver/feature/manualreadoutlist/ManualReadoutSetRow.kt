@@ -1,6 +1,5 @@
 package kurou.kodriver.feature.manualreadoutlist
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -140,11 +139,7 @@ internal fun ManualReadoutSetRow(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 ManualReadoutCategoryChips(categories, set.itemKeys.size)
-                AnimatedVisibility(
-                    visible = showHotkeyChip,
-                    enter = ManualReadoutHotkeyChipEnter,
-                    exit = ManualReadoutHotkeyChipExit,
-                ) {
+                ManualReadoutHotkeyChipAnimatedVisibility(visible = showHotkeyChip) {
                     ManualReadoutHotkeyChip(set)
                 }
             }
