@@ -2,7 +2,7 @@ package kurou.kodriver.feature.manualreadoutdetail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,7 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -328,10 +327,7 @@ internal fun ManualReadoutItemTextField(
                     else -> null
                 },
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
             AssistChip(
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
@@ -348,7 +344,7 @@ internal fun ManualReadoutItemTextField(
             Text(
                 text =
                     stringResource(hintResource(itemKey)),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

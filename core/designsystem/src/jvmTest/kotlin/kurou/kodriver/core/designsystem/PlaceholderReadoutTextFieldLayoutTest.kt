@@ -3,6 +3,7 @@ package kurou.kodriver.core.designsystem
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.width
 import org.junit.Rule
 import org.junit.Test
@@ -41,9 +42,10 @@ class PlaceholderReadoutTextFieldLayoutTest {
 
         val chipBounds = rule.onNodeWithText(insertLabel).getBoundsInRoot()
         val hintBounds = rule.onNodeWithText(hint).getBoundsInRoot()
+        val rootBounds = rule.onRoot().getBoundsInRoot()
 
         assertTrue(hintBounds.top >= chipBounds.bottom)
-        assertTrue(hintBounds.width > chipBounds.width)
+        assertEquals(rootBounds.width, hintBounds.width)
         assertEquals(chipBounds.left, hintBounds.left)
     }
 }
