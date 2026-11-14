@@ -333,19 +333,19 @@ class ManualReadoutSetDetailPaneTextEditTest {
         rule.onNodeWithText("前後車とのギャップ").performClick()
         rule.onNodeWithText(defaultText).assertExists()
         val carGapHint =
-            "{ahead}は前の車との差（例「前方1.5秒」）、{behind}は後ろの車との差（例「後方2.3秒」）に置き換わります。" +
-                "差が0秒のときは「前方車なし」「後方車なし」と読み上げます。"
+            "{ahead}は前の車との差の秒数（例「1.5」）、{behind}は後ろの車との差の秒数（例「2.3」）に置き換わります。" +
+                "差が0秒のときは「前方車なし」「後方車なし」と読み上げます。節を含まない文言では「なし」と読み上げます。"
         rule.onNodeWithText(carGapHint).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("")
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
-        rule.onNodeWithText("{ahead}、{behind}を挿入").performClick()
-        rule.onNodeWithText("{ahead}、{behind}").assertExists()
+        rule.onNodeWithText("前方{ahead}秒、後方{behind}秒を挿入").performClick()
+        rule.onNodeWithText("前方{ahead}秒、後方{behind}秒").assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あと{percent}")
         rule.onNodeWithText("未対応のプレースホルダー: {percent}（そのまま読み上げます）").assertExists()
         rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
-        rule.onNodeWithText("{ahead}、{behind}を挿入").performClick()
+        rule.onNodeWithText("前方{ahead}秒、後方{behind}秒を挿入").performClick()
         rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
         rule.onNodeWithContentDescription("前後車とのギャップを削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
@@ -353,7 +353,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
             assertEquals(
                 listOf(
                     key to "",
-                    key to "{ahead}、{behind}",
+                    key to "前方{ahead}秒、後方{behind}秒",
                     key to "あと{percent}",
                     key to defaultText,
                     key to "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH),

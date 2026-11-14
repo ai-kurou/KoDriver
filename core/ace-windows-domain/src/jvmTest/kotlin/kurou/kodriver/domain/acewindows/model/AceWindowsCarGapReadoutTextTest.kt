@@ -5,22 +5,35 @@ import kotlin.test.assertEquals
 
 class AceWindowsCarGapReadoutTextTest {
     @Test
-    fun `既定文言は前後のプレースホルダーを含み未知のプレースホルダーを持たない`() {
+    fun `既定文言は前後の節を含み未知のプレースホルダーを持たない`() {
         val template = ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT
-        assertEquals("{ahead}、{behind}", template)
+        assertEquals("前方{ahead}秒、後方{behind}秒", template)
         assertEquals(template, ACE_WINDOWS_CAR_GAP_PLACEHOLDERS)
+        assertEquals("前方{ahead}秒", ACE_WINDOWS_CAR_GAP_AHEAD_CLAUSE)
+        assertEquals("後方{behind}秒", ACE_WINDOWS_CAR_GAP_BEHIND_CLAUSE)
         assertEquals(emptyList(), findUnknownAceWindowsCarGapReadoutPlaceholders(template))
     }
 
     @Test
-    fun `前後の秒数を小数1桁に丸めて置換する`() {
+    fun `前後の秒数を小数1桁の単位なし数値に丸めて節に置換する`() {
         assertEquals(
             "前方1.5秒、後方2.3秒",
-            formatAceWindowsCarGapReadoutText("{ahead}、{behind}", AceWindowsGapData(1.5f, 2.26f)),
+            formatAceWindowsCarGapReadoutText(
+                ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT,
+                AceWindowsGapData(1.5f, 2.26f),
+            ),
         )
         assertEquals(
             "前方12.0秒",
-            formatAceWindowsCarGapReadoutText("{ahead}", AceWindowsGapData(11.96f, 0.5f)),
+            formatAceWindowsCarGapReadoutText(ACE_WINDOWS_CAR_GAP_AHEAD_CLAUSE, AceWindowsGapData(11.96f, 0.5f)),
+        )
+    }
+
+    @Test
+    fun `節を含まない文言では数値のみを置換する`() {
+        assertEquals(
+            "1.5と2.3",
+            formatAceWindowsCarGapReadoutText("{ahead}と{behind}", AceWindowsGapData(1.5f, 2.3f)),
         )
     }
 
@@ -28,29 +41,57 @@ class AceWindowsCarGapReadoutTextTest {
     fun `負の値は絶対値で読む`() {
         assertEquals(
             "前方1.5秒、後方2.3秒",
-            formatAceWindowsCarGapReadoutText("{ahead}、{behind}", AceWindowsGapData(-1.5f, -2.3f)),
+            formatAceWindowsCarGapReadoutText(
+                ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT,
+                AceWindowsGapData(-1.5f, -2.3f),
+            ),
         )
     }
 
     @Test
-    fun `0と小数1桁で0になる値と非有限値は車なしにする`() {
+    fun `0と小数1桁で0になる値と非有限値は節ごと車なしにする`() {
         listOf(0f, -0f, 0.04f, Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY).forEach { value ->
             assertEquals(
                 "前方車なし、後方車なし",
-                formatAceWindowsCarGapReadoutText("{ahead}、{behind}", AceWindowsGapData(value, value)),
+                formatAceWindowsCarGapReadoutText(
+                    ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT,
+                    AceWindowsGapData(value, value),
+                ),
             )
         }
+    }
+
+    @Test
+    fun `車なしの節を含まないプレースホルダーは なし に置換する`() {
+        assertEquals(
+            "なしと2.3",
+            formatAceWindowsCarGapReadoutText("{ahead}と{behind}", AceWindowsGapData(0f, 2.3f)),
+        )
+        assertEquals(
+            "1.5となし",
+            formatAceWindowsCarGapReadoutText("{ahead}と{behind}", AceWindowsGapData(1.5f, Float.NaN)),
+        )
+        assertEquals(
+            "なしとなし",
+            formatAceWindowsCarGapReadoutText("{ahead}と{behind}", AceWindowsGapData(0f, 0f)),
+        )
     }
 
     @Test
     fun `前後の片方だけがなしのときもう片方は秒数で読む`() {
         assertEquals(
             "前方車なし、後方3.0秒",
-            formatAceWindowsCarGapReadoutText("{ahead}、{behind}", AceWindowsGapData(0f, 3f)),
+            formatAceWindowsCarGapReadoutText(
+                ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT,
+                AceWindowsGapData(0f, 3f),
+            ),
         )
         assertEquals(
             "前方3.0秒、後方車なし",
-            formatAceWindowsCarGapReadoutText("{ahead}、{behind}", AceWindowsGapData(3f, 0f)),
+            formatAceWindowsCarGapReadoutText(
+                ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT,
+                AceWindowsGapData(3f, 0f),
+            ),
         )
     }
 
@@ -58,7 +99,7 @@ class AceWindowsCarGapReadoutTextTest {
     fun `前後以外のトークンは置換せず未知プレースホルダーとして重複なしで返す`() {
         assertEquals(
             "前方1.0秒 {other} {other} {seconds}",
-            formatAceWindowsCarGapReadoutText("{ahead} {other} {other} {seconds}", AceWindowsGapData(1f, 2f)),
+            formatAceWindowsCarGapReadoutText("前方{ahead}秒 {other} {other} {seconds}", AceWindowsGapData(1f, 2f)),
         )
         assertEquals(
             listOf("{other}", "{seconds}"),
