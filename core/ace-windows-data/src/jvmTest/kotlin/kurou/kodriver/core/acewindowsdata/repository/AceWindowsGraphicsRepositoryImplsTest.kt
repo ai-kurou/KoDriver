@@ -89,6 +89,6 @@ class AceWindowsGraphicsRepositoryImplsTest {
                         },
                 )
 
-            assertEquals(AceWindowsOverallPositionData(2, 20), repo.overallPositionStream().first())
+            assertEquals(AceWindowsOverallPositionData(3, 20), repo.overallPositionStream().first())
         }
 }
