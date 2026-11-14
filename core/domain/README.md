@@ -228,7 +228,7 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 開始音とログには既存の `RemainingFuel.Root` を使い、手動優先で読み上げる。
 
 手動「前後車ギャップ」は新設の `AceWindowsReadoutItemKey.CarGap.Root`（`ace_windows_auto_car_gap`）を使う手動専用の1項目で、
-自動読み上げのスイッチ・保存設定は持たない（LMU の `ClassCarGap.Ahead` / `Behind` とは違い前後を1項目にまとめる）。
+自動読み上げのスイッチ・保存設定は持たない（LMU の `ClassCarGap.Root` と同様に前後を1項目にまとめる）。
 `AceWindowsGapRepository` の `AceWindowsGapData`（前車・後車との符号付き秒数）を `ObserveAceWindowsGapUseCase` 経由で受信し、
 受信から5秒以内のものを `AceWindowsManualReadoutItem.gap` に渡す。未受信・鮮度切れ・ACE以外への切り替え後は
 「前後車とのギャップはデータがありません」を読む。既定文言は `ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT`
