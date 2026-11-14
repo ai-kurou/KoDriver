@@ -52,7 +52,6 @@ class LmuWindowsManualReadoutPhrasesTest {
         val phrases = lmuWindowsManualReadoutItemPhrases(LmuWindowsReadoutItemKey.ClassCarGap.Root.value)
         assertTrue("前方" !in phrases)
         assertTrue("後方" !in phrases)
-        assertTrue("前との差" in phrases)
-        assertTrue("後ろとの差" in phrases)
+        assertEquals(listOf("ギャップ", "前後のギャップ", "前後の差", "前後の車", "前後車", "前後とのギャップ"), phrases)
     }
 }
