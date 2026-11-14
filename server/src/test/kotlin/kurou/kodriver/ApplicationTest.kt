@@ -4330,7 +4330,8 @@ private class FakeAceWindowsGapRepository : AceWindowsGapRepository {
 
 private val aceGapData = AceWindowsGapData(gapAheadSeconds = -1.5f, gapBehindSeconds = 2.25f)
 
-private const val ACE_GAP_JSON = """{"gapAheadSeconds":-1.5,"gapBehindSeconds":2.25}"""
+private const val ACE_GAP_JSON =
+    """{"gapAheadSeconds":-1.5,"gapBehindSeconds":2.25,"debugActiveCars":0,"debugRawWords":[]}"""
 
 private class FakeAceWindowsOverallPositionRepository : AceWindowsOverallPositionRepository {
     private val channel = Channel<AceWindowsOverallPositionData>(capacity = Channel.UNLIMITED)

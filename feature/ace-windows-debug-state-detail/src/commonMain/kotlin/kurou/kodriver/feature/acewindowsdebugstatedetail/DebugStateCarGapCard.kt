@@ -11,6 +11,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_car_gap_car_ahead
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_car_gap_car_behind
+import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_car_gap_debug_active_cars
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_car_gap_early_access_note
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_car_gap_overall_position
 import org.jetbrains.compose.resources.stringResource
@@ -52,6 +53,21 @@ internal fun CarGapContent(
         )
         Text(
             text = stringResource(Res.string.debug_state_car_gap_early_access_note),
+            style = MaterialTheme.typography.bodySmall,
+        )
+        gap?.let { GapDebugRawContent(it) }
+    }
+}
+
+@Composable
+private fun GapDebugRawContent(gap: AceWindowsGapData) {
+    Text(
+        text = stringResource(Res.string.debug_state_car_gap_debug_active_cars, gap.debugActiveCars),
+        style = MaterialTheme.typography.bodySmall,
+    )
+    gap.debugRawWords.forEachIndexed { index, raw ->
+        Text(
+            text = formatGapDebugWord(AceWindowsGapData.GAP_DEBUG_WINDOW_START_OFFSET + index * Int.SIZE_BYTES, raw),
             style = MaterialTheme.typography.bodySmall,
         )
     }

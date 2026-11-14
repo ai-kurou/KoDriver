@@ -258,6 +258,20 @@ class AceWindowsMapperTest {
     }
 
     @Test
+    fun `ギャップ調査用にactive_carsと周辺の生ワードを取得する`() {
+        val buffer = gapBuffer(1.5f, 2.5f)
+        buffer.put(3852, 9)
+
+        val result = AceWindowsMapper.mapGap(buffer)
+
+        assertEquals(9, result.debugActiveCars)
+        assertEquals(13, result.debugRawWords.size)
+        assertEquals(1.5f.toRawBits(), result.debugRawWords[6])
+        assertEquals(2.5f.toRawBits(), result.debugRawWords[7])
+        assertEquals(9, result.debugRawWords[8])
+    }
+
+    @Test
     fun `flag は全てのACEVO_FLAG_TYPEの値を取得できる`() {
         val expected =
             mapOf(
