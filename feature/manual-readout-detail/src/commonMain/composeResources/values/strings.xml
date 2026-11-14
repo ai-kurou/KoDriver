@@ -57,8 +57,8 @@
     <string name="manual_readout_virtual_energy_laps_hint">{laps}は残りエネルギーで走れる周回数に置き換わります。</string>
     <string name="manual_readout_tyre_wear_laps_hint">{laps}は残りタイヤ摩耗で走れる周回数に置き換わります。</string>
     <string name="manual_readout_fuel_laps_hint">{laps}は残り燃料で走れる周回数に置き換わります。</string>
-    <string name="manual_readout_car_gap_insert">{ahead}、{behind}を挿入</string>
-    <string name="manual_readout_car_gap_hint">{ahead}は前の車との差（例「前方1.5秒」）、{behind}は後ろの車との差（例「後方2.3秒」）に置き換わります。差が0秒のときは「前方車なし」「後方車なし」と読み上げます。</string>
+    <string name="manual_readout_car_gap_insert">前方{ahead}秒、後方{behind}秒を挿入</string>
+    <string name="manual_readout_car_gap_hint">{ahead}は前の車との差の秒数（例「1.5」）、{behind}は後ろの車との差の秒数（例「2.3」）に置き換わります。差が0秒のときは「前方車なし」「後方車なし」と読み上げます。節を含まない文言では「なし」と読み上げます。</string>
     <string name="manual_readout_class_car_gap_insert">{ahead}を挿入</string>
     <string name="manual_readout_class_car_gap_behind_insert">{behind}を挿入</string>
     <string name="manual_readout_class_car_gap_hint">{ahead}は「クラス内前方1.5秒」、{behind}は「後方1.5秒」のように同じクラスの前後の車との差（秒、小数1桁）に置き換わります。前に車がいないときは{ahead}を「クラス内先頭です」、後ろに車がいないときは{behind}を「クラス内最後尾です」と読み上げます。</string>

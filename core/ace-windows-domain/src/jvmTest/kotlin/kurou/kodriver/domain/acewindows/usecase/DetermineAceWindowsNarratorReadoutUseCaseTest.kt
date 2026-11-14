@@ -93,9 +93,14 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val state = AceWindowsNarratorState(vehicleApproaching = true)
         val gap = AceWindowsGapData(1.5f, -2.34f)
         listOf(
-            AceWindowsManualReadoutItem(key, "{ahead}、{behind} {other}", null, gap) to "前方1.5秒、後方2.3秒 {other}",
-            AceWindowsManualReadoutItem(key, "{ahead}、{behind}", null, AceWindowsGapData(0f, 0f)) to "前方車なし、後方車なし",
-            AceWindowsManualReadoutItem(key, "{ahead}、{behind}", null, null) to "前後車とのギャップはデータがありません",
+            AceWindowsManualReadoutItem(key, "前方{ahead}秒、後方{behind}秒 {other}", null, gap) to "前方1.5秒、後方2.3秒 {other}",
+            AceWindowsManualReadoutItem(
+                key,
+                "前方{ahead}秒、後方{behind}秒",
+                null,
+                AceWindowsGapData(0f, 0f),
+            ) to "前方車なし、後方車なし",
+            AceWindowsManualReadoutItem(key, "前方{ahead}秒、後方{behind}秒", null, null) to "前後車とのギャップはデータがありません",
             AceWindowsManualReadoutItem(key, "", null, null) to "",
             AceWindowsManualReadoutItem(key, "", null, gap) to "",
         ).forEach { (item, expected) ->
