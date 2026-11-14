@@ -106,7 +106,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 `processManualReadout` のログ JSON は `state`・`settings`・`observedAtMs` の3フィールドで、
 状態と設定は `toRawTelemetryLogJson` を使い、テレメトリの前回値・現在値を含めない。
 
-ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`TyreTemperature` の順。
+ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`TyreTemperature`、`CarGap` の順。
 手動「タイヤ温度」は既存の `AceWindowsReadoutItemKey.TyreTemperature.Root` を使い、
 `currentMaxTyreTemperatureCelsius` で `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい
 最高値を四捨五入した整数℃を取得する。未受信・受信から5秒超・有効な温度なし・ACE以外への切り替え後は
@@ -116,6 +116,19 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
 開始音とログには既存の `RemainingFuel.Root` を使い、手動優先で読み上げる。
+
+手動「前後車ギャップ」は新設の `AceWindowsReadoutItemKey.CarGap.Root`（`ace_windows_auto_car_gap`）を使う手動専用の1項目で、
+自動読み上げのスイッチ・保存設定は持たない（LMU の `ClassCarGap.Ahead` / `Behind` とは違い前後を1項目にまとめる）。
+`AceWindowsGapRepository` の `AceWindowsGapData`（前車・後車との符号付き秒数）を `ObserveAceWindowsGapUseCase` 経由で受信し、
+受信から5秒以内のものを `AceWindowsManualReadoutItem.gap` に渡す。未受信・鮮度切れ・ACE以外への切り替え後は
+「前後車とのギャップはデータがありません」を読む。既定文言は `ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT`
+（「{ahead}、{behind}」）で、`formatAceWindowsCarGapReadoutText` が `{ahead}` を「前方1.5秒」、`{behind}` を「後方2.3秒」に置換する。
+秒数は符号を無視した絶対値を小数1桁に丸め、0・小数1桁で0になる値・非有限値は「前方車なし」「後方車なし」にする。
+`findUnknownAceWindowsCarGapReadoutPlaceholders` で `{ahead}` `{behind}` 以外を未知として検出し、詳細画面の挿入チップは
+`{ahead}、{behind}` をまとめて挿入する。詳細画面のカテゴリはラップ、プレビューは前方1.5秒・後方2.3秒。
+`AceWindowsCarGapCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
+読み上げ時の開始音とログには他の ACE 手動項目と同じ `RemainingFuel.Root` を使い、試聴の開始音には `VehicleApproach.Root` を使う（`AceWindowsCarGapCurrentValue.readoutItemKey`・定義の `eventKey`）。ACE の共有メモリはクラス情報を持たず、マルチクラスレースもないため、
+クラス内かどうかは区別しない。
 
 音声認識の発話から届く `ObserveManualReadoutItemRequestsUseCase`（`ManualReadoutItemRequest(simulatorId, itemKey)`）も別の Job で購読し、ACE 宛ての依頼だけを、指定項目1つの一時セットとして `readManualReadout` に渡す。保存済みセットの編集文言は使わず既定文言で読む。1件の失敗で購読が止まらないよう依頼ごとに例外を `captureError` で記録する。
 読み上げに至った（`processManualReadout` が `SKIPPED` 以外の結果を返した）依頼は、`NotifyManualReadoutItemSpokenUseCase` で通知する。音声タブがこれを受けて、一致した語句（`ManualReadoutItemRequest.matchedPhrase`）を強調する。

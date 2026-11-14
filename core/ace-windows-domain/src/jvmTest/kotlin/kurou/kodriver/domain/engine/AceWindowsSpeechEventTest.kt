@@ -13,6 +13,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLA
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kotlin.test.BeforeTest
@@ -38,6 +39,22 @@ class AceWindowsSpeechEventTest {
         assertEquals("タイヤ温度は90℃", event.narratedText)
 
         assertEquals("温度90", event.withResolvedText("温度90").narratedText)
+
+        assertEquals("", event.withResolvedText("").narratedText)
+    }
+
+    @Test
+    fun `ACEの手動前後車ギャップは車両接近のキーと既定文言と解決済み本文を持つ`() {
+        val gap = AceWindowsGapData(1.5f, -2.3f)
+        val event = AceWindowsCarGapCurrentValue(gap)
+
+        assertEquals(AceWindowsReadoutItemKey.VehicleApproach.Root, event.readoutItemKey)
+
+        assertEquals(gap, event.gap)
+
+        assertEquals("前方1.5秒、後方2.3秒", event.narratedText)
+
+        assertEquals("前1.5", event.withResolvedText("前1.5").narratedText)
 
         assertEquals("", event.withResolvedText("").narratedText)
     }

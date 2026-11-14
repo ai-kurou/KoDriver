@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.acewindows.model
 
 import kurou.kodriver.domain.model.AceWindowsManualReadoutItem
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -40,9 +41,23 @@ class AceWindowsManualReadoutItemsTest {
     }
 
     @Test
-    fun `全項目の開始音キーは項目キー自身`() {
-        aceWindowsManualReadoutItemDefinitions.values.forEach { definition ->
-            assertEquals(definition.key, definition.eventKey.value)
-        }
+    fun `前後車ギャップ以外の開始音キーは項目キー自身で前後車ギャップは車両接近のキーを使う`() {
+        aceWindowsManualReadoutItemDefinitions.values
+            .filter { it.key != AceWindowsReadoutItemKey.CarGap.Root.value }
+            .forEach { definition -> assertEquals(definition.key, definition.eventKey.value) }
+        assertEquals(
+            AceWindowsReadoutItemKey.VehicleApproach.Root,
+            aceWindowsManualReadoutItemDefinitions.getValue(AceWindowsReadoutItemKey.CarGap.Root.value).eventKey,
+        )
+    }
+
+    @Test
+    fun `前後車ギャップの項目はギャップを保持しプレビューで前後の秒数に置換される`() {
+        val definition = aceWindowsManualReadoutItemDefinitions.getValue(AceWindowsReadoutItemKey.CarGap.Root.value)
+        assertEquals("前後車とのギャップ", definition.name)
+        assertEquals("前方1.5秒、後方2.3秒", definition.previewFormatter(definition.textDefault))
+        val gap = AceWindowsGapData(1f, 2f)
+        assertEquals(gap, AceWindowsManualReadoutItem("key", "text", null, gap).gap)
+        assertEquals(null, AceWindowsManualReadoutItem("key", "text", null).gap)
     }
 }

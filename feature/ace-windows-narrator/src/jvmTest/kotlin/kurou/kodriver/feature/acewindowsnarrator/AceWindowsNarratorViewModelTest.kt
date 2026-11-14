@@ -37,6 +37,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
@@ -46,6 +47,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeReposito
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
@@ -58,6 +60,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseC
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
@@ -186,6 +189,8 @@ class AceWindowsNarratorViewModelTest {
 
     private val vehicleApproachRepository: AceWindowsVehicleApproachRepository = mockk()
 
+    private val gapRepository: AceWindowsGapRepository = mockk()
+
     private val vehicleApproachPreferencesRepository: AceWindowsVehicleApproachPreferencesRepository = mockk()
 
     private val ttsEngine: TextToSpeechEngine = mockk()
@@ -207,6 +212,7 @@ class AceWindowsNarratorViewModelTest {
         flagChannel: Channel<AceWindowsFlagData> = Channel(Channel.UNLIMITED),
         tyreCarcassTemperatureChannel: Channel<AceWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
         vehicleApproachChannel: Channel<AceWindowsVehicleApproachData> = Channel(Channel.UNLIMITED),
+        gapChannel: Channel<AceWindowsGapData> = Channel(Channel.UNLIMITED),
         bestLapTimeChannel: Channel<AceWindowsBestLapTimeData> = Channel(Channel.UNLIMITED),
         remainingFuelLapsChannel: Channel<AceWindowsRemainingFuelLapsData> = Channel(Channel.UNLIMITED),
         currentTimeMs: () -> Long = { 0L },
@@ -220,6 +226,7 @@ class AceWindowsNarratorViewModelTest {
         every {
             vehicleApproachRepository.vehicleApproachStream()
         } returns vehicleApproachChannel.receiveAsFlow()
+        every { gapRepository.gapStream() } returns gapChannel.receiveAsFlow()
         every { bestLapTimeRepository.bestLapTimeStream() } returns bestLapTimeChannel.receiveAsFlow()
         every {
             remainingFuelLapsRepository.remainingFuelLapsStream()
@@ -290,6 +297,7 @@ class AceWindowsNarratorViewModelTest {
                         ObserveAceWindowsVehicleApproachEnabledStatesUseCase(vehicleApproachPreferencesRepository),
                     thresholds = AceWindowsVehicleApproachThresholdsUseCases(vehicleApproachPreferencesRepository),
                 ),
+            carGapUseCases = CarGapUseCases(ObserveAceWindowsGapUseCase(gapRepository)),
             eventProcessor =
                 AceWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
@@ -688,6 +696,54 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `手動前後車ギャップは5秒以内なら前後の秒数を読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                expectedText = "前方1.5秒、後方2.3秒",
+                valueAgeMs = 5_000L,
+                switchSimulator = false,
+                itemKeys = listOf(AceWindowsReadoutItemKey.CarGap.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動前後車ギャップは未受信ならデータなしを読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                expectedText = "前後車とのギャップはデータがありません",
+                valueAgeMs = null,
+                switchSimulator = false,
+                itemKeys = listOf(AceWindowsReadoutItemKey.CarGap.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動前後車ギャップは5秒超ならデータなしを読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                expectedText = "前後車とのギャップはデータがありません",
+                valueAgeMs = 5_001L,
+                switchSimulator = false,
+                itemKeys = listOf(AceWindowsReadoutItemKey.CarGap.Root.value),
+            )
+        }
+
+    @Test
+    fun `シミュレーターを切り替えると手動前後車ギャップの現在値をクリアする`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = true,
+                expectedText = "前後車とのギャップはデータがありません",
+                valueAgeMs = 0L,
+                switchSimulator = true,
+                itemKeys = listOf(AceWindowsReadoutItemKey.CarGap.Root.value),
+            )
+        }
+
+    @Test
     fun `シミュレーターを切り替えると手動タイヤ温度の現在値をクリアする`() =
         runTest(testDispatcher) {
             assertManualReadout(
@@ -745,10 +801,12 @@ class AceWindowsNarratorViewModelTest {
         val lapsChannel = Channel<AceWindowsRemainingFuelLapsData>(Channel.UNLIMITED)
         val bestLapChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
         val tyreChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val gapChannel = Channel<AceWindowsGapData>(Channel.UNLIMITED)
         val viewModel =
             createViewModel(
                 fuelChannel,
                 ttsEngine,
+                gapChannel = gapChannel,
                 remainingFuelLapsChannel = lapsChannel,
                 bestLapTimeChannel = bestLapChannel,
                 tyreCarcassTemperatureChannel = tyreChannel,
@@ -770,6 +828,10 @@ class AceWindowsNarratorViewModelTest {
 
                     AceWindowsReadoutItemKey.TyreTemperature.Root.value in items -> {
                         tyreChannel.send(tyreCarcassTemperature(84.5f))
+                    }
+
+                    AceWindowsReadoutItemKey.CarGap.Root.value in items -> {
+                        gapChannel.send(AceWindowsGapData(1.5f, -2.34f))
                     }
 
                     else -> {
