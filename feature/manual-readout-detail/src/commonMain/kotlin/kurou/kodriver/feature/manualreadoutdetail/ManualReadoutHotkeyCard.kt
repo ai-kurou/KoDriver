@@ -2,6 +2,7 @@ package kurou.kodriver.feature.manualreadoutdetail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.MutableTransitionState
@@ -202,26 +203,33 @@ private fun ManualReadoutHotkeyRegistration(
     registration: HotkeyRegistrationState,
     onRetry: () -> Unit,
 ) {
-    when (registration) {
-        HotkeyRegistrationState.Unsupported -> {
-        }
+    // Unsupported は何も表示しない。Crossfade を置くと空の子要素が増えて親の spacedBy の間隔だけが残るため、置かない。
+    if (registration == HotkeyRegistrationState.Unsupported) return
+    Crossfade(targetState = registration, label = "manualReadoutHotkeyRegistration") { animatedRegistration ->
+        when (animatedRegistration) {
+            HotkeyRegistrationState.Unsupported -> {
+            }
 
-        HotkeyRegistrationState.Registering -> {
-            Text(stringResource(Res.string.manual_readout_hotkey_registration_registering))
-        }
+            HotkeyRegistrationState.Registering -> {
+                Text(stringResource(Res.string.manual_readout_hotkey_registration_registering))
+            }
 
-        HotkeyRegistrationState.Registered -> {
-            Text(stringResource(Res.string.manual_readout_hotkey_registration_registered))
-        }
+            HotkeyRegistrationState.Registered -> {
+                Text(stringResource(Res.string.manual_readout_hotkey_registration_registered))
+            }
 
-        HotkeyRegistrationState.Conflict -> {
-            Text(stringResource(Res.string.manual_readout_hotkey_registration_conflict))
-        }
+            HotkeyRegistrationState.Conflict -> {
+                Text(stringResource(Res.string.manual_readout_hotkey_registration_conflict))
+            }
 
-        is HotkeyRegistrationState.Failed -> {
-            Text(
-                stringResource(Res.string.manual_readout_hotkey_registration_failed, registration.errorCode),
-            )
+            is HotkeyRegistrationState.Failed -> {
+                Text(
+                    stringResource(
+                        Res.string.manual_readout_hotkey_registration_failed,
+                        animatedRegistration.errorCode,
+                    ),
+                )
+            }
         }
     }
     if (registration is HotkeyRegistrationState.Conflict || registration is HotkeyRegistrationState.Failed) {

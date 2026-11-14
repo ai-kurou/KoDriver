@@ -18,6 +18,7 @@ kotlin {
             implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.lmuWindowsDomain)
             implementation(libs.compose.foundation)
+            implementation(libs.compose.animation)
             implementation(libs.compose.material.icons.extended)
             implementation(libs.reorderable)
             implementation(libs.androidx.lifecycle.runtimeCompose)
