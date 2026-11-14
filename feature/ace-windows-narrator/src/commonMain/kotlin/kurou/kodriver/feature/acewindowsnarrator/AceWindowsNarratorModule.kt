@@ -13,6 +13,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStat
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase
@@ -64,7 +65,7 @@ import org.koin.dsl.module
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
  *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / RemainingFuelLapsUseCases /
- *   ManualReadoutUseCases / SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases /
+ *   ManualReadoutUseCases / SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases / CarGapUseCases /
  *   AceWindowsRemainingFuelReadoutTextUseCases / AceWindowsReadoutTextUseCases）、
  *   それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・
@@ -86,6 +87,7 @@ val aceWindowsNarratorModule: Module =
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
         viewModel {
             AceWindowsNarratorViewModel(
+                get(),
                 get(),
                 get(),
                 get(),
@@ -118,6 +120,7 @@ val aceWindowsNarratorModule: Module =
         factory { FlagUseCases(get(), get()) }
         factory { TyreTemperatureUseCases(get(), get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get()) }
+        factory { CarGapUseCases(get()) }
         factory {
             AceWindowsNarratorEventProcessor(
                 get(named(Simulator.AceWindows.id)),
@@ -131,6 +134,7 @@ val aceWindowsNarratorModule: Module =
         factory { SaveTelemetryLogUseCase(get()) }
         factory { ObserveAceWindowsBestLapTimeUseCase(get()) }
         factory { ObserveAceWindowsFuelUseCase(get()) }
+        factory { ObserveAceWindowsGapUseCase(get()) }
         factory { ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(get()) }
         factory { ObserveAceWindowsRemainingFuelLapsUseCase(get()) }
         factory { ObserveAceWindowsRemainingFuelLapsThresholdUseCase(get()) }

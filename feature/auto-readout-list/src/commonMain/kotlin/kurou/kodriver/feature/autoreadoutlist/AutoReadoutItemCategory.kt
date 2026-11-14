@@ -45,10 +45,17 @@ private fun gt7Ps5ItemCategory(itemId: Gt7Ps5ReadoutItemKey): ManualReadoutItemC
 private fun aceWindowsItemCategory(itemId: AceWindowsReadoutItemKey): ManualReadoutItemCategory? =
     when (itemId) {
         is AceWindowsReadoutItemKey.RemainingFuel -> ManualReadoutItemCategory.FUEL
+
         is AceWindowsReadoutItemKey.RemainingFuelLaps -> ManualReadoutItemCategory.FUEL
+
         is AceWindowsReadoutItemKey.TyreTemperature -> ManualReadoutItemCategory.TYRE
+
         is AceWindowsReadoutItemKey.MyBestLap -> ManualReadoutItemCategory.LAP
-        is AceWindowsReadoutItemKey.VehicleApproach, is AceWindowsReadoutItemKey.Flag -> null
+
+        is AceWindowsReadoutItemKey.VehicleApproach,
+        is AceWindowsReadoutItemKey.Flag,
+        is AceWindowsReadoutItemKey.CarGap,
+        -> null
     }
 
 /** 手動タブ・音声タブと同じ、読み上げカテゴリ専用の拡張カラー。 */

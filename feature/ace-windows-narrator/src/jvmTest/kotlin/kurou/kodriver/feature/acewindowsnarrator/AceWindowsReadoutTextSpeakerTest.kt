@@ -13,6 +13,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagReadoutTextKey
+import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
@@ -23,6 +24,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsCarGapCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
 import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
@@ -115,6 +117,19 @@ class AceWindowsReadoutTextSpeakerTest {
     fun `手動タイヤ温度本文を再生する`() =
         runTest {
             val event = AceWindowsTyreTemperatureCurrentValue(90)
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText(event.narratedText, volume = 80) } just Runs
+            assertEquals(event.narratedText, speaker.readoutText(event))
+            speaker(event, 80)
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText(event.narratedText, volume = 80) }
+            confirmVerified(checkAvailable, speakText)
+        }
+
+    @Test
+    fun `手動前後車ギャップ本文を再生する`() =
+        runTest {
+            val event = AceWindowsCarGapCurrentValue(AceWindowsGapData(1.5f, 2.3f))
             coEvery { checkAvailable() } returns true
             coEvery { speakText(event.narratedText, volume = 80) } just Runs
             assertEquals(event.narratedText, speaker.readoutText(event))

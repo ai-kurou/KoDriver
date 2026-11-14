@@ -1,6 +1,6 @@
 # manual-readout-list
 
-手動読み上げセットの一覧・依頼・ナビゲーションを担う feature モジュール。シミュレーター ID と表示名を受け取り、選択中シミュレーターの保存済みセット一覧を ViewModel で観測する。見出し右端の2つのセグメントから選んで標準表示と再生ボタン表示を切り替える設定を保存する。再生ボタン表示は2列固定の大きな再生ボタンタイルで、タップで再生し、長押しすると標準表示と同じ「編集」「削除」メニューを表示する。セットが1件以上あるときは見出し行の下に「Nセット」を表示する（狭い幅で操作部を潰さないため別行）。ホットキーチップは対応環境で割り当て済みのみ表示する。再生不可または項目なしのタイルは再生できない。末尾の追加タイルはセット0件でも表示する。標準表示では、保存済みセットが0件なら説明シート付きの見出しと、選択中シミュレーター名入りの空状態を表示する。1件以上なら説明見出し行の下に、保存済みセットを1件1行のカードで表示する。各行にはセット名（未設定なら固定番号の「セット N」）と、カテゴリのアイコン・名称・件数をチップで表示する。カテゴリはバーチャルエネルギー・燃料・タイヤ・ブレーキ・ラップの5種で、最初の出現順に集計し、不明なキーは無視する。項目キーが空なら「項目なし」、不明なキーだけなら「N項目」とする。左端の5dpストライプは先頭カテゴリの色、カテゴリなしは outlineVariant。右端の再生ボタンは52dpの塗りつぶし円。再生タイルには同じ順序のカテゴリ色ドットも表示する。カテゴリ色は `:core:designsystem` の拡張カラー（`KoDriverExtendedColors`）を参照する。右下の「セットを追加」拡張 FAB は標準表示で常時表示し、UUID を ID とする空のセットを`AddManualReadoutSetUseCase` を通じて保存済みセットの末尾へアトミックに追加する。LMU・GT7・ACE の行の右端の ▶ は `RequestManualReadoutUseCase` で `ManualReadoutRequest(simulatorId, setId)` を送る。`canReadSets` は全シミュレーターで true。ACE の対象セットに燃料残量・燃料残り周回数・自己ベストラップ・タイヤ温度、GT7 の対象セットに燃料残量・燃料残り周回数・タイヤ温度・自己ベストラップ、または LMU の対象セットにバーチャルエネルギー残量・燃料残量・タイヤ摩耗・ブレーキ残量・ブレーキ温度・タイヤ温度・自己ベストラップ・バーチャルエネルギーの残り周回数・タイヤ摩耗の残り周回数の項目が含まれる場合は、保存した項目順に現在値の文を「、」でつないだ1イベントとして自動読み上げスイッチに関係なく読み、キュー設定に関係なく手動優先で読み上げる（自動の再生中は停止して先に読み、手動の再生中は末尾へ並べる）。対象項目がないセットは、データの有無に関係なく編集不可の固定文言「読み上げる項目がありません」を開始音付きで読み上げ、手動優先で読み上げ、ログを保存する。セットが見つからない場合は読み上げない。一部の項目が未受信・鮮度切れなら「<項目名>はデータがありません」を連結し、LMU も ACE・GT7 と同様に先頭 `MANUAL_READOUT_SET_ITEM_MAX`（3件）までを開始音付きで読み上げ、手動優先で読み上げ、ログを保存する。行タップで詳細を開く。行（再生ボタン表示ではタイル）を長押しすると、右端に揃えた「編集」「削除」メニューを表示する（「編集」は行タップと同じく詳細を開く）。「削除」は確認ダイアログで確定すると `DeleteManualReadoutSetUseCase` でセットを削除する。選択中のセットを削除すると選択が解除され詳細も閉じる。詳細は `ManualReadoutContent` のスロットとして受け取り、詳細モジュールへの依存は持たない。詳細スロットに `canNavigateBack` と `onBack` を渡し、戻るボタンと削除後の通知で一覧に戻る。説明シートでは読み上げ・順番待ち・データがないときの動作・長押しによる編集・削除を説明し（両表示共通）、Windows デスクトップ版のみ（macOS/Linux では表示しない）ホットキーの説明と、その直下に SimHub 手順書を外部ブラウザで開くリンクを表示する。アプリの「手動」タブから表示され、離脱時に選択は解除せず、他タブから戻ると選択中のセットの詳細を引き続き表示する。選択はシミュレーターごとの ViewModel が保持する。
+手動読み上げセットの一覧・依頼・ナビゲーションを担う feature モジュール。シミュレーター ID と表示名を受け取り、選択中シミュレーターの保存済みセット一覧を ViewModel で観測する。見出し右端の2つのセグメントから選んで標準表示と再生ボタン表示を切り替える設定を保存する。再生ボタン表示は2列固定の大きな再生ボタンタイルで、タップで再生し、長押しすると標準表示と同じ「編集」「削除」メニューを表示する。セットが1件以上あるときは見出し行の下に「Nセット」を表示する（狭い幅で操作部を潰さないため別行）。ホットキーチップは対応環境で割り当て済みのみ表示する。再生不可または項目なしのタイルは再生できない。末尾の追加タイルはセット0件でも表示する。標準表示では、保存済みセットが0件なら説明シート付きの見出しと、選択中シミュレーター名入りの空状態を表示する。1件以上なら説明見出し行の下に、保存済みセットを1件1行のカードで表示する。各行にはセット名（未設定なら固定番号の「セット N」）と、カテゴリのアイコン・名称・件数をチップで表示する。カテゴリはバーチャルエネルギー・燃料・タイヤ・ブレーキ・ラップの5種で、最初の出現順に集計し、不明なキーは無視する。項目キーが空なら「項目なし」、不明なキーだけなら「N項目」とする。左端の5dpストライプは先頭カテゴリの色、カテゴリなしは outlineVariant。右端の再生ボタンは52dpの塗りつぶし円。再生タイルには同じ順序のカテゴリ色ドットも表示する。カテゴリ色は `:core:designsystem` の拡張カラー（`KoDriverExtendedColors`）を参照する。右下の「セットを追加」拡張 FAB は標準表示で常時表示し、UUID を ID とする空のセットを`AddManualReadoutSetUseCase` を通じて保存済みセットの末尾へアトミックに追加する。LMU・GT7・ACE の行の右端の ▶ は `RequestManualReadoutUseCase` で `ManualReadoutRequest(simulatorId, setId)` を送る。`canReadSets` は全シミュレーターで true。ACE の対象セットに燃料残量・燃料残り周回数・自己ベストラップ・タイヤ温度・前後車ギャップ、GT7 の対象セットに燃料残量・燃料残り周回数・タイヤ温度・自己ベストラップ、または LMU の対象セットにバーチャルエネルギー残量・燃料残量・タイヤ摩耗・ブレーキ残量・ブレーキ温度・タイヤ温度・自己ベストラップ・バーチャルエネルギーの残り周回数・タイヤ摩耗の残り周回数の項目が含まれる場合は、保存した項目順に現在値の文を「、」でつないだ1イベントとして自動読み上げスイッチに関係なく読み、キュー設定に関係なく手動優先で読み上げる（自動の再生中は停止して先に読み、手動の再生中は末尾へ並べる）。対象項目がないセットは、データの有無に関係なく編集不可の固定文言「読み上げる項目がありません」を開始音付きで読み上げ、手動優先で読み上げ、ログを保存する。セットが見つからない場合は読み上げない。一部の項目が未受信・鮮度切れなら「<項目名>はデータがありません」を連結し、LMU も ACE・GT7 と同様に先頭 `MANUAL_READOUT_SET_ITEM_MAX`（3件）までを開始音付きで読み上げ、手動優先で読み上げ、ログを保存する。行タップで詳細を開く。行（再生ボタン表示ではタイル）を長押しすると、右端に揃えた「編集」「削除」メニューを表示する（「編集」は行タップと同じく詳細を開く）。「削除」は確認ダイアログで確定すると `DeleteManualReadoutSetUseCase` でセットを削除する。選択中のセットを削除すると選択が解除され詳細も閉じる。詳細は `ManualReadoutContent` のスロットとして受け取り、詳細モジュールへの依存は持たない。詳細スロットに `canNavigateBack` と `onBack` を渡し、戻るボタンと削除後の通知で一覧に戻る。説明シートでは読み上げ・順番待ち・データがないときの動作・長押しによる編集・削除を説明し（両表示共通）、Windows デスクトップ版のみ（macOS/Linux では表示しない）ホットキーの説明と、その直下に SimHub 手順書を外部ブラウザで開くリンクを表示する。アプリの「手動」タブから表示され、離脱時に選択は解除せず、他タブから戻ると選択中のセットの詳細を引き続き表示する。選択はシミュレーターごとの ViewModel が保持する。
 
 セット追加（FAB／タイル）と表示切替、標準カード内の再生ボタンと再生タイルの再生操作には `ContextClick` の触覚フィードバックを1回返す。再生不可の操作では返さず、選択・長押しのフィードバックと重複させない。選択済みの表示セグメントでは返さない。標準行タップ・長押しメニューの編集・手順書リンクの既存フィードバックは維持する。カテゴリチップは表示専用で、状態の同期や追加アニメーションでは触覚を返さない。`ManualReadoutListPaneHapticTest` で操作ごとの回数と重複しないことを確認する。
 
@@ -85,6 +85,7 @@ LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingF
 | ACE Windows | 燃料残り周回数 | `RemainingFuelLaps.Root` | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT` | `RemainingFuel.Root` |
 | ACE Windows | 自己ベストラップ | `MyBestLap.Root` | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT` | `RemainingFuel.Root` |
 | ACE Windows | タイヤ温度 | `TyreTemperature.Root` | `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT` | `RemainingFuel.Root` |
+| ACE Windows | 前後車ギャップ | `CarGap.Root` | `ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT` | `RemainingFuel.Root` |
 
 - LMU の開始音・優先度・ログのキーは、先頭の対応項目から決まる。`PitTiming.VirtualEnergy`・`PitTiming.TyreWear` は `PitTiming.Root`、`RemainingFuel.Laps` は `RemainingFuel.Root`、`ClassCarGap.Root` は `VehicleApproach.Root` を使う。それ以外は先頭項目自身の `Root` を使い、対応項目がない場合は `RemainingVirtualEnergy.Root` を使う。
 - GT7 と ACE は、表の「開始音・優先度・ログのキー」列を固定のキーとして使う（GT7・ACE の表の列は `RemainingFuel.Root` 固定。項目の既定文言は各行の定数）。
@@ -141,7 +142,7 @@ GT7 の手動「自己ベストラップ」は `MyBestLap.Root` を使い、`cur
 項目選択肢は詳細側の `manualReadoutItemKeys(simulatorId)` から取得するため、一覧側にシミュレーター別の候補は持たない。
 ACE の空セット追加・詳細遷移・一覧の ▶ の配線は既存経路を使う。
 
-ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`TyreTemperature` の順。
+ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`TyreTemperature`、`CarGap` の順。
 手動「タイヤ温度」は既存の `AceWindowsReadoutItemKey.TyreTemperature.Root` を使い、
 `currentMaxTyreTemperatureCelsius` で `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい
 最高値を四捨五入した整数℃を取得する。未受信・受信から5秒超・有効な温度なし・ACE以外への切り替え後は
@@ -151,6 +152,19 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
 開始音とログには既存の `RemainingFuel.Root` を使い、手動優先で読み上げる。
+
+手動「前後車ギャップ」は新設の `AceWindowsReadoutItemKey.CarGap.Root`（`ace_windows_auto_car_gap`）を使う手動専用の1項目で、
+自動読み上げのスイッチ・保存設定は持たない（LMU の `ClassCarGap.Ahead` / `Behind` とは違い前後を1項目にまとめる）。
+`AceWindowsGapRepository` の `AceWindowsGapData`（前車・後車との符号付き秒数）を `ObserveAceWindowsGapUseCase` 経由で受信し、
+受信から5秒以内のものを `AceWindowsManualReadoutItem.gap` に渡す。未受信・鮮度切れ・ACE以外への切り替え後は
+「前後車とのギャップはデータがありません」を読む。既定文言は `ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT`
+（「{ahead}、{behind}」）で、`formatAceWindowsCarGapReadoutText` が `{ahead}` を「前方1.5秒」、`{behind}` を「後方2.3秒」に置換する。
+秒数は符号を無視した絶対値を小数1桁に丸め、0・小数1桁で0になる値・非有限値は「前方車なし」「後方車なし」にする。
+`findUnknownAceWindowsCarGapReadoutPlaceholders` で `{ahead}` `{behind}` 以外を未知として検出し、詳細画面の挿入チップは
+`{ahead}、{behind}` をまとめて挿入する。詳細画面のカテゴリはラップ、プレビューは前方1.5秒・後方2.3秒。
+`AceWindowsCarGapCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
+読み上げ時の開始音とログには他の ACE 手動項目と同じ `RemainingFuel.Root` を使い、試聴の開始音には `VehicleApproach.Root` を使う（`AceWindowsCarGapCurrentValue.readoutItemKey`・定義の `eventKey`）。ACE の共有メモリはクラス情報を持たず、マルチクラスレースもないため、
+クラス内かどうかは区別しない。
 
 対応シミュレーターの判定（`canReadManualReadoutSets`）・項目カテゴリ・SimHub 案内の表示有無は、
 `ReadoutItemKeyRegistry` に登録された `ManualReadoutSimulatorSpec` から引く（詳細は `core/domain/README.md`）。

@@ -305,6 +305,69 @@ class ManualReadoutSetDetailPaneTextEditTest {
     }
 
     @Test
+    fun `ACEの前後車ギャップの文言欄は前後の挿入と警告とリセットと文字数上限を扱う`() {
+        val key = AceWindowsReadoutItemKey.CarGap.Root.value
+        val defaultText = aceWindowsManualReadoutItemTextDefault(key)
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.AceWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = listOf(key),
+                ),
+            )
+        val saved = mutableListOf<Pair<String, String>>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
+                    onRemoveItem = { state.value = state.value.copy(selectedItemKeys = emptyList()) },
+                    onDelete = {},
+                    showHotkey = false,
+                    onItemTextChanged = { itemKey, text ->
+                        saved.add(itemKey to text)
+                        state.value = state.value.copy(itemTexts = state.value.itemTexts + (itemKey to text.trim()))
+                    },
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).assertDoesNotExist()
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("前後車とのギャップ").performClick()
+        rule.onNodeWithText(defaultText).assertExists()
+        val carGapHint =
+            "{ahead}は前の車との差（例「前方1.5秒」）、{behind}は後ろの車との差（例「後方2.3秒」）に置き換わります。" +
+                "差が0秒のときは「前方車なし」「後方車なし」と読み上げます。"
+        rule.onNodeWithText(carGapHint).assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("")
+        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
+        rule.onNodeWithText("{ahead}、{behind}を挿入").performClick()
+        rule.onNodeWithText("{ahead}、{behind}").assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("あと{percent}")
+        rule.onNodeWithText("未対応のプレースホルダー: {percent}（そのまま読み上げます）").assertExists()
+        rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
+        rule.onNodeWithText(defaultText).assertExists()
+        rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
+        rule.onNodeWithText("{ahead}、{behind}を挿入").performClick()
+        rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
+        rule.onNodeWithContentDescription("前後車とのギャップを削除").performClick()
+        rule.onNode(hasSetTextAction()).assertDoesNotExist()
+        rule.runOnIdle {
+            assertEquals(
+                listOf(
+                    key to "",
+                    key to "{ahead}、{behind}",
+                    key to "あと{percent}",
+                    key to defaultText,
+                    key to "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH),
+                ),
+                saved,
+            )
+        }
+    }
+
+    @Test
     fun `自己ベストラップの文言欄はラップタイムの挿入と警告とリセットと文字数上限を扱う`() {
         val key = LmuWindowsReadoutItemKey.MyBestLap.Root.value
         val defaultText = lmuWindowsManualReadoutItemTextDefault(key)
