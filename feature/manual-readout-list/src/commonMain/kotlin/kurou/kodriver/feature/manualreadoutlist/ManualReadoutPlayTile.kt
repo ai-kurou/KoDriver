@@ -108,8 +108,12 @@ internal fun ManualReadoutSetPlayButton(
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 ManualReadoutCategoryDots(remember(set.itemKeys) { manualReadoutCategorySummary(set.itemKeys) })
-                if (showHotkeyChip && manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null) {
-                    ManualReadoutHotkeyChip(set, playButtonLayout = true)
+                val hasHotkeyLabel = manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null
+                // ホットキー解除後の退場アニメーション中に「未割り当て」チップが出ないよう、最後に割り当て済みだったセットを保つ。
+                var lastAssignedSet by remember { mutableStateOf(set) }
+                if (hasHotkeyLabel) lastAssignedSet = set
+                ManualReadoutHotkeyChipAnimatedVisibility(visible = showHotkeyChip && hasHotkeyLabel) {
+                    ManualReadoutHotkeyChip(lastAssignedSet, playButtonLayout = true)
                 }
             }
         }
