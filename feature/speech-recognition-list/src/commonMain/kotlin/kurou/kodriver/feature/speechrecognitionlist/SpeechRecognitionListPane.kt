@@ -51,6 +51,7 @@ import kurou.kodriver.core.designsystem.KoDriverPhraseChip
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
+import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.domain.model.SpeechCommandGuideGroup
 import kurou.kodriver.domain.model.SpeechCommandGuideItem
@@ -82,23 +83,30 @@ private const val BLINK_HALF_PERIOD_MS = 300
 
 /**
  * 「音声」タブの一覧（listPane）。選択中のシミュレーターについて、「コドライバー」と呼びかけたあとに言うと読み上げられる語句を、
- * 読み上げ項目ごとのカードで一覧にする。[recognitionCard] には、呼びかけの案内の下に置く音声認識の状態カードを渡す
+ * 読み上げ項目ごとのカードで一覧にする。[scrollToTopRequest] が増えるたびに先頭へスクロールする（タブ再タップ用）。[recognitionCard] には、呼びかけの案内の下に置く音声認識の状態カードを渡す
  * （feature 同士は依存しないため、呼び出し側が差し込む）。
  */
 @Composable
 fun SpeechRecognitionListPane(
     modifier: Modifier = Modifier,
+    scrollToTopRequest: Int = 0,
     recognitionCard: @Composable () -> Unit = {},
 ) {
     val viewModel: SpeechRecognitionListViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    SpeechRecognitionListPaneContent(uiState = uiState, modifier = modifier, recognitionCard = recognitionCard)
+    SpeechRecognitionListPaneContent(
+        uiState = uiState,
+        modifier = modifier,
+        scrollToTopRequest = scrollToTopRequest,
+        recognitionCard = recognitionCard,
+    )
 }
 
 @Composable
 internal fun SpeechRecognitionListPaneContent(
     uiState: SpeechRecognitionListUiState,
     modifier: Modifier = Modifier,
+    scrollToTopRequest: Int = 0,
     recognitionCard: @Composable () -> Unit = {},
 ) {
     val bottomEndOverlayInset = LocalBottomEndOverlayInset.current
@@ -106,6 +114,9 @@ internal fun SpeechRecognitionListPaneContent(
     val highlight = uiState.highlight
     LaunchedEffect(highlight) {
         if (highlight != null) listState.scrollToSpeechCommandItem(uiState.groups, highlight.itemKey)
+    }
+    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+        listState.animateScrollToItem(0)
     }
     LazyColumn(
         state = listState,

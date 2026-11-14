@@ -151,8 +151,11 @@ fun AppScreen(
                 )
             }
         },
-    speechRecognitionContent: @Composable () -> Unit = {
-        SpeechRecognitionListPane(recognitionCard = { LocalSpeechRecognition.current.card(Modifier) })
+    speechRecognitionContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
+        SpeechRecognitionListPane(
+            scrollToTopRequest = scrollToTopRequest,
+            recognitionCard = { LocalSpeechRecognition.current.card(Modifier) },
+        )
     },
     otherContent: @Composable (
         scrollToTopRequest: Int,
@@ -186,6 +189,7 @@ fun AppScreen(
     var manualReadoutTabReselectRequest by rememberSaveable { mutableIntStateOf(0) }
     var autoReadoutListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
     var otherListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
+    var speechRecognitionScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
 
     AppStartupEffects(
         darkTheme = darkTheme,
@@ -262,6 +266,7 @@ fun AppScreen(
                     requestScrollToTop = { autoReadoutListScrollToTopRequest++ },
                 )
             },
+            onSpeechRecognitionTabReselected = { speechRecognitionScrollToTopRequest++ },
             onOtherTabReselected = {
                 handleTabReselected(
                     selectedItem = otherListUiState.selectedItem,
@@ -272,6 +277,7 @@ fun AppScreen(
             autoReadoutContent = autoReadoutContent,
             autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
             otherListScrollToTopRequest = otherListScrollToTopRequest,
+            speechRecognitionScrollToTopRequest = speechRecognitionScrollToTopRequest,
             manualReadoutContent = manualReadoutContent,
             speechRecognitionContent = speechRecognitionContent,
             otherContent = otherContent,
@@ -346,13 +352,15 @@ internal fun AppScreenContent(
     onManualReadoutTabReselected: () -> Unit = {},
     manualReadoutTabReselectRequest: Int = 0,
     onAutoReadoutTabReselected: () -> Unit = {},
+    onSpeechRecognitionTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
     autoReadoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     autoReadoutListScrollToTopRequest: Int = 0,
     manualReadoutContent: @Composable (selectedSimulatorId: String, tabReselectRequest: Int) -> Unit = { _, _ -> },
-    speechRecognitionContent: @Composable () -> Unit = {},
+    speechRecognitionContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit = { _, _ -> },
     otherListScrollToTopRequest: Int = 0,
+    speechRecognitionScrollToTopRequest: Int = 0,
 ) {
     val navigationState = rememberAppNavigationState()
     // 権限の要求はその場で行うため、その他タブへは切り替えない（IPアドレスの設定が必要な遷移のみ切り替える）
@@ -399,6 +407,7 @@ internal fun AppScreenContent(
                 onManualReadoutTabReselected = onManualReadoutTabReselected,
                 manualReadoutTabReselectRequest = manualReadoutTabReselectRequest,
                 onAutoReadoutTabReselected = onAutoReadoutTabReselected,
+                onSpeechRecognitionTabReselected = onSpeechRecognitionTabReselected,
                 onOtherTabReselected = onOtherTabReselected,
                 autoReadoutContent = autoReadoutContent,
                 autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
@@ -406,6 +415,7 @@ internal fun AppScreenContent(
                 speechRecognitionContent = speechRecognitionContent,
                 otherContent = otherContent,
                 otherListScrollToTopRequest = otherListScrollToTopRequest,
+                speechRecognitionScrollToTopRequest = speechRecognitionScrollToTopRequest,
             )
         }
     }
@@ -430,13 +440,15 @@ private fun AppScreenScaffold(
     onManualReadoutTabReselected: () -> Unit,
     manualReadoutTabReselectRequest: Int,
     onAutoReadoutTabReselected: () -> Unit,
+    onSpeechRecognitionTabReselected: () -> Unit,
     onOtherTabReselected: () -> Unit,
     autoReadoutContent: @Composable (scrollToTopRequest: Int) -> Unit,
     autoReadoutListScrollToTopRequest: Int,
     manualReadoutContent: @Composable (selectedSimulatorId: String, tabReselectRequest: Int) -> Unit,
-    speechRecognitionContent: @Composable () -> Unit,
+    speechRecognitionContent: @Composable (scrollToTopRequest: Int) -> Unit,
     otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit,
     otherListScrollToTopRequest: Int,
+    speechRecognitionScrollToTopRequest: Int,
 ) {
     val haptic = LocalHapticFeedback.current
     var simulatorMenuExpanded by remember { mutableStateOf(false) }
@@ -472,7 +484,7 @@ private fun AppScreenScaffold(
                                 when (reselected) {
                                     AppDestination.AutoReadout -> onAutoReadoutTabReselected()
                                     AppDestination.ManualReadout -> onManualReadoutTabReselected()
-                                    AppDestination.SpeechRecognition -> Unit
+                                    AppDestination.SpeechRecognition -> onSpeechRecognitionTabReselected()
                                     AppDestination.More -> onOtherTabReselected()
                                 }
                             }
@@ -533,7 +545,7 @@ private fun AppScreenScaffold(
                         manualReadoutContent = {
                             manualReadoutContent(selectedSimulatorId, manualReadoutTabReselectRequest)
                         },
-                        speechRecognitionContent = speechRecognitionContent,
+                        speechRecognitionContent = { speechRecognitionContent(speechRecognitionScrollToTopRequest) },
                         otherContent = { otherContent(otherListScrollToTopRequest, selectedSimulatorId) },
                     )
                 }
