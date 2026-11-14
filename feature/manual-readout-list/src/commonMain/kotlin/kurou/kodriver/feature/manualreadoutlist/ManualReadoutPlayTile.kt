@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutlist
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -108,7 +109,13 @@ internal fun ManualReadoutSetPlayButton(
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 ManualReadoutCategoryDots(remember(set.itemKeys) { manualReadoutCategorySummary(set.itemKeys) })
-                if (showHotkeyChip && manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null) {
+                AnimatedVisibility(
+                    visible =
+                        showHotkeyChip &&
+                            manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null,
+                    enter = ManualReadoutHotkeyChipEnter,
+                    exit = ManualReadoutHotkeyChipExit,
+                ) {
                     ManualReadoutHotkeyChip(set, playButtonLayout = true)
                 }
             }

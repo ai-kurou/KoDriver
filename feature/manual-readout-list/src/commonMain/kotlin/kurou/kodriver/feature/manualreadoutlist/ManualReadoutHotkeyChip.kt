@@ -1,5 +1,12 @@
 package kurou.kodriver.feature.manualreadoutlist
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -8,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -18,6 +26,13 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_hotkey_unassigned
 import org.jetbrains.compose.resources.stringResource
+
+// ホットキーチップの出現・消失で行の高さが変わるのを滑らかにする。アプリのバナーと同じ300ms/200ms。
+internal val ManualReadoutHotkeyChipEnter: EnterTransition =
+    fadeIn(tween(durationMillis = 300)) + expandVertically(tween(durationMillis = 300), expandFrom = Alignment.Top)
+
+internal val ManualReadoutHotkeyChipExit: ExitTransition =
+    fadeOut(tween(durationMillis = 200)) + shrinkVertically(tween(durationMillis = 200), shrinkTowards = Alignment.Top)
 
 /** 行の操作を妨げない、表示専用のホットキーチップ。 */
 @Composable
