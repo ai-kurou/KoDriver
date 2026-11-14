@@ -429,19 +429,19 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 classPosition = 2,
                 classVehicleCount = 5,
             )
-        val item = LmuWindowsManualReadoutItem(key, "{ahead}、{behind}", ClassCarGap(gap))
+        val item = LmuWindowsManualReadoutItem(key, "前方{ahead}秒、後方{behind}秒", ClassCarGap(gap))
         listOf(
-            Triple(listOf(item), root, "クラス内前方1.3秒、後方3.0秒"),
+            Triple(listOf(item), root, "前方1.3秒、後方3.0秒"),
             Triple(
-                listOf(item.copy(textTemplate = "{behind} / {ahead} {unknown}")),
+                listOf(item.copy(textTemplate = "後方{behind}秒 / 前方{ahead}秒 {unknown}")),
                 root,
-                "後方3.0秒 / クラス内前方1.3秒 {unknown}",
+                "後方3.0秒 / 前方1.3秒 {unknown}",
             ),
-            Triple(listOf(item.copy(textTemplate = "{ahead}")), root, "クラス内前方1.3秒"),
+            Triple(listOf(item.copy(textTemplate = "{ahead}")), root, "1.3"),
             Triple(
                 listOf(item.copy(value = ClassCarGap(gap.copy(gapAheadSeconds = 0.0, gapBehindSeconds = 0.0)))),
                 root,
-                "クラス内前方0.0秒、後方0.0秒",
+                "前方0.0秒、後方0.0秒",
             ),
             Triple(listOf(item.copy(textTemplate = "")), root, ""),
         ).forEach { (items, firstKey, text) ->
@@ -461,10 +461,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val alone = LmuWindowsClassCarGapData(null, null, classPosition = 1, classVehicleCount = 1)
         val unknownPosition = LmuWindowsClassCarGapData(null, null, classPosition = null, classVehicleCount = 4)
         val unknownCount = LmuWindowsClassCarGapData(null, null, classPosition = 4, classVehicleCount = null)
-        val template = "{ahead}、{behind}"
+        val template = "前方{ahead}秒、後方{behind}秒"
         listOf(
             LmuWindowsManualReadoutItem(key, template, ClassCarGap(top)) to "クラス内先頭です、後方2.0秒",
-            LmuWindowsManualReadoutItem(key, template, ClassCarGap(last)) to "クラス内前方2.0秒、クラス内最後尾です",
+            LmuWindowsManualReadoutItem(key, template, ClassCarGap(last)) to "前方2.0秒、クラス内最後尾です",
+            LmuWindowsManualReadoutItem(key, "{ahead}、{behind}", ClassCarGap(top)) to "なし、2.0",
+            LmuWindowsManualReadoutItem(key, "{ahead}、{behind}", ClassCarGap(last)) to "2.0、なし",
             LmuWindowsManualReadoutItem(key, template, ClassCarGap(alone)) to "クラス内先頭です、クラス内最後尾です",
             LmuWindowsManualReadoutItem(key, " ", ClassCarGap(top)) to "",
             LmuWindowsManualReadoutItem(key, "", ClassCarGap(last)) to "",

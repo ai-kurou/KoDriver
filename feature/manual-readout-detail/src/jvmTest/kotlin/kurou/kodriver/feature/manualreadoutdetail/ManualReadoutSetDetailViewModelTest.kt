@@ -1098,14 +1098,14 @@ class ManualReadoutSetDetailViewModelTest {
                 )
             every { observeVolume() } returns MutableStateFlow(60)
             coEvery { playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) } returns Unit
-            coEvery { speakText("差クラス内前方1.5秒、後方1.5秒", volume = 60) } returns Unit
+            coEvery { speakText("差1.5、1.5", volume = 60) } returns Unit
             val vm = viewModel(available = true)
             val collection = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
             try {
                 assertTrue(vm.uiState.first { !it.isLoading }.isTextToSpeechAvailable)
                 vm.onPreviewClicked()
                 coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) }
-                coVerify(exactly = 1) { speakText("差クラス内前方1.5秒、後方1.5秒", volume = 60) }
+                coVerify(exactly = 1) { speakText("差1.5、1.5", volume = 60) }
                 verify(exactly = 1) { observeVolume() }
                 confirmVerified(playStartSound, speakText, observeVolume)
             } finally {

@@ -5,18 +5,14 @@ import kotlin.test.assertEquals
 
 class LmuWindowsClassCarGapReadoutTextTest {
     @Test
-    fun `既定文言は前方の後に後方を読み上げる`() {
-        assertEquals("{ahead}、{behind}", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT)
+    fun `既定文言は前方と後方の節の組で固定文言と「なし」の定数を持つ`() {
+        assertEquals("前方{ahead}秒、後方{behind}秒", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT)
+        assertEquals("前方{ahead}秒、後方{behind}秒", LMU_WINDOWS_CLASS_CAR_GAP_PLACEHOLDERS)
+        assertEquals("前方{ahead}秒", LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_CLAUSE)
+        assertEquals("後方{behind}秒", LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_CLAUSE)
         assertEquals("クラス内先頭です", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT)
         assertEquals("クラス内最後尾です", LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT)
-        assertEquals(
-            "クラス内前方1.5秒、後方2.0秒",
-            formatLmuWindowsClassCarGapReadoutText(
-                LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT,
-                formatLmuWindowsClassCarGapAheadPhrase(1.5),
-                formatLmuWindowsClassCarGapBehindPhrase(2.0),
-            ),
-        )
+        assertEquals("なし", LMU_WINDOWS_CLASS_CAR_GAP_NONE_VALUE_TEXT)
         assertEquals(
             emptyList(),
             findUnknownLmuWindowsClassCarGapReadoutPlaceholders(LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT),
@@ -24,12 +20,67 @@ class LmuWindowsClassCarGapReadoutTextTest {
     }
 
     @Test
-    fun `プレースホルダーは入れ替えや片方だけでも置換される`() {
+    fun `秒数があるときはプレースホルダーを単位なしの秒数だけに置換する`() {
         assertEquals(
-            "後方B、前方A",
-            formatLmuWindowsClassCarGapReadoutText("{behind}、{ahead}", "前方A", "後方B"),
+            "前方1.5秒、後方2.0秒",
+            formatLmuWindowsClassCarGapReadoutText(
+                LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT,
+                aheadSeconds = "1.5",
+                behindSeconds = "2.0",
+            ),
         )
-        assertEquals("前方A", formatLmuWindowsClassCarGapReadoutText("{ahead}", "前方A", "後方B"))
+        assertEquals(
+            "2.0、1.5",
+            formatLmuWindowsClassCarGapReadoutText("{behind}、{ahead}", aheadSeconds = "1.5", behindSeconds = "2.0"),
+        )
+    }
+
+    @Test
+    fun `先頭のときは前方の節全体を固定文言に置換する`() {
+        assertEquals(
+            "クラス内先頭です、後方2.0秒",
+            formatLmuWindowsClassCarGapReadoutText(
+                LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT,
+                aheadSeconds = null,
+                behindSeconds = "2.0",
+            ),
+        )
+    }
+
+    @Test
+    fun `最後尾のときは後方の節全体を固定文言に置換する`() {
+        assertEquals(
+            "前方1.5秒、クラス内最後尾です",
+            formatLmuWindowsClassCarGapReadoutText(
+                LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT,
+                aheadSeconds = "1.5",
+                behindSeconds = null,
+            ),
+        )
+    }
+
+    @Test
+    fun `節を含まない自由文言で車なしのときはプレースホルダー単体を「なし」に置換する`() {
+        assertEquals(
+            "前方なし",
+            formatLmuWindowsClassCarGapReadoutText(
+                "前方{ahead}",
+                aheadSeconds = null,
+                behindSeconds = "2.0",
+            ),
+        )
+        assertEquals(
+            "後方なし",
+            formatLmuWindowsClassCarGapReadoutText(
+                "後方{behind}",
+                aheadSeconds = "1.5",
+                behindSeconds = null,
+            ),
+        )
+        assertEquals(
+            "なし、なし",
+            formatLmuWindowsClassCarGapReadoutText("{ahead}、{behind}", aheadSeconds = null, behindSeconds = null),
+        )
     }
 
     @Test
@@ -43,7 +94,7 @@ class LmuWindowsClassCarGapReadoutTextTest {
     @Test
     fun `プレビューは前方と後方を同じ秒差で展開する`() {
         assertEquals(
-            "クラス内前方1.5秒、後方1.5秒",
+            "前方1.5秒、後方1.5秒",
             formatLmuWindowsClassCarGapPreviewText(LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT, 1.5),
         )
     }
@@ -60,8 +111,7 @@ class LmuWindowsClassCarGapReadoutTextTest {
             12.0 to "12.0",
             125.34 to "125.3",
         ).forEach { (seconds, expected) ->
-            assertEquals("クラス内前方${expected}秒", formatLmuWindowsClassCarGapAheadPhrase(seconds))
-            assertEquals("後方${expected}秒", formatLmuWindowsClassCarGapBehindPhrase(seconds))
+            assertEquals(expected, formatClassCarGapSeconds(seconds))
         }
     }
 }
