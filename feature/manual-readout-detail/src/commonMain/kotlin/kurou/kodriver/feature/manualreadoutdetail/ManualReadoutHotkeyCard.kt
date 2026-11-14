@@ -163,6 +163,8 @@ private fun ManualReadoutHotkeyRegistration(
     registration: HotkeyRegistrationState,
     onRetry: () -> Unit,
 ) {
+    // Unsupported は何も表示しない。Crossfade を置くと空の子要素が増えて親の spacedBy の間隔だけが残るため、置かない。
+    if (registration == HotkeyRegistrationState.Unsupported) return
     Crossfade(targetState = registration, label = "manualReadoutHotkeyRegistration") { animatedRegistration ->
         when (animatedRegistration) {
             HotkeyRegistrationState.Unsupported -> {
