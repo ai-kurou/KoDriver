@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -196,7 +197,11 @@ internal fun ManualReadoutSetDetailPane(
                         onPreviewClick,
                     )
                 }
-                if (showHotkey) {
+                AnimatedVisibility(
+                    visible = showHotkey,
+                    enter = ManualReadoutHotkeyEnterTransition,
+                    exit = ManualReadoutHotkeyExitTransition,
+                ) {
                     ManualReadoutHotkeyCard(
                         uiState,
                         onAssignHotkey,
