@@ -141,6 +141,7 @@ internal fun SpeechRecognitionListPaneContent(
                     category = group.category,
                     item = item,
                     highlight = highlight?.takeIf { it.itemKey == item.key },
+                    modifier = Modifier.animateItem(),
                 )
             }
         }
@@ -301,10 +302,11 @@ private fun SpeechCommandGuideCard(
     category: ManualReadoutItemCategory,
     item: SpeechCommandGuideItem,
     highlight: SpeechPhraseHighlight?,
+    modifier: Modifier = Modifier,
 ) {
     val color = speechCommandGuideCategoryColor(category)
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
         Column(
