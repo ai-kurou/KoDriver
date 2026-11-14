@@ -1,6 +1,16 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,6 +63,36 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_registration_retry
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_title
 import org.jetbrains.compose.resources.stringResource
+
+/** ホットキーカードとガイドリンクの出入りを、周囲のレイアウトが飛ばないよう展開・収縮で滑らかにする。 */
+internal val ManualReadoutHotkeyEnterTransition: EnterTransition =
+    expandVertically(animationSpec = tween(durationMillis = 300)) +
+        fadeIn(animationSpec = tween(durationMillis = 300))
+
+internal val ManualReadoutHotkeyExitTransition: ExitTransition =
+    shrinkVertically(animationSpec = tween(durationMillis = 200)) +
+        fadeOut(animationSpec = tween(durationMillis = 200))
+
+/**
+ * 非表示中は子要素を配置しない [AnimatedVisibility]。
+ * 親の `Arrangement.spacedBy` は高さ0の子要素にも間隔を足すため、退場アニメーション完了後は取り除く。
+ */
+@Composable
+internal fun ManualReadoutHotkeyAnimatedVisibility(
+    visible: Boolean,
+    content: @Composable AnimatedVisibilityScope.() -> Unit,
+) {
+    val visibleState = remember { MutableTransitionState(visible) }
+    visibleState.targetState = visible
+    if (visibleState.currentState || visibleState.targetState) {
+        AnimatedVisibility(
+            visibleState = visibleState,
+            enter = ManualReadoutHotkeyEnterTransition,
+            exit = ManualReadoutHotkeyExitTransition,
+            content = content,
+        )
+    }
+}
 
 @Composable
 internal fun ManualReadoutHotkeyCard(
@@ -130,7 +170,7 @@ internal fun ManualReadoutHotkeyCard(
                     }
                 }
                 Text(stringResource(Res.string.manual_readout_hotkey_hint))
-                if (showGuideLink) {
+                ManualReadoutHotkeyAnimatedVisibility(visible = showGuideLink) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier =

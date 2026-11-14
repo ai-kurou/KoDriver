@@ -196,7 +196,7 @@ internal fun ManualReadoutSetDetailPane(
                         onPreviewClick,
                     )
                 }
-                if (showHotkey) {
+                ManualReadoutHotkeyAnimatedVisibility(visible = showHotkey) {
                     ManualReadoutHotkeyCard(
                         uiState,
                         onAssignHotkey,

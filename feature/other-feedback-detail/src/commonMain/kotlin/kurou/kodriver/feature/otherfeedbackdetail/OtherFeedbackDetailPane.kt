@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.otherfeedbackdetail
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -246,7 +247,7 @@ fun OtherFeedbackDetailPaneContent(
                         null
                     },
                 minLines = 4,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().animateContentSize(),
             )
             Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             TextField(
@@ -261,7 +262,7 @@ fun OtherFeedbackDetailPaneContent(
                         null
                     },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().animateContentSize(),
             )
             Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             TextField(
@@ -282,7 +283,7 @@ fun OtherFeedbackDetailPaneContent(
                         null
                     },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().animateContentSize(),
             )
             Spacer(modifier = Modifier.height(KoDriverSpacing.small))
             Text(

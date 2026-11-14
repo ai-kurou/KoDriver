@@ -139,7 +139,7 @@ internal fun ManualReadoutSetRow(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 ManualReadoutCategoryChips(categories, set.itemKeys.size)
-                if (showHotkeyChip) {
+                ManualReadoutHotkeyChipAnimatedVisibility(visible = showHotkeyChip) {
                     ManualReadoutHotkeyChip(set)
                 }
             }
