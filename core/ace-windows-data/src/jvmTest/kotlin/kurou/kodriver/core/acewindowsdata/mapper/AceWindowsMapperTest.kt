@@ -41,26 +41,30 @@ class AceWindowsMapperTest {
     }
 
     @Test
-    fun `総合順位と総台数を正しいオフセットから取得し未確定の0も保持する`() {
-        listOf(2 to 20, 0 to 0, Int.MAX_VALUE to Int.MAX_VALUE).forEach { (position, totalDrivers) ->
+    fun `0始まりの生値を1始まりに補正し総台数は正しいオフセットから取得する`() {
+        listOf(
+            Triple(2, 20, AceWindowsOverallPositionData(3, 20)),
+            Triple(0, 0, AceWindowsOverallPositionData(1, 0)),
+            Triple(Int.MAX_VALUE, Int.MAX_VALUE, AceWindowsOverallPositionData(Int.MAX_VALUE, Int.MAX_VALUE)),
+        ).forEach { (positionRaw, totalDrivers, expected) ->
             val buffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)
-            buffer.putInt(2388, position)
+            buffer.putInt(2388, positionRaw)
             buffer.putInt(2392, totalDrivers)
             buffer.putInt(2384, 99)
             buffer.putInt(2396, 100)
 
             assertEquals(
-                AceWindowsOverallPositionData(position, totalDrivers),
+                expected,
                 AceWindowsMapper.mapOverallPosition(buffer),
             )
         }
     }
 
     @Test
-    fun `Intの範囲を超えるuint32は項目ごとに0へ補正する`() {
+    fun `Intの範囲を超えるuint32の順位は未確定の0になり総台数は0へ補正する`() {
         listOf(
             Triple(-1, 20, AceWindowsOverallPositionData(0, 20)),
-            Triple(2, Int.MIN_VALUE, AceWindowsOverallPositionData(2, 0)),
+            Triple(2, Int.MIN_VALUE, AceWindowsOverallPositionData(3, 0)),
             Triple(Int.MIN_VALUE, -1, AceWindowsOverallPositionData(0, 0)),
         ).forEach { (position, totalDrivers, expected) ->
             val buffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)

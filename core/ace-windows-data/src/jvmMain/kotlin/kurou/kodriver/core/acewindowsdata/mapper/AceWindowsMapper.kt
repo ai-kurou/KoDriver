@@ -23,6 +23,7 @@ import kotlin.math.sqrt
  * Assetto Corsa EVO の Graphics 共有メモリ (`Local\acevo_pmf_graphics`, `SPageFileGraphicEvo`) の
  * ByteBuffer を AceWindowsFuelData / AceWindowsFlagData / AceWindowsStatusData /
  * AceWindowsVehicleApproachData / AceWindowsGapData / AceWindowsOverallPositionData に変換する。
+ * 総合順位 `current_pos` は生値が0始まりのため +1 して1始まりにし、負の生値のみ未確定の 0 とする。
  *
  * `SPageFileGraphicEvo` は `char[33]` / `bool` を含むため固定オフセットが文書化されておらず
  * (docs/ace-windows-telemetry.md 参照)、_pack_=4 のアライメント規則 (4バイト境界に整列、
@@ -153,14 +154,23 @@ internal object AceWindowsMapper {
         )
 
     /**
-     * 総合順位（1 始まり）・総台数を取得する。0 は未確定値としてそのまま保持する。
-     * uint32 のうち Int の範囲を超える値（getInt では負値）は未確定の 0 に補正する。
+     * 総合順位（1 始まり）・総台数を取得する。
+     * `current_pos` は実機で 0 始まり（9台中9位で生値8）のため +1 して 1 始まりにする。
+     * uint32 のうち Int の範囲を超える生値（getInt では負値）は未確定の 0 にする。
+     * 総台数 `total_drivers` は補正せず、0 と負値の扱いのみ従来どおり 0 に丸める。
      */
     fun mapOverallPosition(buffer: ByteBuffer): AceWindowsOverallPositionData =
         AceWindowsOverallPositionData(
-            position = buffer.getInt(OFF_CURRENT_POS).coerceAtLeast(0),
+            position = toOneBasedPosition(buffer.getInt(OFF_CURRENT_POS)),
             totalDrivers = buffer.getInt(OFF_TOTAL_DRIVERS).coerceAtLeast(0),
         )
+
+    private fun toOneBasedPosition(rawZeroBased: Int): Int =
+        if (rawZeroBased < 0) {
+            0
+        } else {
+            minOf(rawZeroBased, Int.MAX_VALUE - 1) + 1
+        }
 
     fun mapGap(buffer: ByteBuffer): AceWindowsGapData =
         AceWindowsGapData(
