@@ -2,6 +2,7 @@ package kurou.kodriver.feature.speechrecognitionlist
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -105,6 +107,28 @@ class SpeechRecognitionListPaneTest {
         }
 
         rule.onNodeWithText("2語", useUnmergedTree = true).assertExists()
+    }
+
+    @Test
+    fun `scrollToTopRequestが増えると一覧を先頭へ戻す`() {
+        val items = (1..30).map { SpeechCommandGuideItem("item-$it", "項目$it", listOf("語句$it")) }
+        val groups = listOf(SpeechCommandGuideGroup(ManualReadoutItemCategory.FUEL, items))
+        var scrollToTopRequest by mutableIntStateOf(0)
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionListPaneContent(
+                    SpeechRecognitionListUiState(groups = groups),
+                    scrollToTopRequest = scrollToTopRequest,
+                )
+            }
+        }
+        rule.onNodeWithTag(SPEECH_RECOGNITION_LIST_PANE_TEST_TAG).performScrollToIndex(30)
+        rule.onNodeWithText("まずはこう呼びかけます").assertDoesNotExist()
+
+        rule.runOnIdle { scrollToTopRequest++ }
+        rule.waitForIdle()
+
+        rule.onNodeWithText("まずはこう呼びかけます").assertIsDisplayed()
     }
 
     @Test
