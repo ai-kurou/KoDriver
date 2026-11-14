@@ -85,6 +85,10 @@ internal fun ManualReadoutItemsCard(
     var showPicker by remember { mutableStateOf(false) }
     val remaining = uiState.availableItemKeys.filterNot { it in uiState.selectedItemKeys }
     val atLimit = uiState.selectedItemKeys.size >= MANUAL_READOUT_SET_ITEM_MAX
+    // 項目を全て外した直後の退場アニメーション中にプレビュー文が空にならないよう、最後の非空の値を保つ。
+    val currentPreview = manualReadoutPreview(uiState)
+    var lastPreview by remember(uiState.setNumber) { mutableStateOf("") }
+    if (uiState.selectedItemKeys.isNotEmpty()) lastPreview = currentPreview
     if (showPicker) {
         ManualReadoutItemPickerSheet(
             itemKeys = remaining,
@@ -100,7 +104,7 @@ internal fun ManualReadoutItemsCard(
         title = stringResource(Res.string.manual_readout_items_title),
         bottomContent = {
             Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium)) {
-                if (uiState.selectedItemKeys.isEmpty()) {
+                ManualReadoutHotkeyAnimatedVisibility(visible = uiState.selectedItemKeys.isEmpty()) {
                     Text(stringResource(Res.string.manual_readout_empty_hint))
                 }
                 ReorderableColumn(
@@ -196,38 +200,43 @@ internal fun ManualReadoutItemsCard(
                 }, enabled = remaining.isNotEmpty() && !atLimit) {
                     Text(stringResource(Res.string.manual_readout_add_item))
                 }
-                if (uiState.selectedItemKeys.isNotEmpty()) {
-                    val preview = manualReadoutPreview(uiState)
-                    HorizontalDivider()
-                    if (preview.isNotBlank()) {
-                        Text(
-                            preview,
-                            modifier = Modifier.testTag("manual_readout_preview_sentence"),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        FilledTonalButton(
-                            onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                onPreviewClick()
-                            },
-                            enabled = uiState.isTextToSpeechAvailable && preview.isNotBlank(),
-                        ) {
-                            Icon(
-                                imageVector = if (uiState.isPreviewing) Icons.Default.Stop else Icons.Default.PlayArrow,
-                                contentDescription = null,
-                            )
-                            Spacer(Modifier.width(KoDriverSpacing.small))
+                ManualReadoutHotkeyAnimatedVisibility(visible = uiState.selectedItemKeys.isNotEmpty()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium)) {
+                        HorizontalDivider()
+                        if (lastPreview.isNotBlank()) {
                             Text(
-                                stringResource(
-                                    if (uiState.isPreviewing) {
-                                        Res.string.manual_readout_preview_stop
-                                    } else {
-                                        Res.string.manual_readout_preview_play
-                                    },
-                                ),
+                                lastPreview,
+                                modifier = Modifier.testTag("manual_readout_preview_sentence"),
+                                style = MaterialTheme.typography.titleMedium,
                             )
+                        }
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            FilledTonalButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                    onPreviewClick()
+                                },
+                                enabled =
+                                    uiState.isTextToSpeechAvailable &&
+                                        uiState.selectedItemKeys.isNotEmpty() &&
+                                        lastPreview.isNotBlank(),
+                            ) {
+                                Icon(
+                                    imageVector =
+                                        if (uiState.isPreviewing) Icons.Default.Stop else Icons.Default.PlayArrow,
+                                    contentDescription = null,
+                                )
+                                Spacer(Modifier.width(KoDriverSpacing.small))
+                                Text(
+                                    stringResource(
+                                        if (uiState.isPreviewing) {
+                                            Res.string.manual_readout_preview_stop
+                                        } else {
+                                            Res.string.manual_readout_preview_play
+                                        },
+                                    ),
+                                )
+                            }
                         }
                     }
                 }
