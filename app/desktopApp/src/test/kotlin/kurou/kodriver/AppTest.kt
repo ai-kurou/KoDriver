@@ -515,12 +515,12 @@ class AppTest {
     private fun clickReadoutPriorityHelp() {
         rule.onNode(hasContentDescription(READOUT_PRIORITY_HELP_DESCRIPTION)).performClick()
         rule.waitForIdle()
+        // 閉じた確認が空振りで通らないよう、先にヘルプが開いたことを確認する。
+        waitUntilDisplayed(READOUT_PRIORITY_HELP_DESCRIPTION)
         rule.onAllNodes(isRoot()).get(0).performTouchInput { click(Offset(10f, 10f)) }
         rule.waitForIdle()
         // 外側タップでヘルプが閉じたことを確認する。閉じていないと後続の操作が誤ってパスする恐れがある。
-        rule.waitUntil(timeoutMillis = 5_000L) {
-            rule.onAllNodes(hasText(READOUT_PRIORITY_HELP_DESCRIPTION)).fetchSemanticsNodes().isEmpty()
-        }
+        waitUntilNotDisplayed(READOUT_PRIORITY_HELP_DESCRIPTION)
     }
 
     // GT7のカードは表示名の文字列ではなくロゴ画像で表示するため、contentDescriptionでも探す。
