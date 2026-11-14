@@ -157,13 +157,15 @@ internal object AceWindowsMapper {
      * 総合順位（1 始まり）・総台数を取得する。
      * `current_pos` は実機で 0 始まり（9台中9位で生値8）のため +1 して 1 始まりにする。
      * uint32 のうち Int の範囲を超える生値（getInt では負値）は未確定の 0 にする。
-     * 総台数 `total_drivers` は補正せず、0 と負値の扱いのみ従来どおり 0 に丸める。
+     * 総台数 `total_drivers` が 0（セッション開始前などメモリがゼロ埋めの状態）のときも、
+     * 生値 0 が順位1に見えないよう順位を未確定の 0 にする。
+     * 総台数は 0 と負値を 0 に丸める。
      */
-    fun mapOverallPosition(buffer: ByteBuffer): AceWindowsOverallPositionData =
-        AceWindowsOverallPositionData(
-            position = toOneBasedPosition(buffer.getInt(OFF_CURRENT_POS)),
-            totalDrivers = buffer.getInt(OFF_TOTAL_DRIVERS).coerceAtLeast(0),
-        )
+    fun mapOverallPosition(buffer: ByteBuffer): AceWindowsOverallPositionData {
+        val totalDrivers = buffer.getInt(OFF_TOTAL_DRIVERS).coerceAtLeast(0)
+        val position = if (totalDrivers == 0) 0 else toOneBasedPosition(buffer.getInt(OFF_CURRENT_POS))
+        return AceWindowsOverallPositionData(position = position, totalDrivers = totalDrivers)
+    }
 
     private fun toOneBasedPosition(rawZeroBased: Int): Int =
         if (rawZeroBased < 0) {
