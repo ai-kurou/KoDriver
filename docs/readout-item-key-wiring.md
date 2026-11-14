@@ -173,14 +173,13 @@ Android は非対応実装を使い、キー未割り当て・非対応時は登
 | バーチャルエネルギーの残り周回数 | `PitTiming.VirtualEnergy.value`（`lmu_windows_auto_pit_timing_virtual_energy`） | 蓄積済みの `pitTimingVirtualEnergyTrackingState` から算出した残り周回数（周） | `LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT`（「バーチャルエネルギーは残り約{laps}周」）。0周は `LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT`（「バーチャルエネルギーは残り1周未満」） | 蓄積前（`currentLap == -1`）、消費量が null・0以下、算出結果が負、最新エネルギーが未受信・鮮度切れ | 算出式は下の補足。自動のスイッチ・閾値・ベストラップ経過時間には依存しない。追跡状態・自動判定状態（`lastAnnouncedPitTimingVirtualEnergyLaps` 等）は変更しない。 |
 | タイヤ摩耗の残り周回数 | `PitTiming.TyreWear.value`（`lmu_windows_auto_pit_timing_tyre_wear`） | 蓄積済みの `pitTimingTyreWearTrackingState` から同じ式で算出した残り周回数（周） | `LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT`（「タイヤは残り約{laps}周」）。0周は `LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT`（「タイヤは残り1周未満」） | 蓄積前、消費量が null・0以下・非有限、算出結果が負、最新タイヤ摩耗が未受信・鮮度切れ | 「タイヤ摩耗」(%) 項目とも、バーチャルエネルギーの残り周回数とも別項目。 |
 | 燃料残り周回数 | `RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`） | 蓄積済みの `fuelLapsTrackingState` から同じ式で算出した残り周回数（周） | `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料は残り1周未満」） | 蓄積前、消費量が null・0以下・非有限・算出不能、最新燃料が未受信・鮮度切れ | 自動側の燃料判定は変更しない。 |
-| クラス内前方車とのギャップ | `ClassCarGap.Ahead.value`（`lmu_windows_auto_class_car_gap_ahead`） | クラス内前方車との差（秒） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT`（「クラス内前方{seconds}秒」）。クラス内先頭は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」） | ギャップが null・非有限・負 | 先頭キーは `VehicleApproach.Root`（下の補足）。先頭の空欄テンプレートは空文字。 |
-| クラス内後方車とのギャップ | `ClassCarGap.Behind.value`（`lmu_windows_auto_class_car_gap_behind`） | クラス内後方車との差（秒） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_BEHIND_TEXT_DEFAULT`（「クラス内後方{seconds}秒」）。クラス内最後尾は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」） | ギャップが null・非有限・負 | 先頭キーは `VehicleApproach.Root`（下の補足）。最後尾の空欄テンプレートは空文字。 |
+| クラス内前後車とのギャップ | `ClassCarGap.Root.value`（`lmu_windows_auto_class_car_gap`） | クラス内前方車・後方車との差（秒）。前方の後に後方を読む | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「{ahead}、{behind}」）。先頭は「クラス内先頭です」（`..._TOP_TEXT_DEFAULT`）、最後尾は「クラス内最後尾です」（`..._LAST_TEXT_DEFAULT`）に置き換える | 先頭・最後尾でない側のギャップが null・非有限・負 | 先頭キーは `VehicleApproach.Root`（下の補足）。空欄テンプレートは空文字。 |
 
 LMU の補足は次のとおり。
 
 - 残り周回数（バーチャルエネルギー・タイヤ摩耗・燃料）は、現在値（`currentValue`）を `lastValidLapConsumption` で割り、整数へ切り捨てる。1,000周（`LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX`）を超える算出結果はデータ無しとする。ただし丸め誤差の範囲（1e-9 以内）の超過だけは1,000周に丸める。
 - 0周の固定文言は表の定数を読む。空欄テンプレートなら0周でも空文字にする。1周以上は `formatLmuWindowsPitTimingReadoutText` で `{laps}` を置換する。
-- 開始音・ログ・優先度のキーは先頭の対応項目から決まる。`PitTiming.VirtualEnergy`・`PitTiming.TyreWear` は `PitTiming.Root`、`RemainingFuel.Laps` は `RemainingFuel.Root`、`ClassCarGap.Ahead`・`ClassCarGap.Behind` は `VehicleApproach.Root` とする。それ以外は先頭項目自身の Root を使い、対応項目がない場合は `RemainingVirtualEnergy.Root` を使う。
+- 開始音・ログ・優先度のキーは先頭の対応項目から決まる。`PitTiming.VirtualEnergy`・`PitTiming.TyreWear` は `PitTiming.Root`、`RemainingFuel.Laps` は `RemainingFuel.Root`、`ClassCarGap.Root` は `VehicleApproach.Root` とする。それ以外は先頭項目自身の Root を使い、対応項目がない場合は `RemainingVirtualEnergy.Root` を使う。
 - 比率から整数％への四捨五入は `determineManualReadout` に集約し、既存の `PERCENTAGE_SCALE` を使う。
 
 ### GT7 PS5（4項目）
@@ -248,12 +247,14 @@ VE・タイヤ・燃料の候補の最小周回数を選び、共通の `PitTimi
 通常の既定文言は「燃料は残り約{laps}周」、0周以下は「燃料は残り1周未満」。保存文言の解決・開始音・優先度・キュー・ログは
 既存の `PitTiming.Root` の流儀を使い、ログに燃料スナップショットと判定状態を含める。
 
-手動の「クラス内前方車／後方車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value`（`lmu_windows_auto_class_car_gap_ahead`）・`ClassCarGap.Behind.value`（`lmu_windows_auto_class_car_gap_behind`）に対応する。
+手動の「クラス内前後車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Root.value`（`lmu_windows_auto_class_car_gap`）に対応する。前方車の後に後方車のギャップを1文で読み上げる1項目で、統合前の「前方車」「後方車」の2項目（`lmu_windows_auto_class_car_gap_ahead` / `_behind`）は廃止した。
 TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料残り周回数の後）に並ぶ。
 `ObserveLmuWindowsClassCarGapUseCase` の最新値（`LmuWindowsClassCarGapData`）を `latestClassCarGap` / `latestClassCarGapReceivedAtMs` に保持し、受信から5秒（`NARRATOR_CURRENT_VALUE_MAX_AGE_MS`）以内のものだけを項目へ渡す。未受信・鮮度切れはデータ無しとする。
-周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定し、固定文言
-`LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）・`LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）を読む（データありとして扱う。空欄テンプレートなら空文字）。
-それ以外は null・非有限・負値の秒差をデータ無しとし、0以上の有限値を `formatLmuWindowsClassCarGapReadoutText` で小数1桁に丸めて `{seconds}`（`LMU_WINDOWS_CLASS_CAR_GAP_SECONDS_PLACEHOLDER`）を置換する。
-既定文言は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_AHEAD_TEXT_DEFAULT`（「クラス内前方{seconds}秒」）・`..._BEHIND_TEXT_DEFAULT`（「クラス内後方{seconds}秒」）。
+周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定する。
+文言は1つのテンプレートで、`{ahead}`（`LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER`）が前方部分、`{behind}`（`LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER`）が後方部分に置き換わる。既定文言は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「{ahead}、{behind}」）で、前方の後に後方を読む。
+前方部分は、先頭なら固定文言 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）、それ以外は0以上の有限値の秒差を小数1桁に丸めた「クラス内前方{seconds}秒」（`formatLmuWindowsClassCarGapAheadPhrase`）。
+後方部分は、最後尾なら固定文言 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）、それ以外は同様の「後方{seconds}秒」（`formatLmuWindowsClassCarGapBehindPhrase`）。
+先頭・最後尾でない側の秒差が null・非有限・負値のときは、項目全体をデータ無しとする。空欄テンプレートなら（データがあれば）空文字を読む。
+保存済みセットに残る旧キーは、読み出し時に `migrateLmuWindowsManualReadoutLegacyClassCarGap`（`ManualReadoutSimulatorSpec.migrateLegacySet`）で新キー1つへ置き換える。旧キーが最初に現れた位置に置き、前方・後方の両方があっても1つにまとめる。旧キーの文言は新しい文言へ変換できないため破棄し、新キーには既定文言を使う。
 複数項目ではデータ無しの項目に「<項目名>はデータがありません」を連結する。
-先頭項目なら開始音・優先度・ログ・キューに `VehicleApproach.Root` を使う。編集画面は既存の「ラップ」カテゴリに配置し、`{seconds}` を挿入・検証に使う。
+先頭項目なら開始音・優先度・ログ・キューに `VehicleApproach.Root` を使う。編集画面は既存の「ラップ」カテゴリに配置し、`{ahead}` と `{behind}` を挿入・検証に使う。

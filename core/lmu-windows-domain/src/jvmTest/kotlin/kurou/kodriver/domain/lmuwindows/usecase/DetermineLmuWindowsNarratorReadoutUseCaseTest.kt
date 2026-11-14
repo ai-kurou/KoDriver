@@ -418,9 +418,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `手動クラス内ギャップは前方車と後方車の秒差をVehicleApproachのRootで読む`() {
-        val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
-        val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+    fun `手動クラス内ギャップは前方の後に後方の秒差をVehicleApproachのRootで読む`() {
+        val key = LmuWindowsReadoutItemKey.ClassCarGap.Root.value
         val root = LmuWindowsReadoutItemKey.VehicleApproach.Root
         val state = LmuWindowsNarratorState()
         val gap =
@@ -430,19 +429,21 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 classPosition = 2,
                 classVehicleCount = 5,
             )
-        val aheadItem = LmuWindowsManualReadoutItem(ahead, "前{seconds}秒 {unknown}", ClassCarGap(gap))
-        val behindItem = LmuWindowsManualReadoutItem(behind, "後{seconds}秒", ClassCarGap(gap))
+        val item = LmuWindowsManualReadoutItem(key, "{ahead}、{behind}", ClassCarGap(gap))
         listOf(
-            Triple(listOf(aheadItem), root, "前1.3秒 {unknown}"),
-            Triple(listOf(behindItem), root, "後3.0秒"),
-            Triple(listOf(aheadItem, behindItem), root, "前1.3秒 {unknown}、後3.0秒"),
-            Triple(listOf(behindItem, aheadItem), root, "後3.0秒、前1.3秒 {unknown}"),
+            Triple(listOf(item), root, "クラス内前方1.3秒、後方3.0秒"),
             Triple(
-                listOf(aheadItem.copy(value = ClassCarGap(gap.copy(gapAheadSeconds = 0.0)))),
+                listOf(item.copy(textTemplate = "{behind} / {ahead} {unknown}")),
                 root,
-                "前0.0秒 {unknown}",
+                "後方3.0秒 / クラス内前方1.3秒 {unknown}",
             ),
-            Triple(listOf(aheadItem.copy(textTemplate = "")), root, ""),
+            Triple(listOf(item.copy(textTemplate = "{ahead}")), root, "クラス内前方1.3秒"),
+            Triple(
+                listOf(item.copy(value = ClassCarGap(gap.copy(gapAheadSeconds = 0.0, gapBehindSeconds = 0.0)))),
+                root,
+                "クラス内前方0.0秒、後方0.0秒",
+            ),
+            Triple(listOf(item.copy(textTemplate = "")), root, ""),
         ).forEach { (items, firstKey, text) ->
             val decision = manualUseCase.determineManualReadout(state, items)
             assertEquals(state, decision.state)
@@ -453,78 +454,65 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `手動クラス内ギャップはトップと最後尾で固定文言を読みデータありとして扱う`() {
-        val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
-        val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+        val key = LmuWindowsReadoutItemKey.ClassCarGap.Root.value
         val state = LmuWindowsNarratorState()
         val top = LmuWindowsClassCarGapData(null, 2.0, classPosition = 1, classVehicleCount = 4)
         val last = LmuWindowsClassCarGapData(2.0, null, classPosition = 4, classVehicleCount = 4)
         val alone = LmuWindowsClassCarGapData(null, null, classPosition = 1, classVehicleCount = 1)
         val unknownPosition = LmuWindowsClassCarGapData(null, null, classPosition = null, classVehicleCount = 4)
         val unknownCount = LmuWindowsClassCarGapData(null, null, classPosition = 4, classVehicleCount = null)
+        val template = "{ahead}、{behind}"
         listOf(
-            LmuWindowsManualReadoutItem(ahead, "前{seconds}", ClassCarGap(top)) to "クラス内先頭です",
-            LmuWindowsManualReadoutItem(behind, "後{seconds}", ClassCarGap(last)) to "クラス内最後尾です",
-            LmuWindowsManualReadoutItem(ahead, "前{seconds}", ClassCarGap(alone)) to "クラス内先頭です",
-            LmuWindowsManualReadoutItem(behind, "後{seconds}", ClassCarGap(alone)) to "クラス内最後尾です",
-            LmuWindowsManualReadoutItem(ahead, " ", ClassCarGap(top)) to "",
-            LmuWindowsManualReadoutItem(behind, "", ClassCarGap(last)) to "",
-            LmuWindowsManualReadoutItem(ahead, "前{seconds}", ClassCarGap(last)) to "前2.0",
-            LmuWindowsManualReadoutItem(behind, "後{seconds}", ClassCarGap(top)) to "後2.0",
-            LmuWindowsManualReadoutItem(behind, "後{seconds}", ClassCarGap(unknownCount)) to
-                "クラス内後方車とのギャップはデータがありません",
-            LmuWindowsManualReadoutItem(behind, "後{seconds}", ClassCarGap(unknownPosition)) to
-                "クラス内後方車とのギャップはデータがありません",
+            LmuWindowsManualReadoutItem(key, template, ClassCarGap(top)) to "クラス内先頭です、後方2.0秒",
+            LmuWindowsManualReadoutItem(key, template, ClassCarGap(last)) to "クラス内前方2.0秒、クラス内最後尾です",
+            LmuWindowsManualReadoutItem(key, template, ClassCarGap(alone)) to "クラス内先頭です、クラス内最後尾です",
+            LmuWindowsManualReadoutItem(key, " ", ClassCarGap(top)) to "",
+            LmuWindowsManualReadoutItem(key, "", ClassCarGap(last)) to "",
+            LmuWindowsManualReadoutItem(key, template, ClassCarGap(unknownCount)) to
+                "クラス内前後車とのギャップはデータがありません",
+            LmuWindowsManualReadoutItem(key, template, ClassCarGap(unknownPosition)) to
+                "クラス内前後車とのギャップはデータがありません",
         ).forEach { (item, text) ->
             val decision = manualUseCase.determineManualReadout(state, listOf(item))
             assertEquals(text, decision.events.single().narratedText)
         }
-        val topItem = LmuWindowsManualReadoutItem(ahead, "前{seconds}", ClassCarGap(top))
-        val noData = LmuWindowsManualReadoutItem(behind, "後{seconds}", null)
-        assertEquals(
-            "クラス内先頭です、クラス内後方車とのギャップはデータがありません",
-            manualUseCase
-                .determineManualReadout(state, listOf(topItem, noData))
-                .events
-                .single()
-                .narratedText,
-        )
     }
 
     @Test
     fun `手動クラス内ギャップは欠損や不正な秒差をデータ無しとして扱う`() {
-        val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
-        val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+        val key = LmuWindowsReadoutItemKey.ClassCarGap.Root.value
         val state = LmuWindowsNarratorState()
         val tyre =
             LmuWindowsManualReadoutItem(LmuWindowsReadoutItemKey.TyreWear.Root.value, "タイヤ{percent}%", Ratio(0.8))
         val valid = LmuWindowsClassCarGapData(1.0, 1.0, classPosition = 2, classVehicleCount = 3)
+        val name = "クラス内前後車とのギャップ"
         listOf(
             null,
             valid.copy(gapAheadSeconds = null, gapBehindSeconds = null),
-            valid.copy(gapAheadSeconds = -0.1, gapBehindSeconds = -0.1),
-            valid.copy(gapAheadSeconds = Double.NaN, gapBehindSeconds = Double.NaN),
-            valid.copy(gapAheadSeconds = Double.POSITIVE_INFINITY, gapBehindSeconds = Double.POSITIVE_INFINITY),
-            valid.copy(gapAheadSeconds = Double.NEGATIVE_INFINITY, gapBehindSeconds = Double.NEGATIVE_INFINITY),
+            valid.copy(gapAheadSeconds = null),
+            valid.copy(gapBehindSeconds = null),
+            valid.copy(gapAheadSeconds = -0.1),
+            valid.copy(gapBehindSeconds = -0.1),
+            valid.copy(gapAheadSeconds = Double.NaN),
+            valid.copy(gapBehindSeconds = Double.NaN),
+            valid.copy(gapAheadSeconds = Double.POSITIVE_INFINITY),
+            valid.copy(gapBehindSeconds = Double.NEGATIVE_INFINITY),
         ).forEach { data ->
-            listOf(ahead to "クラス内前方車とのギャップ", behind to "クラス内後方車とのギャップ").forEach { (key, name) ->
-                val item = LmuWindowsManualReadoutItem(key, "差{seconds}", data?.let { ClassCarGap(it) })
-                val single = manualUseCase.determineManualReadout(state, listOf(item))
-                assertEquals("${name}はデータがありません", single.events.single().narratedText)
-                assertEquals(LmuWindowsReadoutItemKey.VehicleApproach.Root, single.events.single().readoutItemKey)
-                val combined = manualUseCase.determineManualReadout(state, listOf(item, tyre))
-                assertEquals("${name}はデータがありません、タイヤ80%", combined.events.single().narratedText)
-            }
+            val item = LmuWindowsManualReadoutItem(key, "{ahead}、{behind}", data?.let { ClassCarGap(it) })
+            val single = manualUseCase.determineManualReadout(state, listOf(item))
+            assertEquals("${name}はデータがありません", single.events.single().narratedText)
+            assertEquals(LmuWindowsReadoutItemKey.VehicleApproach.Root, single.events.single().readoutItemKey)
+            val combined = manualUseCase.determineManualReadout(state, listOf(item, tyre))
+            assertEquals("${name}はデータがありません、タイヤ80%", combined.events.single().narratedText)
         }
-        val allNoData =
-            listOf(
-                LmuWindowsManualReadoutItem(ahead, "差{seconds}", null),
-                LmuWindowsManualReadoutItem(behind, "差{seconds}", null),
-            )
+        val topWithoutBehind = LmuWindowsClassCarGapData(null, null, classPosition = 1, classVehicleCount = 3)
         assertEquals(
-            "クラス内前方車とのギャップはデータがありません、クラス内後方車とのギャップはデータがありません",
+            "${name}はデータがありません",
             manualUseCase
-                .determineManualReadout(state, allNoData)
-                .events
+                .determineManualReadout(
+                    state,
+                    listOf(LmuWindowsManualReadoutItem(key, "{ahead}、{behind}", ClassCarGap(topWithoutBehind))),
+                ).events
                 .single()
                 .narratedText,
         )
@@ -575,8 +563,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 LmuWindowsReadoutItemKey.PitTiming.TyreWear.value to LmuWindowsReadoutItemKey.PitTiming.Root,
                 LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to LmuWindowsReadoutItemKey.RemainingFuel.Root,
                 LmuWindowsReadoutItemKey.RemainingFuel.Root.value to LmuWindowsReadoutItemKey.RemainingFuel.Root,
-                LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to LmuWindowsReadoutItemKey.VehicleApproach.Root,
-                LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.ClassCarGap.Root.value to LmuWindowsReadoutItemKey.VehicleApproach.Root,
                 LmuWindowsReadoutItemKey.TyreWear.Root.value to LmuWindowsReadoutItemKey.TyreWear.Root,
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value to LmuWindowsReadoutItemKey.BrakeWear.Root,
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root.value to LmuWindowsReadoutItemKey.BrakeTemperature.Root,

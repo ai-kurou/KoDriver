@@ -9,7 +9,6 @@ import kotlin.test.assertEquals
 class LmuWindowsItemIconTest {
     @Test
     fun `手動専用のクラス内ギャップは車両アイコンを返す`() {
-        assertEquals(Icons.Filled.DirectionsCar, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.ClassCarGap.Ahead))
-        assertEquals(Icons.Filled.DirectionsCar, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.ClassCarGap.Behind))
+        assertEquals(Icons.Filled.DirectionsCar, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.ClassCarGap.Root))
     }
 }

@@ -69,10 +69,21 @@ val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
             ),
         LmuWindowsReadoutItemKey.RemainingFuel.Laps.value to
             listOf("燃料周回", "燃料残り周回", "燃料あと何周", "燃料ラップ", "燃料何周", "燃料はあと何周", "燃料は何周"),
-        LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value to
-            listOf("前の車", "前との差", "前とのギャップ", "前のギャップ", "前の差", "前の車との差"),
-        LmuWindowsReadoutItemKey.ClassCarGap.Behind.value to
-            listOf("後ろの車", "後ろとの差", "後ろとのギャップ", "後ろのギャップ", "後ろの差", "後ろの車との差"),
+        LmuWindowsReadoutItemKey.ClassCarGap.Root.value to
+            listOf(
+                "前の車",
+                "前との差",
+                "前とのギャップ",
+                "前のギャップ",
+                "前の差",
+                "前の車との差",
+                "後ろの車",
+                "後ろとの差",
+                "後ろとのギャップ",
+                "後ろのギャップ",
+                "後ろの差",
+                "後ろの車との差",
+            ),
     )
 
 fun lmuWindowsManualReadoutItemPhrases(itemKey: String): List<String> =

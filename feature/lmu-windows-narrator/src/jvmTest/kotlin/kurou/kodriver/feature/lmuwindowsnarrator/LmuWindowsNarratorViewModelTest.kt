@@ -907,14 +907,13 @@ class LmuWindowsNarratorViewModelTest {
             val gaps = Channel<LmuWindowsClassCarGapData>(Channel.UNLIMITED)
             val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
             val spoken = mutableListOf<SpeechEvent>()
-            val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
-            val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+            val gap = LmuWindowsReadoutItemKey.ClassCarGap.Root.value
             val root = LmuWindowsReadoutItemKey.VehicleApproach.Root
             var time = 0L
             createViewModel(
                 classCarGapChannel = gaps,
                 manualRequestChannel = requests,
-                manualSets = listOf(ManualReadoutSet("gap", listOf(ahead, behind))),
+                manualSets = listOf(ManualReadoutSet("gap", listOf(gap))),
                 ttsEngine = mockTts(spoken),
                 enabledOverrides = mapOf(root to false),
                 queueEnabledOverrides = mapOf(root to false),
@@ -937,10 +936,10 @@ class LmuWindowsNarratorViewModelTest {
             requests.send(request)
             assertEquals(
                 listOf(
-                    "クラス内前方車とのギャップはデータがありません、クラス内後方車とのギャップはデータがありません",
-                    "クラス内前方1.3秒、クラス内後方3.0秒",
-                    "クラス内前方1.3秒、クラス内後方3.0秒",
-                    "クラス内前方車とのギャップはデータがありません、クラス内後方車とのギャップはデータがありません",
+                    "クラス内前後車とのギャップはデータがありません",
+                    "クラス内前方1.3秒、後方3.0秒",
+                    "クラス内前方1.3秒、後方3.0秒",
+                    "クラス内前後車とのギャップはデータがありません",
                 ),
                 spoken.map { it.narratedText },
             )
@@ -954,12 +953,11 @@ class LmuWindowsNarratorViewModelTest {
             val gaps = Channel<LmuWindowsClassCarGapData>(Channel.UNLIMITED)
             val requests = Channel<ManualReadoutRequest>(Channel.UNLIMITED)
             val spoken = mutableListOf<SpeechEvent>()
-            val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
-            val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+            val gap = LmuWindowsReadoutItemKey.ClassCarGap.Root.value
             createViewModel(
                 classCarGapChannel = gaps,
                 manualRequestChannel = requests,
-                manualSets = listOf(ManualReadoutSet("gap", listOf(ahead, behind))),
+                manualSets = listOf(ManualReadoutSet("gap", listOf(gap))),
                 selectedSimulatorFlow = selected,
                 ttsEngine = mockTts(spoken),
             )
@@ -971,7 +969,7 @@ class LmuWindowsNarratorViewModelTest {
             selected.update { Simulator.LmuWindows }
             requests.send(request)
             assertEquals(
-                listOf("クラス内先頭です、クラス内最後尾です", "クラス内前方車とのギャップはデータがありません、クラス内後方車とのギャップはデータがありません"),
+                listOf("クラス内先頭です、クラス内最後尾です", "クラス内前後車とのギャップはデータがありません"),
                 spoken.map { it.narratedText },
             )
         }

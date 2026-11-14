@@ -32,7 +32,7 @@ class LmuWindowsManualReadoutItemsTest {
     fun `定義はキー順に名前と既定文言を持ち未知キーは空文字`() {
         val definitions = lmuWindowsManualReadoutItemDefinitions
         assertEquals(definitions.keys.toList(), lmuWindowsManualReadoutItemKeys())
-        assertEquals(12, definitions.size)
+        assertEquals(11, definitions.size)
         assertEquals(
             listOf(
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value,
@@ -46,13 +46,11 @@ class LmuWindowsManualReadoutItemsTest {
         val laps = definitions.getValue(LmuWindowsReadoutItemKey.RemainingFuel.Laps.value)
         assertEquals("燃料残り周回数", laps.name)
         assertEquals(LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT, laps.textDefault)
-        val ahead = definitions.getValue(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value)
-        assertEquals("クラス内前方車とのギャップ", ahead.name)
-        assertEquals("クラス内前方{seconds}秒", ahead.textDefault)
-        val behind = definitions.getValue(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value)
-        assertEquals("クラス内後方車とのギャップ", behind.name)
-        assertEquals("クラス内後方{seconds}秒", behind.textDefault)
-        assertEquals(listOf(laps.key, ahead.key, behind.key), definitions.keys.toList().takeLast(3))
+        val gap = definitions.getValue(LmuWindowsReadoutItemKey.ClassCarGap.Root.value)
+        assertEquals("クラス内前後車とのギャップ", gap.name)
+        assertEquals("{ahead}、{behind}", gap.textDefault)
+        assertEquals("{ahead}", gap.placeholder)
+        assertEquals(listOf(laps.key, gap.key), definitions.keys.toList().takeLast(2))
         val fuel = definitions.getValue(LmuWindowsReadoutItemKey.RemainingFuel.Root.value)
         assertEquals("燃料残量", fuel.name)
         assertEquals("燃料は残り{percent}%", fuel.textDefault)
@@ -77,8 +75,7 @@ class LmuWindowsManualReadoutItemsTest {
 
     @Test
     fun `クラス内ギャップ項目だけをクラス内ギャップ項目と判定する`() {
-        assertTrue(isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value))
-        assertTrue(isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.ClassCarGap.Behind.value))
+        assertTrue(isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.ClassCarGap.Root.value))
         assertEquals(false, isLmuWindowsManualReadoutClassCarGapItem(LmuWindowsReadoutItemKey.MyBestLap.Root.value))
     }
 
@@ -92,8 +89,7 @@ class LmuWindowsManualReadoutItemsTest {
                 LmuWindowsReadoutItemKey.PitTiming.TyreWear to LmuWindowsReadoutItemKey.PitTiming.Root,
                 LmuWindowsReadoutItemKey.RemainingFuel.Laps to LmuWindowsReadoutItemKey.RemainingFuel.Root,
                 LmuWindowsReadoutItemKey.RemainingFuel.Root to LmuWindowsReadoutItemKey.RemainingFuel.Root,
-                LmuWindowsReadoutItemKey.ClassCarGap.Ahead to LmuWindowsReadoutItemKey.VehicleApproach.Root,
-                LmuWindowsReadoutItemKey.ClassCarGap.Behind to LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.ClassCarGap.Root to LmuWindowsReadoutItemKey.VehicleApproach.Root,
                 LmuWindowsReadoutItemKey.TyreWear.Root to LmuWindowsReadoutItemKey.TyreWear.Root,
                 LmuWindowsReadoutItemKey.BrakeWear.Root to LmuWindowsReadoutItemKey.BrakeWear.Root,
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root to LmuWindowsReadoutItemKey.BrakeTemperature.Root,

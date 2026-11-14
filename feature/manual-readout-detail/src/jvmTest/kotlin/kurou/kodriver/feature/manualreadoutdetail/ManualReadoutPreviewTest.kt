@@ -136,21 +136,20 @@ class ManualReadoutPreviewTest {
 
     @Test
     fun `クラス内ギャップはサンプル秒数に置換し空欄を除いて保存順に連結する`() {
-        val ahead = LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value
-        val behind = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+        val key = LmuWindowsReadoutItemKey.ClassCarGap.Root.value
         val state =
-            ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(ahead))
-        assertEquals("クラス内前方1.5秒", manualReadoutPreview(state))
+            ManualReadoutSetDetailUiState(simulatorId = Simulator.LmuWindows.id, selectedItemKeys = listOf(key))
+        assertEquals("クラス内前方1.5秒、後方1.5秒", manualReadoutPreview(state))
         assertEquals(
-            "後ろ1.5 {unknown}",
-            manualReadoutPreview(
-                state.copy(selectedItemKeys = listOf(behind), itemTexts = mapOf(behind to "後ろ{seconds} {unknown}")),
-            ),
+            "後ろ後方1.5秒 前クラス内前方1.5秒 {unknown}",
+            manualReadoutPreview(state.copy(itemTexts = mapOf(key to "後ろ{behind} 前{ahead} {unknown}"))),
         )
-        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(ahead to ""))))
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
         assertEquals(
-            "クラス内前方1.5秒、クラス内後方1.5秒",
-            manualReadoutPreview(state.copy(selectedItemKeys = listOf(ahead, behind))),
+            "クラス内前方1.5秒、後方1.5秒、タイヤ温度は90℃",
+            manualReadoutPreview(
+                state.copy(selectedItemKeys = listOf(key, LmuWindowsReadoutItemKey.TyreTemperature.Root.value)),
+            ),
         )
     }
 

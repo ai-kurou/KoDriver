@@ -238,7 +238,7 @@ class ManualReadoutSetDetailPaneTextEditTest {
 
     @Test
     fun `クラス内ギャップの文言欄は秒数の挿入と警告とリセットと文字数上限を扱う`() {
-        val key = LmuWindowsReadoutItemKey.ClassCarGap.Behind.value
+        val key = LmuWindowsReadoutItemKey.ClassCarGap.Root.value
         val defaultText = lmuWindowsManualReadoutItemTextDefault(key)
         val state =
             mutableStateOf(
@@ -266,31 +266,35 @@ class ManualReadoutSetDetailPaneTextEditTest {
         }
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("クラス内後方車とのギャップ").performClick()
+        rule.onNodeWithText("クラス内前後車とのギャップ").performClick()
         rule.onNodeWithText(defaultText).assertExists()
         val classCarGapHint =
-            "{seconds}は同じクラスの前後の車との差（秒、小数1桁）に置き換わります。" +
-                "前に車がいないときは「クラス内先頭です」、" +
-                "後ろに車がいないときは「クラス内最後尾です」と読み上げます。"
+            "{ahead}は「クラス内前方1.5秒」、{behind}は「後方1.5秒」のように" +
+                "同じクラスの前後の車との差（秒、小数1桁）に置き換わります。" +
+                "前に車がいないときは{ahead}を「クラス内先頭です」、" +
+                "後ろに車がいないときは{behind}を「クラス内最後尾です」と読み上げます。"
         rule.onNodeWithText(classCarGapHint).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("")
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
-        rule.onNodeWithText("{seconds}を挿入").performClick()
-        rule.onNodeWithText("{seconds}").assertExists()
+        rule.onNodeWithText("{ahead}を挿入").performClick()
+        rule.onNodeWithText("{ahead}").assertExists()
+        rule.onNodeWithText("{behind}を挿入").performClick()
+        rule.onNodeWithText("{ahead}{behind}").assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あと{percent}")
         rule.onNodeWithText("未対応のプレースホルダー: {percent}（そのまま読み上げます）").assertExists()
         rule.onNodeWithContentDescription("文言をデフォルトに戻す").performClick()
         rule.onNodeWithText(defaultText).assertExists()
         rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
-        rule.onNodeWithText("{seconds}を挿入").performClick()
+        rule.onNodeWithText("{ahead}を挿入").performClick()
         rule.onNodeWithText("$READOUT_CUSTOM_TEXT_MAX_LENGTH/$READOUT_CUSTOM_TEXT_MAX_LENGTH").assertExists()
-        rule.onNodeWithContentDescription("クラス内後方車とのギャップを削除").performClick()
+        rule.onNodeWithContentDescription("クラス内前後車とのギャップを削除").performClick()
         rule.onNode(hasSetTextAction()).assertDoesNotExist()
         rule.runOnIdle {
             assertEquals(
                 listOf(
                     key to "",
-                    key to "{seconds}",
+                    key to "{ahead}",
+                    key to "{ahead}{behind}",
                     key to "あと{percent}",
                     key to defaultText,
                     key to "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH),

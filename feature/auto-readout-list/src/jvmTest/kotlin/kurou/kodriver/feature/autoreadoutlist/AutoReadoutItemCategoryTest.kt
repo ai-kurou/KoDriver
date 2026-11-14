@@ -37,7 +37,7 @@ class AutoReadoutItemCategoryTest {
                 LmuWindowsReadoutItemKey.Flag.Root,
                 LmuWindowsReadoutItemKey.VehicleDamage.Root,
                 LmuWindowsReadoutItemKey.PitTiming.Root,
-                LmuWindowsReadoutItemKey.ClassCarGap.Ahead,
+                LmuWindowsReadoutItemKey.ClassCarGap.Root,
             )
         for (key in keys) {
             assertNull(autoReadoutItemCategory(key), key.value)

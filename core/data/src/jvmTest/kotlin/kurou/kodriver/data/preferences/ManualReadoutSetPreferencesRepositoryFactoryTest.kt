@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import java.nio.file.Files
@@ -79,5 +80,36 @@ class ManualReadoutSetPreferencesRepositoryFactoryTest {
                 listOf(ManualReadoutSet("set-1", listOf("BEST_LAP", "SIMULATOR")), ManualReadoutSet("set-2")),
                 aceRepository.observeSets().first(),
             )
+        }
+
+    @Test
+    fun `登録済みの移行処理で旧クラス内ギャップ項目を新キーへ置き換えて読み出す`() =
+        runTest {
+            registerReadoutItemKeys()
+            val repository = createManualReadoutSetPreferencesRepository(tempDir.absolutePath, Simulator.LmuWindows)
+            repository.saveSets(
+                listOf(
+                    ManualReadoutSet(
+                        "set-1",
+                        listOf("lmu_windows_auto_class_car_gap_behind", "lmu_windows_auto_class_car_gap_ahead"),
+                    ),
+                ),
+            )
+
+            assertEquals(
+                listOf(ManualReadoutSet("set-1", listOf("lmu_windows_auto_class_car_gap"))),
+                repository.observeSets().first(),
+            )
+        }
+
+    @Test
+    fun `移行処理を持たない手動読み上げ対応のシミュレーターのセットはそのまま読み出す`() =
+        runTest {
+            registerReadoutItemKeys()
+            val repository = createManualReadoutSetPreferencesRepository(tempDir.absolutePath, Simulator.AceWindows)
+            val sets = listOf(ManualReadoutSet("set-1", listOf("lmu_windows_auto_class_car_gap_ahead")))
+            repository.saveSets(sets)
+
+            assertEquals(sets, repository.observeSets().first())
         }
 }

@@ -7,11 +7,13 @@ import kotlin.concurrent.Volatile
  *
  * [showSimHubGuideLink] は手動読み上げのホットキー案内に SimHub の導入リンクを出すかどうか。
  * [itemPhrases] は音声認識の発話から項目を選ぶ語句で、キーは [itemDefinitions] と同じ項目キー。語句を持たない項目は音声で読み上げられない。
+ * [migrateLegacySet] は保存済みセットに残る廃止済みの項目キーを現行のキーへ置き換える。移行不要なら何もしない。
  */
 class ManualReadoutSimulatorSpec(
     val itemDefinitions: Map<String, ManualReadoutItemDefinition>,
     val showSimHubGuideLink: Boolean = true,
     val itemPhrases: Map<String, List<String>> = emptyMap(),
+    val migrateLegacySet: (ManualReadoutSet) -> ManualReadoutSet = { it },
 )
 
 /** A simulator's complete readout key catalog and defaults. [manualReadout] は手動読み上げ非対応なら null。 */
@@ -109,6 +111,7 @@ internal class ReadoutItemKeyRegistryState {
                         it.itemDefinitions.toMap(),
                         it.showSimHubGuideLink,
                         it.itemPhrases.mapValues { (_, phrases) -> phrases.toList() },
+                        it.migrateLegacySet,
                     )
                 },
         )

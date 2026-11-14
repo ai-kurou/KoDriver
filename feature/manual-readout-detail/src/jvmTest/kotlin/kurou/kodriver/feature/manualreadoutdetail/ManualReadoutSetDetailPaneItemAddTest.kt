@@ -175,7 +175,7 @@ class ManualReadoutSetDetailPaneItemAddTest {
                 ManualReadoutSetDetailUiState(
                     simulatorId = Simulator.LmuWindows.id,
                     setNumber = 1,
-                    availableItemKeys = listOf(LmuWindowsReadoutItemKey.ClassCarGap.Ahead.value),
+                    availableItemKeys = listOf(LmuWindowsReadoutItemKey.ClassCarGap.Root.value),
                 ),
             )
         rule.setContent {
@@ -188,8 +188,8 @@ class ManualReadoutSetDetailPaneItemAddTest {
             }
         }
         rule.onNodeWithText("＋ 項目を追加").performClick()
-        rule.onNodeWithText("クラス内前方車とのギャップ").performClick()
-        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("クラス内前方1.5秒")
+        rule.onNodeWithText("クラス内前後車とのギャップ").performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("クラス内前方1.5秒、後方1.5秒")
     }
 
     @Test
