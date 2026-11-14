@@ -87,7 +87,7 @@ internal fun ManualReadoutItemsCard(
     val atLimit = uiState.selectedItemKeys.size >= MANUAL_READOUT_SET_ITEM_MAX
     // 項目を全て外した直後の退場アニメーション中にプレビュー文が空にならないよう、最後の非空の値を保つ。
     val currentPreview = manualReadoutPreview(uiState)
-    var lastPreview by remember { mutableStateOf("") }
+    var lastPreview by remember(uiState.setNumber) { mutableStateOf("") }
     if (uiState.selectedItemKeys.isNotEmpty()) lastPreview = currentPreview
     if (showPicker) {
         ManualReadoutItemPickerSheet(
@@ -216,7 +216,10 @@ internal fun ManualReadoutItemsCard(
                                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                     onPreviewClick()
                                 },
-                                enabled = uiState.isTextToSpeechAvailable && lastPreview.isNotBlank(),
+                                enabled =
+                                    uiState.isTextToSpeechAvailable &&
+                                        uiState.selectedItemKeys.isNotEmpty() &&
+                                        lastPreview.isNotBlank(),
                             ) {
                                 Icon(
                                     imageVector =
