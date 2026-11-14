@@ -1,8 +1,10 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -69,6 +71,27 @@ internal val ManualReadoutHotkeyEnterTransition: EnterTransition =
 internal val ManualReadoutHotkeyExitTransition: ExitTransition =
     shrinkVertically(animationSpec = tween(durationMillis = 200)) +
         fadeOut(animationSpec = tween(durationMillis = 200))
+
+/**
+ * 非表示中は子要素を配置しない [AnimatedVisibility]。
+ * 親の `Arrangement.spacedBy` は高さ0の子要素にも間隔を足すため、退場アニメーション完了後は取り除く。
+ */
+@Composable
+internal fun ManualReadoutHotkeyAnimatedVisibility(
+    visible: Boolean,
+    content: @Composable AnimatedVisibilityScope.() -> Unit,
+) {
+    val visibleState = remember { MutableTransitionState(visible) }
+    visibleState.targetState = visible
+    if (visibleState.currentState || visibleState.targetState) {
+        AnimatedVisibility(
+            visibleState = visibleState,
+            enter = ManualReadoutHotkeyEnterTransition,
+            exit = ManualReadoutHotkeyExitTransition,
+            content = content,
+        )
+    }
+}
 
 @Composable
 internal fun ManualReadoutHotkeyCard(
@@ -146,11 +169,7 @@ internal fun ManualReadoutHotkeyCard(
                     }
                 }
                 Text(stringResource(Res.string.manual_readout_hotkey_hint))
-                AnimatedVisibility(
-                    visible = showGuideLink,
-                    enter = ManualReadoutHotkeyEnterTransition,
-                    exit = ManualReadoutHotkeyExitTransition,
-                ) {
+                ManualReadoutHotkeyAnimatedVisibility(visible = showGuideLink) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier =
