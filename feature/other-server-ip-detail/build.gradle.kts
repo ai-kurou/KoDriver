@@ -12,11 +12,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.domain)
             implementation(projects.core.designsystem)
             implementation(libs.compose.material.icons.extended)
         }
         jvmMain.dependencies {
-            implementation(projects.core.domain)
             implementation(libs.jmdns)
         }
         jvmTest.dependencies {

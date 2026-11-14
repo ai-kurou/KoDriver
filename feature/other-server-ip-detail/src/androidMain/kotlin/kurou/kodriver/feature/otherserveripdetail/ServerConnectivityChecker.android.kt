@@ -4,6 +4,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.model.IPV4_OCTET_MAX
+import kurou.kodriver.domain.model.IPV4_OCTET_MIN
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
 import kurou.kodriver.domain.model.SERVER_CONNECTIVITY_CHECK_TIMEOUT_MS
 import java.io.IOException
@@ -43,7 +45,7 @@ private fun String.toIpv4InetAddress(): InetAddress? {
     val address = ByteArray(4)
     octets.forEachIndexed { index, octet ->
         val value = octet.toIntOrNull() ?: return null
-        if (value !in 0..255) return null
+        if (value !in IPV4_OCTET_MIN..IPV4_OCTET_MAX) return null
         address[index] = value.toByte()
     }
     return InetAddress.getByAddress(address)
