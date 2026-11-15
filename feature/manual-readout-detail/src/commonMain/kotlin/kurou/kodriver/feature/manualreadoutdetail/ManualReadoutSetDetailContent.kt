@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -183,18 +184,22 @@ internal fun ManualReadoutSetDetailPane(
         ) {
             if (number != null) {
                 ManualReadoutSetNameRow(uiState.name, number, onNameChanged)
-                if (uiState.availableItemKeys.isEmpty()) {
-                    Text(stringResource(Res.string.manual_readout_no_items))
-                }
-                if (uiState.availableItemKeys.isNotEmpty()) {
-                    ManualReadoutItemsCard(
-                        uiState,
-                        onAddItem,
-                        onRemoveItem,
-                        onMoveItem,
-                        onItemTextChanged,
-                        onPreviewClick,
-                    )
+                Crossfade(
+                    targetState = uiState.availableItemKeys.isEmpty(),
+                    label = "manualReadoutItemsEmpty",
+                ) { isEmpty ->
+                    if (isEmpty) {
+                        Text(stringResource(Res.string.manual_readout_no_items))
+                    } else {
+                        ManualReadoutItemsCard(
+                            uiState,
+                            onAddItem,
+                            onRemoveItem,
+                            onMoveItem,
+                            onItemTextChanged,
+                            onPreviewClick,
+                        )
+                    }
                 }
                 ManualReadoutHotkeyAnimatedVisibility(visible = showHotkey) {
                     ManualReadoutHotkeyCard(
