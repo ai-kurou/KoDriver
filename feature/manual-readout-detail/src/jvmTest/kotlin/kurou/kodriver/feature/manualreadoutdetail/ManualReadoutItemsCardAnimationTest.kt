@@ -21,6 +21,7 @@ class ManualReadoutItemsCardAnimationTest {
 
     private val emptyHint = "読み上げたい項目を追加してください"
     private val previewTag = "manual_readout_preview_sentence"
+    private val noItemsText = "このシミュレーターで選べる項目はまだありません"
 
     @Test
     fun `項目を全て外すと空ヒントは展開しながら現れ、プレビューは縮みながら消え終わるまで残る`() {
@@ -46,6 +47,52 @@ class ManualReadoutItemsCardAnimationTest {
         rule.mainClock.advanceTimeBy(400)
         rule.onNodeWithTag(previewTag, useUnmergedTree = true).assertDoesNotExist()
         rule.onNodeWithText(emptyHint).assertExists()
+    }
+
+    @Test
+    fun `選べる項目が無いと文言だけを表示し、項目があるとカードに切り替わって文言は消える`() {
+        val available: MutableState<List<String>> = mutableStateOf(emptyList())
+        showDetail(available)
+        rule.waitForIdle()
+        rule.onNodeWithText(noItemsText).assertExists()
+        rule.onNodeWithText(emptyHint).assertDoesNotExist()
+
+        available.value = lmuWindowsManualReadoutItemKeys()
+        rule.waitForIdle()
+        rule.onNodeWithText(noItemsText).assertDoesNotExist()
+        rule.onNodeWithText(emptyHint).assertExists()
+    }
+
+    @Test
+    fun `選べる項目がある間はカードを表示し、項目が無くなると文言だけになる`() {
+        val available: MutableState<List<String>> = mutableStateOf(lmuWindowsManualReadoutItemKeys())
+        showDetail(available)
+        rule.waitForIdle()
+        rule.onNodeWithText(noItemsText).assertDoesNotExist()
+        rule.onNodeWithText(emptyHint).assertExists()
+
+        available.value = emptyList()
+        rule.waitForIdle()
+        rule.onNodeWithText(noItemsText).assertExists()
+        rule.onNodeWithText(emptyHint).assertDoesNotExist()
+    }
+
+    private fun showDetail(available: MutableState<List<String>>) {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState =
+                        ManualReadoutSetDetailUiState(
+                            simulatorId = Simulator.LmuWindows.id,
+                            setNumber = 1,
+                            availableItemKeys = available.value,
+                            selectedItemKeys = emptyList(),
+                        ),
+                    onAddItem = {},
+                    onDelete = {},
+                )
+            }
+        }
     }
 
     private fun showItemsCard(selected: MutableState<List<String>>) {
