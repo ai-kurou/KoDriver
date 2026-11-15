@@ -108,7 +108,7 @@ fun OtherAndroidAudioUsageDetailPane(
 
 /** 音声の用途設定の画面本体。 */
 @Composable
-fun OtherAndroidAudioUsageDetailPaneContent(
+internal fun OtherAndroidAudioUsageDetailPaneContent(
     uiState: OtherAndroidAudioUsageDetailUiState,
     onUsageSelected: (AndroidAudioUsage) -> Unit = {},
     onPreviewClicked: (AndroidAudioUsage, String) -> Unit = { _, _ -> },

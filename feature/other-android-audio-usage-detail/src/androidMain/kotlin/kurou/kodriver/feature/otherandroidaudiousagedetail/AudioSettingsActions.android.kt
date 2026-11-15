@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 
 /** rememberOpenVolumePanel のこのプラットフォーム向け実装。 */
 @Composable
-actual fun rememberOpenVolumePanel(): (() -> Unit)? {
+internal actual fun rememberOpenVolumePanel(): (() -> Unit)? {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return null
     val context = LocalContext.current
     return {
@@ -23,7 +23,7 @@ actual fun rememberOpenVolumePanel(): (() -> Unit)? {
 
 /** rememberOpenSoundSettings のこのプラットフォーム向け実装。 */
 @Composable
-actual fun rememberOpenSoundSettings(): (() -> Unit)? {
+internal actual fun rememberOpenSoundSettings(): (() -> Unit)? {
     val context = LocalContext.current
     return {
         try {

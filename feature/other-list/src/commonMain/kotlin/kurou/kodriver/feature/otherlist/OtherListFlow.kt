@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.combine
 
 /** 一覧の各入力を表示状態へ合成する冷たい Flow。共有と実行のライフサイクルは呼び出し元が管理する。 */
 @Suppress("LongParameterList")
-class OtherListFlow(
+internal class OtherListFlow(
     baseState: Flow<OtherListUiState>,
     overlaySettings: Flow<OtherListOverlaySettingsUiState>,
     deviceSettings: Flow<OtherListDeviceSettingsUiState>,

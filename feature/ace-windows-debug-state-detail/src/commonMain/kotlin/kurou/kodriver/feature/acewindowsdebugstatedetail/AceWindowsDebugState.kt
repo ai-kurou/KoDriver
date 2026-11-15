@@ -10,7 +10,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 
-data class AceWindowsDebugState(
+internal data class AceWindowsDebugState(
     val fuel: AceWindowsFuelData? = null,
     val flag: AceWindowsFlagData? = null,
     val status: AceWindowsStatusData? = null,

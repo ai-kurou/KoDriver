@@ -10,7 +10,7 @@ import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 /**
  * AceWindowsBanner の接続状態を監視する実装。
  */
-class AceWindowsBannerConnectionChecker(
+internal class AceWindowsBannerConnectionChecker(
     private val checkAceWindowsConnection: CheckAceWindowsConnectionUseCase,
 ) : AceBannerConnectionChecker {
     override fun statusFlow(): Flow<ConnectionBannerVmStatus> =

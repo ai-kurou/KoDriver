@@ -14,7 +14,7 @@ private data class SimulatorReadoutState(
 )
 
 /** AutoReadoutList の設定を観測し、表示状態を合成する冷たい Flow。 */
-class AutoReadoutListFlow(
+internal class AutoReadoutListFlow(
     observeSelectedSimulator: Flow<Simulator>,
     private val autoReadoutOrderUseCases: AutoReadoutOrderUseCases,
     autoReadoutEnabledUseCases: AutoReadoutEnabledUseCases,

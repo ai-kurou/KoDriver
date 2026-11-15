@@ -14,7 +14,7 @@ import kurou.kodriver.domain.usecase.PreviewOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayTextColorUseCase
 
 /** オーバーレイ文字色の保存値とダイアログ内の選択を管理する。 */
-class OtherOverlayTextColorDetailViewModel internal constructor(
+internal class OtherOverlayTextColorDetailViewModel internal constructor(
     observeOverlayTextColor: ObserveOverlayTextColorUseCase,
     private val previewOverlayTextColor: PreviewOverlayTextColorUseCase,
     private val saveOverlayTextColor: SaveOverlayTextColorUseCase,

@@ -5,7 +5,7 @@ import android.os.Build
 /**
  * buildOtherListItems のこのプラットフォーム向け実装。
  */
-actual fun buildOtherListItems(): List<OtherListItemType> {
+internal actual fun buildOtherListItems(): List<OtherListItemType> {
     val sdkInt = Build.VERSION.SDK_INT
     return OtherListItemType.entries.filter { it !in excludedItems && isAvailableOnSdk(it, sdkInt) }
 }

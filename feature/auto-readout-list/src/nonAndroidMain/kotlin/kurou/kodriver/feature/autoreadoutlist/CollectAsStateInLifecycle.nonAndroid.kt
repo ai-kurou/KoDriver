@@ -6,4 +6,4 @@ import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-actual fun <T> StateFlow<T>.collectAsStateInLifecycle(): State<T> = collectAsState()
+internal actual fun <T> StateFlow<T>.collectAsStateInLifecycle(): State<T> = collectAsState()
