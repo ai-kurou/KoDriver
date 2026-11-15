@@ -35,7 +35,7 @@ val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         ),
         manualReadoutItemDefinitionOf(
             AceWindowsReadoutItemKey.MyBestLap.Root,
-            ManualReadoutItemCategory.LAP,
+            ManualReadoutItemCategory.TIME,
             "自己ベストラップ",
             ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT,
             ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER,
@@ -53,7 +53,7 @@ val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         ),
         manualReadoutItemDefinitionOf(
             AceWindowsReadoutItemKey.CarGap.Root,
-            ManualReadoutItemCategory.LAP,
+            ManualReadoutItemCategory.TIME,
             "前後車とのギャップ",
             ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT,
             ACE_WINDOWS_CAR_GAP_PLACEHOLDERS,

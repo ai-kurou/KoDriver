@@ -78,7 +78,7 @@ class ManualReadoutSetDetailPaneAddSheetTest {
                     "2",
                     "燃料残量",
                     "燃料残り周回数",
-                    "ラップ",
+                    "タイム",
                     "2",
                     "自己ベストラップ",
                     "前後車とのギャップ",

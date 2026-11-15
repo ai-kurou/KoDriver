@@ -65,7 +65,7 @@ class AutoReadoutItemCategoryTest {
                 AceWindowsReadoutItemKey.RemainingFuel.Root to ManualReadoutItemCategory.FUEL,
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root to ManualReadoutItemCategory.FUEL,
                 AceWindowsReadoutItemKey.TyreTemperature.Root to ManualReadoutItemCategory.TYRE,
-                AceWindowsReadoutItemKey.MyBestLap.Root to ManualReadoutItemCategory.LAP,
+                AceWindowsReadoutItemKey.MyBestLap.Root to ManualReadoutItemCategory.TIME,
             )
         for ((key, category) in expected) {
             assertEquals(category, autoReadoutItemCategory(key), key.value)
