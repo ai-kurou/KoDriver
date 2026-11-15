@@ -73,7 +73,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         ),
         manualReadoutItemDefinitionOf(
             LmuWindowsReadoutItemKey.MyBestLap.Root,
-            ManualReadoutItemCategory.LAP,
+            ManualReadoutItemCategory.TIME,
             "自己ベストラップ",
             LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT,
             LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER,
@@ -112,7 +112,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         ),
         manualReadoutItemDefinitionOf(
             LmuWindowsReadoutItemKey.ClassCarGap.Root,
-            ManualReadoutItemCategory.LAP,
+            ManualReadoutItemCategory.TIME,
             "クラス内前後車とのギャップ",
             LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT,
             LMU_WINDOWS_CLASS_CAR_GAP_PLACEHOLDERS,

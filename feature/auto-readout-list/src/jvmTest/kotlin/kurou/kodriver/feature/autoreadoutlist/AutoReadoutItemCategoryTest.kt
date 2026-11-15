@@ -22,7 +22,7 @@ class AutoReadoutItemCategoryTest {
                 LmuWindowsReadoutItemKey.TyreWear.Root to ManualReadoutItemCategory.TYRE,
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root to ManualReadoutItemCategory.BRAKE,
                 LmuWindowsReadoutItemKey.BrakeWear.Root to ManualReadoutItemCategory.BRAKE,
-                LmuWindowsReadoutItemKey.MyBestLap.Root to ManualReadoutItemCategory.LAP,
+                LmuWindowsReadoutItemKey.MyBestLap.Root to ManualReadoutItemCategory.TIME,
             )
         for ((key, category) in expected) {
             assertEquals(category, autoReadoutItemCategory(key), key.value)

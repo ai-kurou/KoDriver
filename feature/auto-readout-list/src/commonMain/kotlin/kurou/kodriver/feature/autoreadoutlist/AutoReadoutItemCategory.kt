@@ -28,7 +28,7 @@ private fun lmuWindowsItemCategory(itemId: LmuWindowsReadoutItemKey): ManualRead
         is LmuWindowsReadoutItemKey.TyreWear -> ManualReadoutItemCategory.TYRE
         is LmuWindowsReadoutItemKey.BrakeTemperature -> ManualReadoutItemCategory.BRAKE
         is LmuWindowsReadoutItemKey.BrakeWear -> ManualReadoutItemCategory.BRAKE
-        is LmuWindowsReadoutItemKey.MyBestLap -> ManualReadoutItemCategory.LAP
+        is LmuWindowsReadoutItemKey.MyBestLap -> ManualReadoutItemCategory.TIME
         is LmuWindowsReadoutItemKey.VehicleApproach, is LmuWindowsReadoutItemKey.Flag -> null
         is LmuWindowsReadoutItemKey.VehicleDamage, is LmuWindowsReadoutItemKey.PitTiming -> null
         is LmuWindowsReadoutItemKey.ClassCarGap -> null

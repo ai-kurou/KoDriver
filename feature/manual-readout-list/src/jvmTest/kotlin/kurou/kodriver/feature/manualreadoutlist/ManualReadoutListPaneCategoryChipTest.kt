@@ -48,7 +48,7 @@ class ManualReadoutListPaneCategoryChipTest {
                 )
             }
         }
-        listOf("バーチャルエネルギー 1", "燃料 1", "タイヤ 1", "ブレーキ 1", "ラップ 1").forEach {
+        listOf("バーチャルエネルギー 1", "燃料 1", "タイヤ 1", "ブレーキ 1", "タイム 1").forEach {
             rule.onNodeWithText(it, useUnmergedTree = true).assertIsDisplayed()
         }
         rule.onNodeWithText("unknown", useUnmergedTree = true).assertDoesNotExist()
