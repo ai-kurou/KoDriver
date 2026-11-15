@@ -1,7 +1,15 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -22,6 +30,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -137,36 +148,81 @@ private fun SpeechRecognitionCardContent(
                         .semantics { contentDescription = levelDescription },
             )
         }
-        if (uiState.partialText.isNotEmpty() || uiState.recognized.isNotEmpty()) {
-            // 履歴が長くなっても下のセット一覧の領域を奪わないよう、高さを抑えてスクロールさせる。
-            Column(
-                modifier =
-                    Modifier
-                        .heightIn(max = HISTORY_MAX_HEIGHT)
-                        .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+        val hasHistory = uiState.partialText.isNotEmpty() || uiState.recognized.isNotEmpty()
+        // 退場アニメーション中も中身が空にならないよう、最後に空でなかった履歴を保持する
+        var lastPartialText by remember { mutableStateOf(uiState.partialText) }
+        var lastRecognized by remember { mutableStateOf(uiState.recognized) }
+        if (hasHistory) {
+            lastPartialText = uiState.partialText
+            lastRecognized = uiState.recognized
+        }
+        SpeechRecognitionHistoryAnimatedVisibility(visible = hasHistory) {
+            SpeechRecognitionHistory(partialText = lastPartialText, recognized = lastRecognized)
+        }
+    }
+}
+
+/** 履歴の出現・消失で一覧の位置が飛ばないよう、高さを伸縮させてフェードする。 */
+private val SpeechRecognitionHistoryEnter: EnterTransition =
+    fadeIn(tween(durationMillis = 300)) + expandVertically(tween(durationMillis = 300), expandFrom = Alignment.Top)
+
+private val SpeechRecognitionHistoryExit: ExitTransition =
+    fadeOut(tween(durationMillis = 200)) + shrinkVertically(tween(durationMillis = 200), shrinkTowards = Alignment.Top)
+
+/**
+ * 非表示中は子要素を配置しない [AnimatedVisibility]。
+ * 親の `Arrangement.spacedBy` は高さ0の子要素にも間隔を足すため、退場アニメーション完了後は取り除く。
+ */
+@Composable
+private fun SpeechRecognitionHistoryAnimatedVisibility(
+    visible: Boolean,
+    content: @Composable () -> Unit,
+) {
+    val visibleState = remember { MutableTransitionState(visible) }
+    visibleState.targetState = visible
+    if (visibleState.currentState || visibleState.targetState) {
+        AnimatedVisibility(
+            visibleState = visibleState,
+            enter = SpeechRecognitionHistoryEnter,
+            exit = SpeechRecognitionHistoryExit,
+        ) {
+            content()
+        }
+    }
+}
+
+@Composable
+private fun SpeechRecognitionHistory(
+    partialText: String,
+    recognized: List<List<String>>,
+) {
+    // 履歴が長くなっても下のセット一覧の領域を奪わないよう、高さを抑えてスクロールさせる。
+    Column(
+        modifier =
+            Modifier
+                .heightIn(max = HISTORY_MAX_HEIGHT)
+                .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+    ) {
+        val unknownWord = stringResource(Res.string.speech_recognition_unknown_word)
+        if (partialText.isNotEmpty()) {
+            Text(
+                text = partialText.replace(VOSK_UNKNOWN_WORD, unknownWord),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        recognized.forEach { candidates ->
+            // 1行が1回の発話。候補はチップで並べ、幅を超える分は折り返す
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+                verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
             ) {
-                val unknownWord = stringResource(Res.string.speech_recognition_unknown_word)
-                if (uiState.partialText.isNotEmpty()) {
-                    Text(
-                        text = uiState.partialText.replace(VOSK_UNKNOWN_WORD, unknownWord),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                candidates.forEach {
+                    KoDriverPhraseChip(
+                        text = it.replace(VOSK_UNKNOWN_WORD, unknownWord),
+                        muted = it.contains(VOSK_UNKNOWN_WORD),
                     )
-                }
-                uiState.recognized.forEach { candidates ->
-                    // 1行が1回の発話。候補はチップで並べ、幅を超える分は折り返す
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
-                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
-                    ) {
-                        candidates.forEach {
-                            KoDriverPhraseChip(
-                                text = it.replace(VOSK_UNKNOWN_WORD, unknownWord),
-                                muted = it.contains(VOSK_UNKNOWN_WORD),
-                            )
-                        }
-                    }
                 }
             }
         }
