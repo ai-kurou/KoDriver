@@ -92,8 +92,10 @@ import kurou.kodriver.core.designsystem.KoDriverHintRow
 import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.core.designsystem.handleListRowArrowKey
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
@@ -192,7 +194,8 @@ internal fun AutoReadoutListPane(
         }
     }
     val haptic = LocalHapticFeedback.current
-    val rowFocusState = remember { AutoReadoutRowFocusState() }
+    val rowFocusState = remember { ListRowFocusState() }
+    val itemKeys = remember(uiState.items) { uiState.items.map { it.value } }
     val reorderableState =
         rememberReorderableLazyListState(listState) { from, to ->
             onMove(
@@ -225,10 +228,10 @@ internal fun AutoReadoutListPane(
                     Modifier
                         .fillMaxSize()
                         .onKeyEvent { event ->
-                            handleAutoReadoutArrowKey(
+                            handleListRowArrowKey(
                                 event = event,
                                 focusState = rowFocusState,
-                                items = uiState.items,
+                                itemKeys = itemKeys,
                                 firstItemLazyIndex = autoReadoutItemStartIndex,
                                 listState = listState,
                                 coroutineScope = coroutineScope,
@@ -277,7 +280,7 @@ internal fun AutoReadoutListPane(
                         AutoReadoutListItemCard(
                             modifier =
                                 Modifier.onFocusChanged { rowFocusState.onRowFocusChanged(item.value, it.hasFocus) },
-                            rowFocusRequester = rowFocusState.requesterFor(item),
+                            rowFocusRequester = rowFocusState.requesterFor(item.value),
                             item = item,
                             index = index,
                             itemName = itemName,

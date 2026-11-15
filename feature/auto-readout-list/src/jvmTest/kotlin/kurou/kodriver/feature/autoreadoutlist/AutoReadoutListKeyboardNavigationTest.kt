@@ -23,8 +23,6 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class AutoReadoutListKeyboardNavigationTest {
     init {
@@ -178,40 +176,6 @@ class AutoReadoutListKeyboardNavigationTest {
     }
 
     @Test
-    fun `処理方針は範囲内なら移動先を返し端では動かさず行外では無視する`() {
-        val items = listOf(flag, damage, fuel)
-
-        assertEquals(
-            AutoReadoutArrowKeyAction.MoveTo(1),
-            autoReadoutArrowKeyAction(step = 1, focusedItemKey = flag.value, items = items),
-        )
-        assertEquals(
-            AutoReadoutArrowKeyAction.MoveTo(1),
-            autoReadoutArrowKeyAction(step = -1, focusedItemKey = fuel.value, items = items),
-        )
-        assertEquals(
-            AutoReadoutArrowKeyAction.Stay,
-            autoReadoutArrowKeyAction(step = -1, focusedItemKey = flag.value, items = items),
-        )
-        assertEquals(
-            AutoReadoutArrowKeyAction.Stay,
-            autoReadoutArrowKeyAction(step = 1, focusedItemKey = fuel.value, items = items),
-        )
-        assertEquals(
-            AutoReadoutArrowKeyAction.Ignore,
-            autoReadoutArrowKeyAction(step = 1, focusedItemKey = null, items = items),
-        )
-        assertEquals(
-            AutoReadoutArrowKeyAction.Ignore,
-            autoReadoutArrowKeyAction(step = 1, focusedItemKey = "unknown", items = items),
-        )
-        assertEquals(
-            AutoReadoutArrowKeyAction.Ignore,
-            autoReadoutArrowKeyAction(step = null, focusedItemKey = flag.value, items = items),
-        )
-    }
-
-    @Test
     fun `Ctrl_Meta_Shift付きの下キーや上下以外のキーでは行を移動しない`() {
         setPane(listOf(flag, damage))
         rule.onNodeWithContentDescription(name(flag)).requestFocus()
@@ -227,16 +191,5 @@ class AutoReadoutListKeyboardNavigationTest {
         press(flag, Key.DirectionRight)
 
         rule.onNodeWithContentDescription(name(flag)).assertIsFocused()
-    }
-
-    @Test
-    fun `行のフォーカス状態は自分の行が外れたときだけ解除される`() {
-        val state = AutoReadoutRowFocusState()
-        state.onRowFocusChanged(itemKey = "b", hasFocus = true)
-        state.onRowFocusChanged(itemKey = "a", hasFocus = false)
-        assertEquals("b", state.focusedItemKey)
-
-        state.onRowFocusChanged(itemKey = "b", hasFocus = false)
-        assertNull(state.focusedItemKey)
     }
 }
