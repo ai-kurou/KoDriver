@@ -176,6 +176,36 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
+    fun `表示切替後は切替先のレイアウトだけを表示する`() {
+        val playLayout = mutableStateOf(true)
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState =
+                        ManualReadoutListUiState(
+                            playButtonLayoutEnabled = playLayout.value,
+                            canReadSets = true,
+                            sets = listOf(ManualReadoutSet("set-1", itemKeys = listOf("SESSION"))),
+                        ),
+                    simulatorId = "lmu_windows",
+                    simulatorName = "LMU",
+                    onAddSet = {},
+                    onReadSet = {},
+                    onTogglePlayButtonLayout = { playLayout.value = !playLayout.value },
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("セットを追加").assertDoesNotExist()
+        rule.runOnIdle { playLayout.value = false }
+        rule.waitForIdle()
+        rule.onNodeWithContentDescription("セットを追加").assertIsDisplayed()
+        rule.runOnIdle { playLayout.value = true }
+        rule.waitForIdle()
+        rule.onNodeWithContentDescription("セットを追加").assertDoesNotExist()
+        rule.onNodeWithText("セットを追加").assertIsDisplayed()
+    }
+
+    @Test
     fun `再生ボタン表示は対応環境で割り当て済みのチップだけを表示する`() {
         showPlayButtonHotkeySets(showHotkeyChip = true)
         rule.onNodeWithText("Ctrl+Shift+A", useUnmergedTree = true).assertIsDisplayed()
