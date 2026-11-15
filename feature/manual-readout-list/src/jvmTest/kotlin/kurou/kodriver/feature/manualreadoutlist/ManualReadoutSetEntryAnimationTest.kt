@@ -112,8 +112,8 @@ class ManualReadoutSetEntryAnimationTest {
         rule.runOnIdle {
             state.value = state.value.copy(playButtonLayoutEnabled = !playButtonLayoutEnabled)
         }
-        rule.mainClock.advanceTimeByFrame()
-        rule.mainClock.advanceTimeByFrame()
+        // Crossfade の切替中は退場する側と入場する側が同時に存在するため、切替完了後に計測する
+        rule.mainClock.advanceTimeBy(400)
         val switchedHeight =
             rule
                 .onNodeWithText("追加セット")

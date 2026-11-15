@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -108,118 +109,126 @@ internal fun ManualReadoutListPaneContent(
                     onTogglePlayButtonLayout = onTogglePlayButtonLayout,
                     modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
                 )
-                if (uiState.playButtonLayoutEnabled) {
-                    val tileHeightsPx = remember { mutableStateMapOf<String, Int>() }
-                    val density = LocalDensity.current
-                    LazyVerticalGrid(
-                        state = gridState,
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        contentPadding =
-                            PaddingValues(
-                                start = KoDriverSpacing.small,
-                                end = KoDriverSpacing.small,
-                                bottom = 56.dp + KoDriverSpacing.large + bottomEndOverlayInset,
-                            ),
-                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                    ) {
-                        itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
-                            val setNumber = set.number.takeIf { it > 0 } ?: (index + 1)
-                            ManualReadoutSetEntry(
-                                animate = additionBaseline?.let { set.id !in it } == true,
-                                setId = set.id,
-                                enteredSetIds = enteredSetIds,
-                                modifier =
-                                    Modifier
-                                        .onSizeChanged { tileHeightsPx[set.id] = it.height }
-                                        .animateItem(
+                Crossfade(
+                    targetState = uiState.playButtonLayoutEnabled,
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    label = "manualReadoutPlayLayout",
+                ) { playButtonLayout ->
+                    if (playButtonLayout) {
+                        val tileHeightsPx = remember { mutableStateMapOf<String, Int>() }
+                        val density = LocalDensity.current
+                        LazyVerticalGrid(
+                            state = gridState,
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding =
+                                PaddingValues(
+                                    start = KoDriverSpacing.small,
+                                    end = KoDriverSpacing.small,
+                                    bottom = 56.dp + KoDriverSpacing.large + bottomEndOverlayInset,
+                                ),
+                            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                        ) {
+                            itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
+                                val setNumber = set.number.takeIf { it > 0 } ?: (index + 1)
+                                ManualReadoutSetEntry(
+                                    animate = additionBaseline?.let { set.id !in it } == true,
+                                    setId = set.id,
+                                    enteredSetIds = enteredSetIds,
+                                    modifier =
+                                        Modifier
+                                            .onSizeChanged { tileHeightsPx[set.id] = it.height }
+                                            .animateItem(
+                                                fadeInSpec = null,
+                                                placementSpec = tween(200),
+                                                fadeOutSpec = null,
+                                            ),
+                                ) {
+                                    ManualReadoutSetPlayButton(
+                                        set = set,
+                                        title = set.name.ifBlank { manualReadoutSetTitle(simulatorId, setNumber) },
+                                        setNumber = setNumber,
+                                        canReadSet = uiState.canReadSets && set.itemKeys.isNotEmpty(),
+                                        showHotkeyChip = showHotkeyChip,
+                                        onReadSet = { onReadSet(set.id) },
+                                        onSetClick = { onSetClick(set.id) },
+                                        onDeleteSet = { onDeleteSet(set.id) },
+                                    )
+                                }
+                            }
+                            item(key = "add-set") {
+                                val tallestTileHeightPx = uiState.sets.maxOfOrNull { tileHeightsPx[it.id] ?: 0 } ?: 0
+                                val addTileMinHeight = maxOf(104.dp, with(density) { tallestTileHeightPx.toDp() })
+                                Surface(
+                                    modifier =
+                                        Modifier.animateItem(
                                             fadeInSpec = null,
                                             placementSpec = tween(200),
                                             fadeOutSpec = null,
                                         ),
-                            ) {
-                                ManualReadoutSetPlayButton(
-                                    set = set,
-                                    title = set.name.ifBlank { manualReadoutSetTitle(simulatorId, setNumber) },
-                                    setNumber = setNumber,
-                                    canReadSet = uiState.canReadSets && set.itemKeys.isNotEmpty(),
-                                    showHotkeyChip = showHotkeyChip,
-                                    onReadSet = { onReadSet(set.id) },
-                                    onSetClick = { onSetClick(set.id) },
-                                    onDeleteSet = { onDeleteSet(set.id) },
-                                )
-                            }
-                        }
-                        item(key = "add-set") {
-                            val tallestTileHeightPx = uiState.sets.maxOfOrNull { tileHeightsPx[it.id] ?: 0 } ?: 0
-                            Surface(
-                                modifier =
-                                    Modifier.animateItem(
-                                        fadeInSpec = null,
-                                        placementSpec = tween(200),
-                                        fadeOutSpec = null,
-                                    ),
-                                onClick = addSet,
-                                shape = MaterialTheme.shapes.large,
-                                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            ) {
-                                Column(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .heightIn(min = maxOf(104.dp, with(density) { tallestTileHeightPx.toDp() }))
-                                            .padding(KoDriverSpacing.medium),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement =
-                                        Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterVertically),
+                                    onClick = addSet,
+                                    shape = MaterialTheme.shapes.large,
+                                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 ) {
-                                    Icon(Icons.Filled.Add, contentDescription = null)
-                                    Text(stringResource(Res.string.manual_readout_list_add_set))
+                                    Column(
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .heightIn(min = addTileMinHeight)
+                                                .padding(KoDriverSpacing.medium),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement =
+                                            Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterVertically),
+                                    ) {
+                                        Icon(Icons.Filled.Add, contentDescription = null)
+                                        Text(stringResource(Res.string.manual_readout_list_add_set))
+                                    }
                                 }
                             }
                         }
-                    }
-                } else if (uiState.sets.isEmpty()) {
-                    Box(
-                        modifier = Modifier.weight(1f).fillMaxSize().padding(KoDriverSpacing.extraLarge),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.manual_readout_list_empty_title, simulatorName),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                } else {
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        contentPadding = PaddingValues(bottom = 56.dp + KoDriverSpacing.large + bottomEndOverlayInset),
-                    ) {
-                        itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
-                            ManualReadoutSetEntry(
-                                animate = additionBaseline?.let { set.id !in it } == true,
-                                setId = set.id,
-                                enteredSetIds = enteredSetIds,
-                                modifier =
-                                    Modifier.animateItem(
-                                        fadeInSpec = null,
-                                        placementSpec = tween(200),
-                                        fadeOutSpec = null,
-                                    ),
-                            ) {
-                                ManualReadoutSetRow(
-                                    setNumber = set.number.takeIf { it > 0 } ?: (index + 1),
-                                    simulatorId = simulatorId,
-                                    set = set,
-                                    showHotkeyChip = showHotkeyChip,
-                                    canReadSet = uiState.canReadSets,
-                                    onReadSet = { onReadSet(set.id) },
-                                    onSetClick = { onSetClick(set.id) },
-                                    onDeleteSet = { onDeleteSet(set.id) },
-                                )
+                    } else if (uiState.sets.isEmpty()) {
+                        Box(
+                            modifier = Modifier.fillMaxSize().padding(KoDriverSpacing.extraLarge),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.manual_readout_list_empty_title, simulatorName),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding =
+                                PaddingValues(bottom = 56.dp + KoDriverSpacing.large + bottomEndOverlayInset),
+                        ) {
+                            itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
+                                ManualReadoutSetEntry(
+                                    animate = additionBaseline?.let { set.id !in it } == true,
+                                    setId = set.id,
+                                    enteredSetIds = enteredSetIds,
+                                    modifier =
+                                        Modifier.animateItem(
+                                            fadeInSpec = null,
+                                            placementSpec = tween(200),
+                                            fadeOutSpec = null,
+                                        ),
+                                ) {
+                                    ManualReadoutSetRow(
+                                        setNumber = set.number.takeIf { it > 0 } ?: (index + 1),
+                                        simulatorId = simulatorId,
+                                        set = set,
+                                        showHotkeyChip = showHotkeyChip,
+                                        canReadSet = uiState.canReadSets,
+                                        onReadSet = { onReadSet(set.id) },
+                                        onSetClick = { onSetClick(set.id) },
+                                        onDeleteSet = { onDeleteSet(set.id) },
+                                    )
+                                }
                             }
                         }
                     }
