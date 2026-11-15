@@ -96,6 +96,8 @@ fun listRowArrowKeyAction(
  * 移動先が画面外で未生成の場合は、スクロールしてからフォーカスを移す。
  *
  * [itemKeys] は行の並び順に並んだ項目キー、[firstItemLazyIndex] は先頭項目の LazyList 上のインデックス。
+ * 項目が連続しない LazyColumn（見出しや区切り行を挟む場合）は、[lazyIndexOf] で項目の並び順のインデックスから
+ * LazyList 上のインデックスを求める。既定値は [firstItemLazyIndex] から連続していると見なす。
  */
 fun handleListRowArrowKey(
     event: KeyEvent,
@@ -104,11 +106,12 @@ fun handleListRowArrowKey(
     firstItemLazyIndex: Int,
     listState: LazyListState,
     coroutineScope: CoroutineScope,
+    lazyIndexOf: (Int) -> Int = { firstItemLazyIndex + it },
 ): Boolean {
     val action = listRowArrowKeyAction(listRowArrowKeyStep(event), focusState.focusedItemKey, itemKeys)
     if (action is ListRowArrowKeyAction.MoveTo) {
         val requester = focusState.requesterFor(itemKeys[action.itemIndex])
-        coroutineScope.launch { listState.focusRow(firstItemLazyIndex + action.itemIndex, requester) }
+        coroutineScope.launch { listState.focusRow(lazyIndexOf(action.itemIndex), requester) }
     }
     return action != ListRowArrowKeyAction.Ignore
 }

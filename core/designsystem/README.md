@@ -90,6 +90,7 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 - `ListRowFocusState` が行ごとの `FocusRequester` とフォーカス中の行の項目キーを保持する。並べ替えに追従するため、フォーカス行はインデックスではなく項目キーで記録する。
 - `handleListRowArrowKey` を `Modifier.onKeyEvent` から呼び出す。先頭の↑・末尾の↓では折り返さず消費だけする。Alt / Ctrl / Shift / Meta 付きの↑↓と、行外にフォーカスがある場合は処理しない。
+- 項目の LazyList インデックスが連続しない場合（見出し・区切り行を挟む場合）は、末尾引数 `lazyIndexOf`（項目の並び順のインデックス → LazyList のインデックス）を渡す。省略時は `firstItemLazyIndex` から連続していると見なす。
 - 画面外の行は `scrollToItem` でスクロールしてからフォーカスを移す。
 - 表示と操作の統合は各 feature のペインのテストで確認し、判定ロジックは `src/jvmTest` の `ListRowKeyboardNavigationTest` で確認する。
 
