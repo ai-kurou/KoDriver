@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -75,6 +76,27 @@ class OtherVoiceDetailPaneTest {
         rule.onNodeWithText("システム既定以外の日本語の音声が見つかりません。").assertExists()
         rule.onNodeWithText("再読み込み").assertExists()
         rule.onNodeWithText("日本語の音声が見つかりません。端末の設定で日本語の音声を追加してください。").assertDoesNotExist()
+    }
+
+    @Test
+    fun `読み込み中から読み込み完了に変わると読み込み表示を一覧に切り替える`() {
+        val uiState = mutableStateOf(OtherVoiceDetailUiState(isLoading = true))
+        rule.setContent {
+            MaterialTheme {
+                OtherVoiceDetailPaneContent(uiState = uiState.value)
+            }
+        }
+        rule.onNodeWithText("読み込み中…").assertExists()
+        rule.onNodeWithText("音声A").assertDoesNotExist()
+
+        rule.runOnIdle {
+            uiState.value = OtherVoiceDetailUiState(voices = listOf(voice), isLoading = false)
+        }
+        rule.waitForIdle()
+
+        rule.onNodeWithText("読み込み中…").assertDoesNotExist()
+        rule.onNodeWithText("音声A").assertExists()
+        rule.onNodeWithText("1 件").assertExists()
     }
 
     @Test

@@ -1,5 +1,11 @@
 package kurou.kodriver.feature.othervoicedetail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -132,58 +138,69 @@ fun OtherVoiceDetailPaneContent(
             Column(
                 modifier = Modifier.selectableGroup().padding(horizontal = KoDriverSpacing.large),
             ) {
-                if (uiState.isLoading) {
-                    DetailPaneBodyText(text = stringResource(Res.string.voice_loading))
-                } else {
-                    DetailPaneSubtitle(text = stringResource(Res.string.voice_default_section))
-                    VoiceCards(
-                        voices =
-                            listOf(
-                                TextToSpeechVoice(
-                                    VOICE_ID_UNSPECIFIED,
-                                    stringResource(Res.string.voice_system_default),
-                                    stringResource(Res.string.voice_system_default_description),
-                                ),
-                            ),
-                        selectedId = selectedId,
-                        previewingId = uiState.previewingVoiceId,
-                        onVoiceSelected = onVoiceSelected,
-                        onPreviewClicked = { onPreviewClicked(it, previewSample) },
-                    )
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                        DetailPaneSubtitle(
-                            text = stringResource(Res.string.voice_japanese_section),
-                            modifier = Modifier.weight(1f),
-                        )
-                        Text(
-                            text = stringResource(Res.string.voice_count, voices.size),
-                            style = koDriverMonospaceTextStyle(),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    VoiceCards(
-                        voices = voices,
-                        selectedId = selectedId,
-                        previewingId = uiState.previewingVoiceId,
-                        onVoiceSelected = onVoiceSelected,
-                        onPreviewClicked = { onPreviewClicked(it, previewSample) },
-                    )
-                    if (voices.isEmpty()) {
-                        DetailPaneBodyText(
-                            text =
-                                stringResource(
-                                    if (uiState.voices.isEmpty()) {
-                                        Res.string.voice_empty
-                                    } else {
-                                        Res.string.voice_alternatives_empty
-                                    },
-                                ),
-                        )
-                        TextButton(onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            onRetryClicked()
-                        }) {
-                            Text(stringResource(Res.string.voice_retry))
+                Crossfade(targetState = uiState.isLoading, label = "otherVoiceLoading") { loading ->
+                    if (loading) {
+                        DetailPaneBodyText(text = stringResource(Res.string.voice_loading))
+                    } else {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            DetailPaneSubtitle(text = stringResource(Res.string.voice_default_section))
+                            VoiceCards(
+                                voices =
+                                    listOf(
+                                        TextToSpeechVoice(
+                                            VOICE_ID_UNSPECIFIED,
+                                            stringResource(Res.string.voice_system_default),
+                                            stringResource(Res.string.voice_system_default_description),
+                                        ),
+                                    ),
+                                selectedId = selectedId,
+                                previewingId = uiState.previewingVoiceId,
+                                onVoiceSelected = onVoiceSelected,
+                                onPreviewClicked = { onPreviewClicked(it, previewSample) },
+                            )
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                                DetailPaneSubtitle(
+                                    text = stringResource(Res.string.voice_japanese_section),
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Text(
+                                    text = stringResource(Res.string.voice_count, voices.size),
+                                    style = koDriverMonospaceTextStyle(),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            VoiceCards(
+                                voices = voices,
+                                selectedId = selectedId,
+                                previewingId = uiState.previewingVoiceId,
+                                onVoiceSelected = onVoiceSelected,
+                                onPreviewClicked = { onPreviewClicked(it, previewSample) },
+                            )
+                            AnimatedVisibility(
+                                visible = voices.isEmpty(),
+                                modifier = Modifier.fillMaxWidth(),
+                                enter = expandVertically() + fadeIn(),
+                                exit = shrinkVertically() + fadeOut(),
+                            ) {
+                                Column {
+                                    DetailPaneBodyText(
+                                        text =
+                                            stringResource(
+                                                if (uiState.voices.isEmpty()) {
+                                                    Res.string.voice_empty
+                                                } else {
+                                                    Res.string.voice_alternatives_empty
+                                                },
+                                            ),
+                                    )
+                                    TextButton(onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                        onRetryClicked()
+                                    }) {
+                                        Text(stringResource(Res.string.voice_retry))
+                                    }
+                                }
+                            }
                         }
                     }
                 }

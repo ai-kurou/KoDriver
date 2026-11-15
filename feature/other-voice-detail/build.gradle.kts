@@ -12,6 +12,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(libs.compose.material.icons.extended)
+            implementation(libs.compose.animation)
         }
         jvmTest.dependencies {
             implementation(libs.mockk)
