@@ -5,7 +5,7 @@ package kurou.kodriver.presentation
  * 許可済み（権限が不要なプラットフォームを含む）なら [this] をそのまま返す。
  * 通常の接続状態と混同しないよう、接続済み・待機中のスナックバーが出ない [ConnectionBannerStatus.UNCHECKED] にする。
  */
-fun ConnectionBannerUiState.withAccessLocalNetworkPermission(
+internal fun ConnectionBannerUiState.withAccessLocalNetworkPermission(
     granted: Boolean,
     requiredMessage: String,
 ): ConnectionBannerUiState =

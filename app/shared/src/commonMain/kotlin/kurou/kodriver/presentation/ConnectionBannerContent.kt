@@ -121,7 +121,7 @@ private fun Modifier.pulseWhile(enabled: Boolean): Modifier {
  * ConnectionBanner のコンテンツを表示する Composable。
  */
 @Composable
-fun ConnectionBannerContent(
+internal fun ConnectionBannerContent(
     uiState: ConnectionBannerUiState,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
