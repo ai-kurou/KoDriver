@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otherserveripdetail
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
@@ -106,6 +108,36 @@ class OtherServerIpDetailPaneContentTest {
 
         assertEquals(1, dismissCount)
         assertEquals(1, backCount)
+    }
+
+    @Test
+    fun `接続確認中は保存ボタンにスピナーを表示し確認が終わると非表示にする`() {
+        val uiState =
+            mutableStateOf(
+                OtherServerIpDetailUiState(inputIp = "192.168.1.1", isInputValid = true, isCheckingConnectivity = true),
+            )
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherServerIpDetailPaneContent(
+                    uiState = uiState.value,
+                    onIpChanged = {},
+                    onSave = {},
+                    onSaveAnyway = {},
+                    onDismiss = {},
+                    onOpenGuide = {},
+                    onBack = {},
+                )
+            }
+        }
+        rule.onNodeWithTag("save-checking-spinner").assertExists()
+
+        rule.runOnIdle {
+            uiState.value =
+                OtherServerIpDetailUiState(inputIp = "192.168.1.1", isInputValid = true, isCheckingConnectivity = false)
+        }
+        rule.waitForIdle()
+
+        rule.onNodeWithTag("save-checking-spinner").assertDoesNotExist()
     }
 
     @Test
