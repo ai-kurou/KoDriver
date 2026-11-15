@@ -236,7 +236,7 @@ class MainActivityTest {
         clickItem("キャンセル")
         clickScrollableItem("手動タブの設定を初期化")
         clickItem("キャンセル")
-        clickScrollableItem("ログを全て削除")
+        clickScrollableItem("ログをすべて削除")
         clickItem("キャンセル")
         clickItemAndNavigateBack("フィードバックを送信")
         clickItemAndNavigateBack("ライセンス")

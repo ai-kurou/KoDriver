@@ -200,7 +200,7 @@ internal fun LmuWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
                             if (celsius != null) {
                                 VehicleClassImageOption(
                                     image = image,
-                                    accessibleName = "$accessibleName、$celsius°C",
+                                    accessibleName = "$accessibleName、$celsius℃",
                                     celsius = celsius,
                                     selected = uiState.selectedVehicleClass == vehicleClass,
                                     enabled = uiState.enabled,
@@ -294,7 +294,7 @@ private fun VehicleClassImageOption(
                 contentDescription = null,
                 modifier = Modifier.size(VEHICLE_CLASS_IMAGE_SIZE),
             )
-            Text("$celsius°C", style = MaterialTheme.typography.labelLarge)
+            Text("$celsius℃", style = MaterialTheme.typography.labelLarge)
         }
     }
 }

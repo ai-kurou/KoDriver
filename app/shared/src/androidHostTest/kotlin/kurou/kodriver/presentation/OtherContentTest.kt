@@ -345,8 +345,8 @@ class OtherContentTest {
         assertFalse(state.backEnabled)
 
         // GitHubRepository
-        onNode(hasScrollAction()).performScrollToNode(hasText("GitHubレポジトリ"))
-        onNode(hasText("GitHubレポジトリ")).performClick()
+        onNode(hasScrollAction()).performScrollToNode(hasText("GitHubリポジトリ"))
+        onNode(hasText("GitHubリポジトリ")).performClick()
         waitForIdle()
 
         assertTrue(state.githubRepositoryOpened)

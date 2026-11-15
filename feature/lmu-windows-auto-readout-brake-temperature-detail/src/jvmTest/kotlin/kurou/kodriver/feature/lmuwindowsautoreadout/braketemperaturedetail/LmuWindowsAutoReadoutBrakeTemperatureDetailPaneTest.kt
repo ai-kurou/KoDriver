@@ -227,15 +227,15 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithContentDescription("Hypercar、800°C").assertIsSelected()
+        rule.onNodeWithContentDescription("Hypercar、800℃").assertIsSelected()
         rule
-            .onNodeWithContentDescription("LMGTE、650°C")
+            .onNodeWithContentDescription("LMGTE、650℃")
             .assertIsNotSelected()
             .performScrollTo()
             .performClick()
-        rule.onNodeWithContentDescription("LMP2、800°C").assertDoesNotExist()
+        rule.onNodeWithContentDescription("LMP2、800℃").assertDoesNotExist()
         assertEquals(LmuWindowsVehicleClassData.Gte, selected)
-        rule.onNodeWithContentDescription("custom、900°C").assertDoesNotExist()
+        rule.onNodeWithContentDescription("custom、900℃").assertDoesNotExist()
     }
 
     @Test
@@ -266,18 +266,18 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
         }
 
         rule
-            .onNodeWithContentDescription("LMGT3、650°C")
+            .onNodeWithContentDescription("LMGT3、650℃")
             .performScrollTo()
             .performClick()
-        rule.onNodeWithContentDescription("LMGT3、650°C").assertIsSelected()
-        rule.onNodeWithContentDescription("Hypercar、800°C").assertIsNotSelected()
+        rule.onNodeWithContentDescription("LMGT3、650℃").assertIsSelected()
+        rule.onNodeWithContentDescription("Hypercar、800℃").assertIsNotSelected()
         rule.runOnIdle { uiState = uiState.copy(enabled = false) }
         rule
-            .onNodeWithContentDescription("Hypercar、800°C")
+            .onNodeWithContentDescription("Hypercar、800℃")
             .assertIsNotEnabled()
             .performClick()
         rule
-            .onNodeWithContentDescription("LMGT3、650°C")
+            .onNodeWithContentDescription("LMGT3、650℃")
             .assertIsNotEnabled()
             .assertIsSelected()
         assertEquals(listOf<LmuWindowsVehicleClassData>(LmuWindowsVehicleClassData.Gt3), selections)
