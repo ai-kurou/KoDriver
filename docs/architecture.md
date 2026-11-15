@@ -50,7 +50,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-voice-detail` | その他画面の読み上げ音声設定詳細 | [図](graphs/feature-other-voice-detail.svg) |
 | `:feature:other-feedback-detail` | その他画面のフィードバック送信詳細 | [図](graphs/feature-other-feedback-detail.svg) |
 | `:feature:auto-readout-list` | アナウンス項目の一覧表示・有効/無効の切り替え・優先度のドラッグ&リオーダー | [図](graphs/feature-auto-readout-list.svg) |
-| `:feature:manual-readout-list` | 手動読み上げセット一覧・追加・読み上げ依頼と list/detail 切替（詳細はスロットで受け取る） | [図](graphs/feature-manual-readout-list.svg) |
+| `:feature:manual-readout-list` | 手動読み上げセット一覧・追加・読み上げ依頼と list/detail 切り替え（詳細はスロットで受け取る） | [図](graphs/feature-manual-readout-list.svg) |
 | `:feature:manual-readout-detail` | 手動読み上げセット詳細（項目の選択・削除） | [図](graphs/feature-manual-readout-detail.svg) |
 | `:feature:speech-recognition-list` | 音声タブの一覧表示（読み上げ項目ごとの語句の一覧） | [図](graphs/feature-speech-recognition-list.svg) |
 | `:feature:lmu-windows-auto-readout-flag-detail` | フラッグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-auto-readout-flag-detail.svg) |

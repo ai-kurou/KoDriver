@@ -493,7 +493,7 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ### `/rest/options/...`
 
-**`/rest/options/UIScreen/Controls`** — `allControls.directInput`/`gamepad`/`keyboard` それぞれに `Device`/`Input`（デバイス別の割当一覧）+ `Type` を持ち、`global` にステアリング/フォースフィードバック等の共通設定（`Alternate Neutral Activation`/`Auto Reverse`/`Force Feedback`/`Steering Wheel Range` 等）を持つ、コントロール設定画面の全データ。
+**`/rest/options/UIScreen/Controls`** — `allControls.directInput`/`gamepad`/`keyboard` それぞれに `Device`/`Input`（デバイス別の割り当て一覧）+ `Type` を持ち、`global` にステアリング/フォースフィードバック等の共通設定（`Alternate Neutral Activation`/`Auto Reverse`/`Force Feedback`/`Steering Wheel Range` 等）を持つ、コントロール設定画面の全データ。
 
 **`/rest/options/commandline`** — `{"commandLine": "\"...\\Le Mans Ultimate.exe\""}`。LMU 実行ファイルのローカルパスを含む（本ドキュメントには実際のフルパスを転記していない）。
 
@@ -620,10 +620,10 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 | パス | メソッド | パラメータ | 推測用途 |
 |---|---|---|---|
-| `/rest/hud/toggle/{component}` | POST | パス: `component` | HUD 個別要素（`speedo`/`chat`/`mfd`/`timing`/`trackMap` 等）の表示切替 |
-| `/rest/hud/toggleAllComponents/{visible}` | POST | パス: `visible`(bool) | HUD 全要素の表示・非表示一括切替 |
-| `/rest/liveryeditor/setCamera/{camera}` | POST | パス: `camera` | リバリーエディタのカメラ切替 |
-| `/rest/liveryeditor/showRegionTexture/{active}` | POST | パス: `active`(bool) | リバリーエディタの領域テクスチャ表示切替 |
+| `/rest/hud/toggle/{component}` | POST | パス: `component` | HUD 個別要素（`speedo`/`chat`/`mfd`/`timing`/`trackMap` 等）の表示切り替え |
+| `/rest/hud/toggleAllComponents/{visible}` | POST | パス: `visible`(bool) | HUD 全要素の表示・非表示一括切り替え |
+| `/rest/liveryeditor/setCamera/{camera}` | POST | パス: `camera` | リバリーエディタのカメラ切り替え |
+| `/rest/liveryeditor/showRegionTexture/{active}` | POST | パス: `active`(bool) | リバリーエディタの領域テクスチャ表示切り替え |
 | `/rest/liveryeditor/submitCustomSkin` | POST | なし | カスタムスキンの適用申請 |
 | `/rest/materialeditor/liveryeditor/reloadCustomSkin` | POST | なし | カスタムスキンの再読み込み |
 | `/rest/materialeditor/{materialGuid}` | PUT | パス: `materialGuid`、ボディ | マテリアル定義の更新 |
@@ -665,8 +665,8 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 | `/rest/profile/profileInfo/setProfileInfo` | POST | ボディ | プロフィール情報（表示名・国籍等）の更新 |
 | `/rest/race/startRace` | POST | なし | レース（セッション）の開始 |
 | `/rest/race/track` | POST | ボディ | コース情報の登録・更新 |
-| `/rest/replay/CameraController/setCamera` | POST | ボディ | 観戦カメラの切替 |
-| `/rest/replay/toggleactive` | POST | なし | リプレイコントローラーの有効/無効切替 |
+| `/rest/replay/CameraController/setCamera` | POST | ボディ | 観戦カメラの切り替え |
+| `/rest/replay/toggleactive` | POST | なし | リプレイコントローラーの有効/無効切り替え |
 
 ### `/rest/sessions/...`
 
@@ -727,7 +727,7 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 | `/rest/watch/focusForward` | PUT | なし | 観戦フォーカスを次の車両へ |
 | `/rest/watch/replay/setCurrentMetadata` | PUT | ボディ | リプレイのメタデータ設定 |
 | `/rest/watch/replay/setReplayFolder` | PUT | ボディ | リプレイ保存先フォルダの設定 |
-| `/rest/watch/replay/setReplayUIVisible` | POST | ボディ | リプレイ UI の表示切替 |
+| `/rest/watch/replay/setReplayUIVisible` | POST | ボディ | リプレイ UI の表示切り替え |
 | `/rest/watch/replayCommand/{command}` | PUT | パス: `command` | リプレイ操作コマンド（再生/一時停止等）の実行 |
 | `/rest/watch/replaytime/{time}` | PUT | パス: `time`(number) | リプレイ再生位置（時刻）の指定 |
 | `/webdata/.*` | POST | ワイルドカード | 汎用 Web データエンドポイント（用途不明） |

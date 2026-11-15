@@ -3,7 +3,7 @@
 ACE (Assetto Corsa EVO) Windows版の開始音WAV再生・自由文言TTSとアナウンス制御。`feature:lmu-windows-narrator` /
 `feature:gt7-ps5-narrator` に相当する ACE 版。
 
-`AceWindowsNarratorFlow` は、選択シミュレーターに応じた一覧設定・順序の購読切替、
+`AceWindowsNarratorFlow` は、選択シミュレーターに応じた一覧設定・順序の購読切り替え、
 一覧と詳細の有効設定の合成、ACE 選択中だけのテレメトリ購読、手動要求とホットキー要求の合流を担う。
 `stateIn`・`shareIn` の共有と初期値、`viewModelScope`、イベント処理と最新テレメトリの保持は
 `AceWindowsNarratorViewModel` が管理する。設定のスナップショットも ViewModel で各 StateFlow の現在値から取得する。
@@ -88,7 +88,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 `manualReadoutItemKeys(Simulator.AceWindows.id)` は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root.value`
 （`ace_windows_auto_remaining_fuel`）を返し、手動の「燃料残量」を選択できる。
 `currentRemainingFuelPercent(data)` は `AceWindowsFuelData.remainingPercent`（0〜100）を四捨五入した整数％を返す。
-未受信・受信から5秒超・非有限・0未満・100超は null とし、シミュレーター切替時は最新値と受信時刻をクリアする。
+未受信・受信から5秒超・非有限・0未満・100超は null とし、シミュレーター切り替え時は最新値と受信時刻をクリアする。
 鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` を保存順に最大3件処理し、
 手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」）か
 セットの編集文言を `formatAceWindowsRemainingFuelReadoutText` で置換する。
@@ -101,7 +101,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 `manualReadoutItemKeys(Simulator.AceWindows.id)` は続けて既存の `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`）を返し、手動の「燃料残り周回数」を選択できる。
 `currentRemainingFuelLaps(data)` は `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部を返し、未受信・受信から5秒超・非有限・負値・上限超過は null（データなし）とする。ちょうど0は0周として扱い、固定文言「燃料は残り1周未満」を読む。
 手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）を `formatAceWindowsRemainingFuelLapsReadoutText` で置換し、値が null の項目は「燃料残り周回数はデータがありません」を読む。
-自己ベストラップも同じ手動セットで選択でき、最新の `bestLapTimeMs > 0` の値を（Android ではサーバーが値の変化時しか送らないため5秒の鮮度判定はせず、未受信・0以下・シミュレーター切替後はデータなし） `formatAceWindowsMyBestLapReadoutText` で整形する。自動用 `AceWindowsMyBestLap` イベントの動作は変えない。
+自己ベストラップも同じ手動セットで選択でき、最新の `bestLapTimeMs > 0` の値を（Android ではサーバーが値の変化時しか送らないため5秒の鮮度判定はせず、未受信・0以下・シミュレーター切り替え後はデータなし） `formatAceWindowsMyBestLapReadoutText` で整形する。自動用 `AceWindowsMyBestLap` イベントの動作は変えない。
 
 `processManualReadout` のログ JSON は `state`・`settings`・`observedAtMs` の3フィールドで、
 状態と設定は `toRawTelemetryLogJson` を使い、テレメトリの前回値・現在値を含めない。

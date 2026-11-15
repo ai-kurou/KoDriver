@@ -196,7 +196,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 `manualReadoutItemKeys(Simulator.AceWindows.id)` は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root.value`
 （`ace_windows_auto_remaining_fuel`）を返し、手動の「燃料残量」を選択できる。
 `currentRemainingFuelPercent(data)` は `AceWindowsFuelData.remainingPercent`（0〜100）を四捨五入した整数％を返す。
-未受信・受信から5秒超・非有限・0未満・100超は null とし、シミュレーター切替時は最新値と受信時刻をクリアする。
+未受信・受信から5秒超・非有限・0未満・100超は null とし、シミュレーター切り替え時は最新値と受信時刻をクリアする。
 鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` を保存順に最大3件処理し、
 手動専用の `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」）か
 セットの編集文言を `formatAceWindowsRemainingFuelReadoutText` で置換する。
