@@ -5,7 +5,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamagePrefer
 /**
  * LmuWindowsVehicleDamagePreferences Repository の永続化実装を生成する。
  */
-fun createLmuWindowsVehicleDamagePreferencesRepository(
+internal fun createLmuWindowsVehicleDamagePreferencesRepository(
     directory: String,
 ): LmuWindowsVehicleDamagePreferencesRepository =
     LmuWindowsVehicleDamagePreferencesRepositoryImpl(

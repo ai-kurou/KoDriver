@@ -5,7 +5,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRemainingVirtualEne
 /**
  * LmuWindowsRemainingVirtualEnergyPreferences Repository の永続化実装を生成する。
  */
-fun createLmuWindowsRemainingVirtualEnergyPreferencesRepository(
+internal fun createLmuWindowsRemainingVirtualEnergyPreferencesRepository(
     directory: String,
 ): LmuWindowsRemainingVirtualEnergyPreferencesRepository =
     LmuWindowsRemainingVirtualEnergyPreferencesRepositoryImpl(

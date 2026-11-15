@@ -5,7 +5,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreTemperaturePref
 /**
  * AceWindowsTyreTemperaturePreferences Repository の永続化実装を生成する。
  */
-fun createAceWindowsTyreTemperaturePreferencesRepository(
+internal fun createAceWindowsTyreTemperaturePreferencesRepository(
     directory: String,
 ): AceWindowsTyreTemperaturePreferencesRepository =
     AceWindowsTyreTemperaturePreferencesRepositoryImpl(

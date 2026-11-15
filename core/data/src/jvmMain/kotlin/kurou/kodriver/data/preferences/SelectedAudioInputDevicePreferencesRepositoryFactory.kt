@@ -5,7 +5,7 @@ import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepos
 /**
  * 選択した音声入力デバイス名の Repository の永続化実装を生成する。
  */
-fun createSelectedAudioInputDevicePreferencesRepository(
+internal fun createSelectedAudioInputDevicePreferencesRepository(
     directory: String,
 ): SelectedAudioInputDevicePreferencesRepository =
     SelectedAudioInputDevicePreferencesRepositoryImpl(createSelectedAudioInputDevicePreferencesDataStore(directory))

@@ -5,7 +5,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagReadoutTextPref
 /**
  * LmuWindowsFlagReadoutTextPreferences Repository の永続化実装を生成する。
  */
-fun createLmuWindowsFlagReadoutTextPreferencesRepository(
+internal fun createLmuWindowsFlagReadoutTextPreferencesRepository(
     directory: String,
 ): LmuWindowsFlagReadoutTextPreferencesRepository =
     LmuWindowsFlagReadoutTextPreferencesRepositoryImpl(

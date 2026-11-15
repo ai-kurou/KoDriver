@@ -5,7 +5,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachThre
 /**
  * LmuWindowsVehicleApproachThresholdsPreferences Repository の永続化実装を生成する。
  */
-fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+internal fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     directory: String,
 ): LmuWindowsVehicleApproachThresholdsPreferencesRepository =
     LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl(

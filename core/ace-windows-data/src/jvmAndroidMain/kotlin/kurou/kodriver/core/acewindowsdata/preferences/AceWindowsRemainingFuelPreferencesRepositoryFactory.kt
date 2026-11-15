@@ -5,7 +5,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPrefer
 /**
  * AceWindowsRemainingFuelPreferences Repository の永続化実装を生成する。
  */
-fun createAceWindowsRemainingFuelPreferencesRepository(
+internal fun createAceWindowsRemainingFuelPreferencesRepository(
     directory: String,
 ): AceWindowsRemainingFuelPreferencesRepository =
     AceWindowsRemainingFuelPreferencesRepositoryImpl(

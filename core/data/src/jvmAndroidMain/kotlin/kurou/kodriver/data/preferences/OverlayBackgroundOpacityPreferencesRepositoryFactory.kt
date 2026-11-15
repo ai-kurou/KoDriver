@@ -5,7 +5,7 @@ import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepos
 /**
  * OverlayBackgroundOpacityPreferences Repository の永続化実装を生成する。
  */
-fun createOverlayBackgroundOpacityPreferencesRepository(
+internal fun createOverlayBackgroundOpacityPreferencesRepository(
     directory: String,
 ): OverlayBackgroundOpacityPreferencesRepository =
     OverlayBackgroundOpacityPreferencesRepositoryImpl(createOverlayBackgroundOpacityPreferencesDataStore(directory))

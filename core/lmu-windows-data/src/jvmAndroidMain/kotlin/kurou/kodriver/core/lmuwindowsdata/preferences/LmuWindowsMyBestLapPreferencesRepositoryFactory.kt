@@ -5,5 +5,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsMyBestLapPreference
 /**
  * LmuWindowsMyBestLapPreferences Repository の永続化実装を生成する。
  */
-fun createLmuWindowsMyBestLapPreferencesRepository(directory: String): LmuWindowsMyBestLapPreferencesRepository =
+internal fun createLmuWindowsMyBestLapPreferencesRepository(
+    directory: String,
+): LmuWindowsMyBestLapPreferencesRepository =
     LmuWindowsMyBestLapPreferencesRepositoryImpl(createLmuWindowsMyBestLapPreferencesDataStore(directory))

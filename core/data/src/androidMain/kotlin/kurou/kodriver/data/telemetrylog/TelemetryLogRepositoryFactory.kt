@@ -8,7 +8,7 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 /**
  * TelemetryLog Repository の永続化実装を生成する。
  */
-fun createTelemetryLogRepository(context: Context): TelemetryLogRepository {
+internal fun createTelemetryLogRepository(context: Context): TelemetryLogRepository {
     val database =
         Room
             .databaseBuilder<TelemetryLogDatabase>(

@@ -7,5 +7,5 @@ import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepositor
 /**
  * Gt7Ps5UdpPortPreferences Repository の永続化実装を生成する。
  */
-fun createGt7Ps5UdpPortPreferencesRepository(directory: String): Gt7Ps5UdpPortPreferencesRepository =
+internal fun createGt7Ps5UdpPortPreferencesRepository(directory: String): Gt7Ps5UdpPortPreferencesRepository =
     Gt7Ps5UdpPortPreferencesRepositoryImpl(createGt7Ps5UdpPortPreferencesDataStore(directory))
