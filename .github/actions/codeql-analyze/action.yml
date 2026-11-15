@@ -10,7 +10,22 @@ runs:
       with:
         languages: java-kotlin
 
-    - run: ./gradlew --no-build-cache --rerun-tasks :app:androidApp:assembleDebug
+    # 解析中にランナーが強制停止される事象（"The runner has received a shutdown signal"）への対策。
+    # CodeQL の評価・結果解釈とメモリを取り合わないよう、ビルド中の Gradle ヒープ・ワーカー数を抑える。
+    - name: Build for CodeQL
       shell: bash
+      run: |
+        free -m
+        ./gradlew --no-build-cache --rerun-tasks --max-workers=2 \
+          -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" \
+          :app:androidApp:assembleDebug
+
+    # ビルド後に Gradle / Kotlin デーモンを停止し、解析フェーズにメモリを明け渡す。
+    - name: Stop Gradle and Kotlin daemons
+      shell: bash
+      run: |
+        ./gradlew --stop
+        pkill -f KotlinCompileDaemon || true
+        free -m
 
     - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
