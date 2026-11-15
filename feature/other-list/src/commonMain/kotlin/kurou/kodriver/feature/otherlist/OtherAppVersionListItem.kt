@@ -16,6 +16,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import kotlin.time.Duration.Companion.seconds
@@ -30,6 +32,8 @@ internal fun OtherAppVersionListItem(
     appVersionLabel: String,
     appVersion: String,
     onAppVersionTapped: () -> Unit,
+    rowFocusRequester: FocusRequester,
+    modifier: Modifier = Modifier,
 ) {
     if (appVersionLabel.isBlank() || appVersion.isBlank()) return
 
@@ -59,8 +63,9 @@ internal fun OtherAppVersionListItem(
                 trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             ),
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
+                .focusRequester(rowFocusRequester)
                 .clickable {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     val now = TimeSource.Monotonic.markNow()

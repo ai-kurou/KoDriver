@@ -12,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.selected
@@ -221,6 +223,8 @@ internal fun OtherListItem(
     onHapticFeedbackEnabledChange: (Boolean) -> Unit,
     onStartupEnabledChange: (Boolean) -> Unit,
     onItemClick: (OtherListItemType) -> Unit,
+    rowFocusRequester: FocusRequester,
+    modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
     val openAccessLocalNetworkPermissionSettings = rememberOpenAccessLocalNetworkPermissionSettings()
@@ -355,9 +359,10 @@ internal fun OtherListItem(
         headlineColor = headlineColor,
         iconColor = iconColor,
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
+                .focusRequester(rowFocusRequester)
                 .clickable {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     handleOtherListItemClick(
