@@ -7,7 +7,7 @@
 実装を提供します。JVM/Android 実装は Bluetooth A2DP 接続時の音切れ対策（末尾への無音追記・アンロードタイミングの調整）を
 含みます。`NarratorErrorCapture` は再生失敗を Sentry へ送出する expect/actual です。
 
-開始音の `formula_radio.wav` と `electronic_noise.wav`、Compose Multiplatform Resources による読込関数
+開始音の `formula_radio.wav` と `electronic_noise.wav`、Compose Multiplatform Resources による読み込み関数
 `readStartSoundBytes`、各 feature が共有するリソースパス定数を提供します。リソースは `commonMain/composeResources/files/`
 に置き、実 WAV として読み取れることを `jvmTest` で検証します。
 

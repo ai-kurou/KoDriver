@@ -215,7 +215,7 @@ GT7 PS5 の補足は次のとおり。
 ACE Windows の補足は次のとおり。
 
 - 対応項目は保存順に先頭 `MANUAL_READOUT_SET_ITEM_MAX`（3件）まで処理する。
-- 手動値は鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` で受け取る。シミュレーター切替時は最新値と受信時刻をクリアする。
+- 手動値は鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` で受け取る。シミュレーター切り替え時は最新値と受信時刻をクリアする。
 - 全項目の文言が空白なら空文字とする。
 - 一覧は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root` を含むため、手動の「燃料残量」を選択できる。開始音・ログ・手動優先の読み上げには既存の `RemainingFuel.Root` を使う。
 

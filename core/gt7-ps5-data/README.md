@@ -1,6 +1,6 @@
 # gt7-ps5-data
 
-グランツーリスモ7（PS5）の UDP テレメトリを受信し、ドメイン層の Repository と DataStore による設定永続化を実装する JVM / Android マルチプラットフォームモジュールです。
+Gran Turismo 7（PS5）の UDP テレメトリを受信し、ドメイン層の Repository と DataStore による設定永続化を実装する JVM / Android マルチプラットフォームモジュールです。
 
 `Gt7Ps5AutoReadoutSettingsResetter` は GT7 の自動読み上げ設定・自由文言を端末ローカルで既定値に戻し、Desktop / Android で `AutoReadoutSettingsResetter` として登録します。接続用の UDP ポート設定は対象外です。
 
