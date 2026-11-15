@@ -40,6 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -76,6 +78,7 @@ internal fun ManualReadoutSetRow(
     onReadSet: () -> Unit,
     onSetClick: () -> Unit,
     onDeleteSet: () -> Unit,
+    rowFocusRequester: FocusRequester,
 ) {
     val categories = remember(set.itemKeys) { manualReadoutCategorySummary(set.itemKeys) }
     val stripeColor =
@@ -98,6 +101,7 @@ internal fun ManualReadoutSetRow(
             Modifier
                 .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
                 .fillMaxWidth()
+                .focusRequester(rowFocusRequester)
                 .combinedClickable(
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
