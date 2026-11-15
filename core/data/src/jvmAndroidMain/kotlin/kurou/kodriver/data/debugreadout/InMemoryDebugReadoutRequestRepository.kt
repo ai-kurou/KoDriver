@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 
-class InMemoryDebugReadoutRequestRepository : DebugReadoutRequestRepository {
+internal class InMemoryDebugReadoutRequestRepository : DebugReadoutRequestRepository {
     private val requests = MutableSharedFlow<DebugReadoutRequest>()
 
     override fun observeRequests(): Flow<DebugReadoutRequest> = requests.asSharedFlow()

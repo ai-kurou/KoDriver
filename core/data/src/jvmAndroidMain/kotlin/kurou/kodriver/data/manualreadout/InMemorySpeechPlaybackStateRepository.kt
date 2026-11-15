@@ -8,7 +8,7 @@ import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
 /**
  * シミュレーターごとの再生状態をメモリに持ち、いずれかが再生中なら再生中とみなす。
  */
-class InMemorySpeechPlaybackStateRepository : SpeechPlaybackStateRepository {
+internal class InMemorySpeechPlaybackStateRepository : SpeechPlaybackStateRepository {
     private val activeSources = mutableSetOf<String>()
     private val _isActive = MutableStateFlow(false)
     override val isActive: StateFlow<Boolean> = _isActive.asStateFlow()

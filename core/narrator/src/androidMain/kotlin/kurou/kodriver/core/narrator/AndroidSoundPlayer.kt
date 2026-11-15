@@ -16,7 +16,7 @@ import kotlin.coroutines.resume
 /**
  * WAV 音声を再生する Android 向け実装。
  */
-class AndroidSoundPlayer internal constructor(
+internal class AndroidSoundPlayer internal constructor(
     private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
     private val captureError: (Throwable) -> Unit,

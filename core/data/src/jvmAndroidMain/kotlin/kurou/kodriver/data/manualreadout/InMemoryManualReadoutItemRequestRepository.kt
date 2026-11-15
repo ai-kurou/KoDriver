@@ -11,7 +11,7 @@ import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
  * 購読中の Narrator に項目単位の依頼を配信する。購読開始前の依頼は再配信しない。
  * Narrator が滞っても音声認識の購読側を待たせないよう、バッファが満杯なら古い依頼を捨てる。
  */
-class InMemoryManualReadoutItemRequestRepository : ManualReadoutItemRequestRepository {
+internal class InMemoryManualReadoutItemRequestRepository : ManualReadoutItemRequestRepository {
     private val requests =
         MutableSharedFlow<ManualReadoutItemRequest>(
             extraBufferCapacity = 64,
