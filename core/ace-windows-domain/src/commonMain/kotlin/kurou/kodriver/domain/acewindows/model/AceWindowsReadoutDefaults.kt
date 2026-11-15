@@ -8,7 +8,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
  * ACE の読み上げ有効状態。一覧画面と Narrator が共有する。
  * 新しい TopLevel は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。
  */
-val ACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+internal val ACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         AceWindowsReadoutItemKey.Flag.Root to true,
         AceWindowsReadoutItemKey.VehicleApproach.Root to true,
@@ -22,7 +22,7 @@ val ACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean>
  * ACE の開始音有効状態。車両接近は頻繁に再生されるためOFF、それ以外はON。
  * 新しい TopLevel は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。
  */
-val ACE_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+internal val ACE_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         AceWindowsReadoutItemKey.Flag.Root to true,
         AceWindowsReadoutItemKey.VehicleApproach.Root to false,
@@ -36,7 +36,7 @@ val ACE_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, B
  * ACE のキュー有効状態。supportsQueue が true の TopLevel は必ずここに列挙すること。
  * 省略＝デフォルトfalse、ではない。
  */
-val ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+internal val ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         AceWindowsReadoutItemKey.Flag.Root to false,
         AceWindowsReadoutItemKey.RemainingFuel.Root to true,

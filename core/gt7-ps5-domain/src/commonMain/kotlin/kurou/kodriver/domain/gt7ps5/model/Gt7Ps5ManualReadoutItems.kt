@@ -51,7 +51,8 @@ val gt7Ps5ManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition>
         ),
     )
 
-fun gt7Ps5ManualReadoutItemName(itemKey: String): String = gt7Ps5ManualReadoutItemDefinitions[itemKey]?.name.orEmpty()
+internal fun gt7Ps5ManualReadoutItemName(itemKey: String): String =
+    gt7Ps5ManualReadoutItemDefinitions[itemKey]?.name.orEmpty()
 
 fun gt7Ps5ManualReadoutItemTextDefault(itemKey: String): String =
     gt7Ps5ManualReadoutItemDefinitions[itemKey]?.textDefault.orEmpty()

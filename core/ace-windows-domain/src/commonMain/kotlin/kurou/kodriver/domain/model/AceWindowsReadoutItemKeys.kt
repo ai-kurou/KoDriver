@@ -33,7 +33,7 @@ val ACE_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
         AceWindowsReadoutItemKey.CarGap.Root,
     )
 
-val aceWindowsReadoutSpec: SimulatorReadoutSpec
+internal val aceWindowsReadoutSpec: SimulatorReadoutSpec
     get() =
         SimulatorReadoutSpec(
             Simulator.AceWindows,

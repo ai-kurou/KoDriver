@@ -8,7 +8,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
  * GT7 の読み上げ有効状態。一覧画面と Narrator が共有する。
  * 新しい TopLevel は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。
  */
-val GT7_PS5_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+internal val GT7_PS5_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true,
@@ -20,7 +20,7 @@ val GT7_PS5_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
  * GT7 の開始音有効状態。全ての TopLevel をデフォルトONとする。
  * 新しい TopLevel は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。
  */
-val GT7_PS5_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+internal val GT7_PS5_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         Gt7Ps5ReadoutItemKey.MyBestLap.Root to true,
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,
@@ -32,7 +32,7 @@ val GT7_PS5_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boole
  * GT7 のキュー有効状態。supportsQueue が true の TopLevel は必ずここに列挙すること。
  * 省略＝デフォルトfalse、ではない。
  */
-val GT7_PS5_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+internal val GT7_PS5_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         Gt7Ps5ReadoutItemKey.MyBestLap.Root to false,
         Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,

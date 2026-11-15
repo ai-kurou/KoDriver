@@ -18,4 +18,4 @@ const val GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT = "燃料は残り{percent
 const val GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER = "{percent}"
 
 /** 手動読み上げの燃料残量の既定文言。 */
-const val GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT = "燃料は残り{percent}%"
+internal const val GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT = "燃料は残り{percent}%"

@@ -68,7 +68,7 @@ val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         ),
     )
 
-fun aceWindowsManualReadoutItemName(itemKey: String): String =
+internal fun aceWindowsManualReadoutItemName(itemKey: String): String =
     aceWindowsManualReadoutItemDefinitions[itemKey]?.name.orEmpty()
 
 fun aceWindowsManualReadoutItemTextDefault(itemKey: String): String =

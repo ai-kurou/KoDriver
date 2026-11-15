@@ -18,4 +18,4 @@ const val ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER = "{celsius}"
 const val ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT = "タイヤ過熱{celsius}℃"
 
 /** ACE の手動読み上げで使うタイヤ温度の既定文言。 */
-const val ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT = "タイヤ温度は{celsius}℃"
+internal const val ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT = "タイヤ温度は{celsius}℃"

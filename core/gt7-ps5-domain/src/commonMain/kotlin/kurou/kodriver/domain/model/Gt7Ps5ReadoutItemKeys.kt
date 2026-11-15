@@ -19,7 +19,7 @@ val GT7_PS5_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
         Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning,
     )
 
-val gt7Ps5ReadoutSpec: SimulatorReadoutSpec
+internal val gt7Ps5ReadoutSpec: SimulatorReadoutSpec
     get() =
         SimulatorReadoutSpec(
             Simulator.Gt7Ps5,

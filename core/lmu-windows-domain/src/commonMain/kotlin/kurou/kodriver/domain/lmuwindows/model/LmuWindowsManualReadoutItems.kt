@@ -124,7 +124,7 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
 
 fun lmuWindowsManualReadoutItemKeys(): List<String> = lmuWindowsManualReadoutItemDefinitions.keys.toList()
 
-fun lmuWindowsManualReadoutItemName(itemKey: String): String =
+internal fun lmuWindowsManualReadoutItemName(itemKey: String): String =
     lmuWindowsManualReadoutItemDefinitions[itemKey]?.name.orEmpty()
 
 fun lmuWindowsManualReadoutItemTextDefault(itemKey: String): String =

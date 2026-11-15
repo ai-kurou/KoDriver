@@ -4,7 +4,7 @@ import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.SinglePlaceholderTemplate
 
 /** ソースと残り周回数から、ログ用のピットタイミング既定文言を返す。 */
-fun defaultLmuWindowsPitTimingReadoutText(
+internal fun defaultLmuWindowsPitTimingReadoutText(
     source: PitTimingSource,
     laps: Int,
 ): String {
