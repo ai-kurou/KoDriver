@@ -16,33 +16,45 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-/** 一覧内でフォーカスが行のどこにも無い状態を表す。 */
-private const val NO_FOCUSED_ITEM = -1
-
 /**
  * 一覧の行ごとの「主操作（詳細を開く領域）」の [FocusRequester] と、現在フォーカスのある行を保持する。
  *
  * 行内のスイッチ・トグルなどにフォーカスがあっても、↑↓ では隣の行の主操作領域へ移動する（行単位の移動）。
+ * 並べ替えで行の位置が変わっても追従できるよう、フォーカス行はインデックスではなく項目キーで記録する。
  */
 internal class AutoReadoutRowFocusState {
     private val requesters = mutableMapOf<String, FocusRequester>()
 
-    /** フォーカスのある行の項目インデックス（行外なら [NO_FOCUSED_ITEM]）。 */
-    var focusedItemIndex: Int = NO_FOCUSED_ITEM
+    /** フォーカスのある行の項目キー（[ReadoutItemKey.value]）。行外なら null。 */
+    var focusedItemKey: String? = null
 
     fun requesterFor(item: ReadoutItemKey): FocusRequester = requesters.getOrPut(item.value) { FocusRequester() }
 
-    /** 行にフォーカスが入ったら [index] を記録し、外れたときは自分の行の記録だけを消す。 */
+    /** 行にフォーカスが入ったら [itemKey] を記録し、外れたときは自分の行の記録だけを消す。 */
     fun onRowFocusChanged(
-        index: Int,
+        itemKey: String,
         hasFocus: Boolean,
     ) {
         if (hasFocus) {
-            focusedItemIndex = index
-        } else if (focusedItemIndex == index) {
-            focusedItemIndex = NO_FOCUSED_ITEM
+            focusedItemKey = itemKey
+        } else if (focusedItemKey == itemKey) {
+            focusedItemKey = null
         }
     }
+}
+
+/** ↑↓ キーを受けたときの処理方針。 */
+internal sealed interface AutoReadoutArrowKeyAction {
+    /** 処理せず、既定のフォーカス移動に任せる。 */
+    data object Ignore : AutoReadoutArrowKeyAction
+
+    /** 端でそれ以上動けない。何もせずキーだけ消費する。 */
+    data object Stay : AutoReadoutArrowKeyAction
+
+    /** [itemIndex] 番目の項目の行へフォーカスを移す。 */
+    data class MoveTo(
+        val itemIndex: Int,
+    ) : AutoReadoutArrowKeyAction
 }
 
 /**
@@ -60,19 +72,28 @@ internal fun autoReadoutArrowKeyStep(event: KeyEvent): Int? {
     return step
 }
 
-/** [current] から [step] 移動した先の項目インデックス。範囲外（端を越える）なら null（折り返さない）。 */
-internal fun adjacentAutoReadoutItemIndex(
-    current: Int,
-    step: Int,
-    itemCount: Int,
-): Int? = (current + step).takeIf { it in 0 until itemCount }
+/**
+ * [step]（↑ -1 / ↓ +1。対象外のキーは null）と現在のフォーカス行 [focusedItemKey] から、処理方針を決める。
+ *
+ * - 対象外のキー、またはフォーカスが行の外（ヒント行など）にある場合は [AutoReadoutArrowKeyAction.Ignore]。
+ * - 先頭で ↑、末尾で ↓ のときは [AutoReadoutArrowKeyAction.Stay]（折り返さず、一覧の外にも出ない）。
+ */
+internal fun autoReadoutArrowKeyAction(
+    step: Int?,
+    focusedItemKey: String?,
+    items: List<ReadoutItemKey>,
+): AutoReadoutArrowKeyAction {
+    val current = items.indexOfFirst { it.value == focusedItemKey }
+    return when {
+        step == null || current < 0 -> AutoReadoutArrowKeyAction.Ignore
+        (current + step) in items.indices -> AutoReadoutArrowKeyAction.MoveTo(current + step)
+        else -> AutoReadoutArrowKeyAction.Stay
+    }
+}
 
 /**
  * 一覧の ↑↓ キーを行単位の移動として処理し、処理した（消費すべき）場合は true を返す。
- *
- * - フォーカスが行の外（ヒント行など）にある場合は何もせず false を返し、既定のフォーカス移動に任せる。
- * - 先頭で ↑、末尾で ↓ のときは何もしない（折り返さず、一覧の外にも出ない）が、キーは消費する。
- * - 移動先が画面外で未生成の場合は、スクロールしてからフォーカスを移す。
+ * 移動先が画面外で未生成の場合は、スクロールしてからフォーカスを移す。
  */
 internal fun handleAutoReadoutArrowKey(
     event: KeyEvent,
@@ -82,15 +103,12 @@ internal fun handleAutoReadoutArrowKey(
     listState: LazyListState,
     coroutineScope: CoroutineScope,
 ): Boolean {
-    val step = autoReadoutArrowKeyStep(event)
-    val current = focusState.focusedItemIndex
-    if (step == null || current !in items.indices) return false
-    val target = adjacentAutoReadoutItemIndex(current, step, items.size)
-    if (target != null) {
-        val requester = focusState.requesterFor(items[target])
-        coroutineScope.launch { listState.focusRow(firstItemLazyIndex + target, requester) }
+    val action = autoReadoutArrowKeyAction(autoReadoutArrowKeyStep(event), focusState.focusedItemKey, items)
+    if (action is AutoReadoutArrowKeyAction.MoveTo) {
+        val requester = focusState.requesterFor(items[action.itemIndex])
+        coroutineScope.launch { listState.focusRow(firstItemLazyIndex + action.itemIndex, requester) }
     }
-    return true
+    return action != AutoReadoutArrowKeyAction.Ignore
 }
 
 private suspend fun LazyListState.focusRow(

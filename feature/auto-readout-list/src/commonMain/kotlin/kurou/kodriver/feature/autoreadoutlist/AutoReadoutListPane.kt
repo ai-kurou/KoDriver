@@ -276,7 +276,7 @@ internal fun AutoReadoutListPane(
                         val readoutEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(item)
                         AutoReadoutListItemCard(
                             modifier =
-                                Modifier.onFocusChanged { rowFocusState.onRowFocusChanged(index, it.hasFocus) },
+                                Modifier.onFocusChanged { rowFocusState.onRowFocusChanged(item.value, it.hasFocus) },
                             rowFocusRequester = rowFocusState.requesterFor(item),
                             item = item,
                             index = index,
