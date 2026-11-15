@@ -61,7 +61,7 @@ internal const val TTS_ENGINE_PLAY_STORE_URL = "https://play.google.com/store/ap
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun OtherContent(
+internal fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfoV2()),
     windowPosture: Posture = currentWindowAdaptiveInfoV2().windowPosture,

@@ -164,7 +164,7 @@ internal expect fun dynamicAppColorScheme(darkTheme: Boolean): ColorScheme?
  * AppTheme を提供する公開関数。
  */
 @Composable
-fun AppTheme(
+internal fun AppTheme(
     darkTheme: Boolean = false,
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit,

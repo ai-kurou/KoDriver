@@ -100,7 +100,7 @@ private const val WEB_SOCKET_MAX_FRAME_SIZE_BYTES = 64L * 1024
  * `/version` はアプリバージョンを JSON で返し、`/ws/{simulator}/{feature}` 系の
  * WebSocket エンドポイントは [KoDriverServerUseCases] の Flow を JSON メッセージとして配信する。
  */
-fun Application.module(useCases: KoDriverServerUseCases) {
+internal fun Application.module(useCases: KoDriverServerUseCases) {
     install(WebSockets) {
         // クライアントがサイレントに消えた（half-open になった）接続を検知して
         // セッションを解放するため、ping/pong を有効にする。

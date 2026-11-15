@@ -31,7 +31,7 @@ enum class DesktopSplashStep {
  * 内部の識別子（[DesktopSplashStep] の名前）と表示名を分離するため、
  * 表示名はこの拡張プロパティ側に持たせる。
  */
-val DesktopSplashStep.displayNameRes: StringResource
+internal val DesktopSplashStep.displayNameRes: StringResource
     get() =
         when (this) {
             DesktopSplashStep.INITIALIZING_MODULES -> Res.string.desktop_splash_initializing_modules

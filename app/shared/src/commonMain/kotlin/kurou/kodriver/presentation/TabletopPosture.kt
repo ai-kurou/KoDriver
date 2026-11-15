@@ -21,7 +21,7 @@ import kotlin.math.roundToInt
  * 高さちょうどになり、子がそれより小さいコンテンツであれば元の意図通りのサイズになる。
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-fun Modifier.constrainToTabletopTopPane(posture: Posture): Modifier {
+internal fun Modifier.constrainToTabletopTopPane(posture: Posture): Modifier {
     val topPanePx = posture.tabletopTopPaneHeightPx() ?: return this
     return this.then(
         Modifier.layout { measurable, constraints ->
@@ -58,5 +58,5 @@ internal fun Posture.tabletopTopPaneHeightPx(): Float? {
  * 避けて2ペインを表示するのに十分な幅があるため対象外。
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-val Posture.shouldCollapseDetailPane: Boolean
+internal val Posture.shouldCollapseDetailPane: Boolean
     get() = isTabletop || hingeList.any { it.isSeparating && !it.isFlat }
