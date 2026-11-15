@@ -39,7 +39,7 @@ fun Any.toRawTelemetryLogJson(): String = """{"raw":${toString().toJsonStringLit
  * `toString()` した状態オブジェクトなど、kotlinx.serialization を通さずそのままログ JSON の値として
  * 埋め込みたい文字列に対して使用する。
  */
-fun String.toJsonStringLiteral(): String =
+internal fun String.toJsonStringLiteral(): String =
     buildString {
         append('"')
         this@toJsonStringLiteral.forEach { char ->

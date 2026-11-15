@@ -4,7 +4,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreTemperaturePref
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
 
 /** 同じ DataStore を共有する、タイヤ温度の設定 Repository と文言 Repository の組。 */
-data class LmuWindowsTyreTemperaturePreferencesRepositories(
+internal data class LmuWindowsTyreTemperaturePreferencesRepositories(
     val preferences: LmuWindowsTyreTemperaturePreferencesRepository,
     val readoutText: LmuWindowsTyreTemperatureReadoutTextPreferencesRepository,
 )

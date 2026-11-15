@@ -5,7 +5,7 @@ package kurou.kodriver.core.windowsstartupdata.windows
  * 実装はJNA経由でWindowsレジストリAPIを直接呼び出すため、テストでは [RegistryStartupRegistrySource]
  * の代わりにFakeへ差し替える。
  */
-interface WindowsStartupRegistrySource {
+internal interface WindowsStartupRegistrySource {
     fun isRegistered(): Boolean
 
     fun register()

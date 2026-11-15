@@ -8,7 +8,7 @@ import kurou.kodriver.domain.model.TextToSpeechVoice
  * 実装は、Windows用の[SapiSpeechSynthesizer]（PowerShell + System.Speech のプロセスを常駐）と
  * macOS用の[MacSpeechSynthesizer]（`say`コマンド）。外部プロセスを使うため、テストではFakeへ差し替える。
  */
-interface SpeechSynthesizer {
+internal interface SpeechSynthesizer {
     /** 実行環境のOSに対応する実装で、音声合成を利用できるかどうか。 */
     fun isAvailable(): Boolean
 
