@@ -38,7 +38,7 @@ class OtherContentUriHandlerTest {
     private val viewModel: OtherListViewModel = mockk(relaxUnitFun = true)
 
     @Test
-    fun `GitHubレポジトリリンクをクリックするとGitHubレポジトリのURLが開かれる`() {
+    fun `GitHubリポジトリリンクをクリックするとGitHubリポジトリのURLが開かれる`() {
         every { viewModel.uiState } returns
             MutableStateFlow(OtherListUiState(items = listOf(OtherListItemType.GitHubRepository)))
         every { viewModel.checkUpdate() } returns Unit
@@ -51,7 +51,7 @@ class OtherContentUriHandlerTest {
                     OtherContent()
                 }
             }
-            rule.onNodeWithText("GitHubレポジトリ").performClick()
+            rule.onNodeWithText("GitHubリポジトリ").performClick()
 
             val shadowActivity = shadowOf(rule.activity)
             val startedIntent = shadowActivity.nextStartedActivity

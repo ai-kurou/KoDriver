@@ -27,7 +27,7 @@
     <string name="item_dynamic_color">ダイナミックカラー</string>
     <string name="item_haptic_feedback">ハプティックフィードバック</string>
     <string name="item_startup">PC起動時に自動起動</string>
-    <string name="item_github_repository">GitHubレポジトリ</string>
+    <string name="item_github_repository">GitHubリポジトリ</string>
     <string name="item_github_repository_star_request">⭐ スターを付けていただけると嬉しいです</string>
     <string name="item_release_page">リリースページ</string>
     <string name="item_feedback">フィードバックを送信</string>
@@ -62,8 +62,8 @@
     <string name="audio_usage_assistant">アシスタント</string>
     <string name="section_data_log">データ・ログ</string>
     <string name="item_show_logs">ログを表示</string>
-    <string name="item_delete_all_logs">ログを全て削除</string>
-    <string name="telemetry_log_reset_confirm_title">ログを全て削除</string>
+    <string name="item_delete_all_logs">ログをすべて削除</string>
+    <string name="telemetry_log_reset_confirm_title">ログをすべて削除</string>
     <string name="telemetry_log_reset_confirm_body">すべてのシミュレーターのログを削除します。この操作は元に戻せません。</string>
     <string name="telemetry_log_reset_confirm_button">削除</string>
     <string name="telemetry_log_reset_cancel_button">キャンセル</string>

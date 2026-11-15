@@ -73,7 +73,7 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             }
         }
 
-        rule.onNodeWithContentDescription("LMGT3、95°C").performScrollTo().assertIsNotEnabled()
+        rule.onNodeWithContentDescription("LMGT3、95℃").performScrollTo().assertIsNotEnabled()
 
         assertEquals(emptyList(), selections)
         verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
@@ -286,8 +286,8 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
         }
 
         rule.onNodeWithText("対象クラス").assertIsDisplayed()
-        rule.onNodeWithText("90°C").assertIsDisplayed()
-        rule.onNodeWithContentDescription("LMGT3、90°C").assertIsDisplayed()
+        rule.onNodeWithText("90℃").assertIsDisplayed()
+        rule.onNodeWithContentDescription("LMGT3、90℃").assertIsDisplayed()
     }
 
     @Test
@@ -307,10 +307,10 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             }
         }
 
-        rule.onNodeWithContentDescription("Hypercar、90°C").assertIsSelected()
-        rule.onNodeWithContentDescription("LMGT3、95°C").assertIsNotSelected()
-        rule.onNodeWithText("90°C").assertIsDisplayed()
-        rule.onNodeWithText("95°C").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithContentDescription("Hypercar、90℃").assertIsSelected()
+        rule.onNodeWithContentDescription("LMGT3、95℃").assertIsNotSelected()
+        rule.onNodeWithText("90℃").assertIsDisplayed()
+        rule.onNodeWithText("95℃").performScrollTo().assertIsDisplayed()
         rule.onAllNodesWithText("Hypercar").assertCountEquals(0)
     }
 
@@ -332,8 +332,8 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             }
         }
 
-        rule.onNodeWithContentDescription("LMGT3、95°C").assertIsSelected()
-        rule.onNodeWithContentDescription("Hypercar、90°C").assertIsNotSelected()
+        rule.onNodeWithContentDescription("LMGT3、95℃").assertIsSelected()
+        rule.onNodeWithContentDescription("Hypercar、90℃").assertIsNotSelected()
     }
 
     @Test
@@ -358,8 +358,8 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             }
         }
 
-        val firstTile = rule.onNodeWithContentDescription("Hypercar、100°C").fetchSemanticsNode().boundsInRoot
-        val thirdTile = rule.onNodeWithContentDescription("ELMS LMP2、90°C").fetchSemanticsNode().boundsInRoot
+        val firstTile = rule.onNodeWithContentDescription("Hypercar、100℃").fetchSemanticsNode().boundsInRoot
+        val thirdTile = rule.onNodeWithContentDescription("ELMS LMP2、90℃").fetchSemanticsNode().boundsInRoot
 
         assertEquals(firstTile.left, thirdTile.left, absoluteTolerance = 1f)
         assertTrue(thirdTile.top > firstTile.top)
@@ -387,7 +387,7 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneTest {
             }
         }
 
-        rule.onNodeWithContentDescription("LMGT3、95°C").performScrollTo().performClick()
+        rule.onNodeWithContentDescription("LMGT3、95℃").performScrollTo().performClick()
 
         assertEquals(LmuWindowsVehicleClassData.Gt3, selectedVehicleClass)
         verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }

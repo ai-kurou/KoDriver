@@ -74,9 +74,9 @@ class OtherContentUriWiringTest {
         startKoin { modules(module { single { viewModel } }) }
         try {
             rule.setContent { AppTheme { OtherContent() } }
-            rule.onNodeWithText("ログを全て削除").performClick()
+            rule.onNodeWithText("ログをすべて削除").performClick()
             rule.onNodeWithText("キャンセル").performClick()
-            rule.onNodeWithText("ログを全て削除").performClick()
+            rule.onNodeWithText("ログをすべて削除").performClick()
             rule.onNodeWithText("削除").performClick()
 
             verify(exactly = 2) { viewModel.onResetClick() }
@@ -188,7 +188,7 @@ class OtherContentUriWiringTest {
     }
 
     @Test
-    fun `GitHubレポジトリリンクをクリックするとGitHubレポジトリのURLが開かれる`() {
+    fun `GitHubリポジトリリンクをクリックするとGitHubリポジトリのURLが開かれる`() {
         every { viewModel.uiState } returns
             MutableStateFlow(OtherListUiState(items = listOf(OtherListItemType.GitHubRepository)))
         every { viewModel.checkUpdate() } returns Unit
@@ -207,7 +207,7 @@ class OtherContentUriWiringTest {
                     }
                 }
             }
-            rule.onNodeWithText("GitHubレポジトリ").performClick()
+            rule.onNodeWithText("GitHubリポジトリ").performClick()
 
             verify(exactly = 1) { uriHandler.openUri("https://github.com/ai-kurou/KoDriver") }
             verify(exactly = 1) { viewModel.uiState }

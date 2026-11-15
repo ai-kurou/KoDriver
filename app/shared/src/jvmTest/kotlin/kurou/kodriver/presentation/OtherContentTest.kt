@@ -195,7 +195,7 @@ class OtherContentTest {
     }
 
     @Test
-    fun `ログを全て削除をタップしても選択や詳細遷移を行わない`() {
+    fun `ログをすべて削除をタップしても選択や詳細遷移を行わない`() {
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false
         var detailDisplayed = false
@@ -217,7 +217,7 @@ class OtherContentTest {
             )
         }
 
-        rule.onNodeWithText("ログを全て削除").assertExists().performTouchInput { click() }
+        rule.onNodeWithText("ログをすべて削除").assertExists().performTouchInput { click() }
         rule.waitForIdle()
 
         assertTrue(resetClicked)
@@ -505,7 +505,7 @@ class OtherContentTest {
         assertFalse(backEnabled)
 
         // GitHubRepository
-        clickListItem("GitHubレポジトリ")
+        clickListItem("GitHubリポジトリ")
 
         assertTrue(githubRepositoryOpened)
         assertFalse(backEnabled)

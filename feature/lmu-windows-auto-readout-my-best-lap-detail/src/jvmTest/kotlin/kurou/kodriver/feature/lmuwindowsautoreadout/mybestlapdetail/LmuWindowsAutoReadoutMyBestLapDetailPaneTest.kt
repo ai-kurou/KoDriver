@@ -82,7 +82,7 @@ class LmuWindowsAutoReadoutMyBestLapDetailPaneTest {
         rule.onNodeWithText("自己ベストラップ更新").assertIsDisplayed()
         rule.onNodeWithText("自己ベストラップ更新の文言").assertIsDisplayed()
         rule.onNodeWithText(DEFAULT_TEXT).assertIsDisplayed()
-        rule.onNodeWithText("{laptime} は更新後の自己ベストタイムに置き換わります（例: 1分23秒456）").assertIsDisplayed()
+        rule.onNodeWithText("{laptime} は更新後の自己ベストラップのタイムに置き換わります（例: 1分23秒456）").assertIsDisplayed()
         rule.onNodeWithText("{laptime}を挿入").assertIsEnabled()
     }
 

@@ -86,7 +86,7 @@ class Gt7Ps5AutoReadoutTyreTemperatureDetailPaneTest {
         }
         rule.onNodeWithText("過熱警告").assertIsDisplayed()
         rule.onNodeWithText("高温閾値設定").performScrollTo().assertIsDisplayed()
-        rule.onNodeWithText("高温閾値: 105°C").assertIsDisplayed()
+        rule.onNodeWithText("高温閾値: 105℃").assertIsDisplayed()
         rule.onNodeWithText("タイヤ過熱警告の文言").assertIsDisplayed()
         rule.onNodeWithText(DEFAULT_TEXT).assertIsDisplayed()
         rule.onNodeWithText("{celsius} は判定時の全輪の最高タイヤ温度（摂氏）に置き換わります（整数に丸めます）").assertIsDisplayed()
