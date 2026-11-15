@@ -66,10 +66,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
@@ -188,6 +192,7 @@ internal fun AutoReadoutListPane(
         }
     }
     val haptic = LocalHapticFeedback.current
+    val rowFocusState = remember { AutoReadoutRowFocusState() }
     val reorderableState =
         rememberReorderableLazyListState(listState) { from, to ->
             onMove(
@@ -219,7 +224,16 @@ internal fun AutoReadoutListPane(
                 modifier =
                     Modifier
                         .fillMaxSize()
-                        .padding(vertical = KoDriverSpacing.large),
+                        .onKeyEvent { event ->
+                            handleAutoReadoutArrowKey(
+                                event = event,
+                                focusState = rowFocusState,
+                                items = uiState.items,
+                                firstItemLazyIndex = autoReadoutItemStartIndex,
+                                listState = listState,
+                                coroutineScope = coroutineScope,
+                            )
+                        }.padding(vertical = KoDriverSpacing.large),
             ) {
                 if (isAceSelected) {
                     item(key = "aceReadoutTimingHint") {
@@ -261,6 +275,9 @@ internal fun AutoReadoutListPane(
                         val itemName = autoReadoutItemDisplayName(item)
                         val readoutEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(item)
                         AutoReadoutListItemCard(
+                            modifier =
+                                Modifier.onFocusChanged { rowFocusState.onRowFocusChanged(item.value, it.hasFocus) },
+                            rowFocusRequester = rowFocusState.requesterFor(item),
                             item = item,
                             index = index,
                             itemName = itemName,
@@ -330,6 +347,7 @@ private fun AutoReadoutListItemCard(
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    rowFocusRequester: FocusRequester,
     modifier: Modifier = Modifier,
     dragHandleModifier: Modifier = Modifier,
 ) {
@@ -417,6 +435,7 @@ private fun AutoReadoutListItemCard(
                             .fillMaxWidth()
                             .heightIn(min = 48.dp)
                             .semantics { contentDescription = itemName }
+                            .focusRequester(rowFocusRequester)
                             .clickable(
                                 indication = null,
                                 interactionSource = itemInteractionSource,
