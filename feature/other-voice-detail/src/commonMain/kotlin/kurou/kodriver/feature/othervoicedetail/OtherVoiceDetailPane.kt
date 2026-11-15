@@ -204,7 +204,12 @@ fun OtherVoiceDetailPaneContent(
                         }
                     }
                 }
-                if (uiState.savedVoiceMissing) {
+                AnimatedVisibility(
+                    visible = uiState.savedVoiceMissing,
+                    modifier = Modifier.fillMaxWidth(),
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut(),
+                ) {
                     Surface(
                         shape = MaterialTheme.shapes.large,
                         color = MaterialTheme.colorScheme.tertiaryContainer,

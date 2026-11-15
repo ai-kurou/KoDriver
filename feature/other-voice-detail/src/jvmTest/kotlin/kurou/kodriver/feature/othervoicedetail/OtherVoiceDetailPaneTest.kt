@@ -301,6 +301,22 @@ class OtherVoiceDetailPaneTest {
     }
 
     @Test
+    fun `保存済み音声が存在する場合は注意文を表示しない`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherVoiceDetailPaneContent(
+                    OtherVoiceDetailUiState(listOf(voice), voice.id, isLoading = false, savedVoiceMissing = false),
+                )
+            }
+        }
+
+        rule
+            .onNodeWithText("保存済みの音声が見つからないため、システム既定で読み上げます。")
+            .assertDoesNotExist()
+        rule.onNodeWithText("音声A").assertIsSelected()
+    }
+
+    @Test
     fun `各カードの試聴は音声IDとサンプル文と振動を通知し選択を変更しない`() {
         every { onPreviewClicked(voice.id, "これは読み上げ音声の試聴です。") } returns Unit
         every { onPreviewClicked(VOICE_ID_UNSPECIFIED, "これは読み上げ音声の試聴です。") } returns Unit
