@@ -28,7 +28,7 @@ import org.koin.dsl.module
  * StartupEnabledRepository の Fake 実装をバインドし、実OSのレジストリ操作を避ける。また、
  * HapticFeedbackAvailabilityRepository を常に振動機能ありとするFake実装に、
  * AccessLocalNetworkPermissionRepository を常に許可済みとするFake実装に差し替え、
- * テスト実行環境（実機・エミュレータ）のハードウェア・権限状態にテスト結果が左右されないようにする。
+ * テスト実行環境（実機・エミュレーター）のハードウェア・権限状態にテスト結果が左右されないようにする。
  */
 val fakeTextToSpeechRepository = FakeTextToSpeechRepository()
 

@@ -100,7 +100,7 @@ class AutoReadoutContentRootBannerTest {
     }
 
     @Test
-    fun `Root状態が未読込でデフォルトがtrueの項目は詳細ペインにバナーを表示しない`() {
+    fun `Root状態が未読み込みでデフォルトがtrueの項目は詳細ペインにバナーを表示しない`() {
         rule.setContent {
             AutoReadoutContent(
                 uiState =
@@ -125,7 +125,7 @@ class AutoReadoutContentRootBannerTest {
     }
 
     @Test
-    fun `Root状態が未読込でデフォルトがfalseの項目は詳細ペインにバナーを表示する`() {
+    fun `Root状態が未読み込みでデフォルトがfalseの項目は詳細ペインにバナーを表示する`() {
         rule.setContent {
             AutoReadoutContent(
                 uiState =

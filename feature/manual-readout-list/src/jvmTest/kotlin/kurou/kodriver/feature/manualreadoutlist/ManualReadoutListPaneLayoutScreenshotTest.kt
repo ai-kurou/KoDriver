@@ -25,7 +25,7 @@ import org.junit.Test
 
 /**
  * 手動読み上げ一覧を、シミュレーター3種 × セットなし/あり × 標準表示/再生ボタン表示の12通りで撮影する。
- * 再生ボタン表示は、見出し右上の切替ボタンを押した後の状態を撮る。
+ * 再生ボタン表示は、見出し右上の切り替えボタンを押した後の状態を撮る。
  */
 class ManualReadoutListPaneLayoutScreenshotTest {
     init {

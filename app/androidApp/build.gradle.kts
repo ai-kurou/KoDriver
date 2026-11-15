@@ -129,8 +129,8 @@ android {
     }
 }
 
-// AGP 9.5 は compose が有効だと全バリアントで Compose Preview 用タスクを作り、その作成には単体テストと Android リソースが必要になる。
-// release 系バリアントは単体テストが無効になっているため、ここで有効に戻す
+// AGP 9.5 は compose が有効だと全バリアントで Compose Preview 用タスクを作り、その作成にはユニットテストと Android リソースが必要になる。
+// release 系バリアントはユニットテストが無効になっているため、ここで有効に戻す
 androidComponents {
     beforeVariants { variantBuilder ->
         (variantBuilder as HasHostTestsBuilder).hostTests[HostTestBuilder.UNIT_TEST_TYPE]?.apply {
@@ -152,7 +152,7 @@ androidComponents {
     }
 }
 
-// 上で有効にしたのは Compose Preview のタスク作成を通すためで、debug 以外のバリアントの単体テストは実行しない
+// 上で有効にしたのは Compose Preview のタスク作成を通すためで、debug 以外のバリアントのユニットテストは実行しない
 tasks.configureEach {
     if (name.startsWith("test") && name.endsWith("UnitTest") && name != "testDebugUnitTest") {
         enabled = false

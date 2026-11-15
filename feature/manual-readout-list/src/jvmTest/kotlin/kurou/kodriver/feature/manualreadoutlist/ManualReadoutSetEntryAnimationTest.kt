@@ -21,12 +21,12 @@ class ManualReadoutSetEntryAnimationTest {
     val rule = createComposeRule()
 
     @Test
-    fun `標準表示で追加したセットは縦に展開し表示切替で再生しない`() {
+    fun `標準表示で追加したセットは縦に展開し表示切り替えで再生しない`() {
         assertSetEntryAnimation(playButtonLayoutEnabled = false)
     }
 
     @Test
-    fun `再生ボタン表示で追加したセットは縦に展開し表示切替で再生しない`() {
+    fun `再生ボタン表示で追加したセットは縦に展開し表示切り替えで再生しない`() {
         assertSetEntryAnimation(playButtonLayoutEnabled = true)
     }
 

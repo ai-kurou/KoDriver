@@ -45,7 +45,7 @@ class DebugStateVehicleLocationCardTest {
             )
         val expectedCarLocations =
             listOf(
-                AceWindowsCarLocation.UNASSIGNED to "Unassigned（未割当）",
+                AceWindowsCarLocation.UNASSIGNED to "Unassigned（未割り当て）",
                 AceWindowsCarLocation.PITLANE to "PitLane（ピットレーン）",
                 AceWindowsCarLocation.PITENTRY to "PitEntry（ピットイン）",
                 AceWindowsCarLocation.PITEXIT to "PitExit（ピットアウト）",

@@ -693,7 +693,7 @@ class ManualReadoutSetDetailViewModelTest {
         }
 
     @Test
-    fun `初期読込と存在しないセットと未対応シミュレーターの項目を返す`() =
+    fun `初期読み込みと存在しないセットと未対応シミュレーターの項目を返す`() =
         runTest(dispatcher) {
             every { repository.observeSets() } returns MutableStateFlow(emptyList())
             Simulator.entries.forEach { simulator ->
@@ -919,7 +919,7 @@ class ManualReadoutSetDetailViewModelTest {
         }
 
     @Test
-    fun `修飾キーだけ保存でき割当済みでは組み合わせの競合を拒否する`() =
+    fun `修飾キーだけ保存でき割り当て済みでは組み合わせの競合を拒否する`() =
         runTest(dispatcher) {
             val original = ManualReadoutSet("target")
             val modified = original.copy(hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_SHIFT)
@@ -961,7 +961,7 @@ class ManualReadoutSetDetailViewModelTest {
         }
 
     @Test
-    fun `割当済みの修飾キー変更を保存する`() =
+    fun `割り当て済みの修飾キー変更を保存する`() =
         runTest(dispatcher) {
             val original = ManualReadoutSet("target", hotkeyVirtualKeyCode = 0x41)
             val modified = original.copy(hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_SHIFT)

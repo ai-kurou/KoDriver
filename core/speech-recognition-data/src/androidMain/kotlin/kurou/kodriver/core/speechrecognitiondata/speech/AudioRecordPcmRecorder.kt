@@ -8,7 +8,7 @@ import kurou.kodriver.domain.model.MICROPHONE_SAMPLE_RATE_HZ
 
 /**
  * Android の [AudioRecord] で [PcmRecorder] を実現する。呼び出し元でマイクの権限を確認してから使う。
- * プラットフォームのAPIを直接呼ぶ薄いアダプターのため、単体テストの対象にしない。
+ * プラットフォームのAPIを直接呼ぶ薄いアダプターのため、ユニットテストの対象にしない。
  */
 internal class AudioRecordPcmRecorder : PcmRecorder {
     @Volatile

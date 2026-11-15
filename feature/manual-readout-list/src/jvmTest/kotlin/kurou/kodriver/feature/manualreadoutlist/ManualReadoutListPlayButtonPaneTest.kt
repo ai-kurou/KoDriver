@@ -156,7 +156,7 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
-    fun `どちらの表示にも編集モードの切替ボタンを出さない`() {
+    fun `どちらの表示にも編集モードの切り替えボタンを出さない`() {
         val playLayout = mutableStateOf(true)
         rule.setContent {
             KoDriverTheme {
@@ -258,7 +258,7 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
-    fun `再生ボタン表示は標準表示への切替セグメントを表示する`() {
+    fun `再生ボタン表示は標準表示への切り替えセグメントを表示する`() {
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutListPaneContent(

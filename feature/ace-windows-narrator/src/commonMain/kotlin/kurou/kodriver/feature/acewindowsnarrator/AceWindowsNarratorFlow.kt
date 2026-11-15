@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 
-/** ACE の購読切替と設定・要求の合成を担う cold Flow。共有・初期値・イベント処理は ViewModel が管理する。 */
+/** ACE の購読切り替えと設定・要求の合成を担う cold Flow。共有・初期値・イベント処理は ViewModel が管理する。 */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class AceWindowsNarratorFlow(
     private val selectedSimulator: Flow<Simulator>,

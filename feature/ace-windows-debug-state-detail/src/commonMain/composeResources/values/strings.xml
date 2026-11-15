@@ -27,7 +27,7 @@
     <string name="debug_state_fuel_consumption_remaining_laps">残り %1$s周</string>
     <string name="debug_state_fuel_consumption_remaining_percent">残量 %1$s%</string>
     <string name="debug_state_vehicle_location_title">車両位置</string>
-    <string name="debug_state_vehicle_location_ace_unassigned">Unassigned（未割当）</string>
+    <string name="debug_state_vehicle_location_ace_unassigned">Unassigned（未割り当て）</string>
     <string name="debug_state_vehicle_location_ace_pitlane">PitLane（ピットレーン）</string>
     <string name="debug_state_vehicle_location_ace_pitentry">PitEntry（ピットイン）</string>
     <string name="debug_state_vehicle_location_ace_pitexit">PitExit（ピットアウト）</string>
