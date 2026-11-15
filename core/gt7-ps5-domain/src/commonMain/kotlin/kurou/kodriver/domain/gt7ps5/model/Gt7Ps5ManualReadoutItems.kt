@@ -42,7 +42,7 @@ val gt7Ps5ManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition>
         ),
         manualReadoutItemDefinitionOf(
             Gt7Ps5ReadoutItemKey.MyBestLap.Root,
-            ManualReadoutItemCategory.LAP,
+            ManualReadoutItemCategory.TIME,
             "自己ベストラップ",
             GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT,
             GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER,

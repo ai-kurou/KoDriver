@@ -36,7 +36,7 @@ private fun lmuWindowsItemCategory(itemId: LmuWindowsReadoutItemKey): ManualRead
 
 private fun gt7Ps5ItemCategory(itemId: Gt7Ps5ReadoutItemKey): ManualReadoutItemCategory =
     when (itemId) {
-        is Gt7Ps5ReadoutItemKey.MyBestLap -> ManualReadoutItemCategory.LAP
+        is Gt7Ps5ReadoutItemKey.MyBestLap -> ManualReadoutItemCategory.TIME
         is Gt7Ps5ReadoutItemKey.RemainingFuelLaps -> ManualReadoutItemCategory.FUEL
         is Gt7Ps5ReadoutItemKey.RemainingFuel -> ManualReadoutItemCategory.FUEL
         is Gt7Ps5ReadoutItemKey.TyreTemperature -> ManualReadoutItemCategory.TYRE
@@ -68,5 +68,6 @@ internal fun autoReadoutCategoryColor(
         ManualReadoutItemCategory.FUEL -> colors.categoryFuel
         ManualReadoutItemCategory.TYRE -> colors.categoryTyre
         ManualReadoutItemCategory.BRAKE -> colors.categoryBrake
-        ManualReadoutItemCategory.LAP -> colors.categoryLap
+        ManualReadoutItemCategory.LAP -> colors.categoryTime
+        ManualReadoutItemCategory.TIME -> colors.categoryTime
     }

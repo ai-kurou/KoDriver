@@ -59,6 +59,7 @@ import kurou.kodriver.feature.speechrecognitionlist.generated.resources.Res
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_brake
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_fuel
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_lap
+import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_time
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_tyre
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_virtual_energy
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_longest_phrase_note
@@ -391,7 +392,8 @@ private fun speechCommandGuideCategoryColor(category: ManualReadoutItemCategory)
         ManualReadoutItemCategory.FUEL -> colors.categoryFuel
         ManualReadoutItemCategory.TYRE -> colors.categoryTyre
         ManualReadoutItemCategory.BRAKE -> colors.categoryBrake
-        ManualReadoutItemCategory.LAP -> colors.categoryLap
+        ManualReadoutItemCategory.LAP -> colors.categoryTime
+        ManualReadoutItemCategory.TIME -> colors.categoryTime
     }
 }
 
@@ -403,6 +405,7 @@ private fun speechCommandGuideCategoryIcon(category: ManualReadoutItemCategory):
         ManualReadoutItemCategory.TYRE -> Icons.Default.DonutLarge
         ManualReadoutItemCategory.BRAKE -> Icons.Default.Speed
         ManualReadoutItemCategory.LAP -> Icons.Default.Timer
+        ManualReadoutItemCategory.TIME -> Icons.Default.Timer
     }
 
 @Composable
@@ -414,6 +417,7 @@ private fun speechCommandGuideCategoryLabel(category: ManualReadoutItemCategory)
             ManualReadoutItemCategory.TYRE -> Res.string.speech_command_guide_category_tyre
             ManualReadoutItemCategory.BRAKE -> Res.string.speech_command_guide_category_brake
             ManualReadoutItemCategory.LAP -> Res.string.speech_command_guide_category_lap
+            ManualReadoutItemCategory.TIME -> Res.string.speech_command_guide_category_time
         },
     )
 

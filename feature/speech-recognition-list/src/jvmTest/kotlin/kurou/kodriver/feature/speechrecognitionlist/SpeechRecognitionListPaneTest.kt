@@ -97,6 +97,29 @@ class SpeechRecognitionListPaneTest {
     }
 
     @Test
+    fun `タイムの見出しと項目名と語句を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionListPaneContent(
+                    SpeechRecognitionListUiState(
+                        groups =
+                            listOf(
+                                SpeechCommandGuideGroup(
+                                    ManualReadoutItemCategory.TIME,
+                                    listOf(SpeechCommandGuideItem("time", "自己ベストラップ", listOf("自己ベスト"))),
+                                ),
+                            ),
+                    ),
+                )
+            }
+        }
+
+        listOf("タイム", "自己ベストラップ", "自己ベスト").forEach {
+            rule.onNodeWithText(it, useUnmergedTree = true).assertExists()
+        }
+    }
+
+    @Test
     fun `項目のカードに語句の数を表示する`() {
         rule.setContent {
             KoDriverTheme {

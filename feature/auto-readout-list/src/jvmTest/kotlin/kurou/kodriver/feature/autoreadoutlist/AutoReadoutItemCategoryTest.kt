@@ -48,7 +48,7 @@ class AutoReadoutItemCategoryTest {
     fun `GT7の全項目をカテゴリに分類する`() {
         val expected =
             mapOf(
-                Gt7Ps5ReadoutItemKey.MyBestLap.Root to ManualReadoutItemCategory.LAP,
+                Gt7Ps5ReadoutItemKey.MyBestLap.Root to ManualReadoutItemCategory.TIME,
                 Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to ManualReadoutItemCategory.FUEL,
                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root to ManualReadoutItemCategory.FUEL,
                 Gt7Ps5ReadoutItemKey.TyreTemperature.Root to ManualReadoutItemCategory.TYRE,
@@ -98,7 +98,7 @@ class AutoReadoutItemCategoryTest {
                 categoryFuel = Color(0xFF000002),
                 categoryTyre = Color(0xFF000003),
                 categoryBrake = Color(0xFF000004),
-                categoryLap = Color(0xFF000005),
+                categoryTime = Color(0xFF000005),
             )
 
         val expected =
@@ -107,7 +107,8 @@ class AutoReadoutItemCategoryTest {
                 ManualReadoutItemCategory.FUEL to colors.categoryFuel,
                 ManualReadoutItemCategory.TYRE to colors.categoryTyre,
                 ManualReadoutItemCategory.BRAKE to colors.categoryBrake,
-                ManualReadoutItemCategory.LAP to colors.categoryLap,
+                ManualReadoutItemCategory.LAP to colors.categoryTime,
+                ManualReadoutItemCategory.TIME to colors.categoryTime,
             )
         for ((category, color) in expected) {
             assertEquals(color, autoReadoutCategoryColor(category, colors), category.name)

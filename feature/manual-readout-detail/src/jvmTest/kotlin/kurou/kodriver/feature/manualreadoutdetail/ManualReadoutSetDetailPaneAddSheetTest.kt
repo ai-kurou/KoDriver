@@ -104,7 +104,7 @@ class ManualReadoutSetDetailPaneAddSheetTest {
                     "タイヤ",
                     "1",
                     "タイヤ温度",
-                    "ラップ",
+                    "タイム",
                     "1",
                     "自己ベストラップ",
                 ),
