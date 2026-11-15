@@ -3341,7 +3341,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `他シミュレーター選択中は燃料を購読せず切替後に最新燃料から警告する`() =
+    fun `他シミュレーター選択中は燃料を購読せず切り替え後に最新燃料から警告する`() =
         runTest(testDispatcher) {
             val selected = MutableStateFlow<Simulator>(Simulator.Gt7Ps5)
             val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)

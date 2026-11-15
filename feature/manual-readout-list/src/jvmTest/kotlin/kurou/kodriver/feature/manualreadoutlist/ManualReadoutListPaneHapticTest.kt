@@ -138,7 +138,7 @@ class ManualReadoutListPaneHapticTest {
     }
 
     @Test
-    fun `表示切替は未選択側の操作だけ触覚を返す`() {
+    fun `表示切り替えは未選択側の操作だけ触覚を返す`() {
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         showPane()
         rule.onNodeWithContentDescription("標準表示").performClick()

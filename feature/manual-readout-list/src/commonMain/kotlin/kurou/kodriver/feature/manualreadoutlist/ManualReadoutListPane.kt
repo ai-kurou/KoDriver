@@ -247,7 +247,7 @@ internal fun ManualReadoutListPaneContent(
     }
 }
 
-/** 追加操作で増えたセットだけを展開し、スクロールや表示切替では再生しない。 */
+/** 追加操作で増えたセットだけを展開し、スクロールや表示切り替えでは再生しない。 */
 @Composable
 private fun ManualReadoutSetEntry(
     animate: Boolean,

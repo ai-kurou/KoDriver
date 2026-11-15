@@ -16,7 +16,7 @@ internal const val VOSK_MODEL_ASSET_DIRECTORY = "vosk-model-ja"
  * assets に同梱した日本語モデルから [SpeechTranscriber] を作る。モデルが同梱されていないビルドでは利用不可になる。
  * Vosk の `Model` は assets を直接読めずディレクトリのパスを要求するため、初回とアプリの更新後に端末の内部ストレージへ展開する
  * （[VoskModelInstaller]。同梱モデルの差し替えが古いモデルのまま残らないよう、アプリの最終更新時刻を version にする）。
- * プラットフォームのAPIを直接呼ぶ薄いアダプターのため、単体テストの対象にしない。
+ * プラットフォームのAPIを直接呼ぶ薄いアダプターのため、ユニットテストの対象にしない。
  */
 internal class AndroidVoskSpeechTranscriberFactory(
     private val context: Context,

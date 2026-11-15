@@ -567,7 +567,7 @@ kover {
                     "kurou.kodriver.core.speechrecognitiondata.speech.VoskRecognizerAdapter",
                     "kurou.kodriver.core.speechrecognitiondata.speech.AndroidVoskSpeechTranscriberFactory",
                 )
-                // デスクトップのエントリーポイント。ウィンドウ・Sentry・サーバー起動は実機依存で単体テストできない。
+                // デスクトップのエントリーポイント。ウィンドウ・Sentry・サーバー起動は実機依存でユニットテストできない。
                 // 同じ Koin 構成は AppTest / DesktopKoinModuleGraphTest が検証する
                 classes("kurou.kodriver.MainKt", "kurou.kodriver.MainKt\$*")
             }

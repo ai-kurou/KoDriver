@@ -385,7 +385,7 @@ private fun OtherResetEffects(
     val successMessage = stringResource(Res.string.telemetry_log_reset_success)
     val failureMessage = stringResource(Res.string.telemetry_log_reset_failure)
     val currentOnResetResultConsumed by rememberUpdatedState(onResetResultConsumed)
-    // タブ切替でスナックバー表示中にLaunchedEffectが中断されると結果が残り、戻った時に再表示されるため、離脱時に消費する。
+    // タブ切り替えでスナックバー表示中にLaunchedEffectが中断されると結果が残り、戻った時に再表示されるため、離脱時に消費する。
     DisposableEffect(Unit) {
         onDispose { currentOnResetResultConsumed() }
     }
@@ -410,7 +410,7 @@ private fun OtherAutoReadoutSettingsResetEffects(
     val successMessage = stringResource(Res.string.auto_readout_settings_reset_success)
     val failureMessage = stringResource(Res.string.auto_readout_settings_reset_failure)
     val currentOnResetResultConsumed by rememberUpdatedState(onAutoReadoutSettingsResetResultConsumed)
-    // タブ切替でスナックバー表示中にLaunchedEffectが中断されると結果が残り、戻った時に再表示されるため、離脱時に消費する。
+    // タブ切り替えでスナックバー表示中にLaunchedEffectが中断されると結果が残り、戻った時に再表示されるため、離脱時に消費する。
     DisposableEffect(Unit) {
         onDispose { currentOnResetResultConsumed() }
     }
@@ -438,7 +438,7 @@ private fun OtherManualReadoutSettingsResetEffects(
     val successMessage = stringResource(Res.string.manual_readout_settings_reset_success)
     val failureMessage = stringResource(Res.string.manual_readout_settings_reset_failure)
     val currentOnResetResultConsumed by rememberUpdatedState(onManualReadoutSettingsResetResultConsumed)
-    // タブ切替でスナックバー表示中にLaunchedEffectが中断されると結果が残り、戻った時に再表示されるため、離脱時に消費する。
+    // タブ切り替えでスナックバー表示中にLaunchedEffectが中断されると結果が残り、戻った時に再表示されるため、離脱時に消費する。
     DisposableEffect(Unit) {
         onDispose { currentOnResetResultConsumed() }
     }

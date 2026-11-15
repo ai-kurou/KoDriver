@@ -386,7 +386,7 @@ class MainActivityTest {
         text: String,
         substring: Boolean = false,
     ) {
-        // CI実機エミュレータではボトムシートの閉じるアニメーション等が遅く、
+        // CI実機エミュレーターではボトムシートの閉じるアニメーション等が遅く、
         // 5秒では不足してタイムアウトすることがあるため、実機テストのみ余裕を持たせる。
         composeTestRule.waitUntil(timeoutMillis = 8_000L) {
             composeTestRule.onAllNodes(hasText(text, substring = substring)).fetchSemanticsNodes().isNotEmpty()

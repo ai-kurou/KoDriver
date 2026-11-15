@@ -23,7 +23,7 @@ class ManualReadoutListPaneHeaderTest {
     val rule = createComposeRule()
 
     @Test
-    fun `両セグメントは選択状態を示し未選択側のタップだけ切替を通知する`() {
+    fun `両セグメントは選択状態を示し未選択側のタップだけ切り替えを通知する`() {
         val playLayout = mutableStateOf(false)
         var toggleCount = 0
         rule.setContent {

@@ -53,7 +53,7 @@ class ObserveTelemetryReceivingUseCaseTest {
         }
 
     @Test
-    fun `シミュレーター切替時に対応するFlowへ切り替える`() =
+    fun `シミュレーター切り替え時に対応するFlowへ切り替える`() =
         runTest {
             val selectedSimulator = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns selectedSimulator

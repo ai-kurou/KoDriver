@@ -99,7 +99,7 @@ internal class Gt7Ps5UdpSource(
                 }
             }
         }.retryWhen { cause, attempt ->
-            // Wi-Fi切替・スリープ復帰時のsend失敗、ポート競合(BindException)など、
+            // Wi-Fi切り替え・スリープ復帰時のsend失敗、ポート競合(BindException)など、
             // 一時的なネットワーク起因のIOExceptionは再接続を試みる
             if (cause is java.io.IOException) {
                 delay(BIND_RETRY_DELAY_MS * (attempt + 1))

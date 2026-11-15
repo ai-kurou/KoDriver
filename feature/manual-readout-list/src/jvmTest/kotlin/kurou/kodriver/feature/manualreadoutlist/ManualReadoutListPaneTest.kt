@@ -47,7 +47,7 @@ class ManualReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `標準表示は再生ボタン表示への切替セグメントを表示してクリックを通知する`() {
+    fun `標準表示は再生ボタン表示への切り替えセグメントを表示してクリックを通知する`() {
         var toggleCount = 0
         rule.setContent {
             KoDriverTheme {

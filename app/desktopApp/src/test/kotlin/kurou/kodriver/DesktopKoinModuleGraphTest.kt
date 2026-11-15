@@ -79,7 +79,7 @@ import kotlin.test.assertSame
  * - `:core:ace-windows-data` の `aceWindowsDataModule` → このファイル内のダミー実装。
  *   どちらも共有メモリ読み取り用の JNA（kernel32）バインディングが、コンストラクタのデフォルト引数
  *   評価時に `isWindows` 判定より先にネイティブライブラリのロードを試みるため、Windows 以外の環境
- *   （macOS/Linuxでの単体テスト実行環境含む）では `UnsatisfiedLinkError` になる。
+ *   （macOS/Linuxでのユニットテスト実行環境含む）では `UnsatisfiedLinkError` になる。
  * - `ServerIpPreferencesRepository`・`ServerVersionRepository` はダミー実装で補う。
  *   `feature:other-server-ip-detail`・`feature:server-connection` は Android から Desktop 版サーバーへ
  *   接続する画面用のモジュールで、`OtherListItems.nonAndroid.kt` が Desktop では一覧から隠しており

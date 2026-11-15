@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsNarratorFlowTest {
     @Test
-    fun `テレメトリは収集時だけACEを購読し切替と収集終了でキャンセルする`() =
+    fun `テレメトリは収集時だけACEを購読し切り替えと収集終了でキャンセルする`() =
         runTest {
             val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             val telemetry = MutableSharedFlow<Int>()
