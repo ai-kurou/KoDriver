@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otherconsoleipdetail
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -225,7 +226,7 @@ fun OtherConsoleIpDetailPaneContent(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onSaveConfirmedByKeyboard() }),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().animateContentSize(),
             )
             Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             Text(
