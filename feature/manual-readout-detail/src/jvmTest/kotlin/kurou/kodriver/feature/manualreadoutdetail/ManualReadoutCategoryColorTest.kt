@@ -26,7 +26,6 @@ class ManualReadoutCategoryColorTest {
                         ManualReadoutItemCategory.FUEL to c.categoryFuel,
                         ManualReadoutItemCategory.TYRE to c.categoryTyre,
                         ManualReadoutItemCategory.BRAKE to c.categoryBrake,
-                        ManualReadoutItemCategory.LAP to c.categoryTime,
                         ManualReadoutItemCategory.TIME to c.categoryTime,
                     )
                 ManualReadoutItemCategory.entries.forEach { actual[it] = manualReadoutCategoryColor(it) }

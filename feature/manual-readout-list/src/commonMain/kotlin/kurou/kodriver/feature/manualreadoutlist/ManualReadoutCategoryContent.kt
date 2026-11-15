@@ -31,7 +31,6 @@ import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_category_brake
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_category_fuel
-import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_category_lap
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_category_time
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_category_tyre
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_category_virtual_energy
@@ -49,7 +48,6 @@ internal fun manualReadoutCategoryColor(category: ManualReadoutItemCategory): Co
         ManualReadoutItemCategory.FUEL -> colors.categoryFuel
         ManualReadoutItemCategory.TYRE -> colors.categoryTyre
         ManualReadoutItemCategory.BRAKE -> colors.categoryBrake
-        ManualReadoutItemCategory.LAP -> colors.categoryTime
         ManualReadoutItemCategory.TIME -> colors.categoryTime
     }
 }
@@ -62,7 +60,6 @@ private fun manualReadoutCategoryLabel(category: ManualReadoutItemCategory): Str
             ManualReadoutItemCategory.FUEL -> Res.string.manual_readout_category_fuel
             ManualReadoutItemCategory.TYRE -> Res.string.manual_readout_category_tyre
             ManualReadoutItemCategory.BRAKE -> Res.string.manual_readout_category_brake
-            ManualReadoutItemCategory.LAP -> Res.string.manual_readout_category_lap
             ManualReadoutItemCategory.TIME -> Res.string.manual_readout_category_time
         },
     )
@@ -107,7 +104,6 @@ internal fun ManualReadoutCategoryChips(
                                     ManualReadoutItemCategory.FUEL -> Icons.Default.LocalGasStation
                                     ManualReadoutItemCategory.TYRE -> Icons.Default.DonutLarge
                                     ManualReadoutItemCategory.BRAKE -> Icons.Default.Speed
-                                    ManualReadoutItemCategory.LAP -> Icons.Default.Timer
                                     ManualReadoutItemCategory.TIME -> Icons.Default.Timer
                                 },
                             contentDescription = null,
