@@ -50,7 +50,7 @@ private fun aceWindowsItemCategory(itemId: AceWindowsReadoutItemKey): ManualRead
 
         is AceWindowsReadoutItemKey.TyreTemperature -> ManualReadoutItemCategory.TYRE
 
-        is AceWindowsReadoutItemKey.MyBestLap -> ManualReadoutItemCategory.LAP
+        is AceWindowsReadoutItemKey.MyBestLap -> ManualReadoutItemCategory.TIME
 
         is AceWindowsReadoutItemKey.VehicleApproach,
         is AceWindowsReadoutItemKey.Flag,
