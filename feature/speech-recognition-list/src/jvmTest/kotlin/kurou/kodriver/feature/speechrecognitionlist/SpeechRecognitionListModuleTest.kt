@@ -52,7 +52,7 @@ class SpeechRecognitionListModuleTest {
             val groups =
                 listOf(
                     SpeechCommandGuideGroup(
-                        ManualReadoutItemCategory.LAP,
+                        ManualReadoutItemCategory.TIME,
                         listOf(SpeechCommandGuideItem("lap", "ベストラップ", listOf("ベスト"))),
                     ),
                 )

@@ -9,7 +9,7 @@
 | GT7 PS5 | 燃料残量 | `RemainingFuel.Root`（`gt7_ps5_auto_remaining_fuel`） | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 「燃料残量はデータがありません」 | 燃料カテゴリ |
 | GT7 PS5 | 燃料残り周回数 | `RemainingFuelLaps.Root`（`gt7_ps5_auto_remaining_fuel_laps`） | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料は残り1周未満」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ。プレビュー3周 |
 | GT7 PS5 | タイヤ温度 | `TyreTemperature.Root`（`gt7_ps5_auto_tyre_temperature`） | `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ。プレビュー90℃ |
-| GT7 PS5 | 自己ベストラップ | `MyBestLap.Root`（`gt7_ps5_auto_my_best_lap`） | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | ラップカテゴリ。プレビュー83456ms |
+| GT7 PS5 | 自己ベストラップ | `MyBestLap.Root`（`gt7_ps5_auto_my_best_lap`） | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | タイムカテゴリ。プレビュー83456ms |
 | ACE Windows | 燃料残量 | `RemainingFuel.Root`（`ace_windows_auto_remaining_fuel`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 「燃料残量はデータがありません」 | 燃料カテゴリ。プレビューは `PREVIEW_ENERGY_PERCENT`（50） |
 | ACE Windows | 燃料残り周回数 | `RemainingFuelLaps.Root`（`ace_windows_auto_remaining_fuel_laps`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ |
 | ACE Windows | 自己ベストラップ | `MyBestLap.Root`（`ace_windows_auto_my_best_lap`） | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | タイムカテゴリ |
@@ -24,8 +24,8 @@
 | LMU Windows | ブレーキ残量 | `BrakeWear.Root`（`lmu_windows_auto_brake_wear`） | `LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT`（「ブレーキは残り{percent}%」） | 項目名付きのデータなし文言 | ブレーキカテゴリ |
 | LMU Windows | ブレーキ温度 | `BrakeTemperature.Root`（`lmu_windows_auto_brake_temperature`） | `LMU_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT`（「ブレーキ温度は{celsius}℃」） | 項目名付きのデータなし文言 | ブレーキカテゴリ |
 | LMU Windows | タイヤ温度 | `TyreTemperature.Root`（`lmu_windows_auto_tyre_temperature`） | `LMU_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ |
-| LMU Windows | 自己ベストラップ | `MyBestLap.Root`（`lmu_windows_auto_my_best_lap`） | `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | ラップカテゴリ |
-| LMU Windows | クラス内前後車とのギャップ | `ClassCarGap.Root.value`（`lmu_windows_auto_class_car_gap`） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「前方{ahead}秒、後方{behind}秒」）。先頭は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）、最後尾は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）に置き換える | 項目名付きのデータなし文言 | ラップカテゴリ |
+| LMU Windows | 自己ベストラップ | `MyBestLap.Root`（`lmu_windows_auto_my_best_lap`） | `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | タイムカテゴリ |
+| LMU Windows | クラス内前後車とのギャップ | `ClassCarGap.Root.value`（`lmu_windows_auto_class_car_gap`） | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「前方{ahead}秒、後方{behind}秒」）。先頭は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）、最後尾は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）に置き換える | 項目名付きのデータなし文言 | タイムカテゴリ |
 
 LMU のキーは `LmuWindowsReadoutItemKey.` の接頭辞を省略して記載している。上表の「項目名付きのデータなし文言」は、複数項目のとき「<項目名>はデータがありません」を連結する文言である。
 
@@ -39,12 +39,12 @@ LMU のキーは `LmuWindowsReadoutItemKey.` の接頭辞を省略して記載�
 | `{laps}` | 燃料残り周回数（`GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER` / `ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER`）・LMU の残り周回数（`LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER`） | 整数の周回数 | 挿入・検証（GT7 の詳細の試聴は3周に置換） |
 | `{celsius}` | タイヤ温度（`GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER` / `ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER` / `LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER`）・ブレーキ温度（`LMU_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER`） | 最高温度（整数℃） | 挿入・温度用の未知プレースホルダー検出 |
 | `{laptime}` | 自己ベストラップ（`GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER` / `ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER` / `LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER`） | 「1分23秒456」形式 | 挿入チップ・ヒント・未知プレースホルダー検出 |
-| `{ahead}` | クラス内前後車とのギャップの前方の秒数（`LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER`） | 「1.5」（先頭は前方の節ごと「クラス内先頭です」、節を含まない文言では「なし」） | 挿入・検証（「ラップ」カテゴリ） |
-| `{behind}` | クラス内前後車とのギャップの後方の秒数（`LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER`） | 「2.3」（最後尾は後方の節ごと「クラス内最後尾です」、節を含まない文言では「なし」） | 挿入・検証（「ラップ」カテゴリ） |
+| `{ahead}` | クラス内前後車とのギャップの前方の秒数（`LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER`） | 「1.5」（先頭は前方の節ごと「クラス内先頭です」、節を含まない文言では「なし」） | 挿入・検証（「タイム」カテゴリ） |
+| `{behind}` | クラス内前後車とのギャップの後方の秒数（`LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER`） | 「2.3」（最後尾は後方の節ごと「クラス内最後尾です」、節を含まない文言では「なし」） | 挿入・検証（「タイム」カテゴリ） |
 | `{ahead}` `{behind}` | ACE の前後車ギャップ（`ACE_WINDOWS_CAR_GAP_AHEAD_PLACEHOLDER` / `ACE_WINDOWS_CAR_GAP_BEHIND_PLACEHOLDER`） | 単位なしの数値（例 `1.5` `2.3`）。0は節ごと「前方車なし」「後方車なし」、節を含まない文言では「なし」 | 挿入チップは「前方{ahead}秒、後方{behind}秒」をまとめて挿入・`{ahead}` `{behind}` 以外は未知として警告 |
 
 
-「＋ 項目を追加」から Desktop / Android 共通の `ModalBottomSheet` を開き、未選択項目をカテゴリ別に表示する。シートのタイトルは「読み上げる項目を選択」とし、残り枠の文言と選択数のセグメントバーを表示する。カテゴリ見出しにはアイコンと候補数、カテゴリごとにまとめた選択行には丸い追加アイコンを表示する。カテゴリと項目名は domain の `ManualReadoutItemDefinition`（`category` / `name`）を唯一の定義元とし（読み上げの「○○はデータがありません」と同じ名称）、現在は「バーチャルエネルギー」の LMU「バーチャルエネルギー残量」「バーチャルエネルギーの残り周回数」と「燃料」の LMU「燃料残量」「燃料残り周回数」・GT7「燃料残量」「燃料残り周回数」・ACE「燃料残量」「燃料残り周回数」と「タイヤ」の LMU「タイヤ摩耗」「タイヤ摩耗の残り周回数」「タイヤ温度」・GT7「タイヤ温度」・ACE「タイヤ温度」、「ブレーキ」の「ブレーキ残量」「ブレーキ温度」、「ラップ」の LMU・GT7・ACE「自己ベストラップ」と LMU「クラス内前後車とのギャップ」。選択すると末尾へ追加して閉じる。候補はスクロールでき、シート外のタップ・スワイプ・Esc で閉じる。選択数と上限（3件）は常時表示し、3件選択時は削除してから追加するよう案内する。未選択項目がない場合、または domain の `MANUAL_READOUT_SET_ITEM_MAX` に達した場合は追加ボタンを無効化する。未選択時は短い説明と追加ボタンを表示する。
+「＋ 項目を追加」から Desktop / Android 共通の `ModalBottomSheet` を開き、未選択項目をカテゴリ別に表示する。シートのタイトルは「読み上げる項目を選択」とし、残り枠の文言と選択数のセグメントバーを表示する。カテゴリ見出しにはアイコンと候補数、カテゴリごとにまとめた選択行には丸い追加アイコンを表示する。カテゴリと項目名は domain の `ManualReadoutItemDefinition`（`category` / `name`）を唯一の定義元とし（読み上げの「○○はデータがありません」と同じ名称）、現在は「バーチャルエネルギー」の LMU「バーチャルエネルギー残量」「バーチャルエネルギーの残り周回数」と「燃料」の LMU「燃料残量」「燃料残り周回数」・GT7「燃料残量」「燃料残り周回数」・ACE「燃料残量」「燃料残り周回数」と「タイヤ」の LMU「タイヤ摩耗」「タイヤ摩耗の残り周回数」「タイヤ温度」・GT7「タイヤ温度」・ACE「タイヤ温度」、「ブレーキ」の「ブレーキ残量」「ブレーキ温度」、「タイム」の LMU・GT7・ACE「自己ベストラップ」と LMU「クラス内前後車とのギャップ」。選択すると末尾へ追加して閉じる。候補はスクロールでき、シート外のタップ・スワイプ・Esc で閉じる。選択数と上限（3件）は常時表示し、3件選択時は削除してから追加するよう案内する。未選択項目がない場合、または domain の `MANUAL_READOUT_SET_ITEM_MAX` に達した場合は追加ボタンを無効化する。未選択時は短い説明と追加ボタンを表示する。
 
 項目追加ボタン・ピッカーでの選択・選択項目の削除・試聴開始／停止・セット名の編集開始と明示的な確定・ホットキーの有効なキー入力／解除／再試行／修飾キー操作では、既存の `ContextClick` 触覚フィードバックを行う。文言入力・並べ替え・フォーカス喪失によるセット名の自動保存・状態更新では追加の通知を行わない。
 
@@ -94,7 +94,7 @@ TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列�
 先頭・最後尾でない側の秒差が null・非有限・負値のときは、項目全体をデータ無しとする。空欄テンプレートなら（データがあれば）空文字を読む。
 保存済みセットに残る旧キーは、読み出し時に `migrateLmuWindowsManualReadoutLegacyClassCarGap`（`ManualReadoutSimulatorSpec.migrateLegacySet`）で新キー1つへ置き換える。旧キーが最初に現れた位置に置き、前方・後方の両方があっても1つにまとめる。旧キーの文言は新しい文言へ変換できないため破棄し、新キーには既定文言を使う。
 複数項目ではデータ無しの項目に「<項目名>はデータがありません」を連結する。
-先頭項目なら開始音・優先度・ログ・キューに `VehicleApproach.Root` を使う。編集画面は既存の「ラップ」カテゴリに配置し、`{ahead}` と `{behind}` を挿入・検証に使う。
+先頭項目なら開始音・優先度・ログ・キューに `VehicleApproach.Root` を使う。編集画面は既存の「タイム」カテゴリに配置し、`{ahead}` と `{behind}` を挿入・検証に使う。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
@@ -140,7 +140,7 @@ GT7 の手動「自己ベストラップ」は `MyBestLap.Root` を使い、`cur
 `bestLapTimeMs`（ms）を取得する。未受信・5秒超・0以下（未確定）は「自己ベストラップはデータがありません」。
 既定文言は `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」）で、
 既存の `Gt7Ps5MyBestLap` を手動文言を `resolvedText` に指定して再利用し、既存の GT7 用フォーマッターと
-プレースホルダー検証を使う。詳細のカテゴリはラップ、プレビューは83456ms。空文言は読まず、自動の
+プレースホルダー検証を使う。詳細のカテゴリはタイム、プレビューは83456ms。空文言は読まず、自動の
 `determineMyBestLap` の状態（personalBestMs 等）は変更しない。開始音・ログのキーは `RemainingFuel.Root` を維持する。
 
 セット名は詳細画面でインライン編集できる（最大20文字、重複可）。編集中は文字数カウンターを表示し、上限を超える入力・貼り付けは既存文字を保持したまま拒否する。確定・Done・フォーカス喪失時に保存し、ViewModel でも前後の空白除去と上限の防御を行う。未設定時は作成時に採番された固定番号による「セット N」を表示する。未採番（0）のセットは一覧上の位置を使う。削除しても他の採番済みセットの番号は変わらない。

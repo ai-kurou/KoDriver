@@ -191,7 +191,7 @@ LMU の補足は次のとおり。
 | 燃料残量 | `RemainingFuel.Root.value`（`gt7_ps5_auto_remaining_fuel`） | 最新テレメトリの `gasLevel / gasCapacity * 100` を四捨五入し0〜100に制限した整数％ | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 未受信・鮮度切れ・不正な燃料値は「燃料残量はデータがありません」 | 既存の燃料用フォーマット関数を再利用する。開始音・ログ・常時キュー追加のキーもこの項目。 |
 | 燃料残り周回数 | `RemainingFuelLaps.Root.value`（`gt7_ps5_auto_remaining_fuel_laps`） | 燃料残り周回数の推定（周）。算出式は下の補足 | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周以下は `GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT`（「燃料は残り1周未満」） | 未受信・鮮度切れは「燃料残り周回数はデータがありません」。開始燃料・開始周回が未設定、完走周回数が0以下、消費燃料が0以下は null | 自動側のしきい値・重複抑止・有効スイッチは適用しない。 |
 | タイヤ温度 | `TyreTemperature.Root.value`（`gt7_ps5_auto_tyre_temperature`） | 4輪の有限値の最高温度を `roundToInt()` した整数℃（`currentMaxTyreTemperatureCelsius`） | `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 未受信・鮮度切れ・全輪が非有限または0（取得不能）は「タイヤ温度はデータがありません」 | 詳細画面のカテゴリはタイヤ、プレビューは90℃。自動のしきい値・ヒステリシス・スイッチ判定は適用しない。 |
-| 自己ベストラップ | `MyBestLap.Root.value`（`gt7_ps5_auto_my_best_lap`） | テレメトリの `bestLapTimeMs`（ms）（`currentBestLapTimeMs`）。既存の `Gt7Ps5MyBestLap` で整形 | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 未受信・鮮度切れ・0以下（未確定）は「自己ベストラップはデータがありません」 | 詳細画面のカテゴリはラップ、プレビューは83456ms。自動の `determineMyBestLap` の状態（`personalBestMs` 等）は変更しない。 |
+| 自己ベストラップ | `MyBestLap.Root.value`（`gt7_ps5_auto_my_best_lap`） | テレメトリの `bestLapTimeMs`（ms）（`currentBestLapTimeMs`）。既存の `Gt7Ps5MyBestLap` で整形 | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 未受信・鮮度切れ・0以下（未確定）は「自己ベストラップはデータがありません」 | 詳細画面のカテゴリはタイム、プレビューは83456ms。自動の `determineMyBestLap` の状態（`personalBestMs` 等）は変更しない。 |
 
 GT7 PS5 の補足は次のとおり。
 
@@ -257,4 +257,4 @@ TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列�
 先頭・最後尾でない側の秒差が null・非有限・負値のときは、項目全体をデータ無しとする。空欄テンプレートなら（データがあれば）空文字を読む。
 保存済みセットに残る旧キーは、読み出し時に `migrateLmuWindowsManualReadoutLegacyClassCarGap`（`ManualReadoutSimulatorSpec.migrateLegacySet`）で新キー1つへ置き換える。旧キーが最初に現れた位置に置き、前方・後方の両方があっても1つにまとめる。旧キーの文言は新しい文言へ変換できないため破棄し、新キーには既定文言を使う。
 複数項目ではデータ無しの項目に「<項目名>はデータがありません」を連結する。
-先頭項目なら開始音・優先度・ログ・キューに `VehicleApproach.Root` を使う。編集画面は既存の「ラップ」カテゴリに配置し、`{ahead}` と `{behind}` を挿入・検証に使う。
+先頭項目なら開始音・優先度・ログ・キューに `VehicleApproach.Root` を使う。編集画面は既存の「タイム」カテゴリに配置し、`{ahead}` と `{behind}` を挿入・検証に使う。

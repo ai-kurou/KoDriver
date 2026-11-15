@@ -6,9 +6,6 @@ enum class ManualReadoutItemCategory {
     FUEL,
     TYRE,
     BRAKE,
-
-    /** ACE/LMU 移行完了後に削除する暫定値。GT7 は [TIME] を使う。 */
-    LAP,
     TIME,
 }
 

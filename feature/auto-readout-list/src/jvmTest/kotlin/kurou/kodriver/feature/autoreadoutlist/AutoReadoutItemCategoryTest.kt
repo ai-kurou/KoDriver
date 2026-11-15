@@ -107,7 +107,6 @@ class AutoReadoutItemCategoryTest {
                 ManualReadoutItemCategory.FUEL to colors.categoryFuel,
                 ManualReadoutItemCategory.TYRE to colors.categoryTyre,
                 ManualReadoutItemCategory.BRAKE to colors.categoryBrake,
-                ManualReadoutItemCategory.LAP to colors.categoryTime,
                 ManualReadoutItemCategory.TIME to colors.categoryTime,
             )
         for ((category, color) in expected) {

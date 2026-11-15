@@ -68,6 +68,5 @@ internal fun autoReadoutCategoryColor(
         ManualReadoutItemCategory.FUEL -> colors.categoryFuel
         ManualReadoutItemCategory.TYRE -> colors.categoryTyre
         ManualReadoutItemCategory.BRAKE -> colors.categoryBrake
-        ManualReadoutItemCategory.LAP -> colors.categoryTime
         ManualReadoutItemCategory.TIME -> colors.categoryTime
     }

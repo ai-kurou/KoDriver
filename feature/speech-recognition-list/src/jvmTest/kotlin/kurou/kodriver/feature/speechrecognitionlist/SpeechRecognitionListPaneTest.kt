@@ -83,7 +83,7 @@ class SpeechRecognitionListPaneTest {
                                     listOf(SpeechCommandGuideItem("brake", "ブレーキ温度", listOf("ディスク"))),
                                 ),
                                 SpeechCommandGuideGroup(
-                                    ManualReadoutItemCategory.LAP,
+                                    ManualReadoutItemCategory.TIME,
                                     listOf(SpeechCommandGuideItem("lap", "ベストラップ", listOf("ベスト"))),
                                 ),
                             ),
@@ -92,7 +92,7 @@ class SpeechRecognitionListPaneTest {
             }
         }
 
-        listOf("燃料", "タイヤ", "ブレーキ", "ラップ", "燃料残量", "残り燃料", "ガス", "ゴム", "ディスク", "バーチャルエネルギー", "VE残量", "ベストラップ")
+        listOf("燃料", "タイヤ", "ブレーキ", "タイム", "燃料残量", "残り燃料", "ガス", "ゴム", "ディスク", "バーチャルエネルギー", "VE残量", "ベストラップ")
             .forEach { rule.onNodeWithText(it, useUnmergedTree = true).assertExists() }
     }
 
