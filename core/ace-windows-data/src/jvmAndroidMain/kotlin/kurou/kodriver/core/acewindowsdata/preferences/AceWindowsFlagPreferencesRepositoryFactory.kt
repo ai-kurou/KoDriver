@@ -5,5 +5,5 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepo
 /**
  * AceWindowsFlagPreferences Repository の永続化実装を生成する。
  */
-fun createAceWindowsFlagPreferencesRepository(directory: String): AceWindowsFlagPreferencesRepository =
+internal fun createAceWindowsFlagPreferencesRepository(directory: String): AceWindowsFlagPreferencesRepository =
     AceWindowsFlagPreferencesRepositoryImpl(createAceWindowsFlagPreferencesDataStore(directory))

@@ -5,7 +5,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeTe
 /**
  * LmuWindowsVehicleClassBrakeTemperaturePreferences Repository の永続化実装を生成する。
  */
-fun createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository(
+internal fun createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository(
     directory: String,
 ): LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository =
     LmuWindowsVehicleClassBrakeTemperaturePreferencesRepositoryImpl(

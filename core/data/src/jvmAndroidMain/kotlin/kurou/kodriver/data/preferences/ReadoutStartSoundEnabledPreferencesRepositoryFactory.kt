@@ -5,7 +5,7 @@ import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepos
 /**
  * ReadoutStartSoundEnabledPreferences Repository の永続化実装を生成する。
  */
-fun createReadoutStartSoundEnabledPreferencesRepository(
+internal fun createReadoutStartSoundEnabledPreferencesRepository(
     directory: String,
 ): ReadoutStartSoundEnabledPreferencesRepository =
     ReadoutStartSoundEnabledPreferencesRepositoryImpl(createReadoutStartSoundEnabledPreferencesDataStore(directory))

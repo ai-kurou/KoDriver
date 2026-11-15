@@ -5,7 +5,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreWearPreferences
 /**
  * LmuWindowsTyreWearPreferences Repository の永続化実装を生成する。
  */
-fun createLmuWindowsTyreWearPreferencesRepository(directory: String): LmuWindowsTyreWearPreferencesRepository =
+internal fun createLmuWindowsTyreWearPreferencesRepository(directory: String): LmuWindowsTyreWearPreferencesRepository =
     LmuWindowsTyreWearPreferencesRepositoryImpl(
         createLmuWindowsTyreWearPreferencesDataStore(directory),
     )

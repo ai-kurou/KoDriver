@@ -5,5 +5,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsMyBestLapPreference
 /**
  * AceWindowsMyBestLapPreferences Repository の永続化実装を生成する。
  */
-fun createAceWindowsMyBestLapPreferencesRepository(directory: String): AceWindowsMyBestLapPreferencesRepository =
+internal fun createAceWindowsMyBestLapPreferencesRepository(
+    directory: String,
+): AceWindowsMyBestLapPreferencesRepository =
     AceWindowsMyBestLapPreferencesRepositoryImpl(createAceWindowsMyBestLapPreferencesDataStore(directory))

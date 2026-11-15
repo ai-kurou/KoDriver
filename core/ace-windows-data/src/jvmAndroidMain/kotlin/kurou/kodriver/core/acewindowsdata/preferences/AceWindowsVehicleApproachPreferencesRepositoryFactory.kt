@@ -5,7 +5,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachPref
 /**
  * AceWindowsVehicleApproachPreferences Repository の永続化実装を生成する。
  */
-fun createAceWindowsVehicleApproachPreferencesRepository(
+internal fun createAceWindowsVehicleApproachPreferencesRepository(
     directory: String,
 ): AceWindowsVehicleApproachPreferencesRepository =
     AceWindowsVehicleApproachPreferencesRepositoryImpl(

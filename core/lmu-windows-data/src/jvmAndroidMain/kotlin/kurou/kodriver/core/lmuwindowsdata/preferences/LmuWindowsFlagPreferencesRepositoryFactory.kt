@@ -5,5 +5,5 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagPreferencesRepo
 /**
  * LmuWindowsFlagPreferences Repository の永続化実装を生成する。
  */
-fun createLmuWindowsFlagPreferencesRepository(directory: String): LmuWindowsFlagPreferencesRepository =
+internal fun createLmuWindowsFlagPreferencesRepository(directory: String): LmuWindowsFlagPreferencesRepository =
     LmuWindowsFlagPreferencesRepositoryImpl(createLmuWindowsFlagPreferencesDataStore(directory))

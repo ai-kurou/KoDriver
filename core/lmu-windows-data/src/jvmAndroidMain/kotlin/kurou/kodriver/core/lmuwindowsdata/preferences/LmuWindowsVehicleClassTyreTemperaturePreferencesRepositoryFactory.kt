@@ -5,7 +5,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassTyreTem
 /**
  * LmuWindowsVehicleClassTyreTemperaturePreferences Repository の永続化実装を生成する。
  */
-fun createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository(
+internal fun createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository(
     directory: String,
 ): LmuWindowsVehicleClassTyreTemperaturePreferencesRepository =
     LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImpl(
