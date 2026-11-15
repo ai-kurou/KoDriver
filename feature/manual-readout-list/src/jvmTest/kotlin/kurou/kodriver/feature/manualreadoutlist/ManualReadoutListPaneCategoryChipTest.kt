@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Rule
@@ -51,6 +52,31 @@ class ManualReadoutListPaneCategoryChipTest {
             rule.onNodeWithText(it, useUnmergedTree = true).assertIsDisplayed()
         }
         rule.onNodeWithText("unknown", useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun `GT7の自己ベストはタイムのチップに数える`() {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState =
+                        ManualReadoutListUiState(
+                            sets =
+                                listOf(
+                                    ManualReadoutSet(
+                                        "time",
+                                        itemKeys = listOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root.value),
+                                    ),
+                                ),
+                        ),
+                    simulatorId = "gt7_ps5",
+                    simulatorName = "GT7",
+                    onAddSet = {},
+                    onReadSet = {},
+                )
+            }
+        }
+        rule.onNodeWithText("タイム 1", useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test
