@@ -12,9 +12,9 @@
 | GT7 PS5 | 自己ベストラップ | `MyBestLap.Root`（`gt7_ps5_auto_my_best_lap`） | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | ラップカテゴリ。プレビュー83456ms |
 | ACE Windows | 燃料残量 | `RemainingFuel.Root`（`ace_windows_auto_remaining_fuel`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 「燃料残量はデータがありません」 | 燃料カテゴリ。プレビューは `PREVIEW_ENERGY_PERCENT`（50） |
 | ACE Windows | 燃料残り周回数 | `RemainingFuelLaps.Root`（`ace_windows_auto_remaining_fuel_laps`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ |
-| ACE Windows | 自己ベストラップ | `MyBestLap.Root`（`ace_windows_auto_my_best_lap`） | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | ラップカテゴリ |
+| ACE Windows | 自己ベストラップ | `MyBestLap.Root`（`ace_windows_auto_my_best_lap`） | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | タイムカテゴリ |
 | ACE Windows | タイヤ温度 | `TyreTemperature.Root`（`ace_windows_auto_tyre_temperature`） | `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ。プレビュー90℃ |
-| ACE Windows | 前後車ギャップ | `CarGap.Root`（`ace_windows_auto_car_gap`） | `ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT`（「前方{ahead}秒、後方{behind}秒」） | 「前後車とのギャップはデータがありません」 | ラップカテゴリ。プレビュー前方1.5秒・後方2.3秒 |
+| ACE Windows | 前後車ギャップ | `CarGap.Root`（`ace_windows_auto_car_gap`） | `ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT`（「前方{ahead}秒、後方{behind}秒」） | 「前後車とのギャップはデータがありません」 | タイムカテゴリ。プレビュー前方1.5秒・後方2.3秒 |
 | LMU Windows | 燃料残量 | `RemainingFuel.Root`（`lmu_windows_auto_remaining_fuel`） | `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 「燃料残量はデータがありません」 | 燃料カテゴリ |
 | LMU Windows | 燃料残り周回数 | `RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`） | `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料は残り1周未満」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ |
 | LMU Windows | バーチャルエネルギー残量 | `RemainingVirtualEnergy.Root`（`lmu_windows_auto_remaining_virtual_energy`） | `LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT`（「バーチャルエネルギーは残り{percent}%」） | 「バーチャルエネルギー残量はデータがありません」（項目名付き連結） | バーチャルエネルギーカテゴリ |

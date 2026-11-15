@@ -161,7 +161,7 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 （「前方{ahead}秒、後方{behind}秒」）で、`formatAceWindowsCarGapReadoutText` が `{ahead}` `{behind}` を単位なしの数値（例「1.5」「2.3」）に置換する。
 秒数は符号を無視した絶対値を小数1桁に丸める。0・小数1桁で0になる値・非有限値は節全体（「前方{ahead}秒」「後方{behind}秒」）を「前方車なし」「後方車なし」に置換する。節を含まない文言（例「{ahead}と{behind}」）では、車なし時のプレースホルダーを「なし」に置換する。
 `findUnknownAceWindowsCarGapReadoutPlaceholders` で `{ahead}` `{behind}` 以外を未知として検出し、詳細画面の挿入チップは
-「前方{ahead}秒、後方{behind}秒」をまとめて挿入する。詳細画面のカテゴリはラップ、プレビューは前方1.5秒・後方2.3秒（既定文言）。
+「前方{ahead}秒、後方{behind}秒」をまとめて挿入する。詳細画面のカテゴリはタイム、プレビューは前方1.5秒・後方2.3秒（既定文言）。
 `AceWindowsCarGapCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 読み上げ時の開始音とログには他の ACE 手動項目と同じ `RemainingFuel.Root` を使い、試聴の開始音には `VehicleApproach.Root` を使う（`AceWindowsCarGapCurrentValue.readoutItemKey`・定義の `eventKey`）。ACE の共有メモリはクラス情報を持たず、マルチクラスレースもないため、
 クラス内かどうかは区別しない。
