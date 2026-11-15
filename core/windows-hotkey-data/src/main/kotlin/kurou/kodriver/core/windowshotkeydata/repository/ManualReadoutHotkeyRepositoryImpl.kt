@@ -30,7 +30,7 @@ import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 
-class ManualReadoutHotkeyRepositoryImpl(
+internal class ManualReadoutHotkeyRepositoryImpl(
     private val source: GlobalHotkeySource,
     setRepositories: Map<String, ManualReadoutSetPreferencesRepository>,
     scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),

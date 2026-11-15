@@ -30,7 +30,7 @@ import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class HotkeyRepositoryImpl(
+internal class HotkeyRepositoryImpl(
     private val source: GlobalHotkeySource,
     private val preferences: ReadoutHotkeyPreferencesRepository,
     scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),

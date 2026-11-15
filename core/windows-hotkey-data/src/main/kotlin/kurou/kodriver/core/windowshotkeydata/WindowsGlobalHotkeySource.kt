@@ -20,7 +20,7 @@ import kotlin.concurrent.thread
  * スレッドは daemon にして、キャンセルされないままアプリが終了しても JVM の終了を妨げない。
  * WM_QUIT の投稿に失敗した場合は captureError で記録し、終了しないスレッドを待たずに戻る。
  */
-class WindowsGlobalHotkeySource internal constructor(
+internal class WindowsGlobalHotkeySource internal constructor(
     private val nativeApi: HotkeyNativeApi,
 ) : GlobalHotkeySource {
     override fun observe(hotkey: GlobalHotkey): Flow<GlobalHotkeyEvent> =

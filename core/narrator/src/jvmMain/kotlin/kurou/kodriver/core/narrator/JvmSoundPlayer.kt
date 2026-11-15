@@ -12,7 +12,7 @@ import javax.sound.sampled.SourceDataLine
 /**
  * WAV 音声を再生する Jvm 向け実装。
  */
-class JvmSoundPlayer internal constructor(
+internal class JvmSoundPlayer internal constructor(
     private val audio: JvmAudioBackend,
     private val ioDispatcher: CoroutineDispatcher,
     private val captureError: (Throwable) -> Unit,
