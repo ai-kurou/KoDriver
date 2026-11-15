@@ -38,10 +38,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -49,7 +52,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
+import kurou.kodriver.core.designsystem.handleListRowArrowKey
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
@@ -83,6 +88,9 @@ internal fun ManualReadoutListPaneContent(
     val haptic = LocalHapticFeedback.current
     val bottomEndOverlayInset = LocalBottomEndOverlayInset.current
     var additionBaseline by remember(simulatorId) { mutableStateOf<Set<String>?>(null) }
+    val rowFocusState = remember(simulatorId) { ListRowFocusState() }
+    val itemKeys = remember(uiState.sets) { uiState.sets.map { it.id } }
+    val coroutineScope = rememberCoroutineScope()
     val enteredSetIds = remember(simulatorId) { mutableSetOf<String>() }
     val addSet = {
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
@@ -202,7 +210,19 @@ internal fun ManualReadoutListPaneContent(
                     } else {
                         LazyColumn(
                             state = listState,
-                            modifier = Modifier.fillMaxSize(),
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .onKeyEvent { event ->
+                                        handleListRowArrowKey(
+                                            event = event,
+                                            focusState = rowFocusState,
+                                            itemKeys = itemKeys,
+                                            firstItemLazyIndex = 0,
+                                            listState = listState,
+                                            coroutineScope = coroutineScope,
+                                        )
+                                    },
                             contentPadding =
                                 PaddingValues(bottom = 56.dp + KoDriverSpacing.large + bottomEndOverlayInset),
                         ) {
@@ -212,11 +232,13 @@ internal fun ManualReadoutListPaneContent(
                                     setId = set.id,
                                     enteredSetIds = enteredSetIds,
                                     modifier =
-                                        Modifier.animateItem(
-                                            fadeInSpec = null,
-                                            placementSpec = tween(200),
-                                            fadeOutSpec = null,
-                                        ),
+                                        Modifier
+                                            .onFocusChanged { rowFocusState.onRowFocusChanged(set.id, it.hasFocus) }
+                                            .animateItem(
+                                                fadeInSpec = null,
+                                                placementSpec = tween(200),
+                                                fadeOutSpec = null,
+                                            ),
                                 ) {
                                     ManualReadoutSetRow(
                                         setNumber = set.number.takeIf { it > 0 } ?: (index + 1),
@@ -227,6 +249,7 @@ internal fun ManualReadoutListPaneContent(
                                         onReadSet = { onReadSet(set.id) },
                                         onSetClick = { onSetClick(set.id) },
                                         onDeleteSet = { onDeleteSet(set.id) },
+                                        rowFocusRequester = rowFocusState.requesterFor(set.id),
                                     )
                                 }
                             }
