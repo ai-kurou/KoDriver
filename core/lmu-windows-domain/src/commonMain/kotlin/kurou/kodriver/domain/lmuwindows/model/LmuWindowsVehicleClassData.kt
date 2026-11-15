@@ -46,7 +46,7 @@ sealed class LmuWindowsVehicleClassData(
     }
 }
 
-object LmuWindowsVehicleClassDataSerializer : KSerializer<LmuWindowsVehicleClassData> {
+internal object LmuWindowsVehicleClassDataSerializer : KSerializer<LmuWindowsVehicleClassData> {
     @Serializable
     private data class Surrogate(
         val name: String,
