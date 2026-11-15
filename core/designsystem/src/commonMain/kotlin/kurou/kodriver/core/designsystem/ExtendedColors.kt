@@ -20,7 +20,7 @@ data class ExtendedColorScheme(
     val categoryFuel: Color,
     val categoryTyre: Color,
     val categoryBrake: Color,
-    val categoryLap: Color,
+    val categoryTime: Color,
 )
 
 internal val LightExtendedColorScheme =
@@ -35,7 +35,7 @@ internal val LightExtendedColorScheme =
         categoryFuel = Color(0xFFC2570C),
         categoryTyre = Color(0xFF2F7D4F),
         categoryBrake = Color(0xFFB3261E),
-        categoryLap = Color(0xFF6A4FC7),
+        categoryTime = Color(0xFF6A4FC7),
     )
 
 internal val DarkExtendedColorScheme =
@@ -50,7 +50,7 @@ internal val DarkExtendedColorScheme =
         categoryFuel = Color(0xFFF0A066),
         categoryTyre = Color(0xFF7FD0A0),
         categoryBrake = Color(0xFFFF9D94),
-        categoryLap = Color(0xFFC3B2FF),
+        categoryTime = Color(0xFFC3B2FF),
     )
 
 internal val LocalExtendedColorScheme = staticCompositionLocalOf { LightExtendedColorScheme }

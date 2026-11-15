@@ -45,7 +45,7 @@ class ExtendedColorsTest {
                     scheme.categoryFuel,
                     scheme.categoryTyre,
                     scheme.categoryBrake,
-                    scheme.categoryLap,
+                    scheme.categoryTime,
                 ).size,
             )
         }

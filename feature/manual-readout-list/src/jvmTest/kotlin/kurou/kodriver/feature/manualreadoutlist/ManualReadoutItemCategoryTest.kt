@@ -39,7 +39,7 @@ class ManualReadoutItemCategoryTest {
                 LmuWindowsReadoutItemKey.RemainingFuel.Root.value to ManualReadoutItemCategory.FUEL,
                 AceWindowsReadoutItemKey.TyreTemperature.Root.value to ManualReadoutItemCategory.TYRE,
                 LmuWindowsReadoutItemKey.BrakeWear.Root.value to ManualReadoutItemCategory.BRAKE,
-                Gt7Ps5ReadoutItemKey.MyBestLap.Root.value to ManualReadoutItemCategory.LAP,
+                Gt7Ps5ReadoutItemKey.MyBestLap.Root.value to ManualReadoutItemCategory.TIME,
             )
         expected.forEach { (key, category) -> assertEquals(category, manualReadoutItemCategory(key), key) }
     }

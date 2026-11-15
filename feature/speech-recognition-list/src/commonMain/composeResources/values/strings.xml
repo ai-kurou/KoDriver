@@ -12,4 +12,5 @@
     <string name="speech_command_guide_category_tyre">タイヤ</string>
     <string name="speech_command_guide_category_brake">ブレーキ</string>
     <string name="speech_command_guide_category_lap">ラップ</string>
+    <string name="speech_command_guide_category_time">タイム</string>
 </resources>

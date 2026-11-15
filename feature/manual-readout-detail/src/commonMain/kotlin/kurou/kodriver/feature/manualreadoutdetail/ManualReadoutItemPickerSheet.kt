@@ -47,6 +47,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_brake
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_fuel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_lap
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_time
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_tyre
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_category_virtual_energy
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_picker_remaining
@@ -61,6 +62,7 @@ private fun ManualReadoutItemCategory.icon(): ImageVector =
         ManualReadoutItemCategory.TYRE -> Icons.Default.DonutLarge
         ManualReadoutItemCategory.BRAKE -> Icons.Default.Speed
         ManualReadoutItemCategory.LAP -> Icons.Default.Timer
+        ManualReadoutItemCategory.TIME -> Icons.Default.Timer
     }
 
 internal fun ManualReadoutItemCategory.label(): StringResource =
@@ -70,6 +72,7 @@ internal fun ManualReadoutItemCategory.label(): StringResource =
         ManualReadoutItemCategory.TYRE -> Res.string.manual_readout_category_tyre
         ManualReadoutItemCategory.BRAKE -> Res.string.manual_readout_category_brake
         ManualReadoutItemCategory.LAP -> Res.string.manual_readout_category_lap
+        ManualReadoutItemCategory.TIME -> Res.string.manual_readout_category_time
     }
 
 private fun manualReadoutItemDefinition(itemKey: String): ManualReadoutItemDefinition? =
