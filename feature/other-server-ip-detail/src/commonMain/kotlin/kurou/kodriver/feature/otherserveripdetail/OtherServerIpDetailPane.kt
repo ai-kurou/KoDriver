@@ -2,8 +2,10 @@ package kurou.kodriver.feature.otherserveripdetail
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -40,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -78,6 +81,8 @@ import org.koin.compose.viewmodel.koinViewModel
 private const val WINDOWS_INSTALL_GUIDE_URL =
     "https://github.com/ai-kurou/KoDriver/blob/main/docs/windows-install.md"
 private const val WINDOWS_INSTALL_GUIDE_LINK_ICON_ID = "windows-install-guide-link-icon"
+
+private const val SAVE_CHECKING_SPINNER_TEST_TAG = "save-checking-spinner"
 
 private val BUTTON_CONTENT_HEIGHT = 20.dp
 
@@ -298,12 +303,18 @@ fun OtherServerIpDetailPaneContent(
                             modifier = Modifier.height(BUTTON_CONTENT_HEIGHT),
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (uiState.isCheckingConnectivity) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(16.dp),
-                                        strokeWidth = 2.dp,
-                                    )
-                                    Spacer(modifier = Modifier.width(KoDriverSpacing.small))
+                                AnimatedVisibility(
+                                    visible = uiState.isCheckingConnectivity,
+                                    enter = expandHorizontally() + fadeIn(),
+                                    exit = shrinkHorizontally() + fadeOut(),
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(16.dp).testTag(SAVE_CHECKING_SPINNER_TEST_TAG),
+                                            strokeWidth = 2.dp,
+                                        )
+                                        Spacer(modifier = Modifier.width(KoDriverSpacing.small))
+                                    }
                                 }
                                 Text(stringResource(Res.string.server_ip_save))
                             }

@@ -12,6 +12,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.compose.animation)
             implementation(projects.core.domain)
             implementation(projects.core.designsystem)
             implementation(libs.compose.material.icons.extended)
