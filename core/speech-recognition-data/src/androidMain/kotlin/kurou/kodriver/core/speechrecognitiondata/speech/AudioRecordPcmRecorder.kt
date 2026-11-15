@@ -54,6 +54,6 @@ internal class AudioRecordPcmRecorder : PcmRecorder {
 
     private companion object {
         /** 読み取りが遅れても取りこぼさないよう、最小のバッファーに掛ける倍率。 */
-        const val BUFFER_SIZE_FACTOR = 4
+        private const val BUFFER_SIZE_FACTOR = 4
     }
 }
