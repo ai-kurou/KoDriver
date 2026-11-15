@@ -7,7 +7,7 @@ import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
  * 認識結果は表記が揺れるため、ひらがな・カタカナ・漢字の言い方を併記する。
  * 照合する側は部分一致した語句のうち最も長いものを持つ項目を選ぶこと。同一の語句を複数項目に持たせてはならない。
  */
-val gt7Ps5ManualReadoutItemPhrases: Map<String, List<String>> =
+internal val gt7Ps5ManualReadoutItemPhrases: Map<String, List<String>> =
     mapOf(
         Gt7Ps5ReadoutItemKey.RemainingFuel.Root.value to
             listOf("ガソリン", "燃料残量", "燃料の残量", "ガソリン残量"),
@@ -19,4 +19,5 @@ val gt7Ps5ManualReadoutItemPhrases: Map<String, List<String>> =
             listOf("自己ベスト", "ベストラップ", "ベストタイム", "自己ベストラップ"),
     )
 
-fun gt7Ps5ManualReadoutItemPhrases(itemKey: String): List<String> = gt7Ps5ManualReadoutItemPhrases[itemKey].orEmpty()
+internal fun gt7Ps5ManualReadoutItemPhrases(itemKey: String): List<String> =
+    gt7Ps5ManualReadoutItemPhrases[itemKey].orEmpty()

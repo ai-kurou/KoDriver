@@ -45,7 +45,7 @@ val LMU_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
         LmuWindowsReadoutItemKey.ClassCarGap.Root,
     )
 
-val lmuWindowsReadoutSpec: SimulatorReadoutSpec
+internal val lmuWindowsReadoutSpec: SimulatorReadoutSpec
     get() =
         SimulatorReadoutSpec(
             Simulator.LmuWindows,

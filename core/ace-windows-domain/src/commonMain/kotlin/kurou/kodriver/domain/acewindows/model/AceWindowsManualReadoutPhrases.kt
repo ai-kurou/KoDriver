@@ -7,7 +7,7 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
  * 認識結果は表記が揺れるため、ひらがな・カタカナ・漢字の言い方を併記する。
  * 照合する側は部分一致した語句のうち最も長いものを持つ項目を選ぶこと。同一の語句を複数項目に持たせてはならない。
  */
-val aceWindowsManualReadoutItemPhrases: Map<String, List<String>> =
+internal val aceWindowsManualReadoutItemPhrases: Map<String, List<String>> =
     mapOf(
         AceWindowsReadoutItemKey.RemainingFuel.Root.value to
             listOf("ガソリン", "燃料残量", "燃料の残量", "ガソリン残量"),
@@ -21,5 +21,5 @@ val aceWindowsManualReadoutItemPhrases: Map<String, List<String>> =
             listOf("ギャップ", "前後のギャップ", "前後の差", "前後の車", "前後車", "前後とのギャップ"),
     )
 
-fun aceWindowsManualReadoutItemPhrases(itemKey: String): List<String> =
+internal fun aceWindowsManualReadoutItemPhrases(itemKey: String): List<String> =
     aceWindowsManualReadoutItemPhrases[itemKey].orEmpty()

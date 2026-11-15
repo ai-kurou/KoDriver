@@ -5,4 +5,4 @@ package kurou.kodriver.domain.util
  */
 expect fun isManualReadoutHotkeySupported(): Boolean
 
-fun isWindowsOsName(osName: String): Boolean = osName.lowercase().startsWith("windows")
+internal fun isWindowsOsName(osName: String): Boolean = osName.lowercase().startsWith("windows")

@@ -21,4 +21,4 @@ const val LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT = "タイヤは残り{perce
 const val LMU_WINDOWS_TYRE_WEAR_PERCENT_PLACEHOLDER = "{percent}"
 
 /** 手動読み上げの現在のタイヤ残存率の既定文言。 */
-const val LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT = "タイヤは残り{percent}%"
+internal const val LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT = "タイヤは残り{percent}%"

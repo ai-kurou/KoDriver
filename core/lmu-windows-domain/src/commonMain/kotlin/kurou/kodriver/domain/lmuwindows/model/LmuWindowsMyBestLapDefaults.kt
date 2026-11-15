@@ -7,4 +7,4 @@ const val LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT = "自己ベストラッ�
 const val LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER = "{laptime}"
 
 /** 手動読み上げのセッション自己ベストラップの既定文言。 */
-const val LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT = "自己ベストラップ {laptime}"
+internal const val LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT = "自己ベストラップ {laptime}"

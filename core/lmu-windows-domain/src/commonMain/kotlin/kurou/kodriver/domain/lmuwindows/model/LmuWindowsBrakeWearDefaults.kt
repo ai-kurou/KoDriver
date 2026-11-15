@@ -14,4 +14,4 @@ const val LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT = "ブレーキは残り{p
 const val LMU_WINDOWS_BRAKE_WEAR_PERCENT_PLACEHOLDER = "{percent}"
 
 /** 手動読み上げの現在のブレーキ残量の既定文言。 */
-const val LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT = "ブレーキは残り{percent}%"
+internal const val LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT = "ブレーキは残り{percent}%"

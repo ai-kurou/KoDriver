@@ -23,7 +23,7 @@ private const val PERCENT_MAX = 100f
  * 現在の厚さが「新品時の厚さ [maxThickness]」から「破損厚さ [failureThickness]」までの間のどこにあるかを % で返す。
  * 使える厚さの幅が 0 以下（新品時の厚さが破損厚さ以下）の場合は比較できないため 100 を返す。
  */
-fun calculateBrakeWearRemainingPercent(
+internal fun calculateBrakeWearRemainingPercent(
     current: BrakeThicknessMeters,
     maxThickness: BrakeThicknessMeters,
     failureThickness: BrakeThicknessMeters,

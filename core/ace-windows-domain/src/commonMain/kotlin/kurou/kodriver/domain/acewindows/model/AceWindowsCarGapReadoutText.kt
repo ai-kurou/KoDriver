@@ -15,7 +15,7 @@ private val CAR_GAP_PLACEHOLDERS =
  * 0（小数1桁で 0.0 になる値を含む）・非有限値のときは、まず「前方{ahead}秒」「後方{behind}秒」の節全体を
  * 「前方車なし」「後方車なし」に置換し、節を含まないプレースホルダーは「なし」に置換する。
  */
-fun formatAceWindowsCarGapReadoutText(
+internal fun formatAceWindowsCarGapReadoutText(
     template: String,
     data: AceWindowsGapData,
 ): String {
@@ -54,7 +54,7 @@ private fun carGapSeconds(seconds: Float): String? {
 }
 
 /** 文言内の `{...}` のうち、`{ahead}` `{behind}` 以外のトークンを出現順・重複なしで返す。 */
-fun findUnknownAceWindowsCarGapReadoutPlaceholders(template: String): List<String> =
+internal fun findUnknownAceWindowsCarGapReadoutPlaceholders(template: String): List<String> =
     CAR_GAP_PLACEHOLDER_TOKEN_REGEX
         .findAll(template)
         .map { it.value }

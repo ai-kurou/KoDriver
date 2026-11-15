@@ -8,7 +8,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
  * 「タイヤ残り」と「タイヤ残り周回」のように、ある語句が別項目の語句の一部になっている場合がある。
  * 照合する側は部分一致した語句のうち最も長いものを持つ項目を選ぶこと。同一の語句を複数項目に持たせてはならない。
  */
-val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
+internal val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
     mapOf(
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value to
             listOf("エネルギー残量", "バーチャルエネルギー残量", "バーチャルエネルギーの残量", "エネルギーの残量"),
@@ -73,5 +73,5 @@ val lmuWindowsManualReadoutItemPhrases: Map<String, List<String>> =
             listOf("ギャップ", "前後のギャップ", "前後の差", "前後の車", "前後車", "前後とのギャップ"),
     )
 
-fun lmuWindowsManualReadoutItemPhrases(itemKey: String): List<String> =
+internal fun lmuWindowsManualReadoutItemPhrases(itemKey: String): List<String> =
     lmuWindowsManualReadoutItemPhrases[itemKey].orEmpty()

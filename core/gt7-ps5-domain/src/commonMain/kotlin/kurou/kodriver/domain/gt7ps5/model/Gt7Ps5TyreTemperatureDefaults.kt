@@ -18,4 +18,4 @@ const val GT7_PS5_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER = "{celsius}"
 const val GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT = "タイヤ過熱{celsius}℃"
 
 /** 手動読み上げのタイヤ温度の既定文言。 */
-const val GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT = "タイヤ温度は{celsius}℃"
+internal const val GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT = "タイヤ温度は{celsius}℃"

@@ -8,7 +8,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
  * LMU の読み上げ有効状態。一覧画面と Narrator が共有する。
  * 新しい TopLevel は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。
  */
-val LMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+internal val LMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         LmuWindowsReadoutItemKey.Flag.Root to true,
         LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
@@ -27,7 +27,7 @@ val LMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean>
  * LMU の開始音有効状態。車両接近は頻繁に再生されるためOFF、それ以外はON。
  * 新しい TopLevel は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。
  */
-val LMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+internal val LMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         LmuWindowsReadoutItemKey.VehicleApproach.Root to false,
         LmuWindowsReadoutItemKey.Flag.Root to true,
@@ -46,7 +46,7 @@ val LMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, B
  * LMU のキュー有効状態。supportsQueue が true の TopLevel は必ずここに列挙すること。
  * 省略＝デフォルトfalse、ではない。
  */
-val LMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
+internal val LMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         LmuWindowsReadoutItemKey.Flag.Root to false,
         LmuWindowsReadoutItemKey.VehicleDamage.Root to false,

@@ -18,7 +18,7 @@ private val LEGACY_CLASS_CAR_GAP_KEYS = setOf(LEGACY_CLASS_CAR_GAP_AHEAD_KEY, LE
  * 旧キーの文言は秒数1つだけを置換する形式で新しい文言に変換できないため破棄し、新キーには既定文言を使う。
  * 旧キーがないセットはそのまま返す。
  */
-fun migrateLmuWindowsManualReadoutLegacyClassCarGap(set: ManualReadoutSet): ManualReadoutSet {
+internal fun migrateLmuWindowsManualReadoutLegacyClassCarGap(set: ManualReadoutSet): ManualReadoutSet {
     if (set.itemKeys.none { it in LEGACY_CLASS_CAR_GAP_KEYS } &&
         set.itemTexts.keys.none { it in LEGACY_CLASS_CAR_GAP_KEYS }
     ) {
