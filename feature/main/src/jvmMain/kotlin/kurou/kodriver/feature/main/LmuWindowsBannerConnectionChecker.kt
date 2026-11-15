@@ -10,7 +10,7 @@ import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 /**
  * LmuWindowsBanner の接続状態を監視する実装。
  */
-class LmuWindowsBannerConnectionChecker(
+internal class LmuWindowsBannerConnectionChecker(
     private val checkLmuWindowsConnection: CheckLmuWindowsConnectionUseCase,
 ) : LmuBannerConnectionChecker {
     override fun statusFlow(): Flow<ConnectionBannerVmStatus> =

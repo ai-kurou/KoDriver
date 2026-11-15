@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.combine
 import kurou.kodriver.domain.model.Simulator
 
 /** AppScreen の表示状態を複数の状態 Flow から合成する冷たい Flow。 */
-class AppScreenFlow(
+internal class AppScreenFlow(
     hasAppUpdate: Flow<Boolean>,
     accessLocalNetworkPermissionGranted: Flow<Boolean>,
     keepScreenOn: Flow<Boolean>,

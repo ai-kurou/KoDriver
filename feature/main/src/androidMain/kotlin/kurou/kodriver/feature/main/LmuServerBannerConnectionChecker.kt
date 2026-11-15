@@ -13,7 +13,7 @@ import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 /**
  * LmuServerBanner の接続状態を監視する実装。
  */
-class LmuServerBannerConnectionChecker(
+internal class LmuServerBannerConnectionChecker(
     private val fetchServerVersion: FetchServerVersionUseCase,
     private val observeServerIp: ObserveServerIpUseCase,
 ) : LmuBannerConnectionChecker {

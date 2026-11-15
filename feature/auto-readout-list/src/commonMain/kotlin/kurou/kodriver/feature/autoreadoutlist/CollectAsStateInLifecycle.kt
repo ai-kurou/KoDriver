@@ -5,4 +5,4 @@ import androidx.compose.runtime.State
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-expect fun <T> StateFlow<T>.collectAsStateInLifecycle(): State<T>
+internal expect fun <T> StateFlow<T>.collectAsStateInLifecycle(): State<T>

@@ -19,7 +19,7 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 /**
  * TelemetryLogList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-class TelemetryLogListViewModel internal constructor(
+internal class TelemetryLogListViewModel internal constructor(
     observeSortedTelemetryLogs: ObserveSortedTelemetryLogsUseCase,
     observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     private val deleteTelemetryLog: DeleteTelemetryLogUseCase,

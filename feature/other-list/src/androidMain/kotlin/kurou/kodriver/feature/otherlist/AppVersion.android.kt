@@ -8,4 +8,4 @@ actual fun currentAppVersion(): String = GENERATED_APP_VERSION
 /**
  * currentAppVersionLabel のこのプラットフォーム向け実装。
  */
-actual fun currentAppVersionLabel(): String = "Android版KoDriverバージョン"
+internal actual fun currentAppVersionLabel(): String = "Android版KoDriverバージョン"

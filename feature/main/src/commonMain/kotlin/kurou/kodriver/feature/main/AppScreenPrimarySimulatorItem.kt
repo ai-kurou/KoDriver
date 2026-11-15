@@ -52,7 +52,7 @@ import org.jetbrains.compose.resources.stringResource
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
-fun AppScreenPrimarySimulatorIcon(
+internal fun AppScreenPrimarySimulatorIcon(
     simulatorId: String,
     modifier: Modifier = Modifier,
 ) {

@@ -17,7 +17,7 @@ import kurou.kodriver.domain.usecase.SaveOverlayTextSizeUseCase
 /**
  * OtherOverlayTextSizeDetail 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-class OtherOverlayTextSizeDetailViewModel internal constructor(
+internal class OtherOverlayTextSizeDetailViewModel internal constructor(
     observeOverlayTextSize: ObserveOverlayTextSizeUseCase,
     private val previewOverlayTextSize: PreviewOverlayTextSizeUseCase,
     private val saveOverlayTextSize: SaveOverlayTextSizeUseCase,

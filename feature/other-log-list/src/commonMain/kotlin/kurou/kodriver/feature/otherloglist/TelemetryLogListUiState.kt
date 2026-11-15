@@ -6,7 +6,7 @@ import kurou.kodriver.domain.model.TelemetryLog
 /**
  * TelemetryLogList 画面の表示状態。
  */
-data class TelemetryLogListUiState(
+internal data class TelemetryLogListUiState(
     val logs: List<TelemetryLog> = emptyList(),
     val selectedLogId: Long? = null,
     val selectedSimulator: Simulator? = null,

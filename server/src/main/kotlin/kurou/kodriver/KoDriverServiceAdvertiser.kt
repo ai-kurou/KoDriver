@@ -18,7 +18,7 @@ import kotlin.random.Random
  * ランダムサフィックスはインスタンス生成時に一度だけ生成し、サーバーが再起動するまで
  * 同一の値を維持する。
  */
-class KoDriverServiceAdvertiser(
+internal class KoDriverServiceAdvertiser(
     private val jmdnsFactory: () -> JmDNS = { JmDNS.create(InetAddress.getLocalHost()) },
     suffixProvider: () -> String = { randomSuffix() },
 ) {

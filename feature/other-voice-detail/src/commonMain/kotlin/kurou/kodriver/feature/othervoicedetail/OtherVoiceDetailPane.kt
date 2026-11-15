@@ -109,7 +109,7 @@ fun OtherVoiceDetailPane(
  * OtherVoiceDetail の画面本体を表示する Composable。
  */
 @Composable
-fun OtherVoiceDetailPaneContent(
+internal fun OtherVoiceDetailPaneContent(
     uiState: OtherVoiceDetailUiState,
     modifier: Modifier = Modifier,
     onVoiceSelected: (String) -> Unit = {},
