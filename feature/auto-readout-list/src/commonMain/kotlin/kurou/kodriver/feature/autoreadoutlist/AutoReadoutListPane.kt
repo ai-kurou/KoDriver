@@ -67,6 +67,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Size
@@ -510,6 +511,7 @@ private fun AutoReadoutListItemCard(
                                         .weight(1f)
                                         .heightIn(min = 40.dp)
                                         .testTag("autoReadoutListQueueBlankTouchTarget:${item.value}")
+                                        .focusProperties { canFocus = false }
                                         .clickable(
                                             indication = null,
                                             interactionSource = itemInteractionSource,
@@ -527,6 +529,7 @@ private fun AutoReadoutListItemCard(
                         .fillMaxHeight()
                         .width(24.dp)
                         .testTag("autoReadoutListChevronTouchTarget:${item.value}")
+                        .focusProperties { canFocus = false }
                         .clickable(
                             indication = null,
                             interactionSource = itemInteractionSource,

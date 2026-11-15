@@ -5,7 +5,7 @@
 ## 主要なファイルの役割
 
 - `AutoReadoutListPane.kt` / `AutoReadoutContent.kt`: 一覧画面のUI。`AutoReadoutContent.kt` は `Material3 Adaptive` の `ListDetailPaneScaffold` とナビゲーターで list/detail ペインの表示切り替えを行い、選択状態は ViewModel の UiState から同期する。
-- `AutoReadoutListPane.kt`（キーボード操作）: 一覧のキーボード操作は `:core:designsystem` の `ListRowKeyboardNavigation.kt`（`handleListRowArrowKey`）を項目キーの一覧と共に呼び出して行う。行内のどの部品（スイッチ・トグル・主操作領域）にフォーカスがあっても、↑↓ で隣の行の主操作領域（詳細を開く領域）へフォーカスを移す（行単位の移動）。先頭の↑・末尾の↓では何もせず折り返さない。画面外の行はスクロールしてから移動する。Alt / Ctrl / Shift / Meta 付きの↑↓と、行外（ヒント行など）にフォーカスがある場合は処理せず既定のフォーカス移動に任せる。
+- `AutoReadoutListPane.kt`（キーボード操作）: 一覧のキーボード操作は `:core:designsystem` の `ListRowKeyboardNavigation.kt`（`handleListRowArrowKey`）を項目キーの一覧と共に呼び出して行う。行内のどの部品（スイッチ・トグル・主操作領域）にフォーカスがあっても、↑↓ で隣の行の主操作領域（詳細を開く領域）へフォーカスを移す（行単位の移動）。先頭の↑・末尾の↓では何もせず折り返さない。画面外の行はスクロールしてから移動する。Alt / Ctrl / Shift / Meta 付きの↑↓と、行外（ヒント行など）にフォーカスがある場合は処理せず既定のフォーカス移動に任せる。行内のタッチ判定用の空き領域（キュー非対応時）とシェブロンはフォーカス対象外とし、Tab 移動では行ごとに主操作領域だけが停止する。
 - `AutoReadoutDetailPane.kt`: 選択した読み上げ項目の詳細設定画面。一覧側の Root スイッチ（`ReadoutItemKey.*.Root`）がOFFの場合は、画面上部に警告バナー（左端に縦方向中央の警告アイコン、中央にメッセージ、右端に Root を有効化する「ONにする」リンク）を表示し、詳細内容全体を薄く表示する（操作は可能なまま、保存値は変更しない）。バナーの表示・非表示は縦方向の展開とフェードでアニメーションする。詳細内容の透明度も滑らかに変化する。バナー全体がタップ領域となり、タップすると Root を有効化する。波紋はバナーの角丸内に表示する。各 detail モジュール側の変更は不要。
 - `AutoReadoutListFlow.kt` / `AutoReadoutListViewModel.kt`: Flow が設定を観測して表示状態を合成し、ViewModel が並び替え・選択・設定保存などの操作を扱う。並び替え中は `LocalOrderState` で楽観的に状態を保持し、確定時に `SaveAutoReadoutOrderUseCase` へ反映する。
 - `AutoReadoutListModule.kt`: この feature の Koin モジュール定義。

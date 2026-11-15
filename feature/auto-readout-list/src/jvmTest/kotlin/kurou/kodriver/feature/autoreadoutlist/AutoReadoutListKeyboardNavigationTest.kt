@@ -11,8 +11,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.test.requestFocus
@@ -191,5 +194,20 @@ class AutoReadoutListKeyboardNavigationTest {
         press(flag, Key.DirectionRight)
 
         rule.onNodeWithContentDescription(name(flag)).assertIsFocused()
+    }
+
+    @Test
+    fun `Tab移動でタッチ判定用の空Boxとシェブロンにはフォーカスが止まらない`() {
+        val approach = LmuWindowsReadoutItemKey.VehicleApproach.Root
+        setPane(listOf(approach))
+        val blank = rule.onNodeWithTag("autoReadoutListQueueBlankTouchTarget:${approach.value}", useUnmergedTree = true)
+        val chevron = rule.onNodeWithTag("autoReadoutListChevronTouchTarget:${approach.value}", useUnmergedTree = true)
+        rule.onNodeWithContentDescription(name(approach)).requestFocus()
+
+        repeat(6) {
+            rule.onRoot().performKeyInput { pressKey(Key.Tab) }
+            blank.assertIsNotFocused()
+            chevron.assertIsNotFocused()
+        }
     }
 }
