@@ -116,6 +116,48 @@ fun handleListRowArrowKey(
     return action != ListRowArrowKeyAction.Ignore
 }
 
+/**
+ * Alt（Mac では Option）+ ↑ なら -1、Alt + ↓ なら +1 を返す。
+ * Alt 以外の修飾キーを併用した場合、KeyUp、他のキーは null。
+ */
+fun listRowReorderStep(event: KeyEvent): Int? {
+    val altOnly = event.isAltPressed && !event.isCtrlPressed && !event.isMetaPressed && !event.isShiftPressed
+    val step =
+        when {
+            event.type != KeyEventType.KeyDown || !altOnly -> null
+            event.key == Key.DirectionUp -> -1
+            event.key == Key.DirectionDown -> 1
+            else -> null
+        }
+    return step
+}
+
+/**
+ * 一覧の Alt（Mac では Option）+ ↑↓ を、フォーカス行の並べ替えとして処理し、処理した（消費すべき）場合は true を返す。
+ *
+ * 移動可能なら [onMove] に（移動元, 移動先）の項目インデックスを渡し、移動後も同じ行にフォーカスが残るよう
+ * 主操作領域へフォーカスを戻す（画面外になる場合はスクロールする）。先頭で ↑、末尾で ↓ のときは何も動かさず消費する。
+ * フォーカスが行の外にある場合は処理しない。引数の意味は [handleListRowArrowKey] と同じ。
+ */
+fun handleListRowReorderKey(
+    event: KeyEvent,
+    focusState: ListRowFocusState,
+    itemKeys: List<String>,
+    firstItemLazyIndex: Int,
+    listState: LazyListState,
+    coroutineScope: CoroutineScope,
+    onMove: (from: Int, to: Int) -> Unit,
+): Boolean {
+    val action = listRowArrowKeyAction(listRowReorderStep(event), focusState.focusedItemKey, itemKeys)
+    if (action is ListRowArrowKeyAction.MoveTo) {
+        val from = itemKeys.indexOfFirst { it == focusState.focusedItemKey }
+        onMove(from, action.itemIndex)
+        val requester = focusState.requesterFor(itemKeys[from])
+        coroutineScope.launch { listState.focusRow(firstItemLazyIndex + action.itemIndex, requester) }
+    }
+    return action != ListRowArrowKeyAction.Ignore
+}
+
 private suspend fun LazyListState.focusRow(
     lazyIndex: Int,
     requester: FocusRequester,

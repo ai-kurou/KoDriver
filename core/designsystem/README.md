@@ -86,7 +86,7 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 ## 一覧の行単位キーボード移動
 
-`ListRowKeyboardNavigation.kt` は、行内のどの部品にフォーカスがあっても ↑↓ で隣の行の主操作領域へ移動する一覧の共通処理を提供する。項目は `String` の項目キーで扱い、domain 型には依存しない。
+`ListRowKeyboardNavigation.kt` は、行内のどの部品にフォーカスがあっても ↑↓ で隣の行の主操作領域へ移動する一覧の共通処理を提供する。項目は `String` の項目キーで扱い、domain 型には依存しない。Alt（Mac では Option）+ ↑↓ による行の並べ替えは `handleListRowReorderKey` が（移動元, 移動先）を `onMove` に渡して行い、移動後は同じ行へフォーカスを戻す。
 
 - `ListRowFocusState` が行ごとの `FocusRequester` とフォーカス中の行の項目キーを保持する。並べ替えに追従するため、フォーカス行はインデックスではなく項目キーで記録する。
 - `handleListRowArrowKey` を `Modifier.onKeyEvent` から呼び出す。先頭の↑・末尾の↓では折り返さず消費だけする。Alt / Ctrl / Shift / Meta 付きの↑↓と、行外にフォーカスがある場合は処理しない。

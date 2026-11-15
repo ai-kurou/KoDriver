@@ -97,6 +97,7 @@ import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
+import kurou.kodriver.core.designsystem.handleListRowReorderKey
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
@@ -229,14 +230,25 @@ internal fun AutoReadoutListPane(
                     Modifier
                         .fillMaxSize()
                         .onKeyEvent { event ->
-                            handleListRowArrowKey(
-                                event = event,
-                                focusState = rowFocusState,
-                                itemKeys = itemKeys,
-                                firstItemLazyIndex = autoReadoutItemStartIndex,
-                                listState = listState,
-                                coroutineScope = coroutineScope,
-                            )
+                            val reordered =
+                                handleListRowReorderKey(
+                                    event = event,
+                                    focusState = rowFocusState,
+                                    itemKeys = itemKeys,
+                                    firstItemLazyIndex = autoReadoutItemStartIndex,
+                                    listState = listState,
+                                    coroutineScope = coroutineScope,
+                                    onMove = onMove,
+                                )
+                            reordered ||
+                                handleListRowArrowKey(
+                                    event = event,
+                                    focusState = rowFocusState,
+                                    itemKeys = itemKeys,
+                                    firstItemLazyIndex = autoReadoutItemStartIndex,
+                                    listState = listState,
+                                    coroutineScope = coroutineScope,
+                                )
                         }.padding(vertical = KoDriverSpacing.large),
             ) {
                 if (isAceSelected) {
