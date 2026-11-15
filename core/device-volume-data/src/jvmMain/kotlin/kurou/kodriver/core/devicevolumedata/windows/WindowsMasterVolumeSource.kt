@@ -5,7 +5,7 @@ package kurou.kodriver.core.devicevolumedata.windows
  * 実装はJNA経由でWindows Core Audio（WASAPI）のCOMインターフェースを直接呼び出すため、
  * テストでは [WasapiMasterVolumeSource] の代わりにFakeへ差し替える。
  */
-interface WindowsMasterVolumeSource {
+internal interface WindowsMasterVolumeSource {
     fun getScalarVolume(): Float
 
     fun setScalarVolume(level: Float)

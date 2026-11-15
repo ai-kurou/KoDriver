@@ -4,7 +4,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingPreference
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
 
 /** 同じ DataStore を共有する、ピットタイミングの設定 Repository と文言 Repository の組。 */
-data class LmuWindowsPitTimingPreferencesRepositories(
+internal data class LmuWindowsPitTimingPreferencesRepositories(
     val preferences: LmuWindowsPitTimingPreferencesRepository,
     val readoutText: LmuWindowsPitTimingReadoutTextPreferencesRepository,
 )

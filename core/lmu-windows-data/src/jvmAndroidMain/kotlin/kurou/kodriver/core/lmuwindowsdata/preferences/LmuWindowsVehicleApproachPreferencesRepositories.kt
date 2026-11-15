@@ -4,7 +4,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachPref
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 
 /** 同じ DataStore を共有する、車両接近の設定 Repository と文言 Repository の組。 */
-data class LmuWindowsVehicleApproachPreferencesRepositories(
+internal data class LmuWindowsVehicleApproachPreferencesRepositories(
     val preferences: LmuWindowsVehicleApproachPreferencesRepository,
     val readoutText: LmuWindowsVehicleApproachReadoutTextPreferencesRepository,
 )
