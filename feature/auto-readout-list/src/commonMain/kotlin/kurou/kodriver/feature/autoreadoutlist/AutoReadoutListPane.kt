@@ -57,6 +57,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -198,6 +199,7 @@ internal fun AutoReadoutListPane(
     val haptic = LocalHapticFeedback.current
     val rowFocusState = remember { ListRowFocusState() }
     val itemKeys = remember(uiState.items) { uiState.items.map { it.value } }
+    LaunchedEffect(itemKeys) { rowFocusState.onItemKeysChanged() }
     val reorderableState =
         rememberReorderableLazyListState(listState) { from, to ->
             onMove(

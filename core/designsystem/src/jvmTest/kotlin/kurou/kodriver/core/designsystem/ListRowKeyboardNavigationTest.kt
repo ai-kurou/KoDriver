@@ -65,6 +65,16 @@ class ListRowKeyboardNavigationTest {
     }
 
     @Test
+    fun `並びが変わったと通知されると同じ並びに戻っても再び並べ替えを依頼できる`() {
+        val state = ListRowFocusState()
+
+        assertTrue(state.tryStartReorder(items))
+        state.onItemKeysChanged()
+
+        assertTrue(state.tryStartReorder(items))
+    }
+
+    @Test
     fun `同じ項目キーには同じ FocusRequester を返す`() {
         val state = ListRowFocusState()
 

@@ -58,6 +58,11 @@ class ListRowFocusState {
         }
         return canStart
     }
+
+    /** 一覧の並びが変わったら呼ぶ。保留中の並べ替えは反映済みとみなし、ドラッグ等で元の並びに戻っても再び依頼できるようにする。 */
+    fun onItemKeysChanged() {
+        lastReorderRequestedFrom = null
+    }
 }
 
 /** ↑↓ キーを受けたときの処理方針。 */
