@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
  * feature モジュール側では `fontSize` や `FontWeight` を直接指定せず、
  * `MaterialTheme.typography.*` のスタイルだけを参照すること。
  */
-val KoDriverTypography = Typography()
+internal val KoDriverTypography: Typography = Typography()
 
 private const val TABULAR_FIGURES_FONT_FEATURE_SETTINGS = "tnum"
 
@@ -32,7 +32,7 @@ private const val TABULAR_FIGURES_FONT_FEATURE_SETTINGS = "tnum"
  */
 @Composable
 @ReadOnlyComposable
-fun koDriverNumericTextStyle(): TextStyle =
+public fun koDriverNumericTextStyle(): TextStyle =
     LocalTextStyle.current.merge(TextStyle(fontFeatureSettings = TABULAR_FIGURES_FONT_FEATURE_SETTINGS))
 
 /**
@@ -40,7 +40,7 @@ fun koDriverNumericTextStyle(): TextStyle =
  *
  * 数値を大きく見せたいときに、`fontSize` を直接指定せずテーマのタイポグラフィをそのまま使うための関数。
  */
-fun koDriverNumericTextStyle(baseStyle: TextStyle): TextStyle =
+public fun koDriverNumericTextStyle(baseStyle: TextStyle): TextStyle =
     baseStyle.merge(TextStyle(fontFeatureSettings = TABULAR_FIGURES_FONT_FEATURE_SETTINGS))
 
 /**
@@ -52,7 +52,7 @@ fun koDriverNumericTextStyle(baseStyle: TextStyle): TextStyle =
  */
 @Composable
 @ReadOnlyComposable
-fun koDriverMonospaceTextStyle(): TextStyle =
+public fun koDriverMonospaceTextStyle(): TextStyle =
     MaterialTheme.typography.bodySmall.merge(TextStyle(fontFamily = FontFamily.Monospace))
 
 /**
@@ -62,5 +62,5 @@ fun koDriverMonospaceTextStyle(): TextStyle =
  */
 @Composable
 @ReadOnlyComposable
-fun koDriverTagTextStyle(): TextStyle =
+public fun koDriverTagTextStyle(): TextStyle =
     MaterialTheme.typography.labelSmall.merge(TextStyle(fontWeight = FontWeight.Bold))

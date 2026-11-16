@@ -1,5 +1,6 @@
 package kurou.kodriver.core.designsystem
 
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
@@ -8,10 +9,10 @@ import androidx.compose.ui.unit.dp
  * feature モジュール側では padding・Spacer・Arrangement.spacedBy 等の余白値を直接指定せず、
  * `KoDriverSpacing.*` を参照すること。
  */
-object KoDriverSpacing {
-    val extraSmall = 4.dp
-    val small = 8.dp
-    val medium = 12.dp
-    val large = 16.dp
-    val extraLarge = 24.dp
+public object KoDriverSpacing {
+    public val extraSmall: Dp = 4.dp
+    public val small: Dp = 8.dp
+    public val medium: Dp = 12.dp
+    public val large: Dp = 16.dp
+    public val extraLarge: Dp = 24.dp
 }

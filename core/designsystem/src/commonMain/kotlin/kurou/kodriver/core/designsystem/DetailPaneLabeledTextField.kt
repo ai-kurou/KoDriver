@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
  * 入力・確定・試聴・リセット・選択状態の挙動は [DetailPaneCardTextField] と同じ。[label] はプレースホルダーにも使う。
  */
 @Composable
-fun DetailPaneLabeledTextField(
+public fun DetailPaneLabeledTextField(
     label: String,
     value: String,
     maxLength: Int,

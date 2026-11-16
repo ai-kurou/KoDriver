@@ -1,5 +1,6 @@
 package kurou.kodriver.core.designsystem
 
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
@@ -7,4 +8,4 @@ import androidx.compose.ui.unit.dp
  *
  * app:shared の AppPaneWidth に同値を別定義しているため、変更する場合は両方を同期させること。
  */
-val KoDriverListPaneWidth = 400.dp
+public val KoDriverListPaneWidth: Dp = 400.dp

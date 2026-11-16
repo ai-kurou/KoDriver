@@ -17,7 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 
 /** 説明文と補足画像を横に並べるヘルプシートの内容。画像は装飾なので読み上げ対象にしない。 */
 @Composable
-fun KoDriverHelpSheetImageContent(
+public fun KoDriverHelpSheetImageContent(
     description: String,
     painter: Painter,
     modifier: Modifier = Modifier,

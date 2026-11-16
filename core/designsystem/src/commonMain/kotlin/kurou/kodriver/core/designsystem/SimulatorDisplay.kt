@@ -27,7 +27,7 @@ private const val ACE_WINDOWS_ID = "ace_windows"
  * このモジュールは core:domain に依存しないため、型ではなく文字列IDを引数にとる。
  */
 @Composable
-fun simulatorDisplayName(simulatorId: String): String =
+public fun simulatorDisplayName(simulatorId: String): String =
     when (simulatorId) {
         LMU_WINDOWS_ID -> stringResource(Res.string.simulator_name_lmu_windows)
         GT7_PS5_ID -> stringResource(Res.string.simulator_name_gt7_ps5)
@@ -37,7 +37,7 @@ fun simulatorDisplayName(simulatorId: String): String =
 
 /** [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。 */
 @Composable
-fun simulatorIcon(simulatorId: String): Painter =
+public fun simulatorIcon(simulatorId: String): Painter =
     when (simulatorId) {
         GT7_PS5_ID -> painterResource(Res.drawable.gt7)
         LMU_WINDOWS_ID -> painterResource(Res.drawable.lmu)
@@ -50,7 +50,7 @@ fun simulatorIcon(simulatorId: String): Painter =
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
-fun simulatorLargeImage(simulatorId: String): Painter =
+public fun simulatorLargeImage(simulatorId: String): Painter =
     when (simulatorId) {
         GT7_PS5_ID -> painterResource(Res.drawable.gt7_large)
         LMU_WINDOWS_ID -> painterResource(Res.drawable.lmu_large)
@@ -63,7 +63,7 @@ fun simulatorLargeImage(simulatorId: String): Painter =
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
-fun simulatorLogoImage(simulatorId: String): Painter? =
+public fun simulatorLogoImage(simulatorId: String): Painter? =
     when (simulatorId) {
         GT7_PS5_ID -> painterResource(Res.drawable.gt7_logo)
         LMU_WINDOWS_ID -> painterResource(Res.drawable.lmu_logo)
@@ -76,7 +76,7 @@ fun simulatorLogoImage(simulatorId: String): Painter? =
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
-fun simulatorPlatformLabel(simulatorId: String): String? =
+public fun simulatorPlatformLabel(simulatorId: String): String? =
     when (simulatorId) {
         LMU_WINDOWS_ID, ACE_WINDOWS_ID -> stringResource(Res.string.platform_label_windows)
         GT7_PS5_ID -> null
@@ -88,7 +88,7 @@ fun simulatorPlatformLabel(simulatorId: String): String? =
  * これらは略称であり翻訳対象ではないため文字列リソース化しない。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
-fun simulatorShortName(simulatorId: String): String =
+public fun simulatorShortName(simulatorId: String): String =
     when (simulatorId) {
         LMU_WINDOWS_ID -> "LMU"
         GT7_PS5_ID -> "GT7"

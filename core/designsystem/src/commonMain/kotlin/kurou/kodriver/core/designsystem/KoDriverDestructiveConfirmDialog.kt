@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 
 /** 削除・リセットなどの破壊的操作を確認する。文言は呼び出し側で解決して渡す。 */
 @Composable
-fun KoDriverDestructiveConfirmDialog(
+public fun KoDriverDestructiveConfirmDialog(
     title: String,
     body: String,
     confirmLabel: String,

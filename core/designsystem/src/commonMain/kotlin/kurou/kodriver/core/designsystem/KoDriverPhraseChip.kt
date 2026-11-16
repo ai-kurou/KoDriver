@@ -22,7 +22,7 @@ private const val ACCENT_BORDER_ALPHA = 0.28f
  * [emphasis]（0〜1）は、読み上げの決め手になった語句を点滅で目立たせるための強調の度合い。大きいほど主色に寄せる。
  */
 @Composable
-fun KoDriverPhraseChip(
+public fun KoDriverPhraseChip(
     text: String,
     modifier: Modifier = Modifier,
     accent: Color? = null,

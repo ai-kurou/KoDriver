@@ -31,7 +31,7 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("UnstableCollections")
 @Composable
-fun DebugReadoutRequestCard(
+public fun DebugReadoutRequestCard(
     readoutItemKeyValues: List<String>,
     selectedReadoutItemKeyValue: String,
     text: String,

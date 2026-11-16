@@ -86,7 +86,7 @@ private val DarkColorScheme =
  * KoDriverTheme を提供する公開関数。
  */
 @Composable
-fun KoDriverTheme(
+public fun KoDriverTheme(
     darkTheme: Boolean = false,
     content: @Composable () -> Unit,
 ) {

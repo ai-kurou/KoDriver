@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.dp
  * [supportingText] がない場合も、文字数カウンターは右端に配置する。
  */
 @Composable
-fun DetailPaneCardTextField(
+public fun DetailPaneCardTextField(
     value: String,
     placeholder: String,
     maxLength: Int,

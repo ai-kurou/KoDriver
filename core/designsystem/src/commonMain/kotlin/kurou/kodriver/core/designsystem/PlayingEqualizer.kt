@@ -32,7 +32,7 @@ private const val EQUALIZER_BAR_DELAY_MS = 150
 
 /** 再生中であることを示す、3本のアニメーションバーを表示する。 */
 @Composable
-fun PlayingEqualizer(
+public fun PlayingEqualizer(
     contentDescription: String,
     modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current,

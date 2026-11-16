@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 
 /** 色と装飾記号を呼び出し側で決めるデバッグカードの共通枠。 */
 @Composable
-fun DebugStateCardFrame(
+public fun DebugStateCardFrame(
     title: String,
     symbol: String,
     accent: Color,
@@ -84,7 +84,7 @@ fun DebugStateCardFrame(
 }
 
 /** デバッグカードの枠で使うアクセント色の種別。実際の色はテーマから解決する。 */
-enum class DebugStateCardAccent {
+public enum class DebugStateCardAccent {
     PRIMARY,
     ERROR,
     WARNING,
@@ -92,14 +92,14 @@ enum class DebugStateCardAccent {
 }
 
 /** デバッグカードの装飾記号とアクセント色種別の組。 */
-data class DebugStateCardStyle(
+public data class DebugStateCardStyle(
     val symbol: String,
     val accent: DebugStateCardAccent,
 )
 
 /** アクセント色種別を現在のテーマの色に解決する。 */
 @Composable
-fun DebugStateCardAccent.color(): Color {
+internal fun DebugStateCardAccent.color(): Color {
     val colors = MaterialTheme.colorScheme
     return when (this) {
         DebugStateCardAccent.PRIMARY -> colors.primary
@@ -111,7 +111,7 @@ fun DebugStateCardAccent.color(): Color {
 
 /** [DebugStateCardStyle] で装飾記号とアクセント色を指定するデバッグカードの共通枠。 */
 @Composable
-fun DebugStateCardFrame(
+public fun DebugStateCardFrame(
     title: String,
     style: DebugStateCardStyle,
     modifier: Modifier = Modifier,

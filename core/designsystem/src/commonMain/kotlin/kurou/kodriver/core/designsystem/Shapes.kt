@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
  *
  * feature モジュール側では `RoundedCornerShape` を直接指定せず、`MaterialTheme.shapes.*` のスタイルだけを参照すること。
  */
-val KoDriverShapes =
+internal val KoDriverShapes: Shapes =
     Shapes(
         extraSmall = RoundedCornerShape(4.dp),
         small = RoundedCornerShape(6.dp),

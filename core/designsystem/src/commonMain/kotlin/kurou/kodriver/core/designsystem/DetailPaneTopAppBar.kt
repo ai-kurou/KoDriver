@@ -26,7 +26,7 @@ private val DETAIL_TOP_APP_BAR_HEIGHT = 56.dp
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailPaneTopAppBar(
+public fun DetailPaneTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     onBack: () -> Unit,

@@ -18,11 +18,11 @@ internal const val PENDING_TEXT_TIMEOUT_MILLIS_DEFAULT = 3000L
  * 保存反映が conflate されて途中の値を観測できない場合は、タイムアウトで保存待ちを解除する。
  */
 @Stable
-class PendingTextState internal constructor(
+public class PendingTextState internal constructor(
     savedText: String,
     private val maxLength: Int,
 ) {
-    var currentText by mutableStateOf(savedText)
+    public var currentText: String by mutableStateOf(savedText)
         private set
 
     internal var pendingTexts by mutableStateOf<List<String>>(emptyList())
@@ -31,7 +31,7 @@ class PendingTextState internal constructor(
     private var lastSaved by mutableStateOf(savedText)
 
     /** 入力・リセットした文言を表示し、正規化後の保存値を待つ。 */
-    fun change(text: String) {
+    public fun change(text: String) {
         currentText = text
         val normalizedText = text.trim().take(maxLength)
         if (pendingTexts.isNotEmpty() || normalizedText != lastSaved) {
@@ -70,7 +70,7 @@ class PendingTextState internal constructor(
  * 保存待ちが変化してから [pendingTimeoutMillis] 経過すると、入力を保持したまま保存待ちを解除する。
  */
 @Composable
-fun rememberPendingText(
+public fun rememberPendingText(
     savedText: String,
     maxLength: Int,
     pendingTimeoutMillis: Long = PENDING_TEXT_TIMEOUT_MILLIS_DEFAULT,

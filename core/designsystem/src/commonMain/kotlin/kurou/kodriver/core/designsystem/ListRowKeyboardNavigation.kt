@@ -21,17 +21,17 @@ import kotlinx.coroutines.launch
  * 行内のスイッチ・トグルなどにフォーカスがあっても、↑↓ では隣の行の主操作領域へ移動する（行単位の移動）。
  * 並べ替えで行の位置が変わっても追従できるよう、フォーカス行はインデックスではなく項目キーで記録する。
  */
-class ListRowFocusState {
+public class ListRowFocusState {
     private val requesters = mutableMapOf<String, FocusRequester>()
 
     /** フォーカスのある行の項目キー。行外なら null。 */
-    var focusedItemKey: String? = null
+    public var focusedItemKey: String? = null
 
     /** [itemKey] の行の主操作領域に対応する [FocusRequester]。未生成なら作成して返す。 */
-    fun requesterFor(itemKey: String): FocusRequester = requesters.getOrPut(itemKey) { FocusRequester() }
+    public fun requesterFor(itemKey: String): FocusRequester = requesters.getOrPut(itemKey) { FocusRequester() }
 
     /** 行にフォーカスが入ったら [itemKey] を記録し、外れたときは自分の行の記録だけを消す。 */
-    fun onRowFocusChanged(
+    public fun onRowFocusChanged(
         itemKey: String,
         hasFocus: Boolean,
     ) {
@@ -51,7 +51,7 @@ class ListRowFocusState {
      * （キーリピートが再描画より先に届いた）ため false を返す。古い並びのインデックスで重ねて依頼すると、
      * 別の行が動いたり移動が失われたりするため、反映されるまでは依頼しない。依頼してよい場合は並びを記録して true を返す。
      */
-    fun tryStartReorder(itemKeys: List<String>): Boolean {
+    public fun tryStartReorder(itemKeys: List<String>): Boolean {
         val canStart = lastReorderRequestedFrom != itemKeys
         if (canStart) {
             lastReorderRequestedFrom = itemKeys
@@ -60,13 +60,13 @@ class ListRowFocusState {
     }
 
     /** 一覧の並びが変わったら呼ぶ。保留中の並べ替えは反映済みとみなし、ドラッグ等で元の並びに戻っても再び依頼できるようにする。 */
-    fun onItemKeysChanged() {
+    public fun onItemKeysChanged() {
         lastReorderRequestedFrom = null
     }
 }
 
 /** ↑↓ キーを受けたときの処理方針。 */
-sealed interface ListRowArrowKeyAction {
+internal sealed interface ListRowArrowKeyAction {
     /** 処理せず、既定のフォーカス移動に任せる。 */
     data object Ignore : ListRowArrowKeyAction
 
@@ -82,7 +82,7 @@ sealed interface ListRowArrowKeyAction {
 /**
  * ↑ なら -1、↓ なら +1 を返す。それ以外のキー・KeyUp・修飾キー付き（Alt+↑↓ 等）の場合は null。
  */
-fun listRowArrowKeyStep(event: KeyEvent): Int? {
+internal fun listRowArrowKeyStep(event: KeyEvent): Int? {
     val hasModifier = event.isAltPressed || event.isCtrlPressed || event.isMetaPressed || event.isShiftPressed
     val step =
         when {
@@ -100,7 +100,7 @@ fun listRowArrowKeyStep(event: KeyEvent): Int? {
  * - 対象外のキー、またはフォーカスが行の外（ヒント行など）にある場合は [ListRowArrowKeyAction.Ignore]。
  * - 先頭で ↑、末尾で ↓ のときは [ListRowArrowKeyAction.Stay]（折り返さず、一覧の外にも出ない）。
  */
-fun listRowArrowKeyAction(
+internal fun listRowArrowKeyAction(
     step: Int?,
     focusedItemKey: String?,
     itemKeys: List<String>,
@@ -121,7 +121,7 @@ fun listRowArrowKeyAction(
  * 項目が連続しない LazyColumn（見出しや区切り行を挟む場合）は、[lazyIndexOf] で項目の並び順のインデックスから
  * LazyList 上のインデックスを求める。既定値は [firstItemLazyIndex] から連続していると見なす。
  */
-fun handleListRowArrowKey(
+public fun handleListRowArrowKey(
     event: KeyEvent,
     focusState: ListRowFocusState,
     itemKeys: List<String>,
@@ -142,7 +142,7 @@ fun handleListRowArrowKey(
  * Alt（Mac では Option）+ ↑ なら -1、Alt + ↓ なら +1 を返す。
  * Alt 以外の修飾キーを併用した場合、KeyUp、他のキーは null。
  */
-fun listRowReorderStep(event: KeyEvent): Int? {
+internal fun listRowReorderStep(event: KeyEvent): Int? {
     val altOnly = event.isAltPressed && !event.isCtrlPressed && !event.isMetaPressed && !event.isShiftPressed
     val step =
         when {
@@ -161,7 +161,7 @@ fun listRowReorderStep(event: KeyEvent): Int? {
  * 主操作領域へフォーカスを戻す（画面外になる場合はスクロールする）。先頭で ↑、末尾で ↓ のときは何も動かさず消費する。
  * フォーカスが行の外にある場合は処理しない。引数の意味は [handleListRowArrowKey] と同じ。
  */
-fun handleListRowReorderKey(
+public fun handleListRowReorderKey(
     event: KeyEvent,
     focusState: ListRowFocusState,
     itemKeys: List<String>,

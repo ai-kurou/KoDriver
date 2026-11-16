@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
  */
 @Suppress("LongParameterList")
 @Composable
-fun PlaceholderReadoutTextField(
+public fun PlaceholderReadoutTextField(
     label: String,
     savedText: String,
     defaultText: String,
