@@ -41,6 +41,23 @@ class ListRowFocusState {
             focusedItemKey = null
         }
     }
+
+    private var lastReorderRequestedFrom: List<String>? = null
+
+    /**
+     * Alt+↑↓ の並べ替えを依頼してよいか返す。
+     *
+     * 直前に依頼したときと同じ並び [itemKeys] のままなら、その並べ替えがまだ一覧に反映されていない
+     * （キーリピートが再描画より先に届いた）ため false を返す。古い並びのインデックスで重ねて依頼すると、
+     * 別の行が動いたり移動が失われたりするため、反映されるまでは依頼しない。依頼してよい場合は並びを記録して true を返す。
+     */
+    fun tryStartReorder(itemKeys: List<String>): Boolean {
+        val canStart = lastReorderRequestedFrom != itemKeys
+        if (canStart) {
+            lastReorderRequestedFrom = itemKeys
+        }
+        return canStart
+    }
 }
 
 /** ↑↓ キーを受けたときの処理方針。 */
@@ -149,7 +166,7 @@ fun handleListRowReorderKey(
     onMove: (from: Int, to: Int) -> Unit,
 ): Boolean {
     val action = listRowArrowKeyAction(listRowReorderStep(event), focusState.focusedItemKey, itemKeys)
-    if (action is ListRowArrowKeyAction.MoveTo) {
+    if (action is ListRowArrowKeyAction.MoveTo && focusState.tryStartReorder(itemKeys)) {
         val from = itemKeys.indexOfFirst { it == focusState.focusedItemKey }
         onMove(from, action.itemIndex)
         val requester = focusState.requesterFor(itemKeys[from])
