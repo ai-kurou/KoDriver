@@ -92,7 +92,7 @@ import org.koin.dsl.module
  * 大半は引数 `directory` 配下（Desktop アプリは `~/.kodriver`）の DataStore バインド。例外は AppUpdate（GitHub ネットワーク）・
  * KeepScreenOn（プラットフォーム実装）・TelemetryLog（Room DB）。Android 版は AndroidDataModule を参照。
  */
-fun desktopDataModule(directory: String): Module =
+public fun desktopDataModule(directory: String): Module =
     module {
         single {
             CoreAutoReadoutSettingsResetter(

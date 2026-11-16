@@ -11,6 +11,7 @@ import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechCommandGuideRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
 /**
@@ -18,7 +19,7 @@ import org.koin.dsl.module
  *
  * マイク入力（`MicrophoneRepository`）はデスクトップ専用のためAndroidには登録しない。
  */
-val speechRecognitionDataModule =
+public val speechRecognitionDataModule: Module =
     module {
         // マイク（RECORD_AUDIO）の権限が許可されているか（音声による手動読み上げの開始可否に使用）
         single<RecordAudioPermissionRepository> { AndroidRecordAudioPermissionRepository(get<Context>()) }

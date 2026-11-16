@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.core.devicevolumedata.repository.WindowsDeviceVolumeRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
@@ -14,7 +15,7 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
  * Windows Core Audio（WASAPI）へのアクセスはWindows専用のため、非Windowsでは何もしない
  * No-Op実装（下部のprivate class）にフォールバックする。Android版はandroidMainの同名モジュールを参照。
  */
-val deviceVolumeDataModule =
+public val deviceVolumeDataModule: Module =
     module {
         single<DeviceVolumeRepository> {
             if (isWindows) WindowsDeviceVolumeRepository() else NoOpDeviceVolumeRepository()

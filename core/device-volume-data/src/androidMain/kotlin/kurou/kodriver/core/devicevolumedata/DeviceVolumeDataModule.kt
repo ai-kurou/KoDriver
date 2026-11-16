@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioManager
 import kurou.kodriver.core.devicevolumedata.repository.AndroidDeviceVolumeRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
 /**
@@ -11,7 +12,7 @@ import org.koin.dsl.module
  *
  * jvmMain版との違いは実装手段（`AudioManager` vs Windows Core Audio）のみ。
  */
-val deviceVolumeDataModule =
+public val deviceVolumeDataModule: Module =
     module {
         single<DeviceVolumeRepository> {
             val context = get<Context>()
