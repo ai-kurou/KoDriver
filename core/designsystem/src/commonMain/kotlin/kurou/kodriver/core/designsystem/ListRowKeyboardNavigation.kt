@@ -183,12 +183,25 @@ fun handleListRowReorderKey(
 private suspend fun LazyListState.focusRow(
     lazyIndex: Int,
     requester: FocusRequester,
+) = focusItemWhenComposed(
+    isVisible = layoutInfo.visibleItemsInfo.any { it.index == lazyIndex },
+    scrollToItem = { scrollToItem(lazyIndex) },
+    requester = requester,
+)
+
+/**
+ * 移動先が画面外で未生成なら [scrollToItem] で表示してから、[requester] へフォーカスを移す。
+ * 紐付いていない場合は IllegalStateException になるため、失敗は無視してフォーカスを動かさない。
+ */
+internal suspend fun focusItemWhenComposed(
+    isVisible: Boolean,
+    scrollToItem: suspend () -> Unit,
+    requester: FocusRequester,
 ) {
-    if (layoutInfo.visibleItemsInfo.none { it.index == lazyIndex }) {
-        scrollToItem(lazyIndex)
+    if (!isVisible) {
+        scrollToItem()
         // スクロール先の行が合成され、FocusRequester が紐付くのを待つ
         withFrameNanos { }
     }
-    // 紐付いていない場合は IllegalStateException になるため、失敗は無視してフォーカスを動かさない
     runCatching { requester.requestFocus() }
 }
