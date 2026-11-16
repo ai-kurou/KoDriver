@@ -32,7 +32,7 @@ package kurou.kodriver.core.narrator
  *   優先度に負けて読み上げなかった場合（経路2）は false
  */
 @Suppress("LongParameterList")
-fun <KEY> speakWithPriority(
+public fun <KEY> speakWithPriority(
     eventKey: KEY,
     currentKey: () -> KEY?,
     autoReadoutOrder: List<KEY>,
@@ -90,7 +90,7 @@ private fun <KEY> speakManual(
 }
 
 /** [speakWithOutcome] が返す4経路それぞれの結果値。 */
-data class SpeakOutcomes<OUTCOME>(
+public data class SpeakOutcomes<OUTCOME>(
     val skipped: OUTCOME,
     val queued: OUTCOME,
     val interrupted: OUTCOME,
@@ -107,7 +107,7 @@ data class SpeakOutcomes<OUTCOME>(
  * 経路3と取り違えると通常の読み上げが「割り込み再生」として記録される（PR #1626）。
  */
 @Suppress("LongParameterList")
-fun <KEY, OUTCOME> speakWithOutcome(
+public fun <KEY, OUTCOME> speakWithOutcome(
     eventKey: KEY,
     currentKey: () -> KEY?,
     autoReadoutOrder: List<KEY>,
