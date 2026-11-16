@@ -12,7 +12,7 @@ import kotlinx.serialization.json.Json
  * UDP/共有メモリ由来のテレメトリに NaN/Infinity を取りうる Float/Double フィールドが含まれる場合は、
  * [TelemetryLogJsonAllowingSpecialFloatingPoint] を利用する。
  */
-val TelemetryLogJson: Json =
+public val TelemetryLogJson: Json =
     Json {
         encodeDefaults = true
         explicitNulls = true
@@ -23,7 +23,7 @@ val TelemetryLogJson: Json =
  *
  * [TelemetryLogJson] の共通設定を維持し、非有限値の encode を許可する。
  */
-val TelemetryLogJsonAllowingSpecialFloatingPoint: Json =
+public val TelemetryLogJsonAllowingSpecialFloatingPoint: Json =
     Json(TelemetryLogJson) {
         allowSpecialFloatingPointValues = true
     }
@@ -31,7 +31,7 @@ val TelemetryLogJsonAllowingSpecialFloatingPoint: Json =
 /**
  * 状態や設定の `toString()` をエスケープし、`raw` フィールドを持つテレメトリログ JSON へ変換する。
  */
-fun Any.toRawTelemetryLogJson(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
+public fun Any.toRawTelemetryLogJson(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 
 /**
  * テレメトリログ JSON の値として埋め込めるよう、文字列を JSON 文字列リテラルへ変換する。
@@ -60,7 +60,7 @@ internal fun String.toJsonStringLiteral(): String =
  * [buildTelemetryLogJson] の `previous<X>` フィールド1つ分（JSON キー名と、既に JSON 文字列化された値）を
  * 表す。テレメトリの初回受信時は前回値が存在しないため、`json` は `null` を取りうる。
  */
-data class TelemetryLogJsonPreviousField(
+public data class TelemetryLogJsonPreviousField(
     val name: String,
     val json: String?,
 )
@@ -69,7 +69,7 @@ data class TelemetryLogJsonPreviousField(
  * [buildTelemetryLogJson] の `<x>` フィールド1つ分（JSON キー名と、既に JSON 文字列化された値）を表す。
  * 現在値は必ず存在するため、[TelemetryLogJsonPreviousField] と異なり `json` は非 null。
  */
-data class TelemetryLogJsonCurrentField(
+public data class TelemetryLogJsonCurrentField(
     val name: String,
     val json: String,
 )
@@ -83,7 +83,7 @@ data class TelemetryLogJsonCurrentField(
  * `state` / `previous<X>` / `<x>` / `settings` / `observedAtMs` / `finalState` という共通のキー構成へ
  * 組み立てるだけを担う。
  */
-fun buildTelemetryLogJson(
+public fun buildTelemetryLogJson(
     stateJson: String,
     previous: TelemetryLogJsonPreviousField,
     current: TelemetryLogJsonCurrentField,

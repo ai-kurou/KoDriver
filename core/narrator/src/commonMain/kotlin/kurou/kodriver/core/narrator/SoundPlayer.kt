@@ -3,10 +3,10 @@ package kurou.kodriver.core.narrator
 /**
  * WAV 音声を再生するプラットフォーム実装の共通インターフェース。
  */
-interface SoundPlayer {
-    val isPlaying: Boolean
+public interface SoundPlayer {
+    public val isPlaying: Boolean
 
-    suspend fun play(
+    public suspend fun play(
         bytes: ByteArray,
         volume: Int = 100,
     )

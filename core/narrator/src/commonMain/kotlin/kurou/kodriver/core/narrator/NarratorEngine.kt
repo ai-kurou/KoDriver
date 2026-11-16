@@ -17,7 +17,7 @@ import kotlin.concurrent.Volatile
  * [NarratorEngine] が読み込む開始音のリソース群。開始音タイプ→ファイルパスのマップと、
  * それを読み込む startSoundResourceLoader をまとめたもの。
  */
-data class WavResources<START_TYPE>(
+public data class WavResources<START_TYPE>(
     val startSoundTypeToFile: Map<START_TYPE, String>,
     val startSoundResourceLoader: suspend (String) -> ByteArray,
 )
@@ -34,7 +34,7 @@ data class WavResources<START_TYPE>(
  * 依存しないようにするため、イベント・キー種別をすべて型パラメータ化している。
  */
 @Suppress("LongParameterList")
-class NarratorEngine<EVENT, START_TYPE, KEY>(
+public class NarratorEngine<EVENT, START_TYPE, KEY>(
     private val soundPlayer: SoundPlayer,
     private val resources: WavResources<START_TYPE>,
     private val eventToKey: (EVENT) -> KEY,
@@ -128,14 +128,14 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
 
     // playJob がアクティブな間だけ再生中のキーを返す。
     // キャンセル後に古いジョブが _currentKey を上書きしないよう playJob で二重確認する。
-    val currentKey: KEY?
+    public val currentKey: KEY?
         get() = _currentKey.takeIf { playJob?.isActive == true }
 
     @Volatile
     private var _currentIsManual: Boolean = false
 
     // currentKey と同様に、再生中のイベントが手動読み上げ由来かを返す。再生中でなければ false。
-    val currentIsManual: Boolean
+    public val currentIsManual: Boolean
         get() = _currentIsManual && playJob?.isActive == true
 
     // キューで再生待ちのイベント（再生順）。再生中のイベントは含まない。
@@ -183,7 +183,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         }
     }
 
-    fun speak(
+    public fun speak(
         event: EVENT,
         queue: Boolean = false,
         isManual: Boolean = false,
@@ -290,7 +290,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         }
     }
 
-    fun stop() {
+    public fun stop() {
         cancelPlayback()
     }
 
@@ -321,7 +321,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
         return stopBarrier
     }
 
-    fun previewStartSound(type: START_TYPE) {
+    public fun previewStartSound(type: START_TYPE) {
         val sound = startSounds[type] ?: return
         val barrier = cancelPlayback()
         playbackScope = newPlaybackScope()
@@ -334,7 +334,7 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
      * WAV以外（OS標準TTS等）で本文を読み上げる前に、収録音声と同じ開始音を鳴らしたい場合に使う。
      * [key] の開始音が無効化されている場合、または開始音が読み込めていない場合は何もしない。
      */
-    suspend fun playStartSoundForKey(key: KEY) {
+    public suspend fun playStartSoundForKey(key: KEY) {
         val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
         if (!startSoundEnabled) return
         val sound = startSounds[currentStartSoundType] ?: return

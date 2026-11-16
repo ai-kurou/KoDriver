@@ -7,7 +7,7 @@ import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-actual fun platformSoundModule(qualifier: Qualifier): Module =
+public actual fun platformSoundModule(qualifier: Qualifier): Module =
     module {
         single<SoundPlayer>(qualifier) {
             // :core:text-to-speech-data は同じ qualifier 名で保存済み用途を登録する。

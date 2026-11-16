@@ -61,3 +61,7 @@ compose.resources {
     packageOfResClass = "kurou.kodriver.core.narrator.generated.resources"
     publicResClass = true
 }
+
+kotlin {
+    explicitApi()
+}
