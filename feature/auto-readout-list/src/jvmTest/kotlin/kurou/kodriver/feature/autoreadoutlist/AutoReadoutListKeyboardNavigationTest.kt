@@ -185,15 +185,18 @@ class AutoReadoutListKeyboardNavigationTest {
     }
 
     @Test
-    fun `Tab移動でタッチ判定用の空Boxとシェブロンにはフォーカスが止まらない`() {
+    fun `Tab移動でタッチ判定用のBox・シェブロン・スイッチ外側にはフォーカスが止まらない`() {
         val approach = LmuWindowsReadoutItemKey.VehicleApproach.Root
         setPane(listOf(approach))
         val blank = rule.onNodeWithTag("autoReadoutListQueueBlankTouchTarget:${approach.value}", useUnmergedTree = true)
         val chevron = rule.onNodeWithTag("autoReadoutListChevronTouchTarget:${approach.value}", useUnmergedTree = true)
+        val switchTarget =
+            rule.onNodeWithTag("autoReadoutListSwitchTouchTarget:${approach.value}", useUnmergedTree = true)
         rule.onNodeWithContentDescription(name(approach)).requestFocus()
 
         repeat(6) {
             rule.onRoot().performKeyInput { pressKey(Key.Tab) }
+            switchTarget.assertIsNotFocused()
             blank.assertIsNotFocused()
             chevron.assertIsNotFocused()
         }
