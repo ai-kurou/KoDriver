@@ -22,7 +22,7 @@ import org.koin.dsl.module
 /**
  * Desktop 版の AceWindows 設定系バインド（LongMethod 対策）。
  */
-fun desktopAceWindowsPreferencesDataModule(directory: String): Module =
+public fun desktopAceWindowsPreferencesDataModule(directory: String): Module =
     module {
         single {
             AceWindowsAutoReadoutSettingsResetter(

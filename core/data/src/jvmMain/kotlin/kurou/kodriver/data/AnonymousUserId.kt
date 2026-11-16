@@ -6,10 +6,10 @@ import java.util.UUID
 /**
  * AnonymousUserId の singleton。
  */
-object AnonymousUserId {
+public object AnonymousUserId {
     private const val FILE_NAME = "anonymous_user_id"
 
-    fun getOrCreate(directory: String): String {
+    public fun getOrCreate(directory: String): String {
         val file = File(directory, FILE_NAME)
         val existing = if (file.exists()) file.readText().trim() else ""
         if (existing.isNotEmpty()) return existing

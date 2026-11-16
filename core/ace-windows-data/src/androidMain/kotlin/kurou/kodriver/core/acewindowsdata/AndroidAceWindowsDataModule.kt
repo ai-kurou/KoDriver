@@ -41,7 +41,7 @@ import org.koin.dsl.module
 /**
  * Android 版の AceWindows WebSocket・設定系バインド（LongMethod 対策）。
  */
-fun androidAceWindowsDataModule(context: Context): Module =
+public fun androidAceWindowsDataModule(context: Context): Module =
     module {
         single {
             AceWindowsAutoReadoutSettingsResetter(

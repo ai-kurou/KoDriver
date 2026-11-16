@@ -17,6 +17,7 @@ import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5TyreTemperaturePreferencesR
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -31,7 +32,7 @@ private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
  * get() で解決する Gt7Ps5Repository を提供する。UDP 受信は専用の CoroutineScope 上で行う。
  * Android 版は androidMain の同名モジュールを参照。
  */
-val gt7Ps5DataModule =
+public val gt7Ps5DataModule: Module =
     module {
         single {
             Gt7Ps5AutoReadoutSettingsResetter(

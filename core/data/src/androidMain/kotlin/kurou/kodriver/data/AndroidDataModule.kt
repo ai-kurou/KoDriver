@@ -89,6 +89,7 @@ import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -108,7 +109,7 @@ private val Context.hapticFeedbackEnabledDataStore by preferencesDataStore("hapt
  * LMU の走行データは別登録の `androidLmuWindowsDataModule` が **KoDriver サーバーへの WebSocket** から取得する。
  * 大半は DataStore バインドで、ServerVersion/AppUpdate はネットワーク、TelemetryLog は Room DB。
  */
-fun androidDataModule(context: Context) =
+public fun androidDataModule(context: Context): Module =
     module {
         single {
             CoreAutoReadoutSettingsResetter(

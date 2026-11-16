@@ -32,6 +32,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsRe
 import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachRepository
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
@@ -43,7 +44,7 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
  * 共有メモリ読み取りは Windows 専用のため、非 Windows では空 Flow を返す
  * No-Op 実装（下部の private class）にフォールバックする。
  */
-val aceWindowsDataModule =
+public val aceWindowsDataModule: Module =
     module {
         single { CoroutineScope(SupervisorJob()) }
         single { AceWindowsGraphicsSharedMemorySource(scope = get()) }

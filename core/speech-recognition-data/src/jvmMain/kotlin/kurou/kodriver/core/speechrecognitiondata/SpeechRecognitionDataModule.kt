@@ -15,6 +15,7 @@ import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechCommandGuideRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
 /** Voskの日本語モデルのディレクトリ。手動配置を優先し、無ければアプリ同梱のモデルを使う。 */
@@ -30,7 +31,7 @@ private val voskModelDirectory =
  * デスクトップ版はJava Soundでマイクのデバイス一覧と音声取得を行い、取得した音声をVoskで認識する（権限は常に許可済み）。
  * 認識モデルが配置されていなければ認識は利用不可になる。Android版はandroidMainの同名モジュールを参照。
  */
-val speechRecognitionDataModule =
+public val speechRecognitionDataModule: Module =
     module {
         single<RecordAudioPermissionRepository> { JvmRecordAudioPermissionRepository() }
         single<SpeechTranscriberFactory> { VoskSpeechTranscriberFactory(voskModelDirectory) }

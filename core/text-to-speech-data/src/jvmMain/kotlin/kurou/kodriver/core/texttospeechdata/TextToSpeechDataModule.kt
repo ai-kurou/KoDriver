@@ -9,6 +9,7 @@ import kurou.kodriver.core.texttospeechdata.windows.SpeechSynthesizer
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.repository.VoiceListRepository
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
 /**
@@ -20,7 +21,7 @@ import org.koin.dsl.module
  * `isAvailable()` で `false` を返し読み上げも行わない。
  * Android版はandroidMainの同名モジュールを参照。
  */
-val textToSpeechDataModule =
+public val textToSpeechDataModule: Module =
     module {
         val synthesizer: SpeechSynthesizer = createSpeechSynthesizer()
         single<SpeechSettingsSenderRepository> { WindowsSpeechSettingsSenderRepository() }

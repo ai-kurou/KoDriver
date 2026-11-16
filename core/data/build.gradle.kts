@@ -96,3 +96,7 @@ dependencies {
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
+
+kotlin {
+    explicitApi()
+}
