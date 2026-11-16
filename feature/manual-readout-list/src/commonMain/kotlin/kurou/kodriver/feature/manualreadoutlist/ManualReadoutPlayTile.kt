@@ -25,6 +25,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
@@ -55,6 +57,7 @@ internal fun ManualReadoutSetPlayButton(
     onReadSet: () -> Unit,
     onSetClick: () -> Unit,
     onDeleteSet: () -> Unit,
+    focusRequester: FocusRequester,
 ) {
     val haptic = LocalHapticFeedback.current
     var menuExpanded by remember { mutableStateOf(false) }
@@ -69,6 +72,7 @@ internal fun ManualReadoutSetPlayButton(
         modifier =
             Modifier
                 .alpha(if (canReadSet) 1f else 0.38f)
+                .focusRequester(focusRequester)
                 .combinedClickable(
                     onClick = {
                         if (canReadSet) {

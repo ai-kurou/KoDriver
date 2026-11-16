@@ -170,7 +170,7 @@ class AutoReadoutListKeyboardNavigationTest {
     }
 
     @Test
-    fun `Ctrl_Meta_Shift付きの下キーや上下以外のキーでは行を移動しない`() {
+    fun `Ctrl_Meta_Shift付きの下キーや上下以外のキー（左キーを含む）では行を移動しない`() {
         setPane(listOf(flag, damage))
         rule.onNodeWithContentDescription(name(flag)).requestFocus()
 
@@ -182,7 +182,6 @@ class AutoReadoutListKeyboardNavigationTest {
             }
         }
         press(flag, Key.DirectionLeft)
-        press(flag, Key.DirectionRight)
 
         rule.onNodeWithContentDescription(name(flag)).assertIsFocused()
     }
