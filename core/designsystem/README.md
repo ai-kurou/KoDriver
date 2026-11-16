@@ -133,3 +133,11 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 `DetailPaneTopAppBar` のタイトルは1行で表示し、バーの幅に収まらない場合は末尾を省略する。
 手動読み上げセット名などの長いタイトルでも、戻るボタン・操作領域と共存できるようにする。
+
+## 行内の部品の ←→ 移動
+
+`ListRowPartsKeyboardNavigation.kt` の `handleListRowPartArrowKey` は、一覧の1行の中の部品（主操作領域・スイッチ・トグルなど）を ←→ で順に移動する共通処理を提供する。部品は行内の並び順に 0 から番号を振り、`ListRowPartsFocusState` が各部品の `FocusRequester` とフォーカス中の部品を保持する（0 番は行の主操作領域）。
+
+- → で次の部品、← で前の部品（0 番に戻れる）へ移動する。端では折り返さず、行の外にも出ず、消費だけする。
+- 無効な部品（`partEnabled` が false）は飛ばす。
+- Alt / Ctrl / Shift / Meta 付きの矢印と、行内の部品にフォーカスがない場合は処理しない。↑↓ は従来どおり行単位の移動（`ListRowFocusState`）が担う。
