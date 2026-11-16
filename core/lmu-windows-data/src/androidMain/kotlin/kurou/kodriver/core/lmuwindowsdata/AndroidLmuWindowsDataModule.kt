@@ -71,7 +71,7 @@ import org.koin.dsl.module
 /**
  * Android 版の LMU WebSocket バインド。設定系は別モジュールに分離する（LongMethod 対策）。
  */
-fun androidLmuWindowsDataModule(context: Context): Module =
+public fun androidLmuWindowsDataModule(context: Context): Module =
     module {
         single {
             LmuWindowsAutoReadoutSettingsResetter(
