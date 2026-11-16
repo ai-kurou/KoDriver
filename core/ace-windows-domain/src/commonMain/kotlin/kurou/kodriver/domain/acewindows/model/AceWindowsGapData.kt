@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * 符号付きの値を保持し、前車・後車がいない場合も共有メモリの生値をそのまま返す。
  */
 @Serializable
-data class AceWindowsGapData(
+public data class AceWindowsGapData(
     /** 前車とのギャップ。単位は秒。 */
     val gapAheadSeconds: Float,
     /** 後車とのギャップ。単位は秒。 */
@@ -17,7 +17,7 @@ data class AceWindowsGapData(
     /** デバッグ用: `gap_ahead` 付近を 4 バイトずつ読んだ生の整数列（先頭は [GAP_DEBUG_WINDOW_START_OFFSET]）。 */
     val debugRawWords: List<Int> = emptyList(),
 ) {
-    companion object {
-        const val GAP_DEBUG_WINDOW_START_OFFSET = 3820
+    public companion object {
+        public const val GAP_DEBUG_WINDOW_START_OFFSET: Int = 3820
     }
 }

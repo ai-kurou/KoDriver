@@ -3,8 +3,8 @@ package kurou.kodriver.domain.acewindows.usecase
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 
-class ObserveAceWindowsRemainingFuelLapsThresholdUseCase(
+public class ObserveAceWindowsRemainingFuelLapsThresholdUseCase(
     private val repository: AceWindowsRemainingFuelLapsPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Int> = repository.observeThresholdLaps()
+    public operator fun invoke(): Flow<Int> = repository.observeThresholdLaps()
 }

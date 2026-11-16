@@ -6,7 +6,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 /**
  * Assetto Corsa EVO の Windows 共有メモリから残燃料で走行可能な周回数を読む Repository。
  */
-interface AceWindowsRemainingFuelLapsRepository {
+public interface AceWindowsRemainingFuelLapsRepository {
     /** 残燃料で走行可能な周回数を継続配信する cold Flow。 */
-    fun remainingFuelLapsStream(): Flow<AceWindowsRemainingFuelLapsData>
+    public fun remainingFuelLapsStream(): Flow<AceWindowsRemainingFuelLapsData>
 }

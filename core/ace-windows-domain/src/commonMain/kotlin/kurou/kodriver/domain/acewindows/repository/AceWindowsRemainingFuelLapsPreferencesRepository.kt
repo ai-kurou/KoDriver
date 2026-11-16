@@ -2,18 +2,18 @@ package kurou.kodriver.domain.acewindows.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface AceWindowsRemainingFuelLapsPreferencesRepository {
-    suspend fun resetToDefault()
+public interface AceWindowsRemainingFuelLapsPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeThresholdLaps(): Flow<Int>
+    public fun observeThresholdLaps(): Flow<Int>
 
-    suspend fun saveThresholdLaps(laps: Int)
+    public suspend fun saveThresholdLaps(laps: Int)
 
-    fun observeReadoutText(): Flow<String>
+    public fun observeReadoutText(): Flow<String>
 
-    suspend fun saveReadoutText(text: String)
+    public suspend fun saveReadoutText(text: String)
 
-    fun observeEmptyReadoutText(): Flow<String>
+    public fun observeEmptyReadoutText(): Flow<String>
 
-    suspend fun saveEmptyReadoutText(text: String)
+    public suspend fun saveEmptyReadoutText(text: String)
 }

@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachRepository
 
-class ObserveAceWindowsVehicleApproachUseCase(
+public class ObserveAceWindowsVehicleApproachUseCase(
     private val repository: AceWindowsVehicleApproachRepository,
 ) {
-    operator fun invoke(): Flow<AceWindowsVehicleApproachData> = repository.vehicleApproachStream()
+    public operator fun invoke(): Flow<AceWindowsVehicleApproachData> = repository.vehicleApproachStream()
 }

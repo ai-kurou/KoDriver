@@ -3,12 +3,12 @@ package kurou.kodriver.domain.acewindows.repository
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-interface AceWindowsFlagPreferencesRepository {
-    suspend fun resetToDefault()
+public interface AceWindowsFlagPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
+    public fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
-    suspend fun saveFlagEnabledState(
+    public suspend fun saveFlagEnabledState(
         key: ReadoutItemKey,
         enabled: Boolean,
     )

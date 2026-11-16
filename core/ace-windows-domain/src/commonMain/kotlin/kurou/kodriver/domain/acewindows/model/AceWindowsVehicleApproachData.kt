@@ -10,14 +10,14 @@ import kotlinx.serialization.Serializable
  * 並走判定はできない。ここでは自車とのワールド座標上の直線距離のみを提供する。
  */
 @Serializable
-data class AceWindowsVehicleApproachData(
+public data class AceWindowsVehicleApproachData(
     /** 自車以外の各アクティブ車両との位置関係。 */
     val nearbyVehicles: List<AceWindowsNearbyVehicleData>,
 )
 
 /** ACE の周辺車両1台分の、自車から見た位置関係。 */
 @Serializable
-data class AceWindowsNearbyVehicleData(
+public data class AceWindowsNearbyVehicleData(
     /** 自車とのワールド座標上の直線距離。単位は meters。 */
     val distanceMeters: Double,
 )

@@ -7,7 +7,7 @@ import kurou.kodriver.domain.acewindows.model.aceWindowsDefaultAutoReadoutOrder
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinitions
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemPhrases
 
-val ACE_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
+public val ACE_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
     listOf(
         AceWindowsReadoutItemKey.VehicleApproach.Root,
         AceWindowsReadoutItemKey.VehicleApproach.StartReadout,
@@ -48,4 +48,4 @@ internal val aceWindowsReadoutSpec: SimulatorReadoutSpec
             ),
         )
 
-fun registerAceWindowsReadoutItemKeys() = ReadoutItemKeyRegistry.register(aceWindowsReadoutSpec)
+public fun registerAceWindowsReadoutItemKeys(): Unit = ReadoutItemKeyRegistry.register(aceWindowsReadoutSpec)

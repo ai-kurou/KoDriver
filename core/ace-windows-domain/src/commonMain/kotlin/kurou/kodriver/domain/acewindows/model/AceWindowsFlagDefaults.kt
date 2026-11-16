@@ -20,17 +20,17 @@ internal val ACE_WINDOWS_FLAG_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean
     )
 
 /** ACE のチェッカーフラッグ読み上げ文言の初期値。空白文言の場合は読み上げない。 */
-const val ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT = "チェッカーフラッグ"
+public const val ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT: String = "チェッカーフラッグ"
 
 /** ACE の共通フラッグ読み上げ文言の初期値。空白文言の場合は読み上げない。 */
-const val ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT = "ホワイトフラッグ"
-const val ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT = "グリーンフラッグ"
-const val ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT = "レッドフラッグ"
-const val ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT = "ブルーフラッグ"
-const val ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT = "イエローフラッグ"
-const val ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT = "ブラックフラッグ"
-const val ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT = "ブラック・ホワイトフラッグ"
+public const val ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT: String = "ホワイトフラッグ"
+public const val ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT: String = "グリーンフラッグ"
+public const val ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT: String = "レッドフラッグ"
+public const val ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT: String = "ブルーフラッグ"
+public const val ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT: String = "イエローフラッグ"
+public const val ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT: String = "ブラックフラッグ"
+public const val ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT: String = "ブラック・ホワイトフラッグ"
 
 /** ACE の固有フラッグ読み上げ文言の初期値。空白文言の場合は読み上げない。 */
-const val ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT = "オレンジボールフラッグ、車両に不具合があります"
-const val ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT = "レッド・イエローストライプフラッグ、路面が滑りやすいです"
+public const val ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT: String = "オレンジボールフラッグ、車両に不具合があります"
+public const val ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT: String = "レッド・イエローストライプフラッグ、路面が滑りやすいです"

@@ -3,20 +3,20 @@ package kurou.kodriver.domain.acewindows.repository
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-interface AceWindowsVehicleApproachPreferencesRepository {
-    suspend fun resetToDefault()
+public interface AceWindowsVehicleApproachPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeReadoutText(): Flow<String>
+    public fun observeReadoutText(): Flow<String>
 
-    suspend fun saveReadoutText(text: String)
+    public suspend fun saveReadoutText(text: String)
 
-    fun observeThresholdMeters(): Flow<Double>
+    public fun observeThresholdMeters(): Flow<Double>
 
-    suspend fun saveThresholdMeters(meters: Double)
+    public suspend fun saveThresholdMeters(meters: Double)
 
-    fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
+    public fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
-    suspend fun saveEnabledState(
+    public suspend fun saveEnabledState(
         key: ReadoutItemKey,
         enabled: Boolean,
     )

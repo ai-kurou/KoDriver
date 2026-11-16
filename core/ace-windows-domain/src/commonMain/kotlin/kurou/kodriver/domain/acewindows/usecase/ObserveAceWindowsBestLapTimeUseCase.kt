@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
 
-class ObserveAceWindowsBestLapTimeUseCase(
+public class ObserveAceWindowsBestLapTimeUseCase(
     private val repository: AceWindowsBestLapTimeRepository,
 ) {
-    operator fun invoke(): Flow<AceWindowsBestLapTimeData> = repository.bestLapTimeStream()
+    public operator fun invoke(): Flow<AceWindowsBestLapTimeData> = repository.bestLapTimeStream()
 }

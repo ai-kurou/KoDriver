@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsOverallPositionRepository
 
-class ObserveAceWindowsOverallPositionUseCase(
+public class ObserveAceWindowsOverallPositionUseCase(
     private val repository: AceWindowsOverallPositionRepository,
 ) {
-    operator fun invoke(): Flow<AceWindowsOverallPositionData> = repository.overallPositionStream()
+    public operator fun invoke(): Flow<AceWindowsOverallPositionData> = repository.overallPositionStream()
 }

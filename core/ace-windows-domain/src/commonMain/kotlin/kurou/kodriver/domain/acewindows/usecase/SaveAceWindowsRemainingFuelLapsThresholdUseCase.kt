@@ -2,8 +2,8 @@ package kurou.kodriver.domain.acewindows.usecase
 
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 
-class SaveAceWindowsRemainingFuelLapsThresholdUseCase(
+public class SaveAceWindowsRemainingFuelLapsThresholdUseCase(
     private val repository: AceWindowsRemainingFuelLapsPreferencesRepository,
 ) {
-    suspend operator fun invoke(laps: Int) = repository.saveThresholdLaps(laps)
+    public suspend operator fun invoke(laps: Int): Unit = repository.saveThresholdLaps(laps)
 }
