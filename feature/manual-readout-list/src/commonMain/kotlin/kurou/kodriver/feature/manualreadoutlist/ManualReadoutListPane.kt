@@ -42,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.onKeyEvent
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
+import kurou.kodriver.core.designsystem.handleListGridArrowKey
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
@@ -90,6 +92,8 @@ internal fun ManualReadoutListPaneContent(
     var additionBaseline by remember(simulatorId) { mutableStateOf<Set<String>?>(null) }
     val rowFocusState = remember(simulatorId) { ListRowFocusState() }
     val itemKeys = remember(uiState.sets) { uiState.sets.map { it.id } }
+    // 再生ボタン表示のグリッドでは、末尾の「セットを追加」タイルも矢印キーの移動先にする。
+    val gridItemKeys = remember(itemKeys) { itemKeys + ADD_SET_TILE_KEY }
     val coroutineScope = rememberCoroutineScope()
     val enteredSetIds = remember(simulatorId) { mutableSetOf<String>() }
     val addSet = {
@@ -127,8 +131,21 @@ internal fun ManualReadoutListPaneContent(
                         val density = LocalDensity.current
                         LazyVerticalGrid(
                             state = gridState,
-                            columns = GridCells.Fixed(2),
-                            modifier = Modifier.fillMaxSize(),
+                            columns = GridCells.Fixed(PLAY_BUTTON_GRID_COLUMNS),
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .onKeyEvent { event ->
+                                        handleListGridArrowKey(
+                                            event = event,
+                                            focusState = rowFocusState,
+                                            itemKeys = gridItemKeys,
+                                            columns = PLAY_BUTTON_GRID_COLUMNS,
+                                            firstItemLazyIndex = 0,
+                                            gridState = gridState,
+                                            coroutineScope = coroutineScope,
+                                        )
+                                    },
                             contentPadding =
                                 PaddingValues(
                                     start = KoDriverSpacing.small,
@@ -147,6 +164,7 @@ internal fun ManualReadoutListPaneContent(
                                     modifier =
                                         Modifier
                                             .onSizeChanged { tileHeightsPx[set.id] = it.height }
+                                            .onFocusChanged { rowFocusState.onRowFocusChanged(set.id, it.hasFocus) }
                                             .animateItem(
                                                 fadeInSpec = null,
                                                 placementSpec = tween(200),
@@ -162,19 +180,24 @@ internal fun ManualReadoutListPaneContent(
                                         onReadSet = { onReadSet(set.id) },
                                         onSetClick = { onSetClick(set.id) },
                                         onDeleteSet = { onDeleteSet(set.id) },
+                                        focusRequester = rowFocusState.requesterFor(set.id),
                                     )
                                 }
                             }
-                            item(key = "add-set") {
+                            item(key = ADD_SET_TILE_KEY) {
                                 val tallestTileHeightPx = uiState.sets.maxOfOrNull { tileHeightsPx[it.id] ?: 0 } ?: 0
                                 val addTileMinHeight = maxOf(104.dp, with(density) { tallestTileHeightPx.toDp() })
                                 Surface(
                                     modifier =
-                                        Modifier.animateItem(
-                                            fadeInSpec = null,
-                                            placementSpec = tween(200),
-                                            fadeOutSpec = null,
-                                        ),
+                                        Modifier
+                                            .onFocusChanged {
+                                                rowFocusState.onRowFocusChanged(ADD_SET_TILE_KEY, it.hasFocus)
+                                            }.focusRequester(rowFocusState.requesterFor(ADD_SET_TILE_KEY))
+                                            .animateItem(
+                                                fadeInSpec = null,
+                                                placementSpec = tween(200),
+                                                fadeOutSpec = null,
+                                            ),
                                     onClick = addSet,
                                     shape = MaterialTheme.shapes.large,
                                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -278,6 +301,12 @@ internal fun ManualReadoutListPaneContent(
         }
     }
 }
+
+/** 再生ボタン表示のグリッドの列数。 */
+private const val PLAY_BUTTON_GRID_COLUMNS = 2
+
+/** グリッド末尾の「セットを追加」タイルの項目キー。セットのIDとは重ならない。 */
+private const val ADD_SET_TILE_KEY = "add-set"
 
 /** 追加操作で増えたセットだけを展開し、スクロールや表示切り替えでは再生しない。 */
 @Composable
