@@ -24,3 +24,7 @@ dependencies {
     testImplementation(platform(libs.ktor.bom))
     testImplementation(libs.ktor.clientMock)
 }
+
+kotlin {
+    explicitApi()
+}

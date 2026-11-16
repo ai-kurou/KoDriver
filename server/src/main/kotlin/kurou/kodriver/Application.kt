@@ -19,12 +19,12 @@ import org.koin.core.Koin
  * [KoDriverServer] / [Application.module] のコンストラクタ・関数パラメータ数を detekt の
  * LongParameterList 閾値内に収めるため、シミュレーター別の UseCase バンドルをこのデータクラスで受け渡す。
  */
-data class KoDriverServerUseCases(
+internal data class KoDriverServerUseCases(
     val lmuWindows: LmuWindowsServerUseCases,
     val aceWindows: AceWindowsServerUseCases,
 )
 
-fun main() {
+public fun main() {
     KoDriverServer(
         useCases =
             KoDriverServerUseCases(
@@ -41,7 +41,7 @@ fun main() {
  * LAN 内の Android アプリへ配信する。既定では `0.0.0.0:8080` で待ち受け、
  * 起動時に mDNS で KoDriver サービスを広告する。
  */
-class KoDriverServer(
+public class KoDriverServer internal constructor(
     useCases: KoDriverServerUseCases,
     private val port: Int = KODRIVER_SERVER_PORT_DEFAULT,
     host: String = KODRIVER_SERVER_HOST_DEFAULT,
@@ -63,13 +63,13 @@ class KoDriverServer(
      * [wait] を true にすると Ktor のサーバースレッドでブロックするため、
      * CLI エントリーポイントから単体起動する場合に使う。
      */
-    fun start(wait: Boolean = false) {
+    public fun start(wait: Boolean = false) {
         server.start(wait = wait)
         serviceAdvertiser.start(port)
     }
 
     /** mDNS 広告を停止し、Ktor サーバーを即時停止する。 */
-    fun stop() {
+    public fun stop() {
         serviceAdvertiser.stop()
         server.stop(gracePeriodMillis = 0, timeoutMillis = 0)
     }
@@ -81,7 +81,7 @@ class KoDriverServer(
  * Desktop アプリ内でサーバーを起動する通常経路。単体起動用の [main] は空 Repository を使うため、
  * 実走行データを配信したい場合はこちらを使う。
  */
-fun createKoDriverServer(koin: Koin): KoDriverServer =
+public fun createKoDriverServer(koin: Koin): KoDriverServer =
     KoDriverServer(
         useCases =
             KoDriverServerUseCases(

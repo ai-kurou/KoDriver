@@ -6,6 +6,7 @@ import io.ktor.client.plugins.HttpTimeout
 import kurou.kodriver.core.lmuwindowsrestapidata.datasource.LmuWindowsRestApiRepairAndRefuelDataSource
 import kurou.kodriver.core.lmuwindowsrestapidata.repository.LmuWindowsRestApiBrakeWearRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -22,7 +23,7 @@ private val lmuRestApiHttpClient = named("lmuWindowsRestApiHttpClient")
  * REST API は LMU を起動した Windows 機の `localhost` にのみ待ち受けるため、デスクトップ版の
  * エントリーポイントでのみ束ねる。
  */
-val lmuWindowsRestApiDataModule =
+public val lmuWindowsRestApiDataModule: Module =
     module {
         single(lmuRestApiHttpClient) {
             HttpClient(OkHttp) {

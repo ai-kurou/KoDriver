@@ -2,6 +2,7 @@ package kurou.kodriver.core.windowsstartupdata
 
 import kurou.kodriver.core.windowsstartupdata.repository.WindowsStartupEnabledRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
@@ -12,7 +13,7 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
  * レジストリへのアクセスはWindows専用のため、非Windowsでは何もしないNo-Op実装（下部のprivate class）に
  * フォールバックする。
  */
-val windowsStartupDataModule =
+public val windowsStartupDataModule: Module =
     module {
         single<StartupEnabledRepository> {
             if (isWindows) WindowsStartupEnabledRepository() else NoOpStartupEnabledRepository()

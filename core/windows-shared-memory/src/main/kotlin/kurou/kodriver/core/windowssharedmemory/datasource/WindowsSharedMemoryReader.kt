@@ -10,7 +10,7 @@ import java.nio.ByteOrder
  *
  * このモジュールは `core:domain` に依存しないため、`MapViewOfFile` 失敗の記録先は [captureError] として注入する。
  */
-class WindowsSharedMemoryReader(
+public class WindowsSharedMemoryReader(
     private val segmentName: String,
     private val sizeBytes: Int,
     private val captureError: (Throwable) -> Unit,

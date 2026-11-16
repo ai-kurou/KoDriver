@@ -19,7 +19,7 @@ import java.nio.ByteBuffer
  * open/close の排他制御用に単一の [Mutex] を保持しており、[withReaderLock] を通じて
  * 呼び出し元固有の追加処理（接続判定など）を同じ排他制御の下で安全に行える。
  */
-class SharedMemoryPollingSource(
+public class SharedMemoryPollingSource(
     private val reader: SharedMemoryReader,
     private val pollingIntervalMs: Long,
     private val reconnectIntervalMs: Long,
@@ -27,7 +27,7 @@ class SharedMemoryPollingSource(
 ) {
     private val readerMutex = Mutex()
 
-    val bufferFlow: Flow<ByteBuffer> =
+    public val bufferFlow: Flow<ByteBuffer> =
         flow {
             try {
                 while (true) {
@@ -68,7 +68,7 @@ class SharedMemoryPollingSource(
      * 接続判定・切断など、reader の open/close を伴う追加処理をポーリングループと
      * 競合させずに実行するために使用する。
      */
-    suspend fun <T> withReaderLock(block: suspend (SharedMemoryReader) -> T): T =
+    public suspend fun <T> withReaderLock(block: suspend (SharedMemoryReader) -> T): T =
         withContext(Dispatchers.IO) {
             readerMutex.withLock { block(reader) }
         }

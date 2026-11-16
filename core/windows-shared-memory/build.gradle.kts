@@ -26,3 +26,7 @@ val testJar =
 artifacts {
     add("testArtifacts", testJar)
 }
+
+kotlin {
+    explicitApi()
+}
