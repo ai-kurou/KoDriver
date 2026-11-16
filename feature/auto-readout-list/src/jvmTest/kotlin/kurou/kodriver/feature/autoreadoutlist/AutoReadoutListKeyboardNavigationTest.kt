@@ -12,6 +12,9 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -190,10 +193,14 @@ class AutoReadoutListKeyboardNavigationTest {
         setPane(listOf(approach))
         val blank = rule.onNodeWithTag("autoReadoutListQueueBlankTouchTarget:${approach.value}", useUnmergedTree = true)
         val chevron = rule.onNodeWithTag("autoReadoutListChevronTouchTarget:${approach.value}", useUnmergedTree = true)
-        val switchTarget =
-            rule.onNodeWithTag("autoReadoutListSwitchTouchTarget:${approach.value}", useUnmergedTree = true)
+        val switchTag = "autoReadoutListSwitchTouchTarget:${approach.value}"
+        val switchTarget = rule.onNodeWithTag(switchTag, useUnmergedTree = true)
+        val switch = rule.onNode(isToggleable() and hasAnyAncestor(hasTestTag(switchTag)), useUnmergedTree = true)
         rule.onNodeWithContentDescription(name(approach)).requestFocus()
 
+        rule.onRoot().performKeyInput { pressKey(Key.Tab) }
+        switch.assertIsFocused()
+        rule.onNodeWithContentDescription(name(approach)).requestFocus()
         repeat(6) {
             rule.onRoot().performKeyInput { pressKey(Key.Tab) }
             switchTarget.assertIsNotFocused()
