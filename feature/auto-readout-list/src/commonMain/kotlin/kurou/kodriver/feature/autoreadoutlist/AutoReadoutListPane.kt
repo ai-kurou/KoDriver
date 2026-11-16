@@ -57,6 +57,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -97,6 +98,7 @@ import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
+import kurou.kodriver.core.designsystem.handleListRowReorderKey
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
@@ -197,6 +199,7 @@ internal fun AutoReadoutListPane(
     val haptic = LocalHapticFeedback.current
     val rowFocusState = remember { ListRowFocusState() }
     val itemKeys = remember(uiState.items) { uiState.items.map { it.value } }
+    LaunchedEffect(itemKeys) { rowFocusState.onItemKeysChanged() }
     val reorderableState =
         rememberReorderableLazyListState(listState) { from, to ->
             onMove(
@@ -229,14 +232,25 @@ internal fun AutoReadoutListPane(
                     Modifier
                         .fillMaxSize()
                         .onKeyEvent { event ->
-                            handleListRowArrowKey(
-                                event = event,
-                                focusState = rowFocusState,
-                                itemKeys = itemKeys,
-                                firstItemLazyIndex = autoReadoutItemStartIndex,
-                                listState = listState,
-                                coroutineScope = coroutineScope,
-                            )
+                            val reordered =
+                                handleListRowReorderKey(
+                                    event = event,
+                                    focusState = rowFocusState,
+                                    itemKeys = itemKeys,
+                                    firstItemLazyIndex = autoReadoutItemStartIndex,
+                                    listState = listState,
+                                    coroutineScope = coroutineScope,
+                                    onMove = onMove,
+                                )
+                            reordered ||
+                                handleListRowArrowKey(
+                                    event = event,
+                                    focusState = rowFocusState,
+                                    itemKeys = itemKeys,
+                                    firstItemLazyIndex = autoReadoutItemStartIndex,
+                                    listState = listState,
+                                    coroutineScope = coroutineScope,
+                                )
                         }.padding(vertical = KoDriverSpacing.large),
             ) {
                 if (isAceSelected) {

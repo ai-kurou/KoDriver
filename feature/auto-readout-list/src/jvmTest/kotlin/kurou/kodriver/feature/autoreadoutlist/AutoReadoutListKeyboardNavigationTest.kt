@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class AutoReadoutListKeyboardNavigationTest {
     init {
@@ -47,6 +48,7 @@ class AutoReadoutListKeyboardNavigationTest {
     private fun setPane(
         items: List<ReadoutItemKey>,
         height: Int = 900,
+        onMove: (Int, Int) -> Unit = { _, _ -> },
     ) {
         rule.setContent {
             KoDriverTheme {
@@ -54,7 +56,7 @@ class AutoReadoutListKeyboardNavigationTest {
                 Box(modifier = Modifier.requiredSize(480.dp, height.dp)) {
                     AutoReadoutListPane(
                         uiState = AutoReadoutListUiState(selectedSimulator = Simulator.LmuWindows, items = items),
-                        onMove = { _, _ -> },
+                        onMove = onMove,
                         onReadoutEnabledChanged = { _, _ -> },
                         onQueueEnabledChanged = { _, _ -> },
                         onStartSoundEnabledChanged = { _, _ -> },
@@ -138,20 +140,6 @@ class AutoReadoutListKeyboardNavigationTest {
     }
 
     @Test
-    fun `Alt付きの下キーでは行を移動しない`() {
-        setPane(listOf(flag, damage))
-        rule.onNodeWithContentDescription(name(flag)).requestFocus()
-
-        rule.onNodeWithContentDescription(name(flag)).performKeyInput {
-            keyDown(Key.AltLeft)
-            pressKey(Key.DirectionDown)
-            keyUp(Key.AltLeft)
-        }
-
-        rule.onNodeWithContentDescription(name(flag)).assertIsFocused()
-    }
-
-    @Test
     fun `並べ替えで行の位置が変わってもフォーカス中の行を基準に移動する`() {
         var items by mutableStateOf(listOf(flag, damage, fuel))
         rule.setContent {
@@ -209,5 +197,99 @@ class AutoReadoutListKeyboardNavigationTest {
             blank.assertIsNotFocused()
             chevron.assertIsNotFocused()
         }
+    }
+
+    private fun pressWithModifier(
+        item: ReadoutItemKey,
+        modifier: Key,
+        key: Key,
+    ) {
+        rule.onNodeWithContentDescription(name(item)).performKeyInput {
+            keyDown(modifier)
+            pressKey(key)
+            keyUp(modifier)
+        }
+    }
+
+    @Test
+    fun `Alt付きの下キーで行の並べ替えが依頼され、フォーカスは次の行へ移らない`() {
+        val moves = mutableListOf<Pair<Int, Int>>()
+        setPane(listOf(flag, damage, fuel), onMove = { from, to -> moves += from to to })
+        rule.onNodeWithContentDescription(name(damage)).requestFocus()
+
+        pressWithModifier(damage, Key.AltLeft, Key.DirectionDown)
+
+        assertEquals(listOf(1 to 2), moves)
+        rule.onNodeWithContentDescription(name(damage)).assertIsFocused()
+    }
+
+    @Test
+    fun `Alt付きの上キーで行の並べ替えが依頼される`() {
+        val moves = mutableListOf<Pair<Int, Int>>()
+        setPane(listOf(flag, damage, fuel), onMove = { from, to -> moves += from to to })
+        rule.onNodeWithContentDescription(name(damage)).requestFocus()
+
+        pressWithModifier(damage, Key.AltRight, Key.DirectionUp)
+
+        assertEquals(listOf(1 to 0), moves)
+    }
+
+    @Test
+    fun `先頭でAlt付きの上キー、末尾でAlt付きの下キーでは並べ替えが依頼されない`() {
+        val moves = mutableListOf<Pair<Int, Int>>()
+        setPane(listOf(flag, damage), onMove = { from, to -> moves += from to to })
+        rule.onNodeWithContentDescription(name(flag)).requestFocus()
+        pressWithModifier(flag, Key.AltLeft, Key.DirectionUp)
+        rule.onNodeWithContentDescription(name(damage)).requestFocus()
+        pressWithModifier(damage, Key.AltLeft, Key.DirectionDown)
+
+        assertEquals(emptyList(), moves)
+    }
+
+    @Test
+    fun `Altなし、またはAltと他の修飾キーを併用したときは並べ替えが依頼されない`() {
+        val moves = mutableListOf<Pair<Int, Int>>()
+        setPane(listOf(flag, damage, fuel), onMove = { from, to -> moves += from to to })
+        rule.onNodeWithContentDescription(name(damage)).requestFocus()
+        press(damage, Key.DirectionDown)
+
+        listOf(Key.ShiftLeft, Key.CtrlLeft, Key.MetaLeft).forEach { extra ->
+            rule.onNodeWithContentDescription(name(damage)).requestFocus()
+            rule.onNodeWithContentDescription(name(damage)).performKeyInput {
+                keyDown(Key.AltLeft)
+                keyDown(extra)
+                pressKey(Key.DirectionDown)
+                keyUp(extra)
+                keyUp(Key.AltLeft)
+            }
+        }
+
+        assertEquals(emptyList(), moves)
+    }
+
+    @Test
+    fun `並びが変わる前にAlt付きの下キーが連続しても並べ替えは1回だけ依頼される`() {
+        val moves = mutableListOf<Pair<Int, Int>>()
+        setPane(listOf(flag, damage, fuel), onMove = { from, to -> moves += from to to })
+        rule.onNodeWithContentDescription(name(damage)).requestFocus()
+
+        pressWithModifier(damage, Key.AltLeft, Key.DirectionDown)
+        pressWithModifier(damage, Key.AltLeft, Key.DirectionDown)
+
+        assertEquals(listOf(1 to 2), moves)
+    }
+
+    @Test
+    fun `フォーカスが行の外にあるときはAlt付きの下キーで並べ替えが依頼されない`() {
+        val moves = mutableListOf<Pair<Int, Int>>()
+        setPane(listOf(flag, damage), onMove = { from, to -> moves += from to to })
+
+        rule.onRoot().performKeyInput {
+            keyDown(Key.AltLeft)
+            pressKey(Key.DirectionDown)
+            keyUp(Key.AltLeft)
+        }
+
+        assertEquals(emptyList(), moves)
     }
 }

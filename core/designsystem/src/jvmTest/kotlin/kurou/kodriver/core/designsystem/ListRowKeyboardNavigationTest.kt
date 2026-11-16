@@ -2,7 +2,9 @@ package kurou.kodriver.core.designsystem
 
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class ListRowKeyboardNavigationTest {
     private val items = listOf("flag", "damage", "fuel")
@@ -48,6 +50,28 @@ class ListRowKeyboardNavigationTest {
 
         state.onRowFocusChanged(itemKey = "b", hasFocus = false)
         assertNull(state.focusedItemKey)
+    }
+
+    @Test
+    fun `並べ替えは同じ並びのままでは重ねて依頼されず並びが変わると再び依頼できる`() {
+        val state = ListRowFocusState()
+        val reordered = listOf("damage", "flag", "fuel")
+
+        assertTrue(state.tryStartReorder(items))
+        assertFalse(state.tryStartReorder(items))
+        assertTrue(state.tryStartReorder(reordered))
+        assertFalse(state.tryStartReorder(reordered))
+        assertTrue(state.tryStartReorder(items))
+    }
+
+    @Test
+    fun `並びが変わったと通知されると同じ並びに戻っても再び並べ替えを依頼できる`() {
+        val state = ListRowFocusState()
+
+        assertTrue(state.tryStartReorder(items))
+        state.onItemKeysChanged()
+
+        assertTrue(state.tryStartReorder(items))
     }
 
     @Test
