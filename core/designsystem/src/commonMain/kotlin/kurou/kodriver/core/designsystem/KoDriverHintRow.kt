@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 /** ヘルプシートを開く見出し行。開閉状態は保存・復元する。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KoDriverHintRow(
+public fun KoDriverHintRow(
     label: String,
     helpContentDescription: String,
     modifier: Modifier = Modifier,
@@ -96,7 +96,7 @@ fun KoDriverHintRow(
 
 /** アイコンバッジとタイトル・説明を並べるヘルプシートの行。 */
 @Composable
-fun KoDriverHintSheetRow(
+public fun KoDriverHintSheetRow(
     icon: ImageVector,
     title: String,
     description: String,

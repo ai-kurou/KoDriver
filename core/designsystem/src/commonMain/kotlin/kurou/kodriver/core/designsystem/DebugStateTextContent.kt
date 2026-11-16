@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 
 /** 数値を大きく表示する。[text] が null の場合は未取得表示にする。 */
 @Composable
-fun DebugStateHeadlineValueContent(text: String?) {
+public fun DebugStateHeadlineValueContent(text: String?) {
     if (text == null) {
         DebugStateUnavailableContent()
     } else {
@@ -23,7 +23,7 @@ fun DebugStateHeadlineValueContent(text: String?) {
 
 /** 文字列をそのまま表示する。[text] が null または空の場合は未取得表示にする。 */
 @Composable
-fun DebugStateTextValueContent(text: String?) {
+public fun DebugStateTextValueContent(text: String?) {
     if (text.isNullOrEmpty()) {
         DebugStateUnavailableContent()
     } else {
@@ -37,7 +37,7 @@ fun DebugStateTextValueContent(text: String?) {
  * 表示内容が変わらないテレメトリの更新ではフェードし直さないよう、[contentKey] で表示内容だけをキーにする。
  */
 @Composable
-fun <S, K> DebugStateFadeContent(
+public fun <S, K> DebugStateFadeContent(
     state: S,
     contentKey: (S) -> K,
     content: @Composable (S) -> Unit,

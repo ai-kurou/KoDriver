@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 
 /** シミュレーターIDに対応する表示名を表示する。 */
 @Composable
-fun SimulatorInfoContent(
+public fun SimulatorInfoContent(
     simulatorId: String,
     modifier: Modifier = Modifier,
 ) {

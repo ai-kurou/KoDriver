@@ -11,12 +11,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 
 /** 入力欄のカーソル位置への挿入要求を保持する。入力欄ごとに用意する。 */
 @Stable
-class TextInsertState {
+public class TextInsertState {
     internal var request by mutableStateOf<InsertRequest?>(null)
         private set
 
     /** 選択範囲がある場合は、その範囲を [text] で置換する。 */
-    fun insert(text: String) {
+    public fun insert(text: String) {
         request = InsertRequest(text)
     }
 
@@ -33,7 +33,7 @@ class TextInsertState {
 
 /** 再コンポーズをまたいで挿入要求の状態を保持する。 */
 @Composable
-fun rememberTextInsertState(): TextInsertState = remember { TextInsertState() }
+public fun rememberTextInsertState(): TextInsertState = remember { TextInsertState() }
 
 /** 選択範囲を置換し、改行除去後に上限を超える場合は挿入しない。 */
 internal fun insertAtSelection(

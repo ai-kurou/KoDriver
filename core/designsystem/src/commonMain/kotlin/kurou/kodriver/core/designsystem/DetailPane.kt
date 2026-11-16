@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
  * DetailPaneBodyText を提供する公開関数。
  */
 @Composable
-fun DetailPaneBodyText(
+public fun DetailPaneBodyText(
     text: String,
     modifier: Modifier = Modifier,
 ) {
@@ -48,7 +48,7 @@ fun DetailPaneBodyText(
  * DetailPaneDescription を提供する公開関数。
  */
 @Composable
-fun DetailPaneDescription(
+public fun DetailPaneDescription(
     text: String,
     modifier: Modifier = Modifier,
 ) {
@@ -62,7 +62,7 @@ fun DetailPaneDescription(
  * DetailPaneSubtitle を提供する公開関数。
  */
 @Composable
-fun DetailPaneSubtitle(
+public fun DetailPaneSubtitle(
     text: String,
     modifier: Modifier = Modifier,
     trailingContent: (@Composable () -> Unit)? = null,
@@ -96,7 +96,7 @@ fun DetailPaneSubtitle(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HelpIconButton(
+public fun HelpIconButton(
     contentDescription: String,
     modifier: Modifier = Modifier,
     sheetContent: @Composable () -> Unit,

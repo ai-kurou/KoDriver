@@ -18,7 +18,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /** 未取得の文言と装飾を表示する。文言は既定で共通の「未取得」を使う。 */
 @Composable
-fun DebugStateUnavailableContent(
+public fun DebugStateUnavailableContent(
     text: String = stringResource(Res.string.debug_state_unavailable),
     modifier: Modifier = Modifier,
 ) {

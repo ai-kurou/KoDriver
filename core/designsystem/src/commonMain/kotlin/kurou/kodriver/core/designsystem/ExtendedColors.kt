@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
  *
  * primary/secondary/tertiary のいずれとも意味が異なる用途（例: 警告表示）に使う色をここへ追加する。
  */
-data class ExtendedColorScheme(
+public data class ExtendedColorScheme(
     val warningContainer: Color,
     val onWarningContainer: Color,
     val heatCool: Color,
@@ -60,8 +60,8 @@ internal val LocalExtendedColorScheme = staticCompositionLocalOf { LightExtended
  *
  * `MaterialTheme.colorScheme` と同様に、Composable 内で `KoDriverExtendedColors.current` として参照する。
  */
-object KoDriverExtendedColors {
-    val current: ExtendedColorScheme
+public object KoDriverExtendedColors {
+    public val current: ExtendedColorScheme
         @Composable
         get() = LocalExtendedColorScheme.current
 }

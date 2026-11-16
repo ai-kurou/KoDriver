@@ -15,10 +15,10 @@ internal const val PENDING_THRESHOLD_TIMEOUT_MILLIS_DEFAULT = 3000L
 
 /** 操作中と保存待ちの閾値を保持し、途中の保存通知による巻き戻りを防ぐ。 */
 @Stable
-class PendingThresholdState internal constructor(
+public class PendingThresholdState internal constructor(
     savedValue: Int,
 ) {
-    var currentValue by mutableIntStateOf(savedValue)
+    public var currentValue: Int by mutableIntStateOf(savedValue)
         private set
 
     internal var pendingValues by mutableStateOf<List<Int>>(emptyList())
@@ -28,13 +28,13 @@ class PendingThresholdState internal constructor(
     private var isEditing by mutableStateOf(false)
 
     /** 操作中の表示値を更新する。保存は操作完了時に別途行う。 */
-    fun change(value: Int) {
+    public fun change(value: Int) {
         currentValue = value
         isEditing = true
     }
 
     /** 操作完了またはリセットの値を表示し、保存通知を待つ。 */
-    fun finishChange(value: Int) {
+    public fun finishChange(value: Int) {
         currentValue = value
         isEditing = false
         if (pendingValues.isNotEmpty() || value != lastSaved) {
@@ -65,7 +65,7 @@ class PendingThresholdState internal constructor(
 
 /** 保存値を同期し、保存待ちの変更から期限が過ぎると外部更新への追従を再開する。 */
 @Composable
-fun rememberPendingThreshold(
+public fun rememberPendingThreshold(
     savedValue: Int,
     pendingTimeoutMillis: Long = PENDING_THRESHOLD_TIMEOUT_MILLIS_DEFAULT,
 ): PendingThresholdState {

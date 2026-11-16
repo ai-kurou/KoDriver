@@ -23,7 +23,7 @@ private val DETAIL_PANE_CONTENT_MAX_WIDTH = 840.dp
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailPaneScaffold(
+public fun DetailPaneScaffold(
     title: String,
     canNavigateBack: Boolean,
     onBack: () -> Unit,

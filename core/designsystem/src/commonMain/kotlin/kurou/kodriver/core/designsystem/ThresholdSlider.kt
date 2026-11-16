@@ -30,7 +30,7 @@ import kotlin.math.roundToInt
  * ThresholdSlider を提供する公開関数。
  */
 @Composable
-fun ThresholdSlider(
+public fun ThresholdSlider(
     value: Float,
     valueRange: ClosedFloatingPointRange<Float>,
     labelFormatter: (Float) -> String,

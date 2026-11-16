@@ -11,7 +11,7 @@ import androidx.compose.ui.text.style.TextAlign
 
 /** 明示的な熱レベルで値を表示し、未取得時は中立色を使う。 */
 @Composable
-fun DebugStateHeatTile(
+public fun DebugStateHeatTile(
     text: String,
     heatLevel: HeatLevel?,
     modifier: Modifier = Modifier,
@@ -35,7 +35,7 @@ fun DebugStateHeatTile(
  * @param text 表示する値（[formattedCelsius] または "-"）を受け取ってタイル全体の文言を作る。
  */
 @Composable
-fun DebugStateWheelTemperatureTile(
+public fun DebugStateWheelTemperatureTile(
     text: @Composable (value: String) -> String,
     formattedCelsius: String?,
     heatLevel: HeatLevel?,
@@ -52,7 +52,7 @@ private const val WHEEL_TEMPERATURE_UNAVAILABLE_TEXT = "-"
 
 /** 状態をアクセント色のチップで表示する。 */
 @Composable
-fun DebugStateStatusChip(
+public fun DebugStateStatusChip(
     text: String,
     modifier: Modifier = Modifier,
     accent: Color = MaterialTheme.colorScheme.tertiary,

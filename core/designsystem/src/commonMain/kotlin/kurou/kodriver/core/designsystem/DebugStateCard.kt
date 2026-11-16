@@ -11,7 +11,7 @@ private const val DISABLED_CARD_ALPHA = 0.38f
 /** キーに対応するタイトルと内容を表示し、有効状態に応じた透明度を共通の枠へ渡すデバッグカード。 */
 @Suppress("UnstableCollections")
 @Composable
-fun <K, S> DebugStateCard(
+public fun <K, S> DebugStateCard(
     cardKey: K,
     uiState: S,
     enabled: Boolean,

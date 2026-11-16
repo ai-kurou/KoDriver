@@ -18,13 +18,13 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyGridState
 
 /** デバッグ状態画面のカードグリッドに付けるテストタグ。 */
-const val DEBUG_STATE_GRID_TEST_TAG = "debug_state_grid"
+public const val DEBUG_STATE_GRID_TEST_TAG: String = "debug_state_grid"
 
 private val NARROW_WIDTH_UPPER_BOUND = 400.dp
 private val MEDIUM_WIDTH_UPPER_BOUND = 700.dp
 
 /** 幅が 400dp 未満なら1列、700dp 未満なら2列、それ以上なら3列にする。 */
-fun calculateDebugStateColumns(maxWidth: Dp): Int =
+internal fun calculateDebugStateColumns(maxWidth: Dp): Int =
     when {
         maxWidth < NARROW_WIDTH_UPPER_BOUND -> 1
         maxWidth < MEDIUM_WIDTH_UPPER_BOUND -> 2
@@ -37,9 +37,9 @@ fun calculateDebugStateColumns(maxWidth: Dp): Int =
  * @property key グリッド内での項目の識別子。固定カード同士で重複させない
  * @property content カードの描画。余白を適用済みの modifier が渡る
  */
-class DebugStateFixedCard(
-    val key: String,
-    val content: @Composable (modifier: Modifier) -> Unit,
+public class DebugStateFixedCard(
+    public val key: String,
+    public val content: @Composable (modifier: Modifier) -> Unit,
 )
 
 /**
@@ -54,7 +54,7 @@ class DebugStateFixedCard(
  * @param card キーに対応するカードを描画する
  */
 @Composable
-fun <K : Enum<K>> DebugStateReorderableGrid(
+public fun <K : Enum<K>> DebugStateReorderableGrid(
     cardOrder: List<K>,
     onMoveCard: (from: Int, to: Int) -> Unit,
     fixedCards: List<DebugStateFixedCard>,

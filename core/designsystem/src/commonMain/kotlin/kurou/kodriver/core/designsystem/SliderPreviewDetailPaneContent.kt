@@ -29,7 +29,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
  * @property previewStopLabel 試聴ボタン（試聴中）の文言
  * @property previewSample 試聴ボタン押下時に通知する試聴用の文言
  */
-data class SliderPreviewDetailTexts(
+public data class SliderPreviewDetailTexts(
     val title: String,
     val description: String,
     val sliderLabel: String,
@@ -55,7 +55,7 @@ data class SliderPreviewDetailTexts(
  * @param onPreviewClicked 試聴ボタン押下時に [SliderPreviewDetailTexts.previewSample] を通知する
  */
 @Composable
-fun SliderPreviewDetailPaneContent(
+public fun SliderPreviewDetailPaneContent(
     texts: SliderPreviewDetailTexts,
     value: Float,
     valueRange: ClosedFloatingPointRange<Float>,

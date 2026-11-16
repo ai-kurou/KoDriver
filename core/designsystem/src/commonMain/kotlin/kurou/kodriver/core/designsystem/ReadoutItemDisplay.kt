@@ -178,7 +178,7 @@ private fun bestLapAndFuelDisplayName(readoutItemKeyValue: String): String? =
  * このモジュールは core:domain に依存しないため、型ではなく文字列IDを引数にとる。
  */
 @Composable
-fun readoutItemDisplayName(readoutItemKeyValue: String): String =
+public fun readoutItemDisplayName(readoutItemKeyValue: String): String =
     flagDisplayName(readoutItemKeyValue)
         ?: vehicleApproachDisplayName(readoutItemKeyValue)
         ?: vehicleDamageDisplayName(readoutItemKeyValue)

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 
-typealias AppBackHandler = @Composable (
+public typealias AppBackHandler = @Composable (
     enabled: Boolean,
     onProgress: (Float) -> Unit,
     onBack: () -> Unit,
@@ -13,7 +13,7 @@ typealias AppBackHandler = @Composable (
 /**
  * Modifier を提供する公開関数。
  */
-fun Modifier.predictiveBackDetailPane(progress: Float): Modifier =
+public fun Modifier.predictiveBackDetailPane(progress: Float): Modifier =
     graphicsLayer {
         val coercedProgress = progress.coerceIn(0f, 1f)
         translationX = size.width * 0.25f * coercedProgress

@@ -9,7 +9,7 @@ import androidx.compose.runtime.rememberUpdatedState
  * [scrollToTopRequest] が正の値に変化したときに [scrollToTop] を呼び出す。
  */
 @Composable
-fun ScrollToTopEffect(
+public fun ScrollToTopEffect(
     scrollToTopRequest: Int,
     scrollToTop: suspend () -> Unit,
 ) {

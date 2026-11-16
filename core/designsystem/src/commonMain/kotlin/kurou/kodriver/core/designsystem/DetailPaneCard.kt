@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
  * DetailPaneCard を提供する公開関数。
  */
 @Composable
-fun DetailPaneCard(
+public fun DetailPaneCard(
     title: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
@@ -70,7 +70,7 @@ fun DetailPaneCard(
  * DetailPaneCard を提供する公開関数。
  */
 @Composable
-fun DetailPaneCard(
+public fun DetailPaneCard(
     title: String,
     bottomContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
@@ -138,7 +138,7 @@ private fun DetailPaneCardLayout(
  */
 @Suppress("ModifierMissing", "UnstableCollections")
 @Composable
-fun DetailPaneCardChips(
+internal fun DetailPaneCardChips(
     chipLabels: List<String>,
     selectedChipLabels: Set<String>,
     chipEnabled: Boolean,

@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
  */
 @Suppress("LongParameterList")
 @Composable
-fun ReadoutTextField(
+public fun ReadoutTextField(
     label: String,
     text: String,
     defaultText: String,
