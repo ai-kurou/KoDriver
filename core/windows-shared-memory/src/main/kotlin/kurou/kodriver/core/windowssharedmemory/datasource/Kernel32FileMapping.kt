@@ -9,21 +9,21 @@ import com.sun.jna.platform.win32.WinNT.HANDLE
  * Windows file mapping API へアクセスする JNA interface。
  */
 @Suppress("FunctionNaming", "ktlint:standard:function-naming")
-interface Kernel32FileMapping : Library {
-    companion object {
-        val INSTANCE: Kernel32FileMapping by lazy {
+public interface Kernel32FileMapping : Library {
+    public companion object {
+        public val INSTANCE: Kernel32FileMapping by lazy {
             Native.load("kernel32", Kernel32FileMapping::class.java)
         }
-        const val FILE_MAP_READ = 0x0004
+        public const val FILE_MAP_READ: Int = 0x0004
     }
 
-    fun OpenFileMappingA(
+    public fun OpenFileMappingA(
         dwDesiredAccess: Int,
         bInheritHandle: Boolean,
         lpName: String,
     ): HANDLE?
 
-    fun MapViewOfFile(
+    public fun MapViewOfFile(
         hFileMappingObject: HANDLE,
         dwDesiredAccess: Int,
         dwFileOffsetHigh: Int,
@@ -31,7 +31,7 @@ interface Kernel32FileMapping : Library {
         dwNumberOfBytesToMap: Int,
     ): Pointer?
 
-    fun UnmapViewOfFile(lpBaseAddress: Pointer): Boolean
+    public fun UnmapViewOfFile(lpBaseAddress: Pointer): Boolean
 
-    fun CloseHandle(hObject: HANDLE): Boolean
+    public fun CloseHandle(hObject: HANDLE): Boolean
 }

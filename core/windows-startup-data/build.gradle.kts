@@ -29,3 +29,7 @@ kover {
         }
     }
 }
+
+kotlin {
+    explicitApi()
+}

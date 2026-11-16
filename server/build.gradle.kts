@@ -60,3 +60,7 @@ dependencies {
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.mockk)
 }
+
+kotlin {
+    explicitApi()
+}

@@ -32,7 +32,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproach
 import org.koin.core.Koin
 
 /** ACE の WebSocket エンドポイントの購読用 UseCase。 */
-data class AceWindowsServerUseCases(
+internal data class AceWindowsServerUseCases(
     val observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
     val observeAceWindowsFlag: ObserveAceWindowsFlagUseCase,
     val observeAceWindowsStatus: ObserveAceWindowsStatusUseCase,

@@ -5,12 +5,12 @@ import java.nio.ByteBuffer
 /**
  * Windows 共有メモリを読み取る reader。
  */
-interface SharedMemoryReader {
-    fun open(): Boolean
+public interface SharedMemoryReader {
+    public fun open(): Boolean
 
-    fun readBuffer(): ByteBuffer?
+    public fun readBuffer(): ByteBuffer?
 
-    fun isOpen(): Boolean
+    public fun isOpen(): Boolean
 
-    fun close()
+    public fun close()
 }

@@ -47,7 +47,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUs
 import org.koin.core.Koin
 
 /** LMU の WebSocket エンドポイントの購読用 UseCase。 */
-data class LmuWindowsServerUseCases(
+internal data class LmuWindowsServerUseCases(
     val observeLmuWindowsRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
     val observeLmuWindowsVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     val observeLmuWindowsVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
