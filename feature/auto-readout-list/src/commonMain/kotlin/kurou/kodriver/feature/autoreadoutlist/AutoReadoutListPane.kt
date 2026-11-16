@@ -678,6 +678,7 @@ private fun AutoReadoutListReadoutSwitch(
             Modifier
                 .size(width = 64.dp, height = 48.dp)
                 .testTag("autoReadoutListSwitchTouchTarget:${item.value}")
+                .focusProperties { canFocus = false }
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() },
