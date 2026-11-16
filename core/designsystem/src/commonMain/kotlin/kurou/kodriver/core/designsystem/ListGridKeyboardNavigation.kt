@@ -14,13 +14,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /** グリッドで矢印キーを受けたときの移動方向。 */
-enum class ListGridDirection { Up, Down, Left, Right }
+internal enum class ListGridDirection { Up, Down, Left, Right }
 
 /**
  * ↑↓←→ に対応する [ListGridDirection] を返す。
  * それ以外のキー・KeyUp・修飾キー付き（Alt+矢印 等）の場合は null。
  */
-fun listGridArrowKeyDirection(event: KeyEvent): ListGridDirection? {
+internal fun listGridArrowKeyDirection(event: KeyEvent): ListGridDirection? {
     val hasModifier = event.isAltPressed || event.isCtrlPressed || event.isMetaPressed || event.isShiftPressed
     val direction =
         when {
@@ -44,7 +44,7 @@ fun listGridArrowKeyDirection(event: KeyEvent): ListGridDirection? {
  *   最終行が欠けていて真下の項目がない場合は、最後の項目へ移動する。
  * - いずれも折り返さず、グリッドの外にも出ない。
  */
-fun listGridArrowKeyAction(
+internal fun listGridArrowKeyAction(
     direction: ListGridDirection?,
     focusedItemKey: String?,
     itemKeys: List<String>,
@@ -93,7 +93,7 @@ private fun listGridDownIndex(
  * [itemKeys] は項目の並び順に並んだ項目キー、[firstItemLazyIndex] は先頭項目の LazyGrid 上のインデックス。
  * 項目はそこから連続していると見なす。[focusState] の扱いは [handleListRowArrowKey] と同じ。
  */
-fun handleListGridArrowKey(
+public fun handleListGridArrowKey(
     event: KeyEvent,
     focusState: ListRowFocusState,
     itemKeys: List<String>,
