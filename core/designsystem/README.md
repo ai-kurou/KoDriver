@@ -94,6 +94,15 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 - 画面外の行は `scrollToItem` でスクロールしてからフォーカスを移す。
 - 表示と操作の統合は各 feature のペインのテストで確認し、判定ロジックは `src/jvmTest` の `ListRowKeyboardNavigationTest` で確認する。
 
+### グリッド（複数列）
+
+`ListGridKeyboardNavigation.kt` の `handleListGridArrowKey` は、`LazyVerticalGrid` のような複数列の一覧向けに ↑↓←→ を処理する。項目は左上から右へ、行ごとに並ぶものとして扱い、`ListRowFocusState` を共用する。
+
+- ←→ は同じ行の隣へ、↑↓ は同じ列の上下へ移動する。端では折り返さず、グリッドの外にも出ず、消費だけする。
+- 最終行が欠けていて真下の項目がない場合、↓ は最後の項目へ移動する。
+- Alt / Ctrl / Shift / Meta 付きの矢印と、項目の外にフォーカスがある場合は処理しない。
+- 判定ロジックは `src/jvmTest` の `ListGridKeyboardNavigationTest` で確認する。
+
 ## 削除・リセットの確認ダイアログ
 
 `KoDriverDestructiveConfirmDialog` は、error 色の確認ボタンとキャンセルボタンを持つ共通ダイアログ。`title`・`body`・`confirmLabel`・`dismissLabel` は呼び出し側で `stringResource` を解決して渡す。本文への名前の埋め込みも呼び出し側で行い、feature の文字列リソースを designsystem に持ち込まない。
@@ -124,3 +133,11 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 `DetailPaneTopAppBar` のタイトルは1行で表示し、バーの幅に収まらない場合は末尾を省略する。
 手動読み上げセット名などの長いタイトルでも、戻るボタン・操作領域と共存できるようにする。
+
+## 行内の部品の ←→ 移動
+
+`ListRowPartsKeyboardNavigation.kt` の `handleListRowPartArrowKey` は、一覧の1行の中の部品（主操作領域・スイッチ・トグルなど）を ←→ で順に移動する共通処理を提供する。部品は行内の並び順に 0 から番号を振り、`ListRowPartsFocusState` が各部品の `FocusRequester` とフォーカス中の部品を保持する（0 番は行の主操作領域）。
+
+- → で次の部品、← で前の部品（0 番に戻れる）へ移動する。端では折り返さず、行の外にも出ず、消費だけする。
+- 無効な部品（`partEnabled` が false）は飛ばす。
+- Alt / Ctrl / Shift / Meta 付きの矢印と、行内の部品にフォーカスがない場合は処理しない。↑↓ は従来どおり行単位の移動（`ListRowFocusState`）が担う。

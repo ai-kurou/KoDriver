@@ -95,9 +95,11 @@ import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ListRowFocusState
+import kurou.kodriver.core.designsystem.ListRowPartsFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
+import kurou.kodriver.core.designsystem.handleListRowPartArrowKey
 import kurou.kodriver.core.designsystem.handleListRowReorderKey
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
@@ -371,6 +373,23 @@ private fun AutoReadoutListItemCard(
 ) {
     val haptic = LocalHapticFeedback.current
     val itemInteractionSource = remember { MutableInteractionSource() }
+    val hasStartSound = item is ReadoutItemKey.TopLevel
+    val hasQueue = item is ReadoutItemKey.TopLevel && item.supportsQueue
+    // 行内の部品の並び: 主操作領域 → 読み上げスイッチ → 開始音 → キュー（TopLevel のみ。キューは対応項目のみ）
+    val partsState =
+        remember(rowFocusRequester, hasStartSound, hasQueue) {
+            ListRowPartsFocusState(
+                partCount = AUTO_READOUT_ROW_BASE_PART_COUNT + (if (hasStartSound) 1 else 0) + (if (hasQueue) 1 else 0),
+                firstRequester = rowFocusRequester,
+            )
+        }
+    val partEnabled =
+        buildList {
+            add(true)
+            add(true)
+            if (hasStartSound) add(readoutEnabled)
+            if (hasQueue) add(readoutEnabled)
+        }
     val openDetail = {
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onItemClick(item)
@@ -400,6 +419,7 @@ private fun AutoReadoutListItemCard(
     ElevatedCard(
         modifier =
             modifier
+                .onKeyEvent { event -> handleListRowPartArrowKey(event, partsState, partEnabled) }
                 .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
                 .fillMaxWidth()
                 .shadow(
@@ -453,6 +473,7 @@ private fun AutoReadoutListItemCard(
                             .fillMaxWidth()
                             .heightIn(min = 48.dp)
                             .semantics { contentDescription = itemName }
+                            .onFocusChanged { partsState.onPartFocusChanged(0, it.isFocused) }
                             .focusRequester(rowFocusRequester)
                             .clickable(
                                 indication = null,
@@ -496,6 +517,10 @@ private fun AutoReadoutListItemCard(
                         checked = readoutEnabled,
                         trackColor = visualStyle.switchTrackColor,
                         onCheckedChange = { onReadoutEnabledChanged(item, it) },
+                        modifier =
+                            Modifier
+                                .onFocusChanged { partsState.onPartFocusChanged(1, it.hasFocus) }
+                                .focusRequester(partsState.requesterFor(1)),
                     )
                 }
                 if (item is ReadoutItemKey.TopLevel) {
@@ -508,7 +533,11 @@ private fun AutoReadoutListItemCard(
                             checked = startSoundEnabled,
                             enabled = readoutEnabled,
                             onCheckedChange = { onStartSoundEnabledChanged(item, it) },
-                            modifier = Modifier.weight(1f),
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .onFocusChanged { partsState.onPartFocusChanged(2, it.hasFocus) }
+                                    .focusRequester(partsState.requesterFor(2)),
                         )
                         if (item.supportsQueue) {
                             AutoReadoutListQueueToggle(
@@ -516,7 +545,11 @@ private fun AutoReadoutListItemCard(
                                 checked = queueEnabled,
                                 enabled = readoutEnabled,
                                 onCheckedChange = { onQueueEnabledChanged(item, it) },
-                                modifier = Modifier.weight(1f),
+                                modifier =
+                                    Modifier
+                                        .weight(1f)
+                                        .onFocusChanged { partsState.onPartFocusChanged(3, it.hasFocus) }
+                                        .focusRequester(partsState.requesterFor(3)),
                             )
                         } else {
                             Box(
@@ -622,6 +655,9 @@ private fun AutoReadoutListBottomChip(
 
 private const val DISABLED_CHIP_CONTENT_ALPHA = 0.38f
 
+/** 行内の部品のうち、全項目に共通する主操作領域とスイッチの数。 */
+private const val AUTO_READOUT_ROW_BASE_PART_COUNT = 2
+
 @Composable
 private fun AutoReadoutListStartSoundToggle(
     item: ReadoutItemKey.TopLevel,
@@ -666,6 +702,7 @@ private fun AutoReadoutListReadoutSwitch(
     checked: Boolean,
     trackColor: Color?,
     onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
     val onCheckedChangeWithHaptic: (Boolean) -> Unit = { newChecked ->
@@ -687,6 +724,7 @@ private fun AutoReadoutListReadoutSwitch(
                 },
     ) {
         Switch(
+            modifier = modifier,
             checked = checked,
             onCheckedChange = onCheckedChangeWithHaptic,
             colors =
