@@ -331,7 +331,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         private const val MY_BEST_LAP_SKIP_LAP_COUNT_DELTA = 2
         private const val REMAINING_FUEL_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000
         private const val CURRENT_LAP_CONSUMPTION_WEIGHT = 0.9f
-        const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
+        private const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
     }
 }
 

@@ -418,7 +418,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         }
 
     private companion object {
-        const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
+        private const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
 
         /** 給油による燃料残り周回数の増加とみなす、前回基準の次の整数からの余裕（周）。 */
         private const val REFUEL_HYSTERESIS_LAPS = 0.5f
