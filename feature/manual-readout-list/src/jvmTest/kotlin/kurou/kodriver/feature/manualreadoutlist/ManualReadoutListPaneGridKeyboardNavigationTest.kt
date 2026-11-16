@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performKeyInput
@@ -117,13 +118,23 @@ class ManualReadoutListPaneGridKeyboardNavigationTest {
 
     @Test
     fun `最終行が欠けていて真下がないときは下キーで最後のタイルへ移る`() {
-        // [A B] [C 追加] で B の下は追加タイルではなく、最終行の追加タイル（最後の項目）へ移る。
-        setPane(listOf("A", "B", "C"))
-        rule.onNodeWithText("B").requestFocus()
+        // [A B] [C D] [追加] で D の真下はないが、最終行に追加タイルがあるため最後のタイルへ移る。
+        setPane(listOf("A", "B", "C", "D"))
+        rule.onNodeWithText("D").requestFocus()
 
-        press("B", Key.DirectionDown)
+        press("D", Key.DirectionDown)
 
         rule.onNodeWithText(addTile).assertIsFocused()
+    }
+
+    @Test
+    fun `矢印以外のキーは消費せず既定のフォーカス移動に任せる`() {
+        setPane(listOf("A", "B"))
+        rule.onNodeWithText("A").requestFocus()
+
+        press("A", Key.Tab)
+
+        rule.onNodeWithText("A").assertIsNotFocused()
     }
 
     @Test
