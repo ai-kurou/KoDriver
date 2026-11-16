@@ -42,7 +42,7 @@ import org.koin.dsl.module
 /**
  * Desktop 版の LmuWindows 設定系バインド（LongMethod 対策）。
  */
-fun desktopLmuWindowsPreferencesDataModule(directory: String): Module =
+public fun desktopLmuWindowsPreferencesDataModule(directory: String): Module =
     module {
         single {
             LmuWindowsAutoReadoutSettingsResetter(

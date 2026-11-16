@@ -44,6 +44,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachRepo
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
@@ -58,7 +59,7 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
  * LmuWindowsVehicleClassRepository は Scoring セグメントの mVehicleClass（人間可読なクラス名文字列）を
  * プレイヤー車両分だけ読み取る。
  */
-val lmuWindowsDataModule =
+public val lmuWindowsDataModule: Module =
     module {
         // 共有メモリのポーリングを回すスコープとデータソース
         single { CoroutineScope(SupervisorJob()) }
