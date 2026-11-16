@@ -25,7 +25,7 @@ import kotlin.math.roundToInt
  * 前回までの判定結果と燃料消費の追跡状態を保持する。
  * 自己ベストの状態は周回数の減少による新セッション検出時にリセットする。
  */
-data class Gt7Ps5NarratorState(
+public data class Gt7Ps5NarratorState(
     val personalBestMs: Int = Int.MAX_VALUE,
     val previousBestLapTimeMs: Int? = null,
     val previousLapCount: Int? = null,
@@ -42,7 +42,7 @@ data class Gt7Ps5NarratorState(
  * 閾値を超える燃料残量の増加は給油として扱い、レース開始時燃料・現在ラップ・経過時間から
  * 残り周回数警告のタイミングを推定する。
  */
-data class Gt7Ps5FuelTrackingState(
+public data class Gt7Ps5FuelTrackingState(
     val raceStartFuel: Gt7Ps5FuelUnit? = null,
     val raceStartLap: Int? = null,
     val currentLap: Int = -1,
@@ -57,7 +57,7 @@ data class Gt7Ps5FuelTrackingState(
 )
 
 /** GT7 向け読み上げ判定で参照するユーザー設定。 */
-data class Gt7Ps5NarratorReadoutSettings(
+public data class Gt7Ps5NarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val remainingFuelLapsThreshold: Int,
     val remainingFuelThresholdPercentage: Int,
@@ -65,7 +65,7 @@ data class Gt7Ps5NarratorReadoutSettings(
 )
 
 /** GT7 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
-data class Gt7Ps5NarratorReadoutDecision(
+public data class Gt7Ps5NarratorReadoutDecision(
     val state: Gt7Ps5NarratorState,
     val events: List<ReadoutTextEvent>,
 )
@@ -73,9 +73,9 @@ data class Gt7Ps5NarratorReadoutDecision(
 /**
  * GT7 のテレメトリから、自己ベスト・燃料残量・燃料残り周回数・タイヤ温度の読み上げを決定する UseCase。
  */
-class DetermineGt7Ps5NarratorReadoutUseCase {
+public class DetermineGt7Ps5NarratorReadoutUseCase {
     /** セットの対応項目を保存順に連結し、自動読み上げの警告済み状態を維持する。 */
-    fun determineManualReadout(
+    public fun determineManualReadout(
         state: Gt7Ps5NarratorState,
         items: List<Gt7Ps5ManualReadoutItem>,
     ): Gt7Ps5NarratorReadoutDecision {
@@ -90,10 +90,10 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
     }
 
     /** 自己ベストラップ（ms）。未受信・鮮度切れ・0以下（未確定）の場合はデータなし。 */
-    fun currentBestLapTimeMs(telemetry: Gt7Ps5TelemetryData?): Int? = telemetry?.bestLapTimeMs?.takeIf { it > 0 }
+    public fun currentBestLapTimeMs(telemetry: Gt7Ps5TelemetryData?): Int? = telemetry?.bestLapTimeMs?.takeIf { it > 0 }
 
     /** 有限かつ0以外の最高タイヤ温度を四捨五入する。未受信・鮮度切れ・全輪が非有限値または0（取得不能）の場合はデータなし。 */
-    fun currentMaxTyreTemperatureCelsius(telemetry: Gt7Ps5TelemetryData?): Int? {
+    public fun currentMaxTyreTemperatureCelsius(telemetry: Gt7Ps5TelemetryData?): Int? {
         val temperature = telemetry?.tyreTemperature ?: return null
         return listOf(
             temperature.frontLeftCelsius,
@@ -104,7 +104,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
     }
 
     /** 自動読み上げの設定やタイミングに依存せず、追跡中の平均消費から現在の残り周回数を返す。 */
-    fun currentRemainingFuelLaps(state: Gt7Ps5NarratorState): Int? {
+    public fun currentRemainingFuelLaps(state: Gt7Ps5NarratorState): Int? {
         val fuelState = state.fuelTrackingState
         val startFuel = fuelState.raceStartFuel ?: return null
         val startLap = fuelState.raceStartLap ?: return null
@@ -129,14 +129,14 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
     }
 
     /** 未受信・鮮度切れ・不正な燃料値は手動読み上げのデータなしとして扱う。 */
-    fun currentRemainingFuelPercent(telemetry: Gt7Ps5TelemetryData?): Int? {
+    public fun currentRemainingFuelPercent(telemetry: Gt7Ps5TelemetryData?): Int? {
         if (telemetry == null) return null
         if (!telemetry.gasLevel.value.isFinite() || !telemetry.gasCapacity.value.isFinite()) return null
         if (telemetry.gasLevel.value < 0f || telemetry.gasCapacity.value <= 0f) return null
         return remainingFuelPercent(telemetry)
     }
 
-    fun determineMyBestLap(
+    public fun determineMyBestLap(
         state: Gt7Ps5NarratorState,
         telemetry: Gt7Ps5TelemetryData,
         settings: Gt7Ps5NarratorReadoutSettings,
@@ -176,7 +176,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         )
     }
 
-    fun determineRemainingFuelLaps(
+    public fun determineRemainingFuelLaps(
         state: Gt7Ps5NarratorState,
         telemetry: Gt7Ps5TelemetryData,
         settings: Gt7Ps5NarratorReadoutSettings,
@@ -218,7 +218,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         )
     }
 
-    fun determineRemainingFuel(
+    public fun determineRemainingFuel(
         state: Gt7Ps5NarratorState,
         telemetry: Gt7Ps5TelemetryData,
         settings: Gt7Ps5NarratorReadoutSettings,
@@ -240,7 +240,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         )
     }
 
-    fun determineTyreTemperature(
+    public fun determineTyreTemperature(
         state: Gt7Ps5NarratorState,
         telemetry: Gt7Ps5TelemetryData,
         settings: Gt7Ps5NarratorReadoutSettings,

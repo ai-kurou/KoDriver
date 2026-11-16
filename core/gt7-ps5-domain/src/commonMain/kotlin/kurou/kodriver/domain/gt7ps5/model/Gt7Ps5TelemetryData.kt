@@ -10,7 +10,7 @@ import kurou.kodriver.domain.model.CelsiusReading
  * [gasLevel] / [gasCapacity] で求める。ラップタイムは milliseconds。
  */
 @Serializable
-data class Gt7Ps5TelemetryData(
+public data class Gt7Ps5TelemetryData(
     /** 現在の周回数。セッション切り替わり検出にも使う。 */
     val lapCount: Int,
     /** レースの総周回数。時間制や未設定の場合はゲーム側の値をそのまま保持する。 */

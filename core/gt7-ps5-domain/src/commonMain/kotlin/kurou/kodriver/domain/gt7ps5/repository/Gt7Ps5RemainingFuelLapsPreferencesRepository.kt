@@ -2,18 +2,18 @@ package kurou.kodriver.domain.gt7ps5.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface Gt7Ps5RemainingFuelLapsPreferencesRepository {
-    suspend fun resetToDefault()
+public interface Gt7Ps5RemainingFuelLapsPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeRemainingFuelLaps(): Flow<Int>
+    public fun observeRemainingFuelLaps(): Flow<Int>
 
-    suspend fun saveRemainingFuelLaps(laps: Int)
+    public suspend fun saveRemainingFuelLaps(laps: Int)
 
-    fun observeReadoutText(): Flow<String>
+    public fun observeReadoutText(): Flow<String>
 
-    suspend fun saveReadoutText(text: String)
+    public suspend fun saveReadoutText(text: String)
 
-    fun observeEmptyReadoutText(): Flow<String>
+    public fun observeEmptyReadoutText(): Flow<String>
 
-    suspend fun saveEmptyReadoutText(text: String)
+    public suspend fun saveEmptyReadoutText(text: String)
 }

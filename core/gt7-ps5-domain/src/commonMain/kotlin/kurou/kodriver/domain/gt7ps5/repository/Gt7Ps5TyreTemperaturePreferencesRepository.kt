@@ -4,21 +4,21 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-interface Gt7Ps5TyreTemperaturePreferencesRepository {
-    suspend fun resetToDefault()
+public interface Gt7Ps5TyreTemperaturePreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeHighThresholdCelsius(): Flow<Celsius>
+    public fun observeHighThresholdCelsius(): Flow<Celsius>
 
-    suspend fun saveHighThresholdCelsius(celsius: Celsius)
+    public suspend fun saveHighThresholdCelsius(celsius: Celsius)
 
-    fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
+    public fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
-    suspend fun saveEnabledState(
+    public suspend fun saveEnabledState(
         key: ReadoutItemKey,
         enabled: Boolean,
     )
 
-    fun observeOverheatReadoutText(): Flow<String>
+    public fun observeOverheatReadoutText(): Flow<String>
 
-    suspend fun saveOverheatReadoutText(text: String)
+    public suspend fun saveOverheatReadoutText(text: String)
 }

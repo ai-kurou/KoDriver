@@ -13,9 +13,9 @@ private val tyreTemperatureEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
         Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning to true,
     )
 
-class ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase(
+public class ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase(
     private val repository: Gt7Ps5TyreTemperaturePreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
+    public operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
         repository.observeEnabledStates().map { persisted -> tyreTemperatureEnabledStateDefaults + persisted }
 }

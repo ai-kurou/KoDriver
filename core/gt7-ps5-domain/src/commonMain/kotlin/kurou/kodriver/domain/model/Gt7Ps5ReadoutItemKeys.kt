@@ -7,7 +7,7 @@ import kurou.kodriver.domain.gt7ps5.model.gt7Ps5DefaultAutoReadoutOrder
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemPhrases
 
-val GT7_PS5_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
+public val GT7_PS5_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
     listOf(
         Gt7Ps5ReadoutItemKey.MyBestLap.Root,
         Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled,
@@ -35,4 +35,4 @@ internal val gt7Ps5ReadoutSpec: SimulatorReadoutSpec
             ),
         )
 
-fun registerGt7Ps5ReadoutItemKeys() = ReadoutItemKeyRegistry.register(gt7Ps5ReadoutSpec)
+public fun registerGt7Ps5ReadoutItemKeys(): Unit = ReadoutItemKeyRegistry.register(gt7Ps5ReadoutSpec)

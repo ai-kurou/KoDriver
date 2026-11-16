@@ -3,7 +3,7 @@ package kurou.kodriver.domain.gt7ps5.model
 import kurou.kodriver.domain.model.SinglePlaceholderTemplate
 
 /** 自己ベストラップ更新文言のラップタイムプレースホルダーを置換する。 */
-fun formatGt7Ps5MyBestLapReadoutText(
+public fun formatGt7Ps5MyBestLapReadoutText(
     template: String,
     lapTimeMs: Int,
 ): String {
@@ -15,5 +15,5 @@ fun formatGt7Ps5MyBestLapReadoutText(
 }
 
 /** 文言内の `{...}` のうち、`{laptime}` 以外のトークンを出現順・重複なしで返す。 */
-fun findUnknownGt7Ps5MyBestLapReadoutPlaceholders(template: String): List<String> =
+public fun findUnknownGt7Ps5MyBestLapReadoutPlaceholders(template: String): List<String> =
     SinglePlaceholderTemplate(GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER).findUnknown(template)

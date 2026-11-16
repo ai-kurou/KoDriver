@@ -11,7 +11,7 @@ private const val PREVIEW_REMAINING_FUEL_LAPS = 3
 private const val PREVIEW_BEST_LAP_TIME_MS = 83_456
 private const val PREVIEW_TYRE_TEMPERATURE_CELSIUS = 90
 
-val gt7Ps5ManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition> =
+public val gt7Ps5ManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition> =
     manualReadoutItemDefinitionMapOf(
         manualReadoutItemDefinitionOf(
             Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
@@ -54,5 +54,5 @@ val gt7Ps5ManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition>
 internal fun gt7Ps5ManualReadoutItemName(itemKey: String): String =
     gt7Ps5ManualReadoutItemDefinitions[itemKey]?.name.orEmpty()
 
-fun gt7Ps5ManualReadoutItemTextDefault(itemKey: String): String =
+public fun gt7Ps5ManualReadoutItemTextDefault(itemKey: String): String =
     gt7Ps5ManualReadoutItemDefinitions[itemKey]?.textDefault.orEmpty()
