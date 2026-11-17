@@ -60,7 +60,7 @@ class OtherContentManualReadoutSettingsResetTest {
         rule
             .onNodeWithText(
                 "手動タブのすべてのシミュレーター（LMU・ACE・GT7）の設定を初期化し、デフォルトに戻します。" +
-                    "読み上げセット（項目の有効/無効、並び順、ホットキーなど）と再生ボタンのレイアウト設定が" +
+                    "読み上げセット（項目のON/OFF、並び順、ホットキーなど）と再生ボタンのレイアウト設定が" +
                     "対象です。この操作は元に戻せません。",
             ).assertExists()
         rule.onNodeWithText("キャンセル").performClick()

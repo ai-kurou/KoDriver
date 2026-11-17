@@ -64,7 +64,7 @@ Windows/Androidの「読み上げ速度」項目を読み上げ音声の次に�
 
 「自動タブの設定を初期化」はデータ・ログカテゴリで「ログを表示」の次に全プラットフォームで表示する。確認後、操作した端末の自動タブの設定を LMU・ACE・GT7 一括で既定値へ戻す（有効/無効、並び順、閾値、読み上げ文言など）。選択状態や詳細ペインは変わらない。`OtherListAutoReadoutSettingsResetFlow` が確認・二重実行防止・成功/失敗を管理し、ViewModel が `viewModelScope` で実行する。`ResetAutoReadoutSettingsUseCase(getAll())` に登録済みの全 resetter を渡し、OtherContent がダイアログとスナックバー、離脱時の結果消費を扱う。
 
-「手動タブの設定を初期化」は自動タブ初期化の次に表示する。確認後、手動タブの LMU・ACE・GT7 の読み上げセット（項目の有効/無効、並び順、ホットキーなど）と再生ボタンのレイアウト設定を一括で既定値へ戻す。構成は自動版と同じで、`OtherListManualReadoutSettingsResetFlow` と `ResetManualReadoutSettingsUseCase(getAll())` を使い、OtherContent がダイアログとスナックバーを扱う。
+「手動タブの設定を初期化」は自動タブ初期化の次に表示する。確認後、手動タブの LMU・ACE・GT7 の読み上げセット（項目のON/OFF、並び順、ホットキーなど）と再生ボタンのレイアウト設定を一括で既定値へ戻す。構成は自動版と同じで、`OtherListManualReadoutSettingsResetFlow` と `ResetManualReadoutSettingsUseCase(getAll())` を使い、OtherContent がダイアログとスナックバーを扱う。
 
 OS起動時自動起動の状態取得・変更と表示状態は `OtherListStartupRegistrationFlow` が管理し、`OtherListViewModel` は `viewModelScope` で操作を起動する。
 

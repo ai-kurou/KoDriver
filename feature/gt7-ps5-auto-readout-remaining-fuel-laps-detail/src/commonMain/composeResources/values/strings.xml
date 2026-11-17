@@ -13,5 +13,5 @@
     <string name="remaining_fuel_laps_text_preview">入力した文言を再生</string>
     <string name="remaining_fuel_laps_text_selected_icon">この文言を読み上げます</string>
     <string name="remaining_fuel_laps_text_unknown_placeholders">%1$s は置き換えられません。{laps} を使用してください</string>
-    <string name="remaining_fuel_laps_empty_text_label">燃料がありません(1.0周未満)のときの文言</string>
+    <string name="remaining_fuel_laps_empty_text_label">燃料がありません（1.0周未満）のときの文言</string>
 </resources>

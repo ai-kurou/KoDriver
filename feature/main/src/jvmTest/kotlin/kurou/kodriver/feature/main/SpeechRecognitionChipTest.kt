@@ -75,7 +75,7 @@ class SpeechRecognitionChipTest {
             }
         }
 
-        rule.onNodeWithContentDescription("「コドライバー」の呼びかけを待っています(マイクを使用中)").assertIsDisplayed()
+        rule.onNodeWithContentDescription("「コドライバー」の呼びかけを待っています（マイクを使用中）").assertIsDisplayed()
     }
 
     @Test
@@ -88,7 +88,7 @@ class SpeechRecognitionChipTest {
             }
         }
 
-        rule.onNodeWithContentDescription("コマンドを聞き取り中(マイクを使用中)").assertIsDisplayed()
+        rule.onNodeWithContentDescription("コマンドを聞き取り中（マイクを使用中）").assertIsDisplayed()
     }
 
     @Test

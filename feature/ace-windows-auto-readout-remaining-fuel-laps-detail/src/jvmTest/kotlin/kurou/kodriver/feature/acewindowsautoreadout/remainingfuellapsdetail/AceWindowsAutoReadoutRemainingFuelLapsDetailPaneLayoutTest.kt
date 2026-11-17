@@ -30,7 +30,7 @@ class AceWindowsAutoReadoutRemainingFuelLapsDetailPaneLayoutTest {
             }
         }
 
-        val emptyLabel = rule.onNodeWithText("燃料がありません(0周以下)のときの文言").fetchSemanticsNode().boundsInRoot
+        val emptyLabel = rule.onNodeWithText("燃料がありません（0周以下）のときの文言").fetchSemanticsNode().boundsInRoot
         val chip = rule.onNodeWithText("{laps}を挿入").fetchSemanticsNode().boundsInRoot
         val hint = rule.onNodeWithText("{laps} は残り周回数に置き換わります").fetchSemanticsNode().boundsInRoot
         val expected = with(rule.density) { (KoDriverSpacing.small + KoDriverSpacing.large).toPx() }
@@ -52,7 +52,7 @@ class AceWindowsAutoReadoutRemainingFuelLapsDetailPaneLayoutTest {
         val fields = rule.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().map { it.boundsInRoot }
         listOf(
             "1周以上のときの文言",
-            "燃料がありません(0周以下)のときの文言",
+            "燃料がありません（0周以下）のときの文言",
         ).forEach { label ->
             rule.onAllNodesWithText(label).assertCountEquals(1)
             rule.onAllNodesWithText(label).fetchSemanticsNodes().forEach { node ->

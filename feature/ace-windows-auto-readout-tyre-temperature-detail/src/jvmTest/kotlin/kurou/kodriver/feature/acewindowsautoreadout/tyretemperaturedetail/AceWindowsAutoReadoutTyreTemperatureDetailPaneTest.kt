@@ -288,7 +288,7 @@ class AceWindowsAutoReadoutTyreTemperatureDetailPaneTest {
         rule.onNodeWithText("未対応のプレースホルダー {wheel}、{x} はそのまま読み上げられます").assertIsDisplayed()
         rule.onAllNodesWithText("未対応のプレースホルダー {celsius}", substring = true).assertCountEquals(0)
         rule
-            .onNodeWithText("{celsius} は警告時点で最も高温のタイヤのカーカス温度(℃)を整数に丸めた値に置き換わります")
+            .onNodeWithText("{celsius} は警告時点で最も高温のタイヤのカーカス温度（℃）を整数に丸めた値に置き換わります")
             .assertIsDisplayed()
     }
 

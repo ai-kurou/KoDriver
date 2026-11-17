@@ -68,7 +68,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailPaneTest {
         rule.onNodeWithText("燃料は残り約{laps}周").assertIsDisplayed()
         rule.onNodeWithText("{laps} は残り周回数に置き換わります").assertIsDisplayed()
         rule.onNodeWithText("{laps}を挿入").assertIsEnabled()
-        rule.onNodeWithText("燃料がありません(1.0周未満)のときの文言").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("燃料がありません（1.0周未満）のときの文言").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("燃料は残り1周未満").assertIsDisplayed()
         rule.onNodeWithText("残り約: 3 周").performScrollTo().assertIsDisplayed()
     }
@@ -181,7 +181,7 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("燃料がありません(1.0周未満)のときの文言").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("燃料がありません（1.0周未満）のときの文言").performScrollTo().assertIsDisplayed()
         rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].assertIsNotEnabled().performClick()
         rule.onAllNodes(hasSetTextAction())[1].performTextReplacement("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1))
         rule.onAllNodes(hasSetTextAction())[1].assertEditableTextEquals("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH))
