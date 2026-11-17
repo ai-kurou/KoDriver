@@ -48,6 +48,8 @@ LMU のキーは `LmuWindowsReadoutItemKey.` の接頭辞を省略して記載�
 
 項目追加ボタン・ピッカーでの選択・選択項目の削除・試聴開始／停止・セット名の編集開始と明示的な確定・ホットキーの有効なキー入力／解除／再試行／修飾キー操作では、既存の `ContextClick` 触覚フィードバックを行う。文言入力・並べ替え・フォーカス喪失によるセット名の自動保存・状態更新では追加の通知を行わない。
 
+選択項目の並べ替えは、ドラッグ・アクセシビリティ操作に加え、ドラッグハンドルにフォーカスして Alt（Mac では Option）+ ↑↓ でも行える（`:core:designsystem` の `handleColumnRowReorderKey` から `onMoveItem` を呼ぶ。先頭の↑・末尾の↓では何もしない）。
+
 `libs.reorderable` の `ReorderableColumn` でドラッグ終了時に `moveItem` を呼び、`ManualReadoutSet.itemKeys` の順序を保存する。最大3項目のため、画面のスクロール内で通常の Column として配置する。試聴文は選択順に空欄を除いて「、」でつなぎ、domain の置換関数で仮想エネルギー・タイヤ摩耗・ブレーキ残量・GT7 と ACE の燃料残量のパーセントをサンプル値50に、ブレーキ温度の `{celsius}` をサンプル値500℃に、タイヤ温度の `{celsius}` をサンプル値90℃に、自己ベストの `{laptime}` を83456ms（1分23秒456）に、エネルギー・タイヤ摩耗の `{laps}` を3周に置換する。選択項目がある場合は区切り線の下に空でない試聴文を大きめに表示し、その下に試聴ボタンを右寄せで配置する。項目がなければ試聴ボタンを表示しない。Narrator の読み上げロジックは変更しない。
 
 `ManualReadoutSetDetailViewModel` は `ObserveManualReadoutSetsUseCase` で対象セットを観測し、`UpdateManualReadoutSetUseCase` で追加・削除・並べ替えと項目ごとの文言を保存する。追加は重複・未対応キー・3件上限を検証する。未知キーは保持し、連続操作は直前の保存結果を参照する。セットが見つからない場合は説明を表示する。上部バー右端の削除アイコン（`DetailPaneScaffold` の `actions`）から確認ダイアログを開き、`DeleteManualReadoutSetUseCase` を実行し、削除完了時に Content の `onDeleted` を通知する。

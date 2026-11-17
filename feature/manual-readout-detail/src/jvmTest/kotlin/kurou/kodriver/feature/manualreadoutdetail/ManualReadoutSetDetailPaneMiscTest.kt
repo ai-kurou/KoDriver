@@ -1,16 +1,20 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performKeyInput
+import androidx.compose.ui.test.requestFocus
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
 import kurou.kodriver.domain.model.Simulator
@@ -188,5 +192,54 @@ class ManualReadoutSetDetailPaneMiscTest {
             }
         }
         assertEquals(listOf(0 to 1, 1 to 0, 1 to 2, 2 to 1), moves)
+    }
+
+    @Test
+    fun `並べ替えハンドルにフォーカスがあるとAlt+上下で項目を移動し端と修飾なしでは動かさない`() {
+        val keys = listOf("A", "B", "C")
+        val moves = mutableListOf<Pair<Int, Int>>()
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState =
+                        ManualReadoutSetDetailUiState(
+                            simulatorId = Simulator.LmuWindows.id,
+                            setNumber = 1,
+                            availableItemKeys = lmuWindowsManualReadoutItemKeys(),
+                            selectedItemKeys = keys,
+                        ),
+                    onAddItem = {},
+                    onDelete = {},
+                    onMoveItem = { from, to -> moves.add(from to to) },
+                    showHotkey = false,
+                )
+            }
+        }
+
+        fun pressAlt(
+            index: Int,
+            key: Key,
+        ) {
+            val handle = rule.onAllNodes(hasContentDescription("を並べ替え", substring = true))[index]
+            handle.requestFocus()
+            handle.performKeyInput {
+                keyDown(Key.AltLeft)
+                keyDown(key)
+                keyUp(key)
+                keyUp(Key.AltLeft)
+            }
+        }
+        pressAlt(0, Key.DirectionUp)
+        pressAlt(0, Key.DirectionDown)
+        pressAlt(2, Key.DirectionDown)
+        pressAlt(2, Key.DirectionUp)
+        val plain = rule.onAllNodes(hasContentDescription("を並べ替え", substring = true))[1]
+        plain.requestFocus()
+        plain.performKeyInput {
+            keyDown(Key.DirectionDown)
+            keyUp(Key.DirectionDown)
+        }
+        rule.waitForIdle()
+        assertEquals(listOf(0 to 1, 2 to 1), moves)
     }
 }
