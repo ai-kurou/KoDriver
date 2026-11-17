@@ -14,7 +14,7 @@ import org.jetbrains.compose.resources.StringResource
  * DataStore などに永続化される値ではないため、順序（[ordinal]）を
  * 進捗率の算出に利用してよい。
  */
-enum class DesktopSplashStep {
+public enum class DesktopSplashStep {
     /** Koin モジュール構築中。 */
     INITIALIZING_MODULES,
 

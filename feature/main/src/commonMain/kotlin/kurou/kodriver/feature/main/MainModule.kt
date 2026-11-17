@@ -48,7 +48,7 @@ import org.koin.dsl.module
  *   SimulatorPreferencesRepository（:core:data で登録）。アプリバージョンはビルド生成値を直接渡す。
  * プラットフォーム別の登録は [mainPlatformModule]（expect/actual）に分離している。
  */
-val mainModule =
+public val mainModule: Module =
     module {
         // ViewModel
         viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get()) }
@@ -118,4 +118,4 @@ val mainModule =
         factory { SaveMainWindowBoundsUseCase(get()) }
     }
 
-expect val mainPlatformModule: Module
+public expect val mainPlatformModule: Module

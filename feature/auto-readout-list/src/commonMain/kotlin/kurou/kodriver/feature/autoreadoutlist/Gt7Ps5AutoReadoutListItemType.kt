@@ -4,19 +4,19 @@ import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 
-sealed class Gt7Ps5AutoReadoutListItemType(
+public sealed class Gt7Ps5AutoReadoutListItemType(
     id: ReadoutItemKey,
 ) : AutoReadoutListItemType(id, Simulator.Gt7Ps5) {
-    data object MyBestLap : Gt7Ps5AutoReadoutListItemType(Gt7Ps5ReadoutItemKey.MyBestLap.Root)
+    public data object MyBestLap : Gt7Ps5AutoReadoutListItemType(Gt7Ps5ReadoutItemKey.MyBestLap.Root)
 
-    data object RemainingFuelLaps : Gt7Ps5AutoReadoutListItemType(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root)
+    public data object RemainingFuelLaps : Gt7Ps5AutoReadoutListItemType(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root)
 
-    data object RemainingFuel : Gt7Ps5AutoReadoutListItemType(Gt7Ps5ReadoutItemKey.RemainingFuel.Root)
+    public data object RemainingFuel : Gt7Ps5AutoReadoutListItemType(Gt7Ps5ReadoutItemKey.RemainingFuel.Root)
 
-    data object TyreTemperature : Gt7Ps5AutoReadoutListItemType(Gt7Ps5ReadoutItemKey.TyreTemperature.Root)
+    public data object TyreTemperature : Gt7Ps5AutoReadoutListItemType(Gt7Ps5ReadoutItemKey.TyreTemperature.Root)
 
-    companion object {
-        fun fromId(id: ReadoutItemKey): Gt7Ps5AutoReadoutListItemType? =
+    public companion object {
+        public fun fromId(id: ReadoutItemKey): Gt7Ps5AutoReadoutListItemType? =
             if (id is Gt7Ps5ReadoutItemKey.TopLevel) fromTopLevel(id) else null
 
         private fun fromTopLevel(id: Gt7Ps5ReadoutItemKey.TopLevel): Gt7Ps5AutoReadoutListItemType =

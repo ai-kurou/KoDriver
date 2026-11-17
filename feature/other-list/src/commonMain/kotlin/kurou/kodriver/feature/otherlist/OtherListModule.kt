@@ -28,6 +28,7 @@ import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -38,7 +39,7 @@ import org.koin.dsl.module
  * 消費（get で解決）: OtherListViewModel が使う UseCase 群（:core:domain。実体の Repository は
  *   :core:data / :core:device-volume-data / :core:windows-startup-data / :core:text-to-speech-data で登録）。アプリバージョンはビルド生成値を直接渡す。
  */
-val otherListModule =
+public val otherListModule: Module =
     module {
         // ViewModel
         viewModel {

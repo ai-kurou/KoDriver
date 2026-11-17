@@ -10,6 +10,7 @@ import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -22,7 +23,7 @@ import org.koin.dsl.module
  * 消費（get で解決）: SimulatorPreferencesRepository・AutoReadoutPreferencesRepository・
  *   QueuePreferencesRepository・ReadoutStartSoundEnabledPreferencesRepository（いずれも :core:data で登録）。
  */
-val autoReadoutListModule =
+public val autoReadoutListModule: Module =
     module {
         // ViewModel
         viewModelOf(::AutoReadoutListViewModel)

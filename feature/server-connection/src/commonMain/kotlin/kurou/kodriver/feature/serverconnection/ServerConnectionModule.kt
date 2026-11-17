@@ -4,6 +4,7 @@ import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveKoDriverServerConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -16,7 +17,7 @@ import org.koin.dsl.module
  *   SimulatorPreferencesRepository（:core:data）、named("appVersion") のバージョン定数
  *   （app エントリーポイントで登録）。
  */
-val serverConnectionModule =
+public val serverConnectionModule: Module =
     module {
         // ViewModel（get(named "appVersion") は app エントリーポイントで束ねるバージョン定数を解決）
         viewModel { ServerConnectionViewModel(get(), get(named("appVersion"))) }

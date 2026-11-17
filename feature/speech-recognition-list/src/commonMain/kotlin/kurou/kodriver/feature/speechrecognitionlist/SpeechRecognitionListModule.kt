@@ -2,11 +2,12 @@ package kurou.kodriver.feature.speechrecognitionlist
 
 import kurou.kodriver.domain.usecase.ObserveManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechCommandGuideUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 /** 音声タブの一覧の ViewModel を提供する Koin モジュール。 */
-val speechRecognitionListModule =
+public val speechRecognitionListModule: Module =
     module {
         viewModel {
             SpeechRecognitionListViewModel(

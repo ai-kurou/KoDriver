@@ -7,15 +7,15 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 
 /** アプリ更新の確認と表示状態を管理する。実行のライフサイクルは呼び出し元に従う。 */
-class OtherListAppUpdateFlow(
+public class OtherListAppUpdateFlow(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,
 ) {
     private val _uiState = MutableStateFlow(OtherListAppUpdateUiState())
-    val uiState: StateFlow<OtherListAppUpdateUiState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<OtherListAppUpdateUiState> = _uiState.asStateFlow()
     private var updateCheckStarted = false
 
-    suspend fun checkUpdate() {
+    public suspend fun checkUpdate() {
         if (currentVersion.isBlank() || updateCheckStarted) return
         updateCheckStarted = true
         val hasUpdate = checkAppUpdateAvailable(currentVersion)

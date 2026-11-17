@@ -17,7 +17,7 @@ import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
-data class AppScreenSettingsUseCases(
+public data class AppScreenSettingsUseCases(
     val observeEffectiveKeepScreenOn: ObserveEffectiveKeepScreenOnUseCase,
     val observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
     val observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
@@ -28,7 +28,7 @@ data class AppScreenSettingsUseCases(
 /**
  * AppScreen 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-class AppScreenViewModel(
+public class AppScreenViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,
     private val settingsUseCases: AppScreenSettingsUseCases,
@@ -37,7 +37,7 @@ class AppScreenViewModel(
     private var updateCheckStarted = false
     private val _hasAppUpdate = MutableStateFlow(false)
     private val _accessLocalNetworkPermissionGranted = MutableStateFlow(checkAccessLocalNetworkPermissionGranted())
-    val uiState: StateFlow<AppScreenUiState> =
+    public val uiState: StateFlow<AppScreenUiState> =
         AppScreenFlow(
             hasAppUpdate = _hasAppUpdate,
             accessLocalNetworkPermissionGranted = _accessLocalNetworkPermissionGranted,
@@ -47,7 +47,7 @@ class AppScreenViewModel(
             selectedSimulator = settingsUseCases.observeSelectedSimulator(),
         ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppScreenUiState())
 
-    fun checkUpdate() {
+    public fun checkUpdate() {
         if (currentVersion.isBlank() || updateCheckStarted) return
         updateCheckStarted = true
         viewModelScope.launchCapturingErrors {
@@ -56,7 +56,7 @@ class AppScreenViewModel(
         }
     }
 
-    fun checkAccessLocalNetworkPermission() {
+    public fun checkAccessLocalNetworkPermission() {
         _accessLocalNetworkPermissionGranted.update { checkAccessLocalNetworkPermissionGranted() }
     }
 
@@ -64,7 +64,7 @@ class AppScreenViewModel(
      * app:shared など `:core:domain` に依存しないモジュールから呼び出せるよう、
      * [Simulator] 型ではなく [Simulator.id] の文字列を受け取る。不明な ID は無視する。
      */
-    fun selectSimulator(simulatorId: String) {
+    public fun selectSimulator(simulatorId: String) {
         val simulator = Simulator.fromId(simulatorId) ?: return
         viewModelScope.launchCapturingErrors {
             settingsUseCases.saveSelectedSimulator(simulator)

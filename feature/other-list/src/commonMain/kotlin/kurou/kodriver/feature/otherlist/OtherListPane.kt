@@ -71,7 +71,7 @@ internal fun otherListRowLayout(
  * OtherList の画面を表示する Composable。
  */
 @Composable
-fun OtherListPane(
+public fun OtherListPane(
     uiState: OtherListUiState,
     onItemClick: (OtherListItemType) -> Unit,
     onOverlayVisibleChange: (Boolean) -> Unit,

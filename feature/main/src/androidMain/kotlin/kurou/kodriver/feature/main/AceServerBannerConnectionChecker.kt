@@ -13,7 +13,7 @@ import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 /**
  * AceServerBanner の接続状態を監視する実装。
  */
-class AceServerBannerConnectionChecker(
+public class AceServerBannerConnectionChecker(
     private val fetchServerVersion: FetchServerVersionUseCase,
     private val observeServerIp: ObserveServerIpUseCase,
 ) : AceBannerConnectionChecker {

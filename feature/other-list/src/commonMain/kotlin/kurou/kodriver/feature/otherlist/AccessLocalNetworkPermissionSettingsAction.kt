@@ -7,4 +7,4 @@ import androidx.compose.runtime.Composable
  * このプラットフォーム向けの実装を要求する expect 宣言。
  */
 @Composable
-expect fun rememberOpenAccessLocalNetworkPermissionSettings(): () -> Unit
+public expect fun rememberOpenAccessLocalNetworkPermissionSettings(): () -> Unit

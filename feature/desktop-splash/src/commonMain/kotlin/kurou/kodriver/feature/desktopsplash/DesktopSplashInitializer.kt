@@ -12,7 +12,7 @@ package kurou.kodriver.feature.desktopsplash
  * @param initializeModules Koin モジュール構築など、依存グラフの初期化処理。
  * @param startServer Ktor サーバーの起動処理。
  */
-suspend fun DesktopSplashProgress.runInitialization(
+public suspend fun DesktopSplashProgress.runInitialization(
     initializeModules: suspend () -> Unit,
     startServer: suspend () -> Unit,
 ) {

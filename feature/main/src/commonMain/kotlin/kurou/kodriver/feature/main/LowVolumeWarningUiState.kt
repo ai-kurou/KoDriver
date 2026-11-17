@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.main
 
 /** app:shared に渡す音量警告の表示状態。 */
-data class LowVolumeWarningUiState(
+public data class LowVolumeWarningUiState(
     val deviceVolume: Int? = null,
     val soundVolume: Int? = null,
 ) {

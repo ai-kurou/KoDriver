@@ -9,10 +9,10 @@ import kurou.kodriver.domain.model.OTHER_LIST_DEVICE_VOLUME_POLLING_INTERVAL_MS
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 
 /** OtherList が購読中に取得する端末マスター音量を提供する。 */
-class OtherListDeviceVolumeFlow(
+public class OtherListDeviceVolumeFlow(
     private val getDeviceVolume: GetDeviceVolumeUseCase,
 ) {
-    val volume: Flow<Int> =
+    public val volume: Flow<Int> =
         flow {
             var latest = DEVICE_VOLUME_MIN
             while (true) {

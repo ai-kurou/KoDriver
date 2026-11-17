@@ -7,7 +7,7 @@ import kurou.kodriver.domain.model.Simulator
 /**
  * AutoReadoutList 画面の表示状態。
  */
-data class AutoReadoutListUiState(
+public data class AutoReadoutListUiState(
     val selectedSimulator: Simulator = SELECTED_SIMULATOR_DEFAULT,
     val items: List<ReadoutItemKey> = emptyList(),
     val autoReadoutEnabledStates: Map<ReadoutItemKey, Boolean> = emptyMap(),

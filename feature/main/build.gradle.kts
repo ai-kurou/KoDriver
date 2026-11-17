@@ -92,3 +92,7 @@ dependencies {
     testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))
     testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }
+
+kotlin {
+    explicitApi()
+}

@@ -54,7 +54,7 @@ private const val NARRATOR_OVERLAY_TEXT_FADE_DURATION_MILLIS = 150
  * NarratorOverlayContent を提供する公開関数。
  */
 @Composable
-fun NarratorOverlayContent(modifier: Modifier = Modifier) {
+public fun NarratorOverlayContent(modifier: Modifier = Modifier) {
     val viewModel: NarratorOverlayViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     NarratorOverlayContent(uiState = uiState, modifier = modifier)

@@ -24,7 +24,7 @@ import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 /**
  * OtherList 画面の表示状態。
  */
-data class OtherListUiState(
+public data class OtherListUiState(
     val items: List<OtherListItemType> = buildOtherListItems(),
     val reset: OtherListResetUiState = OtherListResetUiState(),
     val autoReadoutSettingsReset: OtherListResetUiState = OtherListResetUiState(),

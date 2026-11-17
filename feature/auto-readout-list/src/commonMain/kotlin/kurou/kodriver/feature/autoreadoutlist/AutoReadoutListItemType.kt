@@ -4,14 +4,14 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.defaultAutoReadoutOrder
 
-sealed class AutoReadoutListItemType(
-    val id: ReadoutItemKey,
+public sealed class AutoReadoutListItemType(
+    public val id: ReadoutItemKey,
     private val simulator: Simulator,
 ) {
-    fun belongsTo(simulator: Simulator): Boolean = this.simulator == simulator
+    internal fun belongsTo(simulator: Simulator): Boolean = this.simulator == simulator
 
-    companion object {
-        fun fromId(
+    public companion object {
+        public fun fromId(
             simulator: Simulator,
             id: ReadoutItemKey,
         ): AutoReadoutListItemType? =
@@ -21,6 +21,6 @@ sealed class AutoReadoutListItemType(
                 is Simulator.AceWindows -> AceWindowsAutoReadoutListItemType.fromId(id)
             }
 
-        fun defaultOrder(simulator: Simulator): List<ReadoutItemKey> = defaultAutoReadoutOrder(simulator)
+        public fun defaultOrder(simulator: Simulator): List<ReadoutItemKey> = defaultAutoReadoutOrder(simulator)
     }
 }

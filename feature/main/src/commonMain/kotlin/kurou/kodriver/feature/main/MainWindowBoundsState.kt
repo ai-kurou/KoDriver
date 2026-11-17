@@ -27,7 +27,7 @@ import org.koin.compose.koinInject
  * UseCase を直接 inject する。
  */
 @Composable
-fun <T> rememberMainWindowBounds(transform: (x: Int?, y: Int?, width: Int, height: Int) -> T): T? {
+public fun <T> rememberMainWindowBounds(transform: (x: Int?, y: Int?, width: Int, height: Int) -> T): T? {
     val observeMainWindowBounds: ObserveMainWindowBoundsUseCase = koinInject()
     val boundsFlow: Flow<MainWindowBounds> =
         remember(observeMainWindowBounds) { observeMainWindowBounds() }
@@ -48,7 +48,7 @@ fun <T> rememberMainWindowBounds(transform: (x: Int?, y: Int?, width: Int, heigh
  * [rememberMainWindowBounds] と同じ理由で、[MainWindowBounds] ではなく位置・サイズを個別の値として受け取る。
  */
 @Composable
-fun rememberMainWindowBoundsSaver(): (x: Int, y: Int, width: Int, height: Int) -> Unit {
+public fun rememberMainWindowBoundsSaver(): (x: Int, y: Int, width: Int, height: Int) -> Unit {
     val saveMainWindowBounds: SaveMainWindowBoundsUseCase = koinInject()
     val scope = rememberCoroutineScope()
     return remember(saveMainWindowBounds, scope) {

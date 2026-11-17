@@ -64,7 +64,7 @@ import org.koin.dsl.module
  *   TextToSpeechRepository・VoicePreferencesRepository・VoiceSpeedPreferencesRepository・VoicePitchPreferencesRepository、および SoundPlayer（[platformSoundModule]）。
  * 音声系は LMU と区別するため named(Simulator.Gt7Ps5.id) で登録している。
  */
-val gt7Ps5NarratorModule: Module =
+public val gt7Ps5NarratorModule: Module =
     module {
         factory { ObserveDebugReadoutRequestUseCase(get()) }
         factory { ObserveManualReadoutRequestsUseCase(get()) }

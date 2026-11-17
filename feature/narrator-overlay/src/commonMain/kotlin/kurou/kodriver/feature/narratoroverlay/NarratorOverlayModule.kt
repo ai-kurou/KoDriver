@@ -7,6 +7,7 @@ import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayWindowBoundsUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayWindowBoundsUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -18,7 +19,7 @@ import org.koin.dsl.module
  * rememberNarratorOverlayVisible が使う ObserveOverlayVisibleUseCase、rememberNarratorOverlayBounds /
  * rememberNarratorOverlayBoundsSaver が使う ObserveOverlayWindowBoundsUseCase・SaveOverlayWindowBoundsUseCase。
  */
-val narratorOverlayModule =
+public val narratorOverlayModule: Module =
     module {
         viewModel { NarratorOverlayViewModel(get(), get(), get(), get()) }
 

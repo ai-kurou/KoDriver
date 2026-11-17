@@ -6,7 +6,7 @@ import kurou.kodriver.domain.model.Simulator
 /**
  * ConnectionBannerVm 画面の表示状態。
  */
-data class ConnectionBannerVmUiState(
+public data class ConnectionBannerVmUiState(
     val connectionStatus: ConnectionBannerVmStatus = ConnectionBannerVmStatus.UNCHECKED,
     val selectedSimulator: Simulator = SELECTED_SIMULATOR_DEFAULT,
 ) {
@@ -17,7 +17,7 @@ data class ConnectionBannerVmUiState(
 /**
  * ConnectionBannerVm の接続状態を表す表示用ステータス。
  */
-enum class ConnectionBannerVmStatus {
+public enum class ConnectionBannerVmStatus {
     UNCHECKED,
     CONNECTED,
     DISCONNECTED,

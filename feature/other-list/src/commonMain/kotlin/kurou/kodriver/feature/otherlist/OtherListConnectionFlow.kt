@@ -8,7 +8,7 @@ import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 
 /** 接続情報の観測と表示状態を管理する。実行のライフサイクルは呼び出し元に従う。 */
-class OtherListConnectionFlow(
+public class OtherListConnectionFlow(
     observeServerIp: ObserveServerIpUseCase?,
     observeConsoleAddress: ObserveConsoleAddressUseCase,
     observeGt7Ps5UdpPort: ObserveGt7Ps5UdpPortUseCase,
@@ -20,7 +20,7 @@ class OtherListConnectionFlow(
             observeServerIp()
         }
 
-    val uiState: Flow<OtherListConnectionUiState> =
+    public val uiState: Flow<OtherListConnectionUiState> =
         combine(
             serverIpFlow,
             observeConsoleAddress(),

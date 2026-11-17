@@ -12,14 +12,14 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 /**
  * ConnectionBanner 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-class ConnectionBannerViewModel(
+public class ConnectionBannerViewModel(
     checkLmuConnection: LmuBannerConnectionChecker,
     checkAceConnection: AceBannerConnectionChecker,
     checkGt7Ps5Connection: CheckGt7Ps5ConnectionUseCase,
     observeConsoleAddress: ObserveConsoleAddressUseCase,
     observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) : ViewModel() {
-    val uiState: StateFlow<ConnectionBannerVmUiState> =
+    public val uiState: StateFlow<ConnectionBannerVmUiState> =
         ConnectionBannerFlow(
             selectedSimulator = observeSelectedSimulator(),
             observeConsoleAddress = { observeConsoleAddress() },

@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.LocalContext
  * アプリ詳細設定画面（権限一覧）を開く。
  */
 @Composable
-actual fun rememberOpenAccessLocalNetworkPermissionSettings(): () -> Unit {
+public actual fun rememberOpenAccessLocalNetworkPermissionSettings(): () -> Unit {
     val context = LocalContext.current
     return {
         val intent =

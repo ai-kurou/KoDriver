@@ -7,4 +7,4 @@ import androidx.compose.runtime.Composable
  * Android専用の権限のため何も行わない。
  */
 @Composable
-actual fun rememberOpenAccessLocalNetworkPermissionSettings(): () -> Unit = {}
+public actual fun rememberOpenAccessLocalNetworkPermissionSettings(): () -> Unit = {}

@@ -68,7 +68,7 @@ internal fun AppScreenPrimarySimulatorIcon(
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
-fun appScreenPrimarySimulatorLabel(simulatorId: String): String = simulatorShortName(simulatorId)
+public fun appScreenPrimarySimulatorLabel(simulatorId: String): String = simulatorShortName(simulatorId)
 
 private val SimulatorCardWidth = 320.dp
 private val SimulatorCardHeight = 180.dp
@@ -87,7 +87,7 @@ private val SimulatorPopupBorderWidth = 1.dp
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
-fun AppScreenPrimarySimulatorIndicator(
+public fun AppScreenPrimarySimulatorIndicator(
     simulatorId: String,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,

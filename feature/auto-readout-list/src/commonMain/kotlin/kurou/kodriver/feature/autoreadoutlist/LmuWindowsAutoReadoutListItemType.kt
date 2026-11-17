@@ -4,34 +4,37 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 
-sealed class LmuWindowsAutoReadoutListItemType(
+public sealed class LmuWindowsAutoReadoutListItemType(
     id: ReadoutItemKey,
 ) : AutoReadoutListItemType(id, Simulator.LmuWindows) {
-    data object VehicleApproach : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.VehicleApproach.Root)
+    public data object VehicleApproach :
+        LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.VehicleApproach.Root)
 
-    data object Flag : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.Flag.Root)
+    public data object Flag : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.Flag.Root)
 
-    data object VehicleDamage : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.VehicleDamage.Root)
+    public data object VehicleDamage : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.VehicleDamage.Root)
 
-    data object TyreTemperature : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.TyreTemperature.Root)
+    public data object TyreTemperature :
+        LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.TyreTemperature.Root)
 
-    data object PitTiming : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.PitTiming.Root)
+    public data object PitTiming : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.PitTiming.Root)
 
-    data object RemainingVirtualEnergy :
+    public data object RemainingVirtualEnergy :
         LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
 
-    data object RemainingFuel : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.RemainingFuel.Root)
+    public data object RemainingFuel : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.RemainingFuel.Root)
 
-    data object TyreWear : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.TyreWear.Root)
+    public data object TyreWear : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.TyreWear.Root)
 
-    data object BrakeTemperature : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.BrakeTemperature.Root)
+    public data object BrakeTemperature :
+        LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.BrakeTemperature.Root)
 
-    data object BrakeWear : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.BrakeWear.Root)
+    public data object BrakeWear : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.BrakeWear.Root)
 
-    data object MyBestLap : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.MyBestLap.Root)
+    public data object MyBestLap : LmuWindowsAutoReadoutListItemType(LmuWindowsReadoutItemKey.MyBestLap.Root)
 
-    companion object {
-        fun fromId(id: ReadoutItemKey): LmuWindowsAutoReadoutListItemType? =
+    public companion object {
+        public fun fromId(id: ReadoutItemKey): LmuWindowsAutoReadoutListItemType? =
             if (id is LmuWindowsReadoutItemKey.TopLevel) fromTopLevel(id) else null
 
         private fun fromTopLevel(id: LmuWindowsReadoutItemKey.TopLevel): LmuWindowsAutoReadoutListItemType =

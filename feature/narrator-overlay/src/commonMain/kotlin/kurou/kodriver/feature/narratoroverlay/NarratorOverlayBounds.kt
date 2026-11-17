@@ -32,7 +32,7 @@ import org.koin.compose.koinInject
  * UseCase を直接 inject する（[rememberNarratorOverlayVisible] の KDoc を参照）。
  */
 @Composable
-fun <T> rememberNarratorOverlayBounds(transform: (x: Int?, y: Int?, width: Int, height: Int) -> T): T? {
+public fun <T> rememberNarratorOverlayBounds(transform: (x: Int?, y: Int?, width: Int, height: Int) -> T): T? {
     val observeOverlayWindowBounds: ObserveOverlayWindowBoundsUseCase = koinInject()
     val boundsFlow: Flow<OverlayWindowBounds> =
         remember(observeOverlayWindowBounds) { observeOverlayWindowBounds() }
@@ -54,7 +54,7 @@ fun <T> rememberNarratorOverlayBounds(transform: (x: Int?, y: Int?, width: Int, 
  * 個別の値として受け取る。
  */
 @Composable
-fun rememberNarratorOverlayBoundsSaver(): (x: Int, y: Int, width: Int, height: Int) -> Unit {
+public fun rememberNarratorOverlayBoundsSaver(): (x: Int, y: Int, width: Int, height: Int) -> Unit {
     val saveOverlayWindowBounds: SaveOverlayWindowBoundsUseCase = koinInject()
     val scope = rememberCoroutineScope()
     return remember(saveOverlayWindowBounds, scope) {

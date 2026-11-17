@@ -28,3 +28,7 @@ kotlin {
         }
     }
 }
+
+kotlin {
+    explicitApi()
+}

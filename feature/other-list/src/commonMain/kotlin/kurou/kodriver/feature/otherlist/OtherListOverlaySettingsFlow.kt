@@ -9,14 +9,14 @@ import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 
 /** オーバーレイ設定の観測・表示状態と表示ON/OFFの保存を管理する。実行のライフサイクルは呼び出し元に従う。 */
-class OtherListOverlaySettingsFlow(
+public class OtherListOverlaySettingsFlow(
     private val observeOverlayVisible: ObserveOverlayVisibleUseCase,
     private val saveOverlayVisible: SaveOverlayVisibleUseCase,
     private val observeOverlayTextSize: ObserveOverlayTextSizeUseCase,
     private val observeOverlayTextColor: ObserveOverlayTextColorUseCase,
     private val observeOverlayBackgroundOpacity: ObserveOverlayBackgroundOpacityUseCase,
 ) {
-    val uiState: Flow<OtherListOverlaySettingsUiState> =
+    public val uiState: Flow<OtherListOverlaySettingsUiState> =
         combine(
             observeOverlayVisible(),
             observeOverlayTextSize(),
@@ -31,5 +31,5 @@ class OtherListOverlaySettingsFlow(
             )
         }
 
-    suspend fun onOverlayVisibleChange(visible: Boolean) = saveOverlayVisible(visible)
+    public suspend fun onOverlayVisibleChange(visible: Boolean): Unit = saveOverlayVisible(visible)
 }

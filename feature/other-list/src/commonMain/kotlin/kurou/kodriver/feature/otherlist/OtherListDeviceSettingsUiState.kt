@@ -7,7 +7,7 @@ import kurou.kodriver.domain.model.THEME_MODE_DEFAULT
 import kurou.kodriver.domain.model.ThemeMode
 
 /** 端末設定フローの表示状態。 */
-data class OtherListDeviceSettingsUiState(
+public data class OtherListDeviceSettingsUiState(
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
     val dynamicColorEnabled: Boolean = DYNAMIC_COLOR_ENABLED_DEFAULT,
     val hapticFeedbackEnabled: Boolean = HAPTIC_FEEDBACK_ENABLED_DEFAULT,

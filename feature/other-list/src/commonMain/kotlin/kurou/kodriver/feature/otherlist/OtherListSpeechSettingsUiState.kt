@@ -9,7 +9,7 @@ import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
 import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 
-data class OtherListSpeechSettingsUiState(
+public data class OtherListSpeechSettingsUiState(
     val voiceId: String = VOICE_ID_UNSPECIFIED,
     val voiceSpeed: Float = VOICE_SPEED_DEFAULT,
     val voicePitch: Float = VOICE_PITCH_DEFAULT,

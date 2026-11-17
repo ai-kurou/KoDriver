@@ -6,12 +6,13 @@ import kurou.kodriver.domain.usecase.ObserveManualReadoutPlayButtonLayoutEnabled
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
 import kurou.kodriver.domain.usecase.SaveManualReadoutPlayButtonLayoutEnabledUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /** シミュレーター ID に対応する保存済みセットの Repository を使う Koin モジュール。 */
-val manualReadoutListModule =
+public val manualReadoutListModule: Module =
     module {
         viewModel { (simulatorId: String) ->
             ManualReadoutListViewModel(

@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalContext
  * [TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA] でエンジン側の音声データインストール画面を開く。
  */
 @Composable
-actual fun rememberOpenTtsSettings(): () -> Unit {
+public actual fun rememberOpenTtsSettings(): () -> Unit {
     val context = LocalContext.current
     return {
         val intent = Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)
