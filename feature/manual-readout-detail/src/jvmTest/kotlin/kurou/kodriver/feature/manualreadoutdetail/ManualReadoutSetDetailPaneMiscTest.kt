@@ -196,43 +196,18 @@ class ManualReadoutSetDetailPaneMiscTest {
 
     @Test
     fun `並べ替えハンドルにフォーカスがあるとAlt+上下で項目を移動し端と修飾なしでは動かさない`() {
-        val keys = listOf("A", "B", "C")
+        val keys = mutableStateOf(listOf("A", "B", "C"))
         val moves = mutableListOf<Pair<Int, Int>>()
-        rule.setContent {
-            KoDriverTheme {
-                ManualReadoutSetDetailPane(
-                    uiState =
-                        ManualReadoutSetDetailUiState(
-                            simulatorId = Simulator.LmuWindows.id,
-                            setNumber = 1,
-                            availableItemKeys = lmuWindowsManualReadoutItemKeys(),
-                            selectedItemKeys = keys,
-                        ),
-                    onAddItem = {},
-                    onDelete = {},
-                    onMoveItem = { from, to -> moves.add(from to to) },
-                    showHotkey = false,
-                )
-            }
-        }
-
-        fun pressAlt(
-            index: Int,
-            key: Key,
-        ) {
-            val handle = rule.onAllNodes(hasContentDescription("を並べ替え", substring = true))[index]
-            handle.requestFocus()
-            handle.performKeyInput {
-                keyDown(Key.AltLeft)
-                keyDown(key)
-                keyUp(key)
-                keyUp(Key.AltLeft)
-            }
+        showReorderPane(keys) { from, to ->
+            moves.add(from to to)
+            keys.value = keys.value.toMutableList().apply { add(to, removeAt(from)) }
         }
         pressAlt(0, Key.DirectionUp)
         pressAlt(0, Key.DirectionDown)
+        rule.waitForIdle()
         pressAlt(2, Key.DirectionDown)
         pressAlt(2, Key.DirectionUp)
+        rule.waitForIdle()
         val plain = rule.onAllNodes(hasContentDescription("を並べ替え", substring = true))[1]
         plain.requestFocus()
         plain.performKeyInput {
@@ -241,5 +216,53 @@ class ManualReadoutSetDetailPaneMiscTest {
         }
         rule.waitForIdle()
         assertEquals(listOf(0 to 1, 2 to 1), moves)
+    }
+
+    @Test
+    fun `並べ替えが一覧に反映される前に重ねて届いたAlt+上下は無視する`() {
+        val keys = mutableStateOf(listOf("A", "B", "C"))
+        val moves = mutableListOf<Pair<Int, Int>>()
+        showReorderPane(keys) { from, to -> moves.add(from to to) }
+        pressAlt(0, Key.DirectionDown)
+        pressAlt(0, Key.DirectionDown)
+        rule.waitForIdle()
+        assertEquals(listOf(0 to 1), moves)
+    }
+
+    private fun showReorderPane(
+        keys: androidx.compose.runtime.State<List<String>>,
+        onMove: (Int, Int) -> Unit,
+    ) {
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState =
+                        ManualReadoutSetDetailUiState(
+                            simulatorId = Simulator.LmuWindows.id,
+                            setNumber = 1,
+                            availableItemKeys = lmuWindowsManualReadoutItemKeys(),
+                            selectedItemKeys = keys.value,
+                        ),
+                    onAddItem = {},
+                    onDelete = {},
+                    onMoveItem = onMove,
+                    showHotkey = false,
+                )
+            }
+        }
+    }
+
+    private fun pressAlt(
+        index: Int,
+        key: Key,
+    ) {
+        val handle = rule.onAllNodes(hasContentDescription("を並べ替え", substring = true))[index]
+        handle.requestFocus()
+        handle.performKeyInput {
+            keyDown(Key.AltLeft)
+            keyDown(key)
+            keyUp(key)
+            keyUp(Key.AltLeft)
+        }
     }
 }

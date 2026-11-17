@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.handleColumnRowReorderKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
@@ -87,6 +89,8 @@ internal fun ManualReadoutItemsCard(
     onPreviewClick: () -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
+    val reorderFocusState = remember { ListRowFocusState() }
+    LaunchedEffect(uiState.selectedItemKeys) { reorderFocusState.onItemKeysChanged() }
     var showPicker by remember { mutableStateOf(false) }
     val remaining = uiState.availableItemKeys.filterNot { it in uiState.selectedItemKeys }
     val atLimit = uiState.selectedItemKeys.size >= MANUAL_READOUT_SET_ITEM_MAX
@@ -135,7 +139,8 @@ internal fun ManualReadoutItemsCard(
                                                 handleColumnRowReorderKey(
                                                     event = event,
                                                     index = index,
-                                                    count = uiState.selectedItemKeys.size,
+                                                    itemKeys = uiState.selectedItemKeys,
+                                                    focusState = reorderFocusState,
                                                     onMove = onMoveItem,
                                                 )
                                             }.focusable()
