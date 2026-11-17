@@ -168,16 +168,25 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `stopでIOExceptionが発生しても例外を伝播しない`() {
-        every { jmdns.unregisterAllServices() } throws IOException("close failed")
-        val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
-        advertiser.start(port = 8080)
+        val exception = IOException("close failed")
+        every { jmdns.unregisterAllServices() } throws exception
+        mockkStatic(Sentry::class)
+        every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
+        try {
+            val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
+            advertiser.start(port = 8080)
 
-        advertiser.stop()
+            advertiser.stop()
 
-        verify(exactly = 1) {
-            jmdns.registerService(withArg<ServiceInfo> { assert(it.port == 8080) })
+            verify(exactly = 1) {
+                jmdns.registerService(withArg<ServiceInfo> { assert(it.port == 8080) })
+                jmdns.unregisterAllServices()
+                Sentry.captureException(exception)
+            }
+            verify(exactly = 0) { jmdns.close() }
+            confirmVerified(jmdns, Sentry::class)
+        } finally {
+            unmockkStatic(Sentry::class)
         }
-        verify(exactly = 1) { jmdns.unregisterAllServices() }
-        confirmVerified(jmdns)
     }
 }

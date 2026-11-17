@@ -48,6 +48,7 @@ internal class KoDriverServiceAdvertiser(
             }
         } catch (e: IOException) {
             logger.warn("mDNSサービスの停止に失敗しました", e)
+            captureError(e)
         } finally {
             jmdns = null
         }
