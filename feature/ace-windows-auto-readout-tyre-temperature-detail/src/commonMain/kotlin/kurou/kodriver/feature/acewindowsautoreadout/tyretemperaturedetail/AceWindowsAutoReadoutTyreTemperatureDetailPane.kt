@@ -49,7 +49,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
 @Composable
-fun AceWindowsAutoReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
+public fun AceWindowsAutoReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
     val viewModel: AceWindowsAutoReadoutTyreTemperatureDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

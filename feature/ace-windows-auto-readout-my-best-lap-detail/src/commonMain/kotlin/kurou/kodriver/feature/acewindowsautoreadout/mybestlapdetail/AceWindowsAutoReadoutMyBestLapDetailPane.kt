@@ -40,7 +40,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * AceWindowsAutoReadoutMyBestLapDetail の画面を表示する Composable。
  */
 @Composable
-fun AceWindowsAutoReadoutMyBestLapDetailPane(modifier: Modifier = Modifier) {
+public fun AceWindowsAutoReadoutMyBestLapDetailPane(modifier: Modifier = Modifier) {
     val viewModel: AceWindowsAutoReadoutMyBestLapDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

@@ -9,6 +9,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -22,7 +23,7 @@ import org.koin.dsl.module
  *   TextToSpeechRepository・SoundVolumePreferencesRepository（:core:data）、
  *   試聴用の named(Simulator.AceWindows.id) の PlayStartSoundForKeyUseCase・SpeakTextUseCase（:feature:ace-windows-narrator で登録）。
  */
-val aceWindowsAutoReadoutRemainingFuelDetailModule =
+public val aceWindowsAutoReadoutRemainingFuelDetailModule: Module =
     module {
         viewModel {
             AceWindowsAutoReadoutRemainingFuelDetailViewModel(
