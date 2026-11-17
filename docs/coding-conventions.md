@@ -132,3 +132,14 @@ try {
 ## Kotlin コンパイラの警告
 
 ルートの `build.gradle.kts` で、全サブプロジェクトの Kotlin コンパイルに `allWarningsAsErrors` を設定している。警告が出るとコンパイルが失敗するため、`@Suppress` で隠さず原因を解消する。非推奨 API の移行で検証方式やリソース読み込みの挙動が変わるなど、そのPRで対応できない場合に限り、理由をコメントに書いて対象の宣言・式に限定した `@Suppress("DEPRECATION")` を付ける。
+
+## Kotlin の公開範囲（explicitApi）
+
+`explicitApi()`（strict モード）は、`build-logic` の `kmp-library` プラグインを使う KMP ライブラリモジュールのほか、`server` や `app:androidApp` など個別に有効にしたモジュールでも有効になっている。対象モジュールの main 系ソースセットでは、宣言の可視性と、public な関数の戻り値型・public なプロパティの型を明示する。
+
+- 他モジュールや AndroidManifest から参照される宣言だけを `public` にし、モジュール内でのみ使う宣言は `internal` / `private` にする。参照の有無は `rg` で確認する。
+- public 宣言のシグネチャに `internal` 型を出せないため、型ごと `public` にするか、宣言側を `internal` にする。
+- `expect` / `actual` は両方の可視性を揃える。interface のメンバーは `internal` にできないため、契約として公開するものは `public` のままとする。実装本体を持つ補助メンバーは `private` にできる。
+- Koin モジュールは `public val xxxModule: Module`（`org.koin.core.module.Module`）の形で型を明示する。Unit を返す public 関数も `: Unit` を明示する。
+- `override`・enum entry・data class のコンストラクタ引数には可視性の明示は不要。
+- テストソースセットは対象外。Kotlin プラグインを使わない `com.android.test` モジュール（`app:androidBenchmark`）も対象外。
