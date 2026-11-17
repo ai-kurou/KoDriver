@@ -18,7 +18,7 @@ import org.jetbrains.compose.resources.stringResource
  * OtherLicenseDetail の画面を表示する Composable。
  */
 @Composable
-fun OtherLicenseDetailPane(
+public fun OtherLicenseDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,

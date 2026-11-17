@@ -84,7 +84,7 @@ private val CHECK_BADGE_PADDING = 2.dp
  * OtherVoiceDetail の画面を表示する Composable。
  */
 @Composable
-fun OtherVoiceDetailPane(
+public fun OtherVoiceDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,

@@ -26,7 +26,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * TelemetryLogDetail のコンテンツを表示する Composable。
  */
 @Composable
-fun TelemetryLogDetailContent(
+public fun TelemetryLogDetailContent(
     id: Long,
     modifier: Modifier = Modifier,
 ) {

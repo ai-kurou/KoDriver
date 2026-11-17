@@ -38,7 +38,7 @@ import org.koin.core.parameter.parametersOf
  * OtherReadoutStartSoundDetail のダイアログを表示する Composable。
  */
 @Composable
-fun OtherReadoutStartSoundDetailDialog(
+public fun OtherReadoutStartSoundDetailDialog(
     simulatorId: String,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,

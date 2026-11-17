@@ -27,7 +27,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * OtherVoicePitchDetail の画面を表示する Composable。
  */
 @Composable
-fun OtherVoicePitchDetailPane(
+public fun OtherVoicePitchDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -51,7 +51,7 @@ fun OtherVoicePitchDetailPane(
  * OtherVoicePitchDetail の画面本体を表示する Composable。
  */
 @Composable
-fun OtherVoicePitchDetailPaneContent(
+public fun OtherVoicePitchDetailPaneContent(
     uiState: OtherVoicePitchDetailUiState,
     onPitchChanged: (Float) -> Unit = {},
     onPreviewClicked: (String) -> Unit = {},

@@ -26,3 +26,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.othervoicepitchdetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otheroverlaytextsizedetail
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.PreviewOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayTextSizeUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -12,7 +13,7 @@ import org.koin.dsl.module
  * 提供: OtherOverlayTextSizeDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: OverlayTextSizePreferencesRepository（:core:data で登録）。
  */
-val otherOverlayTextSizeDetailModule =
+public val otherOverlayTextSizeDetailModule: Module =
     module {
         // ViewModel
         viewModelOf(::OtherOverlayTextSizeDetailViewModel)

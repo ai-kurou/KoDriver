@@ -34,3 +34,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.otherlogdetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

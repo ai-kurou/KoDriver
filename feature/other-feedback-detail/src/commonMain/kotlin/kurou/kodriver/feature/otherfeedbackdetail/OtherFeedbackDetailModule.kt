@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherfeedbackdetail
 import kurou.kodriver.domain.usecase.CanSendFeedbackUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 import kurou.kodriver.domain.usecase.SendFeedbackUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -11,7 +12,7 @@ import org.koin.dsl.module
  *
  * 消費（get で解決）: TelemetryLogRepository・FeedbackCooldownPreferencesRepository（:core:data で登録）。
  */
-val otherFeedbackDetailModule =
+public val otherFeedbackDetailModule: Module =
     module {
         viewModelOf(::OtherFeedbackDetailViewModel)
 

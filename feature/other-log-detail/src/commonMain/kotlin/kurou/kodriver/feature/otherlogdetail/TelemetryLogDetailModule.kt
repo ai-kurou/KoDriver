@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otherlogdetail
 
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -10,7 +11,7 @@ import org.koin.dsl.module
  * 提供: TelemetryLogDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: TelemetryLogRepository（:core:data で登録）。
  */
-val telemetryLogDetailModule =
+public val telemetryLogDetailModule: Module =
     module {
         // ViewModel
         viewModelOf(::TelemetryLogDetailViewModel)

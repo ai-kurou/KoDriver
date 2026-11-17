@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otheroverlaytextcolordetail
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.PreviewOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayTextColorUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -12,7 +13,7 @@ import org.koin.dsl.module
  * 提供: OtherOverlayTextColorDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: OverlayTextColorPreferencesRepository（:core:data で登録）。
  */
-val otherOverlayTextColorDetailModule =
+public val otherOverlayTextColorDetailModule: Module =
     module {
         // ViewModel
         viewModelOf(::OtherOverlayTextColorDetailViewModel)

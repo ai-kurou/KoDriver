@@ -57,7 +57,7 @@ import kotlin.math.roundToInt
  * OtherVolumeDetail の画面を表示する Composable。
  */
 @Composable
-fun OtherVolumeDetailPane(
+public fun OtherVolumeDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -83,7 +83,7 @@ fun OtherVolumeDetailPane(
  * OtherVolumeDetail の画面本体を表示する Composable。
  */
 @Composable
-fun OtherVolumeDetailPaneContent(
+public fun OtherVolumeDetailPaneContent(
     uiState: OtherVolumeDetailUiState,
     onVolumeChanged: (Int) -> Unit = {},
     onDeviceVolumeChanged: (Int) -> Unit = {},

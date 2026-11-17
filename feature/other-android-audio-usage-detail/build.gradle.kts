@@ -42,3 +42,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.otherandroidaudiousagedetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

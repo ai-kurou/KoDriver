@@ -10,6 +10,7 @@ import kurou.kodriver.domain.usecase.SaveLowVolumeWarningEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -22,7 +23,7 @@ import org.koin.dsl.module
  * DeviceVolumeRepository（:core:device-volume-data で登録）、および試聴用の
  * TextToSpeechRepository（:core:text-to-speech-data で登録）と音声・速度・高さの設定Repository（:core:data で登録）。
  */
-val otherVolumeDetailModule =
+public val otherVolumeDetailModule: Module =
     module {
         // ViewModel
         viewModelOf(::OtherVolumeDetailViewModel)

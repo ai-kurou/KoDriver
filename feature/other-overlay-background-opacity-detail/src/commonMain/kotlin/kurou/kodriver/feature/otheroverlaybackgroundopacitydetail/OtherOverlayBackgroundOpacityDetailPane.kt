@@ -31,7 +31,7 @@ import kotlin.math.roundToInt
  * OtherOverlayBackgroundOpacityDetail の画面を表示する Composable。
  */
 @Composable
-fun OtherOverlayBackgroundOpacityDetailPane(
+public fun OtherOverlayBackgroundOpacityDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -55,7 +55,7 @@ fun OtherOverlayBackgroundOpacityDetailPane(
  * OtherOverlayBackgroundOpacityDetail の画面本体を表示する Composable。
  */
 @Composable
-fun OtherOverlayBackgroundOpacityDetailPaneContent(
+public fun OtherOverlayBackgroundOpacityDetailPaneContent(
     uiState: OtherOverlayBackgroundOpacityDetailUiState,
     onOpacityChanged: (Int) -> Unit = {},
     canNavigateBack: Boolean = true,

@@ -46,7 +46,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * OtherOverlayTextColorDetail のダイアログを表示する Composable。
  */
 @Composable
-fun OtherOverlayTextColorDetailDialog(
+public fun OtherOverlayTextColorDetailDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

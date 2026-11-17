@@ -27,7 +27,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * OtherVoiceSpeedDetail の画面を表示する Composable。
  */
 @Composable
-fun OtherVoiceSpeedDetailPane(
+public fun OtherVoiceSpeedDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -51,7 +51,7 @@ fun OtherVoiceSpeedDetailPane(
  * OtherVoiceSpeedDetail の画面本体を表示する Composable。
  */
 @Composable
-fun OtherVoiceSpeedDetailPaneContent(
+public fun OtherVoiceSpeedDetailPaneContent(
     uiState: OtherVoiceSpeedDetailUiState,
     onSpeedChanged: (Float) -> Unit = {},
     onPreviewClicked: (String) -> Unit = {},

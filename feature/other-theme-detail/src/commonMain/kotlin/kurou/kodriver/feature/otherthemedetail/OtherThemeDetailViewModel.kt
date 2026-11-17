@@ -17,7 +17,7 @@ import kurou.kodriver.domain.usecase.SaveThemeModeUseCase
 /**
  * OtherThemeDetail 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-class OtherThemeDetailViewModel internal constructor(
+public class OtherThemeDetailViewModel internal constructor(
     observeThemeMode: ObserveThemeModeUseCase,
     private val saveThemeMode: SaveThemeModeUseCase,
 ) : ViewModel() {

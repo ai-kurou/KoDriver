@@ -4,6 +4,7 @@ import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.SaveConsoleAddressUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -14,7 +15,7 @@ import org.koin.dsl.module
  * 消費（get で解決）: ConsoleAddressPreferencesRepository・Gt7Ps5UdpPortPreferencesRepository
  *   （いずれも :core:data で登録）。
  */
-val otherConsoleIpDetailModule =
+public val otherConsoleIpDetailModule: Module =
     module {
         // ViewModel
         viewModelOf(::OtherConsoleIpDetailViewModel)

@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherreadoutstartsounddetail
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.PreviewStartSoundUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundTypeUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -14,7 +15,7 @@ import org.koin.dsl.module
  * 消費（get で解決）: ReadoutStartSoundPreferencesRepository（:core:data）、および試聴用の
  *   選択中の simulatorId に対応する named(simulatorId) の TextToSpeechEngine（各 narrator feature で登録）。
  */
-val otherReadoutStartSoundDetailModule =
+public val otherReadoutStartSoundDetailModule: Module =
     module {
         // ViewModel
         viewModel { (simulatorId: String) ->
