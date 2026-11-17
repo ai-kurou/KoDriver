@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
 
-class ObserveLmuWindowsUseCase(
+public class ObserveLmuWindowsUseCase(
     private val repository: LmuWindowsRepository,
 ) {
-    operator fun invoke(): Flow<LmuWindowsTelemetryData> = repository.telemetryStream()
+    public operator fun invoke(): Flow<LmuWindowsTelemetryData> = repository.telemetryStream()
 }

@@ -6,14 +6,14 @@ import kurou.kodriver.domain.model.WheelIndex
 
 /** 1輪分のブレーキ残量。[remainingPercent] は 0〜100（小数を含む）。 */
 @Serializable
-data class LmuWindowsBrakeWearWheelRemaining(
+public data class LmuWindowsBrakeWearWheelRemaining(
     val thickness: BrakeThicknessMeters,
     val remainingPercent: Float,
 )
 
 /** ホイールごとのブレーキ残量。 */
 @Serializable
-data class LmuWindowsBrakeWearRemainingData(
+public data class LmuWindowsBrakeWearRemainingData(
     val wheels: Map<WheelIndex, LmuWindowsBrakeWearWheelRemaining>,
 )
 

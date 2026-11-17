@@ -12,8 +12,8 @@ import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
 
-class DetermineLmuWindowsRaceFlagReadoutUseCase {
-    fun determineRaceFlags(
+public class DetermineLmuWindowsRaceFlagReadoutUseCase {
+    public fun determineRaceFlags(
         state: LmuWindowsNarratorState,
         raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,

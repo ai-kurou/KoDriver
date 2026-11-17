@@ -2,18 +2,18 @@ package kurou.kodriver.domain.lmuwindows.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface LmuWindowsVehicleApproachThresholdsPreferencesRepository {
-    suspend fun resetToDefault()
+public interface LmuWindowsVehicleApproachThresholdsPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeLongitudinalThresholdMeters(): Flow<Double>
+    public fun observeLongitudinalThresholdMeters(): Flow<Double>
 
-    fun observeLateralThresholdMeters(): Flow<Double>
+    public fun observeLateralThresholdMeters(): Flow<Double>
 
-    fun observeSustainedApproachDurationSeconds(): Flow<Int>
+    public fun observeSustainedApproachDurationSeconds(): Flow<Int>
 
-    suspend fun saveLongitudinalThresholdMeters(meters: Double)
+    public suspend fun saveLongitudinalThresholdMeters(meters: Double)
 
-    suspend fun saveLateralThresholdMeters(meters: Double)
+    public suspend fun saveLateralThresholdMeters(meters: Double)
 
-    suspend fun saveSustainedApproachDurationSeconds(seconds: Int)
+    public suspend fun saveSustainedApproachDurationSeconds(seconds: Int)
 }

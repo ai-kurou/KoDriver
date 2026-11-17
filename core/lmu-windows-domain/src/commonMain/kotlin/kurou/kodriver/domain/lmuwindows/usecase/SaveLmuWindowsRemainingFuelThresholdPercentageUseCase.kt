@@ -2,8 +2,8 @@ package kurou.kodriver.domain.lmuwindows.usecase
 
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRemainingFuelPreferencesRepository
 
-class SaveLmuWindowsRemainingFuelThresholdPercentageUseCase(
+public class SaveLmuWindowsRemainingFuelThresholdPercentageUseCase(
     private val repository: LmuWindowsRemainingFuelPreferencesRepository,
 ) {
-    suspend operator fun invoke(percentage: Int) = repository.saveThresholdPercentage(percentage)
+    public suspend operator fun invoke(percentage: Int): Unit = repository.saveThresholdPercentage(percentage)
 }

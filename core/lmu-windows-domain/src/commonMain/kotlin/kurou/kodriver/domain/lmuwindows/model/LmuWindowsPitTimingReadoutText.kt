@@ -29,11 +29,11 @@ internal fun defaultLmuWindowsPitTimingReadoutText(
 }
 
 /** ピットタイミング文言の周回数プレースホルダーを置換する。 */
-fun formatLmuWindowsPitTimingReadoutText(
+public fun formatLmuWindowsPitTimingReadoutText(
     template: String,
     laps: Int,
 ): String = SinglePlaceholderTemplate(LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER).format(template, laps.toString())
 
 /** 文言内の `{...}` のうち、`{laps}` 以外のトークンを出現順・重複なしで返す。 */
-fun findUnknownLmuWindowsPitTimingReadoutPlaceholders(template: String): List<String> =
+public fun findUnknownLmuWindowsPitTimingReadoutPlaceholders(template: String): List<String> =
     SinglePlaceholderTemplate(LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER).findUnknown(template)

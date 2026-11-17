@@ -15,9 +15,9 @@ private val vehicleDamageEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
         LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to true,
     )
 
-class ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(
+public class ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(
     private val repository: LmuWindowsVehicleDamagePreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
+    public operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
         repository.observeEnabledStates().map { persisted -> vehicleDamageEnabledStateDefaults + persisted }
 }

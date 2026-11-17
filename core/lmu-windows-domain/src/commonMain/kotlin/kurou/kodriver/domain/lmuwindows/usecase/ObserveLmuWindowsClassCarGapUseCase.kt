@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsClassCarGapRepository
 
-class ObserveLmuWindowsClassCarGapUseCase(
+public class ObserveLmuWindowsClassCarGapUseCase(
     private val repository: LmuWindowsClassCarGapRepository,
 ) {
-    operator fun invoke(): Flow<LmuWindowsClassCarGapData> = repository.classCarGapStream()
+    public operator fun invoke(): Flow<LmuWindowsClassCarGapData> = repository.classCarGapStream()
 }

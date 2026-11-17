@@ -4,15 +4,17 @@ internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CE
 internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P2_DEFAULT = 800
 internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P2_ELMS_DEFAULT = 800
 internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P3_DEFAULT = 800
-const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT = 800
+public const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT: Int = 800
 internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GT3_DEFAULT = 800
-const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNKNOWN_DEFAULT = 800
+public const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNKNOWN_DEFAULT: Int = 800
 
 /**
  * 車両クラスごとの過熱警告閾値のデフォルト値（摂氏）。現時点では全クラス共通の800℃を既定値とし、
  * クラスごとの個別最適値はユーザーが `feature:lmu-windows-auto-readout-brake-temperature-detail` から調整する。
  */
-fun lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(vehicleClass: LmuWindowsVehicleClassData): Int =
+public fun lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(
+    vehicleClass: LmuWindowsVehicleClassData,
+): Int =
     when (vehicleClass) {
         LmuWindowsVehicleClassData.Hypercar -> {
             LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_HYPERCAR_DEFAULT
@@ -48,7 +50,7 @@ fun lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(vehicleCla
  * [LmuWindowsVehicleClassData.Unknown] は raw 値によらず代表キーの1件を共有するため、
  * マップの直接参照ではなく代表キーへ正規化してから参照する。
  */
-fun resolveLmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsius(
+public fun resolveLmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsius(
     thresholdsByVehicleClass: Map<LmuWindowsVehicleClassData, Int>,
     vehicleClass: LmuWindowsVehicleClassData,
 ): Int {
@@ -65,5 +67,5 @@ fun resolveLmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsius(
 /**
  * 対象クラスチップのデフォルト選択値。
  */
-val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_SELECTED_DEFAULT: LmuWindowsVehicleClassData =
+public val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_SELECTED_DEFAULT: LmuWindowsVehicleClassData =
     LmuWindowsVehicleClassData.Hypercar

@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
 
-class ObserveLmuWindowsVirtualEnergyUseCase(
+public class ObserveLmuWindowsVirtualEnergyUseCase(
     private val repository: LmuWindowsVirtualEnergyRepository,
 ) {
-    operator fun invoke(): Flow<LmuWindowsVirtualEnergyData> = repository.virtualEnergyStream()
+    public operator fun invoke(): Flow<LmuWindowsVirtualEnergyData> = repository.virtualEnergyStream()
 }

@@ -3,21 +3,21 @@ package kurou.kodriver.domain.lmuwindows.repository
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 
-interface LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository {
-    suspend fun resetToDefault()
+public interface LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeHighThresholdCelsius(): Flow<Map<LmuWindowsVehicleClassData, Int>>
+    public fun observeHighThresholdCelsius(): Flow<Map<LmuWindowsVehicleClassData, Int>>
 
-    suspend fun saveHighThresholdCelsius(
+    public suspend fun saveHighThresholdCelsius(
         vehicleClass: LmuWindowsVehicleClassData,
         celsius: Int,
     )
 
-    fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData>
+    public fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData>
 
-    suspend fun saveSelectedVehicleClass(vehicleClass: LmuWindowsVehicleClassData)
+    public suspend fun saveSelectedVehicleClass(vehicleClass: LmuWindowsVehicleClassData)
 
-    fun observeReadoutText(): Flow<String>
+    public fun observeReadoutText(): Flow<String>
 
-    suspend fun saveReadoutText(text: String)
+    public suspend fun saveReadoutText(text: String)
 }

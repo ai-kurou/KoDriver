@@ -6,7 +6,7 @@ import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.WheelIndex
 
 @Serializable
-data class LmuWindowsTyreWheelData(
+public data class LmuWindowsTyreWheelData(
     val surfaceTemperature: CelsiusReading,
     val carcassTemperature: CelsiusReading,
     val brakeTemperature: CelsiusReading,
@@ -15,6 +15,6 @@ data class LmuWindowsTyreWheelData(
 )
 
 @Serializable
-data class LmuWindowsTyreData(
+public data class LmuWindowsTyreData(
     val wheels: Map<WheelIndex, LmuWindowsTyreWheelData>,
 )

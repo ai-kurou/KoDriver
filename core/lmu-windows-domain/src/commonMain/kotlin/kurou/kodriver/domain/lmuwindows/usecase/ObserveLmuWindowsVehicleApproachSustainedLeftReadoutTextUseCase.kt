@@ -3,8 +3,8 @@ package kurou.kodriver.domain.lmuwindows.usecase
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 
-class ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(
+public class ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(
     private val repository: LmuWindowsVehicleApproachReadoutTextPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<String> = repository.observeSustainedLeftReadoutText()
+    public operator fun invoke(): Flow<String> = repository.observeSustainedLeftReadoutText()
 }

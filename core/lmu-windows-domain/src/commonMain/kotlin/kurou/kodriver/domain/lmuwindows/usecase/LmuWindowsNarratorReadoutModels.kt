@@ -21,7 +21,7 @@ import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
  * 自己ベストの状態は周回数の減少による新セッション検出時にリセットする。
  */
 @Serializable
-data class LmuWindowsNarratorState(
+public data class LmuWindowsNarratorState(
     val vehicleApproachState: LmuWindowsVehicleApproachState = LmuWindowsVehicleApproachState(),
     val previousRaceFlags: LmuWindowsRaceFlagsData? = null,
     val previousVehicleDamage: LmuWindowsVehicleDamageData? = null,
@@ -53,7 +53,7 @@ data class LmuWindowsNarratorState(
  * 直近完走ラップ基準の方式。
  */
 @Serializable
-data class LmuWindowsPitTimingTrackingState(
+public data class LmuWindowsPitTimingTrackingState(
     val session: Int? = null,
     val currentLap: Int = -1,
     val currentLapStartedAtMs: Long = 0L,
@@ -74,14 +74,14 @@ data class LmuWindowsPitTimingTrackingState(
 
 /** LMU の車両接近読み上げで、左右それぞれの接近継続状態を保持する。 */
 @Serializable
-data class LmuWindowsVehicleApproachState(
+public data class LmuWindowsVehicleApproachState(
     val left: Map<Int, LmuWindowsApproachState> = emptyMap(),
     val right: Map<Int, LmuWindowsApproachState> = emptyMap(),
 )
 
 /** 1 台の周辺車両に対する接近開始時刻と読み上げ済み状態。 */
 @Serializable
-data class LmuWindowsApproachState(
+public data class LmuWindowsApproachState(
     val startedAtMs: Long,
     val announced: Boolean,
     val sustainedAnnounced: Boolean = false,
@@ -95,7 +95,7 @@ internal data class ApproachSideStatesResult(
 
 /** LMU 向け読み上げ判定で参照するユーザー設定と現在周回情報。 */
 @Serializable
-data class LmuWindowsNarratorReadoutSettings(
+public data class LmuWindowsNarratorReadoutSettings(
     @Serializable(with = ReadoutItemKeyMapSerializer::class)
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val currentLap: Int,
@@ -115,7 +115,7 @@ data class LmuWindowsNarratorReadoutSettings(
 )
 
 /** LMU 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
-data class LmuWindowsNarratorReadoutDecision(
+public data class LmuWindowsNarratorReadoutDecision(
     val state: LmuWindowsNarratorState,
     val events: List<ReadoutTextEvent>,
 )
@@ -127,7 +127,7 @@ data class LmuWindowsNarratorReadoutDecision(
  * 双方でこの型を共有し、判定に使う入力とログに記録する入力がずれないようにする。
  */
 @Serializable
-data class TyreTemperatureReadoutInput(
+public data class TyreTemperatureReadoutInput(
     val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData,
     val raceFlags: LmuWindowsRaceFlagsData,
 )

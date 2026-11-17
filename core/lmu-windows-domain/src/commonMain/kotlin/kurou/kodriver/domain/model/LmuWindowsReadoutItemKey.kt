@@ -1,174 +1,174 @@
 package kurou.kodriver.domain.model
 
-sealed interface LmuWindowsReadoutItemKey : ReadoutItemKey {
-    sealed interface TopLevel :
+public sealed interface LmuWindowsReadoutItemKey : ReadoutItemKey {
+    public sealed interface TopLevel :
         LmuWindowsReadoutItemKey,
         ReadoutItemKey.TopLevel
 
-    sealed interface VehicleApproach : LmuWindowsReadoutItemKey {
-        data object Root : VehicleApproach, TopLevel {
-            override val value = "lmu_windows_auto_vehicle_approach"
-            override val supportsQueue = false
+    public sealed interface VehicleApproach : LmuWindowsReadoutItemKey {
+        public data object Root : VehicleApproach, TopLevel {
+            override val value: String = "lmu_windows_auto_vehicle_approach"
+            override val supportsQueue: Boolean = false
         }
 
-        data object Sustained : VehicleApproach {
-            override val value = "lmu_windows_auto_vehicle_approach_sustained"
+        public data object Sustained : VehicleApproach {
+            override val value: String = "lmu_windows_auto_vehicle_approach_sustained"
         }
 
-        data object StartReadout : VehicleApproach {
-            override val value = "lmu_windows_auto_vehicle_approach_start_readout"
-        }
-    }
-
-    sealed interface MyBestLap : LmuWindowsReadoutItemKey {
-        data object Root : MyBestLap, TopLevel {
-            override val value = "lmu_windows_auto_my_best_lap"
-            override val supportsQueue = true
-        }
-
-        data object DetailEnabled : MyBestLap {
-            override val value = "lmu_windows_auto_my_best_lap_detail_enabled"
+        public data object StartReadout : VehicleApproach {
+            override val value: String = "lmu_windows_auto_vehicle_approach_start_readout"
         }
     }
 
-    sealed interface Flag : LmuWindowsReadoutItemKey {
-        data object Root : Flag, TopLevel {
-            override val value = "lmu_windows_auto_flag"
-            override val supportsQueue = true
+    public sealed interface MyBestLap : LmuWindowsReadoutItemKey {
+        public data object Root : MyBestLap, TopLevel {
+            override val value: String = "lmu_windows_auto_my_best_lap"
+            override val supportsQueue: Boolean = true
         }
 
-        data object BlueFlag : Flag {
-            override val value = "lmu_windows_auto_blue_flag"
-        }
-
-        data object SectorYellowFlag : Flag {
-            override val value = "lmu_windows_auto_sector_yellow_flag"
-        }
-
-        data object FullCourseYellow : Flag {
-            override val value = "lmu_windows_auto_full_course_yellow"
-        }
-
-        data object RedFlag : Flag {
-            override val value = "lmu_windows_auto_red_flag"
+        public data object DetailEnabled : MyBestLap {
+            override val value: String = "lmu_windows_auto_my_best_lap_detail_enabled"
         }
     }
 
-    sealed interface VehicleDamage : LmuWindowsReadoutItemKey {
-        data object Root : VehicleDamage, TopLevel {
-            override val value = "lmu_windows_auto_vehicle_damage"
-            override val supportsQueue = true
+    public sealed interface Flag : LmuWindowsReadoutItemKey {
+        public data object Root : Flag, TopLevel {
+            override val value: String = "lmu_windows_auto_flag"
+            override val supportsQueue: Boolean = true
         }
 
-        data object Overheat : VehicleDamage {
-            override val value = "lmu_windows_auto_overheat"
+        public data object BlueFlag : Flag {
+            override val value: String = "lmu_windows_auto_blue_flag"
         }
 
-        data object PartDetached : VehicleDamage {
-            override val value = "lmu_windows_auto_part_detached"
+        public data object SectorYellowFlag : Flag {
+            override val value: String = "lmu_windows_auto_sector_yellow_flag"
         }
 
-        data object TyreDetached : VehicleDamage {
-            override val value = "lmu_windows_auto_tyre_detached"
-        }
-    }
-
-    sealed interface TyreTemperature : LmuWindowsReadoutItemKey {
-        data object Root : TyreTemperature, TopLevel {
-            override val value = "lmu_windows_auto_tyre_temperature"
-            override val supportsQueue = true
+        public data object FullCourseYellow : Flag {
+            override val value: String = "lmu_windows_auto_full_course_yellow"
         }
 
-        data object OverheatWarning : TyreTemperature {
-            override val value = "lmu_windows_auto_tyre_temperature_overheat_warning"
-        }
-
-        data object LowWarning : TyreTemperature {
-            override val value = "lmu_windows_auto_tyre_temperature_low_warning"
+        public data object RedFlag : Flag {
+            override val value: String = "lmu_windows_auto_red_flag"
         }
     }
 
-    sealed interface PitTiming : LmuWindowsReadoutItemKey {
-        data object Root : PitTiming, TopLevel {
-            override val value = "lmu_windows_auto_pit_timing"
-            override val supportsQueue = true
+    public sealed interface VehicleDamage : LmuWindowsReadoutItemKey {
+        public data object Root : VehicleDamage, TopLevel {
+            override val value: String = "lmu_windows_auto_vehicle_damage"
+            override val supportsQueue: Boolean = true
         }
 
-        data object VirtualEnergy : PitTiming {
-            override val value = "lmu_windows_auto_pit_timing_virtual_energy"
+        public data object Overheat : VehicleDamage {
+            override val value: String = "lmu_windows_auto_overheat"
         }
 
-        data object TyreWear : PitTiming {
-            override val value = "lmu_windows_auto_pit_timing_tyre_wear"
+        public data object PartDetached : VehicleDamage {
+            override val value: String = "lmu_windows_auto_part_detached"
         }
 
-        data object Fuel : PitTiming {
-            override val value = "lmu_windows_auto_pit_timing_fuel"
-        }
-    }
-
-    sealed interface RemainingVirtualEnergy : LmuWindowsReadoutItemKey {
-        data object Root : RemainingVirtualEnergy, TopLevel {
-            override val value = "lmu_windows_auto_remaining_virtual_energy"
-            override val supportsQueue = true
-        }
-
-        data object WarningReadout : RemainingVirtualEnergy {
-            override val value = "lmu_windows_auto_remaining_virtual_energy_warning_readout"
+        public data object TyreDetached : VehicleDamage {
+            override val value: String = "lmu_windows_auto_tyre_detached"
         }
     }
 
-    sealed interface RemainingFuel : LmuWindowsReadoutItemKey {
-        data object Root : RemainingFuel, TopLevel {
-            override val value = "lmu_windows_auto_remaining_fuel"
-            override val supportsQueue = true
+    public sealed interface TyreTemperature : LmuWindowsReadoutItemKey {
+        public data object Root : TyreTemperature, TopLevel {
+            override val value: String = "lmu_windows_auto_tyre_temperature"
+            override val supportsQueue: Boolean = true
         }
 
-        data object WarningReadout : RemainingFuel {
-            override val value = "lmu_windows_auto_remaining_fuel_warning_readout"
+        public data object OverheatWarning : TyreTemperature {
+            override val value: String = "lmu_windows_auto_tyre_temperature_overheat_warning"
         }
 
-        data object Laps : RemainingFuel {
-            override val value = "lmu_windows_auto_remaining_fuel_laps"
-        }
-    }
-
-    sealed interface TyreWear : LmuWindowsReadoutItemKey {
-        data object Root : TyreWear, TopLevel {
-            override val value = "lmu_windows_auto_tyre_wear"
-            override val supportsQueue = true
-        }
-
-        data object WarningReadout : TyreWear {
-            override val value = "lmu_windows_auto_tyre_wear_warning_readout"
+        public data object LowWarning : TyreTemperature {
+            override val value: String = "lmu_windows_auto_tyre_temperature_low_warning"
         }
     }
 
-    sealed interface BrakeTemperature : LmuWindowsReadoutItemKey {
-        data object Root : BrakeTemperature, TopLevel {
-            override val value = "lmu_windows_auto_brake_temperature"
-            override val supportsQueue = true
+    public sealed interface PitTiming : LmuWindowsReadoutItemKey {
+        public data object Root : PitTiming, TopLevel {
+            override val value: String = "lmu_windows_auto_pit_timing"
+            override val supportsQueue: Boolean = true
         }
 
-        data object WarningReadout : BrakeTemperature {
-            override val value = "lmu_windows_auto_brake_temperature_warning_readout"
-        }
-    }
-
-    sealed interface BrakeWear : LmuWindowsReadoutItemKey {
-        data object Root : BrakeWear, TopLevel {
-            override val value = "lmu_windows_auto_brake_wear"
-            override val supportsQueue = true
+        public data object VirtualEnergy : PitTiming {
+            override val value: String = "lmu_windows_auto_pit_timing_virtual_energy"
         }
 
-        data object WarningReadout : BrakeWear {
-            override val value = "lmu_windows_auto_brake_wear_warning_readout"
+        public data object TyreWear : PitTiming {
+            override val value: String = "lmu_windows_auto_pit_timing_tyre_wear"
+        }
+
+        public data object Fuel : PitTiming {
+            override val value: String = "lmu_windows_auto_pit_timing_fuel"
         }
     }
 
-    sealed interface ClassCarGap : LmuWindowsReadoutItemKey {
-        data object Root : ClassCarGap {
-            override val value = "lmu_windows_auto_class_car_gap"
+    public sealed interface RemainingVirtualEnergy : LmuWindowsReadoutItemKey {
+        public data object Root : RemainingVirtualEnergy, TopLevel {
+            override val value: String = "lmu_windows_auto_remaining_virtual_energy"
+            override val supportsQueue: Boolean = true
+        }
+
+        public data object WarningReadout : RemainingVirtualEnergy {
+            override val value: String = "lmu_windows_auto_remaining_virtual_energy_warning_readout"
+        }
+    }
+
+    public sealed interface RemainingFuel : LmuWindowsReadoutItemKey {
+        public data object Root : RemainingFuel, TopLevel {
+            override val value: String = "lmu_windows_auto_remaining_fuel"
+            override val supportsQueue: Boolean = true
+        }
+
+        public data object WarningReadout : RemainingFuel {
+            override val value: String = "lmu_windows_auto_remaining_fuel_warning_readout"
+        }
+
+        public data object Laps : RemainingFuel {
+            override val value: String = "lmu_windows_auto_remaining_fuel_laps"
+        }
+    }
+
+    public sealed interface TyreWear : LmuWindowsReadoutItemKey {
+        public data object Root : TyreWear, TopLevel {
+            override val value: String = "lmu_windows_auto_tyre_wear"
+            override val supportsQueue: Boolean = true
+        }
+
+        public data object WarningReadout : TyreWear {
+            override val value: String = "lmu_windows_auto_tyre_wear_warning_readout"
+        }
+    }
+
+    public sealed interface BrakeTemperature : LmuWindowsReadoutItemKey {
+        public data object Root : BrakeTemperature, TopLevel {
+            override val value: String = "lmu_windows_auto_brake_temperature"
+            override val supportsQueue: Boolean = true
+        }
+
+        public data object WarningReadout : BrakeTemperature {
+            override val value: String = "lmu_windows_auto_brake_temperature_warning_readout"
+        }
+    }
+
+    public sealed interface BrakeWear : LmuWindowsReadoutItemKey {
+        public data object Root : BrakeWear, TopLevel {
+            override val value: String = "lmu_windows_auto_brake_wear"
+            override val supportsQueue: Boolean = true
+        }
+
+        public data object WarningReadout : BrakeWear {
+            override val value: String = "lmu_windows_auto_brake_wear_warning_readout"
+        }
+    }
+
+    public sealed interface ClassCarGap : LmuWindowsReadoutItemKey {
+        public data object Root : ClassCarGap {
+            override val value: String = "lmu_windows_auto_class_car_gap"
         }
     }
 }

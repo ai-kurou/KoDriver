@@ -3,7 +3,7 @@ package kurou.kodriver.domain.lmuwindows.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LmuWindowsRaceFlagsData(
+public data class LmuWindowsRaceFlagsData(
     // セッション全体の進行状態。例: ガレージ、グリッド、走行中、終了後。
     val gamePhase: SessionPhase,
     // セッション全体のイエローフラッグ状態。イエローフラッグなし/FCY準備中/ピットクローズ等を表す。
@@ -19,8 +19,8 @@ data class LmuWindowsRaceFlagsData(
 // LMU shared memory の ScoringInfo.mGamePhase に対応する値。
 // pyLMUSharedMemory lmu_enum.py の LMUGamePhase に基づく（値 0〜9）。
 @Serializable
-enum class SessionPhase(
-    val rawValue: Int,
+public enum class SessionPhase(
+    public val rawValue: Int,
 ) {
     GARAGE(0),
     WARM_UP(1),
@@ -35,15 +35,15 @@ enum class SessionPhase(
     UNKNOWN(Int.MIN_VALUE),
     ;
 
-    companion object {
-        fun fromRaw(value: Int): SessionPhase = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
+    public companion object {
+        public fun fromRaw(value: Int): SessionPhase = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
     }
 }
 
 // rFactor/rF2 系 shared memory の ScoringInfo.mYellowFlagState に対応する値。
 @Serializable
-enum class SessionYellowFlagState(
-    val rawValue: Int,
+public enum class SessionYellowFlagState(
+    public val rawValue: Int,
 ) {
     INVALID(-1),
     NONE(0),
@@ -57,39 +57,39 @@ enum class SessionYellowFlagState(
     UNKNOWN(Int.MIN_VALUE),
     ;
 
-    companion object {
-        fun fromRaw(value: Int): SessionYellowFlagState = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
+    public companion object {
+        public fun fromRaw(value: Int): SessionYellowFlagState = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
     }
 }
 
 // shared memory の ScoringInfo.mSectorFlag[3] に対応する値。
 // 通常は 0=クリア、1=イエローフラッグとして使われるため、その前提で enum 化している。
 @Serializable
-enum class SectorFlagState(
-    val rawValue: Int,
+public enum class SectorFlagState(
+    public val rawValue: Int,
 ) {
     CLEAR(0),
     YELLOW(1),
     UNKNOWN(Int.MIN_VALUE),
     ;
 
-    companion object {
-        fun fromRaw(value: Int): SectorFlagState = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
+    public companion object {
+        public fun fromRaw(value: Int): SectorFlagState = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
     }
 }
 
 // LMU shared memory の VehicleScoringInfo.mFlag に対応する値。
 // pyLMUSharedMemory lmu_enum.py の LMUPrimaryFlag に基づく（Green=0, Blue=6 の2値のみ）。
 @Serializable
-enum class PrimaryFlag(
-    val rawValue: Int,
+public enum class PrimaryFlag(
+    public val rawValue: Int,
 ) {
     GREEN(0),
     BLUE(6),
     UNKNOWN(Int.MIN_VALUE),
     ;
 
-    companion object {
-        fun fromRaw(value: Int): PrimaryFlag = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
+    public companion object {
+        public fun fromRaw(value: Int): PrimaryFlag = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
     }
 }

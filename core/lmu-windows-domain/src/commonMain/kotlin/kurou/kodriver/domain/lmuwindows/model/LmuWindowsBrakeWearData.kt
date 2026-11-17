@@ -11,7 +11,7 @@ import kurou.kodriver.domain.model.WheelIndex
  * Android 版は KoDriver サーバーの `/ws/lmu_windows/brake_wear` から受信する。
  */
 @Serializable
-data class LmuWindowsBrakeWearData(
+public data class LmuWindowsBrakeWearData(
     /** ホイールごとのブレーキ残り厚さ（単位: meters）。 */
     val wheels: Map<WheelIndex, BrakeThicknessMeters>,
 )

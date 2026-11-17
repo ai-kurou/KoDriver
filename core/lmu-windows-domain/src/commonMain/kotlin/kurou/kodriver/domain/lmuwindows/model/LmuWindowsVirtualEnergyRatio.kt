@@ -9,8 +9,8 @@ import kotlin.jvm.JvmInline
  */
 @Serializable
 @JvmInline
-value class LmuWindowsVirtualEnergyRatio(
-    val value: Double,
+public value class LmuWindowsVirtualEnergyRatio(
+    public val value: Double,
 ) : Comparable<LmuWindowsVirtualEnergyRatio> {
     override fun compareTo(other: LmuWindowsVirtualEnergyRatio): Int = value.compareTo(other.value)
 }

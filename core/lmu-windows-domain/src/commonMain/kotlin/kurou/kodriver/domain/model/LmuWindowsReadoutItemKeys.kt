@@ -8,7 +8,7 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemDefinit
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemPhrases
 import kurou.kodriver.domain.lmuwindows.model.migrateLmuWindowsManualReadoutLegacyClassCarGap
 
-val LMU_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
+public val LMU_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
     listOf(
         LmuWindowsReadoutItemKey.VehicleApproach.Root,
         LmuWindowsReadoutItemKey.VehicleApproach.Sustained,
@@ -61,4 +61,4 @@ internal val lmuWindowsReadoutSpec: SimulatorReadoutSpec
             ),
         )
 
-fun registerLmuWindowsReadoutItemKeys() = ReadoutItemKeyRegistry.register(lmuWindowsReadoutSpec)
+public fun registerLmuWindowsReadoutItemKeys(): Unit = ReadoutItemKeyRegistry.register(lmuWindowsReadoutSpec)

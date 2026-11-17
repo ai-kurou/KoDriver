@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 
-class ObserveLmuWindowsVehicleClassBrakeWearSelectionUseCase(
+public class ObserveLmuWindowsVehicleClassBrakeWearSelectionUseCase(
     private val repository: LmuWindowsVehicleClassBrakeWearPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<LmuWindowsVehicleClassData> = repository.observeSelectedVehicleClass()
+    public operator fun invoke(): Flow<LmuWindowsVehicleClassData> = repository.observeSelectedVehicleClass()
 }

@@ -8,7 +8,7 @@ import kotlinx.serialization.Transient
  * [exactPercent] は切り捨て前の割合（0〜100）で、手動読み上げの四捨五入に使う。ログには出さない。
  */
 @Serializable
-data class LmuWindowsRemainingFuelData(
+public data class LmuWindowsRemainingFuelData(
     val remainingPercent: Int,
     @Transient val exactPercent: Double = remainingPercent.toDouble(),
     @Transient val receivedAtMs: Long? = null,

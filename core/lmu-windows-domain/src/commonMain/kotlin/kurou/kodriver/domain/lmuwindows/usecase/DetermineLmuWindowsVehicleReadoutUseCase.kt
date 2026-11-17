@@ -17,8 +17,8 @@ import kurou.kodriver.domain.model.readoutEnabled
 private const val APPROACH_DEBOUNCE_MS = 50L
 private const val MILLIS_PER_SECOND = 1_000L
 
-class DetermineLmuWindowsVehicleReadoutUseCase {
-    fun determineVehicleApproach(
+public class DetermineLmuWindowsVehicleReadoutUseCase {
+    public fun determineVehicleApproach(
         state: LmuWindowsNarratorState,
         vehicleApproach: LmuWindowsVehicleApproachData,
         settings: LmuWindowsNarratorReadoutSettings,
@@ -90,7 +90,7 @@ class DetermineLmuWindowsVehicleReadoutUseCase {
         return ApproachSideStatesResult(states, announce, sustainedAnnounce)
     }
 
-    fun determineVehicleDamage(
+    public fun determineVehicleDamage(
         state: LmuWindowsNarratorState,
         vehicleDamage: LmuWindowsVehicleDamageData,
         settings: LmuWindowsNarratorReadoutSettings,
@@ -128,7 +128,7 @@ class DetermineLmuWindowsVehicleReadoutUseCase {
         )
     }
 
-    fun determineTyreDetached(
+    public fun determineTyreDetached(
         state: LmuWindowsNarratorState,
         tyreDetached: LmuWindowsTyreDetachedData,
         settings: LmuWindowsNarratorReadoutSettings,

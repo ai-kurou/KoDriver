@@ -3,7 +3,7 @@ package kurou.kodriver.domain.lmuwindows.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LmuWindowsPitStatusData(
+public data class LmuWindowsPitStatusData(
     /** ピットレーン走行中か（リモート車両は不正確な場合あり）。 */
     val inPits: Boolean,
     val pitState: LmuWindowsPitState,
@@ -14,8 +14,8 @@ data class LmuWindowsPitStatusData(
 // LMU 共有メモリの rF2VehicleScoring.mPitState に対応する値。
 // docs/lmu-windows-telemetry.md の mPitState 説明に基づく。
 @Serializable
-enum class LmuWindowsPitState(
-    val rawValue: Int,
+public enum class LmuWindowsPitState(
+    public val rawValue: Int,
 ) {
     NONE(0),
     REQUESTED(1),
@@ -25,7 +25,7 @@ enum class LmuWindowsPitState(
     UNKNOWN(Int.MIN_VALUE),
     ;
 
-    companion object {
-        fun fromRaw(value: Int): LmuWindowsPitState = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
+    public companion object {
+        public fun fromRaw(value: Int): LmuWindowsPitState = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
     }
 }

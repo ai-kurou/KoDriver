@@ -2,8 +2,8 @@ package kurou.kodriver.domain.lmuwindows.usecase
 
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingPreferencesRepository
 
-class SaveLmuWindowsPitTimingTyreWearLapsUseCase(
+public class SaveLmuWindowsPitTimingTyreWearLapsUseCase(
     private val repository: LmuWindowsPitTimingPreferencesRepository,
 ) {
-    suspend operator fun invoke(laps: Int) = repository.saveTyreWearLaps(laps)
+    public suspend operator fun invoke(laps: Int): Unit = repository.saveTyreWearLaps(laps)
 }

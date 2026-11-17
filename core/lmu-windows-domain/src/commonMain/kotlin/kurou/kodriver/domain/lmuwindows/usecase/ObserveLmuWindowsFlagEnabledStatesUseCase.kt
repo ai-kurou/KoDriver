@@ -16,9 +16,9 @@ private val flagEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
         LmuWindowsReadoutItemKey.Flag.RedFlag to true,
     )
 
-class ObserveLmuWindowsFlagEnabledStatesUseCase(
+public class ObserveLmuWindowsFlagEnabledStatesUseCase(
     private val repository: LmuWindowsFlagPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
+    public operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
         repository.observeFlagEnabledStates().map { persisted -> flagEnabledStateDefaults + persisted }
 }

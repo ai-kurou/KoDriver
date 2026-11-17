@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreDetachedRepository
 
-class ObserveLmuWindowsTyreDetachedUseCase(
+public class ObserveLmuWindowsTyreDetachedUseCase(
     private val repository: LmuWindowsTyreDetachedRepository,
 ) {
-    operator fun invoke(): Flow<LmuWindowsTyreDetachedData> = repository.tyreDetachedStream()
+    public operator fun invoke(): Flow<LmuWindowsTyreDetachedData> = repository.tyreDetachedStream()
 }

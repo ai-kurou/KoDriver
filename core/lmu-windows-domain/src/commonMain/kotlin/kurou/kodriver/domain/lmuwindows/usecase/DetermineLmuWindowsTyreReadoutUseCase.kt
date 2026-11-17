@@ -13,8 +13,8 @@ private const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60f
 private const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
 private const val LMU_WINDOWS_PERCENTAGE_SCALE = 100.0
 
-class DetermineLmuWindowsTyreReadoutUseCase {
-    fun determineTyreTemperatureOverheat(
+public class DetermineLmuWindowsTyreReadoutUseCase {
+    public fun determineTyreTemperatureOverheat(
         state: LmuWindowsNarratorState,
         input: TyreTemperatureReadoutInput,
         settings: LmuWindowsNarratorReadoutSettings,
@@ -50,7 +50,7 @@ class DetermineLmuWindowsTyreReadoutUseCase {
         )
     }
 
-    fun determineTyreTemperatureLow(
+    public fun determineTyreTemperatureLow(
         state: LmuWindowsNarratorState,
         input: TyreTemperatureReadoutInput,
         settings: LmuWindowsNarratorReadoutSettings,
@@ -86,7 +86,7 @@ class DetermineLmuWindowsTyreReadoutUseCase {
         )
     }
 
-    fun determineTyreWear(
+    public fun determineTyreWear(
         state: LmuWindowsNarratorState,
         data: LmuWindowsTyreWearData,
         settings: LmuWindowsNarratorReadoutSettings,

@@ -3,8 +3,8 @@ package kurou.kodriver.domain.lmuwindows.usecase
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 
-class ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase(
+public class ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase(
     private val repository: LmuWindowsRemainingVirtualEnergyPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<String> = repository.observeReadoutText()
+    public operator fun invoke(): Flow<String> = repository.observeReadoutText()
 }

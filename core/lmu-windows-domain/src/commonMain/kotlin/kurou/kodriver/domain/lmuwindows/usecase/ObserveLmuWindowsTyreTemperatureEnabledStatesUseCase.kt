@@ -14,9 +14,9 @@ private val tyreTemperatureEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
         LmuWindowsReadoutItemKey.TyreTemperature.LowWarning to true,
     )
 
-class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(
+public class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(
     private val repository: LmuWindowsTyreTemperaturePreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
+    public operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
         repository.observeEnabledStates().map { persisted -> tyreTemperatureEnabledStateDefaults + persisted }
 }

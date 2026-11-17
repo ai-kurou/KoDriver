@@ -3,21 +3,21 @@ package kurou.kodriver.domain.lmuwindows.repository
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 
-interface LmuWindowsVehicleClassBrakeWearPreferencesRepository {
-    suspend fun resetToDefault()
+public interface LmuWindowsVehicleClassBrakeWearPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeLowThresholdPercent(): Flow<Map<LmuWindowsVehicleClassData, Int>>
+    public fun observeLowThresholdPercent(): Flow<Map<LmuWindowsVehicleClassData, Int>>
 
-    suspend fun saveLowThresholdPercent(
+    public suspend fun saveLowThresholdPercent(
         vehicleClass: LmuWindowsVehicleClassData,
         percent: Int,
     )
 
-    fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData>
+    public fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData>
 
-    suspend fun saveSelectedVehicleClass(vehicleClass: LmuWindowsVehicleClassData)
+    public suspend fun saveSelectedVehicleClass(vehicleClass: LmuWindowsVehicleClassData)
 
-    fun observeReadoutText(): Flow<String>
+    public fun observeReadoutText(): Flow<String>
 
-    suspend fun saveReadoutText(text: String)
+    public suspend fun saveReadoutText(text: String)
 }

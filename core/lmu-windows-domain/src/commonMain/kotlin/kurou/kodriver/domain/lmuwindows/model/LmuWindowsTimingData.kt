@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  * LMU から有効な値を取得できない項目は 0 として流れることがある。
  */
 @Serializable
-data class LmuWindowsTimingData(
+public data class LmuWindowsTimingData(
     /** 現在ラップの経過時間。単位は milliseconds。 */
     val currentLapTimeMs: Long,
     /** 直前に完了したラップタイム。単位は milliseconds。 */

@@ -14,9 +14,9 @@ private val vehicleApproachEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
         LmuWindowsReadoutItemKey.VehicleApproach.Sustained to false,
     )
 
-class ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(
+public class ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(
     private val repository: LmuWindowsVehicleApproachPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
+    public operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
         repository.observeEnabledStates().map { persisted -> vehicleApproachEnabledStateDefaults + persisted }
 }

@@ -10,9 +10,9 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.readoutEnabled
 
-class DetermineLmuWindowsPitTimingReadoutUseCase {
+public class DetermineLmuWindowsPitTimingReadoutUseCase {
     /** バーチャルエネルギーを使うクラスでのみ警告する。 */
-    fun determinePitTimingVirtualEnergy(
+    public fun determinePitTimingVirtualEnergy(
         state: LmuWindowsNarratorState,
         telemetry: LmuWindowsTelemetryData,
         virtualEnergy: LmuWindowsVirtualEnergyData,
@@ -76,7 +76,7 @@ class DetermineLmuWindowsPitTimingReadoutUseCase {
         )
     }
 
-    fun determinePitTimingTyreWear(
+    public fun determinePitTimingTyreWear(
         state: LmuWindowsNarratorState,
         telemetry: LmuWindowsTelemetryData,
         tyreWear: LmuWindowsTyreWearData,
@@ -139,7 +139,7 @@ class DetermineLmuWindowsPitTimingReadoutUseCase {
         )
     }
 
-    fun determinePitTimingFuel(
+    public fun determinePitTimingFuel(
         state: LmuWindowsNarratorState,
         telemetry: LmuWindowsTelemetryData,
         fuel: LmuWindowsRemainingFuelData,
@@ -176,7 +176,7 @@ class DetermineLmuWindowsPitTimingReadoutUseCase {
     }
 
     /** 読み上げイベントを生成せず、燃料の周回ごとの消費量を追跡する。 */
-    fun trackFuelLaps(
+    public fun trackFuelLaps(
         state: LmuWindowsNarratorState,
         telemetry: LmuWindowsTelemetryData,
         fuel: LmuWindowsRemainingFuelData,
@@ -211,7 +211,7 @@ class DetermineLmuWindowsPitTimingReadoutUseCase {
      * ソース選択・周回ゲートを通過した警告だけを ViewModel から記録する。
      * 候補の生成時に記録すると、採用されなかったソースまで読み上げ済みになってしまう。
      */
-    fun recordPitTimingAnnounced(
+    public fun recordPitTimingAnnounced(
         state: LmuWindowsNarratorState,
         event: LmuWindowsPitTimingWarning,
     ): LmuWindowsNarratorState =

@@ -9,8 +9,8 @@ import kotlin.jvm.JvmInline
  */
 @Serializable
 @JvmInline
-value class LmuWindowsTyreWearRatio(
-    val value: Double,
+public value class LmuWindowsTyreWearRatio(
+    public val value: Double,
 ) : Comparable<LmuWindowsTyreWearRatio> {
     override fun compareTo(other: LmuWindowsTyreWearRatio): Int = value.compareTo(other.value)
 }
