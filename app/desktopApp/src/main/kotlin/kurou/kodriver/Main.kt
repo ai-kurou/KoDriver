@@ -49,7 +49,7 @@ private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
 /**
  * アプリケーションを起動するエントリーポイント。
  */
-fun main() {
+public fun main() {
     registerReadoutItemKeys()
     Sentry.init { options ->
         options.dsn = SENTRY_DSN

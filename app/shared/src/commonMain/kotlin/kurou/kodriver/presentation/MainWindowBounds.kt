@@ -10,7 +10,7 @@ import kurou.kodriver.feature.main.rememberMainWindowBoundsSaver as rememberFeat
  * `app:shared`・`app:desktopApp` は `:core:domain` を参照できない（`moduleGraphAssert`）ため、
  * `:core:domain` の `MainWindowBounds` ではなく、この型でウィンドウ側へ受け渡す。
  */
-data class MainWindowSavedBounds(
+public data class MainWindowSavedBounds(
     val x: Int?,
     val y: Int?,
     val width: Int,
@@ -23,7 +23,7 @@ data class MainWindowSavedBounds(
  * メインウィンドウをホストする側（`app:desktopApp`）が、前回終了時の位置・サイズの復元に使う。
  */
 @Composable
-fun rememberMainWindowBounds(): MainWindowSavedBounds? = rememberFeatureMainWindowBounds(::MainWindowSavedBounds)
+public fun rememberMainWindowBounds(): MainWindowSavedBounds? = rememberFeatureMainWindowBounds(::MainWindowSavedBounds)
 
 /**
  * メインウィンドウの位置・サイズを保存する関数を返す。
@@ -31,5 +31,5 @@ fun rememberMainWindowBounds(): MainWindowSavedBounds? = rememberFeatureMainWind
  * メインウィンドウをホストする側（`app:desktopApp`）が、移動・リサイズの結果の保存に使う。
  */
 @Composable
-fun rememberMainWindowBoundsSaver(): (x: Int, y: Int, width: Int, height: Int) -> Unit =
+public fun rememberMainWindowBoundsSaver(): (x: Int, y: Int, width: Int, height: Int) -> Unit =
     rememberFeatureMainWindowBoundsSaver()

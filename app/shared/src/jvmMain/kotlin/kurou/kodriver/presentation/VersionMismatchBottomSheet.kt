@@ -6,4 +6,4 @@ import androidx.compose.runtime.Composable
  * VersionMismatchBottomSheetEffect のこのプラットフォーム向け実装。
  */
 @Composable
-actual fun VersionMismatchBottomSheetEffect(hapticFeedbackEnabled: Boolean) = Unit
+internal actual fun VersionMismatchBottomSheetEffect(hapticFeedbackEnabled: Boolean): Unit = Unit

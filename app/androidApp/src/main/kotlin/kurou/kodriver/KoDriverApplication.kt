@@ -26,7 +26,7 @@ private const val SENTRY_DSN =
 /**
  * KoDriverApplication の Android Application 実装。
  */
-class KoDriverApplication : Application() {
+public class KoDriverApplication : Application() {
     // ANDROID_ID は Sentry の端末単位のクラッシュ集計用の識別子としてのみ使用する。
     // 広告・トラッキング用途ではないため、HardwareIds 警告は抑止する。
     @SuppressLint("HardwareIds")

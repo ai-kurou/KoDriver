@@ -32,7 +32,7 @@ import kurou.kodriver.feature.desktopsplash.runInitialization
  * @param content 初期化完了後に表示するメイン画面。
  */
 @Composable
-fun DesktopSplashHost(
+public fun DesktopSplashHost(
     initializeModules: suspend () -> Unit,
     startServer: suspend () -> Unit,
     modifier: Modifier = Modifier,

@@ -10,6 +10,6 @@ import androidx.compose.runtime.Composable
  * このプラットフォーム向けの実装を要求する expect 宣言。
  */
 @Composable
-expect fun rememberAccessLocalNetworkPermissionRequester(
+internal expect fun rememberAccessLocalNetworkPermissionRequester(
     onResult: () -> Unit,
 ): (openSettingsWhenPermanentlyDenied: Boolean) -> Unit

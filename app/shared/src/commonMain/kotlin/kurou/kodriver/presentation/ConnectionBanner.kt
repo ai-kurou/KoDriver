@@ -5,17 +5,17 @@ import androidx.compose.runtime.Composable
 /**
  * ConnectionBanner のアイコン種別。
  */
-enum class ConnectionBannerIconType { SIMULATOR, NETWORK }
+internal enum class ConnectionBannerIconType { SIMULATOR, NETWORK }
 
 /**
  * ConnectionBanner の接続状態を表す表示用ステータス。
  */
-enum class ConnectionBannerStatus { UNCHECKED, CONNECTED, DISCONNECTED }
+internal enum class ConnectionBannerStatus { UNCHECKED, CONNECTED, DISCONNECTED }
 
 /**
  * ConnectionBanner 画面の表示状態。
  */
-data class ConnectionBannerUiState(
+internal data class ConnectionBannerUiState(
     val status: ConnectionBannerStatus = ConnectionBannerStatus.UNCHECKED,
     val message: String = "",
     val iconType: ConnectionBannerIconType = ConnectionBannerIconType.SIMULATOR,
@@ -32,17 +32,17 @@ data class ConnectionBannerUiState(
 /**
  * ConnectionBanner の遷移先を表す。
  */
-sealed interface ConnectionBannerNavigationTarget {
-    data object ConsoleIp : ConnectionBannerNavigationTarget
+internal sealed interface ConnectionBannerNavigationTarget {
+    public data object ConsoleIp : ConnectionBannerNavigationTarget
 
-    data object ServerIp : ConnectionBannerNavigationTarget
+    public data object ServerIp : ConnectionBannerNavigationTarget
 
     /** ローカルネットワークの権限が未許可のとき。遷移ではなく権限の要求（拒否済みなら設定画面）を行う。 */
-    data object AccessLocalNetworkPermission : ConnectionBannerNavigationTarget
+    public data object AccessLocalNetworkPermission : ConnectionBannerNavigationTarget
 }
 
 /**
  * rememberConnectionBannerUiState のプラットフォーム別実装を要求する expect 宣言。
  */
 @Composable
-expect fun rememberConnectionBannerUiState(): ConnectionBannerUiState
+internal expect fun rememberConnectionBannerUiState(): ConnectionBannerUiState
