@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
 
-class SaveSelectedAudioInputDeviceNameUseCase(
+public class SaveSelectedAudioInputDeviceNameUseCase(
     private val repository: SelectedAudioInputDevicePreferencesRepository,
 ) {
-    suspend operator fun invoke(name: String) = repository.saveSelectedDeviceName(name)
+    public suspend operator fun invoke(name: String): Unit = repository.saveSelectedDeviceName(name)
 }

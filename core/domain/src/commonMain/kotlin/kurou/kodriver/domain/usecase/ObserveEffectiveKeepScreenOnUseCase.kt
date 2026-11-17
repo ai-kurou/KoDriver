@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.combine
  *
  * 設定が有効、かつ選択中シミュレーターのテレメトリを実際に受信中の場合のみ true になる。
  */
-class ObserveEffectiveKeepScreenOnUseCase(
+public class ObserveEffectiveKeepScreenOnUseCase(
     private val observeKeepScreenOnEnabled: ObserveKeepScreenOnEnabledUseCase,
     private val observeTelemetryReceiving: ObserveTelemetryReceivingUseCase,
 ) {
-    operator fun invoke(): Flow<Boolean> =
+    public operator fun invoke(): Flow<Boolean> =
         combine(
             observeKeepScreenOnEnabled(),
             observeTelemetryReceiving(),

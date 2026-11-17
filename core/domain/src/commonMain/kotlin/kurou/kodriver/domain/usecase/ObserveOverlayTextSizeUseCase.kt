@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 
-class ObserveOverlayTextSizeUseCase(
+public class ObserveOverlayTextSizeUseCase(
     private val repository: OverlayTextSizePreferencesRepository,
 ) {
-    operator fun invoke(): Flow<OverlayTextSize> = repository.observeOverlayTextSize()
+    public operator fun invoke(): Flow<OverlayTextSize> = repository.observeOverlayTextSize()
 }

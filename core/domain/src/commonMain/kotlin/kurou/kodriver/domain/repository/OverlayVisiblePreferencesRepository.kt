@@ -2,8 +2,8 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface OverlayVisiblePreferencesRepository {
-    fun observeOverlayVisible(): Flow<Boolean>
+public interface OverlayVisiblePreferencesRepository {
+    public fun observeOverlayVisible(): Flow<Boolean>
 
-    suspend fun saveOverlayVisible(visible: Boolean)
+    public suspend fun saveOverlayVisible(visible: Boolean)
 }

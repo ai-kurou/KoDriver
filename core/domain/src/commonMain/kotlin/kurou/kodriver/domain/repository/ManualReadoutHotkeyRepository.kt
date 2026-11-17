@@ -4,15 +4,15 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutRequest
 
-interface ManualReadoutHotkeyRepository {
-    fun pressStream(): Flow<ManualReadoutRequest>
+public interface ManualReadoutHotkeyRepository {
+    public fun pressStream(): Flow<ManualReadoutRequest>
 
-    fun registrationStateStream(
+    public fun registrationStateStream(
         simulatorId: String,
         setId: String,
     ): Flow<HotkeyRegistrationState>
 
-    suspend fun retryRegistration(
+    public suspend fun retryRegistration(
         simulatorId: String,
         setId: String,
     )

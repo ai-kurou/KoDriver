@@ -11,14 +11,14 @@ import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 
-enum class KoDriverServerConnectionStatus {
+public enum class KoDriverServerConnectionStatus {
     NOT_CONFIGURED,
     CHECKING,
     CONNECTED,
     DISCONNECTED,
 }
 
-data class KoDriverServerConnectionState(
+public data class KoDriverServerConnectionState(
     val connectionStatus: KoDriverServerConnectionStatus = KoDriverServerConnectionStatus.NOT_CONFIGURED,
     val requiresKoDriverServer: Boolean = SELECTED_SIMULATOR_DEFAULT.requiresKoDriverServer,
     val selectedSimulator: Simulator = SELECTED_SIMULATOR_DEFAULT,
@@ -26,13 +26,13 @@ data class KoDriverServerConnectionState(
     val isVersionMismatch: Boolean = false,
 )
 
-class ObserveKoDriverServerConnectionUseCase(
+public class ObserveKoDriverServerConnectionUseCase(
     private val fetchServerVersion: FetchServerVersionUseCase,
     private val observeServerIp: ObserveServerIpUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(appVersion: String): Flow<KoDriverServerConnectionState> =
+    public operator fun invoke(appVersion: String): Flow<KoDriverServerConnectionState> =
         combine(
             observeServerIp(),
             observeSelectedSimulator(),

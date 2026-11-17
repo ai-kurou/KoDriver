@@ -7,8 +7,8 @@ package kurou.kodriver.domain.model
  * `:core:narrator` の `speakWithPriority` が分岐する4経路と1対1に対応する。キュー再生が有効な場合は
  * 優先度判定をせずキューへ追加されるため、[SPOKEN] 以降はいずれもキュー再生が無効な場合にのみ発生する。
  */
-enum class NarrationOutcome(
-    val id: String,
+public enum class NarrationOutcome(
+    public val id: String,
 ) {
     /** キュー再生が有効で、読み上げキュー経由で再生を要求した（再生中の読み上げの有無は問わない）。 */
     QUEUED("queued"),
@@ -23,7 +23,7 @@ enum class NarrationOutcome(
     SKIPPED("skipped"),
     ;
 
-    companion object {
-        fun fromId(id: String): NarrationOutcome? = entries.firstOrNull { it.id == id }
+    public companion object {
+        public fun fromId(id: String): NarrationOutcome? = entries.firstOrNull { it.id == id }
     }
 }

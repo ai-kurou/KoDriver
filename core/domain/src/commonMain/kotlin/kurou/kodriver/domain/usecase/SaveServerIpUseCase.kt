@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 
-class SaveServerIpUseCase(
+public class SaveServerIpUseCase(
     private val repository: ServerIpPreferencesRepository,
 ) {
-    suspend operator fun invoke(ip: String) = repository.saveServerIp(ip)
+    public suspend operator fun invoke(ip: String): Unit = repository.saveServerIp(ip)
 }

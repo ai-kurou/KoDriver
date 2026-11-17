@@ -11,7 +11,7 @@ package kurou.kodriver.domain.model
  * [x] / [y] が [OVERLAY_WINDOW_POSITION_UNSPECIFIED] の場合は位置が未保存であることを表し、
  * 呼び出し側は既定の表示位置（画面上部中央）を使う。
  */
-data class OverlayWindowBounds(
+public data class OverlayWindowBounds(
     val x: Int = OVERLAY_WINDOW_POSITION_UNSPECIFIED,
     val y: Int = OVERLAY_WINDOW_POSITION_UNSPECIFIED,
     val width: Int = OVERLAY_WINDOW_WIDTH_DEFAULT,

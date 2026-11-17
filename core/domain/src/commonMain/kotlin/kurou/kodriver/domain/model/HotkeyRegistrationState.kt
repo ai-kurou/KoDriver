@@ -1,15 +1,15 @@
 package kurou.kodriver.domain.model
 
-sealed interface HotkeyRegistrationState {
-    data object Unsupported : HotkeyRegistrationState
+public sealed interface HotkeyRegistrationState {
+    public data object Unsupported : HotkeyRegistrationState
 
-    data object Registering : HotkeyRegistrationState
+    public data object Registering : HotkeyRegistrationState
 
-    data object Registered : HotkeyRegistrationState
+    public data object Registered : HotkeyRegistrationState
 
-    data object Conflict : HotkeyRegistrationState
+    public data object Conflict : HotkeyRegistrationState
 
-    data class Failed(
+    public data class Failed(
         val errorCode: Int,
     ) : HotkeyRegistrationState
 }

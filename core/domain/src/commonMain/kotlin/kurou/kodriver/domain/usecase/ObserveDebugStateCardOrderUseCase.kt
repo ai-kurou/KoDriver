@@ -3,8 +3,8 @@ package kurou.kodriver.domain.usecase
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 
-class ObserveDebugStateCardOrderUseCase(
+public class ObserveDebugStateCardOrderUseCase(
     private val repository: DebugStateCardOrderPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<List<String>> = repository.observeCardOrder()
+    public operator fun invoke(): Flow<List<String>> = repository.observeCardOrder()
 }

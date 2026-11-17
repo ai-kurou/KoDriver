@@ -2,8 +2,8 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface VoicePitchPreferencesRepository {
-    fun voicePitch(): Flow<Float>
+public interface VoicePitchPreferencesRepository {
+    public fun voicePitch(): Flow<Float>
 
-    suspend fun saveVoicePitch(voicePitch: Float)
+    public suspend fun saveVoicePitch(voicePitch: Float)
 }

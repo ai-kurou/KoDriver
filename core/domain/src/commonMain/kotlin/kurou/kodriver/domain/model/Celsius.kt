@@ -8,10 +8,10 @@ import kotlin.jvm.JvmInline
  */
 @Serializable
 @JvmInline
-value class Celsius(
-    val value: Int,
+public value class Celsius(
+    public val value: Int,
 ) : Comparable<Celsius> {
     override fun compareTo(other: Celsius): Int = value.compareTo(other.value)
 
-    operator fun minus(other: Celsius): Celsius = Celsius(value - other.value)
+    public operator fun minus(other: Celsius): Celsius = Celsius(value - other.value)
 }

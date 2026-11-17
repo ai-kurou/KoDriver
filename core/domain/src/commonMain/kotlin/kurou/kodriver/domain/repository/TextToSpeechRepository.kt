@@ -14,9 +14,9 @@ import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
  * 実装はWindows（デスクトップ）とAndroidのみで、それ以外のプラットフォームでは
  * [isAvailable] が `false` を返すNo-Op実装にフォールバックする。
  */
-interface TextToSpeechRepository {
+public interface TextToSpeechRepository {
     /** このプラットフォームでTTSが利用できるかどうか。エンジンの初期化を伴う場合がある。 */
-    suspend fun isAvailable(): Boolean
+    public suspend fun isAvailable(): Boolean
 
     /**
      * TTSが利用できない理由。利用できる場合は `null`。
@@ -26,7 +26,7 @@ interface TextToSpeechRepository {
      * を返す。
      * [isAvailable] と同様、エンジンの初期化を伴う場合がある。
      */
-    suspend fun unavailableReason(): TextToSpeechUnavailableReason?
+    public suspend fun unavailableReason(): TextToSpeechUnavailableReason?
 
     /**
      * [text] を読み上げる。実装は読み上げが実際に完了する（またはコルーチンのキャンセルで
@@ -43,7 +43,7 @@ interface TextToSpeechRepository {
      * @param pitch 声の高さ。1.0が標準、0.5〜2.0。範囲外は実装側でcoerceInする。
      * @param audioUsage Androidの音声用途。nullなら保存済み設定を使う。Android以外では無視する。
      */
-    suspend fun speak(
+    public suspend fun speak(
         text: String,
         queue: Boolean = false,
         volume: Int = 100,

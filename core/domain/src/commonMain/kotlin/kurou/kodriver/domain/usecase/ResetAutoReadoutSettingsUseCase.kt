@@ -2,10 +2,10 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 
-class ResetAutoReadoutSettingsUseCase(
+public class ResetAutoReadoutSettingsUseCase(
     private val resetters: List<AutoReadoutSettingsResetter>,
 ) {
-    suspend operator fun invoke() {
+    public suspend operator fun invoke() {
         resetters.forEach { it.resetToDefault() }
     }
 }

@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.ServerVersionRepository
 
-class FetchServerVersionUseCase(
+public class FetchServerVersionUseCase(
     private val repository: ServerVersionRepository,
 ) {
-    suspend operator fun invoke(ip: String): Result<String> = repository.fetchVersion(ip)
+    public suspend operator fun invoke(ip: String): Result<String> = repository.fetchVersion(ip)
 }

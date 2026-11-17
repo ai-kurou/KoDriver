@@ -1,13 +1,13 @@
 package kurou.kodriver.domain.model
 
-sealed class FeedbackType(
-    val tagValue: String,
+public sealed class FeedbackType(
+    public val tagValue: String,
 ) {
-    data object BugReport : FeedbackType("bug_report")
+    public data object BugReport : FeedbackType("bug_report")
 
-    data object FeatureRequest : FeedbackType("feature_request")
+    public data object FeatureRequest : FeedbackType("feature_request")
 
-    data object Question : FeedbackType("question")
+    public data object Question : FeedbackType("question")
 
-    data object Other : FeedbackType("other")
+    public data object Other : FeedbackType("other")
 }

@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.model
 
-data class Feedback(
+public data class Feedback(
     val type: FeedbackType,
     val message: String,
     val email: String? = null,

@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 
-class DeleteManualReadoutSetUseCase(
+public class DeleteManualReadoutSetUseCase(
     private val repository: ManualReadoutSetPreferencesRepository,
 ) {
-    suspend operator fun invoke(id: String) = repository.deleteSet(id)
+    public suspend operator fun invoke(id: String): Unit = repository.deleteSet(id)
 }

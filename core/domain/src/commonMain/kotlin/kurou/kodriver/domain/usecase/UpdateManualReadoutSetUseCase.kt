@@ -3,8 +3,8 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 
-class UpdateManualReadoutSetUseCase(
+public class UpdateManualReadoutSetUseCase(
     private val repository: ManualReadoutSetPreferencesRepository,
 ) {
-    suspend operator fun invoke(set: ManualReadoutSet) = repository.updateSet(set)
+    public suspend operator fun invoke(set: ManualReadoutSet): Unit = repository.updateSet(set)
 }

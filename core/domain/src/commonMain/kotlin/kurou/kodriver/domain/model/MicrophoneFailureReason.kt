@@ -3,7 +3,7 @@ package kurou.kodriver.domain.model
 /**
  * マイクからの取得を続けられない理由。
  */
-enum class MicrophoneFailureReason {
+public enum class MicrophoneFailureReason {
     /** 入力デバイスが見つからない、開けない、または取得中に使えなくなった。 */
     Unavailable,
 

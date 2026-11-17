@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.model
 
-const val LMU_WINDOWS_READOUT_HOTKEY_VIRTUAL_KEY_CODE_DEFAULT = 0x70
-const val LMU_WINDOWS_READOUT_HOTKEY_MODIFIERS = 1 or 2 or 4
+public const val LMU_WINDOWS_READOUT_HOTKEY_VIRTUAL_KEY_CODE_DEFAULT: Int = 0x70
+public const val LMU_WINDOWS_READOUT_HOTKEY_MODIFIERS: Int = 1 or 2 or 4
 
-val MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT = ManualReadoutHotkeyModifiers.CTRL_ALT
+public val MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT: ManualReadoutHotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_ALT

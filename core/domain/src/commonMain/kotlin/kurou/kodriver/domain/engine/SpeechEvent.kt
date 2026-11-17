@@ -11,9 +11,9 @@ import kurou.kodriver.domain.model.ReadoutItemKey
  * シミュレーター別ドメインモジュールが実装を提供するため sealed にしない。
  * シミュレーターごとのマーカー（例: `LmuWindowsSpeechEvent`）は各シミュレーター側で sealed に保つ。
  */
-interface SpeechEvent {
+public interface SpeechEvent {
     /** このイベントを有効化・キュー可否判定に関連付ける読み上げ項目。 */
-    val readoutItemKey: ReadoutItemKey
+    public val readoutItemKey: ReadoutItemKey
 
     /**
      * テレメトリログに記録するイベントの既定文言。
@@ -22,18 +22,18 @@ interface SpeechEvent {
      * ACEフラッグの既定文言は定数を参照し、判定時に解決した実際の本文は [ReadoutTextEvent.resolvedText] に保持する。
      * ドメイン層はCompose Resourcesに依存しないため、表示文言の変更時はここも更新する。
      */
-    val narratedText: String
+    public val narratedText: String
 }
 
 /** 判定時の本文を保持し、キュー待機中の設定変更後も発話とログを一致させる読み上げ文言イベント。 */
-interface ReadoutTextEvent : SpeechEvent {
-    val resolvedText: String?
+public interface ReadoutTextEvent : SpeechEvent {
+    public val resolvedText: String?
 
-    fun withResolvedText(text: String): ReadoutTextEvent
+    public fun withResolvedText(text: String): ReadoutTextEvent
 }
 
 /** 入力文言を置換せず、通常の音声エンジン経路へ渡すイベント。 */
-data class DebugReadoutText(
+public data class DebugReadoutText(
     override val readoutItemKey: ReadoutItemKey,
     override val resolvedText: String,
 ) : ReadoutTextEvent {

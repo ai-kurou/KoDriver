@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.model
 
-data class TelemetryLog(
+public data class TelemetryLog(
     val id: Long,
     val createdAt: Long,
     val simulator: Simulator,

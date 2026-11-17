@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.model
 
 /** IPv4アドレスを `.` で区切った各オクテットの数値が取りうる最小値。 */
-const val IPV4_OCTET_MIN = 0
+public const val IPV4_OCTET_MIN: Int = 0
 
 /** IPv4アドレスを `.` で区切った各オクテットの数値が取りうる最大値。 */
-const val IPV4_OCTET_MAX = 255
+public const val IPV4_OCTET_MAX: Int = 255

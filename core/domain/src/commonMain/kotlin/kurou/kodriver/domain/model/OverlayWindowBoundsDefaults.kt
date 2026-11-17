@@ -7,8 +7,8 @@ package kurou.kodriver.domain.model
  * 座標は負値も取りうる（マルチモニタ環境では左側・上側のモニタが負の座標になる）ため、
  * 「未設定」を負値では表現できず、実際の座標として現れない [Int.MIN_VALUE] を番兵として使う。
  */
-const val OVERLAY_WINDOW_POSITION_UNSPECIFIED = Int.MIN_VALUE
+public const val OVERLAY_WINDOW_POSITION_UNSPECIFIED: Int = Int.MIN_VALUE
 
-const val OVERLAY_WINDOW_WIDTH_DEFAULT = 480
+public const val OVERLAY_WINDOW_WIDTH_DEFAULT: Int = 480
 
-const val OVERLAY_WINDOW_HEIGHT_DEFAULT = 120
+public const val OVERLAY_WINDOW_HEIGHT_DEFAULT: Int = 120

@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 
-class SaveDebugStateCardOrderUseCase(
+public class SaveDebugStateCardOrderUseCase(
     private val repository: DebugStateCardOrderPreferencesRepository,
 ) {
-    suspend operator fun invoke(order: List<String>) = repository.saveCardOrder(order)
+    public suspend operator fun invoke(order: List<String>): Unit = repository.saveCardOrder(order)
 }

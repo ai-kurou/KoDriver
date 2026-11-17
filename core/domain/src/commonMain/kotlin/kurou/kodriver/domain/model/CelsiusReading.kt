@@ -9,8 +9,8 @@ import kotlin.jvm.JvmInline
  */
 @Serializable
 @JvmInline
-value class CelsiusReading(
-    val value: Float,
+public value class CelsiusReading(
+    public val value: Float,
 ) : Comparable<CelsiusReading> {
     override fun compareTo(other: CelsiusReading): Int = value.compareTo(other.value)
 }

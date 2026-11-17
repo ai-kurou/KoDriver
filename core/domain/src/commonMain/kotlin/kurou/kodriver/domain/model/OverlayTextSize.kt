@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.model
 
-enum class OverlayTextSize(
-    val id: String,
+public enum class OverlayTextSize(
+    public val id: String,
 ) {
     EXTRA_SMALL("extra_small"),
     SMALL("small"),
@@ -12,7 +12,8 @@ enum class OverlayTextSize(
     MAXIMUM("maximum"),
     ;
 
-    companion object {
-        fun fromId(id: String): OverlayTextSize = entries.firstOrNull { it.id == id } ?: OVERLAY_TEXT_SIZE_DEFAULT
+    public companion object {
+        public fun fromId(id: String): OverlayTextSize =
+            entries.firstOrNull { it.id == id } ?: OVERLAY_TEXT_SIZE_DEFAULT
     }
 }

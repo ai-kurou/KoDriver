@@ -2,8 +2,8 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface DynamicColorEnabledRepository {
-    fun dynamicColorEnabled(): Flow<Boolean>
+public interface DynamicColorEnabledRepository {
+    public fun dynamicColorEnabled(): Flow<Boolean>
 
-    suspend fun saveDynamicColorEnabled(enabled: Boolean)
+    public suspend fun saveDynamicColorEnabled(enabled: Boolean)
 }

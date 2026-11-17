@@ -3,8 +3,8 @@ package kurou.kodriver.domain.usecase
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 
-class ObserveReadoutHotkeyVirtualKeyCodeUseCase(
+public class ObserveReadoutHotkeyVirtualKeyCodeUseCase(
     private val repository: ReadoutHotkeyPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Int> = repository.observeVirtualKeyCode()
+    public operator fun invoke(): Flow<Int> = repository.observeVirtualKeyCode()
 }

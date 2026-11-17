@@ -13,13 +13,13 @@ import kurou.kodriver.domain.repository.TextToSpeechRepository
  * TTSが「℃」を「せっし」と読む（100℃が「ひゃくせっし」になる）ため、
  * Repositoryへ渡す前に「℃」を「ど」へ置き換えて必ず「ど」と読ませる。
  */
-class SpeakTextUseCase(
+public class SpeakTextUseCase(
     private val repository: TextToSpeechRepository,
     private val observeVoice: ObserveVoiceUseCase,
     private val observeVoiceSpeed: ObserveVoiceSpeedUseCase,
     private val observeVoicePitch: ObserveVoicePitchUseCase,
 ) {
-    suspend operator fun invoke(
+    public suspend operator fun invoke(
         text: String,
         queue: Boolean = false,
         volume: Int = 100,

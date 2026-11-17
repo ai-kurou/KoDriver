@@ -10,8 +10,8 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
  * 読み上げ条件は整ったが読み上げされなかったログ（`NarrationOutcome.SKIPPED`）は音が鳴っていないため、
  * ナレーターオーバーレイのような「今読み上げている内容」を示す用途では対象外にする。
  */
-class ObserveLatestNarratedTelemetryLogUseCase(
+public class ObserveLatestNarratedTelemetryLogUseCase(
     private val repository: TelemetryLogRepository,
 ) {
-    operator fun invoke(): Flow<TelemetryLog?> = repository.observeLatestNarratedTelemetryLog()
+    public operator fun invoke(): Flow<TelemetryLog?> = repository.observeLatestNarratedTelemetryLog()
 }

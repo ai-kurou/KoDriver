@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.model
 
-enum class KoDriverServerFeature(
+public enum class KoDriverServerFeature(
     private val pathSegment: String,
 ) {
     TELEMETRY(pathSegment = "telemetry"),
@@ -24,5 +24,5 @@ enum class KoDriverServerFeature(
     REMAINING_FUEL_LAPS(pathSegment = "remaining_fuel_laps"),
     ;
 
-    fun webSocketPath(simulator: Simulator): String = "/ws/${simulator.id}/$pathSegment"
+    public fun webSocketPath(simulator: Simulator): String = "/ws/${simulator.id}/$pathSegment"
 }

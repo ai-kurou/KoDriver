@@ -11,7 +11,7 @@ package kurou.kodriver.domain.model
  * @property name 表示専用のセット名。空文字は名前なし。
  * @property number 作成時に採番する固定の表示番号。0は未採番で、その場合は一覧上の位置を使う。
  */
-data class ManualReadoutSet(
+public data class ManualReadoutSet(
     val id: String,
     val itemKeys: List<String> = emptyList(),
     val itemTexts: Map<String, String> = emptyMap(),

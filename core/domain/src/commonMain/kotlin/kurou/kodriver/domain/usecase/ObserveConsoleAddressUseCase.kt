@@ -1,9 +1,10 @@
 package kurou.kodriver.domain.usecase
 
+import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 
-class ObserveConsoleAddressUseCase(
+public class ObserveConsoleAddressUseCase(
     private val repository: ConsoleAddressPreferencesRepository,
 ) {
-    operator fun invoke() = repository.consoleAddress()
+    public operator fun invoke(): Flow<String?> = repository.consoleAddress()
 }

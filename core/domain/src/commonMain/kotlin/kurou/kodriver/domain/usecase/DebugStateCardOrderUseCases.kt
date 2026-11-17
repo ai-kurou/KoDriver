@@ -8,16 +8,16 @@ import kotlinx.coroutines.flow.map
  *
  * @param keys 対象シミュレーターのカードキー一覧。保存済みの名前のうち、ここに存在しないもの（削除済み項目）は読み出し時に除外する。
  */
-class DebugStateCardOrderUseCases<K : Enum<K>>(
+public class DebugStateCardOrderUseCases<K : Enum<K>>(
     private val keys: List<K>,
-    val observeCardOrder: ObserveDebugStateCardOrderUseCase,
-    val resolveCardOrder: ResolveDebugStateCardOrderUseCase,
-    val saveCardOrder: SaveDebugStateCardOrderUseCase,
+    public val observeCardOrder: ObserveDebugStateCardOrderUseCase,
+    public val resolveCardOrder: ResolveDebugStateCardOrderUseCase,
+    public val saveCardOrder: SaveDebugStateCardOrderUseCase,
 ) {
-    fun observeKeys(): Flow<List<K>> =
+    public fun observeKeys(): Flow<List<K>> =
         observeCardOrder().map { order ->
             order.mapNotNull { name -> keys.find { it.name == name } }
         }
 
-    suspend fun saveKeys(order: List<K>) = saveCardOrder(order.map { it.name })
+    public suspend fun saveKeys(order: List<K>): Unit = saveCardOrder(order.map { it.name })
 }

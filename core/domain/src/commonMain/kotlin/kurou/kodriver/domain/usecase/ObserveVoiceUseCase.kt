@@ -3,8 +3,8 @@ package kurou.kodriver.domain.usecase
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
 
-class ObserveVoiceUseCase(
+public class ObserveVoiceUseCase(
     private val repository: VoicePreferencesRepository,
 ) {
-    operator fun invoke(): Flow<String> = repository.voiceId()
+    public operator fun invoke(): Flow<String> = repository.voiceId()
 }

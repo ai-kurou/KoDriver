@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 
-class ObserveDebugReadoutRequestUseCase(
+public class ObserveDebugReadoutRequestUseCase(
     private val repository: DebugReadoutRequestRepository,
 ) {
-    operator fun invoke(): Flow<DebugReadoutRequest> = repository.observeRequests()
+    public operator fun invoke(): Flow<DebugReadoutRequest> = repository.observeRequests()
 }

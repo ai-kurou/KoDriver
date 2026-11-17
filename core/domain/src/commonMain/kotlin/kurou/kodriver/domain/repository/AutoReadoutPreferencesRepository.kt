@@ -9,24 +9,24 @@ import kurou.kodriver.domain.model.ReadoutItemKey
  * simulator 引数には [kurou.kodriver.domain.model.Simulator.id] を渡す。
  * キーの有効状態と並び順はシミュレーターごとに独立して保存される。
  */
-interface AutoReadoutPreferencesRepository {
-    suspend fun resetToDefault()
+public interface AutoReadoutPreferencesRepository {
+    public suspend fun resetToDefault()
 
     /** 指定シミュレーターの読み上げ有効状態を購読する。未保存のキーは domain のデフォルト値で補完する。 */
-    fun observeAutoReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>>
+    public fun observeAutoReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>>
 
     /** 指定シミュレーターの読み上げ有効状態を 1 件保存する。 */
-    suspend fun saveAutoReadoutEnabledState(
+    public suspend fun saveAutoReadoutEnabledState(
         simulator: String,
         key: ReadoutItemKey,
         enabled: Boolean,
     )
 
     /** 指定シミュレーターの読み上げ一覧表示順を購読する。未保存または欠落キーは domain の既定順で補完する。 */
-    fun observeAutoReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>>
+    public fun observeAutoReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>>
 
     /** 指定シミュレーターの読み上げ一覧表示順を保存する。 */
-    suspend fun saveAutoReadoutOrder(
+    public suspend fun saveAutoReadoutOrder(
         simulator: String,
         order: List<ReadoutItemKey>,
     )

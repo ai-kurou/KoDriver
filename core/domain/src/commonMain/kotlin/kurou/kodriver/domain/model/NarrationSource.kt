@@ -1,8 +1,8 @@
 package kurou.kodriver.domain.model
 
 /** テレメトリログに保存する読み上げの起点を表す。 */
-enum class NarrationSource(
-    val id: String,
+public enum class NarrationSource(
+    public val id: String,
 ) {
     /** 自動読み上げ。 */
     AUTO("auto"),
@@ -11,7 +11,7 @@ enum class NarrationSource(
     MANUAL("manual"),
     ;
 
-    companion object {
-        fun fromId(id: String): NarrationSource? = entries.firstOrNull { it.id == id }
+    public companion object {
+        public fun fromId(id: String): NarrationSource? = entries.firstOrNull { it.id == id }
     }
 }

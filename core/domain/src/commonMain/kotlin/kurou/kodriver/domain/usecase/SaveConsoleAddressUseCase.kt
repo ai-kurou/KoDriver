@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 
-class SaveConsoleAddressUseCase(
+public class SaveConsoleAddressUseCase(
     private val repository: ConsoleAddressPreferencesRepository,
 ) {
-    suspend operator fun invoke(address: String) = repository.saveConsoleAddress(address)
+    public suspend operator fun invoke(address: String): Unit = repository.saveConsoleAddress(address)
 }

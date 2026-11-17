@@ -11,7 +11,7 @@ package kurou.kodriver.domain.util
  * 空白は無視し、英字は大文字小文字を区別しない。照合の前に、音声認識がよく取り違える語を [SPEECH_RECOGNITION_CORRECTIONS] で正しい語に置き換える（例: 「まーも」→「摩耗」）。英字だけの語句（例: VE）は、前後が英字でない場合だけ一致とする（have の中の ve に反応しない）。
  * どの項目にも一致しなければ null。
  */
-fun matchManualReadoutPhrase(
+public fun matchManualReadoutPhrase(
     candidates: List<String>,
     phrasesByItemKey: Map<String, List<String>>,
 ): ManualReadoutPhraseMatch? {

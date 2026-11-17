@@ -2,10 +2,10 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface ManualReadoutPlayButtonLayoutEnabledPreferencesRepository {
-    fun observeManualReadoutPlayButtonLayoutEnabled(): Flow<Boolean>
+public interface ManualReadoutPlayButtonLayoutEnabledPreferencesRepository {
+    public fun observeManualReadoutPlayButtonLayoutEnabled(): Flow<Boolean>
 
-    suspend fun saveManualReadoutPlayButtonLayoutEnabled(enabled: Boolean)
+    public suspend fun saveManualReadoutPlayButtonLayoutEnabled(enabled: Boolean)
 
-    suspend fun resetToDefault()
+    public suspend fun resetToDefault()
 }

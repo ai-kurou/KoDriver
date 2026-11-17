@@ -3,12 +3,12 @@ package kurou.kodriver.domain.repository
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-interface QueuePreferencesRepository {
-    suspend fun resetToDefault()
+public interface QueuePreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeQueueEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
+    public fun observeQueueEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
-    suspend fun saveQueueEnabledState(
+    public suspend fun saveQueueEnabledState(
         key: ReadoutItemKey,
         enabled: Boolean,
     )

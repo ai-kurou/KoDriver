@@ -10,9 +10,9 @@ package kurou.kodriver.domain.model
  *
  * `Root` は一覧画面のトップレベル項目、その他のキーは詳細画面内のサブ項目を表す。
  */
-interface ReadoutItemKey {
+public interface ReadoutItemKey {
     /** DataStore に保存する安定識別子。 */
-    val value: String
+    public val value: String
 
     /**
      * listPane のトップレベル項目（Root）であることを表すマーカー。
@@ -20,19 +20,19 @@ interface ReadoutItemKey {
      * supportsQueue は TopLevel にのみ存在し、サブ項目には存在しない。
      * デフォルト値は持たせず、新規追加時に必ず true/false を明示させる。
      */
-    interface TopLevel : ReadoutItemKey {
-        val supportsQueue: Boolean
+    public interface TopLevel : ReadoutItemKey {
+        public val supportsQueue: Boolean
     }
 
-    companion object {
+    public companion object {
         /** 既存保存値の復元対象となる全キー。各 simulator モジュールの登録済みキーを返す。 */
-        val entries: List<ReadoutItemKey> get() = ReadoutItemKeyRegistry.entries
+        public val entries: List<ReadoutItemKey> get() = ReadoutItemKeyRegistry.entries
 
         /** シミュレーター固有の一覧項目を、entries の順序で返す。 */
-        fun topLevelEntriesOf(simulator: Simulator): List<TopLevel> =
+        public fun topLevelEntriesOf(simulator: Simulator): List<TopLevel> =
             ReadoutItemKeyRegistry.topLevelEntriesOf(simulator)
 
         /** DataStore に保存された [value] からキーを復元する。不明な値は null を返す。 */
-        fun fromValue(value: String): ReadoutItemKey? = ReadoutItemKeyRegistry.fromValue(value)
+        public fun fromValue(value: String): ReadoutItemKey? = ReadoutItemKeyRegistry.fromValue(value)
     }
 }

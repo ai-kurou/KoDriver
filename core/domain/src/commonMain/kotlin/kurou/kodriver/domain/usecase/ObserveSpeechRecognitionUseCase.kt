@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 
-class ObserveSpeechRecognitionUseCase(
+public class ObserveSpeechRecognitionUseCase(
     private val repository: SpeechRecognitionRepository,
 ) {
-    operator fun invoke(): Flow<SpeechRecognitionEvent> = repository.observeRecognition()
+    public operator fun invoke(): Flow<SpeechRecognitionEvent> = repository.observeRecognition()
 }

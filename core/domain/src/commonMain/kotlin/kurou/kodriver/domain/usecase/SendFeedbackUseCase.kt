@@ -7,12 +7,12 @@ import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kotlin.time.Clock
 
-class SendFeedbackUseCase(
+public class SendFeedbackUseCase(
     private val repository: FeedbackSenderRepository,
     private val cooldownRepository: FeedbackCooldownPreferencesRepository,
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) {
-    suspend operator fun invoke(feedback: Feedback): Result<Unit> {
+    public suspend operator fun invoke(feedback: Feedback): Result<Unit> {
         val normalizedFeedback =
             feedback.copy(
                 message = feedback.message.trim(),

@@ -1,3 +1,3 @@
 package kurou.kodriver.domain.util
 
-actual fun isManualReadoutHotkeySupported(): Boolean = false
+public actual fun isManualReadoutHotkeySupported(): Boolean = false

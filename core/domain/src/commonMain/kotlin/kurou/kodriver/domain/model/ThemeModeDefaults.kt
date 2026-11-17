@@ -1,3 +1,3 @@
 package kurou.kodriver.domain.model
 
-val THEME_MODE_DEFAULT = ThemeMode.SYSTEM
+public val THEME_MODE_DEFAULT: ThemeMode = ThemeMode.SYSTEM
