@@ -90,7 +90,7 @@ private const val SUSTAINED_DURATION_MAX = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINE
  * LmuWindowsAutoReadoutVehicleApproachDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsAutoReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutVehicleApproachDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val readoutTextSettings = viewModel.readoutTextSettings

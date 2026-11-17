@@ -11,6 +11,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsVehicleApproachSta
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -28,7 +29,7 @@ import org.koin.dsl.module
  *   TextToSpeechRepository（:core:text-to-speech-data）、試聴用の named(Simulator.LmuWindows.id) の
  *   PlayStartSoundForKeyUseCase・SpeakTextUseCase（:feature:lmu-windows-narrator で登録）。
  */
-val lmuWindowsAutoReadoutVehicleApproachDetailModule =
+public val lmuWindowsAutoReadoutVehicleApproachDetailModule: Module =
     module {
         // ViewModel（get(named(Simulator.LmuWindows.id)) は narrator モジュールの TextToSpeechEngine を解決）
         viewModel {

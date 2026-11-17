@@ -56,7 +56,7 @@ private const val THRESHOLD_MAX = LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_MAX
  * LmuWindowsAutoReadoutTyreWearDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsAutoReadoutTyreWearDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutTyreWearDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutTyreWearDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {
