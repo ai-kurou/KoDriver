@@ -6,7 +6,7 @@ package kurou.kodriver.domain.lmuwindows.model
 // 他の項目のデフォルト有効状態（autoReadoutEnabledStateDefaults等）は対応するObserve*UseCaseファイル内の
 // private valとして閉じているが、この値はRepository実装（core:data、明示的なtrue/false書き込みの
 // キー空間として使用）からも参照する必要があるため、両モジュールから見えるdomain/model層に置いている。
-val lmuWindowsTyreTemperatureLowWarningSelectablePhases: Set<SessionPhase> =
+public val lmuWindowsTyreTemperatureLowWarningSelectablePhases: Set<SessionPhase> =
     setOf(
         SessionPhase.GARAGE,
         SessionPhase.WARM_UP,
@@ -14,5 +14,5 @@ val lmuWindowsTyreTemperatureLowWarningSelectablePhases: Set<SessionPhase> =
         SessionPhase.FORMATION,
     )
 
-val lmuWindowsTyreTemperatureLowWarningDefaultPhases: Set<SessionPhase> =
+public val lmuWindowsTyreTemperatureLowWarningDefaultPhases: Set<SessionPhase> =
     lmuWindowsTyreTemperatureLowWarningSelectablePhases - SessionPhase.GARAGE

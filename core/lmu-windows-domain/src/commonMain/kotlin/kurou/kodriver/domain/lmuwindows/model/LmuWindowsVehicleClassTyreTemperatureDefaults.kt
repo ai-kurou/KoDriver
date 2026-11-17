@@ -6,7 +6,7 @@ internal val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_H
 internal val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P2_DEFAULT = Celsius(90)
 internal val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P2_ELMS_DEFAULT = Celsius(90)
 internal val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P3_DEFAULT = Celsius(90)
-val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT = Celsius(100)
+public val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT: Celsius = Celsius(100)
 internal val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GT3_DEFAULT = Celsius(90)
 internal val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNKNOWN_DEFAULT = Celsius(90)
 
@@ -14,13 +14,13 @@ internal val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_U
  * [LmuWindowsVehicleClassData.Unknown] を「未知クラス全体で共有する1件」として扱うための代表キー。
  * 実際の raw 値は無視される。
  */
-const val LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY = "Unknown"
+public const val LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY: String = "Unknown"
 
 /**
  * 車両クラスごとの高温警告閾値のデフォルト値（摂氏）。Hypercar と GTE は 100℃、
  * それ以外のクラスは 90℃ を既定値とする。
  */
-fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+public fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
     vehicleClass: LmuWindowsVehicleClassData,
 ): Celsius =
     when (vehicleClass) {
@@ -58,7 +58,7 @@ fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
  * [LmuWindowsVehicleClassData.Unknown] は raw 値によらず代表キーの1件を共有するため、
  * マップの直接参照ではなく代表キーへ正規化してから参照する。
  */
-fun resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(
+public fun resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(
     thresholdsByVehicleClass: Map<LmuWindowsVehicleClassData, Celsius>,
     vehicleClass: LmuWindowsVehicleClassData,
 ): Celsius {
@@ -75,14 +75,14 @@ fun resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(
 /**
  * 対象クラスチップのデフォルト選択値。
  */
-val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT: LmuWindowsVehicleClassData =
+public val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT: LmuWindowsVehicleClassData =
     LmuWindowsVehicleClassData.Hypercar
 
 /**
  * 高温警告閾値をクラスごとに保存・列挙する際に対象とする全車両クラス
  * （Unknown は代表インスタンスを1件のみ含む）。
  */
-val lmuWindowsAllVehicleClasses: List<LmuWindowsVehicleClassData> =
+public val lmuWindowsAllVehicleClasses: List<LmuWindowsVehicleClassData> =
     listOf(
         LmuWindowsVehicleClassData.Hypercar,
         LmuWindowsVehicleClassData.P2,

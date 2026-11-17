@@ -3,22 +3,22 @@ package kurou.kodriver.domain.lmuwindows.repository
 import kotlinx.coroutines.flow.Flow
 
 /** LMU のフラッグごとの自由文字列を永続化する。空白文言では本文を読み上げない。 */
-interface LmuWindowsFlagReadoutTextPreferencesRepository {
-    suspend fun resetToDefault()
+public interface LmuWindowsFlagReadoutTextPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeSectorYellowFlagText(): Flow<String>
+    public fun observeSectorYellowFlagText(): Flow<String>
 
-    suspend fun saveSectorYellowFlagText(text: String)
+    public suspend fun saveSectorYellowFlagText(text: String)
 
-    fun observeBlueFlagText(): Flow<String>
+    public fun observeBlueFlagText(): Flow<String>
 
-    suspend fun saveBlueFlagText(text: String)
+    public suspend fun saveBlueFlagText(text: String)
 
-    fun observeFullCourseYellowFlagText(): Flow<String>
+    public fun observeFullCourseYellowFlagText(): Flow<String>
 
-    suspend fun saveFullCourseYellowFlagText(text: String)
+    public suspend fun saveFullCourseYellowFlagText(text: String)
 
-    fun observeRedFlagText(): Flow<String>
+    public fun observeRedFlagText(): Flow<String>
 
-    suspend fun saveRedFlagText(text: String)
+    public suspend fun saveRedFlagText(text: String)
 }

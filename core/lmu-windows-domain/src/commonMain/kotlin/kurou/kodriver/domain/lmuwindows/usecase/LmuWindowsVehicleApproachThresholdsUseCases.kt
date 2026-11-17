@@ -3,19 +3,21 @@ package kurou.kodriver.domain.lmuwindows.usecase
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
-class LmuWindowsVehicleApproachThresholdsUseCases(
+public class LmuWindowsVehicleApproachThresholdsUseCases(
     private val repository: LmuWindowsVehicleApproachThresholdsPreferencesRepository,
 ) {
-    fun observeLongitudinalThresholdMeters(): Flow<Double> = repository.observeLongitudinalThresholdMeters()
+    public fun observeLongitudinalThresholdMeters(): Flow<Double> = repository.observeLongitudinalThresholdMeters()
 
-    suspend fun saveLongitudinalThresholdMeters(meters: Double) = repository.saveLongitudinalThresholdMeters(meters)
+    public suspend fun saveLongitudinalThresholdMeters(meters: Double): Unit =
+        repository.saveLongitudinalThresholdMeters(meters)
 
-    fun observeLateralThresholdMeters(): Flow<Double> = repository.observeLateralThresholdMeters()
+    public fun observeLateralThresholdMeters(): Flow<Double> = repository.observeLateralThresholdMeters()
 
-    suspend fun saveLateralThresholdMeters(meters: Double) = repository.saveLateralThresholdMeters(meters)
+    public suspend fun saveLateralThresholdMeters(meters: Double): Unit = repository.saveLateralThresholdMeters(meters)
 
-    fun observeSustainedApproachDurationSeconds(): Flow<Int> = repository.observeSustainedApproachDurationSeconds()
+    public fun observeSustainedApproachDurationSeconds(): Flow<Int> =
+        repository.observeSustainedApproachDurationSeconds()
 
-    suspend fun saveSustainedApproachDurationSeconds(seconds: Int) =
+    public suspend fun saveSustainedApproachDurationSeconds(seconds: Int): Unit =
         repository.saveSustainedApproachDurationSeconds(seconds)
 }

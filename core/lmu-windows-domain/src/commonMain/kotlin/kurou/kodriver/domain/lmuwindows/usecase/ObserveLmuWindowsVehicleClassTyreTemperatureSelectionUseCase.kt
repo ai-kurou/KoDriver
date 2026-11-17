@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 
-class ObserveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase(
+public class ObserveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase(
     private val repository: LmuWindowsVehicleClassTyreTemperaturePreferencesRepository,
 ) {
-    operator fun invoke(): Flow<LmuWindowsVehicleClassData> = repository.observeSelectedVehicleClass()
+    public operator fun invoke(): Flow<LmuWindowsVehicleClassData> = repository.observeSelectedVehicleClass()
 }

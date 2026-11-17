@@ -14,10 +14,10 @@ private val lowWarningPhaseDefaults: Map<SessionPhase, Boolean> =
         phase in lmuWindowsTyreTemperatureLowWarningDefaultPhases
     }
 
-class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(
+public class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(
     private val repository: LmuWindowsTyreTemperaturePreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Set<SessionPhase>> =
+    public operator fun invoke(): Flow<Set<SessionPhase>> =
         repository.observeLowWarningPhases().map { persisted ->
             (lowWarningPhaseDefaults + persisted).filterValues { enabled -> enabled }.keys
         }

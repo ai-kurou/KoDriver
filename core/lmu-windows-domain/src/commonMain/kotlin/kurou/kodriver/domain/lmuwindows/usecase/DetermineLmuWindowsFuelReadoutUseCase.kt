@@ -6,9 +6,9 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
 
-class DetermineLmuWindowsFuelReadoutUseCase {
+public class DetermineLmuWindowsFuelReadoutUseCase {
     /** 燃料を使うクラスでのみ、残量が閾値以下になった瞬間に1回だけ警告する。 */
-    fun determineRemainingFuel(
+    public fun determineRemainingFuel(
         state: LmuWindowsNarratorState,
         data: LmuWindowsRemainingFuelData,
         settings: LmuWindowsNarratorReadoutSettings,

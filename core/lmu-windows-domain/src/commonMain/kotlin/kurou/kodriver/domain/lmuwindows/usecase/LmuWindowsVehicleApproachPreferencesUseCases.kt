@@ -4,31 +4,32 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 
-class LmuWindowsVehicleApproachPreferencesUseCases(
+public class LmuWindowsVehicleApproachPreferencesUseCases(
     private val repository: LmuWindowsVehicleApproachPreferencesRepository,
     private val readoutTextRepository: LmuWindowsVehicleApproachReadoutTextPreferencesRepository,
 ) {
-    fun observeSkipFirstLap(): Flow<Boolean> = repository.observeSkipFirstLap()
+    public fun observeSkipFirstLap(): Flow<Boolean> = repository.observeSkipFirstLap()
 
-    suspend fun saveSkipFirstLap(skip: Boolean) = repository.saveSkipFirstLap(skip)
+    public suspend fun saveSkipFirstLap(skip: Boolean): Unit = repository.saveSkipFirstLap(skip)
 
-    fun observeStartLeftReadoutText(): Flow<String> = readoutTextRepository.observeStartLeftReadoutText()
+    public fun observeStartLeftReadoutText(): Flow<String> = readoutTextRepository.observeStartLeftReadoutText()
 
-    suspend fun saveStartLeftReadoutText(text: String) =
+    public suspend fun saveStartLeftReadoutText(text: String): Unit =
         SaveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase(readoutTextRepository)(text)
 
-    fun observeStartRightReadoutText(): Flow<String> = readoutTextRepository.observeStartRightReadoutText()
+    public fun observeStartRightReadoutText(): Flow<String> = readoutTextRepository.observeStartRightReadoutText()
 
-    suspend fun saveStartRightReadoutText(text: String) =
+    public suspend fun saveStartRightReadoutText(text: String): Unit =
         SaveLmuWindowsVehicleApproachStartRightReadoutTextUseCase(readoutTextRepository)(text)
 
-    fun observeSustainedLeftReadoutText(): Flow<String> = readoutTextRepository.observeSustainedLeftReadoutText()
+    public fun observeSustainedLeftReadoutText(): Flow<String> = readoutTextRepository.observeSustainedLeftReadoutText()
 
-    suspend fun saveSustainedLeftReadoutText(text: String) =
+    public suspend fun saveSustainedLeftReadoutText(text: String): Unit =
         SaveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(readoutTextRepository)(text)
 
-    fun observeSustainedRightReadoutText(): Flow<String> = readoutTextRepository.observeSustainedRightReadoutText()
+    public fun observeSustainedRightReadoutText(): Flow<String> =
+        readoutTextRepository.observeSustainedRightReadoutText()
 
-    suspend fun saveSustainedRightReadoutText(text: String) =
+    public suspend fun saveSustainedRightReadoutText(text: String): Unit =
         SaveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(readoutTextRepository)(text)
 }

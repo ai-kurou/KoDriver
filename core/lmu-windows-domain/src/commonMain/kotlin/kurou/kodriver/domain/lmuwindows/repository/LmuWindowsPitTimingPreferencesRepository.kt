@@ -3,24 +3,24 @@ package kurou.kodriver.domain.lmuwindows.repository
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-interface LmuWindowsPitTimingPreferencesRepository {
-    suspend fun resetToDefault()
+public interface LmuWindowsPitTimingPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeVirtualEnergyLaps(): Flow<Int>
+    public fun observeVirtualEnergyLaps(): Flow<Int>
 
-    suspend fun saveVirtualEnergyLaps(laps: Int)
+    public suspend fun saveVirtualEnergyLaps(laps: Int)
 
-    fun observeTyreWearLaps(): Flow<Int>
+    public fun observeTyreWearLaps(): Flow<Int>
 
-    fun observeFuelLaps(): Flow<Int>
+    public fun observeFuelLaps(): Flow<Int>
 
-    suspend fun saveTyreWearLaps(laps: Int)
+    public suspend fun saveTyreWearLaps(laps: Int)
 
-    suspend fun saveFuelLaps(laps: Int)
+    public suspend fun saveFuelLaps(laps: Int)
 
-    fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
+    public fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
-    suspend fun saveEnabledState(
+    public suspend fun saveEnabledState(
         key: ReadoutItemKey,
         enabled: Boolean,
     )

@@ -12,7 +12,7 @@ import kurou.kodriver.domain.model.WheelIndex
  * 共有メモリ側は Kelvin のため、Repository 実装側で Celsius へ変換して渡す。
  */
 @Serializable
-data class LmuWindowsBrakeTemperatureData(
+public data class LmuWindowsBrakeTemperatureData(
     /** ホイールごとのブレーキ温度（単位: Celsius）。 */
     val wheels: Map<WheelIndex, CelsiusReading>,
 )

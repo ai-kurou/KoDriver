@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 
-class ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase(
+public class ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase(
     private val repository: LmuWindowsVehicleClassBrakeWearPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Map<LmuWindowsVehicleClassData, Int>> = repository.observeLowThresholdPercent()
+    public operator fun invoke(): Flow<Map<LmuWindowsVehicleClassData, Int>> = repository.observeLowThresholdPercent()
 }

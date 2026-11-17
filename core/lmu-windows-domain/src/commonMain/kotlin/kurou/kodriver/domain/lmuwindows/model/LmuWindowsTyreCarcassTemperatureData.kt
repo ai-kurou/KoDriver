@@ -5,7 +5,7 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.WheelIndex
 
 @Serializable
-data class LmuWindowsTyreCarcassTemperatureData(
+public data class LmuWindowsTyreCarcassTemperatureData(
     /** ホイールごとのカーカス温度（単位: Celsius）。 */
     val wheels: Map<WheelIndex, CelsiusReading>,
 )

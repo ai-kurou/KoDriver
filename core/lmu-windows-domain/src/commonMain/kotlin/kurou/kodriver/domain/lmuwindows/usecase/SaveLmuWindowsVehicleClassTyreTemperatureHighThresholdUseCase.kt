@@ -4,11 +4,11 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.model.Celsius
 
-class SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(
+public class SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(
     private val repository: LmuWindowsVehicleClassTyreTemperaturePreferencesRepository,
 ) {
-    suspend operator fun invoke(
+    public suspend operator fun invoke(
         vehicleClass: LmuWindowsVehicleClassData,
         celsius: Celsius,
-    ) = repository.saveHighThresholdCelsius(vehicleClass, celsius)
+    ): Unit = repository.saveHighThresholdCelsius(vehicleClass, celsius)
 }

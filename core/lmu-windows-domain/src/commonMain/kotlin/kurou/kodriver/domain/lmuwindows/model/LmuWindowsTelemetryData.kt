@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  * 接続断時はこの型のダミー値ではなく、Repository 側の接続状態や Flow の停止で表現する。
  */
 @Serializable
-data class LmuWindowsTelemetryData(
+public data class LmuWindowsTelemetryData(
     /** サンプル取得時刻。単位は Unix epoch milliseconds。 */
     val timestampMs: Long,
     val engine: LmuWindowsEngineData,

@@ -4,7 +4,7 @@ internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_HY
 internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_P2_DEFAULT = 20
 internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_P2_ELMS_DEFAULT = 20
 internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_P3_DEFAULT = 20
-const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_GTE_DEFAULT = 20
+public const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_GTE_DEFAULT: Int = 20
 internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_GT3_DEFAULT = 20
 internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_UNKNOWN_DEFAULT = 20
 
@@ -12,7 +12,7 @@ internal const val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_UN
  * 車両クラスごとの残量警告閾値のデフォルト値（%）。現時点では全クラス共通の20%を既定値とし、
  * クラスごとの個別最適値はユーザーが `feature:lmu-windows-auto-readout-brake-wear-detail` から調整する。
  */
-fun lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault(vehicleClass: LmuWindowsVehicleClassData): Int =
+public fun lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault(vehicleClass: LmuWindowsVehicleClassData): Int =
     when (vehicleClass) {
         LmuWindowsVehicleClassData.Hypercar -> {
             LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_HYPERCAR_DEFAULT
@@ -48,7 +48,7 @@ fun lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault(vehicleClass: LmuW
  * [LmuWindowsVehicleClassData.Unknown] は raw 値によらず代表キーの1件を共有するため、
  * マップの直接参照ではなく代表キーへ正規化してから参照する。
  */
-fun resolveLmuWindowsVehicleClassBrakeWearLowThresholdPercent(
+public fun resolveLmuWindowsVehicleClassBrakeWearLowThresholdPercent(
     thresholdsByVehicleClass: Map<LmuWindowsVehicleClassData, Int>,
     vehicleClass: LmuWindowsVehicleClassData,
 ): Int {
@@ -65,5 +65,5 @@ fun resolveLmuWindowsVehicleClassBrakeWearLowThresholdPercent(
 /**
  * 対象クラスチップのデフォルト選択値。
  */
-val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_SELECTED_DEFAULT: LmuWindowsVehicleClassData =
+public val LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_SELECTED_DEFAULT: LmuWindowsVehicleClassData =
     LmuWindowsVehicleClassData.Hypercar

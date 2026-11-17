@@ -15,7 +15,7 @@ private const val PREVIEW_BRAKE_WEAR_PERCENT = 50
 private const val PREVIEW_TYRE_WEAR_PERCENT = 50
 private const val PREVIEW_ENERGY_PERCENT = 50
 
-val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition> =
+public val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition> =
     manualReadoutItemDefinitionMapOf(
         manualReadoutItemDefinitionOf(
             LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
@@ -122,10 +122,10 @@ val lmuWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
         ),
     )
 
-fun lmuWindowsManualReadoutItemKeys(): List<String> = lmuWindowsManualReadoutItemDefinitions.keys.toList()
+public fun lmuWindowsManualReadoutItemKeys(): List<String> = lmuWindowsManualReadoutItemDefinitions.keys.toList()
 
 internal fun lmuWindowsManualReadoutItemName(itemKey: String): String =
     lmuWindowsManualReadoutItemDefinitions[itemKey]?.name.orEmpty()
 
-fun lmuWindowsManualReadoutItemTextDefault(itemKey: String): String =
+public fun lmuWindowsManualReadoutItemTextDefault(itemKey: String): String =
     lmuWindowsManualReadoutItemDefinitions[itemKey]?.textDefault.orEmpty()

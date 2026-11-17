@@ -24,11 +24,11 @@ import kurou.kodriver.domain.model.WheelIndex
  * （共有メモリは毎フレーム同じクラスを流すため、重複は除外して実際に変わったときだけ取り直す）。
  * このため、摩耗済みの状態で観測を始めると、その時点の厚さが 100% として扱われる。
  */
-class ObserveLmuWindowsBrakeWearRemainingUseCase(
+public class ObserveLmuWindowsBrakeWearRemainingUseCase(
     private val brakeWearRepository: LmuWindowsBrakeWearRepository,
     private val vehicleClassRepository: LmuWindowsVehicleClassRepository,
 ) {
-    operator fun invoke(): Flow<LmuWindowsBrakeWearRemainingData?> =
+    public operator fun invoke(): Flow<LmuWindowsBrakeWearRemainingData?> =
         flow {
             var vehicleClass: LmuWindowsVehicleClassData = LmuWindowsVehicleClassData.Unknown(raw = "")
             var maxThickness = emptyMap<WheelIndex, BrakeThicknessMeters>()

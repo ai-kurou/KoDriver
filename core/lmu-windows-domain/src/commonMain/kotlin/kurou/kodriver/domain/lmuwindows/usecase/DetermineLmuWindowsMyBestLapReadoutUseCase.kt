@@ -5,8 +5,8 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
 
-class DetermineLmuWindowsMyBestLapReadoutUseCase {
-    fun determineMyBestLap(
+public class DetermineLmuWindowsMyBestLapReadoutUseCase {
+    public fun determineMyBestLap(
         state: LmuWindowsNarratorState,
         telemetry: LmuWindowsTelemetryData,
         settings: LmuWindowsNarratorReadoutSettings,

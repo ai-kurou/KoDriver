@@ -3,25 +3,25 @@ package kurou.kodriver.domain.lmuwindows.repository
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-interface LmuWindowsVehicleDamagePreferencesRepository {
-    suspend fun resetToDefault()
+public interface LmuWindowsVehicleDamagePreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
+    public fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
-    suspend fun saveEnabledState(
+    public suspend fun saveEnabledState(
         key: ReadoutItemKey,
         enabled: Boolean,
     )
 
-    fun observeOverheatReadoutText(): Flow<String>
+    public fun observeOverheatReadoutText(): Flow<String>
 
-    suspend fun saveOverheatReadoutText(text: String)
+    public suspend fun saveOverheatReadoutText(text: String)
 
-    fun observePartDetachedReadoutText(): Flow<String>
+    public fun observePartDetachedReadoutText(): Flow<String>
 
-    suspend fun savePartDetachedReadoutText(text: String)
+    public suspend fun savePartDetachedReadoutText(text: String)
 
-    fun observeTyreDetachedReadoutText(): Flow<String>
+    public fun observeTyreDetachedReadoutText(): Flow<String>
 
-    suspend fun saveTyreDetachedReadoutText(text: String)
+    public suspend fun saveTyreDetachedReadoutText(text: String)
 }

@@ -10,8 +10,8 @@ import kurou.kodriver.domain.usecase.determineHysteresisState
 
 private const val BRAKE_TEMPERATURE_OVERHEAT_HYSTERESIS_CELSIUS = 100f
 
-class DetermineLmuWindowsBrakeReadoutUseCase {
-    fun determineBrakeTemperatureOverheat(
+public class DetermineLmuWindowsBrakeReadoutUseCase {
+    public fun determineBrakeTemperatureOverheat(
         state: LmuWindowsNarratorState,
         data: LmuWindowsBrakeTemperatureData,
         settings: LmuWindowsNarratorReadoutSettings,
@@ -43,7 +43,7 @@ class DetermineLmuWindowsBrakeReadoutUseCase {
         )
     }
 
-    fun determineBrakeWearLow(
+    public fun determineBrakeWearLow(
         state: LmuWindowsNarratorState,
         data: LmuWindowsBrakeWearRemainingData,
         settings: LmuWindowsNarratorReadoutSettings,

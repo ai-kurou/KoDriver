@@ -10,10 +10,10 @@ private const val LMU_WINDOWS_FUEL_PERCENTAGE_SCALE = 100.0
 private const val LMU_WINDOWS_FUEL_PERCENTAGE_MAX = 100
 
 /** 燃料容量が取得できない（0以下の）テレメトリは流さない。Android のダミー値もここで除外される。 */
-class ObserveLmuWindowsFuelUseCase(
+public class ObserveLmuWindowsFuelUseCase(
     private val repository: LmuWindowsRepository,
 ) {
-    operator fun invoke(): Flow<LmuWindowsRemainingFuelData> =
+    public operator fun invoke(): Flow<LmuWindowsRemainingFuelData> =
         repository
             .telemetryStream()
             .map { it.fuel }

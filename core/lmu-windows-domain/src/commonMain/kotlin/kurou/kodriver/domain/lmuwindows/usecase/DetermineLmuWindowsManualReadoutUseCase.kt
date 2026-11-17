@@ -34,9 +34,9 @@ import kotlin.math.roundToInt
 
 private const val LMU_WINDOWS_PERCENTAGE_SCALE = 100.0
 
-class DetermineLmuWindowsManualReadoutUseCase {
+public class DetermineLmuWindowsManualReadoutUseCase {
     /** 対応項目の現在値を保存順に連結し、警告済み状態を維持する。 */
-    fun determineManualReadout(
+    public fun determineManualReadout(
         state: LmuWindowsNarratorState,
         items: List<LmuWindowsManualReadoutItem>,
     ): LmuWindowsNarratorReadoutDecision {
@@ -54,15 +54,15 @@ class DetermineLmuWindowsManualReadoutUseCase {
     }
 
     /** 自動判定の条件や状態を変更せず、蓄積済みのエネルギー消費量から残り周回数を読む。 */
-    fun manualPitTimingVirtualEnergyRemainingLaps(state: LmuWindowsNarratorState): Int? =
+    public fun manualPitTimingVirtualEnergyRemainingLaps(state: LmuWindowsNarratorState): Int? =
         manualPitTimingRemainingLaps(state.pitTimingVirtualEnergyTrackingState)
 
     /** 自動判定の条件や状態を変更せず、蓄積済みのタイヤ摩耗量から残り周回数を読む。 */
-    fun manualPitTimingTyreWearRemainingLaps(state: LmuWindowsNarratorState): Int? =
+    public fun manualPitTimingTyreWearRemainingLaps(state: LmuWindowsNarratorState): Int? =
         manualPitTimingRemainingLaps(state.pitTimingTyreWearTrackingState)
 
     /** 自動判定の条件や状態を変更せず、蓄積済みの燃料消費量から残り周回数を読む。 */
-    fun manualFuelRemainingLaps(state: LmuWindowsNarratorState): Int? =
+    public fun manualFuelRemainingLaps(state: LmuWindowsNarratorState): Int? =
         manualPitTimingRemainingLaps(state.fuelLapsTrackingState)
 
     private fun manualPitTimingRemainingLaps(tracking: LmuWindowsPitTimingTrackingState): Int? {
@@ -215,7 +215,7 @@ class DetermineLmuWindowsManualReadoutUseCase {
     }
 
     /** 自動読み上げスイッチに関係なく現在の残量（未受信・鮮度切れならデータ無し）を読み上げ、警告済み状態を維持する。 */
-    fun determineManualRemainingVirtualEnergyCurrentValue(
+    public fun determineManualRemainingVirtualEnergyCurrentValue(
         state: LmuWindowsNarratorState,
         data: LmuWindowsVirtualEnergyData?,
         textTemplate: String? = null,

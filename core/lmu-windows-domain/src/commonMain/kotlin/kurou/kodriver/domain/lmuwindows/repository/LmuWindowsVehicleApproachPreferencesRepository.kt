@@ -3,16 +3,16 @@ package kurou.kodriver.domain.lmuwindows.repository
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-interface LmuWindowsVehicleApproachPreferencesRepository {
-    suspend fun resetToDefault()
+public interface LmuWindowsVehicleApproachPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeSkipFirstLap(): Flow<Boolean>
+    public fun observeSkipFirstLap(): Flow<Boolean>
 
-    suspend fun saveSkipFirstLap(skip: Boolean)
+    public suspend fun saveSkipFirstLap(skip: Boolean)
 
-    fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
+    public fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
-    suspend fun saveEnabledState(
+    public suspend fun saveEnabledState(
         key: ReadoutItemKey,
         enabled: Boolean,
     )

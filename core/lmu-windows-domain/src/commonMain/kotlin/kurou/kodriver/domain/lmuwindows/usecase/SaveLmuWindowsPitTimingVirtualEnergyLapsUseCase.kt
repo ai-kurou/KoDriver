@@ -2,8 +2,8 @@ package kurou.kodriver.domain.lmuwindows.usecase
 
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitTimingPreferencesRepository
 
-class SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(
+public class SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(
     private val repository: LmuWindowsPitTimingPreferencesRepository,
 ) {
-    suspend operator fun invoke(laps: Int) = repository.saveVirtualEnergyLaps(laps)
+    public suspend operator fun invoke(laps: Int): Unit = repository.saveVirtualEnergyLaps(laps)
 }

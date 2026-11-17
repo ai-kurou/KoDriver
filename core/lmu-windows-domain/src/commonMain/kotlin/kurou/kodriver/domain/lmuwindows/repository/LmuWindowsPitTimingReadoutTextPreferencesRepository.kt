@@ -4,28 +4,28 @@ import kotlinx.coroutines.flow.Flow
 
 /** LMU のピットタイミングの読み上げ文言を永続化する。 */
 @Suppress("TooManyFunctions")
-interface LmuWindowsPitTimingReadoutTextPreferencesRepository {
-    fun observeVirtualEnergyReadoutText(): Flow<String>
+public interface LmuWindowsPitTimingReadoutTextPreferencesRepository {
+    public fun observeVirtualEnergyReadoutText(): Flow<String>
 
-    suspend fun saveVirtualEnergyReadoutText(text: String)
+    public suspend fun saveVirtualEnergyReadoutText(text: String)
 
-    fun observeVirtualEnergyImminentReadoutText(): Flow<String>
+    public fun observeVirtualEnergyImminentReadoutText(): Flow<String>
 
-    suspend fun saveVirtualEnergyImminentReadoutText(text: String)
+    public suspend fun saveVirtualEnergyImminentReadoutText(text: String)
 
-    fun observeTyreWearReadoutText(): Flow<String>
+    public fun observeTyreWearReadoutText(): Flow<String>
 
-    fun observeFuelReadoutText(): Flow<String>
+    public fun observeFuelReadoutText(): Flow<String>
 
-    suspend fun saveTyreWearReadoutText(text: String)
+    public suspend fun saveTyreWearReadoutText(text: String)
 
-    suspend fun saveFuelReadoutText(text: String)
+    public suspend fun saveFuelReadoutText(text: String)
 
-    fun observeTyreWearImminentReadoutText(): Flow<String>
+    public fun observeTyreWearImminentReadoutText(): Flow<String>
 
-    fun observeFuelImminentReadoutText(): Flow<String>
+    public fun observeFuelImminentReadoutText(): Flow<String>
 
-    suspend fun saveTyreWearImminentReadoutText(text: String)
+    public suspend fun saveTyreWearImminentReadoutText(text: String)
 
-    suspend fun saveFuelImminentReadoutText(text: String)
+    public suspend fun saveFuelImminentReadoutText(text: String)
 }

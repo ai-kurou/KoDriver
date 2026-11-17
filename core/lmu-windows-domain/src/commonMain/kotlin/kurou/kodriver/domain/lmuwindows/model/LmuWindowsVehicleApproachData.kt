@@ -10,7 +10,7 @@ import kurou.kodriver.domain.model.LateralDistanceMeters
  * 距離は meters。並走車両がいない側の距離は [Double.MAX_VALUE] で表現する。
  */
 @Serializable
-data class LmuWindowsVehicleApproachData(
+public data class LmuWindowsVehicleApproachData(
     /** 左側で並走中の車両 ID。空なら左側に並走車両はいない。 */
     val sideBySideLeftVehicleIds: Set<Int>,
     /** 右側で並走中の車両 ID。空なら右側に並走車両はいない。 */

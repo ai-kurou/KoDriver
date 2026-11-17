@@ -12,28 +12,28 @@ import kotlinx.serialization.encoding.Encoder
  * WebSocket 経由の JSON では従来と同じ `{"name": "..."}` の形で送受信される（[LmuWindowsVehicleClassDataSerializer]）。
  */
 @Serializable(with = LmuWindowsVehicleClassDataSerializer::class)
-sealed class LmuWindowsVehicleClassData(
-    val name: String,
+public sealed class LmuWindowsVehicleClassData(
+    public val name: String,
 ) {
-    data object Hypercar : LmuWindowsVehicleClassData("Hyper")
+    public data object Hypercar : LmuWindowsVehicleClassData("Hyper")
 
-    data object P2 : LmuWindowsVehicleClassData("LMP2")
+    public data object P2 : LmuWindowsVehicleClassData("LMP2")
 
-    data object P2Elms : LmuWindowsVehicleClassData("LMP2_ELMS")
+    public data object P2Elms : LmuWindowsVehicleClassData("LMP2_ELMS")
 
-    data object P3 : LmuWindowsVehicleClassData("LMP3")
+    public data object P3 : LmuWindowsVehicleClassData("LMP3")
 
-    data object Gte : LmuWindowsVehicleClassData("GTE")
+    public data object Gte : LmuWindowsVehicleClassData("GTE")
 
-    data object Gt3 : LmuWindowsVehicleClassData("GT3")
+    public data object Gt3 : LmuWindowsVehicleClassData("GT3")
 
     /** 未知のクラス文字列、またはプレイヤー車両が見つからず空文字列だった場合。 */
-    data class Unknown(
+    public data class Unknown(
         val raw: String,
     ) : LmuWindowsVehicleClassData(raw)
 
-    companion object {
-        fun fromRawValue(raw: String): LmuWindowsVehicleClassData =
+    public companion object {
+        public fun fromRawValue(raw: String): LmuWindowsVehicleClassData =
             when (raw) {
                 Hypercar.name -> Hypercar
                 P2.name -> P2

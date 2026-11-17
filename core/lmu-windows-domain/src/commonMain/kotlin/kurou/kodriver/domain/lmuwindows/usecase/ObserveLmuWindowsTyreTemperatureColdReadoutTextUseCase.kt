@@ -3,8 +3,8 @@ package kurou.kodriver.domain.lmuwindows.usecase
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
 
-class ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase(
+public class ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase(
     private val repository: LmuWindowsTyreTemperatureReadoutTextPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<String> = repository.observeColdReadoutText()
+    public operator fun invoke(): Flow<String> = repository.observeColdReadoutText()
 }

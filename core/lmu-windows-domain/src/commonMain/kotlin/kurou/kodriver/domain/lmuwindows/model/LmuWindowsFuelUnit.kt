@@ -9,8 +9,8 @@ import kotlin.jvm.JvmInline
  */
 @Serializable
 @JvmInline
-value class LmuWindowsFuelUnit(
-    val value: Double,
+public value class LmuWindowsFuelUnit(
+    public val value: Double,
 ) : Comparable<LmuWindowsFuelUnit> {
     override fun compareTo(other: LmuWindowsFuelUnit): Int = value.compareTo(other.value)
 }

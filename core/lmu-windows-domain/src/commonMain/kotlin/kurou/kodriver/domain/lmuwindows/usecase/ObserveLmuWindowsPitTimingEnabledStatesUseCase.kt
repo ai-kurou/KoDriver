@@ -15,9 +15,9 @@ private val pitTimingEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
         LmuWindowsReadoutItemKey.PitTiming.Fuel to true,
     )
 
-class ObserveLmuWindowsPitTimingEnabledStatesUseCase(
+public class ObserveLmuWindowsPitTimingEnabledStatesUseCase(
     private val repository: LmuWindowsPitTimingPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
+    public operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
         repository.observeEnabledStates().map { persisted -> pitTimingEnabledStateDefaults + persisted }
 }

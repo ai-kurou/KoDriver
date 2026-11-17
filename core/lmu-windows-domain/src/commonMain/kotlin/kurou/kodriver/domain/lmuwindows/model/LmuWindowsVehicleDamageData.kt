@@ -3,7 +3,7 @@ package kurou.kodriver.domain.lmuwindows.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LmuWindowsVehicleDamageData(
+public data class LmuWindowsVehicleDamageData(
     val overheating: Boolean,
     val partDetached: Boolean,
     val lastImpactMagnitude: Double,
