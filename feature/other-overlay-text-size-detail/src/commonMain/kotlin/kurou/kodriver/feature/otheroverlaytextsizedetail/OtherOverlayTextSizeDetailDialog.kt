@@ -45,7 +45,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * OtherOverlayTextSizeDetail のダイアログを表示する Composable。
  */
 @Composable
-fun OtherOverlayTextSizeDetailDialog(
+public fun OtherOverlayTextSizeDetailDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

@@ -95,7 +95,7 @@ private const val SENTRY_LINK_ICON_ID = "sentry-link-icon"
  * OtherFeedbackDetail の画面を表示する Composable。
  */
 @Composable
-fun OtherFeedbackDetailPane(
+public fun OtherFeedbackDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -127,7 +127,7 @@ fun OtherFeedbackDetailPane(
  * OtherFeedbackDetail の画面本体を表示する Composable。
  */
 @Composable
-fun OtherFeedbackDetailPaneContent(
+public fun OtherFeedbackDetailPaneContent(
     uiState: OtherFeedbackDetailUiState,
     onTypeSelected: (FeedbackType) -> Unit = {},
     onMessageChanged: (String) -> Unit = {},

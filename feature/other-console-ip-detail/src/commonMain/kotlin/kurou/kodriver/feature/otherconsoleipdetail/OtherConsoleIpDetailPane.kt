@@ -82,7 +82,7 @@ private const val SIMHUB_LINK_ICON_ID = "simhub-link-icon"
  * OtherConsoleIpDetail の画面を表示する Composable。
  */
 @Composable
-fun OtherConsoleIpDetailPane(
+public fun OtherConsoleIpDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -108,7 +108,7 @@ fun OtherConsoleIpDetailPane(
  * OtherConsoleIpDetail の画面本体を表示する Composable。
  */
 @Composable
-fun OtherConsoleIpDetailPaneContent(
+public fun OtherConsoleIpDetailPaneContent(
     uiState: OtherConsoleIpDetailUiState,
     onAddressChanged: (String) -> Unit = {},
     onPortSelected: (Int) -> Unit = {},

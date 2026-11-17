@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherthemedetail
 
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
 import kurou.kodriver.domain.usecase.SaveThemeModeUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -11,7 +12,7 @@ import org.koin.dsl.module
  * 提供: OtherThemeDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: ThemePreferencesRepository（:core:data で登録）。
  */
-val otherThemeDetailModule =
+public val otherThemeDetailModule: Module =
     module {
         // ViewModel
         viewModelOf(::OtherThemeDetailViewModel)

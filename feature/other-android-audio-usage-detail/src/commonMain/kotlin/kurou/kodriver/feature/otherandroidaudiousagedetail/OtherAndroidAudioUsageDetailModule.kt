@@ -7,6 +7,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SaveAndroidAudioUsageUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -16,7 +17,7 @@ import org.koin.dsl.module
  * 消費（get で解決）: AndroidAudioUsagePreferencesRepository・SoundVolumePreferencesRepository、
  * TextToSpeechRepository・VoicePreferencesRepository・VoiceSpeedPreferencesRepository・VoicePitchPreferencesRepository。
  */
-val otherAndroidAudioUsageDetailModule =
+public val otherAndroidAudioUsageDetailModule: Module =
     module {
         viewModelOf(::OtherAndroidAudioUsageDetailViewModel)
 

@@ -84,7 +84,7 @@ private val CHECK_BADGE_PADDING = 2.dp
 
 /** 音声の用途設定を表示する詳細ペイン。 */
 @Composable
-fun OtherAndroidAudioUsageDetailPane(
+public fun OtherAndroidAudioUsageDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,

@@ -23,3 +23,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

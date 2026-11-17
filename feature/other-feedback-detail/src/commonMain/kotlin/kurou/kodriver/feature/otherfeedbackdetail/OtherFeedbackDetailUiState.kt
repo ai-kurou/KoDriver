@@ -7,17 +7,17 @@ private val EMAIL_REGEX = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
 
 internal fun isValidEmail(email: String): Boolean = EMAIL_REGEX.matches(email)
 
-sealed interface FeedbackSendStatus {
-    data object Idle : FeedbackSendStatus
+public sealed interface FeedbackSendStatus {
+    public data object Idle : FeedbackSendStatus
 
-    data object Sending : FeedbackSendStatus
+    public data object Sending : FeedbackSendStatus
 
-    data object Sent : FeedbackSendStatus
+    public data object Sent : FeedbackSendStatus
 
-    data object Failed : FeedbackSendStatus
+    public data object Failed : FeedbackSendStatus
 }
 
-data class OtherFeedbackDetailUiState(
+public data class OtherFeedbackDetailUiState(
     val type: FeedbackType = FeedbackType.BugReport,
     val message: String = "",
     val name: String = "",

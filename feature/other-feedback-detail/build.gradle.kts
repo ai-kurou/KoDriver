@@ -41,3 +41,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.otherfeedbackdetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

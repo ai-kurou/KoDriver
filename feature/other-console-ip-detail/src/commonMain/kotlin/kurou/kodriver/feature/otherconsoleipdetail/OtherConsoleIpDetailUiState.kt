@@ -5,7 +5,7 @@ import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
 /**
  * OtherConsoleIpDetail 画面の表示状態。
  */
-data class OtherConsoleIpDetailUiState(
+public data class OtherConsoleIpDetailUiState(
     val inputAddress: String = "",
     val isInputValid: Boolean = true,
     val saveFailed: Boolean = false,

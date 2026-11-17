@@ -7,6 +7,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SaveVoiceUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -17,7 +18,7 @@ import org.koin.dsl.module
  * 消費: TextToSpeechRepository（:core:text-to-speech-data）、SoundVolumePreferencesRepository（:core:data）、
  *   VoicePreferencesRepository・VoiceSpeedPreferencesRepository・VoicePitchPreferencesRepository（:core:data）、VoiceListRepository（:core:text-to-speech-data の JVM 実装）。
  */
-val otherVoiceDetailModule =
+public val otherVoiceDetailModule: Module =
     module {
         viewModelOf(::OtherVoiceDetailViewModel)
         factory { GetAvailableVoicesUseCase(get()) }

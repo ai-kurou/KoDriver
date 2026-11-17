@@ -6,7 +6,7 @@ import kurou.kodriver.domain.model.LOW_VOLUME_WARNING_ENABLED_DEFAULT
 /**
  * OtherVolumeDetail 画面の表示状態。
  */
-data class OtherVolumeDetailUiState(
+public data class OtherVolumeDetailUiState(
     val volume: Int = 100,
     val deviceVolume: Int = DEVICE_VOLUME_MIN,
     val isPreviewing: Boolean = false,
