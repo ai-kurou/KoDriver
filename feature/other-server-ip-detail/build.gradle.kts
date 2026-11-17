@@ -44,3 +44,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.otherserveripdetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

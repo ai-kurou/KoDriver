@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherserveripdetail
 
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -14,7 +15,7 @@ import org.koin.dsl.module
  *   （プラットフォーム実装を [platformWindowsServerDiscoveryModule] で解決）。
  * 消費（get で解決）: ServerIpPreferencesRepository（:core:data で登録）。
  */
-val otherServerIpDetailModule =
+public val otherServerIpDetailModule: Module =
     module {
         // ViewModel
         viewModelOf(::OtherServerIpDetailViewModel)

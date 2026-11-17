@@ -81,7 +81,7 @@ private const val SIMHUB_HOTKEY_SETUP_URL =
     "https://github.com/ai-kurou/KoDriver/blob/main/docs/simhub-hotkey-setup.md"
 
 @Composable
-fun ManualReadoutSetDetailContent(
+public fun ManualReadoutSetDetailContent(
     simulatorId: String,
     setId: String,
     onDeleted: () -> Unit,

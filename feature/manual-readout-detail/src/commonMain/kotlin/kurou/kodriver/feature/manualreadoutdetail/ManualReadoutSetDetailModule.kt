@@ -8,6 +8,7 @@ import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.RetryManualReadoutHotkeyRegistrationUseCase
 import kurou.kodriver.domain.usecase.UpdateManualReadoutSetUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -18,7 +19,7 @@ import org.koin.dsl.module
  * TextToSpeechRepository、SoundVolumePreferencesRepository、および Narrator が登録する
  * named(simulatorId) の PlayStartSoundForKeyUseCase・SpeakTextUseCase。
  */
-val manualReadoutSetDetailModule =
+public val manualReadoutSetDetailModule: Module =
     module {
         viewModel { (simulatorId: String, setId: String) ->
             ManualReadoutSetDetailViewModel(
