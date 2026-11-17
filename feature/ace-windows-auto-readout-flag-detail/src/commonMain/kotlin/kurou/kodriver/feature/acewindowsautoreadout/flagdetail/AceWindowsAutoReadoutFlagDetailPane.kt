@@ -32,7 +32,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * AceWindowsAutoReadoutFlagDetail の画面を表示する Composable。
  */
 @Composable
-fun AceWindowsAutoReadoutFlagDetailPane(modifier: Modifier = Modifier) {
+public fun AceWindowsAutoReadoutFlagDetailPane(modifier: Modifier = Modifier) {
     val viewModel: AceWindowsAutoReadoutFlagDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

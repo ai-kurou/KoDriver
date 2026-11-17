@@ -7,6 +7,7 @@ import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachEna
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -19,7 +20,7 @@ import org.koin.dsl.module
  * 消費（get で解決）: AceWindowsVehicleApproachPreferencesRepository（:core:data）、試聴用の
  *   named(Simulator.AceWindows.id) のTTS・開始音UseCase（:feature:ace-windows-narrator で登録）。
  */
-val aceWindowsAutoReadoutVehicleApproachDetailModule =
+public val aceWindowsAutoReadoutVehicleApproachDetailModule: Module =
     module {
         // 試聴用TTS・開始音は ACE narrator の登録を解決する。
         viewModel {

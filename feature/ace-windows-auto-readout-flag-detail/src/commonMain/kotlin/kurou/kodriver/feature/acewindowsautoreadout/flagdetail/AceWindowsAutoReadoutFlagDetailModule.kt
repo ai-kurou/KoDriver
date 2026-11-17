@@ -6,6 +6,7 @@ import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsFlagEnabledStateUs
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -18,7 +19,7 @@ import org.koin.dsl.module
  *   PlayStartSoundForKeyUseCase・SpeakTextUseCase・CheckTextToSpeechAvailableUseCase
  *   （:feature:ace-windows-narrator。SpeakTextUseCaseは同名のObserveVoiceUseCaseを利用する）。
  */
-val aceWindowsAutoReadoutFlagDetailModule =
+public val aceWindowsAutoReadoutFlagDetailModule: Module =
     module {
         viewModel {
             AceWindowsAutoReadoutFlagDetailViewModel(

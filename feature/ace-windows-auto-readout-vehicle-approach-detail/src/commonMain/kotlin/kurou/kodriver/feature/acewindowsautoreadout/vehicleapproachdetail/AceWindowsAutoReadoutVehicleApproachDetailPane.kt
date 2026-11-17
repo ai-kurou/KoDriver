@@ -54,7 +54,7 @@ private const val THRESHOLD_MAX = ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_
  * AceWindowsAutoReadoutVehicleApproachDetail の画面を表示する Composable。
  */
 @Composable
-fun AceWindowsAutoReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
+public fun AceWindowsAutoReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
     val viewModel: AceWindowsAutoReadoutVehicleApproachDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

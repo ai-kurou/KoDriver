@@ -59,7 +59,7 @@ private const val THRESHOLD_MAX = ACE_WINDOWS_REMAINING_FUEL_LAPS_MAX.toFloat()
  * AceWindowsAutoReadoutRemainingFuelLapsDetail の画面を表示する Composable。
  */
 @Composable
-fun AceWindowsAutoReadoutRemainingFuelLapsDetailPane(modifier: Modifier = Modifier) {
+public fun AceWindowsAutoReadoutRemainingFuelLapsDetailPane(modifier: Modifier = Modifier) {
     val viewModel: AceWindowsAutoReadoutRemainingFuelLapsDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {
