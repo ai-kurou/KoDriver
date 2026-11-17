@@ -46,7 +46,3 @@ aboutLibraries {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.otherlicensedetail.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}

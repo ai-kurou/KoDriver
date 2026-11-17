@@ -9,6 +9,8 @@ plugins {
 private val libs = versionCatalogs.named("libs")
 
 kotlin {
+    explicitApi()
+
     jvm()
 
     android {

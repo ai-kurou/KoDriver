@@ -21,7 +21,3 @@ compose.resources {
     packageOfResClass =
         "kurou.kodriver.feature.lmuwindowsautoreadout.remainingfueldetail.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}

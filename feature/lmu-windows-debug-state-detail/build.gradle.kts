@@ -26,7 +26,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}

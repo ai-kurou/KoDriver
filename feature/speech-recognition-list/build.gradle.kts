@@ -30,7 +30,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.speechrecognitionlist.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}

@@ -26,7 +26,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.othervoicespeeddetail.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}

@@ -72,7 +72,3 @@ tasks.named("compileTestKotlinJvm") {
 }
 
 apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))
-
-kotlin {
-    explicitApi()
-}

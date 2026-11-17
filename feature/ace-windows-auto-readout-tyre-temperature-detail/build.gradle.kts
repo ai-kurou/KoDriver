@@ -24,7 +24,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.acewindowsautoreadout.tyretemperaturedetail.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}
