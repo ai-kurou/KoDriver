@@ -195,7 +195,7 @@ class SpeechRecognitionChipHostTest {
         rule.onNodeWithContentDescription("停止中").performClick()
         rule.runOnIdle { events.tryEmit(SpeechRecognitionEvent.Listening) }
 
-        rule.onAllNodesWithContentDescription("「コドライバー」の呼びかけを待っています(マイクを使用中)").assertCountEquals(1)
+        rule.onAllNodesWithContentDescription("「コドライバー」の呼びかけを待っています（マイクを使用中）").assertCountEquals(1)
     }
 
     @Test
@@ -206,7 +206,7 @@ class SpeechRecognitionChipHostTest {
         rule.onNodeWithContentDescription("停止中").performClick()
         rule.runOnIdle { assertTrue(viewModel.uiState.value.enabled) }
         rule.runOnIdle { events.tryEmit(SpeechRecognitionEvent.Listening) }
-        rule.onAllNodesWithContentDescription("「コドライバー」の呼びかけを待っています(マイクを使用中)")[0].performClick()
+        rule.onAllNodesWithContentDescription("「コドライバー」の呼びかけを待っています（マイクを使用中）")[0].performClick()
 
         rule.runOnIdle { assertFalse(viewModel.uiState.value.enabled) }
     }

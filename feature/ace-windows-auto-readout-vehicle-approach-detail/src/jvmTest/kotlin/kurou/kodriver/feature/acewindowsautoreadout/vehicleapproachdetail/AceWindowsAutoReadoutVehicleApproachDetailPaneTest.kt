@@ -58,7 +58,7 @@ class AceWindowsAutoReadoutVehicleApproachDetailPaneTest {
         rule
             .onNodeWithText(
                 "閾値は自車中心から相手車両中心までの距離です。この範囲内に入ると車両接近と判定され読み上げられます。\n\n" +
-                    "※車両は一般的に全長 5 m 以下、全幅 2 m 以下となっています。",
+                    "※車両は一般的に全長 5m以下、全幅 2m以下となっています。",
             ).assertIsDisplayed()
     }
 

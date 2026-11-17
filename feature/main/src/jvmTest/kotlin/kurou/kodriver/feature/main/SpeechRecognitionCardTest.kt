@@ -97,7 +97,7 @@ class SpeechRecognitionCardTest {
             }
         }
 
-        rule.onNodeWithText("「コドライバー」の呼びかけを待っています(マイクを使用中)").assertExists()
+        rule.onNodeWithText("「コドライバー」の呼びかけを待っています（マイクを使用中）").assertExists()
         rule.onNodeWithText("タイ").assertExists()
         rule.onNodeWithText("燃料").assertExists()
         rule.onNodeWithText("然料").assertExists()
@@ -142,9 +142,9 @@ class SpeechRecognitionCardTest {
         }
         mapOf(
             SpeechRecognitionStatus.Stopped to "停止中",
-            SpeechRecognitionStatus.Starting to "準備中(マイクを使用中)",
-            SpeechRecognitionStatus.Listening to "「コドライバー」の呼びかけを待っています(マイクを使用中)",
-            SpeechRecognitionStatus.CommandWaiting to "コマンドを聞き取り中(マイクを使用中)",
+            SpeechRecognitionStatus.Starting to "準備中（マイクを使用中）",
+            SpeechRecognitionStatus.Listening to "「コドライバー」の呼びかけを待っています（マイクを使用中）",
+            SpeechRecognitionStatus.CommandWaiting to "コマンドを聞き取り中（マイクを使用中）",
             SpeechRecognitionStatus.PermissionDenied to "マイクの権限が許可されていません",
             SpeechRecognitionStatus.Unavailable to "この端末では音声認識を利用できません",
             SpeechRecognitionStatus.MicrophoneUnavailable to "マイクを開けないか、使えなくなりました",

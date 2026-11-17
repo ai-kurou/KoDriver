@@ -60,7 +60,7 @@ class OtherContentAutoReadoutSettingsResetTest {
         rule
             .onNodeWithText(
                 "自動タブのすべてのシミュレーター（LMU・ACE・GT7）の設定を初期化し、デフォルトに戻します。" +
-                    "読み上げの有効/無効、並び順、閾値、読み上げ文言などが対象です。この操作は元に戻せません。",
+                    "読み上げのON/OFF、並び順、閾値、読み上げ文言などが対象です。この操作は元に戻せません。",
             ).assertExists()
         rule.onNodeWithText("キャンセル").performClick()
         assertEquals(1, dismissed)

@@ -100,7 +100,7 @@ class LmuWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
         rule.onNodeWithText("過熱警告").assertIsDisplayed()
         rule.onNodeWithText("ブレーキ温度が閾値以上になったときの文言").assertIsDisplayed()
         rule.onNodeWithText("ブレーキ温度は{celsius}℃以上").assertIsDisplayed()
-        rule.onNodeWithText("{celsius} は選択中の車両クラスの温度閾値(℃)に置き換わります").assertIsDisplayed()
+        rule.onNodeWithText("{celsius} は選択中の車両クラスの温度閾値（℃）に置き換わります").assertIsDisplayed()
         rule.onNodeWithText("{celsius}を挿入").assertIsEnabled()
     }
 
