@@ -14,7 +14,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 
-data class LmuWindowsDebugState(
+public data class LmuWindowsDebugState(
     val carGap: LmuWindowsCarGapData? = null,
     val classCarGap: LmuWindowsClassCarGapData? = null,
     val raceFlags: LmuWindowsRaceFlagsData? = null,

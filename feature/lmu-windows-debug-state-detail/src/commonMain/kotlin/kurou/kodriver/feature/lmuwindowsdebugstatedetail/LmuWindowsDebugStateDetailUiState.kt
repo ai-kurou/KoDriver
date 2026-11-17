@@ -28,7 +28,7 @@ internal val defaultDebugStateCardOrder =
         LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE,
     )
 
-data class LmuWindowsDebugStateDetailUiState(
+public data class LmuWindowsDebugStateDetailUiState(
     val selectedReadoutItemKey: ReadoutItemKey =
         LMU_WINDOWS_READOUT_ITEM_KEYS
             .filterIsInstance<ReadoutItemKey.TopLevel>()

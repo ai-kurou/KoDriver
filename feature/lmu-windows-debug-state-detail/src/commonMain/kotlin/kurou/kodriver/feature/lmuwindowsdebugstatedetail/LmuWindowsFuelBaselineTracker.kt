@@ -3,7 +3,7 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_FUEL_REFILL_DETECTION_TOLERANCE_LITERS
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 
-data class LmuWindowsFuelBaseline(
+public data class LmuWindowsFuelBaseline(
     val liters: Double,
     val lap: Int,
 )

@@ -47,7 +47,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * LMU Windows 専用のデバッグ状態画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsDebugStateDetailPane(
+public fun LmuWindowsDebugStateDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -69,7 +69,7 @@ fun LmuWindowsDebugStateDetailPane(
 }
 
 @Composable
-fun LmuWindowsDebugStateDetailPaneContent(
+public fun LmuWindowsDebugStateDetailPaneContent(
     uiState: LmuWindowsDebugStateDetailUiState,
     canNavigateBack: Boolean,
     onBack: () -> Unit,
