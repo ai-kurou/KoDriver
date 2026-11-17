@@ -7,18 +7,18 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 
 /** OS起動時自動起動の取得・変更と表示状態を管理する。実行のライフサイクルは呼び出し元に従う。 */
-class OtherListStartupRegistrationFlow(
+public class OtherListStartupRegistrationFlow(
     private val startupRegistration: StartupRegistrationUseCases,
 ) {
     private val _uiState = MutableStateFlow(OtherListStartupRegistrationUiState())
-    val uiState: StateFlow<OtherListStartupRegistrationUiState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<OtherListStartupRegistrationUiState> = _uiState.asStateFlow()
 
-    suspend fun checkStartupEnabled() {
+    public suspend fun checkStartupEnabled() {
         val enabled = startupRegistration.getEnabled()
         _uiState.update { it.copy(startupEnabled = enabled) }
     }
 
-    suspend fun onStartupEnabledChange(enabled: Boolean) {
+    public suspend fun onStartupEnabledChange(enabled: Boolean) {
         startupRegistration.setEnabled(enabled)
         _uiState.update { it.copy(startupEnabled = enabled) }
     }

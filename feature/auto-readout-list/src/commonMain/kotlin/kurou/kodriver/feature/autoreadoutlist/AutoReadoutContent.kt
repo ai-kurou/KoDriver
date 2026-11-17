@@ -43,7 +43,7 @@ import org.koin.compose.viewmodel.koinViewModel
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun AutoReadoutContent(
+public fun AutoReadoutContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfoV2()),
     windowPosture: Posture = currentWindowAdaptiveInfoV2().windowPosture,

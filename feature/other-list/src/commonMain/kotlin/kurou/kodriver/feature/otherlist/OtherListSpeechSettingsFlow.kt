@@ -10,7 +10,7 @@ import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 
 /** 読み上げ設定の観測値を表示状態へ集約する。実行のライフサイクルは呼び出し元に従う。 */
-class OtherListSpeechSettingsFlow(
+public class OtherListSpeechSettingsFlow(
     private val observeVoice: ObserveVoiceUseCase,
     private val observeVoiceSpeed: ObserveVoiceSpeedUseCase,
     private val observeVoicePitch: ObserveVoicePitchUseCase,
@@ -18,7 +18,7 @@ class OtherListSpeechSettingsFlow(
     private val observeReadoutStartSoundType: ObserveReadoutStartSoundTypeUseCase,
     private val observeSoundVolume: ObserveSoundVolumeUseCase,
 ) {
-    val uiState: Flow<OtherListSpeechSettingsUiState> =
+    public val uiState: Flow<OtherListSpeechSettingsUiState> =
         combine(
             combine(
                 observeVoice(),

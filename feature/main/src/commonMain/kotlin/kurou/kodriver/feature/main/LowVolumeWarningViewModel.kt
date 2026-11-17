@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningUseCase
 
-class LowVolumeWarningViewModel(
+public class LowVolumeWarningViewModel(
     observeLowVolumeWarning: ObserveLowVolumeWarningUseCase,
 ) : ViewModel() {
     private val dismissed = MutableStateFlow(false)
 
     /** 閉じた後は、警告が解消されるまで再表示しない。 */
-    val uiState: StateFlow<LowVolumeWarningUiState> =
+    public val uiState: StateFlow<LowVolumeWarningUiState> =
         LowVolumeWarningFlow(
             warning = observeLowVolumeWarning(),
             dismissed = dismissed,
@@ -26,7 +26,7 @@ class LowVolumeWarningViewModel(
             initialValue = LowVolumeWarningUiState(),
         )
 
-    fun dismiss() {
+    public fun dismiss() {
         if (!uiState.value.isVisible) return
         dismissed.update { true }
     }

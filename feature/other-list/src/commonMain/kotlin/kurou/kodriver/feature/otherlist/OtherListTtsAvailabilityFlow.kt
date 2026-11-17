@@ -11,13 +11,13 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
  * TTS利用可否の判定と一覧項目・警告表示への反映を管理する。
  * 実行のライフサイクルは呼び出し元に従う。
  */
-class OtherListTtsAvailabilityFlow(
+public class OtherListTtsAvailabilityFlow(
     private val checkUnavailableReason: CheckTextToSpeechUnavailableReasonUseCase,
 ) {
     private val _uiState = MutableStateFlow(OtherListTtsAvailabilityUiState())
-    val uiState: StateFlow<OtherListTtsAvailabilityUiState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<OtherListTtsAvailabilityUiState> = _uiState.asStateFlow()
 
-    suspend fun checkAvailability() {
+    internal suspend fun checkAvailability() {
         val reason = checkUnavailableReason()
         _uiState.update {
             OtherListTtsAvailabilityUiState(
@@ -27,7 +27,7 @@ class OtherListTtsAvailabilityFlow(
         }
     }
 
-    fun applyGuidance(items: List<OtherListItemType>): List<OtherListItemType> =
+    internal fun applyGuidance(items: List<OtherListItemType>): List<OtherListItemType> =
         (items.filterNot { it.isTtsGuidanceItem() } + uiState.value.guidanceItems).sortedBy { it.ordinal }
 }
 

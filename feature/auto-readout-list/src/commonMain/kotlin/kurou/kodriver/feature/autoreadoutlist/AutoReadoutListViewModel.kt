@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -27,27 +28,27 @@ private data class LocalOrderState(
     val items: List<ReadoutItemKey>,
 )
 
-data class SimulatorUseCases(
+public data class SimulatorUseCases(
     val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 )
 
-data class AutoReadoutOrderUseCases(
+public data class AutoReadoutOrderUseCases(
     val observeAutoReadoutOrder: ObserveAutoReadoutOrderUseCase,
     val resolveAutoReadoutOrder: ResolveAutoReadoutOrderUseCase,
     val saveAutoReadoutOrder: SaveAutoReadoutOrderUseCase,
 )
 
-data class AutoReadoutEnabledUseCases(
+public data class AutoReadoutEnabledUseCases(
     val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
     val saveAutoReadoutEnabledState: SaveAutoReadoutEnabledStateUseCase,
 )
 
-data class QueueUseCases(
+public data class QueueUseCases(
     val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
     val saveQueueEnabledState: SaveQueueEnabledStateUseCase,
 )
 
-data class StartSoundUseCases(
+public data class StartSoundUseCases(
     val observeReadoutStartSoundEnabledStates: ObserveReadoutStartSoundEnabledStatesUseCase,
     val saveReadoutStartSoundEnabledState: SaveReadoutStartSoundEnabledStateUseCase,
 )
@@ -55,7 +56,7 @@ data class StartSoundUseCases(
 /**
  * AutoReadoutList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-class AutoReadoutListViewModel(
+public class AutoReadoutListViewModel(
     private val simulatorUseCases: SimulatorUseCases,
     private val autoReadoutOrderUseCases: AutoReadoutOrderUseCases,
     private val autoReadoutEnabledUseCases: AutoReadoutEnabledUseCases,
@@ -82,14 +83,14 @@ class AutoReadoutListViewModel(
             selectedItem = _selectedItem,
         )
 
-    val uiState =
+    public val uiState: StateFlow<AutoReadoutListUiState> =
         flow.uiState.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
             AutoReadoutListUiState(),
         )
 
-    fun moveItem(
+    public fun moveItem(
         fromIndex: Int,
         toIndex: Int,
     ) {
@@ -104,17 +105,17 @@ class AutoReadoutListViewModel(
         }
     }
 
-    fun onItemSelected(item: ReadoutItemKey) {
+    public fun onItemSelected(item: ReadoutItemKey) {
         val simulator = _selectedSimulator.value
         val type = AutoReadoutListItemType.fromId(simulator, item) ?: return
         _selectedItem.update { if (it == type) null else type }
     }
 
-    fun clearSelectedItem() {
+    public fun clearSelectedItem() {
         _selectedItem.update { null }
     }
 
-    fun onReadoutEnabledChanged(
+    internal fun onReadoutEnabledChanged(
         key: ReadoutItemKey,
         enabled: Boolean,
     ) {
@@ -124,7 +125,7 @@ class AutoReadoutListViewModel(
         }
     }
 
-    fun onQueueEnabledChanged(
+    internal fun onQueueEnabledChanged(
         key: ReadoutItemKey,
         enabled: Boolean,
     ) {
@@ -133,7 +134,7 @@ class AutoReadoutListViewModel(
         }
     }
 
-    fun onStartSoundEnabledChanged(
+    internal fun onStartSoundEnabledChanged(
         key: ReadoutItemKey,
         enabled: Boolean,
     ) {

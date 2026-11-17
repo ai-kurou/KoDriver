@@ -28,3 +28,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.desktopsplash.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

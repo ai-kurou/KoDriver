@@ -14,7 +14,7 @@ import kurou.kodriver.domain.usecase.ObserveKoDriverServerConnectionUseCase
 /**
  * ServerConnection 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-class ServerConnectionViewModel(
+public class ServerConnectionViewModel(
     observeKoDriverServerConnection: ObserveKoDriverServerConnectionUseCase,
     private val appVersion: String,
 ) : ViewModel() {
@@ -34,7 +34,7 @@ class ServerConnectionViewModel(
                 replay = 1,
             )
 
-    val uiState: StateFlow<ServerConnectionUiState> =
+    public val uiState: StateFlow<ServerConnectionUiState> =
         ServerConnectionFlow(
             connectionState = connectionStateFlow,
             showVersionMismatchBottomSheet = showVersionMismatchBottomSheetFlow,
@@ -45,7 +45,7 @@ class ServerConnectionViewModel(
             initialValue = ServerConnectionUiState(),
         )
 
-    fun dismissVersionMismatchBottomSheet() {
+    public fun dismissVersionMismatchBottomSheet() {
         showVersionMismatchBottomSheetFlow.update { false }
     }
 }

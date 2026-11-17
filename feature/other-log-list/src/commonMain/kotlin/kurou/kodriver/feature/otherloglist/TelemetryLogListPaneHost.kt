@@ -32,7 +32,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * その他タブの詳細ペインにログ一覧を表示する Composable。ログをタップするとボトムシートに [detailContent] でログ詳細を表示する。
  */
 @Composable
-fun TelemetryLogListPaneHost(
+public fun TelemetryLogListPaneHost(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,

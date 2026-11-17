@@ -122,7 +122,7 @@ import org.koin.dsl.module
  *   試聴用途と共有しても問題ないため named では区別しない）。
  * 音声系は GT7 と区別するため named(Simulator.LmuWindows.id) で登録している。
  */
-val lmuWindowsNarratorModule: Module =
+public val lmuWindowsNarratorModule: Module =
     module {
         factory { ObserveDebugReadoutRequestUseCase(get()) }
         // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）

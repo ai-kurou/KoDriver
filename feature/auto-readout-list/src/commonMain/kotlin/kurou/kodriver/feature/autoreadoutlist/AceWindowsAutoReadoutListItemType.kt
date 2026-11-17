@@ -4,23 +4,26 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 
-sealed class AceWindowsAutoReadoutListItemType(
+public sealed class AceWindowsAutoReadoutListItemType(
     id: ReadoutItemKey,
 ) : AutoReadoutListItemType(id, Simulator.AceWindows) {
-    data object VehicleApproach : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.VehicleApproach.Root)
+    public data object VehicleApproach :
+        AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.VehicleApproach.Root)
 
-    data object Flag : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.Flag.Root)
+    public data object Flag : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.Flag.Root)
 
-    data object TyreTemperature : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.TyreTemperature.Root)
+    public data object TyreTemperature :
+        AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.TyreTemperature.Root)
 
-    data object RemainingFuel : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.RemainingFuel.Root)
+    public data object RemainingFuel : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.RemainingFuel.Root)
 
-    data object RemainingFuelLaps : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.RemainingFuelLaps.Root)
+    public data object RemainingFuelLaps :
+        AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.RemainingFuelLaps.Root)
 
-    data object MyBestLap : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.MyBestLap.Root)
+    public data object MyBestLap : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.MyBestLap.Root)
 
-    companion object {
-        fun fromId(id: ReadoutItemKey): AceWindowsAutoReadoutListItemType? =
+    public companion object {
+        public fun fromId(id: ReadoutItemKey): AceWindowsAutoReadoutListItemType? =
             if (id is AceWindowsReadoutItemKey.TopLevel) fromTopLevel(id) else null
 
         private fun fromTopLevel(id: AceWindowsReadoutItemKey.TopLevel): AceWindowsAutoReadoutListItemType =

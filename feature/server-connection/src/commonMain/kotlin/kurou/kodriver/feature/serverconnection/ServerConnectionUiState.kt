@@ -7,7 +7,7 @@ import kurou.kodriver.domain.usecase.KoDriverServerConnectionStatus
 /**
  * ServerConnection 画面の表示状態。
  */
-data class ServerConnectionUiState(
+public data class ServerConnectionUiState(
     val connectionStatus: KoDriverServerConnectionStatus = KoDriverServerConnectionStatus.NOT_CONFIGURED,
     val requiresKoDriverServer: Boolean = SELECTED_SIMULATOR_DEFAULT.requiresKoDriverServer,
     val selectedSimulator: Simulator = SELECTED_SIMULATOR_DEFAULT,

@@ -16,7 +16,7 @@ import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 /**
  * アプリバージョン表示に必要な情報（現在バージョン・プラットフォーム別ラベル）。
  */
-data class OtherListAppVersionInfo(
+public data class OtherListAppVersionInfo(
     val currentVersion: String,
     val appVersionLabel: String,
 )
@@ -25,7 +25,7 @@ data class OtherListAppVersionInfo(
  * OtherList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
 @Suppress("LongParameterList", "TooManyFunctions")
-class OtherListViewModel(
+public class OtherListViewModel(
     private val overlaySettingsFlow: OtherListOverlaySettingsFlow,
     private val speechSettingsFlow: OtherListSpeechSettingsFlow,
     private val deviceSettingsFlow: OtherListDeviceSettingsFlow,
@@ -56,7 +56,7 @@ class OtherListViewModel(
             ),
         )
 
-    val uiState: StateFlow<OtherListUiState> =
+    public val uiState: StateFlow<OtherListUiState> =
         OtherListFlow(
             baseState = _uiState,
             overlaySettings = overlaySettingsFlow.uiState,
@@ -73,80 +73,80 @@ class OtherListViewModel(
             appUpdate = appUpdateFlow.uiState,
         ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
-    fun onResetClick() {
+    public fun onResetClick() {
         resetFlow.onResetClick()
     }
 
-    fun onResetDismiss() {
+    public fun onResetDismiss() {
         resetFlow.onResetDismiss()
     }
 
-    fun onResetConfirm() {
+    public fun onResetConfirm() {
         viewModelScope.launch { resetFlow.onResetConfirm() }
     }
 
-    fun consumeResetResult() {
+    public fun consumeResetResult() {
         resetFlow.consumeResetResult()
     }
 
-    fun onAutoReadoutSettingsResetClick() {
+    public fun onAutoReadoutSettingsResetClick() {
         autoReadoutSettingsResetFlow.onResetClick()
     }
 
-    fun onAutoReadoutSettingsResetDismiss() {
+    public fun onAutoReadoutSettingsResetDismiss() {
         autoReadoutSettingsResetFlow.onResetDismiss()
     }
 
-    fun onAutoReadoutSettingsResetConfirm() {
+    public fun onAutoReadoutSettingsResetConfirm() {
         viewModelScope.launch { autoReadoutSettingsResetFlow.onResetConfirm() }
     }
 
-    fun consumeAutoReadoutSettingsResetResult() {
+    public fun consumeAutoReadoutSettingsResetResult() {
         autoReadoutSettingsResetFlow.consumeResetResult()
     }
 
-    fun onManualReadoutSettingsResetClick() {
+    public fun onManualReadoutSettingsResetClick() {
         manualReadoutSettingsResetFlow.onResetClick()
     }
 
-    fun onManualReadoutSettingsResetDismiss() {
+    public fun onManualReadoutSettingsResetDismiss() {
         manualReadoutSettingsResetFlow.onResetDismiss()
     }
 
-    fun onManualReadoutSettingsResetConfirm() {
+    public fun onManualReadoutSettingsResetConfirm() {
         viewModelScope.launch { manualReadoutSettingsResetFlow.onResetConfirm() }
     }
 
-    fun consumeManualReadoutSettingsResetResult() {
+    public fun consumeManualReadoutSettingsResetResult() {
         manualReadoutSettingsResetFlow.consumeResetResult()
     }
 
-    fun checkUpdate() {
+    public fun checkUpdate() {
         viewModelScope.launchCapturingErrors { appUpdateFlow.checkUpdate() }
     }
 
-    fun checkAccessLocalNetworkPermission() {
+    public fun checkAccessLocalNetworkPermission() {
         val granted = checkAccessLocalNetworkPermissionGranted()
         _uiState.update { it.copy(accessLocalNetworkPermissionGranted = granted) }
     }
 
-    fun openWindowsSpeechSettings() {
+    public fun openWindowsSpeechSettings() {
         openWindowsSpeechSettings.invoke()
     }
 
-    fun checkStartupEnabled() {
+    public fun checkStartupEnabled() {
         viewModelScope.launchCapturingErrors { startupRegistrationFlow.checkStartupEnabled() }
     }
 
-    fun checkTextToSpeechAvailability() {
+    public fun checkTextToSpeechAvailability() {
         viewModelScope.launchCapturingErrors { ttsAvailabilityFlow.checkAvailability() }
     }
 
-    fun onStartupEnabledChange(enabled: Boolean) {
+    public fun onStartupEnabledChange(enabled: Boolean) {
         viewModelScope.launchCapturingErrors { startupRegistrationFlow.onStartupEnabledChange(enabled) }
     }
 
-    fun onItemSelected(itemType: OtherListItemType) {
+    public fun onItemSelected(itemType: OtherListItemType) {
         if (
             itemType == OtherListItemType.DeleteAllLogs ||
             itemType == OtherListItemType.ResetAutoReadoutSettings ||
@@ -165,7 +165,7 @@ class OtherListViewModel(
         }
     }
 
-    fun selectItem(itemType: OtherListItemType) {
+    public fun selectItem(itemType: OtherListItemType) {
         if (
             itemType == OtherListItemType.DeleteAllLogs ||
             itemType == OtherListItemType.ResetAutoReadoutSettings ||
@@ -176,7 +176,7 @@ class OtherListViewModel(
         _uiState.update { it.copy(selectedItem = itemType, selectedFeedbackTelemetryLogId = null) }
     }
 
-    fun selectFeedbackItem(telemetryLogId: Long) {
+    public fun selectFeedbackItem(telemetryLogId: Long) {
         _uiState.update {
             it.copy(
                 selectedItem = OtherListItemType.Feedback,
@@ -186,23 +186,23 @@ class OtherListViewModel(
         }
     }
 
-    fun clearSelectedItem() {
+    public fun clearSelectedItem() {
         _uiState.update { it.copy(selectedItem = null, selectedFeedbackTelemetryLogId = null) }
     }
 
-    fun onOverlayVisibleChange(visible: Boolean) {
+    public fun onOverlayVisibleChange(visible: Boolean) {
         viewModelScope.launchCapturingErrors { overlaySettingsFlow.onOverlayVisibleChange(visible) }
     }
 
-    fun onKeepScreenOnChange(enabled: Boolean) {
+    public fun onKeepScreenOnChange(enabled: Boolean) {
         viewModelScope.launchCapturingErrors { deviceSettingsFlow.onKeepScreenOnChange(enabled) }
     }
 
-    fun onDynamicColorEnabledChange(enabled: Boolean) {
+    public fun onDynamicColorEnabledChange(enabled: Boolean) {
         viewModelScope.launchCapturingErrors { deviceSettingsFlow.onDynamicColorEnabledChange(enabled) }
     }
 
-    fun onHapticFeedbackEnabledChange(enabled: Boolean) {
+    public fun onHapticFeedbackEnabledChange(enabled: Boolean) {
         viewModelScope.launchCapturingErrors { deviceSettingsFlow.onHapticFeedbackEnabledChange(enabled) }
     }
 }

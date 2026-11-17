@@ -50,3 +50,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.manualreadoutlist.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

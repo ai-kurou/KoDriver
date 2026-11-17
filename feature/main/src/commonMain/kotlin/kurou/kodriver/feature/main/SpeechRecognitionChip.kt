@@ -54,13 +54,13 @@ private val CHIP_SIZE = 44.dp
  * 右下の音声認識のチップが占める幅・高さ（チップ本体と、他の要素との間の余白を含む）。
  * 右下に置く他の要素（FAB・Snackbar など）はこの分だけ避ける。
  */
-val SPEECH_RECOGNITION_CHIP_OVERLAY_INSET = CHIP_SIZE + KoDriverSpacing.small
+public val SPEECH_RECOGNITION_CHIP_OVERLAY_INSET: Dp = CHIP_SIZE + KoDriverSpacing.small
 
 /**
  * [SPEECH_RECOGNITION_CHIP_OVERLAY_INSET] を [LocalBottomEndOverlayInset] として配下の画面へ渡す。
  * チップを重ねるアプリ共通シェルが `CompositionLocalProvider` に渡す。
  */
-val speechRecognitionChipOverlayInset: ProvidedValue<Dp> =
+public val speechRecognitionChipOverlayInset: ProvidedValue<Dp> =
     LocalBottomEndOverlayInset provides SPEECH_RECOGNITION_CHIP_OVERLAY_INSET
 private val CHIP_ICON_SIZE = 24.dp
 private val CHIP_SHADOW_ELEVATION = 4.dp

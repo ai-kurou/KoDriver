@@ -39,7 +39,7 @@ private const val PROGRESS_INDICATOR_WIDTH_DP = 200
  * アプリアイコン・進捗バー・現在のフェーズ名を中央に表示する。
  */
 @Composable
-fun DesktopSplashScreen(
+public fun DesktopSplashScreen(
     uiState: DesktopSplashUiState,
     modifier: Modifier = Modifier,
 ) {

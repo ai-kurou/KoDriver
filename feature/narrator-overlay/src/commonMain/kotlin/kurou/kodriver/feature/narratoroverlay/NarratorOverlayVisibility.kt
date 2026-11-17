@@ -22,7 +22,7 @@ import org.koin.compose.koinInject
  * [NarratorOverlayViewModel] を経由せず、UseCase を直接 inject して購読する。
  */
 @Composable
-fun rememberNarratorOverlayVisible(): Boolean? {
+public fun rememberNarratorOverlayVisible(): Boolean? {
     val observeOverlayVisible: ObserveOverlayVisibleUseCase = koinInject()
     val overlayVisible: Flow<Boolean> = remember(observeOverlayVisible) { observeOverlayVisible() }
     val visible by overlayVisible.collectAsState(initial = null)

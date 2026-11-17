@@ -11,7 +11,7 @@ import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 
 /** 端末設定の観測・保存と表示状態を管理する。実行のライフサイクルは呼び出し元に従う。 */
-class OtherListDeviceSettingsFlow(
+public class OtherListDeviceSettingsFlow(
     private val observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
     private val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
     private val observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
@@ -20,7 +20,7 @@ class OtherListDeviceSettingsFlow(
     private val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
     private val observeThemeMode: ObserveThemeModeUseCase,
 ) {
-    val uiState: Flow<OtherListDeviceSettingsUiState> =
+    public val uiState: Flow<OtherListDeviceSettingsUiState> =
         combine(
             observeKeepScreenOn(),
             observeDynamicColorEnabled(),
@@ -30,9 +30,9 @@ class OtherListDeviceSettingsFlow(
             OtherListDeviceSettingsUiState(keepScreenOn, dynamicColorEnabled, hapticFeedbackEnabled, themeMode)
         }
 
-    suspend fun onKeepScreenOnChange(enabled: Boolean) = saveKeepScreenOn(enabled)
+    public suspend fun onKeepScreenOnChange(enabled: Boolean): Unit = saveKeepScreenOn(enabled)
 
-    suspend fun onDynamicColorEnabledChange(enabled: Boolean) = saveDynamicColorEnabled(enabled)
+    public suspend fun onDynamicColorEnabledChange(enabled: Boolean): Unit = saveDynamicColorEnabled(enabled)
 
-    suspend fun onHapticFeedbackEnabledChange(enabled: Boolean) = saveHapticFeedbackEnabled(enabled)
+    public suspend fun onHapticFeedbackEnabledChange(enabled: Boolean): Unit = saveHapticFeedbackEnabled(enabled)
 }

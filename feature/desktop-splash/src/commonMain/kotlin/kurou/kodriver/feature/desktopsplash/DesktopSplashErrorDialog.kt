@@ -20,7 +20,7 @@ import org.jetbrains.compose.resources.stringResource
  * @param onConfirm 閉じるボタン押下時に呼ばれるコールバック。
  */
 @Composable
-fun DesktopSplashErrorDialog(
+public fun DesktopSplashErrorDialog(
     message: String,
     onConfirm: () -> Unit,
 ) {

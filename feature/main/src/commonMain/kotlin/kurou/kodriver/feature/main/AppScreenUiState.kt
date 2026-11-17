@@ -9,7 +9,7 @@ import kurou.kodriver.domain.model.Simulator
 /**
  * AppScreen 画面の表示状態。
  */
-data class AppScreenUiState(
+public data class AppScreenUiState(
     val hasAppUpdate: Boolean = false,
     val accessLocalNetworkPermissionGranted: Boolean = true,
     /**

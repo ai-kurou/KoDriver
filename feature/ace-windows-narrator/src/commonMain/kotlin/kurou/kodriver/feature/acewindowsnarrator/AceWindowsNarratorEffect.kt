@@ -7,6 +7,6 @@ import org.koin.compose.viewmodel.koinViewModel
  * AceWindowsNarrator の副作用を画面表示中に実行する Composable。
  */
 @Composable
-fun AceWindowsNarratorEffect() {
+public fun AceWindowsNarratorEffect() {
     koinViewModel<AceWindowsNarratorViewModel>()
 }

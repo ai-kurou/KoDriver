@@ -8,7 +8,7 @@ import org.koin.dsl.module
  * LMU / ACE 接続バナー用の LmuBannerConnectionChecker / AceBannerConnectionChecker を
  * プラットフォーム別に提供する（JVM=共有メモリ経由、Android=KoDriver サーバーへの疎通確認）。
  */
-actual val mainPlatformModule: Module =
+public actual val mainPlatformModule: Module =
     module {
         factory<LmuBannerConnectionChecker> { LmuServerBannerConnectionChecker(get(), get()) }
         factory<AceBannerConnectionChecker> { AceServerBannerConnectionChecker(get(), get()) }

@@ -44,7 +44,7 @@ import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun ManualReadoutContent(
+public fun ManualReadoutContent(
     simulatorId: String,
     simulatorName: String,
     modifier: Modifier = Modifier,

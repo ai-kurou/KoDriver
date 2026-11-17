@@ -13,7 +13,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.manual_readout_setti
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ManualReadoutSettingsResetConfirmDialog(
+public fun ManualReadoutSettingsResetConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,

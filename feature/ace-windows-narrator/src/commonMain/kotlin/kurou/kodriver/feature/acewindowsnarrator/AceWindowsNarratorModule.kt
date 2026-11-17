@@ -77,7 +77,7 @@ import org.koin.dsl.module
  * 音声・速度・高さ設定の VoicePreferencesRepository・VoiceSpeedPreferencesRepository・VoicePitchPreferencesRepository（:core:data）を消費する。
  * 音声系は LMU/GT7 と区別するため named(Simulator.AceWindows.id) で登録している。
  */
-val aceWindowsNarratorModule: Module =
+public val aceWindowsNarratorModule: Module =
     module {
         factory { ObserveDebugReadoutRequestUseCase(get()) }
         factory { ObserveManualReadoutRequestsUseCase(get()) }

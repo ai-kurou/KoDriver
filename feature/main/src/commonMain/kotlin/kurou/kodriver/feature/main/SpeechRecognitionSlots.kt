@@ -15,13 +15,13 @@ import org.koin.compose.viewmodel.koinViewModel
  * [chip] は全画面の右下に重ねる小さなチップで、タップで聞き取りの ON/OFF を切り替える。
  * [card] は音声タブの一覧に置く状態カード（状態・入力デバイス・音量・認識結果）。
  */
-class SpeechRecognitionSlots(
-    val chip: @Composable (Modifier) -> Unit,
-    val card: @Composable (Modifier) -> Unit,
+public class SpeechRecognitionSlots(
+    public val chip: @Composable (Modifier) -> Unit,
+    public val card: @Composable (Modifier) -> Unit,
 ) {
-    companion object {
+    public companion object {
         /** 音声認識を提供しないとき（プレビュー・テスト・非対応のプラットフォーム）の、何も表示しない組。 */
-        val None = SpeechRecognitionSlots(chip = { }, card = { })
+        public val None: SpeechRecognitionSlots = SpeechRecognitionSlots(chip = { }, card = { })
     }
 }
 
@@ -32,7 +32,7 @@ class SpeechRecognitionSlots(
  * 音声認識を提供しないプラットフォームでは [SpeechRecognitionSlots.None] を返す。
  */
 @Composable
-fun rememberSpeechRecognition(): SpeechRecognitionSlots {
+public fun rememberSpeechRecognition(): SpeechRecognitionSlots {
     if (!isSpeechRecognitionSupportedOnPlatform()) return SpeechRecognitionSlots.None
     val viewModel: SpeechRecognitionViewModel = koinViewModel()
     val requestPermission = rememberRecordAudioPermissionRequester(viewModel::onPermissionResult)

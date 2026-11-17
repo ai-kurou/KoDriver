@@ -8,22 +8,22 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.usecase.ResetManualReadoutSettingsUseCase
 
 /** 手動タブの設定初期化の確認・実行・結果通知を管理する。実行のライフサイクルは呼び出し元に従う。 */
-class OtherListManualReadoutSettingsResetFlow(
+public class OtherListManualReadoutSettingsResetFlow(
     private val resetManualReadoutSettings: ResetManualReadoutSettingsUseCase,
 ) {
     private val _uiState = MutableStateFlow(OtherListResetUiState())
-    val uiState: StateFlow<OtherListResetUiState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<OtherListResetUiState> = _uiState.asStateFlow()
 
-    fun onResetClick() {
+    public fun onResetClick() {
         if (_uiState.value.isResetting) return
         _uiState.update { it.copy(showResetConfirmDialog = true) }
     }
 
-    fun onResetDismiss() {
+    public fun onResetDismiss() {
         _uiState.update { it.copy(showResetConfirmDialog = false) }
     }
 
-    suspend fun onResetConfirm() {
+    public suspend fun onResetConfirm() {
         if (!_uiState.value.showResetConfirmDialog || _uiState.value.isResetting) return
         _uiState.update { it.copy(showResetConfirmDialog = false, isResetting = true, resetSucceeded = null) }
         try {
@@ -44,7 +44,7 @@ class OtherListManualReadoutSettingsResetFlow(
         }
     }
 
-    fun consumeResetResult() {
+    public fun consumeResetResult() {
         _uiState.update { it.copy(resetSucceeded = null) }
     }
 }

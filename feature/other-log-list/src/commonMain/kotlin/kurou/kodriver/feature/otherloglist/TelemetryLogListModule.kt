@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherloglist
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -12,7 +13,7 @@ import org.koin.dsl.module
  * 提供: TelemetryLogListViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: TelemetryLogRepository・SimulatorPreferencesRepository（:core:data で登録）。
  */
-val telemetryLogListModule =
+public val telemetryLogListModule: Module =
     module {
         // ViewModel
         viewModelOf(::TelemetryLogListViewModel)

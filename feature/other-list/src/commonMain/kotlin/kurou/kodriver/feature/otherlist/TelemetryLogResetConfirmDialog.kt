@@ -13,7 +13,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.telemetry_log_reset_
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun TelemetryLogResetConfirmDialog(
+public fun TelemetryLogResetConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,

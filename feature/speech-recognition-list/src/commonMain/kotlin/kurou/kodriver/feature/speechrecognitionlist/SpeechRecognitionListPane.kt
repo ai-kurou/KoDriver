@@ -87,7 +87,7 @@ private const val BLINK_HALF_PERIOD_MS = 300
  * （feature 同士は依存しないため、呼び出し側が差し込む）。
  */
 @Composable
-fun SpeechRecognitionListPane(
+public fun SpeechRecognitionListPane(
     modifier: Modifier = Modifier,
     scrollToTopRequest: Int = 0,
     recognitionCard: @Composable () -> Unit = {},
