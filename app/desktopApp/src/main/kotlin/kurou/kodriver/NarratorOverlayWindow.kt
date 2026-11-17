@@ -89,7 +89,7 @@ private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
  */
 @OptIn(ExperimentalComposeUiApi::class, FlowPreview::class)
 @Composable
-fun ApplicationScope.NarratorOverlayWindow(
+internal fun ApplicationScope.NarratorOverlayWindow(
     initialBounds: NarratorOverlayWindowBounds,
     onBoundsChange: (x: Int, y: Int, width: Int, height: Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -177,7 +177,7 @@ fun ApplicationScope.NarratorOverlayWindow(
  * 開いて閉じたり、既定位置で開いてから保存位置へ飛んだりするため、どちらも揃ってから生成する。
  */
 @Composable
-fun ApplicationScope.NarratorOverlayWindowHost(modifier: Modifier = Modifier) {
+internal fun ApplicationScope.NarratorOverlayWindowHost(modifier: Modifier = Modifier) {
     val visible = rememberNarratorOverlayVisible()
     val bounds = rememberNarratorOverlayBounds()
     val saveBounds = rememberNarratorOverlayBoundsSaver()

@@ -14,7 +14,7 @@ import kurou.kodriver.feature.narratoroverlay.rememberNarratorOverlayVisible as 
  * 読み上げ内容オーバーレイの画面。
  */
 @Composable
-fun NarratorOverlayScreen(modifier: Modifier = Modifier) {
+public fun NarratorOverlayScreen(modifier: Modifier = Modifier) {
     NarratorOverlayContent(modifier = modifier)
 }
 
@@ -25,7 +25,7 @@ fun NarratorOverlayScreen(modifier: Modifier = Modifier) {
  * オーバーレイ用ウィンドウをホストする側（`app:desktopApp`）が、ウィンドウを開くかどうかの判断に使う。
  */
 @Composable
-fun rememberNarratorOverlayVisible(): Boolean? = rememberFeatureNarratorOverlayVisible()
+public fun rememberNarratorOverlayVisible(): Boolean? = rememberFeatureNarratorOverlayVisible()
 
 /**
  * オーバーレイウィンドウの位置・サイズ。位置が未保存の場合は [x] / [y] が `null` になる。
@@ -33,7 +33,7 @@ fun rememberNarratorOverlayVisible(): Boolean? = rememberFeatureNarratorOverlayV
  * `app:shared`・`app:desktopApp` は `:core:domain` を参照できない（`moduleGraphAssert`）ため、
  * `:core:domain` の `OverlayWindowBounds` ではなく、この型でウィンドウ側へ受け渡す。
  */
-data class NarratorOverlayWindowBounds(
+public data class NarratorOverlayWindowBounds(
     val x: Int?,
     val y: Int?,
     val width: Int,
@@ -46,7 +46,7 @@ data class NarratorOverlayWindowBounds(
  * オーバーレイ用ウィンドウをホストする側（`app:desktopApp`）が、ウィンドウの初期位置・サイズに使う。
  */
 @Composable
-fun rememberNarratorOverlayBounds(): NarratorOverlayWindowBounds? =
+public fun rememberNarratorOverlayBounds(): NarratorOverlayWindowBounds? =
     rememberFeatureNarratorOverlayBounds(::NarratorOverlayWindowBounds)
 
 /**
@@ -55,5 +55,5 @@ fun rememberNarratorOverlayBounds(): NarratorOverlayWindowBounds? =
  * オーバーレイ用ウィンドウをホストする側（`app:desktopApp`）が、移動・リサイズの結果の保存に使う。
  */
 @Composable
-fun rememberNarratorOverlayBoundsSaver(): (x: Int, y: Int, width: Int, height: Int) -> Unit =
+public fun rememberNarratorOverlayBoundsSaver(): (x: Int, y: Int, width: Int, height: Int) -> Unit =
     rememberFeatureNarratorOverlayBoundsSaver()

@@ -15,7 +15,7 @@ import kurou.kodriver.presentation.AppScreen
 /**
  * MainActivity の Android Activity。
  */
-class MainActivity : ComponentActivity() {
+public class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalActivityApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()

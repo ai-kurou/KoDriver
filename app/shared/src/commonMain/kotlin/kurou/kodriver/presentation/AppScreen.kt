@@ -117,7 +117,7 @@ private fun AppDestinationContent(
  * AppScreen を提供する公開関数。
  */
 @Composable
-fun AppScreen(
+public fun AppScreen(
     viewModel: AppScreenViewModel = koinViewModel(),
     autoReadoutListViewModel: AutoReadoutListViewModel = koinViewModel(),
     otherListViewModel: OtherListViewModel = koinViewModel(),

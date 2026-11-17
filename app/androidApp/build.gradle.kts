@@ -164,3 +164,7 @@ baselineProfile {
     automaticGenerationDuringBuild = false
     saveInSrc = true
 }
+
+kotlin {
+    explicitApi()
+}

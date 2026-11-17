@@ -17,7 +17,7 @@ import org.koin.compose.viewmodel.koinViewModel
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-actual fun VersionMismatchBottomSheetEffect(hapticFeedbackEnabled: Boolean) {
+internal actual fun VersionMismatchBottomSheetEffect(hapticFeedbackEnabled: Boolean) {
     val viewModel: ServerConnectionViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

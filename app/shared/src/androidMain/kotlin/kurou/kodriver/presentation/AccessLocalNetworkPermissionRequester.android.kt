@@ -28,7 +28,7 @@ import kurou.kodriver.feature.otherlist.rememberOpenAccessLocalNetworkPermission
  */
 @SuppressLint("InlinedApi")
 @Composable
-actual fun rememberAccessLocalNetworkPermissionRequester(
+internal actual fun rememberAccessLocalNetworkPermissionRequester(
     onResult: () -> Unit,
 ): (openSettingsWhenPermanentlyDenied: Boolean) -> Unit {
     val activity = LocalContext.current.findActivity()

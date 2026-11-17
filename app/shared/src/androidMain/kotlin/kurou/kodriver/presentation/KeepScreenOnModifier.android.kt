@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalView
  * KeepScreenOnEffect のこのプラットフォーム向け実装。
  */
 @Composable
-actual fun KeepScreenOnEffect(enabled: Boolean) {
+internal actual fun KeepScreenOnEffect(enabled: Boolean) {
     val view = LocalView.current
     DisposableEffect(enabled) {
         view.keepScreenOn = enabled

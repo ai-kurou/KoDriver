@@ -16,7 +16,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * rememberConnectionBannerUiState のこのプラットフォーム向け実装。
  */
 @Composable
-actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
+internal actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val viewModel: ConnectionBannerViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
