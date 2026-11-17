@@ -90,7 +90,7 @@ private val BUTTON_CONTENT_HEIGHT = 20.dp
  * OtherServerIpDetail の画面を表示する Composable。
  */
 @Composable
-fun OtherServerIpDetailPane(
+public fun OtherServerIpDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -123,7 +123,7 @@ fun OtherServerIpDetailPane(
  * OtherServerIpDetail の画面本体を表示する Composable。
  */
 @Composable
-fun OtherServerIpDetailPaneContent(
+public fun OtherServerIpDetailPaneContent(
     uiState: OtherServerIpDetailUiState,
     onIpChanged: (String) -> Unit = {},
     onSave: () -> Unit = {},

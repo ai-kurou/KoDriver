@@ -3,7 +3,7 @@ package kurou.kodriver.feature.otherserveripdetail
 /**
  * OtherServerIpDetail 画面の表示状態。
  */
-data class OtherServerIpDetailUiState(
+public data class OtherServerIpDetailUiState(
     val inputIp: String = "",
     val isInputValid: Boolean = true,
     val saveFailed: Boolean = false,
