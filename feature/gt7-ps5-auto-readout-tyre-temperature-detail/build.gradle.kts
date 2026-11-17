@@ -24,3 +24,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.gt7ps5autoreadout.tyretemperaturedetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

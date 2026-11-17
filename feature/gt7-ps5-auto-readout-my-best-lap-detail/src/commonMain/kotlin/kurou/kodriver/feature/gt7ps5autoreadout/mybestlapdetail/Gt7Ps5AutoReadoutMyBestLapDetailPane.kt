@@ -40,7 +40,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * Gt7Ps5AutoReadoutMyBestLapDetail の画面を表示する Composable。
  */
 @Composable
-fun Gt7Ps5AutoReadoutMyBestLapDetailPane(modifier: Modifier = Modifier) {
+public fun Gt7Ps5AutoReadoutMyBestLapDetailPane(modifier: Modifier = Modifier) {
     val viewModel: Gt7Ps5AutoReadoutMyBestLapDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {
