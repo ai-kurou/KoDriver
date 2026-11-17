@@ -31,7 +31,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * GT7 PS5 専用のデバッグ状態画面を表示する Composable。
  */
 @Composable
-fun Gt7Ps5DebugStateDetailPane(
+public fun Gt7Ps5DebugStateDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,

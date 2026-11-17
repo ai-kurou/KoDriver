@@ -26,3 +26,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

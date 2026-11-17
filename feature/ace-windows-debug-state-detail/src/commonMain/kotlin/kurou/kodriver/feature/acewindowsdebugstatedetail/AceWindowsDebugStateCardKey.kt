@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
-enum class AceWindowsDebugStateCardKey {
+public enum class AceWindowsDebugStateCardKey {
     SIMULATOR,
     VEHICLE_LOCATION,
     FLAG_INFO,

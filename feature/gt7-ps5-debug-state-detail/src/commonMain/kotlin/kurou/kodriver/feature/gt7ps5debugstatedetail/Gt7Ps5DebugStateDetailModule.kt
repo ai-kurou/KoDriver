@@ -6,12 +6,13 @@ import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /** GT7 PS5 専用デバッグ状態画面の ViewModel と UseCase を登録する。Repository は利用側で `named(Simulator.Gt7Ps5.id)` として登録する。 */
-val gt7Ps5DebugStateDetailModule =
+public val gt7Ps5DebugStateDetailModule: Module =
     module {
         factory { RequestDebugReadoutUseCase(get()) }
         viewModel { Gt7Ps5DebugStateDetailViewModel(get(), get(named(Simulator.Gt7Ps5.id)), get()) }

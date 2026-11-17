@@ -33,7 +33,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * ACE Windows 専用のデバッグ状態画面を表示する Composable。
  */
 @Composable
-fun AceWindowsDebugStateDetailPane(
+public fun AceWindowsDebugStateDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
