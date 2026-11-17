@@ -84,7 +84,7 @@ private const val THRESHOLD_MAX = LMU_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAG
  * LmuWindowsAutoReadoutRemainingFuelDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsAutoReadoutRemainingFuelDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutRemainingFuelDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutRemainingFuelDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

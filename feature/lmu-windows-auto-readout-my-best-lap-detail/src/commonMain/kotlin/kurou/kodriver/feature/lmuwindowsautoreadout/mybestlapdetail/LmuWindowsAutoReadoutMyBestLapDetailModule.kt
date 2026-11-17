@@ -7,6 +7,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -18,7 +19,7 @@ import org.koin.dsl.module
  * 提供: LmuWindowsAutoReadoutMyBestLapDetailViewModel。自己ベストラップ更新の有効/無効・文言の永続化用 UseCase を解決する。
  * 試聴は lmu-windows-narrator が提供する LMU 修飾子付き PlayStartSoundForKeyUseCase・SpeakTextUseCase を利用する。
  */
-val lmuWindowsAutoReadoutMyBestLapDetailModule =
+public val lmuWindowsAutoReadoutMyBestLapDetailModule: Module =
     module {
         viewModel {
             LmuWindowsAutoReadoutMyBestLapDetailViewModel(get(), get())

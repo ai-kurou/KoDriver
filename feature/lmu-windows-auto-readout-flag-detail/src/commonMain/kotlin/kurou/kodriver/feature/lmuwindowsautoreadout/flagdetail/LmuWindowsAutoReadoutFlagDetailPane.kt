@@ -33,7 +33,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * LmuWindowsAutoReadoutFlagDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsAutoReadoutFlagDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutFlagDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutFlagDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

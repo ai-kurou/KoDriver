@@ -23,6 +23,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsPitTimingVirtualEn
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -37,7 +38,7 @@ import org.koin.dsl.module
  * PlayStartSoundForKeyUseCase・SpeakTextUseCase は :feature:lmu-windows-narrator で登録される。
  * 消費: TextToSpeechRepository・SoundVolumePreferencesRepository と既存のピットタイミング設定Repository。
  */
-val lmuWindowsAutoReadoutPitTimingDetailModule =
+public val lmuWindowsAutoReadoutPitTimingDetailModule: Module =
     module {
         viewModel {
             LmuWindowsAutoReadoutPitTimingDetailViewModel(

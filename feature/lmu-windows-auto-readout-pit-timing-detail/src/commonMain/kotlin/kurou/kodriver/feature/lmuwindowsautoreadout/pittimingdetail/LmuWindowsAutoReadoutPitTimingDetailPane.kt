@@ -111,7 +111,7 @@ private const val MAXIMUM_PIT_TIMING_LAPS = LMU_WINDOWS_PIT_TIMING_LAPS_MAX.toFl
  * LmuWindowsAutoReadoutPitTimingDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsAutoReadoutPitTimingDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutPitTimingDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutPitTimingDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {
