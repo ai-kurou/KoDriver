@@ -40,7 +40,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * LmuWindowsAutoReadoutMyBestLapDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsAutoReadoutMyBestLapDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutMyBestLapDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutMyBestLapDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

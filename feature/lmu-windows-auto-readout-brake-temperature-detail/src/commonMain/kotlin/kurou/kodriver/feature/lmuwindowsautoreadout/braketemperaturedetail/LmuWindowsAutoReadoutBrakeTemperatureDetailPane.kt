@@ -88,7 +88,7 @@ private const val THRESHOLD_MAX = LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_C
  * LmuWindowsAutoReadoutBrakeTemperatureDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsAutoReadoutBrakeTemperatureDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutBrakeTemperatureDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutBrakeTemperatureDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

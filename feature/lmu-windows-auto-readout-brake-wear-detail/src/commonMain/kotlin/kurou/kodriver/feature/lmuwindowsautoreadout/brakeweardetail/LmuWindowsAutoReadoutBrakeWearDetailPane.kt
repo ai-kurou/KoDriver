@@ -88,7 +88,7 @@ private const val THRESHOLD_MAX = LMU_WINDOWS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_M
  * LmuWindowsAutoReadoutBrakeWearDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsAutoReadoutBrakeWearDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutBrakeWearDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutBrakeWearDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

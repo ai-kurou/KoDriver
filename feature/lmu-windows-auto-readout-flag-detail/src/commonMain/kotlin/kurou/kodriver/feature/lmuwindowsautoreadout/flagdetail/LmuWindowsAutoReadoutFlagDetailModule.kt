@@ -17,6 +17,7 @@ import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -32,7 +33,7 @@ import org.koin.dsl.module
  *   :core:text-to-speech-data）、試聴用の named(Simulator.LmuWindows.id) の
  *   PlayStartSoundForKeyUseCase（いずれも :feature:lmu-windows-narrator で登録）。
  */
-val lmuWindowsAutoReadoutFlagDetailModule =
+public val lmuWindowsAutoReadoutFlagDetailModule: Module =
     module {
         // ViewModel（get(named(Simulator.LmuWindows.id)) は narrator モジュールの
         // PlayStartSoundForKeyUseCase を解決）

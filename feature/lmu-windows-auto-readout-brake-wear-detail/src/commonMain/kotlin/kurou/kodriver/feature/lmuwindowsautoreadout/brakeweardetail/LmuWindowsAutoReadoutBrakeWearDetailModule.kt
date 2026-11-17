@@ -12,6 +12,7 @@ import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -28,7 +29,7 @@ import org.koin.dsl.module
  *   PlaySpeechEventUseCase（:feature:lmu-windows-narrator で登録）。
  *   試聴停止用の StopSpeechUseCase は同じ named(Simulator.LmuWindows.id) の TextToSpeechEngine から生成する。
  */
-val lmuWindowsAutoReadoutBrakeWearDetailModule =
+public val lmuWindowsAutoReadoutBrakeWearDetailModule: Module =
     module {
         viewModel {
             LmuWindowsAutoReadoutBrakeWearDetailViewModel(

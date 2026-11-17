@@ -23,3 +23,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.lmuwindowsautoreadout.flagdetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}
