@@ -5,19 +5,26 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
@@ -360,5 +367,29 @@ class DetailPaneCardTextFieldTest {
             assertTrue(supportingBounds.right <= counterBounds.left)
             assertTrue(supportingBounds.bottom - supportingBounds.top > counterBounds.bottom - counterBounds.top)
         }
+    }
+
+    @Test
+    fun `IMEアクションはDoneでEnterを押すとフォーカスが外れる`() {
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "イエロー",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = null,
+                    modifier = Modifier.testTag("textField"),
+                )
+            }
+        }
+        val field = rule.onNodeWithTag("textField")
+        field.assert(SemanticsMatcher.expectValue(SemanticsProperties.ImeAction, ImeAction.Done))
+        field.performClick()
+        field.assertIsFocused()
+
+        field.performImeAction()
+
+        field.assertIsNotFocused()
     }
 }

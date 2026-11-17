@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.PlayArrow
@@ -27,8 +29,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -79,6 +83,7 @@ public fun DetailPaneCardTextField(
     insertState: TextInsertState? = null,
 ) {
     val haptic = LocalHapticFeedback.current
+    val focusManager = LocalFocusManager.current
     var text by remember(value) { mutableStateOf(value) }
     // 未操作（null）の間は従来どおり先頭を表示し、挿入要求は末尾へ追加する。
     var selection by remember { mutableStateOf<TextRange?>(null) }
@@ -133,6 +138,9 @@ public fun DetailPaneCardTextField(
             }
         },
         singleLine = true,
+        // 入力のたびに確定通知しているため、Done はフォーカスを外してキーボードを閉じるだけにする。
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         colors =
             if (selected) {
                 TextFieldDefaults.colors(

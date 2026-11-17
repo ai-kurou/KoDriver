@@ -15,7 +15,9 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.click
@@ -24,9 +26,11 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -384,5 +388,40 @@ class OtherFeedbackDetailPaneTest {
         assertEquals(listOf<FeedbackType>(FeedbackType.FeatureRequest, FeedbackType.FeatureRequest), selections)
         verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(haptic)
+    }
+
+    @Test
+    fun `入力欄のIMEアクションは内容が改行名前がNextメールがDoneで統一される`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState())
+            }
+        }
+
+        rule
+            .onNodeWithText("内容")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.ImeAction, ImeAction.Default))
+        rule
+            .onNodeWithText("名前")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.ImeAction, ImeAction.Next))
+        rule
+            .onNodeWithText("メールアドレス")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.ImeAction, ImeAction.Done))
+    }
+
+    @Test
+    fun `名前欄でNextを押すとメール欄にフォーカスが移る`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState())
+            }
+        }
+        rule.onNodeWithText("名前").performClick()
+        rule.onNodeWithText("名前").assertIsFocused()
+
+        rule.onNodeWithText("名前").performImeAction()
+
+        rule.onNodeWithText("名前").assertIsNotFocused()
+        rule.onNodeWithText("メールアドレス").assertIsFocused()
     }
 }

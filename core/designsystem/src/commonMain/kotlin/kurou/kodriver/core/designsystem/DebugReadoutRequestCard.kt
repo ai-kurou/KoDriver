@@ -3,6 +3,8 @@ package kurou.kodriver.core.designsystem
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,8 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.ImeAction
 import kurou.kodriver.core.designsystem.generated.resources.Res
 import kurou.kodriver.core.designsystem.generated.resources.debug_readout_request_item
 import kurou.kodriver.core.designsystem.generated.resources.debug_readout_request_send
@@ -42,6 +46,7 @@ public fun DebugReadoutRequestCard(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
+    val focusManager = LocalFocusManager.current
     DetailPaneCard(
         title = stringResource(Res.string.debug_readout_request_title),
         modifier = modifier.testTag("debug_readout_request_card"),
@@ -81,6 +86,9 @@ public fun DebugReadoutRequestCard(
                     value = text,
                     onValueChange = onTextChange,
                     label = { Text(stringResource(Res.string.debug_readout_request_text)) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                     modifier = Modifier.fillMaxWidth().testTag("debug_readout_request_text"),
                 )
                 Button(
