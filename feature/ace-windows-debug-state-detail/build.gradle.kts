@@ -26,3 +26,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}
