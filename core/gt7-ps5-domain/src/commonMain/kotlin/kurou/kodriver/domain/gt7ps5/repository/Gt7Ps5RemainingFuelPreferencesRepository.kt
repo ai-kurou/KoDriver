@@ -2,14 +2,14 @@ package kurou.kodriver.domain.gt7ps5.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface Gt7Ps5RemainingFuelPreferencesRepository {
-    suspend fun resetToDefault()
+public interface Gt7Ps5RemainingFuelPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeThresholdPercentage(): Flow<Int>
+    public fun observeThresholdPercentage(): Flow<Int>
 
-    suspend fun saveThresholdPercentage(percentage: Int)
+    public suspend fun saveThresholdPercentage(percentage: Int)
 
-    fun observeReadoutText(): Flow<String>
+    public fun observeReadoutText(): Flow<String>
 
-    suspend fun saveReadoutText(text: String)
+    public suspend fun saveReadoutText(text: String)
 }

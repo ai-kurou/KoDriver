@@ -2,8 +2,8 @@ package kurou.kodriver.domain.gt7ps5.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface Gt7Ps5UdpPortPreferencesRepository {
-    fun port(): Flow<Int>
+public interface Gt7Ps5UdpPortPreferencesRepository {
+    public fun port(): Flow<Int>
 
-    suspend fun savePort(port: Int)
+    public suspend fun savePort(port: Int)
 }

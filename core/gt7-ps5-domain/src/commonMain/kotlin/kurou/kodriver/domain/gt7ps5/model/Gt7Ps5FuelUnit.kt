@@ -9,20 +9,21 @@ import kotlin.jvm.JvmInline
  */
 @Serializable
 @JvmInline
-value class Gt7Ps5FuelUnit(
-    val value: Float,
+public value class Gt7Ps5FuelUnit(
+    public val value: Float,
 ) : Comparable<Gt7Ps5FuelUnit> {
     override fun compareTo(other: Gt7Ps5FuelUnit): Int = value.compareTo(other.value)
 
-    operator fun plus(other: Gt7Ps5FuelUnit): Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(value + other.value)
+    public operator fun plus(other: Gt7Ps5FuelUnit): Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(value + other.value)
 
-    operator fun minus(other: Gt7Ps5FuelUnit): Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(value - other.value)
+    public operator fun minus(other: Gt7Ps5FuelUnit): Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(value - other.value)
 
     /** ラップ数などのスカラーで割り、ラップあたりの消費量を求める。 */
-    operator fun div(laps: Float): Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(value / laps)
+    public operator fun div(laps: Float): Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(value / laps)
 
     /** ラップあたりの消費量で割り、残り周回数（無次元）を求める。 */
-    operator fun div(consumptionPerLap: Gt7Ps5FuelUnit): Float = value / consumptionPerLap.value
+    public operator fun div(consumptionPerLap: Gt7Ps5FuelUnit): Float = value / consumptionPerLap.value
 
-    fun coerceAtLeast(minimum: Gt7Ps5FuelUnit): Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(value.coerceAtLeast(minimum.value))
+    public fun coerceAtLeast(minimum: Gt7Ps5FuelUnit): Gt7Ps5FuelUnit =
+        Gt7Ps5FuelUnit(value.coerceAtLeast(minimum.value))
 }
