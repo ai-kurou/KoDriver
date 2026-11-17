@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.model
 
-data class TelemetryLogDetail(
+public data class TelemetryLogDetail(
     val current: TelemetryLog,
     val previous: TelemetryLog?,
 )

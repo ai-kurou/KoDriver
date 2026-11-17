@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ManualReadoutRequest
 
 /** アプリ内で手動読み上げの依頼を配信する。 */
-interface ManualReadoutRequestRepository {
-    fun observeRequests(): Flow<ManualReadoutRequest>
+public interface ManualReadoutRequestRepository {
+    public fun observeRequests(): Flow<ManualReadoutRequest>
 
-    suspend fun request(request: ManualReadoutRequest)
+    public suspend fun request(request: ManualReadoutRequest)
 }

@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.model
 
-enum class AndroidAudioUsage(
-    val id: String,
+public enum class AndroidAudioUsage(
+    public val id: String,
 ) {
     MEDIA("media"),
     COMMUNICATION("communication"),
@@ -11,7 +11,8 @@ enum class AndroidAudioUsage(
     ASSISTANT("assistant"),
     ;
 
-    companion object {
-        fun fromId(id: String): AndroidAudioUsage = entries.firstOrNull { it.id == id } ?: ANDROID_AUDIO_USAGE_DEFAULT
+    public companion object {
+        public fun fromId(id: String): AndroidAudioUsage =
+            entries.firstOrNull { it.id == id } ?: ANDROID_AUDIO_USAGE_DEFAULT
     }
 }

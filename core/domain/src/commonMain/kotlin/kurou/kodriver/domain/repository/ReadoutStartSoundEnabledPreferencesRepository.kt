@@ -3,12 +3,12 @@ package kurou.kodriver.domain.repository
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-interface ReadoutStartSoundEnabledPreferencesRepository {
-    suspend fun resetToDefault()
+public interface ReadoutStartSoundEnabledPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeStartSoundEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
+    public fun observeStartSoundEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
-    suspend fun saveStartSoundEnabledState(
+    public suspend fun saveStartSoundEnabledState(
         key: ReadoutItemKey,
         enabled: Boolean,
     )

@@ -9,55 +9,55 @@ import kotlin.concurrent.Volatile
  * [itemPhrases] は音声認識の発話から項目を選ぶ語句で、キーは [itemDefinitions] と同じ項目キー。語句を持たない項目は音声で読み上げられない。
  * [migrateLegacySet] は保存済みセットに残る廃止済みの項目キーを現行のキーへ置き換える。移行不要なら何もしない。
  */
-class ManualReadoutSimulatorSpec(
-    val itemDefinitions: Map<String, ManualReadoutItemDefinition>,
-    val showSimHubGuideLink: Boolean = true,
-    val itemPhrases: Map<String, List<String>> = emptyMap(),
-    val migrateLegacySet: (ManualReadoutSet) -> ManualReadoutSet = { it },
+public class ManualReadoutSimulatorSpec(
+    public val itemDefinitions: Map<String, ManualReadoutItemDefinition>,
+    public val showSimHubGuideLink: Boolean = true,
+    public val itemPhrases: Map<String, List<String>> = emptyMap(),
+    public val migrateLegacySet: (ManualReadoutSet) -> ManualReadoutSet = { it },
 )
 
 /** A simulator's complete readout key catalog and defaults. [manualReadout] は手動読み上げ非対応なら null。 */
-class SimulatorReadoutSpec(
-    val simulator: Simulator,
-    val keys: List<ReadoutItemKey>,
-    val autoReadoutEnabledStateDefault: Map<ReadoutItemKey, Boolean>,
-    val startSoundEnabledStateDefault: Map<ReadoutItemKey, Boolean>,
-    val queueEnabledStateDefault: Map<ReadoutItemKey, Boolean>,
-    val defaultAutoReadoutOrder: List<ReadoutItemKey>,
-    val manualReadout: ManualReadoutSimulatorSpec? = null,
+public class SimulatorReadoutSpec(
+    public val simulator: Simulator,
+    public val keys: List<ReadoutItemKey>,
+    public val autoReadoutEnabledStateDefault: Map<ReadoutItemKey, Boolean>,
+    public val startSoundEnabledStateDefault: Map<ReadoutItemKey, Boolean>,
+    public val queueEnabledStateDefault: Map<ReadoutItemKey, Boolean>,
+    public val defaultAutoReadoutOrder: List<ReadoutItemKey>,
+    public val manualReadout: ManualReadoutSimulatorSpec? = null,
 )
 
 /** Thread-safe registry; updates replace an immutable snapshot. */
-object ReadoutItemKeyRegistry {
+public object ReadoutItemKeyRegistry {
     private val registryState = ReadoutItemKeyRegistryState()
 
-    fun register(spec: SimulatorReadoutSpec) = registryState.register(spec)
+    public fun register(spec: SimulatorReadoutSpec): Unit = registryState.register(spec)
 
-    fun specOf(simulator: Simulator): SimulatorReadoutSpec = registryState.specOf(simulator)
+    public fun specOf(simulator: Simulator): SimulatorReadoutSpec = registryState.specOf(simulator)
 
     /** 登録済みの spec を [Simulator.entries] の順で返す。未登録のシミュレーターは含まれない。 */
-    val registeredSpecs: List<SimulatorReadoutSpec> get() = registryState.registeredSpecs
+    public val registeredSpecs: List<SimulatorReadoutSpec> get() = registryState.registeredSpecs
 
-    val entries: List<ReadoutItemKey> get() = registryState.entries
+    public val entries: List<ReadoutItemKey> get() = registryState.entries
 
     /** 手動読み上げに対応する登録済みシミュレーターの ID と spec を [Simulator.entries] の順で返す。 */
-    val manualReadoutSpecs: List<Pair<String, ManualReadoutSimulatorSpec>>
+    public val manualReadoutSpecs: List<Pair<String, ManualReadoutSimulatorSpec>>
         get() = registeredSpecs.mapNotNull { spec -> spec.manualReadout?.let { spec.simulator.id to it } }
 
     /** [simulatorId] の手動読み上げ spec。未登録・非対応なら null。 */
-    fun manualReadoutSpecOf(simulatorId: String): ManualReadoutSimulatorSpec? =
+    public fun manualReadoutSpecOf(simulatorId: String): ManualReadoutSimulatorSpec? =
         manualReadoutSpecs.firstOrNull { it.first == simulatorId }?.second
 
     /** [simulatorId] の手動読み上げ画面で SimHub の導入リンクを出すか。未登録・非対応は既定の true。 */
-    fun showsManualReadoutSimHubGuideLink(simulatorId: String): Boolean =
+    public fun showsManualReadoutSimHubGuideLink(simulatorId: String): Boolean =
         manualReadoutSpecOf(simulatorId)?.showSimHubGuideLink ?: true
 
-    fun fromValue(value: String): ReadoutItemKey? = registryState.fromValue(value)
+    public fun fromValue(value: String): ReadoutItemKey? = registryState.fromValue(value)
 
-    fun topLevelEntriesOf(simulator: Simulator): List<ReadoutItemKey.TopLevel> =
+    public fun topLevelEntriesOf(simulator: Simulator): List<ReadoutItemKey.TopLevel> =
         registryState.topLevelEntriesOf(simulator)
 
-    fun autoReadoutEnabledDefault(key: ReadoutItemKey): Boolean? = registryState.autoReadoutEnabledDefault(key)
+    public fun autoReadoutEnabledDefault(key: ReadoutItemKey): Boolean? = registryState.autoReadoutEnabledDefault(key)
 }
 
 internal class ReadoutItemKeyRegistryState {

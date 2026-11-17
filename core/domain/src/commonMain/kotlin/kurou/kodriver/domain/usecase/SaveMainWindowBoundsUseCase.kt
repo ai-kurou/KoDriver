@@ -3,10 +3,10 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.model.MainWindowBounds
 import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
 
-class SaveMainWindowBoundsUseCase(
+public class SaveMainWindowBoundsUseCase(
     private val repository: MainWindowBoundsPreferencesRepository,
 ) {
-    suspend operator fun invoke(bounds: MainWindowBounds) {
+    public suspend operator fun invoke(bounds: MainWindowBounds) {
         repository.saveMainWindowBounds(bounds)
     }
 }

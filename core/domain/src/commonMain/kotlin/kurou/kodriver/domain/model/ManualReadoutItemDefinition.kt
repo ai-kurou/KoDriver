@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.model
 
 /** 手動読み上げ項目のカテゴリ。ピッカーとリストの分類・表示順の基準になる。 */
-enum class ManualReadoutItemCategory {
+public enum class ManualReadoutItemCategory {
     VIRTUAL_ENERGY,
     FUEL,
     TYRE,
@@ -16,7 +16,7 @@ enum class ManualReadoutItemCategory {
  * [previewFormatter] はプレビュー用に文言へサンプル値を埋め込む関数、
  * [eventKey] は実読み上げとプレビューで開始音・優先度に使う event キー。
  */
-data class ManualReadoutItemDefinition(
+public data class ManualReadoutItemDefinition(
     val key: String,
     val category: ManualReadoutItemCategory,
     val name: String,
@@ -28,7 +28,7 @@ data class ManualReadoutItemDefinition(
 )
 
 @Suppress("LongParameterList")
-fun manualReadoutItemDefinitionOf(
+public fun manualReadoutItemDefinitionOf(
     key: ReadoutItemKey,
     category: ManualReadoutItemCategory,
     name: String,
@@ -49,6 +49,6 @@ fun manualReadoutItemDefinitionOf(
         eventKey,
     )
 
-fun manualReadoutItemDefinitionMapOf(
+public fun manualReadoutItemDefinitionMapOf(
     vararg definitions: ManualReadoutItemDefinition,
 ): Map<String, ManualReadoutItemDefinition> = definitions.associateBy { it.key }

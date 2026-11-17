@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 
-class CheckTextToSpeechAvailableUseCase(
+public class CheckTextToSpeechAvailableUseCase(
     private val repository: TextToSpeechRepository,
 ) {
-    suspend operator fun invoke(): Boolean = repository.isAvailable()
+    public suspend operator fun invoke(): Boolean = repository.isAvailable()
 }

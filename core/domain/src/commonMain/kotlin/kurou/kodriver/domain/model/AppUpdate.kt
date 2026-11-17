@@ -1,5 +1,5 @@
 package kurou.kodriver.domain.model
 
-data class AppUpdate(
+public data class AppUpdate(
     val tagName: String,
 )

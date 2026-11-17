@@ -2,8 +2,8 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface FeedbackCooldownPreferencesRepository {
-    fun lastFeedbackSentAtEpochMillis(): Flow<Long?>
+public interface FeedbackCooldownPreferencesRepository {
+    public fun lastFeedbackSentAtEpochMillis(): Flow<Long?>
 
-    suspend fun saveLastFeedbackSentAtEpochMillis(epochMillis: Long)
+    public suspend fun saveLastFeedbackSentAtEpochMillis(epochMillis: Long)
 }

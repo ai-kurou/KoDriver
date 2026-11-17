@@ -1,9 +1,10 @@
 package kurou.kodriver.domain.usecase
 
+import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 
-class ObserveServerIpUseCase(
+public class ObserveServerIpUseCase(
     private val repository: ServerIpPreferencesRepository,
 ) {
-    operator fun invoke() = repository.serverIp()
+    public operator fun invoke(): Flow<String?> = repository.serverIp()
 }

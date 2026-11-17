@@ -7,7 +7,7 @@ package kurou.kodriver.domain.usecase
  * [highThresholdCelsius] から [hysteresisCelsius] を引いた値以下なら無効にし、
  * その間は [currentState] を維持する。
  */
-fun determineHysteresisState(
+public fun determineHysteresisState(
     valuesCelsius: Iterable<Float>,
     highThresholdCelsius: Float,
     hysteresisCelsius: Float,

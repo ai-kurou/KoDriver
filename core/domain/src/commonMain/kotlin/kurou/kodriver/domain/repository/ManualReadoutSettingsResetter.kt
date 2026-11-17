@@ -1,5 +1,5 @@
 package kurou.kodriver.domain.repository
 
-interface ManualReadoutSettingsResetter {
-    suspend fun resetToDefault()
+public interface ManualReadoutSettingsResetter {
+    public suspend fun resetToDefault()
 }

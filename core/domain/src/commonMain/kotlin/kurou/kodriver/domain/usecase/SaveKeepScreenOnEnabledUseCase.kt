@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 
-class SaveKeepScreenOnEnabledUseCase(
+public class SaveKeepScreenOnEnabledUseCase(
     private val repository: KeepScreenOnEnabledRepository,
 ) {
-    suspend operator fun invoke(enabled: Boolean) = repository.saveKeepScreenOn(enabled)
+    public suspend operator fun invoke(enabled: Boolean): Unit = repository.saveKeepScreenOn(enabled)
 }

@@ -6,7 +6,7 @@ package kurou.kodriver.domain.model
  * Androidではエンジンと日本語データの不足を判別し、Windowsでは利用できない場合に
  * Windowsの音声設定を案内するために使う。
  */
-enum class TextToSpeechUnavailableReason {
+public enum class TextToSpeechUnavailableReason {
     /** TTSエンジン自体が端末にインストールされていない。 */
     EngineMissing,
 

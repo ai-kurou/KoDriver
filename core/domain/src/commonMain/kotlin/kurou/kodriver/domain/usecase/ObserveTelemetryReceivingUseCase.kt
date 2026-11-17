@@ -20,12 +20,12 @@ import kurou.kodriver.domain.model.TELEMETRY_RECEIVING_TIMEOUT_MS_DEFAULT
  * テレメトリを受信するたびに [transformLatest] がタイムアウト待機を
  * 最初からやり直すため、ticker によるポーリングを使わずに正確なタイムアウトを実現する。
  */
-class ObserveTelemetryReceivingUseCase(
+public class ObserveTelemetryReceivingUseCase(
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     private val telemetryStream: (Simulator) -> Flow<*>,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<Boolean> =
+    public operator fun invoke(): Flow<Boolean> =
         observeSelectedSimulator()
             .flatMapLatest { simulator -> telemetryReceivingFlow(simulator) }
 

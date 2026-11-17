@@ -4,10 +4,10 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 
-class ObserveManualReadoutHotkeyRegistrationStateUseCase(
+public class ObserveManualReadoutHotkeyRegistrationStateUseCase(
     private val repository: ManualReadoutHotkeyRepository,
 ) {
-    operator fun invoke(
+    public operator fun invoke(
         simulatorId: String,
         setId: String,
     ): Flow<HotkeyRegistrationState> = repository.registrationStateStream(simulatorId, setId)

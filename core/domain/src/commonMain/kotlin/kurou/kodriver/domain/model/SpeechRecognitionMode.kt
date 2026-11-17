@@ -3,7 +3,7 @@ package kurou.kodriver.domain.model
 /**
  * 音声認識が今、何を聞き取るか。
  */
-enum class SpeechRecognitionMode {
+public enum class SpeechRecognitionMode {
     /** ウェイクワードだけを待つ。語彙をウェイクワードに絞って認識する。 */
     WakeWord,
 

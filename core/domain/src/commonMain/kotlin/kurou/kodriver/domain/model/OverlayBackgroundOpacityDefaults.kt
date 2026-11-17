@@ -1,5 +1,5 @@
 package kurou.kodriver.domain.model
 
-const val OVERLAY_BACKGROUND_OPACITY_DEFAULT = 50
-const val OVERLAY_BACKGROUND_OPACITY_MIN = 0
-const val OVERLAY_BACKGROUND_OPACITY_MAX = 100
+public const val OVERLAY_BACKGROUND_OPACITY_DEFAULT: Int = 50
+public const val OVERLAY_BACKGROUND_OPACITY_MIN: Int = 0
+public const val OVERLAY_BACKGROUND_OPACITY_MAX: Int = 100

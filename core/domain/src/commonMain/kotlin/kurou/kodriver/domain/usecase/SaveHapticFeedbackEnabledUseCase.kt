@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 
-class SaveHapticFeedbackEnabledUseCase(
+public class SaveHapticFeedbackEnabledUseCase(
     private val repository: HapticFeedbackEnabledRepository,
 ) {
-    suspend operator fun invoke(enabled: Boolean) = repository.saveHapticFeedbackEnabled(enabled)
+    public suspend operator fun invoke(enabled: Boolean): Unit = repository.saveHapticFeedbackEnabled(enabled)
 }

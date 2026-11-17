@@ -2,10 +2,10 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.AppUpdateRepository
 
-class CheckAppUpdateAvailableUseCase(
+public class CheckAppUpdateAvailableUseCase(
     private val repository: AppUpdateRepository,
 ) {
-    suspend operator fun invoke(currentVersion: String): Boolean {
+    public suspend operator fun invoke(currentVersion: String): Boolean {
         val latest = repository.getLatestRelease() ?: return false
         val latestParts = parseVersion(latest.tagName.trimStart('v'))
         val currentParts = parseVersion(currentVersion.trimStart('v'))

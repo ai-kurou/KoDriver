@@ -2,8 +2,8 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface VoicePreferencesRepository {
-    fun voiceId(): Flow<String>
+public interface VoicePreferencesRepository {
+    public fun voiceId(): Flow<String>
 
-    suspend fun saveVoiceId(voiceId: String)
+    public suspend fun saveVoiceId(voiceId: String)
 }

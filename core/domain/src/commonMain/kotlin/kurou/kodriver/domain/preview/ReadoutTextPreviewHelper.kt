@@ -19,7 +19,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * [onPreviewClicked] は所有者のスコープで試聴を開始し、再押しで停止する。
  * [preview] は呼び出し元のコルーチンで実行し、キャンセルと例外をそのまま伝播する。
  */
-class ReadoutTextPreviewHelper(
+public class ReadoutTextPreviewHelper(
     private val scope: CoroutineScope,
     checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     observeSoundVolume: ObserveSoundVolumeUseCase,
@@ -27,21 +27,21 @@ class ReadoutTextPreviewHelper(
     private val speakText: SpeakTextUseCase,
 ) {
     private val guard = ReadoutPreviewGuard(scope, checkTextToSpeechAvailable, observeSoundVolume)
-    val textToSpeechAvailable = guard.textToSpeechAvailable
+    public val textToSpeechAvailable: StateFlow<Boolean> = guard.textToSpeechAvailable
     private val _isPreviewing = MutableStateFlow(false)
-    val isPreviewing: StateFlow<Boolean> = _isPreviewing
+    public val isPreviewing: StateFlow<Boolean> = _isPreviewing
     private var previewJob: Job? = null
     private var previewRequest = 0
 
     /** 再生中または開始待ちの試聴を止める。 */
-    fun stop() {
+    public fun stop() {
         previewRequest++
         previewJob?.cancel()
         _isPreviewing.update { false }
     }
 
     /** 試聴中に呼ぶと停止し、停止中に呼ぶと開始音の後に [text] を読み上げる。 */
-    fun onPreviewClicked(
+    public fun onPreviewClicked(
         text: String,
         key: ReadoutItemKey,
     ) {
@@ -68,7 +68,7 @@ class ReadoutTextPreviewHelper(
     }
 
     /** 空白文言・TTS利用不可・音量0以下では開始音も本文も再生しない。 */
-    suspend fun preview(
+    public suspend fun preview(
         text: String,
         key: ReadoutItemKey,
     ) {

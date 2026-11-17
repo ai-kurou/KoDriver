@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.Flow
  * （[SoundVolumePreferencesRepository]）とは異なり、読み上げが実際に聞こえるかどうかに関わる
  * OS側の再生音量を扱う。値は0-100のパーセンテージで表す。
  */
-interface DeviceVolumeRepository {
+public interface DeviceVolumeRepository {
     /** ポーリングで端末音量の値の変化を流す。 */
-    fun observeVolume(): Flow<Int>
+    public fun observeVolume(): Flow<Int>
 
-    suspend fun getVolume(): Int
+    public suspend fun getVolume(): Int
 
-    suspend fun setVolume(volume: Int)
+    public suspend fun setVolume(volume: Int)
 }

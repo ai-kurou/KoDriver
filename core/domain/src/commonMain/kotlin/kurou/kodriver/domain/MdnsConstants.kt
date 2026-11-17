@@ -6,7 +6,7 @@ package kurou.kodriver.domain
  * Desktop 側の広告と Android/JVM 側の探索で同じサービスタイプを使うため、
  * domain 層に置いて platform 実装から共有する。
  */
-object MdnsConstants {
+public object MdnsConstants {
     /** KoDriver サーバーが広告する DNS-SD サービスタイプ。 */
-    const val KO_DRIVER_SERVICE_TYPE = "_kodriver._tcp.local."
+    public const val KO_DRIVER_SERVICE_TYPE: String = "_kodriver._tcp.local."
 }

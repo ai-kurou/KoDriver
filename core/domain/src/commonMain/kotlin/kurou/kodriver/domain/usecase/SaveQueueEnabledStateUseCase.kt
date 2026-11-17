@@ -3,11 +3,11 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 
-class SaveQueueEnabledStateUseCase(
+public class SaveQueueEnabledStateUseCase(
     private val repository: QueuePreferencesRepository,
 ) {
-    suspend operator fun invoke(
+    public suspend operator fun invoke(
         key: ReadoutItemKey,
         enabled: Boolean,
-    ) = repository.saveQueueEnabledState(key, enabled)
+    ): Unit = repository.saveQueueEnabledState(key, enabled)
 }

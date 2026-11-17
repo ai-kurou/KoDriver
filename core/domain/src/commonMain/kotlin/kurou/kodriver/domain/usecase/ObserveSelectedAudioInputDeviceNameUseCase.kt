@@ -1,9 +1,10 @@
 package kurou.kodriver.domain.usecase
 
+import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
 
-class ObserveSelectedAudioInputDeviceNameUseCase(
+public class ObserveSelectedAudioInputDeviceNameUseCase(
     private val repository: SelectedAudioInputDevicePreferencesRepository,
 ) {
-    operator fun invoke() = repository.selectedDeviceName()
+    public operator fun invoke(): Flow<String> = repository.selectedDeviceName()
 }

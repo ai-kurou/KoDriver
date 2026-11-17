@@ -12,7 +12,7 @@ import kotlinx.serialization.encoding.Encoder
  * DataStore キーと同じ [ReadoutItemKey.value] を Map キーとして使うことで、
  * テレメトリログ上でも読み上げ設定を読める形で記録する。
  */
-object ReadoutItemKeyMapSerializer : KSerializer<Map<ReadoutItemKey, Boolean>> {
+public object ReadoutItemKeyMapSerializer : KSerializer<Map<ReadoutItemKey, Boolean>> {
     private val delegate = MapSerializer(String.serializer(), Boolean.serializer())
 
     override val descriptor: SerialDescriptor = delegate.descriptor

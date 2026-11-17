@@ -1,5 +1,5 @@
 package kurou.kodriver.domain.model
 
-const val VOICE_SPEED_DEFAULT = 1.0f
-const val VOICE_SPEED_MIN = 0.5f
-const val VOICE_SPEED_MAX = 2.0f
+public const val VOICE_SPEED_DEFAULT: Float = 1.0f
+public const val VOICE_SPEED_MIN: Float = 0.5f
+public const val VOICE_SPEED_MAX: Float = 2.0f

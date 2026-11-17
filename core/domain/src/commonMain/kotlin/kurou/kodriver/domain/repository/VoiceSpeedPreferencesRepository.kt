@@ -2,8 +2,8 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface VoiceSpeedPreferencesRepository {
-    fun voiceSpeed(): Flow<Float>
+public interface VoiceSpeedPreferencesRepository {
+    public fun voiceSpeed(): Flow<Float>
 
-    suspend fun saveVoiceSpeed(voiceSpeed: Float)
+    public suspend fun saveVoiceSpeed(voiceSpeed: Float)
 }

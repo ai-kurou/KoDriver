@@ -8,15 +8,15 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 
-interface TelemetryLogRepository {
-    fun observeTelemetryLogs(): Flow<List<TelemetryLog>>
+public interface TelemetryLogRepository {
+    public fun observeTelemetryLogs(): Flow<List<TelemetryLog>>
 
-    fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?>
+    public fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?>
 
     /** 実際に読み上げられた最新のログを観測する。読み上げされなかったログは含まない。 */
-    fun observeLatestNarratedTelemetryLog(): Flow<TelemetryLog?>
+    public fun observeLatestNarratedTelemetryLog(): Flow<TelemetryLog?>
 
-    suspend fun saveTelemetryLog(
+    public suspend fun saveTelemetryLog(
         createdAt: Long,
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
@@ -26,7 +26,7 @@ interface TelemetryLogRepository {
         telemetryJson: String,
     )
 
-    suspend fun deleteTelemetryLogsBySimulator(simulator: Simulator)
+    public suspend fun deleteTelemetryLogsBySimulator(simulator: Simulator)
 
-    suspend fun deleteTelemetryLog(id: Long)
+    public suspend fun deleteTelemetryLog(id: Long)
 }

@@ -1,5 +1,5 @@
 package kurou.kodriver.domain.repository
 
-interface ServerVersionRepository {
-    suspend fun fetchVersion(ip: String): Result<String>
+public interface ServerVersionRepository {
+    public suspend fun fetchVersion(ip: String): Result<String>
 }

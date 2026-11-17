@@ -6,4 +6,4 @@ package kurou.kodriver.domain.model
  * pong がこの間隔内に返らないと OkHttp が接続を失敗として扱い、
  * 各リポジトリの connectWithRetry が再接続できるようになる。
  */
-const val WEB_SOCKET_PING_INTERVAL_MS = 15_000L
+public const val WEB_SOCKET_PING_INTERVAL_MS: Long = 15_000L

@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.HotkeyRepository
 
-class RetryReadoutHotkeyRegistrationUseCase(
+public class RetryReadoutHotkeyRegistrationUseCase(
     private val repository: HotkeyRepository,
 ) {
-    suspend operator fun invoke() = repository.retryRegistration()
+    public suspend operator fun invoke(): Unit = repository.retryRegistration()
 }

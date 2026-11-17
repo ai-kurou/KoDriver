@@ -3,8 +3,8 @@ package kurou.kodriver.domain.usecase
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 
-class ObserveHapticFeedbackEnabledUseCase(
+public class ObserveHapticFeedbackEnabledUseCase(
     private val repository: HapticFeedbackEnabledRepository,
 ) {
-    operator fun invoke(): Flow<Boolean> = repository.hapticFeedbackEnabled()
+    public operator fun invoke(): Flow<Boolean> = repository.hapticFeedbackEnabled()
 }

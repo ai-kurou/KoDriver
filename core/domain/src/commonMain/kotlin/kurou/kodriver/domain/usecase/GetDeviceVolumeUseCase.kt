@@ -2,8 +2,8 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 
-class GetDeviceVolumeUseCase(
+public class GetDeviceVolumeUseCase(
     private val repository: DeviceVolumeRepository,
 ) {
-    suspend operator fun invoke(): Int = repository.getVolume()
+    public suspend operator fun invoke(): Int = repository.getVolume()
 }

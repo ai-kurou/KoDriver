@@ -3,11 +3,11 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 
-class PlaySpeechEventUseCase(
+public class PlaySpeechEventUseCase(
     private val ttsEngine: TextToSpeechEngine,
 ) {
-    operator fun invoke(
+    public operator fun invoke(
         event: SpeechEvent,
         queue: Boolean = false,
-    ) = ttsEngine.speak(event, queue)
+    ): Unit = ttsEngine.speak(event, queue)
 }

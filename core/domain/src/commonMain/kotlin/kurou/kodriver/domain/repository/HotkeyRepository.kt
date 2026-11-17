@@ -3,10 +3,10 @@ package kurou.kodriver.domain.repository
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 
-interface HotkeyRepository {
-    suspend fun retryRegistration()
+public interface HotkeyRepository {
+    public suspend fun retryRegistration()
 
-    fun registrationStateStream(): Flow<HotkeyRegistrationState>
+    public fun registrationStateStream(): Flow<HotkeyRegistrationState>
 
-    fun hotkeyPressStream(): Flow<Unit>
+    public fun hotkeyPressStream(): Flow<Unit>
 }
