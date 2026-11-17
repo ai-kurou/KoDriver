@@ -56,7 +56,7 @@ private const val THRESHOLD_MAX = GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_MA
  * Gt7Ps5AutoReadoutRemainingFuelDetail の画面を表示する Composable。
  */
 @Composable
-fun Gt7Ps5AutoReadoutRemainingFuelDetailPane(modifier: Modifier = Modifier) {
+public fun Gt7Ps5AutoReadoutRemainingFuelDetailPane(modifier: Modifier = Modifier) {
     val viewModel: Gt7Ps5AutoReadoutRemainingFuelDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

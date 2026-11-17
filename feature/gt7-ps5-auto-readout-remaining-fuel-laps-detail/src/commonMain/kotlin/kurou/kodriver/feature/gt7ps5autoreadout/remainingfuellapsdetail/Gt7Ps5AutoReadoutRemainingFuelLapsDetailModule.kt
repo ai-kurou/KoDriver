@@ -11,6 +11,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -23,7 +24,7 @@ import org.koin.dsl.module
  * 消費（get で解決）: Gt7Ps5RemainingFuelLapsPreferencesRepository・AutoReadoutPreferencesRepository・TextToSpeechRepository・SoundVolumePreferencesRepository（:core:data）、
  *   試聴用の named(Simulator.Gt7Ps5.id) の PlayStartSoundForKeyUseCase・SpeakTextUseCase（:feature:gt7-ps5-narrator で登録）。
  */
-val gt7Ps5AutoReadoutRemainingFuelLapsDetailModule =
+public val gt7Ps5AutoReadoutRemainingFuelLapsDetailModule: Module =
     module {
         viewModel {
             Gt7Ps5AutoReadoutRemainingFuelLapsDetailViewModel(

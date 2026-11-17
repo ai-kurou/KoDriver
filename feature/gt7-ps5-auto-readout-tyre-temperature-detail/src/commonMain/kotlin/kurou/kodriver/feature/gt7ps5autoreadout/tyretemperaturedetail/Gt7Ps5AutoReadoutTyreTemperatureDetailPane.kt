@@ -51,7 +51,7 @@ import kotlin.math.roundToInt
  * Gt7Ps5AutoReadoutTyreTemperatureDetail の画面を表示する Composable。
  */
 @Composable
-fun Gt7Ps5AutoReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
+public fun Gt7Ps5AutoReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
     val viewModel: Gt7Ps5AutoReadoutTyreTemperatureDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {
