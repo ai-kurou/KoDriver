@@ -11,12 +11,13 @@ import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.RetryReadoutHotkeyRegistrationUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutHotkeyVirtualKeyCodeUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /** LMU 専用デバッグ状態画面の ViewModel と UseCase を登録する。Repository は利用側で `named(Simulator.LmuWindows.id)` として登録する。 */
-val lmuWindowsDebugStateDetailModule =
+public val lmuWindowsDebugStateDetailModule: Module =
     module {
         factory { RequestDebugReadoutUseCase(get()) }
         viewModel { LmuWindowsDebugStateDetailViewModel(get(), get(named(Simulator.LmuWindows.id)), get(), get()) }

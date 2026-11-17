@@ -3,7 +3,7 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_RATIO_INCREASE_DETECTION_TOLERANCE_RATIO
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 
-data class LmuWindowsTyreWearBaseline(
+public data class LmuWindowsTyreWearBaseline(
     val ratio: Double,
     val lap: Int,
 )

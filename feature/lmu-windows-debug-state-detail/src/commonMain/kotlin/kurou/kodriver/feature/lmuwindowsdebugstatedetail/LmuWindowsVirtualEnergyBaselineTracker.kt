@@ -4,7 +4,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_REMAINING_RATIO_INCREA
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 
-data class LmuWindowsVirtualEnergyBaseline(
+public data class LmuWindowsVirtualEnergyBaseline(
     val ratio: Double,
     val lap: Int,
 )

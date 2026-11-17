@@ -3,7 +3,7 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 
 /** デバッグ画面で観測した、左右それぞれの最長並走時間。 */
-data class LmuWindowsSideBySideDurations(
+public data class LmuWindowsSideBySideDurations(
     val leftMillis: Long?,
     val rightMillis: Long?,
 )
