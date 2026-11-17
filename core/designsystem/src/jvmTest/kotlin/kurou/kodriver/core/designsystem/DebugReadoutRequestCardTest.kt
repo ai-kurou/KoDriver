@@ -8,14 +8,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.text.input.ImeAction
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -101,5 +108,29 @@ class DebugReadoutRequestCardTest {
         override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
             performedTypes += hapticFeedbackType
         }
+    }
+
+    @Test
+    fun `文言欄のIMEアクションはDoneでEnterを押すとフォーカスが外れる`() {
+        rule.setContent {
+            KoDriverTheme {
+                DebugReadoutRequestCard(
+                    readoutItemKeyValues = listOf("gt7_ps5_auto_my_best_lap"),
+                    selectedReadoutItemKeyValue = "gt7_ps5_auto_my_best_lap",
+                    text = "入力",
+                    onReadoutItemSelected = {},
+                    onTextChange = {},
+                    onReadout = {},
+                )
+            }
+        }
+        val field = rule.onNodeWithTag("debug_readout_request_text")
+        field.assert(SemanticsMatcher.expectValue(SemanticsProperties.ImeAction, ImeAction.Done))
+        field.performClick()
+        field.assertIsFocused()
+
+        field.performImeAction()
+
+        field.assertIsNotFocused()
     }
 }
