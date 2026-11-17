@@ -6,7 +6,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 /**
  * Assetto Corsa EVO の Windows 共有メモリからベストラップタイムを読む Repository。
  */
-interface AceWindowsBestLapTimeRepository {
+public interface AceWindowsBestLapTimeRepository {
     /** セッション中のベストラップタイムを継続配信する cold Flow。 */
-    fun bestLapTimeStream(): Flow<AceWindowsBestLapTimeData>
+    public fun bestLapTimeStream(): Flow<AceWindowsBestLapTimeData>
 }

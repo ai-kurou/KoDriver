@@ -28,20 +28,21 @@ import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsR
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutItemKey
 
 /** ACE 由来の読み上げイベントを識別する共通マーカー。自由文言経路で本文を扱うため [ReadoutTextEvent] の契約を持つ。 */
-sealed interface AceWindowsSpeechEvent : ReadoutTextEvent
+public sealed interface AceWindowsSpeechEvent : ReadoutTextEvent
 
 /** ACE の全10種類のフラッグ読み上げイベント。保存文言の解決を網羅的に扱う。 */
-sealed interface AceWindowsFlagSpeechEvent : AceWindowsSpeechEvent
+public sealed interface AceWindowsFlagSpeechEvent : AceWindowsSpeechEvent
 
 /** ACE の残燃料で走行可能な周回数。解決済み文言は判定時の発話・ログ内容を保持する。 */
-data class AceWindowsRemainingFuelLapsWarning(
+public data class AceWindowsRemainingFuelLapsWarning(
     val laps: Int,
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.RemainingFuelLaps.Root
-    override val narratedText =
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.RemainingFuelLaps.Root
+    override val narratedText: String =
         if (laps <= 0) {
             ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
         } else {
@@ -55,114 +56,114 @@ data class AceWindowsRemainingFuelLapsWarning(
  * percent は判定時の実残量を四捨五入した整数。
  * resolvedText は判定時に解決済みの文言で、キュー待機中に設定が変わってもログと発話を一致させる。
  */
-data class AceWindowsRemainingFuelWarning(
+public data class AceWindowsRemainingFuelWarning(
     val percent: Int,
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root
-    override val narratedText =
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root
+    override val narratedText: String =
         formatAceWindowsRemainingFuelReadoutText(ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT, percent)
 
     override fun withResolvedText(text: String): AceWindowsRemainingFuelWarning = copy(resolvedText = text)
 }
 
-data class AceWindowsWhiteFlag(
+public data class AceWindowsWhiteFlag(
     override val resolvedText: String? = null,
 ) : AceWindowsFlagSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
-    override val narratedText = ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.Flag.Root
+    override val narratedText: String = ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsWhiteFlag = copy(resolvedText = text)
 }
 
-data class AceWindowsGreenFlag(
+public data class AceWindowsGreenFlag(
     override val resolvedText: String? = null,
 ) : AceWindowsFlagSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
-    override val narratedText = ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.Flag.Root
+    override val narratedText: String = ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsGreenFlag = copy(resolvedText = text)
 }
 
-data class AceWindowsRedFlag(
+public data class AceWindowsRedFlag(
     override val resolvedText: String? = null,
 ) : AceWindowsFlagSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
-    override val narratedText = ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.Flag.Root
+    override val narratedText: String = ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsRedFlag = copy(resolvedText = text)
 }
 
-data class AceWindowsBlueFlag(
+public data class AceWindowsBlueFlag(
     override val resolvedText: String? = null,
 ) : AceWindowsFlagSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
-    override val narratedText = ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.Flag.Root
+    override val narratedText: String = ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsBlueFlag = copy(resolvedText = text)
 }
 
-data class AceWindowsYellowFlag(
+public data class AceWindowsYellowFlag(
     override val resolvedText: String? = null,
 ) : AceWindowsFlagSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
-    override val narratedText = ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.Flag.Root
+    override val narratedText: String = ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsYellowFlag = copy(resolvedText = text)
 }
 
-data class AceWindowsBlackFlag(
+public data class AceWindowsBlackFlag(
     override val resolvedText: String? = null,
 ) : AceWindowsFlagSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
-    override val narratedText = ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.Flag.Root
+    override val narratedText: String = ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsBlackFlag = copy(resolvedText = text)
 }
 
-data class AceWindowsBlackWhiteFlag(
+public data class AceWindowsBlackWhiteFlag(
     override val resolvedText: String? = null,
 ) : AceWindowsFlagSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
-    override val narratedText = ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.Flag.Root
+    override val narratedText: String = ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsBlackWhiteFlag = copy(resolvedText = text)
 }
 
-data class AceWindowsCheckeredFlag(
+public data class AceWindowsCheckeredFlag(
     override val resolvedText: String? = null,
 ) : AceWindowsFlagSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
-    override val narratedText = ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.Flag.Root
+    override val narratedText: String = ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsCheckeredFlag = copy(resolvedText = text)
 }
 
-data class AceWindowsOrangeCircleFlag(
+public data class AceWindowsOrangeCircleFlag(
     override val resolvedText: String? = null,
 ) : AceWindowsFlagSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
-    override val narratedText = ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.Flag.Root
+    override val narratedText: String = ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsOrangeCircleFlag = copy(resolvedText = text)
 }
 
-data class AceWindowsRedYellowStripesFlag(
+public data class AceWindowsRedYellowStripesFlag(
     override val resolvedText: String? = null,
 ) : AceWindowsFlagSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
-    override val narratedText = ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.Flag.Root
+    override val narratedText: String = ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsRedYellowStripesFlag = copy(resolvedText = text)
 }
 
 /** 判定時点の最大カーカス温度と解決済み本文を保持するタイヤ過熱イベント。 */
-data class AceWindowsTyreOverheat(
+public data class AceWindowsTyreOverheat(
     val celsius: Int,
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.TyreTemperature.Root
-    override val narratedText =
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.TyreTemperature.Root
+    override val narratedText: String =
         formatAceWindowsTyreTemperatureReadoutText(
             ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
             celsius,
@@ -177,45 +178,45 @@ data class AceWindowsTyreOverheat(
  * ACE の共有メモリには自車の向きに相当するフィールドが存在せず、LMU（`LmuWindowsCarLeft`/`LmuWindowsCarRight` 等）のような
  * 左右を区別した接近アナウンスができないため、左右を区別しない汎用の接近アナウンスとして1種類のみ用意する。
  */
-data class AceWindowsVehicleApproach(
+public data class AceWindowsVehicleApproach(
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.VehicleApproach.Root
-    override val narratedText = ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.VehicleApproach.Root
+    override val narratedText: String = ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 
     override fun withResolvedText(text: String): AceWindowsVehicleApproach = copy(resolvedText = text)
 }
 
 /** ACE の更新後の自己ベストタイム。解決済み文言は判定時の発話・ログ内容を保持する。 */
-data class AceWindowsMyBestLap(
+public data class AceWindowsMyBestLap(
     val lapTimeMs: Int,
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.MyBestLap.Root
-    override val narratedText =
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.MyBestLap.Root
+    override val narratedText: String =
         formatAceWindowsMyBestLapReadoutText(ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
 
     override fun withResolvedText(text: String): AceWindowsMyBestLap = copy(resolvedText = text)
 }
 
 /** セット内の項目を保存順に連結する手動読み上げイベント。 */
-data class AceWindowsManualReadoutText(
+public data class AceWindowsManualReadoutText(
     override val readoutItemKey: AceWindowsReadoutItemKey,
     val text: String,
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val narratedText = resolvedText ?: text
+    override val narratedText: String = resolvedText ?: text
 
     override fun withResolvedText(text: String): AceWindowsManualReadoutText = copy(resolvedText = text)
 }
 
 /** ACE の現在の燃料残量。手動読み上げではセット内の文言を優先する。 */
-data class AceWindowsRemainingFuelCurrentValue(
+public data class AceWindowsRemainingFuelCurrentValue(
     val percent: Int,
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root
-    override val narratedText =
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root
+    override val narratedText: String =
         resolvedText ?: formatAceWindowsRemainingFuelReadoutText(
             ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT,
             percent,
@@ -225,12 +226,12 @@ data class AceWindowsRemainingFuelCurrentValue(
 }
 
 /** ACE の燃料残り周回数の現在値。手動読み上げではセット内の文言を優先する。 */
-data class AceWindowsRemainingFuelLapsCurrentValue(
+public data class AceWindowsRemainingFuelLapsCurrentValue(
     val laps: Int,
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.RemainingFuelLaps.Root
-    override val narratedText =
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.RemainingFuelLaps.Root
+    override val narratedText: String =
         resolvedText ?: formatAceWindowsRemainingFuelLapsReadoutText(
             ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT,
             laps,
@@ -240,12 +241,12 @@ data class AceWindowsRemainingFuelLapsCurrentValue(
 }
 
 /** ACE の自己ベストラップ現在値。手動読み上げではセット内の文言を優先する。 */
-data class AceWindowsMyBestLapCurrentValue(
+public data class AceWindowsMyBestLapCurrentValue(
     val lapTimeMs: Int,
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.MyBestLap.Root
-    override val narratedText =
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.MyBestLap.Root
+    override val narratedText: String =
         resolvedText
             ?: formatAceWindowsMyBestLapReadoutText(ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT, lapTimeMs)
 
@@ -253,12 +254,12 @@ data class AceWindowsMyBestLapCurrentValue(
 }
 
 /** ACE のタイヤ温度現在値。手動読み上げではセット内の文言を優先する。 */
-data class AceWindowsTyreTemperatureCurrentValue(
+public data class AceWindowsTyreTemperatureCurrentValue(
     val celsius: Int,
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.TyreTemperature.Root
-    override val narratedText =
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.TyreTemperature.Root
+    override val narratedText: String =
         resolvedText
             ?: formatAceWindowsTyreTemperatureReadoutText(
                 ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT,
@@ -269,12 +270,12 @@ data class AceWindowsTyreTemperatureCurrentValue(
 }
 
 /** ACE の前後車ギャップ現在値。手動読み上げではセット内の文言を優先する。開始音・優先度は車両接近と同じキーを使う。 */
-data class AceWindowsCarGapCurrentValue(
+public data class AceWindowsCarGapCurrentValue(
     val gap: AceWindowsGapData,
     override val resolvedText: String? = null,
 ) : AceWindowsSpeechEvent {
-    override val readoutItemKey = AceWindowsReadoutItemKey.VehicleApproach.Root
-    override val narratedText =
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.VehicleApproach.Root
+    override val narratedText: String =
         resolvedText ?: formatAceWindowsCarGapReadoutText(ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT, gap)
 
     override fun withResolvedText(text: String): AceWindowsCarGapCurrentValue = copy(resolvedText = text)

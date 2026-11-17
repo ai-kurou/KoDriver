@@ -6,9 +6,9 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_FLAG_ENABLED_STATE_DEF
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-class ObserveAceWindowsFlagEnabledStatesUseCase(
+public class ObserveAceWindowsFlagEnabledStatesUseCase(
     private val repository: AceWindowsFlagPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
+    public operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
         repository.observeFlagEnabledStates().map { persisted -> ACE_WINDOWS_FLAG_ENABLED_STATE_DEFAULT + persisted }
 }

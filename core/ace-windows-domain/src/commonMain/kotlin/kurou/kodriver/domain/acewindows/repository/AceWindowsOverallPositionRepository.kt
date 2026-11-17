@@ -6,7 +6,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
 /**
  * Assetto Corsa EVO の Windows 共有メモリから総合順位・総台数を読む Repository。
  */
-interface AceWindowsOverallPositionRepository {
+public interface AceWindowsOverallPositionRepository {
     /** 総合順位・総台数を継続配信する cold Flow。 */
-    fun overallPositionStream(): Flow<AceWindowsOverallPositionData>
+    public fun overallPositionStream(): Flow<AceWindowsOverallPositionData>
 }

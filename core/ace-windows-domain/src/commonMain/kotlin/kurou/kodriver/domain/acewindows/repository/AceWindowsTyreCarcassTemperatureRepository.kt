@@ -6,7 +6,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureDa
 /**
  * Assetto Corsa EVO の Windows 共有メモリからタイヤのカーカス平均温度を読む Repository。
  */
-interface AceWindowsTyreCarcassTemperatureRepository {
+public interface AceWindowsTyreCarcassTemperatureRepository {
     /** 4輪分のカーカス平均温度を継続配信する cold Flow。 */
-    fun tyreCarcassTemperatureStream(): Flow<AceWindowsTyreCarcassTemperatureData>
+    public fun tyreCarcassTemperatureStream(): Flow<AceWindowsTyreCarcassTemperatureData>
 }

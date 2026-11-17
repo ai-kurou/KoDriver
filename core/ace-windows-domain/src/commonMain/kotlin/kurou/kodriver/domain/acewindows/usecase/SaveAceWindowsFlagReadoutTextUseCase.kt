@@ -10,10 +10,10 @@ import kurou.kodriver.domain.model.normalizeReadoutCustomText
  * 前後の空白を除去し、空白のみの入力は未設定（空文字）として保存する。
  * 保存値の正規化は [normalizeReadoutCustomText] に従う。
  */
-class SaveAceWindowsFlagReadoutTextUseCase(
+public class SaveAceWindowsFlagReadoutTextUseCase(
     private val repository: AceWindowsFlagReadoutTextPreferencesRepository,
 ) {
-    suspend operator fun invoke(
+    public suspend operator fun invoke(
         key: AceWindowsFlagReadoutTextKey,
         text: String,
     ) {

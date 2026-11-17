@@ -5,8 +5,8 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagReadoutTextPreferencesRepository
 
 /** フラッグごとのカスタム読み上げ文言を [AceWindowsFlagReadoutTextKey] を指定して取得する。 */
-class ObserveAceWindowsFlagReadoutTextUseCase(
+public class ObserveAceWindowsFlagReadoutTextUseCase(
     private val repository: AceWindowsFlagReadoutTextPreferencesRepository,
 ) {
-    operator fun invoke(key: AceWindowsFlagReadoutTextKey): Flow<String> = repository.observeText(key)
+    public operator fun invoke(key: AceWindowsFlagReadoutTextKey): Flow<String> = repository.observeText(key)
 }

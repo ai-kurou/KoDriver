@@ -2,10 +2,10 @@ package kurou.kodriver.domain.acewindows.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface AceWindowsMyBestLapPreferencesRepository {
-    suspend fun resetToDefault()
+public interface AceWindowsMyBestLapPreferencesRepository {
+    public suspend fun resetToDefault()
 
-    fun observeReadoutText(): Flow<String>
+    public fun observeReadoutText(): Flow<String>
 
-    suspend fun saveReadoutText(text: String)
+    public suspend fun saveReadoutText(text: String)
 }

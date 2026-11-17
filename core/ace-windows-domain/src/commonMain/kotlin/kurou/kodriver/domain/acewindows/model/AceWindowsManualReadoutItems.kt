@@ -13,7 +13,7 @@ private const val PREVIEW_TYRE_TEMPERATURE_CELSIUS = 90
 private const val PREVIEW_CAR_GAP_AHEAD_SECONDS = 1.5f
 private const val PREVIEW_CAR_GAP_BEHIND_SECONDS = 2.3f
 
-val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition> =
+public val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinition> =
     manualReadoutItemDefinitionMapOf(
         manualReadoutItemDefinitionOf(
             AceWindowsReadoutItemKey.RemainingFuel.Root,
@@ -71,5 +71,5 @@ val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItemDefinit
 internal fun aceWindowsManualReadoutItemName(itemKey: String): String =
     aceWindowsManualReadoutItemDefinitions[itemKey]?.name.orEmpty()
 
-fun aceWindowsManualReadoutItemTextDefault(itemKey: String): String =
+public fun aceWindowsManualReadoutItemTextDefault(itemKey: String): String =
     aceWindowsManualReadoutItemDefinitions[itemKey]?.textDefault.orEmpty()

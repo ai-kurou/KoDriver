@@ -3,15 +3,15 @@ package kurou.kodriver.domain.acewindows.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AceWindowsFlagData(
+public data class AceWindowsFlagData(
     val flag: AceWindowsFlagType,
 )
 
 // ACE shared memory の graphics.flag（自車提示フラッグ）に対応する ACEVO_FLAG_TYPE の値。
 // docs/ace-windows-telemetry.md の ACEVO_FLAG_TYPE 一覧に基づく。
 @Serializable
-enum class AceWindowsFlagType(
-    val rawValue: Int,
+public enum class AceWindowsFlagType(
+    public val rawValue: Int,
 ) {
     NO_FLAG(0),
     WHITE_FLAG(1),
@@ -27,7 +27,7 @@ enum class AceWindowsFlagType(
     UNKNOWN(Int.MIN_VALUE),
     ;
 
-    companion object {
-        fun fromRaw(value: Int): AceWindowsFlagType = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
+    public companion object {
+        public fun fromRaw(value: Int): AceWindowsFlagType = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
     }
 }

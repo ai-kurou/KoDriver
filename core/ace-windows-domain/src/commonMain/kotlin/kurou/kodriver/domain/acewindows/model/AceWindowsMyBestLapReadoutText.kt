@@ -3,7 +3,7 @@ package kurou.kodriver.domain.acewindows.model
 import kurou.kodriver.domain.model.SinglePlaceholderTemplate
 
 /** 自己ベストラップ更新文言のラップタイムプレースホルダーを置換する。 */
-fun formatAceWindowsMyBestLapReadoutText(
+public fun formatAceWindowsMyBestLapReadoutText(
     template: String,
     lapTimeMs: Int,
 ): String {
@@ -15,5 +15,5 @@ fun formatAceWindowsMyBestLapReadoutText(
 }
 
 /** 文言内の `{...}` のうち、`{laptime}` 以外のトークンを出現順・重複なしで返す。 */
-fun findUnknownAceWindowsMyBestLapReadoutPlaceholders(template: String): List<String> =
+public fun findUnknownAceWindowsMyBestLapReadoutPlaceholders(template: String): List<String> =
     SinglePlaceholderTemplate(ACE_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER).findUnknown(template)

@@ -3,7 +3,7 @@ package kurou.kodriver.domain.acewindows.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AceWindowsStatusData(
+public data class AceWindowsStatusData(
     val status: AceWindowsStatusType,
     val carLocation: AceWindowsCarLocation = AceWindowsCarLocation.UNASSIGNED,
 )
@@ -11,8 +11,8 @@ data class AceWindowsStatusData(
 // ACE shared memory の graphics.status に対応する ACEVO_STATUS の値。
 // docs/ace-windows-telemetry.md の ACEVO_STATUS 一覧に基づく。
 @Serializable
-enum class AceWindowsStatusType(
-    val rawValue: Int,
+public enum class AceWindowsStatusType(
+    public val rawValue: Int,
 ) {
     OFF(0),
     REPLAY(1),
@@ -21,8 +21,8 @@ enum class AceWindowsStatusType(
     UNKNOWN(Int.MIN_VALUE),
     ;
 
-    companion object {
-        fun fromRaw(value: Int): AceWindowsStatusType = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
+    public companion object {
+        public fun fromRaw(value: Int): AceWindowsStatusType = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
     }
 }
 
@@ -31,8 +31,8 @@ enum class AceWindowsStatusType(
 // 「実際にコース上を走行中か」を判定する用途を想定している。
 // docs/ace-windows-telemetry.md の ACEVO_CAR_LOCATION 一覧に基づく。
 @Serializable
-enum class AceWindowsCarLocation(
-    val rawValue: Int,
+public enum class AceWindowsCarLocation(
+    public val rawValue: Int,
 ) {
     UNASSIGNED(0),
     PITLANE(1),
@@ -42,7 +42,7 @@ enum class AceWindowsCarLocation(
     UNKNOWN(Int.MIN_VALUE),
     ;
 
-    companion object {
-        fun fromRaw(value: Int): AceWindowsCarLocation = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
+    public companion object {
+        public fun fromRaw(value: Int): AceWindowsCarLocation = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
     }
 }

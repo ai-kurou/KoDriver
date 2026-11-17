@@ -6,16 +6,16 @@ package kurou.kodriver.domain.acewindows.model
  * ACE の共有メモリには自車の向きに相当するフィールドが存在せず、自車中心から相手車両中心までの
  * 合成距離のみが取得できるため、LMU のような前後・左右を区別した閾値は持たず単一の閾値のみを持つ。
  */
-const val ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT = 6.0
+public const val ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT: Double = 6.0
 
 /** ACE 車両接近の接近判定閾値（メートル）の設定可能な下限。 */
-const val ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_MIN = 2.0
+public const val ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_MIN: Double = 2.0
 
 /** ACE 車両接近の接近判定閾値（メートル）の設定可能な上限。 */
-const val ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_MAX = 10.0
+public const val ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_MAX: Double = 10.0
 
 /** ACE 車両接近アナウンスの、接近開始時読み上げの有効/無効デフォルト値。 */
-const val ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_ENABLED_DEFAULT = true
+public const val ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_ENABLED_DEFAULT: Boolean = true
 
 /** ACE 車両接近アナウンスの既定文言。 */
-const val ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT = "車両接近"
+public const val ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT: String = "車両接近"

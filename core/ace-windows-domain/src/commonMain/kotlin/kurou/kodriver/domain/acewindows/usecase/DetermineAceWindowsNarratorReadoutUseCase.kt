@@ -60,7 +60,7 @@ import kotlin.math.roundToInt
  * 同じ低燃料警告・同じフラッグ状態・同じタイヤ過熱状態・同じ車両接近状態・同じ燃料残り周回数を連続で読み上げないため、
  * 前回の判定結果を保持する。
  */
-data class AceWindowsNarratorState(
+public data class AceWindowsNarratorState(
     val remainingFuelWarned: Boolean = false,
     val previousFlag: AceWindowsFlagType? = null,
     val tyreOverheating: Boolean = false,
@@ -74,7 +74,7 @@ data class AceWindowsNarratorState(
 )
 
 /** ACE 向け読み上げ判定で参照するユーザー設定。 */
-data class AceWindowsNarratorReadoutSettings(
+public data class AceWindowsNarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val remainingFuelThresholdPercentage: Int,
     val tyreTemperatureHighThresholdCelsius: Celsius = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
@@ -83,7 +83,7 @@ data class AceWindowsNarratorReadoutSettings(
 )
 
 /** ACE 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
-data class AceWindowsNarratorReadoutDecision(
+public data class AceWindowsNarratorReadoutDecision(
     val state: AceWindowsNarratorState,
     val events: List<ReadoutTextEvent>,
 )
@@ -108,9 +108,9 @@ data class AceWindowsNarratorReadoutDecision(
  * 前回値との比較（[AceWindowsNarratorState.previousBestLapTimeMs]）と読み上げ済みベスト
  * （[AceWindowsNarratorState.personalBestMs]）の2段構えで二重読み上げを防ぐ。
  */
-class DetermineAceWindowsNarratorReadoutUseCase {
+public class DetermineAceWindowsNarratorReadoutUseCase {
     /** セットの対応項目を保存順に連結し、自動読み上げの警告済み状態を維持する。 */
-    fun determineManualReadout(
+    public fun determineManualReadout(
         state: AceWindowsNarratorState,
         items: List<AceWindowsManualReadoutItem>,
     ): AceWindowsNarratorReadoutDecision {
@@ -145,7 +145,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
     }
 
     /** 未受信・鮮度切れ・全輪が非有限または0以下の場合はデータなしとして扱う。 */
-    fun currentMaxTyreTemperatureCelsius(data: AceWindowsTyreCarcassTemperatureData?): Int? {
+    public fun currentMaxTyreTemperatureCelsius(data: AceWindowsTyreCarcassTemperatureData?): Int? {
         val wheels = data?.wheels ?: return null
         return wheels.values
             .map { it.value }
@@ -192,17 +192,17 @@ class DetermineAceWindowsNarratorReadoutUseCase {
     }
 
     /** 未受信・鮮度切れ・範囲外や非有限の燃料値は手動読み上げのデータなしとして扱う。 */
-    fun currentRemainingFuelPercent(data: AceWindowsFuelData?): Int? {
+    public fun currentRemainingFuelPercent(data: AceWindowsFuelData?): Int? {
         val percent = data?.remainingPercent?.value ?: return null
         if (!percent.isFinite() || percent < 0.0 || percent > 100.0) return null
         return percent.roundToInt()
     }
 
     /** 未受信または未計測の自己ベストラップは手動読み上げのデータなしとして扱う。 */
-    fun currentBestLapTimeMs(data: AceWindowsBestLapTimeData?): Int? = data?.bestLapTimeMs?.takeIf { it > 0 }
+    public fun currentBestLapTimeMs(data: AceWindowsBestLapTimeData?): Int? = data?.bestLapTimeMs?.takeIf { it > 0 }
 
     /** 未受信・鮮度切れ・非有限・負値・1,000周超の値はデータなしとし、0周と1周未満の正数は整数部（0）へ切り捨てる。 */
-    fun currentRemainingFuelLaps(data: AceWindowsRemainingFuelLapsData?): Int? {
+    public fun currentRemainingFuelLaps(data: AceWindowsRemainingFuelLapsData?): Int? {
         val remaining = data?.remainingLaps ?: return null
         if (
             !remaining.isFinite() ||
@@ -214,7 +214,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         return floor(remaining).toInt()
     }
 
-    fun determineMyBestLap(
+    public fun determineMyBestLap(
         state: AceWindowsNarratorState,
         data: AceWindowsBestLapTimeData,
         settings: AceWindowsNarratorReadoutSettings,
@@ -249,7 +249,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         )
     }
 
-    fun determineRemainingFuelLaps(
+    public fun determineRemainingFuelLaps(
         state: AceWindowsNarratorState,
         data: AceWindowsRemainingFuelLapsData,
         settings: AceWindowsNarratorReadoutSettings,
@@ -280,7 +280,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         )
     }
 
-    fun determineRemainingFuel(
+    public fun determineRemainingFuel(
         state: AceWindowsNarratorState,
         data: AceWindowsFuelData,
         settings: AceWindowsNarratorReadoutSettings,
@@ -305,7 +305,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         )
     }
 
-    fun determineFlag(
+    public fun determineFlag(
         state: AceWindowsNarratorState,
         data: AceWindowsFlagData,
         settings: AceWindowsNarratorReadoutSettings,
@@ -331,7 +331,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         return maxReading.roundToInt()
     }
 
-    fun determineTyreTemperatureOverheat(
+    public fun determineTyreTemperatureOverheat(
         state: AceWindowsNarratorState,
         data: AceWindowsTyreCarcassTemperatureData,
         settings: AceWindowsNarratorReadoutSettings,
@@ -354,7 +354,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         )
     }
 
-    fun determineVehicleApproach(
+    public fun determineVehicleApproach(
         state: AceWindowsNarratorState,
         data: AceWindowsVehicleApproachData,
         settings: AceWindowsNarratorReadoutSettings,

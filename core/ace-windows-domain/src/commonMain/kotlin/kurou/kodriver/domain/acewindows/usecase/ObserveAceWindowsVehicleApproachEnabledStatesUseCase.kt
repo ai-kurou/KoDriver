@@ -15,9 +15,9 @@ private val vehicleApproachEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
             ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_ENABLED_DEFAULT,
     )
 
-class ObserveAceWindowsVehicleApproachEnabledStatesUseCase(
+public class ObserveAceWindowsVehicleApproachEnabledStatesUseCase(
     private val repository: AceWindowsVehicleApproachPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
+    public operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
         repository.observeEnabledStates().map { persisted -> vehicleApproachEnabledStateDefaults + persisted }
 }

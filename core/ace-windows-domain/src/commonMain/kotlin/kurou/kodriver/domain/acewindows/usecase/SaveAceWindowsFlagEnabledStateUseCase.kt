@@ -3,11 +3,11 @@ package kurou.kodriver.domain.acewindows.usecase
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.model.ReadoutItemKey
 
-class SaveAceWindowsFlagEnabledStateUseCase(
+public class SaveAceWindowsFlagEnabledStateUseCase(
     private val repository: AceWindowsFlagPreferencesRepository,
 ) {
-    suspend operator fun invoke(
+    public suspend operator fun invoke(
         key: ReadoutItemKey,
         enabled: Boolean,
-    ) = repository.saveFlagEnabledState(key, enabled)
+    ): Unit = repository.saveFlagEnabledState(key, enabled)
 }

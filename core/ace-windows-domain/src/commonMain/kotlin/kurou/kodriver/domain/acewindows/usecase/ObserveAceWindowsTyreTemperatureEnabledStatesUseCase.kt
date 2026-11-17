@@ -13,9 +13,9 @@ private val tyreTemperatureEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
         AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to true,
     )
 
-class ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(
+public class ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(
     private val repository: AceWindowsTyreTemperaturePreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
+    public operator fun invoke(): Flow<Map<ReadoutItemKey, Boolean>> =
         repository.observeEnabledStates().map { persisted -> tyreTemperatureEnabledStateDefaults + persisted }
 }
