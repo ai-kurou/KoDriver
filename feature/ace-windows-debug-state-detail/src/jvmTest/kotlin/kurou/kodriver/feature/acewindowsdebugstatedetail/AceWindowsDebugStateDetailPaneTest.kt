@@ -2,7 +2,11 @@ package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.InputMode
+import androidx.compose.ui.input.InputModeManager
+import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
@@ -26,14 +30,17 @@ class AceWindowsDebugStateDetailPaneTest {
     @Test
     fun `読み上げカードは他のカードと一緒にスクロールする`() {
         val state = AceWindowsDebugStateDetailUiState()
+        // 初期フォーカスで先頭カードが保持されないよう、タッチ操作として描画する
         rule.setContent {
-            MaterialTheme {
-                AceWindowsDebugStateDetailPaneContent(
-                    uiState = state,
-                    canNavigateBack = false,
-                    onBack = {},
-                    modifier = Modifier.requiredSize(360.dp, 320.dp),
-                )
+            CompositionLocalProvider(LocalInputModeManager provides touchInputModeManager) {
+                MaterialTheme {
+                    AceWindowsDebugStateDetailPaneContent(
+                        uiState = state,
+                        canNavigateBack = false,
+                        onBack = {},
+                        modifier = Modifier.requiredSize(360.dp, 320.dp),
+                    )
+                }
             }
         }
 
@@ -137,4 +144,11 @@ class AceWindowsDebugStateDetailPaneTest {
         val simulator = rule.onNodeWithText("選択中のシミュレーター").fetchSemanticsNode().boundsInRoot
         assertTrue(flag.top < simulator.top || flag.left < simulator.left)
     }
+
+    private val touchInputModeManager =
+        object : InputModeManager {
+            override val inputMode: InputMode = InputMode.Touch
+
+            override fun requestInputMode(inputMode: InputMode): Boolean = false
+        }
 }
