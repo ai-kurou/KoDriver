@@ -180,6 +180,29 @@ public fun handleListRowReorderKey(
     return action != ListRowArrowKeyAction.Ignore
 }
 
+/**
+ * LazyList を使わない縦並びの一覧（[itemKeys] の並び順）で、[index] 番目の行にフォーカスがあるときの Alt（Mac では Option）+ ↑↓ を
+ * 並べ替えとして処理し、処理した（消費すべき）場合は true を返す。
+ *
+ * 移動可能なら [onMove] に（移動元, 移動先）のインデックスを渡す。先頭で ↑、末尾で ↓ のときは何も動かさず消費する。
+ * Alt 以外の修飾キー付きや他のキーは処理しない。並べ替えが一覧に反映される前に届いたキーリピートは、
+ * 古いインデックスで別の行を動かさないよう [focusState] の [ListRowFocusState.tryStartReorder] で抑止する
+ * （並びが変わったら [ListRowFocusState.onItemKeysChanged] を呼ぶこと）。
+ */
+public fun handleColumnRowReorderKey(
+    event: KeyEvent,
+    index: Int,
+    itemKeys: List<String>,
+    focusState: ListRowFocusState,
+    onMove: (from: Int, to: Int) -> Unit,
+): Boolean {
+    val step = listRowReorderStep(event)
+    if (step != null && (index + step) in itemKeys.indices && focusState.tryStartReorder(itemKeys)) {
+        onMove(index, index + step)
+    }
+    return step != null
+}
+
 private suspend fun LazyListState.focusRow(
     lazyIndex: Int,
     requester: FocusRequester,

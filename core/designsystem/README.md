@@ -89,6 +89,7 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 `ListRowKeyboardNavigation.kt` は、行内のどの部品にフォーカスがあっても ↑↓ で隣の行の主操作領域へ移動する一覧の共通処理を提供する。項目は `String` の項目キーで扱い、domain 型には依存しない。Alt（Mac では Option）+ ↑↓ による行の並べ替えは `handleListRowReorderKey` が（移動元, 移動先）を `onMove` に渡して行い、移動後は同じ行へフォーカスを戻す。
 
 - `ListRowFocusState` が行ごとの `FocusRequester` とフォーカス中の行の項目キーを保持する。並べ替えに追従するため、フォーカス行はインデックスではなく項目キーで記録する。
+- `handleColumnRowReorderKey` は LazyList を使わない縦並びの一覧向けで、フォーカス行のインデックスと項目キー一覧から Alt+↑↓ を並べ替え（移動元, 移動先）として処理する（手動タブ詳細の選択項目カードが利用）。
 - `handleListRowArrowKey` を `Modifier.onKeyEvent` から呼び出す。先頭の↑・末尾の↓では折り返さず消費だけする。Alt / Ctrl / Shift / Meta 付きの↑↓と、行外にフォーカスがある場合は処理しない。
 - 項目の LazyList インデックスが連続しない場合（見出し・区切り行を挟む場合）は、末尾引数 `lazyIndexOf`（項目の並び順のインデックス → LazyList のインデックス）を渡す。省略時は `firstItemLazyIndex` から連続していると見なす。
 - 画面外の行は `scrollToItem` でスクロールしてからフォーカスを移す。

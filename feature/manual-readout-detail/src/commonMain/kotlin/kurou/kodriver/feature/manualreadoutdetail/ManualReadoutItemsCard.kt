@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -43,6 +46,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.ListRowFocusState
+import kurou.kodriver.core.designsystem.handleColumnRowReorderKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_add_item
@@ -84,6 +89,8 @@ internal fun ManualReadoutItemsCard(
     onPreviewClick: () -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
+    val reorderFocusState = remember { ListRowFocusState() }
+    LaunchedEffect(uiState.selectedItemKeys) { reorderFocusState.onItemKeysChanged() }
     var showPicker by remember { mutableStateOf(false) }
     val remaining = uiState.availableItemKeys.filterNot { it in uiState.selectedItemKeys }
     val atLimit = uiState.selectedItemKeys.size >= MANUAL_READOUT_SET_ITEM_MAX
@@ -128,6 +135,15 @@ internal fun ManualReadoutItemsCard(
                                         Icons.Default.DragIndicator,
                                         stringResource(Res.string.manual_readout_drag_item, name),
                                         Modifier
+                                            .onKeyEvent { event ->
+                                                handleColumnRowReorderKey(
+                                                    event = event,
+                                                    index = index,
+                                                    itemKeys = uiState.selectedItemKeys,
+                                                    focusState = reorderFocusState,
+                                                    onMove = onMoveItem,
+                                                )
+                                            }.focusable()
                                             .draggableHandle(
                                                 onDragStarted = { _ ->
                                                     haptic.performHapticFeedback(
