@@ -36,7 +36,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LmuWindowsAutoReadoutVehicleDamageDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutVehicleDamageDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutVehicleDamageDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

@@ -15,6 +15,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsVehicleClassTyreTe
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -29,7 +30,7 @@ import org.koin.dsl.module
  *   SoundVolumePreferencesRepository（:core:data）、試聴用の named(Simulator.LmuWindows.id) の
  *   SpeakTextUseCase・PlayStartSoundForKeyUseCase（:feature:lmu-windows-narrator で登録）。
  */
-val lmuWindowsAutoReadoutTyreTemperatureDetailModule =
+public val lmuWindowsAutoReadoutTyreTemperatureDetailModule: Module =
     module {
         // ViewModel（試聴用のTTS依存は TyreTemperatureReadoutUseCases 経由で解決）
         viewModel {

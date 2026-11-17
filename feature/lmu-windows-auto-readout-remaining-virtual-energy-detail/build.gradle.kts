@@ -23,3 +23,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.lmuwindowsautoreadout.remainingvirtualenergydetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}

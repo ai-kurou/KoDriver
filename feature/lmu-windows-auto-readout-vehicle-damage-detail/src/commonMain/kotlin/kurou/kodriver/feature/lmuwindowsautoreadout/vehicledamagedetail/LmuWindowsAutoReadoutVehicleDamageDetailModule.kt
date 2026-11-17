@@ -12,6 +12,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -22,7 +23,7 @@ import org.koin.dsl.module
  * TTS利用可否・音量は :core:data、試聴用の PlaySpeechEventUseCase は narrator モジュールから解決する。
  * 試聴停止用の StopSpeechUseCase は同じ named(Simulator.LmuWindows.id) の TextToSpeechEngine から生成する。
  */
-val lmuWindowsAutoReadoutVehicleDamageDetailModule =
+public val lmuWindowsAutoReadoutVehicleDamageDetailModule: Module =
     module {
         viewModel { LmuWindowsAutoReadoutVehicleDamageDetailViewModel(get(), get()) }
         factory { VehicleDamageUseCases(get(), get(), get(), get(), get(), get(), get(), get()) }

@@ -107,7 +107,7 @@ import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemR
  * LmuWindowsAutoReadoutTyreTemperatureDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsAutoReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutTyreTemperatureDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

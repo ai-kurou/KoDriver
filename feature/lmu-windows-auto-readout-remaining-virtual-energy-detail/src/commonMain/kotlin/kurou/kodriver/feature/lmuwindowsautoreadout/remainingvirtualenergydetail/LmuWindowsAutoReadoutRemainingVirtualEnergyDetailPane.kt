@@ -84,7 +84,7 @@ private const val THRESHOLD_MAX = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD
  * LmuWindowsAutoReadoutRemainingVirtualEnergyDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPane(modifier: Modifier = Modifier) {
+public fun LmuWindowsAutoReadoutRemainingVirtualEnergyDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsAutoReadoutRemainingVirtualEnergyDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DisposableEffect(viewModel) {

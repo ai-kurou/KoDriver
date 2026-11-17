@@ -24,3 +24,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.lmuwindowsautoreadout.vehicleapproachdetail.generated.resources"
 }
+
+kotlin {
+    explicitApi()
+}
