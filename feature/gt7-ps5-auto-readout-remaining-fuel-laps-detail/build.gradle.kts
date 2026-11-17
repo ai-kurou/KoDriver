@@ -23,7 +23,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.gt7ps5autoreadout.remainingfuellapsdetail.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}

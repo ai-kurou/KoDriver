@@ -23,7 +23,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}

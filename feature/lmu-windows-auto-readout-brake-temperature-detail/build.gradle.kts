@@ -23,7 +23,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.lmuwindowsautoreadout.braketemperaturedetail.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}

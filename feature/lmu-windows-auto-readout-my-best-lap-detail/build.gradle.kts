@@ -23,7 +23,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.lmuwindowsautoreadout.mybestlapdetail.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}

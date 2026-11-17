@@ -35,7 +35,3 @@ dependencies {
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
 }
-
-kotlin {
-    explicitApi()
-}

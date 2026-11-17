@@ -24,7 +24,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.acewindowsautoreadout.vehicleapproachdetail.generated.resources"
 }
-
-kotlin {
-    explicitApi()
-}
