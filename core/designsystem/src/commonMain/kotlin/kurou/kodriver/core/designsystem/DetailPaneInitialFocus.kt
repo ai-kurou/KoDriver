@@ -15,12 +15,17 @@ import androidx.compose.ui.platform.LocalInputModeManager
  * 詳細ペインの本文先頭の操作部品へ初期フォーカスを置くための Modifier。
  *
  * キーボード操作のときだけ、フォーカスグループへフォーカスを要求する。グループ内の最初のフォーカス可能な子に当たる。
- * タッチ操作ではフォーカスを要求しない。フォーカス可能な子がなければ何も起きない。
+ * 判定はペインに入った時点の一度きりで、タッチ操作ではフォーカスを要求しない。フォーカス可能な子がなければ何も起きない。
+ *
+ * 別モジュールの詳細ペインから利用できるよう公開している。
  */
 @Composable
-internal fun Modifier.detailPaneInitialFocus(): Modifier {
+public fun Modifier.detailPaneInitialFocus(): Modifier {
     val focusRequester = remember { FocusRequester() }
-    if (shouldRequestInitialFocus(LocalInputModeManager.current.inputMode)) {
+    val inputModeManager = LocalInputModeManager.current
+    // 入力モードは詳細ペインに入った時点で一度だけ判定する。表示中にタッチからキーボードへ切り替わっても、フォーカスを奪わない
+    val requestsFocus = remember { shouldRequestInitialFocus(inputModeManager.inputMode) }
+    if (requestsFocus) {
         LaunchedEffect(Unit) {
             withFrameNanos { }
             runCatching { focusRequester.requestFocus() }

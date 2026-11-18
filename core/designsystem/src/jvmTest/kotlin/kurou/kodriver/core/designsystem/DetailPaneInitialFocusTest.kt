@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.input.InputModeManager
@@ -57,6 +58,32 @@ class DetailPaneInitialFocusTest {
                 }
             }
         }
+        rule.waitForIdle()
+
+        assertFalse(rule.onNodeWithTag(TAG_FIRST_BUTTON).fetchSemanticsNode().config[SemanticsProperties.Focused])
+    }
+
+    @Test
+    fun `表示中にタッチからキーボードへ切り替わってもフォーカスを奪わない`() {
+        val mode = mutableStateOf(InputMode.Touch)
+        val manager =
+            object : InputModeManager {
+                override val inputMode: InputMode get() = mode.value
+
+                override fun requestInputMode(inputMode: InputMode): Boolean = false
+            }
+        rule.setContent {
+            KoDriverTheme {
+                CompositionLocalProvider(LocalInputModeManager provides manager) {
+                    DetailPaneScaffold(title = "ライセンス", canNavigateBack = true, onBack = {}) {
+                        Button(onClick = {}, modifier = Modifier.testTag(TAG_FIRST_BUTTON)) { Text("先頭") }
+                    }
+                }
+            }
+        }
+        rule.waitForIdle()
+
+        mode.value = InputMode.Keyboard
         rule.waitForIdle()
 
         assertFalse(rule.onNodeWithTag(TAG_FIRST_BUTTON).fetchSemanticsNode().config[SemanticsProperties.Focused])

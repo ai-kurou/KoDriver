@@ -14,7 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.InputMode
+import androidx.compose.ui.input.InputModeManager
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalInputModeManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -26,6 +30,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
@@ -35,6 +40,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AutoReadoutDetailPaneTest {
@@ -342,7 +348,55 @@ class AutoReadoutDetailPaneTest {
         assertEquals(1, clickCount)
     }
 
+    @Test
+    fun `キーボード操作では本文先頭のボタンにフォーカスが当たる`() {
+        rule.setContent {
+            KoDriverTheme {
+                CompositionLocalProvider(LocalInputModeManager provides fakeInputModeManager(InputMode.Keyboard)) {
+                    AutoReadoutDetailPane(title = "タイヤ温度", canNavigateBack = true, onBack = {}) {
+                        Column {
+                            TextButton(onClick = {}, modifier = Modifier.testTag(TAG_FIRST_BUTTON)) { Text("先頭") }
+                            TextButton(onClick = {}) { Text("次") }
+                        }
+                    }
+                }
+            }
+        }
+        rule.waitForIdle()
+
+        assertTrue(isFirstButtonFocused())
+    }
+
+    @Test
+    fun `タッチ操作では本文先頭のボタンにフォーカスを要求しない`() {
+        rule.setContent {
+            KoDriverTheme {
+                CompositionLocalProvider(LocalInputModeManager provides fakeInputModeManager(InputMode.Touch)) {
+                    AutoReadoutDetailPane(title = "タイヤ温度", canNavigateBack = true, onBack = {}) {
+                        TextButton(onClick = {}, modifier = Modifier.testTag(TAG_FIRST_BUTTON)) { Text("先頭") }
+                    }
+                }
+            }
+        }
+        rule.waitForIdle()
+
+        assertFalse(isFirstButtonFocused())
+    }
+
+    private fun isFirstButtonFocused(): Boolean {
+        val node = rule.onNodeWithTag(TAG_FIRST_BUTTON).fetchSemanticsNode()
+        return node.config[SemanticsProperties.Focused] == true
+    }
+
+    private fun fakeInputModeManager(mode: InputMode): InputModeManager =
+        object : InputModeManager {
+            override val inputMode: InputMode = mode
+
+            override fun requestInputMode(inputMode: InputMode): Boolean = false
+        }
+
     private companion object {
         const val HEAVY_ITEM_COUNT = 50
+        const val TAG_FIRST_BUTTON = "detail-pane-first-button"
     }
 }
