@@ -58,7 +58,13 @@ public fun DetailPaneScaffold(
                     .fillMaxSize(),
             contentAlignment = Alignment.TopCenter,
         ) {
-            Box(modifier = Modifier.widthIn(max = DETAIL_PANE_CONTENT_MAX_WIDTH).fillMaxWidth()) {
+            Box(
+                modifier =
+                    Modifier
+                        .widthIn(max = DETAIL_PANE_CONTENT_MAX_WIDTH)
+                        .fillMaxWidth()
+                        .detailPaneInitialFocus(),
+            ) {
                 content()
             }
         }

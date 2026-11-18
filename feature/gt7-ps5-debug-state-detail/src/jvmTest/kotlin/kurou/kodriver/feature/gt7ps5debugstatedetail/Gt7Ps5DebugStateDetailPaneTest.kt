@@ -3,9 +3,13 @@ package kurou.kodriver.feature.gt7ps5debugstatedetail
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.InputMode
+import androidx.compose.ui.input.InputModeManager
+import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
@@ -33,14 +37,17 @@ class Gt7Ps5DebugStateDetailPaneTest {
     @Test
     fun `読み上げカードは他のカードと一緒にスクロールする`() {
         val state = Gt7Ps5DebugStateDetailUiState()
+        // 初期フォーカスで先頭カードが保持されないよう、タッチ操作として描画する
         rule.setContent {
-            MaterialTheme {
-                Gt7Ps5DebugStateDetailPaneContent(
-                    uiState = state,
-                    canNavigateBack = false,
-                    onBack = {},
-                    modifier = Modifier.requiredSize(360.dp, 320.dp),
-                )
+            CompositionLocalProvider(LocalInputModeManager provides touchInputModeManager) {
+                MaterialTheme {
+                    Gt7Ps5DebugStateDetailPaneContent(
+                        uiState = state,
+                        canNavigateBack = false,
+                        onBack = {},
+                        modifier = Modifier.requiredSize(360.dp, 320.dp),
+                    )
+                }
             }
         }
 
@@ -185,4 +192,11 @@ class Gt7Ps5DebugStateDetailPaneTest {
         val simulator = rule.onNodeWithText("選択中のシミュレーター").fetchSemanticsNode().boundsInRoot
         assertTrue(vehicleClass.top < simulator.top)
     }
+
+    private val touchInputModeManager =
+        object : InputModeManager {
+            override val inputMode: InputMode = InputMode.Touch
+
+            override fun requestInputMode(inputMode: InputMode): Boolean = false
+        }
 }
