@@ -134,10 +134,13 @@ class OtherAndroidAudioUsageDetailViewModelTest {
     @Test
     fun `ゼロ音量では再生せず失敗しても試聴操作を継続できる`() =
         runTest {
+            val error = IllegalStateException("再生失敗")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
             every { repository.observeAndroidAudioUsage() } returns usageFlow
             every { observeSoundVolume() } returnsMany listOf(MutableStateFlow(0), MutableStateFlow(35))
-            coEvery { speakText("試聴文", volume = 35, audioUsage = AndroidAudioUsage.MEDIA) } throws
-                IllegalStateException("再生失敗")
+            coEvery { speakText("試聴文", volume = 35, audioUsage = AndroidAudioUsage.MEDIA) } throws error
             val viewModel = createViewModel()
             viewModel.uiState.launchIn(backgroundScope)
             try {
@@ -147,12 +150,14 @@ class OtherAndroidAudioUsageDetailViewModelTest {
                 viewModel.onPreviewClicked(AndroidAudioUsage.MEDIA, "試聴文")
                 runCurrent()
                 assertEquals(null, viewModel.uiState.value.previewingUsage)
+                verify(exactly = 1) { captureError(error) }
                 verify(exactly = 2) { observeSoundVolume() }
                 coVerify(exactly = 0) { speakText("試聴文", volume = 0, audioUsage = AndroidAudioUsage.ALARM) }
                 coVerify(exactly = 1) { speakText("試聴文", volume = 35, audioUsage = AndroidAudioUsage.MEDIA) }
                 verify(exactly = 1) { repository.observeAndroidAudioUsage() }
-                confirmVerified(repository, speakText, observeSoundVolume)
+                confirmVerified(repository, speakText, observeSoundVolume, errorCapture)
             } finally {
+                unmockkStatic(errorCapture)
                 viewModel.viewModelScope.cancel()
             }
         }

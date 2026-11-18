@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.runCapturingErrors
@@ -118,7 +119,8 @@ internal class OtherVolumeDetailViewModel(
                     speakText(sample.narratedText, volume = volume)
                 } catch (e: CancellationException) {
                     throw e
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    captureError(e)
                     // 試聴に失敗しても画面の操作を続けられるようにする。
                 } finally {
                     finishPreview(request)

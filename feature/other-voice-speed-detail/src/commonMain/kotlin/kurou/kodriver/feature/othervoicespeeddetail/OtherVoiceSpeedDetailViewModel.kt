@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
@@ -68,7 +69,8 @@ internal class OtherVoiceSpeedDetailViewModel(
                     speakText(text, volume = volume)
                 } catch (e: CancellationException) {
                     throw e
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    captureError(e)
                     // 試聴に失敗しても画面の操作を続けられるようにする。
                 } finally {
                     if (previewRequest == request) isPreviewing.update { false }

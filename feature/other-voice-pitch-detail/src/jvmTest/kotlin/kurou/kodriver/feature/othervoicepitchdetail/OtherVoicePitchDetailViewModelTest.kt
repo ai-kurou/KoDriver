@@ -197,27 +197,35 @@ class OtherVoicePitchDetailViewModelTest {
     @Test
     fun `試聴の失敗は画面をクラッシュさせず試聴中を解除する`() =
         runTest {
+            val error = IllegalStateException("試聴失敗")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
             every { repository.voicePitch() } returns pitchFlow
             every { observeSoundVolume() } returns flowOf(42)
-            coEvery { speakText("試聴", volume = 42) } throws IllegalStateException("試聴失敗")
+            coEvery { speakText("試聴", volume = 42) } throws error
             val viewModel = createViewModel()
             val subscription = viewModel.uiState.launchIn(backgroundScope)
-            runCurrent()
+            try {
+                runCurrent()
 
-            viewModel.onPreviewClicked("試聴")
-            runCurrent()
+                viewModel.onPreviewClicked("試聴")
+                runCurrent()
 
-            assertFalse(viewModel.uiState.value.isPreviewing)
-            coEvery { speakText("試聴", volume = 42) } returns Unit
-            viewModel.onPreviewClicked("試聴")
-            runCurrent()
-            assertFalse(viewModel.uiState.value.isPreviewing)
-
-            subscription.cancel()
+                assertFalse(viewModel.uiState.value.isPreviewing)
+                verify(exactly = 1) { captureError(error) }
+                coEvery { speakText("試聴", volume = 42) } returns Unit
+                viewModel.onPreviewClicked("試聴")
+                runCurrent()
+                assertFalse(viewModel.uiState.value.isPreviewing)
+            } finally {
+                subscription.cancel()
+                unmockkStatic(errorCapture)
+            }
             verify(exactly = 1) { repository.voicePitch() }
             verify(exactly = 2) { observeSoundVolume() }
             coVerify(exactly = 2) { speakText("試聴", volume = 42) }
-            confirmVerified(repository, observeSoundVolume, speakText)
+            confirmVerified(repository, observeSoundVolume, speakText, errorCapture)
         }
 
     @Test
