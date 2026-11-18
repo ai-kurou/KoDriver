@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
+import androidx.compose.runtime.Immutable
 import kurou.kodriver.domain.model.ACE_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 
@@ -15,6 +16,7 @@ internal val defaultDebugStateCardOrder =
         AceWindowsDebugStateCardKey.CAR_GAP,
     )
 
+@Immutable
 internal data class AceWindowsDebugStateDetailUiState(
     val selectedReadoutItemKey: ReadoutItemKey =
         ACE_WINDOWS_READOUT_ITEM_KEYS
