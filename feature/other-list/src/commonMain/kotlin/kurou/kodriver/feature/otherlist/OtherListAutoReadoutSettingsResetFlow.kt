@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.usecase.ResetAutoReadoutSettingsUseCase
 
 /** 自動タブの設定初期化の確認・実行・結果通知を管理する。実行のライフサイクルは呼び出し元に従う。 */
@@ -36,6 +37,7 @@ public class OtherListAutoReadoutSettingsResetFlow(
                 } catch (
                     @Suppress("TooGenericExceptionCaught") e: Exception,
                 ) {
+                    captureError(e)
                     false
                 }
             _uiState.update { it.copy(resetSucceeded = succeeded) }

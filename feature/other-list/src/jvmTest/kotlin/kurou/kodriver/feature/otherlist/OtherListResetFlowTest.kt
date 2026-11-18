@@ -3,7 +3,11 @@ package kurou.kodriver.feature.otherlist
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
@@ -11,6 +15,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
@@ -118,22 +123,32 @@ abstract class OtherListResetFlowTestContract {
     )
 
     @Test
-    fun `通常例外を失敗結果にして再実行時に前回の結果を消す`() =
+    fun `通常例外を記録して失敗結果にし再実行時に前回の結果を消す`() =
         runTest {
-            stubFailure(IllegalStateException("失敗"))
-            onResetClick()
-            onResetConfirm()
-            assertEquals(OtherListResetUiState(resetSucceeded = false), uiState.value)
-            val completion = CompletableDeferred<Unit>()
-            stubAwait(completion)
-            onResetClick()
-            val job = launch(start = CoroutineStart.UNDISPATCHED) { onResetConfirm() }
-            assertTrue(uiState.value.isResetting)
-            assertNull(uiState.value.resetSucceeded)
-            completion.complete(Unit)
-            job.join()
-            assertEquals(OtherListResetUiState(resetSucceeded = true), uiState.value)
-            verifyCalls(firstCalls = 2, remainingCalls = 1)
+            val error = IllegalStateException("失敗")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            try {
+                every { captureError(error) } returns Unit
+                stubFailure(error)
+                onResetClick()
+                onResetConfirm()
+                assertEquals(OtherListResetUiState(resetSucceeded = false), uiState.value)
+                val completion = CompletableDeferred<Unit>()
+                stubAwait(completion)
+                onResetClick()
+                val job = launch(start = CoroutineStart.UNDISPATCHED) { onResetConfirm() }
+                assertTrue(uiState.value.isResetting)
+                assertNull(uiState.value.resetSucceeded)
+                completion.complete(Unit)
+                job.join()
+                assertEquals(OtherListResetUiState(resetSucceeded = true), uiState.value)
+                verifyCalls(firstCalls = 2, remainingCalls = 1)
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test
