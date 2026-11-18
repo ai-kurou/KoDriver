@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
+import androidx.compose.runtime.Immutable
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
@@ -10,6 +11,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 
+@Immutable
 internal data class AceWindowsDebugState(
     val fuel: AceWindowsFuelData? = null,
     val flag: AceWindowsFlagData? = null,
