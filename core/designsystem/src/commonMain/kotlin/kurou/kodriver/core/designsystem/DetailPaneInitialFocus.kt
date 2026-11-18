@@ -16,9 +16,11 @@ import androidx.compose.ui.platform.LocalInputModeManager
  *
  * キーボード操作のときだけ、フォーカスグループへフォーカスを要求する。グループ内の最初のフォーカス可能な子に当たる。
  * タッチ操作ではフォーカスを要求しない。フォーカス可能な子がなければ何も起きない。
+ *
+ * 別モジュールの詳細ペインから利用できるよう公開している。
  */
 @Composable
-internal fun Modifier.detailPaneInitialFocus(): Modifier {
+public fun Modifier.detailPaneInitialFocus(): Modifier {
     val focusRequester = remember { FocusRequester() }
     if (shouldRequestInitialFocus(LocalInputModeManager.current.inputMode)) {
         LaunchedEffect(Unit) {
