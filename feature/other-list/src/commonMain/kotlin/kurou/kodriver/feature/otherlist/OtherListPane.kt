@@ -18,6 +18,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
+import kurou.kodriver.core.designsystem.RestoreRowFocusOnReturn
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
 
@@ -82,6 +83,8 @@ public fun OtherListPane(
     modifier: Modifier = Modifier,
     onAppVersionTapped: () -> Unit = {},
     scrollToTopRequest: Int = 0,
+    restoreFocusItemKey: String? = null,
+    onFocusRestored: () -> Unit = {},
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -89,6 +92,16 @@ public fun OtherListPane(
     val appVersionVisible = uiState.appVersionLabel.isNotBlank() && uiState.appVersion.isNotBlank()
     val rowLayout = remember(groupedItems, appVersionVisible) { otherListRowLayout(groupedItems, appVersionVisible) }
     val rowFocusState = remember { ListRowFocusState() }
+    RestoreRowFocusOnReturn(
+        restoreItemKey = restoreFocusItemKey,
+        focusState = rowFocusState,
+        onRestored = onFocusRestored,
+        listState = listState,
+        lazyIndexOf = { key ->
+            val index = rowLayout.itemKeys.indexOf(key)
+            if (index >= 0) rowLayout.lazyIndexes[index] else null
+        },
+    )
 
     ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
         listState.animateScrollToItem(0)

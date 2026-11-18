@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
+import kurou.kodriver.core.designsystem.RestoreRowFocusOnReturn
 import kurou.kodriver.core.designsystem.handleListGridArrowKey
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
@@ -86,11 +87,19 @@ internal fun ManualReadoutListPaneContent(
     showHotkeyChip: Boolean = isManualReadoutHotkeySupported(),
     listState: LazyListState = rememberLazyListState(),
     gridState: LazyGridState = rememberLazyGridState(),
+    restoreFocusSetId: String? = null,
+    onFocusRestored: () -> Unit = {},
 ) {
     val haptic = LocalHapticFeedback.current
     val bottomEndOverlayInset = LocalBottomEndOverlayInset.current
     var additionBaseline by remember(simulatorId) { mutableStateOf<Set<String>?>(null) }
     val rowFocusState = remember(simulatorId) { ListRowFocusState() }
+    // 一覧とグリッドのスクロール位置は呼び出し側が保持しているため、スクロールせずに行へフォーカスを戻す
+    RestoreRowFocusOnReturn(
+        restoreItemKey = restoreFocusSetId,
+        focusState = rowFocusState,
+        onRestored = onFocusRestored,
+    )
     val itemKeys = remember(uiState.sets) { uiState.sets.map { it.id } }
     // 再生ボタン表示のグリッドでは、末尾の「セットを追加」タイルも矢印キーの移動先にする。
     val gridItemKeys = remember(itemKeys) { itemKeys + ADD_SET_TILE_KEY }
