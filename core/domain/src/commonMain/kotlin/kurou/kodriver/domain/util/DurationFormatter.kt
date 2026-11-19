@@ -27,3 +27,7 @@ public fun formatLapTimeMs(milliseconds: Long): String {
     val components = decomposeDurationMs(milliseconds)
     return "$totalMinutes:${components.seconds.padStartZero(2)}.${components.millis.padStartZero(3)}"
 }
+
+/** ベストラップ時間（ms）を表示用に整形する。未計測（null）または0以下の場合は null を返す。 */
+public fun formatBestLapTimeMsOrNull(bestLapTimeMs: Long?): String? =
+    bestLapTimeMs?.takeIf { it > 0L }?.let { formatLapTimeMs(it) }
