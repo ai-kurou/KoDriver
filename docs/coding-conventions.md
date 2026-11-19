@@ -150,10 +150,10 @@ try {
 
 ### 方針
 
-- フォーカスを動かすのは `InputMode.Keyboard` のときだけ。タッチ操作では要求しない（テキスト入力に当たると IME が開くため）。入力モードはペインや一覧に入った時点で一度だけ判定し、表示中の切り替えではフォーカスを奪わない。
+- フォーカスを動かすのは `InputMode.Keyboard` のときだけ。タッチ操作では要求しない（テキスト入力に当たると IME が開くため）。詳細ペイン（`detailPaneInitialFocus()`）は入力モードをペインに入った時点で一度だけ判定し、表示中の切り替えではフォーカスを奪わない。一覧側の `RestoreRowFocusOnReturn` / `FocusFirstRowOnEntry` は、フォーカスを要求する時点の入力モードを見る（先頭行がまだ無く後から決まる場合は、決まった時点のモードで判定する）。
 - 一覧と詳細が並んで表示される 2 ペイン表示では、一覧の行フォーカスを奪わない。詳細へ初期フォーカスを置くのは、詳細が新しく開いた瞬間だけ。
 - `Dialog` で開く詳細は対象外。フォーカスは OS 側の仕組みに任せる。
-- 合成直後は `requestFocus` が失敗しうるため、`withFrameNanos { }` で 1 フレーム待ち、`runCatching { requestFocus() }` で失敗を無視する。画面外の行は `focusItemWhenComposed` でスクロールしてから移す。
+- 合成直後は `requestFocus` が失敗しうるため、`withFrameNanos { }` で 1 フレーム待ち、`runCatching { requestFocus() }` で失敗を無視する。画面外の行へ移す場合は、一覧側の部品に `listState` と `lazyIndexOf` を渡すと、内部（`core/designsystem` の `internal` な `focusItemWhenComposed`）でスクロールしてから移す。feature から `focusItemWhenComposed` を直接呼ばない。
 - フォーカスできる部品が無いときは何も起きない（例外にしない）。
 
 ### 共通部品の使い分け
@@ -164,8 +164,10 @@ try {
 | 詳細から一覧へ戻ったとき | `RestoreRowFocusOnReturn` | 直前に開いた行 |
 | タブを切り替えたとき | `FocusFirstRowOnEntry` | 一覧の先頭の行 |
 
+- 一覧は、タブ切り替えと詳細からの復帰の両方に対応するため、`FocusFirstRowOnEntry` と `RestoreRowFocusOnReturn` の両方を組み込む（呼び出しを 1 つの Composable にまとめてもよい）。
 - 新しい詳細ペインが `DetailPaneScaffold` を使うなら追加の対応は不要。使わない場合は本文を囲む要素に `detailPaneInitialFocus()` を付ける。
 - 一覧は `ListRowFocusState` の `requesterFor(key)` で行ごとの `FocusRequester` を受け取る。`RestoreRowFocusOnReturn` へ渡す復元キーは、詳細から戻った（選択が解除された）ときだけ非 null にする。
-- `FocusFirstRowOnEntry` の `enabled` は、詳細が選択済みのときや復元キーがあるときに false にする。表示時点で false なら、その表示では先頭行へフォーカスを置かない。
+- `FocusFirstRowOnEntry` の `enabled` は、詳細が選択済みのときや復元キーがあるときに false にする。表示時点で false なら、その表示では先頭行へフォーカスを置かない。先頭行へのフォーカスは 1 回のコンポジション（タブ内容が新しく表示されるたび）につき一度だけで、同じコンポジションのまま非表示から戻った場合は再度置かない。
+- 手動読み上げの一覧は現状 `listState` / `lazyIndexOf` を渡していないため、画面外の行へはスクロールして移せない（画面内の行のみ対象）。
 - 音声認識の一覧やログの一覧など `ListRowFocusState` を持たない一覧は、現状は対象外。
 - テストでは `LocalInputModeManager` を `InputModeManager` のフェイクで差し替え、`Keyboard` と `Touch` の両方を確認する。
