@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -142,6 +143,8 @@ internal fun ManualReadoutContentScaffold(
             initialAnchoredIndex = 0,
         )
     val scope = rememberCoroutineScope()
+    // 詳細を閉じて一覧へ戻ったとき、直前に開いたセットの行へフォーカスを戻すために、開いたセットの ID を覚えておく
+    var lastOpenedSetId by remember { mutableStateOf<String?>(null) }
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
         predictiveBackProgress = 0f
@@ -185,7 +188,12 @@ internal fun ManualReadoutContentScaffold(
                     onReadSet = onReadSet,
                     onDeleteSet = onDeleteSet,
                     onTogglePlayButtonLayout = onTogglePlayButtonLayout,
-                    onSetClick = onSetClick,
+                    onSetClick = {
+                        lastOpenedSetId = it
+                        onSetClick(it)
+                    },
+                    restoreFocusSetId = lastOpenedSetId.takeIf { uiState.selectedSetId == null },
+                    onFocusRestored = { lastOpenedSetId = null },
                 )
             },
             detailPane = {

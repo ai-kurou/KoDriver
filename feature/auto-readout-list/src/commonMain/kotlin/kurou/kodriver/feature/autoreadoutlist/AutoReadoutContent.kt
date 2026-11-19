@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -116,6 +117,8 @@ internal fun AutoReadoutContent(
                 },
         )
     val scope = rememberCoroutineScope()
+    // 詳細を閉じて一覧へ戻ったとき、直前に開いた行へフォーカスを戻すために、開いた項目のキーを覚えておく
+    var lastOpenedItemKey by remember { mutableStateOf<String?>(null) }
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
         predictiveBackProgress = 0f
@@ -159,8 +162,13 @@ internal fun AutoReadoutContent(
                 onReadoutEnabledChanged = onReadoutEnabledChanged,
                 onQueueEnabledChanged = onQueueEnabledChanged,
                 onStartSoundEnabledChanged = onStartSoundEnabledChanged,
-                onItemClick = onItemSelected,
+                onItemClick = {
+                    lastOpenedItemKey = it.value
+                    onItemSelected(it)
+                },
                 scrollToTopRequest = scrollToTopRequest,
+                restoreFocusItemKey = lastOpenedItemKey.takeIf { uiState.selectedItem == null },
+                onFocusRestored = { lastOpenedItemKey = null },
             )
         },
         detailPane = {

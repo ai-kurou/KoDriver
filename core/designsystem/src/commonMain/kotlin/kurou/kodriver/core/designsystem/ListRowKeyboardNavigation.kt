@@ -1,8 +1,13 @@
 package kurou.kodriver.core.designsystem
 
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
@@ -12,6 +17,7 @@ import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalInputModeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -201,6 +207,42 @@ public fun handleColumnRowReorderKey(
         onMove(index, index + step)
     }
     return step != null
+}
+
+/**
+ * 詳細から一覧へ戻ったとき、直前に開いた行 [restoreItemKey] の主操作領域へフォーカスを戻す。
+ *
+ * [restoreItemKey] が null の間は何もしない。null でなくなったらキーボード操作のときだけフォーカスを要求し、
+ * 要求の成否にかかわらず [onRestored] を呼ぶ（呼び出し側で復元キーを消し、タブ切り替えなどの再表示で再び奪わないようにする）。
+ * 行が画面外で未生成のときは、[listState] と [lazyIndexOf]（項目キーから LazyList 上のインデックス）を渡すとスクロールしてから移す。
+ * 一覧が詳細と並んで表示されている間はフォーカスを奪わないよう、戻った（選択が解除された）ときだけ [restoreItemKey] を渡すこと。
+ */
+@Composable
+public fun RestoreRowFocusOnReturn(
+    restoreItemKey: String?,
+    focusState: ListRowFocusState,
+    onRestored: () -> Unit,
+    listState: LazyListState? = null,
+    lazyIndexOf: (String) -> Int? = { null },
+) {
+    val inputModeManager = LocalInputModeManager.current
+    val currentOnRestored by rememberUpdatedState(onRestored)
+    val currentLazyIndexOf by rememberUpdatedState(lazyIndexOf)
+    LaunchedEffect(restoreItemKey) {
+        if (restoreItemKey != null) {
+            if (inputModeManager.inputMode == InputMode.Keyboard) {
+                val requester = focusState.requesterFor(restoreItemKey)
+                val lazyIndex = currentLazyIndexOf(restoreItemKey)
+                if (listState != null && lazyIndex != null) {
+                    listState.focusRow(lazyIndex, requester)
+                } else {
+                    withFrameNanos { }
+                    runCatching { requester.requestFocus() }
+                }
+            }
+            currentOnRestored()
+        }
+    }
 }
 
 private suspend fun LazyListState.focusRow(

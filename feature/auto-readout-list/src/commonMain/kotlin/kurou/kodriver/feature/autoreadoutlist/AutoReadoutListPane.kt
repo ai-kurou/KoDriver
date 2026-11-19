@@ -97,6 +97,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.ListRowPartsFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
+import kurou.kodriver.core.designsystem.RestoreRowFocusOnReturn
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
 import kurou.kodriver.core.designsystem.handleListRowPartArrowKey
@@ -187,6 +188,8 @@ internal fun AutoReadoutListPane(
     onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemClick: (ReadoutItemKey) -> Unit,
     scrollToTopRequest: Int = 0,
+    restoreFocusItemKey: String? = null,
+    onFocusRestored: () -> Unit = {},
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -202,6 +205,15 @@ internal fun AutoReadoutListPane(
     val rowFocusState = remember { ListRowFocusState() }
     val itemKeys = remember(uiState.items) { uiState.items.map { it.value } }
     LaunchedEffect(itemKeys) { rowFocusState.onItemKeysChanged() }
+    RestoreRowFocusOnReturn(
+        restoreItemKey = restoreFocusItemKey,
+        focusState = rowFocusState,
+        onRestored = onFocusRestored,
+        listState = listState,
+        lazyIndexOf = { key ->
+            itemKeys.indexOf(key).takeIf { it >= 0 }?.let { autoReadoutItemStartIndex + it }
+        },
+    )
     val reorderableState =
         rememberReorderableLazyListState(listState) { from, to ->
             onMove(
