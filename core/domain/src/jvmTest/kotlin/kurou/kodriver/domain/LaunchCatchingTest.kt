@@ -72,6 +72,50 @@ class LaunchCatchingTest {
         }
 
     @Test
+    fun `runCapturingErrorsOrNullは成功時に結果を返し記録しない`() =
+        runTest {
+            val captured = slot<Throwable>()
+            mockkStatic(errorCapture)
+            every { captureError(capture(captured)) } returns Unit
+            try {
+                assertEquals("ok", runCapturingErrorsOrNull { "ok" })
+                assertTrue(!captured.isCaptured)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `runCapturingErrorsOrNullは通常の例外を記録してnullを返す`() =
+        runTest {
+            val error = IllegalStateException("fail")
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                assertEquals(null, runCapturingErrorsOrNull<String> { throw error })
+                verify(exactly = 1) { captureError(error) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `runCapturingErrorsOrNullはキャンセル例外を再スローし記録しない`() =
+        runTest {
+            val captured = slot<Throwable>()
+            mockkStatic(errorCapture)
+            every { captureError(capture(captured)) } returns Unit
+            try {
+                assertFailsWith<CancellationException> {
+                    runCapturingErrorsOrNull<String> { throw CancellationException("cancel") }
+                }
+                assertTrue(!captured.isCaptured)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
     fun `launchCapturingErrorsは例外後もスコープを継続させる`() =
         runTest(UnconfinedTestDispatcher()) {
             val error = IllegalStateException("fail")
