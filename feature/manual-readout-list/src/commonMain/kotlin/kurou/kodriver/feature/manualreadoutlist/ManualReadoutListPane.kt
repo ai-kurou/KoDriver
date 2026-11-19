@@ -106,7 +106,7 @@ internal fun ManualReadoutListPaneContent(
     val coroutineScope = rememberCoroutineScope()
     val enteredSetIds = remember(simulatorId) { mutableSetOf<String>() }
     val addSet =
-        remember(itemKeys, onAddSet) {
+        remember(simulatorId, itemKeys, onAddSet) {
             {
                 haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                 additionBaseline = itemKeys.toSet()
