@@ -2,7 +2,6 @@ package kurou.kodriver.feature.otherloglist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -11,8 +10,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.runCapturingErrorsOrNull
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
@@ -80,15 +79,10 @@ internal class TelemetryLogListViewModel internal constructor(
         viewModelScope.launch {
             _deleteState.update { it.copy(isDeleting = true, deleteSucceeded = null) }
             val succeeded =
-                try {
+                runCapturingErrorsOrNull {
                     deleteTelemetryLog(id)
                     true
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    captureError(e)
-                    false
-                }
+                } != null
             _deleteState.update { it.copy(isDeleting = false, deleteSucceeded = succeeded) }
         }
     }
