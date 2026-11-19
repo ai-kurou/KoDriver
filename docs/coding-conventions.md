@@ -127,6 +127,34 @@ try {
 }
 ```
 
+### 例外を記録して握りつぶす場合のヘルパー
+
+失敗しても処理を続けたく、例外を `captureError` へ記録するだけでよい場合は、`try-catch` を手書きせず `core:domain` のヘルパーを使う。いずれも `CancellationException` は再スローし、それ以外の例外を `captureError` へ記録する。
+
+| ヘルパー | 使う場面 |
+| --- | --- |
+| `runCapturingErrors { ... }` | 結果が不要な処理（保存・送信など）。戻り値は `Unit` |
+| `runCapturingErrorsOrNull { ... }` | 成功可否や値が必要な処理。失敗時は `null` を返す（`T : Any`） |
+
+```kotlin
+// 成功可否が必要: 非null値を返して `!= null` で判定する
+val succeeded =
+    runCapturingErrorsOrNull {
+        deleteLog(id)
+        true
+    } != null
+
+// 値が必要: 失敗時の既定値は `?:` で補う
+val voices = runCapturingErrorsOrNull { getAvailableVoices() } ?: emptyList()
+```
+
+次の場合はヘルパーを使わず、従来どおり `try-catch` を手書きする。
+
+- 例外の種類で処理を分ける（例: `IOException` は記録せず、それ以外を記録する）。
+- 記録先が別にある（`core:narrator` の `runCatchingNarratorError` など）。
+- ブロック内で `return@launch` や `return@withContext` のように非ローカルで抜ける（ヘルパーは非 inline のため書けない）。
+- 例外をそのまま呼び出し側へ伝えたい。
+
 テストにおける mockk の `any()` 使用ルールは [`docs/testing-guidelines.md`](testing-guidelines.md) を参照。
 
 ## Kotlin コンパイラの警告
