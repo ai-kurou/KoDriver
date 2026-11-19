@@ -6,6 +6,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -18,6 +20,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.PreviewOverlayBackgroundOpacityUseCase
@@ -220,5 +223,60 @@ class OtherOverlayBackgroundOpacityDetailViewModelTest {
             coVerify(exactly = 1) { repository.saveOverlayBackgroundOpacity(80) }
             verify(exactly = 1) { repository.setPreviewOverlayBackgroundOpacity(null) }
             confirmVerified(repository)
+        }
+
+    @Test
+    fun `保存に失敗したらエラーを記録する`() =
+        runTest(testDispatcher) {
+            val error = IllegalStateException("failed")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                every { repository.observeOverlayBackgroundOpacity() } returns opacityFlow
+                every { repository.setPreviewOverlayBackgroundOpacity(80) } returns Unit
+                every { repository.setPreviewOverlayBackgroundOpacity(null) } returns Unit
+                coEvery { repository.saveOverlayBackgroundOpacity(80) } throws error
+                val viewModel = createViewModel()
+
+                viewModel.onOpacityPreview(80)
+                viewModel.onOpacityChanged(80)
+
+                verify(exactly = 1) { repository.observeOverlayBackgroundOpacity() }
+                verify(exactly = 1) { repository.setPreviewOverlayBackgroundOpacity(80) }
+                coVerify(exactly = 1) { repository.saveOverlayBackgroundOpacity(80) }
+                verify(exactly = 1) { repository.setPreviewOverlayBackgroundOpacity(null) }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(repository, errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `保存がキャンセルされたらエラーを記録せず例外を伝播する`() =
+        runTest(testDispatcher) {
+            val cancellation = CancellationException("cancelled")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            try {
+                every { repository.observeOverlayBackgroundOpacity() } returns opacityFlow
+                every { repository.setPreviewOverlayBackgroundOpacity(80) } returns Unit
+                every { repository.setPreviewOverlayBackgroundOpacity(null) } returns Unit
+                coEvery { repository.saveOverlayBackgroundOpacity(80) } throws cancellation
+                val viewModel = createViewModel()
+
+                viewModel.onOpacityPreview(80)
+                viewModel.onOpacityChanged(80)
+
+                verify(exactly = 1) { repository.observeOverlayBackgroundOpacity() }
+                verify(exactly = 1) { repository.setPreviewOverlayBackgroundOpacity(80) }
+                coVerify(exactly = 1) { repository.saveOverlayBackgroundOpacity(80) }
+                verify(exactly = 1) { repository.setPreviewOverlayBackgroundOpacity(null) }
+                verify(exactly = 0) { captureError(cancellation) }
+                confirmVerified(repository, errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 }
