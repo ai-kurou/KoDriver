@@ -5,16 +5,21 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
@@ -32,6 +37,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * [TelemetryLogListViewModel] の削除フロー（onDeleteClick/onDeleteConfirm/onDeleteDismiss/consumeDeleteResult）のテスト。
@@ -148,20 +154,60 @@ class TelemetryLogListViewModelDeleteTest {
         }
 
     @Test
-    fun `deleteTelemetryLogが失敗するとdeleteSucceededがfalseになる`() =
+    fun `deleteTelemetryLogが失敗するとdeleteSucceededがfalseになりcaptureErrorへ記録される`() =
         runTest(dispatcher) {
-            every { repository.observeTelemetryLogs() } returns logsFlow
-            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
-            coEvery { repository.deleteTelemetryLog(1L) } throws IllegalStateException("削除に失敗しました")
-            val viewModel = createViewModel()
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            val error = IllegalStateException("削除に失敗しました")
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                every { repository.observeTelemetryLogs() } returns logsFlow
+                every { simulatorRepository.selectedSimulator() } returns selectedSimulator
+                coEvery { repository.deleteTelemetryLog(1L) } throws error
+                val viewModel = createViewModel()
 
-            viewModel.onDeleteClick(1L)
-            viewModel.uiState.first { it.pendingDeleteLogId == 1L }
-            viewModel.onDeleteConfirm()
+                viewModel.onDeleteClick(1L)
+                viewModel.uiState.first { it.pendingDeleteLogId == 1L }
+                viewModel.onDeleteConfirm()
 
-            val state = viewModel.uiState.first { it.deleteSucceeded != null }
-            assertEquals(false, state.deleteSucceeded)
-            assertFalse(state.isDeleting)
+                val state = viewModel.uiState.first { it.deleteSucceeded != null }
+                assertEquals(false, state.deleteSucceeded)
+                assertFalse(state.isDeleting)
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteTelemetryLog(1L) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `deleteTelemetryLogがCancellationExceptionを投げるとキャンセルを再スローしcaptureErrorへ記録しない`() =
+        runTest(dispatcher) {
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            val cancellation = CancellationException("キャンセル")
+            mockkStatic(errorCapture)
+            try {
+                every { repository.observeTelemetryLogs() } returns logsFlow
+                every { simulatorRepository.selectedSimulator() } returns selectedSimulator
+                coEvery { repository.deleteTelemetryLog(1L) } throws cancellation
+                val viewModel = createViewModel()
+
+                viewModel.onDeleteClick(1L)
+                viewModel.uiState.first { it.pendingDeleteLogId == 1L }
+                viewModel.onDeleteConfirm()
+                advanceUntilIdle()
+
+                val state = viewModel.uiState.first()
+                assertTrue(state.isDeleting)
+                assertNull(state.deleteSucceeded)
+                verify(exactly = 0) { captureError(cancellation) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
             verify(exactly = 1) { repository.observeTelemetryLogs() }
             coVerify(exactly = 1) { repository.deleteTelemetryLog(1L) }
             confirmVerified(repository)
