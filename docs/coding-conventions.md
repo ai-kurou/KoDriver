@@ -143,3 +143,29 @@ try {
 - Koin モジュールは `public val xxxModule: Module`（`org.koin.core.module.Module`）の形で型を明示する。Unit を返す public 関数も `: Unit` を明示する。
 - `override`・enum entry・data class のコンストラクタ引数には可視性の明示は不要。
 - テストソースセットは対象外。Kotlin プラグインを使わない `com.android.test` モジュール（`app:androidBenchmark`）も対象外。
+
+## ペイン・タブ切り替え時の初期フォーカス
+
+一覧ペイン⇔詳細ペイン、タブの切り替えでは、キーボード利用者が Tab を何度も押さなくて済むよう、共通部品（`core/designsystem`）で初期フォーカスを決める。各 feature では共通部品を呼ぶ 1 か所だけを変更し、フォーカス用の独自処理は書かない。
+
+### 方針
+
+- フォーカスを動かすのは `InputMode.Keyboard` のときだけ。タッチ操作では要求しない（テキスト入力に当たると IME が開くため）。入力モードはペインや一覧に入った時点で一度だけ判定し、表示中の切り替えではフォーカスを奪わない。
+- 一覧と詳細が並んで表示される 2 ペイン表示では、一覧の行フォーカスを奪わない。詳細へ初期フォーカスを置くのは、詳細が新しく開いた瞬間だけ。
+- `Dialog` で開く詳細は対象外。フォーカスは OS 側の仕組みに任せる。
+- 合成直後は `requestFocus` が失敗しうるため、`withFrameNanos { }` で 1 フレーム待ち、`runCatching { requestFocus() }` で失敗を無視する。画面外の行は `focusItemWhenComposed` でスクロールしてから移す。
+- フォーカスできる部品が無いときは何も起きない（例外にしない）。
+
+### 共通部品の使い分け
+
+| 場面 | 部品 | フォーカス先 |
+|------|------|--------------|
+| 詳細を開いたとき | `Modifier.detailPaneInitialFocus()`（`DetailPaneScaffold` と `AutoReadoutDetailPane` の本文に適用済み） | 本文先頭の操作部品 |
+| 詳細から一覧へ戻ったとき | `RestoreRowFocusOnReturn` | 直前に開いた行 |
+| タブを切り替えたとき | `FocusFirstRowOnEntry` | 一覧の先頭の行 |
+
+- 新しい詳細ペインが `DetailPaneScaffold` を使うなら追加の対応は不要。使わない場合は本文を囲む要素に `detailPaneInitialFocus()` を付ける。
+- 一覧は `ListRowFocusState` の `requesterFor(key)` で行ごとの `FocusRequester` を受け取る。`RestoreRowFocusOnReturn` へ渡す復元キーは、詳細から戻った（選択が解除された）ときだけ非 null にする。
+- `FocusFirstRowOnEntry` の `enabled` は、詳細が選択済みのときや復元キーがあるときに false にする。表示時点で false なら、その表示では先頭行へフォーカスを置かない。
+- 音声認識の一覧やログの一覧など `ListRowFocusState` を持たない一覧は、現状は対象外。
+- テストでは `LocalInputModeManager` を `InputModeManager` のフェイクで差し替え、`Keyboard` と `Touch` の両方を確認する。
