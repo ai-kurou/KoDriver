@@ -105,11 +105,14 @@ internal fun ManualReadoutListPaneContent(
     val gridItemKeys = remember(itemKeys) { itemKeys + ADD_SET_TILE_KEY }
     val coroutineScope = rememberCoroutineScope()
     val enteredSetIds = remember(simulatorId) { mutableSetOf<String>() }
-    val addSet = {
-        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-        additionBaseline = uiState.sets.map { it.id }.toSet()
-        onAddSet()
-    }
+    val addSet =
+        remember(itemKeys, onAddSet) {
+            {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                additionBaseline = itemKeys.toSet()
+                onAddSet()
+            }
+        }
     val visibleState = remember { MutableTransitionState(false).apply { targetState = true } }
     val entryOffset = with(LocalDensity.current) { 12.dp.roundToPx() }
     AnimatedVisibility(
