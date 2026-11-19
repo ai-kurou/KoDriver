@@ -2,13 +2,12 @@ package kurou.kodriver.feature.otheroverlaytextcolordetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.runCapturingErrors
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.PreviewOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayTextColorUseCase
@@ -42,12 +41,8 @@ internal class OtherOverlayTextColorDetailViewModel internal constructor(
         confirmingRequest = request
         viewModelScope.launch {
             try {
-                saveOverlayTextColor(overlayTextColor)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                captureError(e)
                 // 保存に失敗しても未保存の色を表示し続けず、保存済みの設定へ戻す。
+                runCapturingErrors { saveOverlayTextColor(overlayTextColor) }
             } finally {
                 if (confirmingRequest == request) confirmingRequest = null
                 // 保存中に選び直された場合は、後続の選択のプレビューを解除しない。
