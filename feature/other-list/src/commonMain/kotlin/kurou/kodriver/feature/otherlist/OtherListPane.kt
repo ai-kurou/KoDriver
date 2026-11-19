@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.tooling.preview.Preview
+import kurou.kodriver.core.designsystem.FocusFirstRowOnEntry
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ListRowFocusState
@@ -92,6 +93,13 @@ public fun OtherListPane(
     val appVersionVisible = uiState.appVersionLabel.isNotBlank() && uiState.appVersion.isNotBlank()
     val rowLayout = remember(groupedItems, appVersionVisible) { otherListRowLayout(groupedItems, appVersionVisible) }
     val rowFocusState = remember { ListRowFocusState() }
+    FocusFirstRowOnEntry(
+        firstItemKey = rowLayout.itemKeys.firstOrNull(),
+        enabled = restoreFocusItemKey == null && uiState.selectedItem == null,
+        focusState = rowFocusState,
+        listState = listState,
+        lazyIndexOf = { rowLayout.lazyIndexes.firstOrNull() },
+    )
     RestoreRowFocusOnReturn(
         restoreItemKey = restoreFocusItemKey,
         focusState = rowFocusState,

@@ -2,11 +2,15 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.InputMode
+import androidx.compose.ui.input.InputModeManager
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -52,19 +56,22 @@ class AutoReadoutListKeyboardNavigationTest {
         items: List<ReadoutItemKey>,
         height: Int = 900,
         onMove: (Int, Int) -> Unit = { _, _ -> },
+        inputMode: InputMode = InputMode.Keyboard,
     ) {
         rule.setContent {
-            KoDriverTheme {
-                items.forEach { displayNames[it] = autoReadoutItemDisplayName(it) }
-                Box(modifier = Modifier.requiredSize(480.dp, height.dp)) {
-                    AutoReadoutListPane(
-                        uiState = AutoReadoutListUiState(selectedSimulator = Simulator.LmuWindows, items = items),
-                        onMove = onMove,
-                        onReadoutEnabledChanged = { _, _ -> },
-                        onQueueEnabledChanged = { _, _ -> },
-                        onStartSoundEnabledChanged = { _, _ -> },
-                        onItemClick = {},
-                    )
+            CompositionLocalProvider(LocalInputModeManager provides fakeInputModeManager(inputMode)) {
+                KoDriverTheme {
+                    items.forEach { displayNames[it] = autoReadoutItemDisplayName(it) }
+                    Box(modifier = Modifier.requiredSize(480.dp, height.dp)) {
+                        AutoReadoutListPane(
+                            uiState = AutoReadoutListUiState(selectedSimulator = Simulator.LmuWindows, items = items),
+                            onMove = onMove,
+                            onReadoutEnabledChanged = { _, _ -> },
+                            onQueueEnabledChanged = { _, _ -> },
+                            onStartSoundEnabledChanged = { _, _ -> },
+                            onItemClick = {},
+                        )
+                    }
                 }
             }
         }
@@ -291,7 +298,8 @@ class AutoReadoutListKeyboardNavigationTest {
     @Test
     fun `フォーカスが行の外にあるときはAlt付きの下キーで並べ替えが依頼されない`() {
         val moves = mutableListOf<Pair<Int, Int>>()
-        setPane(listOf(flag, damage), onMove = { from, to -> moves += from to to })
+        // 起動直後に先頭の行へフォーカスが移らないよう、タッチ操作中として描画する
+        setPane(listOf(flag, damage), onMove = { from, to -> moves += from to to }, inputMode = InputMode.Touch)
 
         rule.onRoot().performKeyInput {
             keyDown(Key.AltLeft)
@@ -302,3 +310,10 @@ class AutoReadoutListKeyboardNavigationTest {
         assertEquals(emptyList(), moves)
     }
 }
+
+private fun fakeInputModeManager(mode: InputMode): InputModeManager =
+    object : InputModeManager {
+        override val inputMode: InputMode = mode
+
+        override fun requestInputMode(inputMode: InputMode): Boolean = false
+    }

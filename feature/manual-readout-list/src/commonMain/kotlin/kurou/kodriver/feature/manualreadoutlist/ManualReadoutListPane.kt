@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.FocusFirstRowOnEntry
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
@@ -94,13 +95,18 @@ internal fun ManualReadoutListPaneContent(
     val bottomEndOverlayInset = LocalBottomEndOverlayInset.current
     var additionBaseline by remember(simulatorId) { mutableStateOf<Set<String>?>(null) }
     val rowFocusState = remember(simulatorId) { ListRowFocusState() }
+    val itemKeys = remember(uiState.sets) { uiState.sets.map { it.id } }
     // 一覧とグリッドのスクロール位置は呼び出し側が保持しているため、スクロールせずに行へフォーカスを戻す
+    FocusFirstRowOnEntry(
+        firstItemKey = itemKeys.firstOrNull(),
+        enabled = focusesFirstRowOnEntry(restoreFocusSetId, uiState.selectedSetId),
+        focusState = rowFocusState,
+    )
     RestoreRowFocusOnReturn(
         restoreItemKey = restoreFocusSetId,
         focusState = rowFocusState,
         onRestored = onFocusRestored,
     )
-    val itemKeys = remember(uiState.sets) { uiState.sets.map { it.id } }
     // 再生ボタン表示のグリッドでは、末尾の「セットを追加」タイルも矢印キーの移動先にする。
     val gridItemKeys = remember(itemKeys) { itemKeys + ADD_SET_TILE_KEY }
     val coroutineScope = rememberCoroutineScope()
@@ -350,3 +356,9 @@ internal fun manualReadoutSetTitle(
         "ace_windows" -> stringResource(Res.string.manual_readout_list_set_title_ace, setNumber)
         else -> error("未対応のsimulatorId: $simulatorId")
     }
+
+/** 詳細が開いておらず、戻り先の行の復元も待っていないときだけ、一覧の先頭の行へフォーカスを置く。 */
+private fun focusesFirstRowOnEntry(
+    restoreFocusSetId: String?,
+    selectedSetId: String?,
+): Boolean = restoreFocusSetId == null && selectedSetId == null
