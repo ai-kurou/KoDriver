@@ -4,7 +4,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.input.InputMode
@@ -243,6 +246,37 @@ public fun RestoreRowFocusOnReturn(
             currentOnRestored()
         }
     }
+}
+
+/**
+ * タブの切り替えなどで一覧が表示されたとき、先頭の行 [firstItemKey] の主操作領域へ一度だけフォーカスを置く。
+ *
+ * [enabled] が false で表示された場合は、その表示では一切フォーカスを置かない
+ * （詳細が選択済みで詳細側が初期フォーカスを持つ場合や、詳細から戻って [RestoreRowFocusOnReturn] が直前の行へ戻す場合）。
+ * 先頭の行がまだ無い（[firstItemKey] が null）間は待ち、決まった時点で一度だけ要求する。
+ * キーボード操作のときだけフォーカスを要求し、行が画面外のときのスクロールは [RestoreRowFocusOnReturn] と同じ。
+ */
+@Composable
+public fun FocusFirstRowOnEntry(
+    firstItemKey: String?,
+    enabled: Boolean,
+    focusState: ListRowFocusState,
+    listState: LazyListState? = null,
+    lazyIndexOf: (String) -> Int? = { null },
+) {
+    var pending by remember { mutableStateOf(enabled) }
+    LaunchedEffect(enabled) {
+        if (!enabled) {
+            pending = false
+        }
+    }
+    RestoreRowFocusOnReturn(
+        restoreItemKey = firstItemKey.takeIf { pending && enabled },
+        focusState = focusState,
+        onRestored = { pending = false },
+        listState = listState,
+        lazyIndexOf = lazyIndexOf,
+    )
 }
 
 private suspend fun LazyListState.focusRow(

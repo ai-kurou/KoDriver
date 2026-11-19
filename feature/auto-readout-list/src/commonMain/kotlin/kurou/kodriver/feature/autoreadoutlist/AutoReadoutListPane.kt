@@ -89,6 +89,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.FocusFirstRowOnEntry
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverHintRow
 import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
@@ -205,6 +206,13 @@ internal fun AutoReadoutListPane(
     val rowFocusState = remember { ListRowFocusState() }
     val itemKeys = remember(uiState.items) { uiState.items.map { it.value } }
     LaunchedEffect(itemKeys) { rowFocusState.onItemKeysChanged() }
+    FocusFirstRowOnEntry(
+        firstItemKey = itemKeys.firstOrNull(),
+        enabled = restoreFocusItemKey == null && uiState.selectedItem == null,
+        focusState = rowFocusState,
+        listState = listState,
+        lazyIndexOf = { autoReadoutItemStartIndex },
+    )
     RestoreRowFocusOnReturn(
         restoreItemKey = restoreFocusItemKey,
         focusState = rowFocusState,
