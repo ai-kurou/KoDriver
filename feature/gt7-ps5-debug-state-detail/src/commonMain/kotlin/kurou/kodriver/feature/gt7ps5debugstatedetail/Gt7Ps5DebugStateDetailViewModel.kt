@@ -12,6 +12,7 @@ import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.GT7_PS5_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.DebugStateCardOrderFlow
 import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 
@@ -39,9 +40,10 @@ internal class Gt7Ps5DebugStateDetailViewModel(
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
     private val _localCardOrder = MutableStateFlow<List<Gt7Ps5DebugStateCardKey>?>(null)
     private val _cardOrder: StateFlow<List<Gt7Ps5DebugStateCardKey>> =
-        Gt7Ps5DebugStateCardOrderFlow(
+        DebugStateCardOrderFlow(
             persistedOrder = cardOrderUseCases.observeKeys(),
             localOrder = _localCardOrder,
+            defaultOrder = defaultDebugStateCardOrder,
             resolveCardOrder = cardOrderUseCases.resolveCardOrder,
         ).order.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
 

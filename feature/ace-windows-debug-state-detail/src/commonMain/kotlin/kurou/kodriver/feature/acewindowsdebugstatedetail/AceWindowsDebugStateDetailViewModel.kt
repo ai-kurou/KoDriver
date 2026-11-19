@@ -12,6 +12,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.DebugStateCardOrderFlow
 import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 
@@ -39,9 +40,10 @@ internal class AceWindowsDebugStateDetailViewModel(
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
     private val _localCardOrder = MutableStateFlow<List<AceWindowsDebugStateCardKey>?>(null)
     private val _cardOrder: StateFlow<List<AceWindowsDebugStateCardKey>> =
-        AceWindowsDebugStateCardOrderFlow(
+        DebugStateCardOrderFlow(
             persistedOrder = cardOrderUseCases.observeKeys(),
             localOrder = _localCardOrder,
+            defaultOrder = defaultDebugStateCardOrder,
             resolveCardOrder = cardOrderUseCases.resolveCardOrder,
         ).order.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
 
