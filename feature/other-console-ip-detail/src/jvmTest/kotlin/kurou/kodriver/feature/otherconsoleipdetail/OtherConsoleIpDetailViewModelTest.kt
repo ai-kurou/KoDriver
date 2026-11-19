@@ -1,5 +1,12 @@
 package kurou.kodriver.feature.otherconsoleipdetail
 
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.slot
+import io.mockk.unmockkStatic
+import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +17,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5UdpPortUseCase
@@ -138,6 +146,50 @@ class OtherConsoleIpDetailViewModelTest {
         }
 
     @Test
+    fun `保存時の例外はcaptureErrorへ記録される`() =
+        runTest {
+            addressRepository = FailingConsoleAddressPreferencesRepository()
+            viewModel = buildViewModel(addrRepo = addressRepository)
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            val captured = slot<Throwable>()
+            mockkStatic(errorCapture)
+            every { captureError(capture(captured)) } returns Unit
+            try {
+                viewModel.onAddressChanged("10.0.0.3")
+                viewModel.onSave()
+
+                assertEquals("保存に失敗しました", captured.captured.message)
+                verify(exactly = 1) { captureError(captured.captured) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
+    fun `保存中のCancellationExceptionは再スローされcaptureErrorへ記録されない`() =
+        runTest {
+            addressRepository = CancellingConsoleAddressPreferencesRepository()
+            viewModel = buildViewModel(addrRepo = addressRepository)
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            val captured = slot<Throwable>()
+            mockkStatic(errorCapture)
+            every { captureError(capture(captured)) } returns Unit
+            try {
+                viewModel.onAddressChanged("10.0.0.4")
+                viewModel.onSave()
+
+                assertFalse(captured.isCaptured)
+                val state = viewModel.uiState.first()
+                assertFalse(state.saveFailed)
+                assertFalse(state.isSaved)
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+
+    @Test
     fun `ポート33741を選択してから保存するとリポジトリに33741が保存される`() =
         runTest {
             viewModel.onAddressChanged("10.0.0.1")
@@ -183,6 +235,10 @@ private class FailingConsoleAddressPreferencesRepository : FakeConsoleAddressPre
     override suspend fun saveConsoleAddress(address: String) {
         error("保存に失敗しました")
     }
+}
+
+private class CancellingConsoleAddressPreferencesRepository : FakeConsoleAddressPreferencesRepository() {
+    override suspend fun saveConsoleAddress(address: String) = throw CancellationException("cancelled")
 }
 
 private class FakeGt7Ps5UdpPortPreferencesRepository(
