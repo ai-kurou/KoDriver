@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.AcePreReleaseNotice
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverPhraseChip
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -130,6 +131,9 @@ internal fun SpeechRecognitionListPaneContent(
             ),
         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
     ) {
+        if (uiState.isAceSelected) {
+            item(key = "acePreReleaseNotice") { AcePreReleaseNotice() }
+        }
         item { WakeWordGuide() }
         item { recognitionCard() }
         uiState.groups.forEach { group ->

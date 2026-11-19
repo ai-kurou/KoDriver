@@ -25,6 +25,7 @@ import kurou.kodriver.domain.repository.ManualReadoutItemSpokenRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechCommandGuideRepository
 import kurou.kodriver.domain.usecase.ObserveManualReadoutItemSpokenUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechCommandGuideUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -69,11 +70,27 @@ class SpeechRecognitionListViewModelTest {
                     SpeechRecognitionListUiState(groups),
                     viewModel.uiState.first { it.groups.isNotEmpty() },
                 )
-                verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+                verify(exactly = 2) { simulatorRepository.selectedSimulator() }
                 verify(exactly = 1) { guideRepository.guideGroups(Simulator.LmuWindows) }
                 verify(exactly = 1) { spokenRepository.observeSpoken() }
                 confirmVerified(simulatorRepository, guideRepository, spokenRepository)
             } finally {
+                viewModel.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `ACE選択中だけ正式リリース前の案内を出す指示にする`() =
+        runTest(dispatcher) {
+            every { simulatorRepository.selectedSimulator() } returns flowOf(Simulator.AceWindows)
+            every { guideRepository.guideGroups(Simulator.AceWindows) } returns emptyList()
+            every { spokenRepository.observeSpoken() } returns spoken
+            val viewModel = createViewModel()
+            val collector = launch(dispatcher) { viewModel.uiState.collect {} }
+            try {
+                assertEquals(true, viewModel.uiState.value.isAceSelected)
+            } finally {
+                collector.cancel()
                 viewModel.viewModelScope.cancel()
             }
         }
@@ -142,5 +159,6 @@ class SpeechRecognitionListViewModelTest {
         SpeechRecognitionListViewModel(
             ObserveSpeechCommandGuideUseCase(simulatorRepository, guideRepository),
             ObserveManualReadoutItemSpokenUseCase(spokenRepository),
+            ObserveSelectedSimulatorUseCase(simulatorRepository),
         )
 }

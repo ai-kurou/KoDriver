@@ -89,6 +89,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.AcePreReleaseNotice
 import kurou.kodriver.core.designsystem.FocusFirstRowOnEntry
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverHintRow
@@ -276,8 +277,8 @@ internal fun AutoReadoutListPane(
                         }.padding(vertical = KoDriverSpacing.large),
             ) {
                 if (isAceSelected) {
-                    item(key = "aceReadoutTimingHint") {
-                        AceAutoReadoutTimingHintRow(
+                    item(key = "acePreReleaseNotice") {
+                        AcePreReleaseNotice(
                             modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
                         )
                     }

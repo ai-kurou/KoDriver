@@ -47,6 +47,30 @@ class SpeechRecognitionListPaneTest {
     }
 
     @Test
+    fun `ACE選択中は最上部に正式リリース前の案内を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionListPaneContent(SpeechRecognitionListUiState(isAceSelected = true))
+            }
+        }
+
+        rule
+            .onNodeWithText(
+                "Assetto Corsa EVOは現在正式リリース前のため、シミュレーターとKoDriverのバージョンの組み合わせによっては正しく動作しない場合があります。",
+            ).assertIsDisplayed()
+    }
+
+    @Test
+    fun `ACE以外では正式リリース前の案内を表示しない`() {
+        rule.setContent { KoDriverTheme { SpeechRecognitionListPaneContent(SpeechRecognitionListUiState()) } }
+
+        rule
+            .onNodeWithText(
+                "Assetto Corsa EVOは現在正式リリース前のため、シミュレーターとKoDriverのバージョンの組み合わせによっては正しく動作しない場合があります。",
+            ).assertDoesNotExist()
+    }
+
+    @Test
     fun `渡された音声認識のカードを呼びかけの案内の下に表示する`() {
         rule.setContent {
             KoDriverTheme {

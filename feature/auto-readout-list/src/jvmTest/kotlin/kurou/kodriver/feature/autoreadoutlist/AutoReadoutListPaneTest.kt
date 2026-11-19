@@ -425,7 +425,7 @@ class AutoReadoutListPaneTest {
     }
 
     @Test
-    fun `ACE選択時のみ読み上げタイミングヒントを表示する`() {
+    fun `ACE選択時のみ正式リリース前の案内を表示する`() {
         rule.setContent {
             KoDriverTheme {
                 AutoReadoutListPane(
@@ -446,15 +446,13 @@ class AutoReadoutListPaneTest {
 
         rule
             .onNodeWithText(
-                "レース開始前やローディング画面で読み上げが発生することがありますが、仕様上の挙動です。" +
-                    "レース中（コース走行中）は設定通りに読み上げられます。" +
-                    "なお、Assetto Corsa EVOは現在正式リリース前のため、" +
+                "Assetto Corsa EVOは現在正式リリース前のため、" +
                     "シミュレーターとKoDriverのバージョンの組み合わせによっては正しく動作しない場合があります。",
             ).assertDoesNotExist()
     }
 
     @Test
-    fun `ACE選択時は読み上げタイミングヒントを表示する`() {
+    fun `ACE選択時は正式リリース前の案内を表示する`() {
         rule.setContent {
             KoDriverTheme {
                 AutoReadoutListPane(
@@ -475,9 +473,7 @@ class AutoReadoutListPaneTest {
 
         rule
             .onNodeWithText(
-                "レース開始前やローディング画面で読み上げが発生することがありますが、仕様上の挙動です。" +
-                    "レース中（コース走行中）は設定通りに読み上げられます。" +
-                    "なお、Assetto Corsa EVOは現在正式リリース前のため、" +
+                "Assetto Corsa EVOは現在正式リリース前のため、" +
                     "シミュレーターとKoDriverのバージョンの組み合わせによっては正しく動作しない場合があります。",
             ).assertIsDisplayed()
     }

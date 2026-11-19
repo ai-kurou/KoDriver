@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.speechrecognitionlist
 
 import kurou.kodriver.domain.usecase.ObserveManualReadoutItemSpokenUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechCommandGuideUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -13,6 +14,7 @@ public val speechRecognitionListModule: Module =
             SpeechRecognitionListViewModel(
                 observeSpeechCommandGuide = ObserveSpeechCommandGuideUseCase(get(), get()),
                 observeItemSpoken = ObserveManualReadoutItemSpokenUseCase(get()),
+                observeSelectedSimulator = ObserveSelectedSimulatorUseCase(get()),
             )
         }
     }
