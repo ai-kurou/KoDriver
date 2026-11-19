@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -22,6 +24,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
@@ -220,21 +223,30 @@ class OtherThemeDetailViewModelTest {
     @Test
     fun `保存に失敗するとプレビューを解除して保存済みテーマへ戻す`() =
         runTest(dispatcher) {
-            every { repository.observeThemeMode() } returns themeModeFlow
-            themeModeFlow.update { ThemeMode.LIGHT }
-            coEvery { repository.saveThemeMode(ThemeMode.DARK) } throws IOException("保存失敗")
-            val viewModel = createViewModel()
-            backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
-            viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
-            assertEquals(ThemeMode.DARK, viewModel.uiState.first().pendingThemeMode)
+            val error = IOException("保存失敗")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                every { repository.observeThemeMode() } returns themeModeFlow
+                themeModeFlow.update { ThemeMode.LIGHT }
+                coEvery { repository.saveThemeMode(ThemeMode.DARK) } throws error
+                val viewModel = createViewModel()
+                backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
+                viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
+                assertEquals(ThemeMode.DARK, viewModel.uiState.first().pendingThemeMode)
 
-            viewModel.onConfirm()
+                viewModel.onConfirm()
 
-            assertEquals(ThemeMode.LIGHT, viewModel.uiState.first().pendingThemeMode)
-            assertEquals(ThemeMode.LIGHT, themeModeFlow.first())
-            verify(exactly = 1) { repository.observeThemeMode() }
-            coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.DARK) }
-            confirmVerified(repository)
+                assertEquals(ThemeMode.LIGHT, viewModel.uiState.first().pendingThemeMode)
+                assertEquals(ThemeMode.LIGHT, themeModeFlow.first())
+                verify(exactly = 1) { repository.observeThemeMode() }
+                coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.DARK) }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test
@@ -266,24 +278,32 @@ class OtherThemeDetailViewModelTest {
     @Test
     fun `保存のキャンセルを再送出してプレビューを解除する`() =
         runTest(dispatcher) {
-            every { repository.observeThemeMode() } returns themeModeFlow
-            val saveJob = CompletableDeferred<Job>()
-            coEvery { repository.saveThemeMode(ThemeMode.DARK) } coAnswers {
-                saveJob.complete(currentCoroutineContext().job)
-                throw CancellationException("保存のキャンセル")
+            val cancellation = CancellationException("保存のキャンセル")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            try {
+                every { repository.observeThemeMode() } returns themeModeFlow
+                val saveJob = CompletableDeferred<Job>()
+                coEvery { repository.saveThemeMode(ThemeMode.DARK) } coAnswers {
+                    saveJob.complete(currentCoroutineContext().job)
+                    throw cancellation
+                }
+                val viewModel = createViewModel()
+                backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
+                viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
+
+                viewModel.onConfirm()
+
+                assertTrue(saveJob.await().isCancelled)
+                assertEquals(ThemeMode.SYSTEM, viewModel.uiState.first().pendingThemeMode)
+                assertEquals(ThemeMode.SYSTEM, themeModeFlow.first())
+                verify(exactly = 1) { repository.observeThemeMode() }
+                coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.DARK) }
+                verify(exactly = 0) { captureError(cancellation) }
+                confirmVerified(errorCapture, repository)
+            } finally {
+                unmockkStatic(errorCapture)
             }
-            val viewModel = createViewModel()
-            backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
-            viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
-
-            viewModel.onConfirm()
-
-            assertTrue(saveJob.await().isCancelled)
-            assertEquals(ThemeMode.SYSTEM, viewModel.uiState.first().pendingThemeMode)
-            assertEquals(ThemeMode.SYSTEM, themeModeFlow.first())
-            verify(exactly = 1) { repository.observeThemeMode() }
-            coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.DARK) }
-            confirmVerified(repository)
         }
 
     @Test

@@ -2,15 +2,14 @@ package kurou.kodriver.feature.otherthemedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.domain.runCapturingErrors
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
 import kurou.kodriver.domain.usecase.SaveThemeModeUseCase
 
@@ -41,14 +40,12 @@ public class OtherThemeDetailViewModel internal constructor(
         val request = ++previewRequest
         viewModelScope.launch {
             try {
-                saveThemeMode(themeMode)
-                // 保存済み状態への反映を待ち、確定時に元のテーマが一瞬表示されるのを防ぐ。
-                uiState.first { it.selectedThemeMode == themeMode }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                captureError(e)
                 // 保存に失敗しても未保存のテーマを表示し続けず、保存済みの設定へ戻す。
+                runCapturingErrors {
+                    saveThemeMode(themeMode)
+                    // 保存済み状態への反映を待ち、確定時に元のテーマが一瞬表示されるのを防ぐ。
+                    uiState.first { it.selectedThemeMode == themeMode }
+                }
             } finally {
                 // 同じテーマを選び直した場合も、後続の選択・保存処理には触れない。
                 if (previewRequest == request) pendingThemeMode.update { null }
