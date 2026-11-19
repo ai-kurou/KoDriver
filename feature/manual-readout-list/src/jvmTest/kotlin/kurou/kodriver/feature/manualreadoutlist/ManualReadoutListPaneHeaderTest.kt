@@ -23,6 +23,29 @@ class ManualReadoutListPaneHeaderTest {
     val rule = createComposeRule()
 
     @Test
+    fun `ACE選択時だけ最上部に正式リリース前の案内を表示する`() {
+        val simulatorId = mutableStateOf("ace_windows")
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutListPaneContent(
+                    uiState = ManualReadoutListUiState(),
+                    simulatorId = simulatorId.value,
+                    simulatorName = "ACE",
+                    onAddSet = {},
+                    onReadSet = {},
+                )
+            }
+        }
+        val notice =
+            rule.onNodeWithText(
+                "Assetto Corsa EVOは現在正式リリース前のため、シミュレーターとKoDriverのバージョンの組み合わせによっては正しく動作しない場合があります。",
+            )
+        notice.assertIsDisplayed()
+        simulatorId.value = "lmu_windows"
+        notice.assertDoesNotExist()
+    }
+
+    @Test
     fun `両セグメントは選択状態を示し未選択側のタップだけ切り替えを通知する`() {
         val playLayout = mutableStateOf(false)
         var toggleCount = 0

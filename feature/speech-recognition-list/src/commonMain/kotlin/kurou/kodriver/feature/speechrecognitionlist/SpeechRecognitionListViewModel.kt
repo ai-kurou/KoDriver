@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveManualReadoutItemSpokenUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechCommandGuideUseCase
 
 private const val STOP_TIMEOUT_MS = 5_000L
@@ -28,6 +30,7 @@ internal const val HIGHLIGHT_DURATION_MS = 2_000L
 internal class SpeechRecognitionListViewModel(
     observeSpeechCommandGuide: ObserveSpeechCommandGuideUseCase,
     observeItemSpoken: ObserveManualReadoutItemSpokenUseCase,
+    observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) : ViewModel() {
     private val highlights =
         observeItemSpoken()
@@ -47,8 +50,12 @@ internal class SpeechRecognitionListViewModel(
             }
 
     val uiState =
-        combine(observeSpeechCommandGuide(), highlights) { groups, highlight ->
-            SpeechRecognitionListUiState(groups = groups, highlight = highlight)
+        combine(observeSpeechCommandGuide(), highlights, observeSelectedSimulator()) { groups, highlight, simulator ->
+            SpeechRecognitionListUiState(
+                groups = groups,
+                highlight = highlight,
+                isAceSelected = simulator is Simulator.AceWindows,
+            )
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS, replayExpirationMillis = 0),

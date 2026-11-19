@@ -73,7 +73,7 @@ class SpeechRecognitionListModuleTest {
             val viewModel = application.koin.get<SpeechRecognitionListViewModel>()
             try {
                 assertEquals(groups, viewModel.uiState.first { it.groups.isNotEmpty() }.groups)
-                verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+                verify(exactly = 2) { simulatorRepository.selectedSimulator() }
                 verify(exactly = 1) { guideRepository.guideGroups(Simulator.Gt7Ps5) }
                 verify(exactly = 1) { spokenRepository.observeSpoken() }
                 confirmVerified(simulatorRepository, guideRepository, spokenRepository)

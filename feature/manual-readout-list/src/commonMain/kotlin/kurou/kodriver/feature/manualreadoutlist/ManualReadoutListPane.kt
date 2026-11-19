@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.AcePreReleaseNotice
 import kurou.kodriver.core.designsystem.FocusFirstRowOnEntry
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ListRowFocusState
@@ -60,6 +61,7 @@ import kurou.kodriver.core.designsystem.RestoreRowFocusOnReturn
 import kurou.kodriver.core.designsystem.handleListGridArrowKey
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_add_set
@@ -132,6 +134,7 @@ internal fun ManualReadoutListPaneContent(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
+                ManualReadoutAcePreReleaseNotice(simulatorId)
                 ManualReadoutHintRow(
                     setCount = uiState.sets.size,
                     showSimHubGuideLink = ReadoutItemKeyRegistry.showsManualReadoutSimHubGuideLink(simulatorId),
@@ -365,3 +368,11 @@ private fun focusesFirstRowOnEntry(
     restoreFocusSetId: String?,
     selectedSetId: String?,
 ): Boolean = restoreFocusSetId == null && selectedSetId == null
+
+/** ACE を選択しているときだけ、正式リリース前の案内を最上部に表示する。 */
+@Composable
+private fun ManualReadoutAcePreReleaseNotice(simulatorId: String) {
+    if (simulatorId == Simulator.AceWindows.id) {
+        AcePreReleaseNotice(modifier = Modifier.padding(horizontal = KoDriverSpacing.small))
+    }
+}

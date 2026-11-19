@@ -5,6 +5,7 @@
     <string name="simulator_name_gt7_ps5">Gran Turismo 7（PS5）</string>
     <string name="platform_label_windows">Windows版</string>
     <string name="simulator_name_ace_windows">Assetto Corsa EVO（Windows版）</string>
+    <string name="ace_pre_release_notice">Assetto Corsa EVOは現在正式リリース前のため、シミュレーターとKoDriverのバージョンの組み合わせによっては正しく動作しない場合があります。</string>
     <string name="readout_item_vehicle_approach">車両接近</string>
     <string name="readout_item_vehicle_approach_sustained">接近継続</string>
     <string name="readout_item_vehicle_approach_start_readout">接近開始時の読み上げ</string>
