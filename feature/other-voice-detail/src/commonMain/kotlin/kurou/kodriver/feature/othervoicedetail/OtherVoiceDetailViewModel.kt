@@ -11,8 +11,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.TextToSpeechVoice
+import kurou.kodriver.domain.runCapturingErrors
+import kurou.kodriver.domain.runCapturingErrorsOrNull
 import kurou.kodriver.domain.usecase.GetAvailableVoicesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
@@ -41,24 +42,11 @@ internal class OtherVoiceDetailViewModel(
 
     /** 取得に失敗しても取得完了（空の一覧）として扱い、「再読み込み」から再試行できるようにする。 */
     private suspend fun loadVoices(): List<TextToSpeechVoice> =
-        try {
-            getAvailableVoices()
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            captureError(e)
-            emptyList()
-        }
+        runCapturingErrorsOrNull { getAvailableVoices() } ?: emptyList()
 
     fun onVoiceSelected(id: String) {
         viewModelScope.launch {
-            try {
-                saveVoice(id)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                captureError(e)
-            }
+            runCapturingErrors { saveVoice(id) }
         }
     }
 

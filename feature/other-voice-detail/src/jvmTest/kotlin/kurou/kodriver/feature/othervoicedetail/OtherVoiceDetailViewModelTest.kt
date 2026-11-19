@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -26,6 +28,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withContext
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.repository.VoiceListRepository
@@ -168,25 +171,35 @@ class OtherVoiceDetailViewModelTest {
     fun `一覧の取得に失敗しても取得完了の空の一覧になり再読み込みで復帰できる`() =
         runTest {
             every { voicePreferencesRepository.voiceId() } returns MutableStateFlow(VOICE_ID_UNSPECIFIED)
+            val failure = IllegalStateException("取得失敗")
             var calls = 0
             coEvery { voiceListRepository.availableVoices() } coAnswers {
-                if (calls++ == 0) throw IllegalStateException("取得失敗") else listOf(voice)
+                if (calls++ == 0) throw failure else listOf(voice)
             }
-            val viewModel = createViewModel()
-            val job = viewModel.uiState.launchIn(backgroundScope)
-            runCurrent()
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(failure) } returns Unit
+            try {
+                val viewModel = createViewModel()
+                val job = viewModel.uiState.launchIn(backgroundScope)
+                runCurrent()
 
-            val failed = viewModel.uiState.first { !it.isLoading }
-            assertEquals(emptyList(), failed.voices)
+                val failed = viewModel.uiState.first { !it.isLoading }
+                assertEquals(emptyList(), failed.voices)
 
-            viewModel.onRetryClicked()
-            runCurrent()
+                viewModel.onRetryClicked()
+                runCurrent()
 
-            assertEquals(listOf(voice), viewModel.uiState.first { !it.isLoading && it.voices.isNotEmpty() }.voices)
-            coVerify(exactly = 2) { voiceListRepository.availableVoices() }
-            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
-            job.cancel()
-            confirmVerified(voiceListRepository, voicePreferencesRepository)
+                assertEquals(listOf(voice), viewModel.uiState.first { !it.isLoading && it.voices.isNotEmpty() }.voices)
+                verify(exactly = 1) { captureError(failure) }
+                confirmVerified(errorCapture)
+                coVerify(exactly = 2) { voiceListRepository.availableVoices() }
+                verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+                job.cancel()
+                confirmVerified(voiceListRepository, voicePreferencesRepository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test
