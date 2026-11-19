@@ -5,6 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +19,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.repository.VoiceListRepository
@@ -63,22 +66,32 @@ class OtherVoiceDetailVoiceSelectionFailureTest {
     fun `音声選択の保存に失敗しても例外が伝播せず選択は更新されない`() =
         runTest {
             val saved = MutableStateFlow(VOICE_ID_UNSPECIFIED)
+            val failure = IllegalStateException("保存失敗")
             every { voicePreferencesRepository.voiceId() } returns saved
             coEvery { voiceListRepository.availableVoices() } returns listOf(voice)
-            coEvery { voicePreferencesRepository.saveVoiceId(voice.id) } throws IllegalStateException("保存失敗")
-            val viewModel = createViewModel()
-            val job = viewModel.uiState.launchIn(backgroundScope)
-            runCurrent()
+            coEvery { voicePreferencesRepository.saveVoiceId(voice.id) } throws failure
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(failure) } returns Unit
+            try {
+                val viewModel = createViewModel()
+                val job = viewModel.uiState.launchIn(backgroundScope)
+                runCurrent()
 
-            viewModel.onVoiceSelected(voice.id)
-            runCurrent()
+                viewModel.onVoiceSelected(voice.id)
+                runCurrent()
 
-            assertEquals(VOICE_ID_UNSPECIFIED, viewModel.uiState.first().selectedVoiceId)
-            coVerify(exactly = 1) { voicePreferencesRepository.saveVoiceId(voice.id) }
-            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
-            coVerify(exactly = 1) { voiceListRepository.availableVoices() }
-            job.cancel()
-            confirmVerified(voicePreferencesRepository, voiceListRepository)
+                assertEquals(VOICE_ID_UNSPECIFIED, viewModel.uiState.first().selectedVoiceId)
+                verify(exactly = 1) { captureError(failure) }
+                confirmVerified(errorCapture)
+                coVerify(exactly = 1) { voicePreferencesRepository.saveVoiceId(voice.id) }
+                verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+                coVerify(exactly = 1) { voiceListRepository.availableVoices() }
+                job.cancel()
+                confirmVerified(voicePreferencesRepository, voiceListRepository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test
