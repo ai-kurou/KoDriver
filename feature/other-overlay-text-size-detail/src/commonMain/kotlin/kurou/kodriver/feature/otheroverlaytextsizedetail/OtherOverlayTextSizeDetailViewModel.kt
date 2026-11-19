@@ -2,14 +2,13 @@ package kurou.kodriver.feature.otheroverlaytextsizedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.OverlayTextSize
+import kurou.kodriver.domain.runCapturingErrors
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.PreviewOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayTextSizeUseCase
@@ -45,12 +44,8 @@ internal class OtherOverlayTextSizeDetailViewModel internal constructor(
         confirmingRequest = request
         viewModelScope.launch {
             try {
-                saveOverlayTextSize(overlayTextSize)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                captureError(e)
                 // 保存に失敗しても未保存のサイズを表示し続けず、保存済みの設定へ戻す。
+                runCapturingErrors { saveOverlayTextSize(overlayTextSize) }
             } finally {
                 if (confirmingRequest == request) confirmingRequest = null
                 // 保存中に選び直された場合は、後続の選択のプレビューを解除しない。

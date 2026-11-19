@@ -6,7 +6,10 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +20,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
@@ -262,22 +266,60 @@ class OtherOverlayTextSizeDetailViewModelTest {
         }
 
     @Test
-    fun `保存に失敗してもプレビューを解除する`() =
+    fun `保存に失敗してもプレビューを解除して記録する`() =
         runTest(dispatcher) {
+            val error = IllegalStateException("failed")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
             every { repository.observeOverlayTextSize() } returns overlayTextSizeFlow
             every { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) } returns Unit
             every { repository.setPreviewOverlayTextSize(null) } returns Unit
-            coEvery { repository.saveOverlayTextSize(OverlayTextSize.LARGE) } throws IllegalStateException("failed")
-            val viewModel = createViewModel()
+            coEvery { repository.saveOverlayTextSize(OverlayTextSize.LARGE) } throws error
+            try {
+                val viewModel = createViewModel()
 
-            viewModel.onPendingOverlayTextSizeSelected(OverlayTextSize.LARGE)
-            viewModel.onConfirm()
+                viewModel.onPendingOverlayTextSizeSelected(OverlayTextSize.LARGE)
+                viewModel.onConfirm()
 
+                assertEquals(OverlayTextSize.MEDIUM, viewModel.uiState.first().pendingOverlayTextSize)
+                verify(exactly = 1) { captureError(error) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
             verify(exactly = 1) { repository.observeOverlayTextSize() }
             verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) }
             coVerify(exactly = 1) { repository.saveOverlayTextSize(OverlayTextSize.LARGE) }
             verify(exactly = 1) { repository.setPreviewOverlayTextSize(null) }
-            confirmVerified(repository)
+            confirmVerified(repository, errorCapture)
+        }
+
+    @Test
+    fun `保存のキャンセル例外は記録せず、プレビューを解除する`() =
+        runTest(dispatcher) {
+            val cancelled = CancellationException("キャンセル")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { repository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) } returns Unit
+            every { repository.setPreviewOverlayTextSize(null) } returns Unit
+            coEvery { repository.saveOverlayTextSize(OverlayTextSize.LARGE) } throws cancelled
+            try {
+                val viewModel = createViewModel()
+
+                viewModel.onPendingOverlayTextSizeSelected(OverlayTextSize.LARGE)
+                viewModel.onConfirm()
+
+                assertEquals(OverlayTextSize.MEDIUM, viewModel.uiState.first().pendingOverlayTextSize)
+                verify(exactly = 0) { captureError(cancelled) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            verify(exactly = 1) { repository.observeOverlayTextSize() }
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE) }
+            coVerify(exactly = 1) { repository.saveOverlayTextSize(OverlayTextSize.LARGE) }
+            verify(exactly = 1) { repository.setPreviewOverlayTextSize(null) }
+            confirmVerified(repository, errorCapture)
         }
 
     @Test
