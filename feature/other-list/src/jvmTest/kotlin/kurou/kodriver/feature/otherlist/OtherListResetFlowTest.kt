@@ -155,12 +155,20 @@ abstract class OtherListResetFlowTestContract {
     fun `CancellationExceptionをそのまま伝播して実行中状態を解除する`() =
         runTest {
             val cancellation = CancellationException("cancelled")
-            stubFailure(cancellation)
-            onResetClick()
-            val thrown = assertFailsWith<CancellationException> { onResetConfirm() }
-            assertSame(cancellation, thrown)
-            assertEquals(OtherListResetUiState(), uiState.value)
-            verifyCalls(firstCalls = 1, remainingCalls = 0)
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            try {
+                stubFailure(cancellation)
+                onResetClick()
+                val thrown = assertFailsWith<CancellationException> { onResetConfirm() }
+                assertSame(cancellation, thrown)
+                assertEquals(OtherListResetUiState(), uiState.value)
+                verifyCalls(firstCalls = 1, remainingCalls = 0)
+                verify(exactly = 0) { captureError(cancellation) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test
