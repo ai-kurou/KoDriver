@@ -344,22 +344,31 @@ class OtherVolumeDetailViewModelTest {
     @Test
     fun `音量ゼロでは試聴せず失敗時も停止状態へ戻る`() =
         runTest {
+            val error = IOException("失敗")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
             every { soundVolumeRepository.volume() } returns volumeFlow
             every { warningEnabledRepository.observeLowVolumeWarningEnabled() } returns MutableStateFlow(true)
             coEvery { deviceVolumeRepository.getVolume() } returns 60
-            coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } throws IOException("失敗")
+            coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } throws error
             val viewModel = createViewModel()
             viewModel.uiState.launchIn(backgroundScope)
-            volumeFlow.update { 0 }
-            viewModel.onPreviewClicked()
-            assertFalse(viewModel.uiState.first().isPreviewing)
-            coVerify(exactly = 0) { speakText("自己ベストラップ更新 1分23秒456", volume = 0) }
+            try {
+                volumeFlow.update { 0 }
+                viewModel.onPreviewClicked()
+                assertFalse(viewModel.uiState.first().isPreviewing)
+                coVerify(exactly = 0) { speakText("自己ベストラップ更新 1分23秒456", volume = 0) }
 
-            volumeFlow.update { 80 }
-            viewModel.onPreviewClicked()
-            assertFalse(viewModel.uiState.first().isPreviewing)
-            coVerify(exactly = 1) { speakText("自己ベストラップ更新 1分23秒456", volume = 80) }
-            confirmVerified(speakText)
+                volumeFlow.update { 80 }
+                viewModel.onPreviewClicked()
+                assertFalse(viewModel.uiState.first().isPreviewing)
+                verify(exactly = 1) { captureError(error) }
+                coVerify(exactly = 1) { speakText("自己ベストラップ更新 1分23秒456", volume = 80) }
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+            confirmVerified(speakText, errorCapture)
         }
 
     @Test
