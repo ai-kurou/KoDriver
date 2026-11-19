@@ -58,13 +58,13 @@ Windows/Androidの「読み上げ速度」項目を読み上げ音声の次に�
 
 「Windows版KoDriverへ接続するIPアドレス」（ServerIp）項目に「LMU」「ACE」、「ゲーム機・SimHubへ接続するIPアドレス」（ConsoleIp）項目に「GT7」のゲーム名タグを右端の矢印の前に表示する。他の項目にはタグを表示せず、選択中はタグの配色を切り替えて視認性を保つ。
 
-「情報」の後ろ（一覧の最下部）に「データ・ログ」カテゴリを表示し、「ログを表示」「自動タブの設定を初期化」「手動タブの設定を初期化」「ログを全て削除」をこの順に配置する。「ログを全て削除」はタップすると確認ダイアログを表示し、確認後にすべてのシミュレーターのログを削除する。選択状態や詳細ペインは変わらない。削除中は二重実行を防ぎ、成功・失敗をスナックバーで通知する。削除フローの状態・操作・UseCase依存は `OtherListResetFlow` が管理し、`OtherListViewModel` は `viewModelScope` で操作を実行する。
+「情報」の後ろ（一覧の最下部）に「データ・ログ」カテゴリを表示し、「ログを表示」「自動タブの設定を初期化」「手動タブの設定を初期化」「ログを全て削除」をこの順に配置する。「ログを全て削除」はタップすると確認ダイアログを表示し、確認後にすべてのシミュレーターのログを削除する。選択状態や詳細ペインは変わらない。削除中は二重実行を防ぎ、成功・失敗をスナックバーで通知する。削除フローの状態・操作は `OtherListResetFlow` が管理し、実処理は `suspend () -> Unit` として渡される（ログ削除・自動タブ初期化・手動タブ初期化の3つを用途別インスタンスとして生成）。`OtherListViewModel` は `viewModelScope` で操作を実行する。
 
 「ログを表示」はデータ・ログカテゴリの先頭に全プラットフォームで表示する。選択すると、選択中シミュレーターのログ一覧だけを表示する詳細ペインへ遷移する。ログをタップしても何も起きず、ログ詳細は表示しない。一覧の個別削除は詳細ペイン内で行える。各ログの「その他の操作」メニューから「フィードバック送信」を選ぶと、そのログを添付対象として「フィードバック」の詳細ペインへ切り替わる（`OtherListViewModel.selectFeedbackItem`）。
 
-「自動タブの設定を初期化」はデータ・ログカテゴリで「ログを表示」の次に全プラットフォームで表示する。確認後、操作した端末の自動タブの設定を LMU・ACE・GT7 一括で既定値へ戻す（有効/無効、並び順、閾値、読み上げ文言など）。選択状態や詳細ペインは変わらない。`OtherListAutoReadoutSettingsResetFlow` が確認・二重実行防止・成功/失敗を管理し、ViewModel が `viewModelScope` で実行する。`ResetAutoReadoutSettingsUseCase(getAll())` に登録済みの全 resetter を渡し、OtherContent がダイアログとスナックバー、離脱時の結果消費を扱う。
+「自動タブの設定を初期化」はデータ・ログカテゴリで「ログを表示」の次に全プラットフォームで表示する。確認後、操作した端末の自動タブの設定を LMU・ACE・GT7 一括で既定値へ戻す（有効/無効、並び順、閾値、読み上げ文言など）。選択状態や詳細ペインは変わらない。`OtherListResetFlow` に `ResetAutoReadoutSettingsUseCase(getAll())::invoke` を渡して確認・二重実行防止・成功/失敗を管理し、ViewModel が `viewModelScope` で実行する。UseCase には登録済みの全 resetter を渡し、OtherContent がダイアログとスナックバー、離脱時の結果消費を扱う。
 
-「手動タブの設定を初期化」は自動タブ初期化の次に表示する。確認後、手動タブの LMU・ACE・GT7 の読み上げセット（項目のON/OFF、並び順、ホットキーなど）と再生ボタンのレイアウト設定を一括で既定値へ戻す。構成は自動版と同じで、`OtherListManualReadoutSettingsResetFlow` と `ResetManualReadoutSettingsUseCase(getAll())` を使い、OtherContent がダイアログとスナックバーを扱う。
+「手動タブの設定を初期化」は自動タブ初期化の次に表示する。確認後、手動タブの LMU・ACE・GT7 の読み上げセット（項目のON/OFF、並び順、ホットキーなど）と再生ボタンのレイアウト設定を一括で既定値へ戻す。構成は自動版と同じで、`OtherListResetFlow` に `ResetManualReadoutSettingsUseCase(getAll())::invoke` を渡して使い、OtherContent がダイアログとスナックバーを扱う。
 
 OS起動時自動起動の状態取得・変更と表示状態は `OtherListStartupRegistrationFlow` が管理し、`OtherListViewModel` は `viewModelScope` で操作を起動する。
 
