@@ -6,6 +6,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -18,6 +20,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
@@ -136,40 +139,57 @@ class OtherOverlayTextColorDetailViewModelTest {
         }
 
     @Test
-    fun `保存失敗ではプレビューを解除して保存済みの色に戻す`() =
+    fun `保存失敗ではプレビューを解除して保存済みの色に戻しエラーを記録する`() =
         runTest(dispatcher) {
-            every { repository.observeOverlayTextColor() } returns flow
-            coEvery { repository.saveOverlayTextColor(0xFFFFFFFFL) } throws IllegalStateException("failed")
-            every { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) } returns Unit
-            every { repository.setPreviewOverlayTextColor(null) } returns Unit
-            val viewModel = createViewModel()
-            viewModel.onPendingOverlayTextColorSelected(0xFFFFFFFFL)
-            viewModel.onConfirm()
-            assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, viewModel.uiState.first().selectedOverlayTextColor)
-            assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, viewModel.uiState.first().pendingOverlayTextColor)
-            coVerify(exactly = 1) { repository.saveOverlayTextColor(0xFFFFFFFFL) }
-            verify(exactly = 1) { repository.observeOverlayTextColor() }
-            verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) }
-            verify(exactly = 1) { repository.setPreviewOverlayTextColor(null) }
-            confirmVerified(repository)
+            val error = IllegalStateException("failed")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                every { repository.observeOverlayTextColor() } returns flow
+                coEvery { repository.saveOverlayTextColor(0xFFFFFFFFL) } throws error
+                every { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) } returns Unit
+                every { repository.setPreviewOverlayTextColor(null) } returns Unit
+                val viewModel = createViewModel()
+                viewModel.onPendingOverlayTextColorSelected(0xFFFFFFFFL)
+                viewModel.onConfirm()
+                assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, viewModel.uiState.first().selectedOverlayTextColor)
+                assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, viewModel.uiState.first().pendingOverlayTextColor)
+                coVerify(exactly = 1) { repository.saveOverlayTextColor(0xFFFFFFFFL) }
+                verify(exactly = 1) { repository.observeOverlayTextColor() }
+                verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) }
+                verify(exactly = 1) { repository.setPreviewOverlayTextColor(null) }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(repository, errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test
-    fun `保存のキャンセルでは保存値を変更しない`() =
+    fun `保存のキャンセルでは保存値を変更せずエラーを記録せず例外を伝播する`() =
         runTest(dispatcher) {
-            every { repository.observeOverlayTextColor() } returns flow
-            coEvery { repository.saveOverlayTextColor(0xFFFFFFFFL) } throws CancellationException("cancelled")
-            every { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) } returns Unit
-            every { repository.setPreviewOverlayTextColor(null) } returns Unit
-            val viewModel = createViewModel()
-            viewModel.onPendingOverlayTextColorSelected(0xFFFFFFFFL)
-            viewModel.onConfirm()
-            assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, flow.first())
-            coVerify(exactly = 1) { repository.saveOverlayTextColor(0xFFFFFFFFL) }
-            verify(exactly = 1) { repository.observeOverlayTextColor() }
-            verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) }
-            verify(exactly = 1) { repository.setPreviewOverlayTextColor(null) }
-            confirmVerified(repository)
+            val cancellation = CancellationException("cancelled")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            try {
+                every { repository.observeOverlayTextColor() } returns flow
+                coEvery { repository.saveOverlayTextColor(0xFFFFFFFFL) } throws cancellation
+                every { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) } returns Unit
+                every { repository.setPreviewOverlayTextColor(null) } returns Unit
+                val viewModel = createViewModel()
+                viewModel.onPendingOverlayTextColorSelected(0xFFFFFFFFL)
+                viewModel.onConfirm()
+                assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, flow.first())
+                coVerify(exactly = 1) { repository.saveOverlayTextColor(0xFFFFFFFFL) }
+                verify(exactly = 1) { repository.observeOverlayTextColor() }
+                verify(exactly = 1) { repository.setPreviewOverlayTextColor(0xFFFFFFFFL) }
+                verify(exactly = 1) { repository.setPreviewOverlayTextColor(null) }
+                verify(exactly = 0) { captureError(cancellation) }
+                confirmVerified(repository, errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test
