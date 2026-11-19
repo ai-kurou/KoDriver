@@ -1,10 +1,9 @@
 package kurou.kodriver.domain.usecase
 
-import kotlinx.coroutines.CancellationException
-import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
+import kurou.kodriver.domain.runCapturingErrors
 import kotlin.time.Clock
 
 public class SendFeedbackUseCase(
@@ -30,13 +29,9 @@ public class SendFeedbackUseCase(
     }
 
     private suspend fun saveCooldownTimestamp() {
-        try {
+        // 送信自体は成功しているため、クールダウン記録の失敗で送信結果を失敗扱いにしない。
+        runCapturingErrors {
             cooldownRepository.saveLastFeedbackSentAtEpochMillis(currentTimeMs())
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            // 送信自体は成功しているため、クールダウン記録の失敗で送信結果を失敗扱いにしない。
-            captureError(e)
         }
     }
 }
