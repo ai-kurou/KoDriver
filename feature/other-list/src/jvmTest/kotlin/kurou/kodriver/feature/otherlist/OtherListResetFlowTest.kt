@@ -12,13 +12,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.TelemetryLogRepository
-import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -27,34 +23,42 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
-class OtherListResetFlowTest : OtherListResetFlowTestContract() {
-    private val repository: TelemetryLogRepository = mockk()
+class OtherListResetFlowTest {
+    private val reset: suspend () -> Unit = mockk()
+    private val resetFlow = OtherListResetFlow(reset)
 
     @Test
-    fun `未確認時と取消後の確定では削除しない`() =
+    fun `未確認時と取消後の確定では初期化しない`() =
         runTest {
-            val resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(repository))
             assertEquals(OtherListResetUiState(), resetFlow.uiState.value)
             resetFlow.onResetConfirm()
             resetFlow.onResetClick()
             assertTrue(resetFlow.uiState.value.showResetConfirmDialog)
             resetFlow.onResetDismiss()
+            assertFalse(resetFlow.uiState.value.showResetConfirmDialog)
             resetFlow.onResetConfirm()
             assertEquals(OtherListResetUiState(), resetFlow.uiState.value)
-            Simulator.entries.forEach { simulator ->
-                coVerify(exactly = 0) { repository.deleteTelemetryLogsBySimulator(simulator) }
-            }
-            confirmVerified(repository)
+            confirmVerified(reset)
         }
 
     @Test
-    fun `削除中の再クリックと二重確定を抑止し成功結果を消費する`() =
+    fun `成功を通知し結果を消費できる`() =
+        runTest {
+            coEvery { reset() } returns Unit
+            resetFlow.onResetClick()
+            resetFlow.onResetConfirm()
+            assertEquals(OtherListResetUiState(resetSucceeded = true), resetFlow.uiState.value)
+            resetFlow.consumeResetResult()
+            assertEquals(OtherListResetUiState(), resetFlow.uiState.value)
+            coVerify(exactly = 1) { reset() }
+            confirmVerified(reset)
+        }
+
+    @Test
+    fun `実行中の再クリックと二重確定を抑止する`() =
         runTest {
             val completion = CompletableDeferred<Unit>()
-            Simulator.entries.forEach { simulator ->
-                coEvery { repository.deleteTelemetryLogsBySimulator(simulator) } coAnswers { completion.await() }
-            }
-            val resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(repository))
+            coEvery { reset() } coAnswers { completion.await() }
             resetFlow.onResetClick()
             val job = launch(start = CoroutineStart.UNDISPATCHED) { resetFlow.onResetConfirm() }
             assertTrue(resetFlow.uiState.value.isResetting)
@@ -66,61 +70,9 @@ class OtherListResetFlowTest : OtherListResetFlowTestContract() {
             completion.complete(Unit)
             job.join()
             assertEquals(OtherListResetUiState(resetSucceeded = true), resetFlow.uiState.value)
-            resetFlow.consumeResetResult()
-            assertEquals(OtherListResetUiState(), resetFlow.uiState.value)
-            Simulator.entries.forEach { simulator ->
-                coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(simulator) }
-            }
-            confirmVerified(repository)
+            coVerify(exactly = 1) { reset() }
+            confirmVerified(reset)
         }
-
-    private val resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(repository))
-
-    override val uiState: StateFlow<OtherListResetUiState> = resetFlow.uiState
-
-    override fun onResetClick() = resetFlow.onResetClick()
-
-    override suspend fun onResetConfirm() = resetFlow.onResetConfirm()
-
-    override fun stubFailure(exception: Exception) {
-        coEvery { repository.deleteTelemetryLogsBySimulator(Simulator.entries.first()) } throws exception
-    }
-
-    override fun stubAwait(completion: CompletableDeferred<Unit>) {
-        Simulator.entries.forEach { simulator ->
-            coEvery { repository.deleteTelemetryLogsBySimulator(simulator) } coAnswers { completion.await() }
-        }
-    }
-
-    override fun verifyCalls(
-        firstCalls: Int,
-        remainingCalls: Int,
-    ) {
-        Simulator.entries.forEach { simulator ->
-            coVerify(exactly = if (simulator == Simulator.entries.first()) firstCalls else remainingCalls) {
-                repository.deleteTelemetryLogsBySimulator(simulator)
-            }
-        }
-        confirmVerified(repository)
-    }
-}
-
-/** 両方の初期化Flowで例外・キャンセル時の契約を同じテストとして実行する。 */
-abstract class OtherListResetFlowTestContract {
-    protected abstract val uiState: StateFlow<OtherListResetUiState>
-
-    protected abstract fun onResetClick()
-
-    protected abstract suspend fun onResetConfirm()
-
-    protected abstract fun stubFailure(exception: Exception)
-
-    protected abstract fun stubAwait(completion: CompletableDeferred<Unit>)
-
-    protected abstract fun verifyCalls(
-        firstCalls: Int,
-        remainingCalls: Int,
-    )
 
     @Test
     fun `通常例外を記録して失敗結果にし再実行時に前回の結果を消す`() =
@@ -130,22 +82,22 @@ abstract class OtherListResetFlowTestContract {
             mockkStatic(errorCapture)
             try {
                 every { captureError(error) } returns Unit
-                stubFailure(error)
-                onResetClick()
-                onResetConfirm()
-                assertEquals(OtherListResetUiState(resetSucceeded = false), uiState.value)
+                coEvery { reset() } throws error
+                resetFlow.onResetClick()
+                resetFlow.onResetConfirm()
+                assertEquals(OtherListResetUiState(resetSucceeded = false), resetFlow.uiState.value)
                 val completion = CompletableDeferred<Unit>()
-                stubAwait(completion)
-                onResetClick()
-                val job = launch(start = CoroutineStart.UNDISPATCHED) { onResetConfirm() }
-                assertTrue(uiState.value.isResetting)
-                assertNull(uiState.value.resetSucceeded)
+                coEvery { reset() } coAnswers { completion.await() }
+                resetFlow.onResetClick()
+                val job = launch(start = CoroutineStart.UNDISPATCHED) { resetFlow.onResetConfirm() }
+                assertTrue(resetFlow.uiState.value.isResetting)
+                assertNull(resetFlow.uiState.value.resetSucceeded)
                 completion.complete(Unit)
                 job.join()
-                assertEquals(OtherListResetUiState(resetSucceeded = true), uiState.value)
-                verifyCalls(firstCalls = 2, remainingCalls = 1)
+                assertEquals(OtherListResetUiState(resetSucceeded = true), resetFlow.uiState.value)
+                coVerify(exactly = 2) { reset() }
                 verify(exactly = 1) { captureError(error) }
-                confirmVerified(errorCapture)
+                confirmVerified(reset, errorCapture)
             } finally {
                 unmockkStatic(errorCapture)
             }
@@ -158,14 +110,14 @@ abstract class OtherListResetFlowTestContract {
             val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
             mockkStatic(errorCapture)
             try {
-                stubFailure(cancellation)
-                onResetClick()
-                val thrown = assertFailsWith<CancellationException> { onResetConfirm() }
+                coEvery { reset() } throws cancellation
+                resetFlow.onResetClick()
+                val thrown = assertFailsWith<CancellationException> { resetFlow.onResetConfirm() }
                 assertSame(cancellation, thrown)
-                assertEquals(OtherListResetUiState(), uiState.value)
-                verifyCalls(firstCalls = 1, remainingCalls = 0)
+                assertEquals(OtherListResetUiState(), resetFlow.uiState.value)
+                coVerify(exactly = 1) { reset() }
                 verify(exactly = 0) { captureError(cancellation) }
-                confirmVerified(errorCapture)
+                confirmVerified(reset, errorCapture)
             } finally {
                 unmockkStatic(errorCapture)
             }
@@ -175,13 +127,14 @@ abstract class OtherListResetFlowTestContract {
     fun `呼び出し元のキャンセルでも実行中状態を解除して結果を通知しない`() =
         runTest {
             val completion = CompletableDeferred<Unit>()
-            stubAwait(completion)
-            onResetClick()
-            val job = launch(start = CoroutineStart.UNDISPATCHED) { onResetConfirm() }
-            assertTrue(uiState.value.isResetting)
+            coEvery { reset() } coAnswers { completion.await() }
+            resetFlow.onResetClick()
+            val job = launch(start = CoroutineStart.UNDISPATCHED) { resetFlow.onResetConfirm() }
+            assertTrue(resetFlow.uiState.value.isResetting)
             job.cancelAndJoin()
             assertTrue(job.isCancelled)
-            assertEquals(OtherListResetUiState(), uiState.value)
-            verifyCalls(firstCalls = 1, remainingCalls = 0)
+            assertEquals(OtherListResetUiState(), resetFlow.uiState.value)
+            coVerify(exactly = 1) { reset() }
+            confirmVerified(reset)
         }
 }

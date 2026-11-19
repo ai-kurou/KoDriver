@@ -222,15 +222,11 @@ abstract class OtherListViewModelTestFixture {
             appUpdateFlow =
                 OtherListAppUpdateFlow(CheckAppUpdateAvailableUseCase(appUpdateRepository), "0.5.0"),
             deviceVolumeFlow = OtherListDeviceVolumeFlow(GetDeviceVolumeUseCase(deviceVolumeRepository)),
-            resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(telemetryLogRepository)),
+            resetFlow = OtherListResetFlow(ResetTelemetryLogDatabaseUseCase(telemetryLogRepository)::invoke),
             autoReadoutSettingsResetFlow =
-                OtherListAutoReadoutSettingsResetFlow(
-                    ResetAutoReadoutSettingsUseCase(listOf(autoReadoutSettingsResetter)),
-                ),
+                OtherListResetFlow(ResetAutoReadoutSettingsUseCase(listOf(autoReadoutSettingsResetter))::invoke),
             manualReadoutSettingsResetFlow =
-                OtherListManualReadoutSettingsResetFlow(
-                    ResetManualReadoutSettingsUseCase(listOf(manualReadoutSettingsResetter)),
-                ),
+                OtherListResetFlow(ResetManualReadoutSettingsUseCase(listOf(manualReadoutSettingsResetter))::invoke),
             appVersionInfo =
                 OtherListAppVersionInfo(
                     currentVersion = "0.5.0",

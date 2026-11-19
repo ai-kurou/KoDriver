@@ -5,11 +5,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.runCapturingErrorsOrNull
-import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 
-/** ログ削除の確認・実行・結果通知を管理する。実行のライフサイクルは呼び出し元に従う。 */
+/**
+ * 確認ダイアログ付きの初期化・削除操作の確認・実行・結果通知を管理する。
+ * 実際の処理は [reset] として渡され、用途ごとに別インスタンスを生成して使う。実行のライフサイクルは呼び出し元に従う。
+ */
 public class OtherListResetFlow(
-    private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,
+    private val reset: suspend () -> Unit,
 ) {
     private val _uiState = MutableStateFlow(OtherListResetUiState())
     public val uiState: StateFlow<OtherListResetUiState> = _uiState.asStateFlow()
@@ -29,7 +31,7 @@ public class OtherListResetFlow(
         try {
             val succeeded =
                 runCapturingErrorsOrNull {
-                    resetTelemetryLogDatabase()
+                    reset()
                     true
                 } != null
             _uiState.update { it.copy(resetSucceeded = succeeded) }

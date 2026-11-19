@@ -59,9 +59,9 @@ public val otherListModule: Module =
                 ),
                 get(),
                 get(),
-                get(),
-                get(),
-                get(),
+                OtherListResetFlow(get<ResetTelemetryLogDatabaseUseCase>()::invoke),
+                OtherListResetFlow(get<ResetAutoReadoutSettingsUseCase>()::invoke),
+                OtherListResetFlow(get<ResetManualReadoutSettingsUseCase>()::invoke),
             )
         }
 
@@ -76,11 +76,8 @@ public val otherListModule: Module =
             )
         }
 
-        // ログ削除フローは ViewModel ごとに生成し、実行は viewModelScope に従わせる。
-        factory { OtherListResetFlow(get()) }
-        factory { OtherListAutoReadoutSettingsResetFlow(get()) }
+        // 初期化・削除フローは ViewModel 生成時に OtherListResetFlow へ UseCase を渡して組み立て、実行は viewModelScope に従わせる。
         factory { ResetAutoReadoutSettingsUseCase(getAll()) }
-        factory { OtherListManualReadoutSettingsResetFlow(get()) }
         factory { ResetManualReadoutSettingsUseCase(getAll()) }
         factory { OtherListStartupRegistrationFlow(get()) }
         factory { OtherListDeviceSettingsFlow(get(), get(), get(), get(), get(), get(), get()) }

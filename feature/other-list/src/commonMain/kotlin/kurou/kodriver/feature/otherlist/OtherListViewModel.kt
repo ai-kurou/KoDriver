@@ -39,8 +39,8 @@ public class OtherListViewModel(
     private val appUpdateFlow: OtherListAppUpdateFlow,
     private val deviceVolumeFlow: OtherListDeviceVolumeFlow,
     private val resetFlow: OtherListResetFlow,
-    private val autoReadoutSettingsResetFlow: OtherListAutoReadoutSettingsResetFlow,
-    private val manualReadoutSettingsResetFlow: OtherListManualReadoutSettingsResetFlow,
+    private val autoReadoutSettingsResetFlow: OtherListResetFlow,
+    private val manualReadoutSettingsResetFlow: OtherListResetFlow,
 ) : ViewModel() {
     private val hapticFeedbackAvailable = checkHapticFeedbackAvailable()
     private val _uiState =
