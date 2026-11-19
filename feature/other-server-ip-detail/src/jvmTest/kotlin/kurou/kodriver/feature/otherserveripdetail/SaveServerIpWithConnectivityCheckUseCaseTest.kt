@@ -3,9 +3,14 @@ package kurou.kodriver.feature.otherserveripdetail
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
 import java.io.IOException
@@ -83,15 +88,24 @@ class SaveServerIpWithConnectivityCheckUseCaseTest {
         }
 
     @Test
-    fun `保存例外はSaveFailedを返す`() =
+    fun `保存例外はSaveFailedを返しエラーを記録する`() =
         runTest {
-            coEvery { repository.saveServerIp("192.168.1.10") } throws IOException("保存失敗")
+            val error = IOException("保存失敗")
+            coEvery { repository.saveServerIp("192.168.1.10") } throws error
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                val result = createUseCase()("192.168.1.10")
 
-            val result = createUseCase()("192.168.1.10")
-
-            assertEquals(SaveServerIpResult.SaveFailed, result)
-            coVerify(exactly = 1) { repository.saveServerIp("192.168.1.10") }
-            confirmVerified(repository)
+                assertEquals(SaveServerIpResult.SaveFailed, result)
+                coVerify(exactly = 1) { repository.saveServerIp("192.168.1.10") }
+                confirmVerified(repository)
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
         }
 
     @Test
