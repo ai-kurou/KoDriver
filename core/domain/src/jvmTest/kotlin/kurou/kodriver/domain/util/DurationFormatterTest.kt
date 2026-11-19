@@ -2,6 +2,7 @@ package kurou.kodriver.domain.util
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class DurationFormatterTest {
     @Test
@@ -55,5 +56,25 @@ class DurationFormatterTest {
         assertEquals("1:23.456", formatLapTimeMs(83_456L))
         assertEquals("1:02.005", formatLapTimeMs(62_005L))
         assertEquals("0:00.000", formatLapTimeMs(0L))
+    }
+
+    @Test
+    fun `formatBestLapTimeMsOrNull returns null when the best lap time is null`() {
+        assertNull(formatBestLapTimeMsOrNull(null))
+    }
+
+    @Test
+    fun `formatBestLapTimeMsOrNull returns null when the best lap time is zero`() {
+        assertNull(formatBestLapTimeMsOrNull(0L))
+    }
+
+    @Test
+    fun `formatBestLapTimeMsOrNull returns null when the best lap time is negative`() {
+        assertNull(formatBestLapTimeMsOrNull(-1L))
+    }
+
+    @Test
+    fun `formatBestLapTimeMsOrNull formats a positive best lap time as a lap time string`() {
+        assertEquals("1:23.456", formatBestLapTimeMsOrNull(83_456L))
     }
 }
