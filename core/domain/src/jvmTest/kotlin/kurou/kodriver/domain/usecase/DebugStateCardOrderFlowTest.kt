@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.lmuwindowsdebugstatedetail
+package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,52 +7,57 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LmuWindowsDebugStateCardOrderFlowTest {
+class DebugStateCardOrderFlowTest {
+    private enum class TestKey { A, B, C }
+
+    private val defaultOrder = listOf(TestKey.A, TestKey.B, TestKey.C)
+
     @Test
     fun `初期保存順を維持して不足カードを既定順で補完する`() =
         runTest {
-            val persisted = listOf(LmuWindowsDebugStateCardKey.CAR_GAP, LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION)
+            val persisted = listOf(TestKey.C, TestKey.B)
             val flow =
-                LmuWindowsDebugStateCardOrderFlow(
+                DebugStateCardOrderFlow(
                     persistedOrder = flowOf(persisted),
                     localOrder = flowOf(null),
+                    defaultOrder = defaultOrder,
                     resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
                 )
 
-            assertEquals(persisted + defaultDebugStateCardOrder.filter { it !in persisted }, flow.order.first())
+            assertEquals(persisted + defaultOrder.filter { it !in persisted }, flow.order.first())
         }
 
     @Test
     fun `保存順が空なら既定順へフォールバックする`() =
         runTest {
             val flow =
-                LmuWindowsDebugStateCardOrderFlow(
+                DebugStateCardOrderFlow(
                     persistedOrder = flowOf(emptyList()),
                     localOrder = flowOf(null),
+                    defaultOrder = defaultOrder,
                     resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
                 )
 
-            assertEquals(defaultDebugStateCardOrder, flow.order.first())
+            assertEquals(defaultOrder, flow.order.first())
         }
 
     @Test
     fun `ローカル順を補完せず優先し空リストも維持する`() =
         runTest {
-            val local =
-                MutableStateFlow<List<LmuWindowsDebugStateCardKey>?>(listOf(LmuWindowsDebugStateCardKey.CAR_GAP))
+            val local = MutableStateFlow<List<TestKey>?>(listOf(TestKey.A))
             val flow =
-                LmuWindowsDebugStateCardOrderFlow(
-                    persistedOrder = flowOf(defaultDebugStateCardOrder.reversed()),
+                DebugStateCardOrderFlow(
+                    persistedOrder = flowOf(defaultOrder.reversed()),
                     localOrder = local,
+                    defaultOrder = defaultOrder,
                     resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
                 )
 
-            assertEquals(listOf(LmuWindowsDebugStateCardKey.CAR_GAP), flow.order.first())
+            assertEquals(listOf(TestKey.A), flow.order.first())
             local.update { emptyList() }
             assertEquals(emptyList(), flow.order.first())
         }
@@ -60,25 +65,26 @@ class LmuWindowsDebugStateCardOrderFlowTest {
     @Test
     fun `保存順の更新に追従しローカル解除時は最新保存順を解決する`() =
         runTest {
-            val persisted = MutableStateFlow(defaultDebugStateCardOrder)
-            val local = MutableStateFlow<List<LmuWindowsDebugStateCardKey>?>(null)
+            val persisted = MutableStateFlow(defaultOrder)
+            val local = MutableStateFlow<List<TestKey>?>(null)
             val flow =
-                LmuWindowsDebugStateCardOrderFlow(
+                DebugStateCardOrderFlow(
                     persistedOrder = persisted,
                     localOrder = local,
+                    defaultOrder = defaultOrder,
                     resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
                 )
-            val orders = mutableListOf<List<LmuWindowsDebugStateCardKey>>()
+            val orders = mutableListOf<List<TestKey>>()
             backgroundScope.launch { flow.order.collect { orders.add(it) } }
             testScheduler.runCurrent()
-            assertEquals(defaultDebugStateCardOrder, orders.last())
+            assertEquals(defaultOrder, orders.last())
 
-            val reversed = defaultDebugStateCardOrder.reversed()
+            val reversed = defaultOrder.reversed()
             persisted.update { reversed }
             testScheduler.runCurrent()
             assertEquals(reversed, orders.last())
 
-            val dragged = listOf(LmuWindowsDebugStateCardKey.CAR_GAP)
+            val dragged = listOf(TestKey.A)
             local.update { dragged }
             testScheduler.runCurrent()
             assertEquals(dragged, orders.last())
@@ -89,6 +95,21 @@ class LmuWindowsDebugStateCardOrderFlowTest {
 
             local.update { null }
             testScheduler.runCurrent()
-            assertEquals(defaultDebugStateCardOrder, orders.last())
+            assertEquals(defaultOrder, orders.last())
+        }
+
+    @Test
+    fun `全件並べ替え済みの保存順をそのまま返す`() =
+        runTest {
+            val reversed = defaultOrder.reversed()
+            val flow =
+                DebugStateCardOrderFlow(
+                    persistedOrder = flowOf(reversed),
+                    localOrder = flowOf(null),
+                    defaultOrder = defaultOrder,
+                    resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
+                )
+
+            assertEquals(reversed, flow.order.first())
         }
 }
