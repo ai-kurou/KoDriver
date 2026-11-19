@@ -2,17 +2,16 @@ package kurou.kodriver.feature.otherconsoleipdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5UdpPortUseCase
+import kurou.kodriver.domain.runCapturingErrorsOrNull
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.SaveConsoleAddressUseCase
 
@@ -56,14 +55,16 @@ internal class OtherConsoleIpDetailViewModel(
         if (!isValidConsoleIpAddress(address)) return
         val port = _mutable.value.userSelectedPort ?: savedPort.value
         viewModelScope.launch {
-            try {
-                saveConsoleAddress(address)
-                saveGt7Ps5UdpPort(port)
+            val result =
+                runCapturingErrorsOrNull {
+                    saveConsoleAddress(address)
+                    saveGt7Ps5UdpPort(port)
+                    true
+                }
+            val saved = result != null
+            if (saved) {
                 _mutable.update { it.copy(saveFailed = false, isSaved = true) }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                captureError(e)
+            } else {
                 _mutable.update { it.copy(saveFailed = true) }
             }
         }
