@@ -106,9 +106,9 @@ class AutoReadoutContentRootBannerTest {
                 uiState =
                     AutoReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
+                        items = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                         autoReadoutEnabledStates = emptyMap(),
-                        selectedItem = LmuWindowsAutoReadoutListItemType.TyreTemperature,
+                        selectedItem = LmuWindowsAutoReadoutListItemType.VehicleApproach,
                     ),
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },

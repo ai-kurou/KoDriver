@@ -94,7 +94,7 @@ class ObserveAutoReadoutEnabledStatesUseCaseTest {
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
                     LmuWindowsReadoutItemKey.Flag.Root to true,
-                    LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
                     LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
                     LmuWindowsReadoutItemKey.VehicleDamage.Root to false,
                     LmuWindowsReadoutItemKey.PitTiming.Root to true,
@@ -163,7 +163,7 @@ class ObserveAutoReadoutEnabledStatesUseCaseTest {
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
                     LmuWindowsReadoutItemKey.Flag.Root to true,
-                    LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
                     LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
                     LmuWindowsReadoutItemKey.VehicleDamage.Root to false,
                     LmuWindowsReadoutItemKey.PitTiming.Root to true,

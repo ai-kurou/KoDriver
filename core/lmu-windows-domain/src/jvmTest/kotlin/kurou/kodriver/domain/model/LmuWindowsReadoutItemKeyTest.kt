@@ -47,6 +47,9 @@ class LmuWindowsReadoutItemKeyTest {
     fun `LMU defaults cover all TopLevel keys and queueable keys`() {
         val topLevel = LMU_WINDOWS_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>()
         assertEquals(topLevel.toSet(), LMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT.keys)
+        val tyreTemperature = LmuWindowsReadoutItemKey.TyreTemperature.Root
+        assertEquals(false, LMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT.getValue(tyreTemperature))
+        assertEquals(true, LMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT.getValue(tyreTemperature))
         assertEquals(topLevel.toSet(), LMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT.keys)
         assertEquals(topLevel.filter { it.supportsQueue }.toSet(), LMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT.keys)
         assertEquals(Simulator.LmuWindows, lmuWindowsReadoutSpec.simulator)
@@ -57,8 +60,8 @@ class LmuWindowsReadoutItemKeyTest {
                 LmuWindowsReadoutItemKey.PitTiming.Root,
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                 LmuWindowsReadoutItemKey.RemainingFuel.Root,
-                LmuWindowsReadoutItemKey.TyreTemperature.Root,
                 LmuWindowsReadoutItemKey.TyreWear.Root,
+                LmuWindowsReadoutItemKey.TyreTemperature.Root,
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root,
                 LmuWindowsReadoutItemKey.BrakeWear.Root,
                 LmuWindowsReadoutItemKey.VehicleDamage.Root,

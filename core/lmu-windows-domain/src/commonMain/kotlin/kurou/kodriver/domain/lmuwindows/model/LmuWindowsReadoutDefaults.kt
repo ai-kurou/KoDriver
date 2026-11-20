@@ -11,7 +11,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 internal val LMU_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
         LmuWindowsReadoutItemKey.Flag.Root to true,
-        LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+        LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
         LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
         LmuWindowsReadoutItemKey.VehicleDamage.Root to false,
         LmuWindowsReadoutItemKey.PitTiming.Root to true,
@@ -74,8 +74,8 @@ private fun lmuWindowsOrderIndex(key: LmuWindowsReadoutItemKey.TopLevel): Int =
         LmuWindowsReadoutItemKey.PitTiming.Root -> 2
         LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root -> 3
         LmuWindowsReadoutItemKey.RemainingFuel.Root -> 4
-        LmuWindowsReadoutItemKey.TyreTemperature.Root -> 5
-        LmuWindowsReadoutItemKey.TyreWear.Root -> 6
+        LmuWindowsReadoutItemKey.TyreWear.Root -> 5
+        LmuWindowsReadoutItemKey.TyreTemperature.Root -> 6
         LmuWindowsReadoutItemKey.BrakeTemperature.Root -> 7
         LmuWindowsReadoutItemKey.BrakeWear.Root -> 8
         LmuWindowsReadoutItemKey.VehicleDamage.Root -> 9
