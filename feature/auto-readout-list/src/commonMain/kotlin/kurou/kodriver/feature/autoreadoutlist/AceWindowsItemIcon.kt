@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.DeviceThermostat
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalGasStation
+import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.ui.graphics.vector.ImageVector
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
@@ -17,5 +18,5 @@ internal fun aceWindowsItemIcon(itemId: AceWindowsReadoutItemKey): ImageVector =
         is AceWindowsReadoutItemKey.RemainingFuelLaps -> Icons.Filled.LocalGasStation
         is AceWindowsReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
         is AceWindowsReadoutItemKey.MyBestLap -> Icons.Filled.Timer
-        is AceWindowsReadoutItemKey.CarGap -> Icons.Filled.DirectionsCar
+        is AceWindowsReadoutItemKey.CarGap -> Icons.Filled.Straighten
     }

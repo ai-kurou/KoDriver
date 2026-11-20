@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.DonutLarge
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.ui.graphics.vector.ImageVector
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -27,5 +28,5 @@ internal fun lmuWindowsItemIcon(itemId: LmuWindowsReadoutItemKey): ImageVector =
         is LmuWindowsReadoutItemKey.BrakeTemperature -> Icons.Filled.DeviceThermostat
         is LmuWindowsReadoutItemKey.BrakeWear -> Icons.Filled.Speed
         is LmuWindowsReadoutItemKey.MyBestLap -> Icons.Filled.Timer
-        is LmuWindowsReadoutItemKey.ClassCarGap -> Icons.Filled.DirectionsCar
+        is LmuWindowsReadoutItemKey.ClassCarGap -> Icons.Filled.Straighten
     }
