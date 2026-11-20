@@ -14,7 +14,6 @@ import androidx.compose.material.icons.outlined.FormatColorText
 import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.Layers
-import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Palette
@@ -27,6 +26,7 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.Wifi
+import kurou.kodriver.core.designsystem.ReadoutStartSoundIcons
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -51,7 +51,7 @@ class OtherListItemIconsTest {
                 OtherListItemType.VoiceSpeed to Icons.Outlined.Speed,
                 OtherListItemType.VoicePitch to Icons.Outlined.GraphicEq,
                 OtherListItemType.AndroidAudioUsage to Icons.Outlined.Tune,
-                OtherListItemType.ReadoutStartSound to Icons.Outlined.MusicNote,
+                OtherListItemType.ReadoutStartSound to ReadoutStartSoundIcons.OutlinedOn,
                 OtherListItemType.OverlayVisible to Icons.Outlined.Layers,
                 OtherListItemType.OverlayTextSize to Icons.Outlined.FormatSize,
                 OtherListItemType.OverlayTextColor to Icons.Outlined.FormatColorText,

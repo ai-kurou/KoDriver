@@ -14,7 +14,6 @@ import androidx.compose.material.icons.outlined.FormatColorText
 import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.Layers
-import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Palette
@@ -28,6 +27,7 @@ import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.ui.graphics.vector.ImageVector
+import kurou.kodriver.core.designsystem.ReadoutStartSoundIcons
 
 internal fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
     when (itemType) {
@@ -78,7 +78,7 @@ private fun otherReadoutSettingsItemLeadingIconVector(itemType: OtherListItemTyp
 
         OtherListItemType.AndroidAudioUsage -> Icons.Outlined.Tune
 
-        OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
+        OtherListItemType.ReadoutStartSound -> ReadoutStartSoundIcons.OutlinedOn
     }
 
 private fun otherOverlaySettingsItemLeadingIconVector(itemType: OtherListItemType.OverlaySettings): ImageVector =

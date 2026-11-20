@@ -119,6 +119,11 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 - `KoDriverHintSheetRow` は同じ見た目のアイコンバッジとタイトル・説明を表示する。文字列リソースは呼び出し側で解決して渡す。
 - 表示と操作は `src/jvmTest` の `KoDriverHintRowTest`、実際の画面レイアウトは両 list feature の既存スクリーンショットテストで確認する。
 
+## 読み上げ開始音のアイコン
+
+- `ReadoutStartSoundIcons` は読み上げ開始音のアイコンを定義する。設定一覧は `OutlinedOn`（Outlined MusicNote）、自動読み上げ一覧は `FilledOn` / `FilledOff`（Filled MusicNote / MusicOff）を使う。
+- 画面ごとに直接 `Icons.*` を指定せず、この値を参照する。
+
 ## デバッグ状態の共通部品
 
 - `DebugStateCard` はキーに対応するタイトルリソースと内容のマップを受け取り、無効時は透明度を0.38にする。枠は `frame` で渡し、カードキー固有の装飾は各 feature に残す。
