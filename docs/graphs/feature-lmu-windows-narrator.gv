@@ -2,7 +2,6 @@ digraph G {
   rankdir=TB
   node [shape=box, style="rounded,filled"]
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
-  ":core:designsystem" [fillcolor="#FFF9C4", color="#F9A825", penwidth=1]
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:lmu-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:narrator" [fillcolor="#FFF9C4", color="#F9A825", penwidth=1]
@@ -11,6 +10,5 @@ digraph G {
   ":core:lmu-windows-domain" -> ":core:domain"
   ":feature:lmu-windows-narrator" -> ":core:domain"
   ":feature:lmu-windows-narrator" -> ":core:lmu-windows-domain"
-  ":feature:lmu-windows-narrator" -> ":core:designsystem"
   ":feature:lmu-windows-narrator" -> ":core:narrator"
 }
