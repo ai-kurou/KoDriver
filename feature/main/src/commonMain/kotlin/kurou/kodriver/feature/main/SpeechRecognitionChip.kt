@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicOff
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -143,7 +144,7 @@ internal fun SpeechRecognitionUiState.volumeRingStepOrNull(): Int? {
 /**
  * 音声認識の聞き取り状態を、どの画面にも重ねて出せる小さな丸いチップで表す。聞き取り中は音量を縁のリングの段階で示す。
  * タップで詳細を開く（[onClick]）。タップできるのはチップ自身だけで、下の画面へのタップは妨げない（`Surface` は使わない）。
- * 状態は色とアイコンの形で区別する（ウェイクワード待ち=輪郭だけの Mic・コマンド待ち=塗りつぶしの Mic と、入った直後の波紋・無効やエラー=MicOff）。
+ * 状態は色とアイコンの形で区別する（ウェイクワード待ち=輪郭だけの Mic・コマンド待ち=塗りつぶしの Mic と、入った直後の波紋・無効=MicOff・エラー=警告アイコン）。
  * 読み上げ用の説明には [SpeechRecognitionStatus] の文言を使う。
  */
 @Composable
@@ -181,7 +182,7 @@ internal fun SpeechRecognitionChip(
         SpeechRecognitionChipState.Error -> {
             containerColor = colors.errorContainer
             contentColor = colors.onErrorContainer
-            icon = Icons.Filled.MicOff
+            icon = Icons.Filled.WarningAmber
         }
     }
     // 状態が切り替わったときに色が急に変わらないよう、短く補間する
