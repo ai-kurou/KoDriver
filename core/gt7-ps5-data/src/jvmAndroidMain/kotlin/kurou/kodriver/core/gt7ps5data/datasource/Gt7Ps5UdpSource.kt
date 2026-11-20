@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.yield
+import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_SOCKET_TIMEOUT_MILLIS
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
 import java.net.DatagramPacket
 import java.nio.ByteBuffer
@@ -44,7 +45,7 @@ internal class Gt7Ps5UdpSource(
     private val listenPortFlow: Flow<Int> = flowOf(LISTEN_PORT),
     private val sendPort: Int = SEND_PORT,
     private val socketFactory: (Int) -> UdpSocket = { port ->
-        RealUdpSocket(listenPort = port, timeoutMs = SOCKET_TIMEOUT_MS)
+        RealUdpSocket(listenPort = port, timeoutMs = GT7_PS5_SOCKET_TIMEOUT_MILLIS)
     },
     scope: CoroutineScope,
     private val currentTimeMillis: () -> Long = { Clock.System.now().toEpochMilliseconds() },
@@ -127,7 +128,6 @@ internal class Gt7Ps5UdpSource(
         const val MAGIC = 0x47375330 // 'G7S0' in little-endian
         const val IV_OFFSET = 0x40
         const val HEARTBEAT_INTERVAL_PACKETS = 100
-        const val SOCKET_TIMEOUT_MS = 3_000
         const val BIND_RETRY_DELAY_MS = 1_000L
 
         val GT7_KEY = "Simulator Interface Packet GT7 ver 0.0".toByteArray().copyOf(32)

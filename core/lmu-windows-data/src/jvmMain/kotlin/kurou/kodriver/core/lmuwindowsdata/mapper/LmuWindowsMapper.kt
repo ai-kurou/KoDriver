@@ -1,5 +1,6 @@
 package kurou.kodriver.core.lmuwindowsdata.mapper
 
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MAX_SCORING_VEHICLES
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
@@ -80,7 +81,6 @@ internal object LmuWindowsMapper {
     internal const val SCORING_BASE = 1632
     internal const val VEHICLE_SCORING_BASE = 2192
     internal const val VEHICLE_SCORING_STRIDE = 584
-    internal const val MAX_SCORING_VEHICLES = 104
 
     private const val OFF_SCORING_SESSION = 64
     internal const val OFF_SCORING_NUM_VEHICLES = 104
@@ -256,7 +256,10 @@ internal object LmuWindowsMapper {
         )
 
     internal fun findPlayerVehicleScoringBase(buffer: ByteBuffer): Int? {
-        val vehicleCount = buffer.getInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES).coerceIn(0, MAX_SCORING_VEHICLES)
+        val vehicleCount =
+            buffer
+                .getInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES)
+                .coerceIn(0, LMU_WINDOWS_MAX_SCORING_VEHICLES)
         for (index in 0 until vehicleCount) {
             val vehicleBase = VEHICLE_SCORING_BASE + index * VEHICLE_SCORING_STRIDE
             if (buffer.get(vehicleBase + OFF_SCORING_IS_PLAYER).toInt() != 0) {

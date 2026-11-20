@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryPollingSource
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import kurou.kodriver.core.windowssharedmemory.datasource.WindowsSharedMemoryReader
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_PACKET_ID_STALE_THRESHOLD_MILLIS
 import kurou.kodriver.domain.captureError
 import java.nio.ByteBuffer
 import kotlin.time.Clock
@@ -54,7 +55,7 @@ internal class AceWindowsGraphicsSharedMemorySource(
             val buffer = reader.readBuffer() ?: return@withReaderLock false
 
             // packetId（+0）はフレームごとに増加するカウンタ。ACE が終了・停止した場合は
-            // 値が変化しなくなるため、PACKET_ID_STALE_THRESHOLD_MS 以上変化がなければ
+            // 値が変化しなくなるため、ACE_WINDOWS_PACKET_ID_STALE_THRESHOLD_MILLIS 以上変化がなければ
             // 実質的に切断されたとみなす。
             val currentPacketId = buffer.getInt(PACKET_ID_OFFSET)
             val nowMs = currentTimeMs()
@@ -62,12 +63,11 @@ internal class AceWindowsGraphicsSharedMemorySource(
                 lastKnownPacketId = currentPacketId
                 lastPacketIdChangeTimeMs = nowMs
             }
-            nowMs - lastPacketIdChangeTimeMs < PACKET_ID_STALE_THRESHOLD_MS
+            nowMs - lastPacketIdChangeTimeMs < ACE_WINDOWS_PACKET_ID_STALE_THRESHOLD_MILLIS
         }
 
     private companion object {
         const val GRAPHICS_SEGMENT_SIZE_BYTES = 8_192
         const val PACKET_ID_OFFSET = 0
-        const val PACKET_ID_STALE_THRESHOLD_MS = 3_000L
     }
 }
