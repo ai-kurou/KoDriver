@@ -18,7 +18,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.compose.components.resources)
-            implementation(libs.compose.runtime)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesCore)
             implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
