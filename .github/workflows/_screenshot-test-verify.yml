@@ -72,6 +72,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # 画素が HEAD と同一で PNG 形式だけ変わった画像（RGBA→RGB 等）は差分に含めず戻し、画素が変わった画像だけをコミットする
+          python3 scripts/revert-unchanged-golden-images.py "$SNAPSHOT_PATH_GLOB"
           find . -path "$SNAPSHOT_PATH_GLOB" -not -path "*/build/*" -print0 | xargs -0 -r git add
           if git diff --staged --quiet; then
             echo "No golden image changes to commit"
