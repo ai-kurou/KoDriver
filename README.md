@@ -56,7 +56,7 @@ Windows 版 KoDriver をあらかじめ起動しておいてください。LMU �
 
 **Android アプリ**
 
-[Releases](https://github.com/ai-kurou/KoDriver/releases) から最新の APK をダウンロードしてインストールしてください。
+[Releases](https://github.com/ai-kurou/KoDriver/releases) から最新の APK をダウンロードしてインストールしてください。詳しい手順と、Android の開発者認証（Developer verification）に関する注意は [Android 版のインストール手順](docs/android-install.md) を参照してください。
 
 読み上げには、日本語に対応した音声合成（TTS）エンジンと日本語の音声データが必要です。利用できない場合は「その他」に表示される「音声合成アプリをインストール」または「音声合成の日本語データを設定」から準備してください。「その他 → 読み上げ音声」で音声を選択・試聴できます。
 
