@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.DonutLarge
 import androidx.compose.material.icons.filled.LocalGasStation
-import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -103,7 +103,7 @@ internal fun ManualReadoutCategoryChips(
                                     ManualReadoutItemCategory.VIRTUAL_ENERGY -> Icons.Default.Bolt
                                     ManualReadoutItemCategory.FUEL -> Icons.Default.LocalGasStation
                                     ManualReadoutItemCategory.TYRE -> Icons.Default.DonutLarge
-                                    ManualReadoutItemCategory.BRAKE -> Icons.Default.Speed
+                                    ManualReadoutItemCategory.BRAKE -> Icons.Default.Album
                                     ManualReadoutItemCategory.TIME -> Icons.Default.Timer
                                 },
                             contentDescription = null,

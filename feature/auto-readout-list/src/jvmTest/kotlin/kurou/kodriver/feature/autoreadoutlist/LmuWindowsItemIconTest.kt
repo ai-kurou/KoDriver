@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.autoreadoutlist
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.LocalGasStation
@@ -28,5 +29,10 @@ class LmuWindowsItemIconTest {
     @Test
     fun `残燃料は給油所アイコンを返す`() {
         assertEquals(Icons.Filled.LocalGasStation, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.RemainingFuel.Root))
+    }
+
+    @Test
+    fun `ブレーキ摩耗はディスクアイコンを返す`() {
+        assertEquals(Icons.Filled.Album, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.BrakeWear.Root))
     }
 }
