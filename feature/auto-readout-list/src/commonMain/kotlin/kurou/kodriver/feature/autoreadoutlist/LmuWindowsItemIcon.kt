@@ -2,6 +2,7 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DeviceThermostat
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -20,7 +21,7 @@ internal fun lmuWindowsItemIcon(itemId: LmuWindowsReadoutItemKey): ImageVector =
         is LmuWindowsReadoutItemKey.VehicleDamage -> Icons.Filled.Build
         is LmuWindowsReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
         is LmuWindowsReadoutItemKey.PitTiming -> Icons.Filled.AccessTime
-        is LmuWindowsReadoutItemKey.RemainingVirtualEnergy -> Icons.Filled.LocalGasStation
+        is LmuWindowsReadoutItemKey.RemainingVirtualEnergy -> Icons.Filled.Bolt
         is LmuWindowsReadoutItemKey.RemainingFuel -> Icons.Filled.LocalGasStation
         is LmuWindowsReadoutItemKey.TyreWear -> Icons.Filled.DonutLarge
         is LmuWindowsReadoutItemKey.BrakeTemperature -> Icons.Filled.DeviceThermostat

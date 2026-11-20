@@ -1,7 +1,9 @@
 package kurou.kodriver.feature.autoreadoutlist
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.LocalGasStation
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -10,5 +12,15 @@ class LmuWindowsItemIconTest {
     @Test
     fun `手動専用のクラス内ギャップは車両アイコンを返す`() {
         assertEquals(Icons.Filled.DirectionsCar, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.ClassCarGap.Root))
+    }
+
+    @Test
+    fun `残バーチャルエネルギーは稲妻アイコンを返す`() {
+        assertEquals(Icons.Filled.Bolt, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root))
+    }
+
+    @Test
+    fun `残燃料は給油所アイコンを返す`() {
+        assertEquals(Icons.Filled.LocalGasStation, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.RemainingFuel.Root))
     }
 }
