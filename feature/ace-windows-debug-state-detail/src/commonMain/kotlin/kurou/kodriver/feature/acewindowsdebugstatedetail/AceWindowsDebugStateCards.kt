@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import kurou.kodriver.core.designsystem.DebugStateStatusChip
 import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
@@ -164,6 +165,10 @@ internal fun AceWindowsFuelContent(
 
 @Composable
 internal fun AceWindowsNearbyVehiclesContent(vehicleApproach: AceWindowsVehicleApproachData?) {
+    val sortedVehicles =
+        remember(vehicleApproach?.nearbyVehicles) {
+            vehicleApproach?.nearbyVehicles?.sortedBy { it.distanceMeters }.orEmpty()
+        }
     if (vehicleApproach == null) {
         DebugStateUnavailableContent()
         return
@@ -173,7 +178,7 @@ internal fun AceWindowsNearbyVehiclesContent(vehicleApproach: AceWindowsVehicleA
         return
     }
     Column {
-        vehicleApproach.nearbyVehicles.sortedBy { it.distanceMeters }.forEach { nearbyVehicle ->
+        sortedVehicles.forEach { nearbyVehicle ->
             Text(
                 text =
                     stringResource(
