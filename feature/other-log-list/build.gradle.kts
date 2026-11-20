@@ -20,8 +20,6 @@ kotlin {
             implementation(projects.core.gt7Ps5Domain)
             implementation(libs.compose.material3)
             implementation(libs.compose.material.icons.extended)
-            implementation(libs.compose.material3.adaptive.layout)
-            implementation(libs.compose.material3.adaptive.navigation)
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         jvmTest.dependencies {
