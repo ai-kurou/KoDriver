@@ -9,20 +9,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.acewindows.model.matchAceWindowsManualReadoutPhrase
 import kurou.kodriver.domain.captureErrorTypeOnly
-import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutPhrase
 import kurou.kodriver.domain.launchCapturingErrors
-import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutPhrase
-import kurou.kodriver.domain.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS
 import kurou.kodriver.domain.model.SPEECH_RECOGNITION_HISTORY_MAX
 import kurou.kodriver.domain.model.SPEECH_RECOGNITION_RESUME_DELAY_MS
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.model.containsSpeechRecognitionWakeWord
@@ -60,8 +54,6 @@ internal class SpeechRecognitionViewModel(
 
     /** 次の聞き取りが開始前に待つ、マイクを閉じ終えていない前の聞き取り。 */
     private var startWaits: List<Job> = emptyList()
-    private var refreshJob: Job? = null
-
     private val commandWait =
         CommandWaitController(
             scope = viewModelScope,
@@ -74,6 +66,21 @@ internal class SpeechRecognitionViewModel(
                 _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
             },
         )
+
+    private val commandHandler =
+        SpeechRecognitionCommandHandler(requestManualReadoutItem, observeSelectedSimulator, commandWait)
+
+    /** 入力デバイスを選べないプラットフォーム（Android）では null。 */
+    private val deviceController =
+        audioInputDeviceSelector?.let {
+            SpeechRecognitionDeviceController(
+                scope = viewModelScope,
+                selector = it,
+                uiState = _uiState,
+                cancelLaunch = ::cancelLaunch,
+                restart = ::start,
+            )
+        }
 
     /** 読み上げの再生状態を購読し、再生中は聞き取りを止める。 */
     private var playbackJob: Job? = null
@@ -155,46 +162,12 @@ internal class SpeechRecognitionViewModel(
 
     /** 入力デバイスの一覧を取得し直す。デバイスを選べないプラットフォームでは何もしない。停止中でも選択中のデバイスを表示するため、カードの表示時とメニューを開いたときに呼ぶ。 */
     fun refreshDevices() {
-        val selector = audioInputDeviceSelector ?: return
-        refreshJob?.cancel()
-        refreshJob =
-            viewModelScope.launch {
-                try {
-                    val devices = selector.refresh()
-                    val before = _uiState.value.deviceName
-                    _uiState.update { it.copy(devices = devices.names, deviceName = devices.selected) }
-                    // 聞き取り中に解決先のデバイスが変わった場合は、表示と取得元がずれないよう聞き取りをやり直す
-                    if (_uiState.value.enabled && before != null && devices.selected != before) start()
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    // 保存値を読めなくても、聞き取りは止めない。次の取得で読み直す
-                    captureErrorTypeOnly(e)
-                }
-            }
+        deviceController?.refresh()
     }
 
     /** ドロップダウンで入力デバイスを選ぶ。聞き取り中の場合は、保存した選択で聞き取りをやり直す。 */
     fun onDeviceSelected(name: String) {
-        val selector = audioInputDeviceSelector ?: return
-        val previousName = _uiState.value.deviceName
-        cancelLaunch()
-        refreshJob?.cancel()
-        _uiState.update { it.copy(deviceName = name) }
-        viewModelScope.launch {
-            try {
-                selector.select(name)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                // 保存できなかった選択では聞き取りをやり直さず、表示も元に戻す（再度選べば保存をやり直せる）
-                captureErrorTypeOnly(e)
-                _uiState.update { it.copy(deviceName = previousName) }
-                return@launch
-            }
-            // 認識は保存済みのデバイス名を読んで開くため、保存が終わってからやり直す
-            if (name != previousName && _uiState.value.enabled) start()
-        }
+        deviceController?.select(name)
     }
 
     /** アプリが見えなくなったときに聞き取りを止める。聞き取り中だった場合は [onAppForegrounded] で再開する。 */
@@ -278,7 +251,7 @@ internal class SpeechRecognitionViewModel(
                 try {
                     // 前の聞き取りがマイクを閉じ終えてから開く。同じデバイスを同時に開けない環境で失敗しないようにする
                     waits.joinAll()
-                    syncDeviceDisplay()
+                    deviceController?.sync()
                     observeSpeechRecognition().collect(::onEvent)
                 } catch (e: CancellationException) {
                     throw e
@@ -287,19 +260,6 @@ internal class SpeechRecognitionViewModel(
                     onFailed(SpeechRecognitionFailureReason.RecognitionFailed)
                 }
             }
-    }
-
-    /** 聞き取りを始める前に一覧と選択を取り直し、画面の表示と実際に開くデバイスを同じ結果に揃える。 */
-    private suspend fun syncDeviceDisplay() {
-        val selector = audioInputDeviceSelector ?: return
-        try {
-            val devices = selector.refresh()
-            _uiState.update { it.copy(devices = devices.names, deviceName = devices.selected) }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            captureErrorTypeOnly(e)
-        }
     }
 
     private suspend fun onEvent(event: SpeechRecognitionEvent) {
@@ -336,39 +296,11 @@ internal class SpeechRecognitionViewModel(
                         recognized = (listOf(event.candidates) + it.recognized).take(SPEECH_RECOGNITION_HISTORY_MAX),
                     )
                 }
-                onRecognizedCandidates(event.candidates)
+                commandHandler.onRecognizedCandidates(event.candidates)
             }
 
             is SpeechRecognitionEvent.Failed -> {
                 onFailed(event.reason)
-            }
-        }
-    }
-
-    private suspend fun onRecognizedCandidates(candidates: List<String>) {
-        when {
-            commandWait.paused -> {}
-
-            !commandWait.commandWaiting -> {
-                if (containsSpeechRecognitionWakeWord(candidates)) commandWait.startCommandWait()
-            }
-
-            else -> {
-                try {
-                    if (requestManualReadoutItem.requestMatchedReadouts(
-                            observeSelectedSimulator().first(),
-                            candidates,
-                        )
-                    ) {
-                        commandWait.finishCommandWait()
-                    }
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    // 1回の依頼に失敗しても聞き取り全体は止めない。種類だけ記録してウェイクワード待ちへ戻る
-                    captureErrorTypeOnly(e)
-                    commandWait.finishCommandWait()
-                }
             }
         }
     }
@@ -396,22 +328,3 @@ private fun SpeechRecognitionFailureReason.toStatus(): SpeechRecognitionStatus =
         SpeechRecognitionFailureReason.NoSignal -> SpeechRecognitionStatus.NoSignal
         SpeechRecognitionFailureReason.RecognitionFailed -> SpeechRecognitionStatus.RecognitionFailed
     }
-
-/**
- * 選択中のシミュレーターの語句だけを照合し、一致したら依頼を発行する。依頼したら true。
- * 選択中でないシミュレーターの語句は照合しない（そのNarratorは依頼を無視するため、コマンド待ちだけが終わってしまう）。
- * 音声認識の読み上げでは開始音を鳴らさない（playStartSound = false）。
- */
-private suspend fun RequestManualReadoutItemUseCase.requestMatchedReadouts(
-    selected: Simulator,
-    candidates: List<String>,
-): Boolean {
-    val match =
-        when (selected) {
-            Simulator.LmuWindows -> matchLmuWindowsManualReadoutPhrase(candidates)
-            Simulator.Gt7Ps5 -> matchGt7Ps5ManualReadoutPhrase(candidates)
-            Simulator.AceWindows -> matchAceWindowsManualReadoutPhrase(candidates)
-        } ?: return false
-    this(ManualReadoutItemRequest(selected.id, match.itemKey, playStartSound = false, matchedPhrase = match.phrase))
-    return true
-}
