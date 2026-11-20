@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.acewindows.model
 
+import kurou.kodriver.domain.util.replaceGap
 import kotlin.math.abs
 import kotlin.math.roundToLong
 
@@ -27,22 +28,14 @@ internal fun formatAceWindowsCarGapReadoutText(
             placeholder = ACE_WINDOWS_CAR_GAP_AHEAD_PLACEHOLDER,
             seconds = ahead,
             noneClauseText = ACE_WINDOWS_CAR_GAP_AHEAD_NONE_TEXT,
+            noneValueText = ACE_WINDOWS_CAR_GAP_NONE_VALUE_TEXT,
         ).replaceGap(
             clause = ACE_WINDOWS_CAR_GAP_BEHIND_CLAUSE,
             placeholder = ACE_WINDOWS_CAR_GAP_BEHIND_PLACEHOLDER,
             seconds = behind,
             noneClauseText = ACE_WINDOWS_CAR_GAP_BEHIND_NONE_TEXT,
+            noneValueText = ACE_WINDOWS_CAR_GAP_NONE_VALUE_TEXT,
         )
-}
-
-private fun String.replaceGap(
-    clause: String,
-    placeholder: String,
-    seconds: String?,
-    noneClauseText: String,
-): String {
-    if (seconds != null) return replace(placeholder, seconds)
-    return replace(clause, noneClauseText).replace(placeholder, ACE_WINDOWS_CAR_GAP_NONE_VALUE_TEXT)
 }
 
 /** 符号を無視して小数1桁に丸めた秒数。ギャップなし（0・非有限）のときは null。 */

@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.lmuwindows.model
 
+import kurou.kodriver.domain.util.replaceGap
 import kotlin.math.roundToLong
 
 private const val CLASS_CAR_GAP_DECIMAL_SCALE = 10.0
@@ -31,22 +32,14 @@ internal fun formatLmuWindowsClassCarGapReadoutText(
             placeholder = LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER,
             seconds = aheadSeconds,
             noneClauseText = LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT,
+            noneValueText = LMU_WINDOWS_CLASS_CAR_GAP_NONE_VALUE_TEXT,
         ).replaceGap(
             clause = LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_CLAUSE,
             placeholder = LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER,
             seconds = behindSeconds,
             noneClauseText = LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT,
+            noneValueText = LMU_WINDOWS_CLASS_CAR_GAP_NONE_VALUE_TEXT,
         )
-
-private fun String.replaceGap(
-    clause: String,
-    placeholder: String,
-    seconds: String?,
-    noneClauseText: String,
-): String {
-    if (seconds != null) return replace(placeholder, seconds)
-    return replace(clause, noneClauseText).replace(placeholder, LMU_WINDOWS_CLASS_CAR_GAP_NONE_VALUE_TEXT)
-}
 
 /** プレビュー用に、前方・後方とも同じ秒差の文言を作る。 */
 internal fun formatLmuWindowsClassCarGapPreviewText(
