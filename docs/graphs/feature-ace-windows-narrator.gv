@@ -3,7 +3,6 @@ digraph G {
   node [shape=box, style="rounded,filled"]
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:ace-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
-  ":core:designsystem" [fillcolor="#FFF9C4", color="#F9A825", penwidth=1]
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:narrator" [fillcolor="#FFF9C4", color="#F9A825", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
@@ -11,6 +10,5 @@ digraph G {
   ":core:ace-windows-domain" -> ":core:domain"
   ":feature:ace-windows-narrator" -> ":core:domain"
   ":feature:ace-windows-narrator" -> ":core:ace-windows-domain"
-  ":feature:ace-windows-narrator" -> ":core:designsystem"
   ":feature:ace-windows-narrator" -> ":core:narrator"
 }
