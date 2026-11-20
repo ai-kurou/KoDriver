@@ -4,14 +4,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.LocalGasStation
+import androidx.compose.material.icons.filled.Straighten
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LmuWindowsItemIconTest {
     @Test
-    fun `手動専用のクラス内ギャップは車両アイコンを返す`() {
-        assertEquals(Icons.Filled.DirectionsCar, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.ClassCarGap.Root))
+    fun `手動専用のクラス内ギャップは距離アイコンを返す`() {
+        assertEquals(Icons.Filled.Straighten, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.ClassCarGap.Root))
+    }
+
+    @Test
+    fun `接近車両は車両アイコンを返す`() {
+        assertEquals(Icons.Filled.DirectionsCar, lmuWindowsItemIcon(LmuWindowsReadoutItemKey.VehicleApproach.Root))
     }
 
     @Test
