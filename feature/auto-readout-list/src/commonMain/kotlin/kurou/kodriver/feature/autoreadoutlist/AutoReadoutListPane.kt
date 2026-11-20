@@ -39,8 +39,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Flag
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.PlaylistRemove
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.ButtonDefaults
@@ -99,6 +97,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.ListRowPartsFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
+import kurou.kodriver.core.designsystem.ReadoutStartSoundIcons
 import kurou.kodriver.core.designsystem.RestoreRowFocusOnReturn
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
@@ -173,7 +172,7 @@ internal fun PriorityHintSheetContent(modifier: Modifier = Modifier) {
             description = stringResource(Res.string.queue_hint_description),
         )
         KoDriverHintSheetRow(
-            icon = Icons.Filled.NotificationsActive,
+            icon = ReadoutStartSoundIcons.FilledOn,
             title = stringResource(Res.string.start_sound_toggle_description),
             description = stringResource(Res.string.start_sound_hint_description),
         )
@@ -690,7 +689,7 @@ private fun AutoReadoutListStartSoundToggle(
     AutoReadoutListBottomChip(
         checked = checked,
         enabled = enabled,
-        icon = if (checked) Icons.Filled.NotificationsActive else Icons.Filled.NotificationsOff,
+        icon = if (checked) ReadoutStartSoundIcons.FilledOn else ReadoutStartSoundIcons.FilledOff,
         label = stringResource(Res.string.start_sound_toggle_description),
         testTag = "autoReadoutListStartSoundTouchTarget:${item.value}",
         onCheckedChange = onCheckedChange,
