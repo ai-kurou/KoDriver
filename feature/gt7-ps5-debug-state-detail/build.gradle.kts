@@ -15,7 +15,6 @@ kotlin {
             implementation(projects.core.gt7Ps5Domain)
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
-            implementation(libs.reorderable)
         }
         jvmTest.dependencies {
             implementation(libs.mockk)
