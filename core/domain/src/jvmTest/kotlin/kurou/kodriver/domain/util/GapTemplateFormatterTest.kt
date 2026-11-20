@@ -22,6 +22,11 @@ class GapTemplateFormatterTest {
     }
 
     @Test
+    fun `秒数が非nullで同じプレースホルダーが複数回出現するときはすべて置換する`() {
+        assertEquals("1.2秒、つまり1.2", "{ahead}秒、つまり{ahead}".replaceAhead("1.2"))
+    }
+
+    @Test
     fun `秒数がnullで節を含むときは節全体を車なしの文言に置換する`() {
         assertEquals("前方車なし", "前方{ahead}秒".replaceAhead(null))
     }
