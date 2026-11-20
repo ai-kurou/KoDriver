@@ -49,8 +49,18 @@ jobs:
           path: apk/
 
       - name: Install Maestro
+        env:
+          # 更新手順: 新バージョンの zip の SHA256 を `curl -sL <zipのURL> | shasum -a 256` で取得し、下記2値を更新する
+          # （URL: https://github.com/mobile-dev-inc/maestro/releases/download/cli-<バージョン>/maestro.zip）
+          MAESTRO_VERSION: "2.12.1"
+          MAESTRO_SHA256: 54dbb0716425626604973cbb374c585ca30272375d9ce15177a1152765ddd9d7
         run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
+          set -euo pipefail
+          curl --fail --location --silent --show-error -o "$RUNNER_TEMP/maestro.zip" "https://github.com/mobile-dev-inc/maestro/releases/download/cli-${MAESTRO_VERSION}/maestro.zip"
+          echo "${MAESTRO_SHA256}  $RUNNER_TEMP/maestro.zip" | sha256sum --check
+          unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP/maestro-dist"
+          mkdir -p "$HOME/.maestro"
+          cp -rf "$RUNNER_TEMP/maestro-dist/maestro/." "$HOME/.maestro/"
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
       - uses: ./.github/actions/enable-kvm
