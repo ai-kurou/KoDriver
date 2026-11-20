@@ -160,9 +160,12 @@ class LmuWindowsDebugStateDetailViewModelTest {
     ) = LmuWindowsDebugStateDetailViewModel(
         requestDebugReadout = requestDebugReadout,
         hotkeyUseCases = hotkeyRepository.useCases(),
-        hotkeyCheckTimeoutMs = 1_000L,
-        currentTimeMs = currentTimeMs,
-        sideBySideTickIntervalMs = sideBySideTickIntervalMs,
+        timings =
+            LmuWindowsDebugStateDetailTimings(
+                hotkeyCheckTimeoutMs = 1_000L,
+                currentTimeMs = currentTimeMs,
+                sideBySideTickIntervalMs = sideBySideTickIntervalMs,
+            ),
         lmuWindowsUseCases =
             LmuWindowsDebugStateUseCases(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
