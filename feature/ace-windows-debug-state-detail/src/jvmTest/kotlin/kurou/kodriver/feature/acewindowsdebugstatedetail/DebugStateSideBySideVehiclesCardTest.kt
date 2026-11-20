@@ -1,6 +1,9 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -96,6 +99,55 @@ class DebugStateSideBySideVehiclesCardTest {
         val fartherTop =
             rule
                 .onNodeWithText("12.3m")
+                .fetchSemanticsNode()
+                .boundsInRoot.top
+        assertTrue(nearerTop < fartherTop)
+    }
+
+    @Test
+    fun `ACEで周辺車両が更新された場合は再コンポジション後も距離の近い順に表示する`() {
+        var vehicleApproach by mutableStateOf(
+            AceWindowsVehicleApproachData(
+                nearbyVehicles =
+                    listOf(
+                        AceWindowsNearbyVehicleData(distanceMeters = 12.34),
+                        AceWindowsNearbyVehicleData(distanceMeters = 3.06),
+                    ),
+            ),
+        )
+        rule.setContent {
+            MaterialTheme {
+                AceWindowsNearbyVehiclesContent(vehicleApproach)
+            }
+        }
+
+        rule.onNodeWithText("3.1m").assertIsDisplayed()
+        rule.onNodeWithText("12.3m").assertIsDisplayed()
+
+        rule.runOnIdle {
+            vehicleApproach =
+                AceWindowsVehicleApproachData(
+                    nearbyVehicles =
+                        listOf(
+                            AceWindowsNearbyVehicleData(distanceMeters = 20.0),
+                            AceWindowsNearbyVehicleData(distanceMeters = 1.0),
+                        ),
+                )
+        }
+
+        rule.onNodeWithText("1.0m").assertIsDisplayed()
+        rule.onNodeWithText("20.0m").assertIsDisplayed()
+        rule.onNodeWithText("3.1m").assertDoesNotExist()
+        rule.onNodeWithText("12.3m").assertDoesNotExist()
+
+        val nearerTop =
+            rule
+                .onNodeWithText("1.0m")
+                .fetchSemanticsNode()
+                .boundsInRoot.top
+        val fartherTop =
+            rule
+                .onNodeWithText("20.0m")
                 .fetchSemanticsNode()
                 .boundsInRoot.top
         assertTrue(nearerTop < fartherTop)

@@ -167,7 +167,7 @@ internal fun AceWindowsFuelContent(
 internal fun AceWindowsNearbyVehiclesContent(vehicleApproach: AceWindowsVehicleApproachData?) {
     val sortedVehicles =
         remember(vehicleApproach?.nearbyVehicles) {
-            vehicleApproach?.nearbyVehicles?.sortedBy { it.distanceMeters }.orEmpty()
+            vehicleApproach?.nearbyVehicles.orEmpty().sortedBy { it.distanceMeters }
         }
     if (vehicleApproach == null) {
         DebugStateUnavailableContent()
