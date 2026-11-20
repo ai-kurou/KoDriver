@@ -22,14 +22,19 @@ import kotlin.time.Clock
 
 private const val SIDE_BY_SIDE_TICK_INTERVAL_MS = 100L
 
+/** [LmuWindowsDebugStateDetailViewModel] の時間まわりの設定。テストで差し替えるため引数にまとめている。 */
+internal data class LmuWindowsDebugStateDetailTimings(
+    val hotkeyCheckTimeoutMs: Long = 10_000L,
+    val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
+    val sideBySideTickIntervalMs: Long = SIDE_BY_SIDE_TICK_INTERVAL_MS,
+)
+
 internal class LmuWindowsDebugStateDetailViewModel(
     lmuWindowsUseCases: LmuWindowsDebugStateUseCases,
     cardOrderUseCases: DebugStateCardOrderUseCases<LmuWindowsDebugStateCardKey>,
     private val requestDebugReadout: RequestDebugReadoutUseCase,
     private val hotkeyUseCases: ReadoutHotkeyUseCases,
-    private val hotkeyCheckTimeoutMs: Long = 10_000L,
-    private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
-    private val sideBySideTickIntervalMs: Long = SIDE_BY_SIDE_TICK_INTERVAL_MS,
+    private val timings: LmuWindowsDebugStateDetailTimings = LmuWindowsDebugStateDetailTimings(),
 ) : ViewModel() {
     private val _selectedReadoutItemKey =
         MutableStateFlow<ReadoutItemKey>(
@@ -46,8 +51,8 @@ internal class LmuWindowsDebugStateDetailViewModel(
             scope = viewModelScope,
             useCases = lmuWindowsUseCases,
             markCardsReceived = ::markCardsReceived,
-            currentTimeMs = currentTimeMs,
-            sideBySideTickIntervalMs = sideBySideTickIntervalMs,
+            currentTimeMs = timings.currentTimeMs,
+            sideBySideTickIntervalMs = timings.sideBySideTickIntervalMs,
         )
 
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
@@ -109,7 +114,7 @@ internal class LmuWindowsDebugStateDetailViewModel(
         _hotkeyCheckState.update { HotkeyCheckState.Waiting }
         hotkeyCheckJob =
             viewModelScope.launchCapturingErrors {
-                val detected = withTimeoutOrNull(hotkeyCheckTimeoutMs) { hotkeyUseCases.observePress().first() }
+                val detected = withTimeoutOrNull(timings.hotkeyCheckTimeoutMs) { hotkeyUseCases.observePress().first() }
                 _hotkeyCheckState.update {
                     if (detected !=
                         null
