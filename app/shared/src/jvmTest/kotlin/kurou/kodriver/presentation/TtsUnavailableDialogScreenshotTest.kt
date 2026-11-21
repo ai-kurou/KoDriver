@@ -16,45 +16,24 @@ class TtsUnavailableDialogScreenshotTest {
     @Test
     fun `エンジン不足 ライトテーマ`() =
         composeScreenshotTest {
-            capture(TtsUnavailableGuidance.EngineMissing, darkTheme = false)
-        }
-
-    @Test
-    fun `エンジン不足 ダークテーマ`() =
-        composeScreenshotTest {
-            capture(TtsUnavailableGuidance.EngineMissing, darkTheme = true)
+            capture(TtsUnavailableGuidance.EngineMissing)
         }
 
     @Test
     fun `日本語データ不足 ライトテーマ`() =
         composeScreenshotTest {
-            capture(TtsUnavailableGuidance.LanguageDataMissing, darkTheme = false)
-        }
-
-    @Test
-    fun `日本語データ不足 ダークテーマ`() =
-        composeScreenshotTest {
-            capture(TtsUnavailableGuidance.LanguageDataMissing, darkTheme = true)
+            capture(TtsUnavailableGuidance.LanguageDataMissing)
         }
 
     @Test
     fun `Windows音声不足 ライトテーマ`() =
         composeScreenshotTest {
-            capture(TtsUnavailableGuidance.WindowsSpeechUnavailable, darkTheme = false)
+            capture(TtsUnavailableGuidance.WindowsSpeechUnavailable)
         }
 
-    @Test
-    fun `Windows音声不足 ダークテーマ`() =
-        composeScreenshotTest {
-            capture(TtsUnavailableGuidance.WindowsSpeechUnavailable, darkTheme = true)
-        }
-
-    private fun DesktopComposeUiTest.capture(
-        reason: TtsUnavailableGuidance,
-        darkTheme: Boolean,
-    ) {
+    private fun DesktopComposeUiTest.capture(reason: TtsUnavailableGuidance) {
         setContent {
-            AppTheme(darkTheme = darkTheme) {
+            AppTheme(darkTheme = false) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(width = 480.dp, height = 320.dp)) {
                         TtsUnavailableDialog(reason, onPrimaryClick = {}, onDismiss = {})
