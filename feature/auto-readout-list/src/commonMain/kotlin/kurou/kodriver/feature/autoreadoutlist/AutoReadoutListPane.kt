@@ -121,7 +121,6 @@ import kurou.kodriver.feature.autoreadoutlist.generated.resources.queue_toggle_d
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.scroll_to_top
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.start_sound_hint_description
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.start_sound_toggle_description
-import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableItem
@@ -424,7 +423,7 @@ private fun AutoReadoutListItemCard(
     val accentAlpha by animateFloatAsState(visualStyle.accentAlpha, label = "accentAlpha")
     val tileColor by animateColorAsState(visualStyle.tileColor, label = "tileColor")
     val tileContentColor by animateColorAsState(visualStyle.tileContentColor, label = "tileContentColor")
-    val tyreBackground = if (hasTyreBackgroundImage(item)) painterResource(Res.drawable.tyre_row_background) else null
+    val backgroundImage = autoReadoutBackgroundImage(item)?.let { painterResource(it) }
     val primary = MaterialTheme.colorScheme.primary
     val cardShape = CardDefaults.elevatedShape
     val selectionBorderColor by
@@ -458,8 +457,8 @@ private fun AutoReadoutListItemCard(
                 Modifier
                     .fillMaxWidth()
                     .then(
-                        if (tyreBackground != null) {
-                            Modifier.rightAlignedBackgroundImage(tyreBackground, containerColor)
+                        if (backgroundImage != null) {
+                            Modifier.rightAlignedBackgroundImage(backgroundImage, containerColor)
                         } else {
                             Modifier
                         },
