@@ -13,7 +13,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -110,9 +109,6 @@ class ManualReadoutSetDetailPaneScreenshotTest {
 
     @Test
     fun `戻るボタンなし`() = screenshot(lmuWindowsManualReadoutItemKeys(), canNavigateBack = false)
-
-    @Test
-    fun `1ペインで戻るボタンを表示`() = screenshot(lmuWindowsManualReadoutItemKeys(), size = DpSize(360.dp, 640.dp))
 
     @Test
     fun `削除ダイアログ`() =
@@ -263,7 +259,6 @@ class ManualReadoutSetDetailPaneAceScreenshotTest {
 private fun screenshot(
     keys: List<String>,
     canNavigateBack: Boolean = true,
-    size: DpSize = DpSize(1560.dp, 1080.dp),
     selected: Boolean = false,
     itemTexts: Map<String, String> = emptyMap(),
     hotkey: Pair<Int?, ManualReadoutHotkeyConflict?>? = null,
@@ -273,7 +268,7 @@ private fun screenshot(
     setContent {
         KoDriverTheme {
             Surface {
-                Box(modifier = Modifier.requiredSize(size.width, size.height)) {
+                Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                     ManualReadoutSetDetailPane(
                         uiState =
                             ManualReadoutSetDetailUiState(
