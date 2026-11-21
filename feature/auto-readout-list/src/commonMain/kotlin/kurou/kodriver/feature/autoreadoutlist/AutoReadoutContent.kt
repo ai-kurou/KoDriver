@@ -177,6 +177,7 @@ internal fun AutoReadoutContent(
                     AutoReadoutDetailPane(
                         title = autoReadoutItemDisplayName(selectedItem.id),
                         rootItemName = autoReadoutItemDisplayName(selectedItem.id),
+                        background = autoReadoutBackground(selectedItem.id),
                         canNavigateBack = navigator.canNavigateBack(),
                         onBack = { navigateBack() },
                         rootEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(selectedItem.id),

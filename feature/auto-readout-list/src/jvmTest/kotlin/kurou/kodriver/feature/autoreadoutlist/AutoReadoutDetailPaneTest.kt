@@ -37,6 +37,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeUp
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.ReadoutBackground
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -59,6 +60,25 @@ class AutoReadoutDetailPaneTest {
                     title = "フラッグ",
                     canNavigateBack = true,
                     onBack = {},
+                ) {
+                    Text("詳細内容")
+                }
+            }
+        }
+
+        rule.onNodeWithText("フラッグ").assertIsDisplayed()
+        rule.onNodeWithText("詳細内容").assertIsDisplayed()
+    }
+
+    @Test
+    fun `背景画像を指定してもタイトルと内容を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                AutoReadoutDetailPane(
+                    title = "フラッグ",
+                    canNavigateBack = true,
+                    onBack = {},
+                    background = ReadoutBackground.FLAG,
                 ) {
                     Text("詳細内容")
                 }

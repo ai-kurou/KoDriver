@@ -37,6 +37,23 @@ class DetailPaneTopAppBarTest {
     }
 
     @Test
+    fun `背景画像を指定してもタイトルと戻るボタンを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneTopAppBar(
+                    title = "タイヤ温度",
+                    canNavigateBack = true,
+                    onBack = {},
+                    background = ReadoutBackground.TYRE,
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ温度").assertIsDisplayed()
+        rule.onNode(hasContentDescription("戻る")).assertIsDisplayed()
+    }
+
+    @Test
     fun `20文字のセット名は戻るボタンと操作があっても1行で末尾を省略する`() {
         assertTitleLayout("WWWWWWWWWWWWWWWWWWWW")
     }
