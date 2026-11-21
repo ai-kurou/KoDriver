@@ -158,7 +158,11 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
                     "毎周ベストラップの30秒前に、バーチャルエネルギー残量・タイヤ摩耗・燃料残量の予想残り周回数を判定し、" +
                     "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。\n" +
                     "車両クラスに応じてバーチャルエネルギーまたは燃料を判定します。\n" +
-                    "読み上げる文言は、バーチャルエネルギー・タイヤ摩耗・燃料それぞれ下の欄で設定できます。",
+                    "読み上げる文言は、バーチャルエネルギー・タイヤ摩耗・燃料それぞれ下の欄で設定できます。\n" +
+                    "予想残り周回数は、直近に完走した1周分の消費量をもとに算出します。" +
+                    "バーチャルエネルギー補充・タイヤ交換・給油を検出した周は、消費量の計算に使いません。\n" +
+                    "アプリの起動直後や、シミュレーターを切り替えた直後は、消費量の実績がないため、" +
+                    "予想残り周回数が読み上げられない、または読み上げのタイミングがずれることがあります。1周ほど走ると安定します。",
             ).assertIsDisplayed()
         rule.onNodeWithText("バーチャルエネルギー").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗").performScrollTo().assertIsDisplayed()
@@ -303,29 +307,6 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneTest {
             }
 
         assert(tyreWearLaps == 1)
-    }
-
-    @Test
-    fun `ヘルプアイコンをタップするとヘルプシートが表示される`() {
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsAutoReadoutPitTimingDetailPaneContent()
-            }
-        }
-
-        rule.onNodeWithContentDescription("バーチャルエネルギー予想残り周回数の計算方法の説明を表示").performScrollTo().performClick()
-
-        rule
-            .onNodeWithText(
-                "直近に完走した1周分の消費量をもとに、バーチャルエネルギー残量・タイヤ残存率・燃料残量から予想残り周回数を算出します。" +
-                    "バーチャルエネルギー補充・タイヤ交換・給油を検出した周は、消費量の計算に使いません。" +
-                    "その後、補充・交換なしで1周を完走すると、推定に使う消費量を更新します。\n" +
-                    "推定に使う消費量は、次のときに消えます。" +
-                    "消えた後は、補充・交換なしで1周を完走して消費量が記録されるまで、予想残り周回数は読み上げません。\n" +
-                    "・LMU以外のシミュレーターに切り替えたとき\n" +
-                    "・セッションが変わったとき（周回数が戻ったときを含む）\n" +
-                    "・アプリを再起動したとき",
-            ).assertIsDisplayed()
     }
 
     @Test

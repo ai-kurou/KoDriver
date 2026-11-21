@@ -1134,6 +1134,68 @@ class Gt7Ps5NarratorViewModelTest {
         }
 
     @Test
+    fun `GT7以外へ切り替えて戻ると燃料追跡の基準を取り直す`() =
+        runTest(testDispatcher) {
+            val selected = MutableStateFlow<Simulator>(Simulator.Gt7Ps5)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            var nowMs = 0L
+            stubReadoutDefaults(fuelThreshold = 3)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns selected
+            every {
+                autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(Simulator.LmuWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every {
+                autoReadoutPreferencesRepository.observeAutoReadoutOrder(Simulator.LmuWindows.id)
+            } returns MutableStateFlow(emptyList())
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val viewModel = createViewModel(channel, ttsEngine, currentTimeMs = { nowMs })
+            try {
+                runCurrent()
+                // GT7 選択中に 1 周目から給油なしで消費を追跡し、残り1周未満の警告を読み上げる。
+                nowMs = 0L
+                channel.send(gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000))
+                runCurrent()
+                nowMs = 100_000L
+                channel.send(gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000))
+                runCurrent()
+                nowMs = 160_000L
+                channel.send(gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000))
+                runCurrent()
+                assertEquals(
+                    listOf<SpeechEvent>(Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料は残り1周未満")),
+                    spokenTexts,
+                )
+
+                // LMU を選択して GT7 へ戻る間は追跡を進めず、戻った直後は 2 周目の燃料を新たな基準にする。
+                selected.value = Simulator.LmuWindows
+                runCurrent()
+                selected.value = Simulator.Gt7Ps5
+                runCurrent()
+                nowMs = 200_000L
+                channel.send(gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000))
+                runCurrent()
+                nowMs = 300_000L
+                channel.send(gt7Telemetry(lapCount = 3, gasLevel = 20f, gasCapacity = 100f, bestLapTimeMs = 90_000))
+                runCurrent()
+                // 古い基準（1周目の100）が残っていれば残り0周として抑止されるため、新しい基準の残り3周を読む。
+                nowMs = 360_000L
+                channel.send(gt7Telemetry(lapCount = 3, gasLevel = 20f, gasCapacity = 100f, bestLapTimeMs = 90_000))
+                runCurrent()
+                assertEquals(
+                    listOf<SpeechEvent>(
+                        Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料は残り1周未満"),
+                        Gt7Ps5RemainingFuelLapsWarning(3, resolvedText = "燃料は残り約3周"),
+                    ),
+                    spokenTexts,
+                )
+            } finally {
+                viewModel.viewModelScope.cancel()
+                channel.close()
+            }
+        }
+
+    @Test
     fun `燃料残り周回数が無効のときは読み上げない`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)

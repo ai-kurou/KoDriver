@@ -13,6 +13,7 @@ import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOL
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemTextDefault
 import kurou.kodriver.domain.gt7ps5.usecase.DetermineGt7Ps5NarratorReadoutUseCase
+import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5FuelTrackingState
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
@@ -152,6 +153,13 @@ internal class Gt7Ps5NarratorViewModel(
     private fun resetLatestTelemetry() {
         latestTelemetry = null
         latestTelemetryReceivedAtMs = 0L
+        // GT7 の選択解除で燃料消費量と残り周回数の評価状態を破棄して別シミュレーターの値を持ち越さない。
+        narratorState =
+            narratorState.copy(
+                fuelTrackingState = Gt7Ps5FuelTrackingState(),
+                lastAnnouncedRemainingLaps = -1,
+                lastFuelEvaluationLap = -1,
+            )
     }
 
     private val telemetryFlow =

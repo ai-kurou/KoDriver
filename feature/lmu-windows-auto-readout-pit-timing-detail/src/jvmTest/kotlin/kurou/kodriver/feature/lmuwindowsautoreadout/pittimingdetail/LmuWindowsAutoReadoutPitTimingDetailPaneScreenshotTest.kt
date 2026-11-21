@@ -54,21 +54,6 @@ class LmuWindowsAutoReadoutPitTimingDetailPaneScreenshotTest {
         }
 
     @Test
-    fun `予想残り周回数のヘルプボトムシート`() =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
-                            PitTimingLapsHelpSheetContent()
-                        }
-                    }
-                }
-            }
-            onRoot().captureRoboImage()
-        }
-
-    @Test
     fun `通常入力あり`() =
         composeScreenshotTest {
             setContent {
