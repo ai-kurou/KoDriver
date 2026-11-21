@@ -9,11 +9,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.best_lap_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.brake_row_background
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.flag_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -43,15 +46,20 @@ internal fun backgroundImageSide(
 
 /**
  * 項目のカード右側に背景として表示する画像を返す。画像を持たない項目は null。
- * タイヤ関連（温度・摩耗）はタイヤ、ブレーキ関連（温度・摩耗）はブレーキ、自己ベストラップはドライバーの画像を使う。
+ * タイヤ関連（温度・摩耗）はタイヤ、ブレーキ関連（温度・摩耗）はブレーキ、自己ベストラップはドライバー、
+ * フラッグ（LMU・ACE）は旗の画像を使う。
  */
-internal fun autoReadoutBackgroundImage(item: ReadoutItemKey): DrawableResource? =
-    when (autoReadoutItemCategory(item)) {
+internal fun autoReadoutBackgroundImage(item: ReadoutItemKey): DrawableResource? {
+    if (item is LmuWindowsReadoutItemKey.Flag || item is AceWindowsReadoutItemKey.Flag) {
+        return Res.drawable.flag_row_background
+    }
+    return when (autoReadoutItemCategory(item)) {
         ManualReadoutItemCategory.TYRE -> Res.drawable.tyre_row_background
         ManualReadoutItemCategory.BRAKE -> Res.drawable.brake_row_background
         ManualReadoutItemCategory.TIME -> Res.drawable.best_lap_row_background
         else -> null
     }
+}
 
 /**
  * 正方形の [painter] を右寄せ・縦中央で描き、左端から [fadeColor]（カードの背景色）へ溶け込ませる。

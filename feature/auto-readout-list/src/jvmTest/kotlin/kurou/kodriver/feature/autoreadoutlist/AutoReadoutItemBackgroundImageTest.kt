@@ -7,6 +7,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.best_lap_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.brake_row_background
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.flag_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -71,11 +72,23 @@ class AutoReadoutItemBackgroundImageTest {
     }
 
     @Test
-    fun `タイヤ・ブレーキ・自己ベストラップ以外の項目は背景画像を表示しない`() {
+    fun `フラッグの項目は旗の背景画像を表示する`() {
+        val keys: List<ReadoutItemKey> =
+            listOf(
+                LmuWindowsReadoutItemKey.Flag.Root,
+                AceWindowsReadoutItemKey.Flag.Root,
+            )
+        for (key in keys) {
+            assertEquals(Res.drawable.flag_row_background, autoReadoutBackgroundImage(key), key.value)
+        }
+    }
+
+    @Test
+    fun `タイヤ・ブレーキ・自己ベストラップ・フラッグ以外の項目は背景画像を表示しない`() {
         val keys: List<ReadoutItemKey> =
             listOf(
                 LmuWindowsReadoutItemKey.RemainingFuel.Root,
-                LmuWindowsReadoutItemKey.Flag.Root,
+                LmuWindowsReadoutItemKey.VehicleApproach.Root,
                 Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
                 AceWindowsReadoutItemKey.RemainingFuel.Root,
             )
