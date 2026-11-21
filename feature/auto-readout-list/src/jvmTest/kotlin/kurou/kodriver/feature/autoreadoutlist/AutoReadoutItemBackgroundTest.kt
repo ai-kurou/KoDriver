@@ -1,40 +1,15 @@
 package kurou.kodriver.feature.autoreadoutlist
 
+import kurou.kodriver.core.designsystem.ReadoutBackground
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.feature.autoreadoutlist.generated.resources.Res
-import kurou.kodriver.feature.autoreadoutlist.generated.resources.best_lap_row_background
-import kurou.kodriver.feature.autoreadoutlist.generated.resources.brake_row_background
-import kurou.kodriver.feature.autoreadoutlist.generated.resources.flag_row_background
-import kurou.kodriver.feature.autoreadoutlist.generated.resources.fuel_row_background
-import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
-import kurou.kodriver.feature.autoreadoutlist.generated.resources.vehicle_approach_row_background
-import kurou.kodriver.feature.autoreadoutlist.generated.resources.virtual_energy_row_background
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class AutoReadoutItemBackgroundImageTest {
-    @Test
-    fun `背景画像の一辺は幅が狭いとき幅基準になる`() {
-        // 幅基準 400 * 0.55 = 220 < 高さ基準 200 * 1.5 = 300
-        assertEquals(220f, backgroundImageSide(width = 400f, height = 200f))
-    }
-
-    @Test
-    fun `背景画像の一辺は幅が広いとき高さ基準の上限で止まる`() {
-        // 幅基準 1200 * 0.55 = 660 > 高さ基準 200 * 1.5 = 300
-        assertEquals(300f, backgroundImageSide(width = 1200f, height = 200f))
-    }
-
-    @Test
-    fun `背景画像の一辺は幅基準と高さ基準が等しいとき、その値になる`() {
-        // 幅基準 600 * 0.55 = 330 == 高さ基準 220 * 1.5 = 330
-        assertEquals(330f, backgroundImageSide(width = 600f, height = 220f))
-    }
-
+class AutoReadoutItemBackgroundTest {
     @Test
     fun `タイヤ温度とタイヤ摩耗の項目は背景画像を表示する`() {
         val keys: List<ReadoutItemKey> =
@@ -45,7 +20,7 @@ class AutoReadoutItemBackgroundImageTest {
                 AceWindowsReadoutItemKey.TyreTemperature.Root,
             )
         for (key in keys) {
-            assertEquals(Res.drawable.tyre_row_background, autoReadoutBackgroundImage(key), key.value)
+            assertEquals(ReadoutBackground.TYRE, autoReadoutBackground(key), key.value)
         }
     }
 
@@ -57,7 +32,7 @@ class AutoReadoutItemBackgroundImageTest {
                 LmuWindowsReadoutItemKey.BrakeWear.Root,
             )
         for (key in keys) {
-            assertEquals(Res.drawable.brake_row_background, autoReadoutBackgroundImage(key), key.value)
+            assertEquals(ReadoutBackground.BRAKE, autoReadoutBackground(key), key.value)
         }
     }
 
@@ -70,7 +45,7 @@ class AutoReadoutItemBackgroundImageTest {
                 AceWindowsReadoutItemKey.MyBestLap.Root,
             )
         for (key in keys) {
-            assertEquals(Res.drawable.best_lap_row_background, autoReadoutBackgroundImage(key), key.value)
+            assertEquals(ReadoutBackground.BEST_LAP, autoReadoutBackground(key), key.value)
         }
     }
 
@@ -82,7 +57,7 @@ class AutoReadoutItemBackgroundImageTest {
                 AceWindowsReadoutItemKey.Flag.Root,
             )
         for (key in keys) {
-            assertEquals(Res.drawable.flag_row_background, autoReadoutBackgroundImage(key), key.value)
+            assertEquals(ReadoutBackground.FLAG, autoReadoutBackground(key), key.value)
         }
     }
 
@@ -97,7 +72,7 @@ class AutoReadoutItemBackgroundImageTest {
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
             )
         for (key in keys) {
-            assertEquals(Res.drawable.fuel_row_background, autoReadoutBackgroundImage(key), key.value)
+            assertEquals(ReadoutBackground.FUEL, autoReadoutBackground(key), key.value)
         }
     }
 
@@ -108,7 +83,7 @@ class AutoReadoutItemBackgroundImageTest {
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
             )
         for (key in keys) {
-            assertEquals(Res.drawable.virtual_energy_row_background, autoReadoutBackgroundImage(key), key.value)
+            assertEquals(ReadoutBackground.VIRTUAL_ENERGY, autoReadoutBackground(key), key.value)
         }
     }
 
@@ -120,7 +95,7 @@ class AutoReadoutItemBackgroundImageTest {
                 AceWindowsReadoutItemKey.VehicleApproach.Root,
             )
         for (key in keys) {
-            assertEquals(Res.drawable.vehicle_approach_row_background, autoReadoutBackgroundImage(key), key.value)
+            assertEquals(ReadoutBackground.VEHICLE_APPROACH, autoReadoutBackground(key), key.value)
         }
     }
 
@@ -131,7 +106,7 @@ class AutoReadoutItemBackgroundImageTest {
                 LmuWindowsReadoutItemKey.PitTiming.Root,
             )
         for (key in keys) {
-            assertNull(autoReadoutBackgroundImage(key), key.value)
+            assertNull(autoReadoutBackground(key), key.value)
         }
     }
 }
