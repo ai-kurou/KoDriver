@@ -11,6 +11,10 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.Res
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.brake_row_background
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
+import org.jetbrains.compose.resources.DrawableResource
 
 /** 背景画像を置く幅の、項目カード幅に対する割合。画像は正方形のため右寄せで置く。 */
 internal const val BACKGROUND_IMAGE_WIDTH_FRACTION = 0.55f
@@ -21,9 +25,16 @@ internal const val BACKGROUND_IMAGE_FADE_START_ALPHA = 1f
 /** 背景画像の右端での、カード色の不透明度。画像を暗く落として、文字やスイッチの視認性を保つ。 */
 internal const val BACKGROUND_IMAGE_FADE_END_ALPHA = 0.3f
 
-/** タイヤ関連の項目（タイヤ温度・タイヤ摩耗）は、カード右側にタイヤの画像を背景として表示する。 */
-internal fun hasTyreBackgroundImage(item: ReadoutItemKey): Boolean =
-    autoReadoutItemCategory(item) == ManualReadoutItemCategory.TYRE
+/**
+ * 項目のカード右側に背景として表示する画像を返す。画像を持たない項目は null。
+ * タイヤ関連（温度・摩耗）はタイヤ、ブレーキ関連（温度・摩耗）はブレーキの画像を使う。
+ */
+internal fun autoReadoutBackgroundImage(item: ReadoutItemKey): DrawableResource? =
+    when (autoReadoutItemCategory(item)) {
+        ManualReadoutItemCategory.TYRE -> Res.drawable.tyre_row_background
+        ManualReadoutItemCategory.BRAKE -> Res.drawable.brake_row_background
+        else -> null
+    }
 
 /**
  * 正方形の [painter] を右寄せ・縦中央で描き、左端から [fadeColor]（カードの背景色）へ溶け込ませる。
