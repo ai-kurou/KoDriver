@@ -19,10 +19,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.DonutLarge
 import androidx.compose.material.icons.filled.LocalGasStation
-import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -405,7 +405,7 @@ private fun speechCommandGuideCategoryIcon(category: ManualReadoutItemCategory):
         ManualReadoutItemCategory.VIRTUAL_ENERGY -> Icons.Default.Bolt
         ManualReadoutItemCategory.FUEL -> Icons.Default.LocalGasStation
         ManualReadoutItemCategory.TYRE -> Icons.Default.DonutLarge
-        ManualReadoutItemCategory.BRAKE -> Icons.Default.Speed
+        ManualReadoutItemCategory.BRAKE -> Icons.Default.Album
         ManualReadoutItemCategory.TIME -> Icons.Default.Timer
     }
 
