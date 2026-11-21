@@ -9,6 +9,7 @@ import kurou.kodriver.feature.autoreadoutlist.generated.resources.best_lap_row_b
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.brake_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.flag_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.virtual_energy_row_background
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -84,7 +85,18 @@ class AutoReadoutItemBackgroundImageTest {
     }
 
     @Test
-    fun `タイヤ・ブレーキ・自己ベストラップ・フラッグ以外の項目は背景画像を表示しない`() {
+    fun `バーチャルエネルギー残量の項目は仮想エネルギーの背景画像を表示する`() {
+        val keys: List<ReadoutItemKey> =
+            listOf(
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+            )
+        for (key in keys) {
+            assertEquals(Res.drawable.virtual_energy_row_background, autoReadoutBackgroundImage(key), key.value)
+        }
+    }
+
+    @Test
+    fun `タイヤ・ブレーキ・自己ベストラップ・フラッグ・バーチャルエネルギー残量以外の項目は背景画像を表示しない`() {
         val keys: List<ReadoutItemKey> =
             listOf(
                 LmuWindowsReadoutItemKey.RemainingFuel.Root,
