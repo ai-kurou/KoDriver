@@ -4,7 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
-import androidx.compose.material.icons.filled.PlaylistRemove
+import androidx.compose.material.icons.filled.PriorityHigh
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -42,7 +42,7 @@ class TelemetryLogNarrationOutcomeTest {
     fun `narrationOutcomeIconは4種の結果に対応するアイコンを返す`() {
         assertEquals(Icons.AutoMirrored.Filled.PlaylistAdd, narrationOutcomeIcon(NarrationOutcome.QUEUED))
         assertEquals(Icons.AutoMirrored.Filled.VolumeUp, narrationOutcomeIcon(NarrationOutcome.SPOKEN))
-        assertEquals(Icons.Filled.PlaylistRemove, narrationOutcomeIcon(NarrationOutcome.INTERRUPTED))
+        assertEquals(Icons.Filled.PriorityHigh, narrationOutcomeIcon(NarrationOutcome.INTERRUPTED))
         assertEquals(Icons.AutoMirrored.Filled.VolumeOff, narrationOutcomeIcon(NarrationOutcome.SKIPPED))
     }
 

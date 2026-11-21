@@ -23,7 +23,7 @@
 | --- | --- | --- | --- |
 | `QUEUED` | `Icons.AutoMirrored.Filled.PlaylistAdd` | キュー経由で再生 | 通常 |
 | `SPOKEN` | `Icons.AutoMirrored.Filled.VolumeUp` | 通常再生 | 通常 |
-| `INTERRUPTED` | `Icons.Filled.PlaylistRemove` | 割り込み再生 | 通常 |
+| `INTERRUPTED` | `Icons.Filled.PriorityHigh` | 割り込み再生 | 通常 |
 | `SKIPPED` | `Icons.Filled.VolumeOff` | 読み上げなし | `SKIPPED_CONTENT_ALPHA`（0.38）で減光 |
 
 結果アイコンの左隣に、`NarrationSource.AUTO` は `Icons.Default.HeadsetMic`（自動読み上げ）、`MANUAL` は `Icons.Default.TouchApp`（手動読み上げ）の丸い経路バッジを表示する。自動は無彩色、手動は暖色とし、選択中は選択行に合わせた配色に切り替える。`SKIPPED` ではバッジの背景・アイコンも減光する。

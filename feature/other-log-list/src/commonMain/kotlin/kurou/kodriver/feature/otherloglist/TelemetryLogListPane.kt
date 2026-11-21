@@ -34,7 +34,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlaylistRemove
+import androidx.compose.material.icons.filled.PriorityHigh
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.outlined.Inbox
 import androidx.compose.material3.ButtonDefaults
@@ -591,7 +591,7 @@ internal fun narrationOutcomeIcon(outcome: NarrationOutcome): ImageVector =
     when (outcome) {
         NarrationOutcome.QUEUED -> Icons.AutoMirrored.Filled.PlaylistAdd
         NarrationOutcome.SPOKEN -> Icons.AutoMirrored.Filled.VolumeUp
-        NarrationOutcome.INTERRUPTED -> Icons.Filled.PlaylistRemove
+        NarrationOutcome.INTERRUPTED -> Icons.Filled.PriorityHigh
         NarrationOutcome.SKIPPED -> Icons.AutoMirrored.Filled.VolumeOff
     }
 
