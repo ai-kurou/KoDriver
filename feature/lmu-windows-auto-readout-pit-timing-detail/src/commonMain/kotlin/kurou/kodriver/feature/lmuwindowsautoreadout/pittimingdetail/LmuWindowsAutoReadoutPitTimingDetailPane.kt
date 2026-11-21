@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -40,7 +38,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
-import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ReadoutTextField
@@ -73,11 +70,9 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassEnergySource
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_description
-import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_fuel_laps_help_icon_content_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_fuel_laps_subtitle
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_fuel_title
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_imminent_text_label
-import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_laps_help_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_laps_insert
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_laps_placeholder_hint
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_laps_reset_to_default
@@ -89,13 +84,11 @@ import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.re
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_text_supporting
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_text_unavailable
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_text_unknown_placeholders
-import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_laps_help_icon_content_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_laps_subtitle
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_title
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_vehicle_class_not_target
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_vehicle_class_target
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_vehicle_class_target_subtitle
-import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_help_icon_content_description
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_subtitle
 import kurou.kodriver.feature.lmuwindowsautoreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_title
 import org.jetbrains.compose.resources.painterResource
@@ -168,12 +161,6 @@ internal fun LmuWindowsAutoReadoutPitTimingDetailPaneContent(
 ) {
     val sliderLabel = stringResource(Res.string.pit_timing_laps_slider_label)
     val resetToDefaultLabel = stringResource(Res.string.pit_timing_laps_reset_to_default)
-    val virtualEnergyHelpIconContentDescription =
-        stringResource(Res.string.pit_timing_virtual_energy_laps_help_icon_content_description)
-    val tyreWearHelpIconContentDescription =
-        stringResource(Res.string.pit_timing_tyre_wear_laps_help_icon_content_description)
-    val fuelHelpIconContentDescription =
-        stringResource(Res.string.pit_timing_fuel_laps_help_icon_content_description)
     // 保存値がuiStateへ反映される前でも、スライダーに表示中の周回数で試聴する。
     var virtualEnergyLaps by remember(uiState.virtualEnergyLaps) { mutableIntStateOf(uiState.virtualEnergyLaps) }
     var tyreWearLaps by remember(uiState.tyreWearLaps) { mutableIntStateOf(uiState.tyreWearLaps) }
@@ -226,12 +213,6 @@ internal fun LmuWindowsAutoReadoutPitTimingDetailPaneContent(
                     )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.pit_timing_virtual_energy_laps_subtitle),
-                        trailingContent = {
-                            HelpIconButton(
-                                contentDescription = virtualEnergyHelpIconContentDescription,
-                                sheetContent = { PitTimingLapsHelpSheetContent() },
-                            )
-                        },
                     )
                     ThresholdSlider(
                         value = uiState.virtualEnergyLaps.toFloat(),
@@ -279,12 +260,6 @@ internal fun LmuWindowsAutoReadoutPitTimingDetailPaneContent(
                     )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.pit_timing_tyre_wear_laps_subtitle),
-                        trailingContent = {
-                            HelpIconButton(
-                                contentDescription = tyreWearHelpIconContentDescription,
-                                sheetContent = { PitTimingLapsHelpSheetContent() },
-                            )
-                        },
                     )
                     ThresholdSlider(
                         value = uiState.tyreWearLaps.toFloat(),
@@ -343,12 +318,6 @@ internal fun LmuWindowsAutoReadoutPitTimingDetailPaneContent(
                     )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.pit_timing_fuel_laps_subtitle),
-                        trailingContent = {
-                            HelpIconButton(
-                                contentDescription = fuelHelpIconContentDescription,
-                                sheetContent = { PitTimingLapsHelpSheetContent() },
-                            )
-                        },
                     )
                     ThresholdSlider(
                         value = uiState.fuelLaps.toFloat(),
@@ -538,17 +507,6 @@ private fun PitTimingReadoutFields(
             supportingText = stringResource(Res.string.pit_timing_text_supporting),
         )
     }
-}
-
-@Composable
-internal fun PitTimingLapsHelpSheetContent(modifier: Modifier = Modifier) {
-    Text(
-        text = stringResource(Res.string.pit_timing_laps_help_description),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large),
-    )
-    Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
 }
 
 @Preview(showBackground = true)

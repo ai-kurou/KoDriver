@@ -108,6 +108,9 @@ GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持
 自動側のしきい値・重複抑止・周回内タイミング・有効スイッチは手動側に適用しない。
 テレメトリごとに `determineRemainingFuelLaps` が呼ばれ、有効スイッチの判定より前に燃料追跡が更新されるため、
 自動読み上げが無効でも手動用の追跡が続く。
+GT7 以外のシミュレーターを選択したときは `resetLatestTelemetry()` で、燃料追跡状態（`fuelTrackingState`）・
+残り周回数の最終通知値（`lastAnnouncedRemainingLaps`）・最終評価周（`lastFuelEvaluationLap`）を初期値へ戻し、
+GT7 に戻ったときに古い基準を引き継がない。
 
 GT7 の手動「タイヤ温度」は `TyreTemperature.Root` を使い、`currentMaxTyreTemperatureCelsius(telemetry)` で
 4輪の有限値の最高温度を `roundToInt()` した整数℃を取得する。未受信・5秒超・全輪が非有限値または0（取得不能）は

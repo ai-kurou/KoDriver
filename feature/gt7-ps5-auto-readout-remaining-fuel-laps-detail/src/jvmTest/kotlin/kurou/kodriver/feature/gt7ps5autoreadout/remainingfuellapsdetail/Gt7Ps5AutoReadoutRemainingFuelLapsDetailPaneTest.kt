@@ -51,7 +51,9 @@ class Gt7Ps5AutoReadoutRemainingFuelLapsDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("この基準は、セッションが変わったとき(周回数が戻ったとき)と、", substring = true).assertIsDisplayed()
+        rule.onNodeWithText("この基準は、セッションが変わったとき(周回数が戻ったとき)、", substring = true).assertIsDisplayed()
+        rule.onNodeWithText("シミュレーターを切り替えたときに、その時点の燃料で取り直します。", substring = true).assertIsDisplayed()
+        rule.onNodeWithText("1周ほど走ると安定します。", substring = true).assertIsDisplayed()
     }
 
     @Test
