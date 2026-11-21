@@ -10,6 +10,7 @@ import kurou.kodriver.feature.autoreadoutlist.generated.resources.brake_row_back
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.flag_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.fuel_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.vehicle_approach_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.virtual_energy_row_background
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -112,10 +113,22 @@ class AutoReadoutItemBackgroundImageTest {
     }
 
     @Test
-    fun `タイヤ・ブレーキ・自己ベストラップ・フラッグ・燃料・バーチャルエネルギー残量以外の項目は背景画像を表示しない`() {
+    fun `車両接近の項目は車両接近の背景画像を表示する`() {
         val keys: List<ReadoutItemKey> =
             listOf(
                 LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                AceWindowsReadoutItemKey.VehicleApproach.Root,
+            )
+        for (key in keys) {
+            assertEquals(Res.drawable.vehicle_approach_row_background, autoReadoutBackgroundImage(key), key.value)
+        }
+    }
+
+    @Test
+    fun `タイヤ・ブレーキ・自己ベストラップ・フラッグ・燃料・バーチャルエネルギー残量・車両接近以外の項目は背景画像を表示しない`() {
+        val keys: List<ReadoutItemKey> =
+            listOf(
+                LmuWindowsReadoutItemKey.PitTiming.Root,
             )
         for (key in keys) {
             assertNull(autoReadoutBackgroundImage(key), key.value)

@@ -19,6 +19,7 @@ import kurou.kodriver.feature.autoreadoutlist.generated.resources.brake_row_back
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.flag_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.fuel_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.vehicle_approach_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.virtual_energy_row_background
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -52,6 +53,7 @@ internal fun backgroundImageSide(
  * フラッグ（LMU・ACE）は旗の画像を使う。
  * バーチャルエネルギー残量（LMU）は仮想エネルギーの画像を使う。
  * 燃料関連（残量・残り周回数）は燃料缶の画像を使う。
+ * 車両接近（LMU・ACE）は接近する車両の画像を使う。
  */
 internal fun autoReadoutBackgroundImage(item: ReadoutItemKey): DrawableResource? {
     if (item is LmuWindowsReadoutItemKey.Flag || item is AceWindowsReadoutItemKey.Flag) {
@@ -59,6 +61,9 @@ internal fun autoReadoutBackgroundImage(item: ReadoutItemKey): DrawableResource?
     }
     if (item is LmuWindowsReadoutItemKey.RemainingVirtualEnergy) {
         return Res.drawable.virtual_energy_row_background
+    }
+    if (item is LmuWindowsReadoutItemKey.VehicleApproach || item is AceWindowsReadoutItemKey.VehicleApproach) {
+        return Res.drawable.vehicle_approach_row_background
     }
     return when (autoReadoutItemCategory(item)) {
         ManualReadoutItemCategory.TYRE -> Res.drawable.tyre_row_background
