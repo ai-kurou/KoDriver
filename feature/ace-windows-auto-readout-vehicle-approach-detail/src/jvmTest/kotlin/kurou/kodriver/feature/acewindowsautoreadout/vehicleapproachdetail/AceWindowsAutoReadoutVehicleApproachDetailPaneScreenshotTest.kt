@@ -1,9 +1,12 @@
 package kurou.kodriver.feature.acewindowsautoreadout.vehicleapproachdetail
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
@@ -59,12 +62,15 @@ class AceWindowsAutoReadoutVehicleApproachDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             VehicleApproachHelpSheetContent()
                         }
                     }
                 }
             }
+            onNodeWithText(
+                "閾値は自車中心から相手車両中心までの距離です。この範囲内に入ると車両接近と判定され読み上げられます。\n\n※車両は一般的に全長 5m以下、全幅 2m以下となっています。",
+            ).assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
