@@ -1,9 +1,12 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.tyretemperaturedetail
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
@@ -74,12 +77,15 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             TyreTemperatureThresholdHelpSheetContent()
                         }
                     }
                 }
             }
+            onNodeWithText(
+                "設定した温度以上になると過熱警告を読み上げます。一度警告を読み上げた後は、閾値より約5℃低い温度まで下がるまで再度読み上げません。温度が閾値付近で細かく上下しても連続して警告しないための制御です。",
+            ).assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 
@@ -89,12 +95,16 @@ class LmuWindowsAutoReadoutTyreTemperatureDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
                             TyreTemperatureLowWarningPhasesHelpSheetContent()
                         }
                     }
                 }
             }
+            onNodeWithText(
+                "ガレージ・ウォームアップラップ・グリッドウォーク・フォーメーションラップのうち、選択したフェーズに切り替わった瞬間に、4輪のうち1輪でも60℃以下であれば低温警告を読み上げます。" +
+                    "フェーズが変わらない間や、切り替わった時点で全輪が60℃を超えている場合は読み上げません。",
+            ).assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 

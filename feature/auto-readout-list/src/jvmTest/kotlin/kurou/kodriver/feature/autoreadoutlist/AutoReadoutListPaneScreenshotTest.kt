@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
@@ -271,6 +272,7 @@ class AutoReadoutListPaneScreenshotTest {
                     }
                 }
             }
+            onNodeWithText("読み上げ開始音アイコンをONにすると、その項目の読み上げ前に開始音を鳴らします").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 

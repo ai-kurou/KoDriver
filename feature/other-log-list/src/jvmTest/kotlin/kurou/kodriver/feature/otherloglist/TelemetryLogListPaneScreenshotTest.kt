@@ -94,6 +94,7 @@ class TelemetryLogListPaneScreenshotTest {
                     }
                 }
             }
+            onNodeWithText("手動読み上げタブの操作やホットキーで、読み上げが要求されました。").assertIsDisplayed()
             onRoot().captureRoboImage()
         }
 

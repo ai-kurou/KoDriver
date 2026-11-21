@@ -2,11 +2,15 @@
 
 package kurou.kodriver.feature.manualreadoutlist
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -30,7 +34,9 @@ class ManualReadoutHintSheetContentScreenshotTest {
         composeRule.setContent {
             KoDriverTheme {
                 Surface {
-                    ManualReadoutHintSheetContent(showHotkeyHint = isManualReadoutHotkeySupported())
+                    Column(modifier = Modifier.requiredSize(480.dp, 1080.dp)) {
+                        ManualReadoutHintSheetContent(showHotkeyHint = isManualReadoutHotkeySupported())
+                    }
                 }
             }
         }
