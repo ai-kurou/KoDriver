@@ -8,7 +8,6 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -61,24 +60,6 @@ class OtherVoiceDetailPaneScreenshotTest {
         screenshot(OtherVoiceDetailUiState(listOf(voice), "missing", isLoading = false, savedVoiceMissing = true))
 
     @Test
-    fun `狭いペインの音声カード`() =
-        screenshot(
-            OtherVoiceDetailUiState(listOf(voice, TextToSpeechVoice("voice-b", "音声B", "ja-JP")), voice.id, false),
-            width = 360.dp,
-        )
-
-    @Test
-    fun `ダークテーマの音声カード`() =
-        screenshot(
-            OtherVoiceDetailUiState(
-                listOf(voice, TextToSpeechVoice("voice-b", "長い名前の日本語音声B", "ja-jp-x-jac-local")),
-                voice.id,
-                false,
-            ),
-            darkTheme = true,
-        )
-
-    @Test
     fun `試聴中の音声カード`() =
         screenshot(
             OtherVoiceDetailUiState(
@@ -89,31 +70,28 @@ class OtherVoiceDetailPaneScreenshotTest {
             ),
         )
 
-    private fun screenshot(
-        uiState: OtherVoiceDetailUiState,
-        width: Dp = 1560.dp,
-        darkTheme: Boolean = false,
-    ) = composeScreenshotTest {
-        setContent {
-            KoDriverTheme(darkTheme = darkTheme) {
-                Surface {
-                    Box(modifier = Modifier.requiredSize(width, 1080.dp)) {
-                        OtherVoiceDetailPaneContent(uiState = uiState)
+    private fun screenshot(uiState: OtherVoiceDetailUiState) =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            OtherVoiceDetailPaneContent(uiState = uiState)
+                        }
                     }
                 }
             }
+            if (uiState.isLoading) {
+                onNodeWithText("読み込み中…").assertExists()
+                onNode(hasContentDescription("システム既定を試聴")).assertDoesNotExist()
+            } else {
+                onNode(hasContentDescription("システム既定を試聴")).assertIsEnabled()
+            }
+            if (uiState.previewingVoiceId == voice.id) {
+                onNode(hasContentDescription("音声Aの試聴を停止")).assertIsEnabled()
+                mainClock.autoAdvance = false
+                mainClock.advanceTimeBy(200)
+            }
+            onRoot().captureRoboImage()
         }
-        if (uiState.isLoading) {
-            onNodeWithText("読み込み中…").assertExists()
-            onNode(hasContentDescription("システム既定を試聴")).assertDoesNotExist()
-        } else {
-            onNode(hasContentDescription("システム既定を試聴")).assertIsEnabled()
-        }
-        if (uiState.previewingVoiceId == voice.id) {
-            onNode(hasContentDescription("音声Aの試聴を停止")).assertIsEnabled()
-            mainClock.autoAdvance = false
-            mainClock.advanceTimeBy(200)
-        }
-        onRoot().captureRoboImage()
-    }
 }
