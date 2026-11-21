@@ -88,4 +88,44 @@ class DetailPaneTopAppBarScreenshotTest {
             }
             onAllNodes(isRoot()).get(0).captureRoboImage()
         }
+
+    @Test
+    fun `背景画像あり`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 64.dp)) {
+                            DetailPaneTopAppBar(
+                                title = "タイヤ温度",
+                                canNavigateBack = true,
+                                onBack = {},
+                                background = ReadoutBackground.TYRE,
+                            )
+                        }
+                    }
+                }
+            }
+            onAllNodes(isRoot()).get(0).captureRoboImage()
+        }
+
+    @Test
+    fun `背景画像あり ダークテーマ`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme(darkTheme = true) {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 64.dp)) {
+                            DetailPaneTopAppBar(
+                                title = "タイヤ温度",
+                                canNavigateBack = true,
+                                onBack = {},
+                                background = ReadoutBackground.TYRE,
+                            )
+                        }
+                    }
+                }
+            }
+            onAllNodes(isRoot()).get(0).captureRoboImage()
+        }
 }
