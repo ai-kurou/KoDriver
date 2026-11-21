@@ -17,6 +17,7 @@ import kurou.kodriver.feature.autoreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.best_lap_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.brake_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.flag_row_background
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.fuel_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.virtual_energy_row_background
 import org.jetbrains.compose.resources.DrawableResource
@@ -50,6 +51,7 @@ internal fun backgroundImageSide(
  * タイヤ関連（温度・摩耗）はタイヤ、ブレーキ関連（温度・摩耗）はブレーキ、自己ベストラップはドライバー、
  * フラッグ（LMU・ACE）は旗の画像を使う。
  * バーチャルエネルギー残量（LMU）は仮想エネルギーの画像を使う。
+ * 燃料関連（残量・残り周回数）は燃料缶の画像を使う。
  */
 internal fun autoReadoutBackgroundImage(item: ReadoutItemKey): DrawableResource? {
     if (item is LmuWindowsReadoutItemKey.Flag || item is AceWindowsReadoutItemKey.Flag) {
@@ -61,6 +63,7 @@ internal fun autoReadoutBackgroundImage(item: ReadoutItemKey): DrawableResource?
     return when (autoReadoutItemCategory(item)) {
         ManualReadoutItemCategory.TYRE -> Res.drawable.tyre_row_background
         ManualReadoutItemCategory.BRAKE -> Res.drawable.brake_row_background
+        ManualReadoutItemCategory.FUEL -> Res.drawable.fuel_row_background
         ManualReadoutItemCategory.TIME -> Res.drawable.best_lap_row_background
         else -> null
     }

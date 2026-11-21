@@ -8,6 +8,7 @@ import kurou.kodriver.feature.autoreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.best_lap_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.brake_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.flag_row_background
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.fuel_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.virtual_energy_row_background
 import kotlin.test.Test
@@ -85,6 +86,21 @@ class AutoReadoutItemBackgroundImageTest {
     }
 
     @Test
+    fun `燃料残量と燃料の残り周回数の項目は燃料の背景画像を表示する`() {
+        val keys: List<ReadoutItemKey> =
+            listOf(
+                LmuWindowsReadoutItemKey.RemainingFuel.Root,
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
+                AceWindowsReadoutItemKey.RemainingFuel.Root,
+                AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
+            )
+        for (key in keys) {
+            assertEquals(Res.drawable.fuel_row_background, autoReadoutBackgroundImage(key), key.value)
+        }
+    }
+
+    @Test
     fun `バーチャルエネルギー残量の項目は仮想エネルギーの背景画像を表示する`() {
         val keys: List<ReadoutItemKey> =
             listOf(
@@ -96,13 +112,10 @@ class AutoReadoutItemBackgroundImageTest {
     }
 
     @Test
-    fun `タイヤ・ブレーキ・自己ベストラップ・フラッグ・バーチャルエネルギー残量以外の項目は背景画像を表示しない`() {
+    fun `タイヤ・ブレーキ・自己ベストラップ・フラッグ・燃料・バーチャルエネルギー残量以外の項目は背景画像を表示しない`() {
         val keys: List<ReadoutItemKey> =
             listOf(
-                LmuWindowsReadoutItemKey.RemainingFuel.Root,
                 LmuWindowsReadoutItemKey.VehicleApproach.Root,
-                Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
-                AceWindowsReadoutItemKey.RemainingFuel.Root,
             )
         for (key in keys) {
             assertNull(autoReadoutBackgroundImage(key), key.value)
