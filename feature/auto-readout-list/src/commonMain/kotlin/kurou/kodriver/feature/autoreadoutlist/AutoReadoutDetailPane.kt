@@ -44,6 +44,7 @@ import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
+import kurou.kodriver.core.designsystem.ReadoutBackground
 import kurou.kodriver.core.designsystem.detailPaneInitialFocus
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.root_disabled_banner_enable
@@ -61,6 +62,7 @@ internal fun AutoReadoutDetailPane(
     modifier: Modifier = Modifier,
     rootEnabled: Boolean = true,
     rootItemName: String = title,
+    background: ReadoutBackground? = null,
     onEnableRoot: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     content: @Composable () -> Unit,
@@ -80,6 +82,7 @@ internal fun AutoReadoutDetailPane(
                 canNavigateBack = canNavigateBack,
                 onBack = onBack,
                 scrollBehavior = scrollBehavior,
+                background = background,
             )
         },
     ) { paddingValues ->

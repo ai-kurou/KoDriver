@@ -88,4 +88,31 @@ class DetailPaneTopAppBarScreenshotTest {
             }
             onAllNodes(isRoot()).get(0).captureRoboImage()
         }
+
+    @Test
+    fun `背景画像 タイヤ`() = captureWithBackground(ReadoutBackground.TYRE, darkTheme = false)
+
+    @Test
+    fun `背景画像 タイヤ ダークテーマ`() = captureWithBackground(ReadoutBackground.TYRE, darkTheme = true)
+
+    private fun captureWithBackground(
+        background: ReadoutBackground,
+        darkTheme: Boolean,
+    ) = composeScreenshotTest {
+        setContent {
+            KoDriverTheme(darkTheme = darkTheme) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(360.dp, 64.dp)) {
+                        DetailPaneTopAppBar(
+                            title = "タイヤ温度",
+                            canNavigateBack = true,
+                            onBack = {},
+                            background = background,
+                        )
+                    }
+                }
+            }
+        }
+        onAllNodes(isRoot()).get(0).captureRoboImage()
+    }
 }

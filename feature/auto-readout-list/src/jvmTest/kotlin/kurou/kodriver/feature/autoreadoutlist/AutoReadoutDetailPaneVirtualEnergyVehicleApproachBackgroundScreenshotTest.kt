@@ -1,0 +1,31 @@
+package kurou.kodriver.feature.autoreadoutlist
+
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import org.junit.Test
+
+/** バーチャルエネルギー・車両接近の項目の詳細ペイン上部バーを、本番と同じタイトル・背景画像で撮影する。 */
+class AutoReadoutDetailPaneVirtualEnergyVehicleApproachBackgroundScreenshotTest {
+    init {
+        registerAllReadoutItemKeys()
+    }
+
+    @Test
+    fun `LMU バーチャルエネルギー残量`() = captureDetailPane(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, dark = false)
+
+    @Test
+    fun `LMU バーチャルエネルギー残量 ダークテーマ`() =
+        captureDetailPane(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, dark = true)
+
+    @Test
+    fun `LMU 車両接近`() = captureDetailPane(LmuWindowsReadoutItemKey.VehicleApproach.Root, dark = false)
+
+    @Test
+    fun `LMU 車両接近 ダークテーマ`() = captureDetailPane(LmuWindowsReadoutItemKey.VehicleApproach.Root, dark = true)
+
+    @Test
+    fun `ACE 車両接近`() = captureDetailPane(AceWindowsReadoutItemKey.VehicleApproach.Root, dark = false)
+
+    @Test
+    fun `ACE 車両接近 ダークテーマ`() = captureDetailPane(AceWindowsReadoutItemKey.VehicleApproach.Root, dark = true)
+}
