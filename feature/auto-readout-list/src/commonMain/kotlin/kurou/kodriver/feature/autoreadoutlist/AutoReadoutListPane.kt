@@ -104,6 +104,7 @@ import kurou.kodriver.core.designsystem.handleListRowArrowKey
 import kurou.kodriver.core.designsystem.handleListRowPartArrowKey
 import kurou.kodriver.core.designsystem.handleListRowReorderKey
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
+import kurou.kodriver.core.designsystem.rightAlignedBackgroundImage
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -423,7 +424,7 @@ private fun AutoReadoutListItemCard(
     val accentAlpha by animateFloatAsState(visualStyle.accentAlpha, label = "accentAlpha")
     val tileColor by animateColorAsState(visualStyle.tileColor, label = "tileColor")
     val tileContentColor by animateColorAsState(visualStyle.tileContentColor, label = "tileContentColor")
-    val backgroundImage = autoReadoutBackgroundImage(item)?.let { painterResource(it) }
+    val backgroundImage = autoReadoutBackground(item)?.let { painterResource(it.drawable) }
     val primary = MaterialTheme.colorScheme.primary
     val cardShape = CardDefaults.elevatedShape
     val selectionBorderColor by
