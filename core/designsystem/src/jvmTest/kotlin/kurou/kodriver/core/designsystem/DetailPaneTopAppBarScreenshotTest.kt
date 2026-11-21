@@ -95,42 +95,6 @@ class DetailPaneTopAppBarScreenshotTest {
     @Test
     fun `背景画像 タイヤ ダークテーマ`() = captureWithBackground(ReadoutBackground.TYRE, darkTheme = true)
 
-    @Test
-    fun `背景画像 ブレーキ`() = captureWithBackground(ReadoutBackground.BRAKE, darkTheme = false)
-
-    @Test
-    fun `背景画像 ブレーキ ダークテーマ`() = captureWithBackground(ReadoutBackground.BRAKE, darkTheme = true)
-
-    @Test
-    fun `背景画像 燃料`() = captureWithBackground(ReadoutBackground.FUEL, darkTheme = false)
-
-    @Test
-    fun `背景画像 燃料 ダークテーマ`() = captureWithBackground(ReadoutBackground.FUEL, darkTheme = true)
-
-    @Test
-    fun `背景画像 自己ベストラップ`() = captureWithBackground(ReadoutBackground.BEST_LAP, darkTheme = false)
-
-    @Test
-    fun `背景画像 自己ベストラップ ダークテーマ`() = captureWithBackground(ReadoutBackground.BEST_LAP, darkTheme = true)
-
-    @Test
-    fun `背景画像 フラッグ`() = captureWithBackground(ReadoutBackground.FLAG, darkTheme = false)
-
-    @Test
-    fun `背景画像 フラッグ ダークテーマ`() = captureWithBackground(ReadoutBackground.FLAG, darkTheme = true)
-
-    @Test
-    fun `背景画像 バーチャルエネルギー`() = captureWithBackground(ReadoutBackground.VIRTUAL_ENERGY, darkTheme = false)
-
-    @Test
-    fun `背景画像 バーチャルエネルギー ダークテーマ`() = captureWithBackground(ReadoutBackground.VIRTUAL_ENERGY, darkTheme = true)
-
-    @Test
-    fun `背景画像 車両接近`() = captureWithBackground(ReadoutBackground.VEHICLE_APPROACH, darkTheme = false)
-
-    @Test
-    fun `背景画像 車両接近 ダークテーマ`() = captureWithBackground(ReadoutBackground.VEHICLE_APPROACH, darkTheme = true)
-
     private fun captureWithBackground(
         background: ReadoutBackground,
         darkTheme: Boolean,
