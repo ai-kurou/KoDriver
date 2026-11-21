@@ -7,6 +7,12 @@ on:
 permissions:
   contents: read
 
+# main の run を直列化する。並行実行だと、保存前の run のGradleビルドキャッシュを次の run が復元できないため（#3149）。
+# 実行中の run はキャンセルせず、待機中は最新のみ残る。
+concurrency:
+  group: ${{ github.workflow }}-main
+  cancel-in-progress: false
+
 jobs:
   detekt:
     uses: ./.github/workflows/_gradle-check.yml
