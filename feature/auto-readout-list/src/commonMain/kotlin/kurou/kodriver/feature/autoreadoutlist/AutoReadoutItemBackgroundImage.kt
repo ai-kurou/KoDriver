@@ -18,6 +18,7 @@ import kurou.kodriver.feature.autoreadoutlist.generated.resources.best_lap_row_b
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.brake_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.flag_row_background
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.tyre_row_background
+import kurou.kodriver.feature.autoreadoutlist.generated.resources.virtual_energy_row_background
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -48,10 +49,14 @@ internal fun backgroundImageSide(
  * 項目のカード右側に背景として表示する画像を返す。画像を持たない項目は null。
  * タイヤ関連（温度・摩耗）はタイヤ、ブレーキ関連（温度・摩耗）はブレーキ、自己ベストラップはドライバー、
  * フラッグ（LMU・ACE）は旗の画像を使う。
+ * バーチャルエネルギー残量（LMU）は仮想エネルギーの画像を使う。
  */
 internal fun autoReadoutBackgroundImage(item: ReadoutItemKey): DrawableResource? {
     if (item is LmuWindowsReadoutItemKey.Flag || item is AceWindowsReadoutItemKey.Flag) {
         return Res.drawable.flag_row_background
+    }
+    if (item is LmuWindowsReadoutItemKey.RemainingVirtualEnergy) {
+        return Res.drawable.virtual_energy_row_background
     }
     return when (autoReadoutItemCategory(item)) {
         ManualReadoutItemCategory.TYRE -> Res.drawable.tyre_row_background
