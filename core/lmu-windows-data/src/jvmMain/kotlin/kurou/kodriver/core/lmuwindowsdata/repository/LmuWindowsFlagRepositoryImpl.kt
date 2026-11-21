@@ -3,6 +3,7 @@ package kurou.kodriver.core.lmuwindowsdata.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MAX_SCORING_VEHICLES
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
 import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
@@ -17,7 +18,7 @@ internal class LmuWindowsFlagRepositoryImpl(
     override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = source.scoringBufferFlow.mapNotNull { readFlags(it) }
 
     private fun readFlags(buffer: ByteBuffer): LmuWindowsRaceFlagsData? {
-        val vehicleCount = buffer.getInt(SCORING_BASE + OFF_NUM_VEHICLES).coerceIn(0, MAX_VEHICLES)
+        val vehicleCount = buffer.getInt(SCORING_BASE + OFF_NUM_VEHICLES).coerceIn(0, LMU_WINDOWS_MAX_SCORING_VEHICLES)
         val playerVehicleBase = findPlayerVehicleBase(buffer, vehicleCount) ?: return null
 
         return LmuWindowsRaceFlagsData(
@@ -51,7 +52,6 @@ internal class LmuWindowsFlagRepositoryImpl(
         private const val SCORING_BASE = 1_632
         private const val VEHICLE_SCORING_BASE = 2_192
         private const val VEHICLE_SCORING_STRIDE = 584
-        private const val MAX_VEHICLES = 104
 
         private const val OFF_NUM_VEHICLES = 104
         private const val OFF_GAME_PHASE = 108

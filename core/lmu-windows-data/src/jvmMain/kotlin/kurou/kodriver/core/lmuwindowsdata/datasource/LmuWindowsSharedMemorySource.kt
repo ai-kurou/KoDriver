@@ -9,6 +9,7 @@ import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryPollingSou
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import kurou.kodriver.core.windowssharedmemory.datasource.WindowsSharedMemoryReader
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_ET_STALE_THRESHOLD_MILLIS
 import java.nio.ByteBuffer
 import kotlin.time.Clock
 
@@ -83,7 +84,7 @@ internal class LmuWindowsSharedMemorySource(
 
             // OpenFileMappingA が成功しても、LMU の終了後に別のプロセス（Steam など）が
             // セクションを生かし続けている場合がある。これを検出するため mCurrentET が
-            // 進んでいるかを確認し、ET_STALE_THRESHOLD_MS の間値が変化しなければ LMU は
+            // 進んでいるかを確認し、LMU_WINDOWS_ET_STALE_THRESHOLD_MILLIS の間値が変化しなければ LMU は
             // 既に起動していないとみなす。
             val currentEt = buffer.getDouble(CURRENT_ET_OFFSET)
             val nowMs = currentTimeMs()
@@ -91,7 +92,7 @@ internal class LmuWindowsSharedMemorySource(
                 lastKnownEt = currentEt
                 lastEtChangeTimeMs = nowMs
             }
-            nowMs - lastEtChangeTimeMs < ET_STALE_THRESHOLD_MS
+            nowMs - lastEtChangeTimeMs < LMU_WINDOWS_ET_STALE_THRESHOLD_MILLIS
         }
 
     suspend fun disconnect() = pollingSource.withReaderLock { reader -> reader.close() }
@@ -99,6 +100,5 @@ internal class LmuWindowsSharedMemorySource(
     private companion object {
         // LMUObjectOut の scoring は +1632 から始まり、LMUScoringInfo の mCurrentET は +68。
         const val CURRENT_ET_OFFSET = 1632 + 68
-        const val ET_STALE_THRESHOLD_MS = 3_000L
     }
 }

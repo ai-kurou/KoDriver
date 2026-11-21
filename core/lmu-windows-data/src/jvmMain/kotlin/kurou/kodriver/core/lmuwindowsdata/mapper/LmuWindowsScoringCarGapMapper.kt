@@ -1,5 +1,6 @@
 package kurou.kodriver.core.lmuwindowsdata.mapper
 
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MAX_SCORING_VEHICLES
 import java.nio.ByteBuffer
 import kotlin.math.floor
 
@@ -41,7 +42,7 @@ internal object LmuWindowsScoringCarGapMapper {
         val vehicleCount =
             buffer
                 .getInt(LmuWindowsMapper.SCORING_BASE + LmuWindowsMapper.OFF_SCORING_NUM_VEHICLES)
-                .coerceIn(0, LmuWindowsMapper.MAX_SCORING_VEHICLES)
+                .coerceIn(0, LMU_WINDOWS_MAX_SCORING_VEHICLES)
         val start = LmuWindowsMapper.VEHICLE_SCORING_BASE
         val stride = LmuWindowsMapper.VEHICLE_SCORING_STRIDE
         return start until start + vehicleCount * stride step stride
