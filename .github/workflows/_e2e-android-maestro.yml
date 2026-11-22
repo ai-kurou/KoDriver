@@ -33,14 +33,37 @@ jobs:
 
   maestro-test:
     needs: build
+    name: maestro-test (${{ matrix.target }})
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        # latest: 最新の API レベル、min-sdk: gradle/libs.versions.toml の android-minSdk
+        target: [latest, min-sdk]
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref }}
           persist-credentials: false
+
+      - name: Resolve emulator API level
+        id: api
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          if [ "$TARGET" = "min-sdk" ]; then
+            level="$(sed -nE 's/^android-minSdk *= *"([0-9]+)".*/\1/p' gradle/libs.versions.toml)"
+            if [ -z "$level" ]; then
+              echo "::error::android-minSdk を gradle/libs.versions.toml から取得できませんでした"
+              exit 1
+            fi
+          else
+            level=36
+          fi
+          echo "level=$level" >> "$GITHUB_OUTPUT"
 
       - name: Download APK
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -70,7 +93,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@c9c93e6ba9c4194322e114c40970d5983d9a07cc # v2.38.0
         continue-on-error: true # エミュレーターのダウンロード・起動失敗等の一時的な障害に備え、失敗時は1回だけ再実行する
         with:
-          api-level: 36
+          api-level: ${{ steps.api.outputs.level }}
           target: google_apis
           arch: x86_64
           profile: pixel_9
@@ -81,7 +104,7 @@ jobs:
         if: always() && steps.maestro.outcome == 'failure'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: maestro-debug-artifacts-attempt1
+          name: maestro-debug-artifacts-attempt1-${{ matrix.target }}
           path: maestro-artifacts/
           if-no-files-found: ignore
 
@@ -89,7 +112,7 @@ jobs:
         if: steps.maestro.outcome == 'failure'
         uses: reactivecircus/android-emulator-runner@c9c93e6ba9c4194322e114c40970d5983d9a07cc # v2.38.0
         with:
-          api-level: 36
+          api-level: ${{ steps.api.outputs.level }}
           target: google_apis
           arch: x86_64
           profile: pixel_9
@@ -100,6 +123,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: maestro-debug-artifacts
+          name: maestro-debug-artifacts-${{ matrix.target }}
           path: maestro-artifacts/
           if-no-files-found: ignore
