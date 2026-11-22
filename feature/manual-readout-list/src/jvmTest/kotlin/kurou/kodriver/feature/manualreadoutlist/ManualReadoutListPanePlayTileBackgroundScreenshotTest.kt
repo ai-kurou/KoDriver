@@ -14,7 +14,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
 import org.junit.Test
 
-/** 再生ボタン表示のタイル背景画像を、画像の枚数（カテゴリ数）ごとに撮影する。 */
+/** 再生ボタン表示のタイル背景画像を、画像の枚数（カテゴリ数）ごとと、ダークテーマ・不明なキーのみの場合で撮影する。 */
 class ManualReadoutListPanePlayTileBackgroundScreenshotTest {
     init {
         registerAllManualReadoutSimulators()
@@ -54,31 +54,57 @@ class ManualReadoutListPanePlayTileBackgroundScreenshotTest {
             ),
         )
 
+    @Test
+    fun `ダークテーマで背景画像が3枚の再生ボタン表示`() =
+        capturePlayButtons(
+            listOf(
+                ManualReadoutSet(
+                    id = "set-1",
+                    name = "燃料とタイヤとブレーキ",
+                    itemKeys =
+                        listOf(
+                            LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
+                            LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                            LmuWindowsReadoutItemKey.BrakeWear.Root.value,
+                        ),
+                ),
+            ),
+            darkTheme = true,
+        )
+
+    @Test
+    fun `不明なキーだけのセットは背景画像なしで項目数を表示する再生ボタン表示`() =
+        capturePlayButtons(
+            listOf(ManualReadoutSet(id = "set-1", name = "不明なキー", itemKeys = listOf("unknown-1", "unknown-2"))),
+        )
+
     @OptIn(ExperimentalTestApi::class)
-    private fun capturePlayButtons(sets: List<ManualReadoutSet>) =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
-                            ManualReadoutListPaneContent(
-                                uiState =
-                                    ManualReadoutListUiState(
-                                        playButtonLayoutEnabled = true,
-                                        canReadSets = true,
-                                        sets = sets,
-                                    ),
-                                simulatorId = "lmu_windows",
-                                simulatorName = "LMU",
-                                onAddSet = {},
-                                onReadSet = {},
-                                onTogglePlayButtonLayout = {},
-                                showHotkeyChip = true,
-                            )
-                        }
+    private fun capturePlayButtons(
+        sets: List<ManualReadoutSet>,
+        darkTheme: Boolean = false,
+    ) = composeScreenshotTest {
+        setContent {
+            KoDriverTheme(darkTheme = darkTheme) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                        ManualReadoutListPaneContent(
+                            uiState =
+                                ManualReadoutListUiState(
+                                    playButtonLayoutEnabled = true,
+                                    canReadSets = true,
+                                    sets = sets,
+                                ),
+                            simulatorId = "lmu_windows",
+                            simulatorName = "LMU",
+                            onAddSet = {},
+                            onReadSet = {},
+                            onTogglePlayButtonLayout = {},
+                            showHotkeyChip = true,
+                        )
                     }
                 }
             }
-            onRoot().captureRoboImage()
         }
+        onRoot().captureRoboImage()
+    }
 }
