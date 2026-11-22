@@ -63,7 +63,7 @@ internal fun OtherListGameTag(
         softWrap = false,
         modifier =
             modifier
-                .requiredWidth(36.dp)
+                .requiredWidth(60.dp)
                 .background(backgroundColor, MaterialTheme.shapes.small)
                 .padding(vertical = KoDriverSpacing.extraSmall),
     )
