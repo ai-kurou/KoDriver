@@ -137,7 +137,7 @@ PROMPT
 )" \
     --allowedTools "Read,Grep,Glob,Edit,Write,Bash" \
     --permission-mode acceptEdits \
-    --model sonnet)
+    --model sonnet --effort low)
   local claude_exit=$?
   set -e
   log "Claude Code CLI が終了しました（exit code: ${claude_exit}）"
