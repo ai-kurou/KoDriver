@@ -113,6 +113,18 @@ class OtherListItemsAndroid15Test {
 }
 
 @RunWith(RobolectricTestRunner::class)
+@Config(sdk = [31])
+class OtherListItemsAndroid12Test {
+    @Test
+    fun `Android12ちょうどではDynamicColorを含みAccessLocalNetworkPermissionを含まない`() {
+        val items = buildOtherListItems()
+
+        assertTrue(items.contains(OtherListItemType.DynamicColor))
+        assertFalse(items.contains(OtherListItemType.AccessLocalNetworkPermission))
+    }
+}
+
+@RunWith(RobolectricTestRunner::class)
 @Config(sdk = [30])
 class OtherListItemsAndroid11Test {
     @Test

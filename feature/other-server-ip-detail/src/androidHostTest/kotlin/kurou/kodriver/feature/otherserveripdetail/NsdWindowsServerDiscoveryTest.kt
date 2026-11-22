@@ -80,7 +80,17 @@ class NsdWindowsServerDiscoveryTest {
 
     @Test
     @Config(sdk = [28])
-    fun `旧APIではサービス発見後にresolveしたホストを通知し失敗時は通知しない`() {
+    fun `旧APIではサービス発見後にresolveしたホストを通知し失敗時は通知しない`() = assertLegacyResolveNotifiesHost()
+
+    @Test
+    @Config(sdk = [33])
+    fun `UPSIDE_DOWN_CAKE未満の33では旧APIのresolveでホストを通知する`() = assertLegacyResolveNotifiesHost()
+
+    @Test
+    @Config(sdk = [34])
+    fun `UPSIDE_DOWN_CAKEちょうどの34では新APIでサービス更新ごとにホストを通知する`() = assertServiceInfoCallbackNotifiesHost()
+
+    private fun assertLegacyResolveNotifiesHost() {
         val resolveListener = slot<NsdManager.ResolveListener>()
         val found = serviceInfo("server")
         runDiscovery(verifyAfter = {
@@ -116,7 +126,9 @@ class NsdWindowsServerDiscoveryTest {
 
     @Test
     @Config(sdk = [36])
-    fun `新APIではサービス更新ごとにホストを通知し同名の再発見で古いコールバックを解除する`() {
+    fun `新APIではサービス更新ごとにホストを通知し同名の再発見で古いコールバックを解除する`() = assertServiceInfoCallbackNotifiesHost()
+
+    private fun assertServiceInfoCallbackNotifiesHost() {
         val callbacks = mutableListOf<NsdManager.ServiceInfoCallback>()
         val executor = slot<Executor>()
         val found = serviceInfo("server")
