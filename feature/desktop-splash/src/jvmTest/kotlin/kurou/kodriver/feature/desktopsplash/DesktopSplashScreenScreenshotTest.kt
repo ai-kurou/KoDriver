@@ -30,6 +30,22 @@ class DesktopSplashScreenScreenshotTest {
             capture(DesktopSplashStep.READY)
         }
 
+    @Test
+    fun `起動完了_光が横切る途中`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Box(modifier = Modifier.requiredSize(600.dp, 500.dp)) {
+                        DesktopSplashContent(
+                            uiState = DesktopSplashUiState(step = DesktopSplashStep.READY),
+                            shineProgress = 0.5f,
+                        )
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
     private fun DesktopComposeUiTest.capture(step: DesktopSplashStep) {
         setContent {
             KoDriverTheme {

@@ -11,6 +11,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class DesktopSplashScreenTest {
     @get:Rule
@@ -42,6 +43,32 @@ class DesktopSplashScreenTest {
         rule.waitForIdle()
 
         rule.onNodeWithText("起動が完了しました").assertIsDisplayed()
+    }
+
+    @Test
+    fun `起動完了の演出が終わると一度だけ通知する`() {
+        var step by mutableStateOf(DesktopSplashStep.STARTING_SERVER)
+        var finishedCount = 0
+
+        rule.mainClock.autoAdvance = false
+        rule.setContent {
+            MaterialTheme {
+                DesktopSplashScreen(
+                    uiState = DesktopSplashUiState(step = step),
+                    onReadyAnimationFinished = { finishedCount++ },
+                )
+            }
+        }
+
+        rule.mainClock.advanceTimeBy(SHINE_DURATION_MILLIS * 2L)
+        assertEquals(0, finishedCount)
+
+        step = DesktopSplashStep.READY
+        rule.mainClock.advanceTimeBy(SHINE_DURATION_MILLIS / 2L)
+        assertEquals(0, finishedCount)
+
+        rule.mainClock.advanceTimeBy(SHINE_DURATION_MILLIS * 2L)
+        assertEquals(1, finishedCount)
     }
 
     @Test

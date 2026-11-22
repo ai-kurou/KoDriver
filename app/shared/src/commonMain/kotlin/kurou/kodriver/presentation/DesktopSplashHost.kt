@@ -19,7 +19,8 @@ import kurou.kodriver.feature.desktopsplash.runInitialization
  * デスクトップアプリの起動時に、初期化が完了するまでスプラッシュ画面を表示するホスト。
  *
  * [initializeModules] と [startServer] を順に実行し、その進捗を [DesktopSplashScreen] に
- * 表示する。初期化が完了したら [content]（メイン画面）へ切り替え、[onReady] を通知する。
+ * 表示する。初期化が完了すると、スプラッシュ画面の完了演出（光が横切る）が終わるのを待って
+ * [content]（メイン画面）へ切り替える。[onReady] は初期化の完了時に通知する。
  *
  * 初期化処理が例外をスローした場合はスプラッシュ画面が完了しないまま停止するため、
  * エラーダイアログを表示する。ダイアログを閉じると [onError] を通知し、アプリ終了などの
@@ -43,6 +44,7 @@ public fun DesktopSplashHost(
     val progress = remember { DesktopSplashProgress() }
     val uiState by progress.uiState.collectAsState()
     var error by remember { mutableStateOf<Throwable?>(null) }
+    var readyAnimationFinished by remember { mutableStateOf(false) }
     val currentOnReady by rememberUpdatedState(onReady)
 
     LaunchedEffect(Unit) {
@@ -59,10 +61,14 @@ public fun DesktopSplashHost(
         }
     }
 
-    if (uiState.isReady) {
+    if (uiState.isReady && readyAnimationFinished) {
         content()
     } else {
-        DesktopSplashScreen(uiState = uiState, modifier = modifier)
+        DesktopSplashScreen(
+            uiState = uiState,
+            modifier = modifier,
+            onReadyAnimationFinished = { readyAnimationFinished = true },
+        )
     }
 
     error?.let { throwable ->
