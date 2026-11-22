@@ -7,15 +7,20 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class RecognitionPipelineTest {
     private val modes = mutableListOf<SpeechRecognitionMode>()
     private val results = ArrayDeque<SpeechTranscript?>()
+    private val accepted = mutableListOf<ByteArray>()
     private val transcriber =
         object : SpeechTranscriber {
-            override fun accept(pcm: ByteArray): SpeechTranscript? = results.removeFirst()
+            override fun accept(pcm: ByteArray): SpeechTranscript? {
+                accepted += pcm
+                return results.removeFirst()
+            }
 
             override fun setMode(mode: SpeechRecognitionMode) {
                 modes += mode
@@ -105,7 +110,66 @@ class RecognitionPipelineTest {
             assertEquals(listOf(SpeechRecognitionMode.Paused, SpeechRecognitionMode.WakeWord), modes)
         }
 
+    @Test
+    fun `閾値未満の断片は全ゼロを認識器に渡す`() =
+        runTest {
+            results += null
+
+            feed(quietPcm)
+
+            assertContentEquals(ByteArray(quietPcm.size), accepted.single())
+        }
+
+    @Test
+    fun `閾値以上の断片は元の音声を認識器に渡す`() =
+        runTest {
+            results += null
+
+            feed(loudPcm)
+
+            assertContentEquals(loudPcm, accepted.single())
+        }
+
+    @Test
+    fun `閾値以上のあとはホールド回数ぶんの小さい断片を通し、超えると全ゼロを渡す`() =
+        runTest {
+            repeat(VOLUME_GATE_HOLD_CHUNKS + 2) { results += null }
+
+            feed(loudPcm, *Array(VOLUME_GATE_HOLD_CHUNKS + 1) { quietPcm })
+
+            assertContentEquals(loudPcm, accepted.first())
+            repeat(VOLUME_GATE_HOLD_CHUNKS) { i -> assertContentEquals(quietPcm, accepted[i + 1]) }
+            assertContentEquals(ByteArray(quietPcm.size), accepted.last())
+        }
+
+    @Test
+    fun `ゲートで無音にしても音量は実音量のまま流す`() =
+        runTest {
+            results += null
+
+            val events = feed(quietPcm)
+
+            assertEquals(SpeechRecognitionEvent.Level(quietPcm.pcmLevel()), events.single())
+            assertTrue(quietPcm.pcmLevel() < VOLUME_GATE_THRESHOLD)
+        }
+
+    private suspend fun feed(vararg chunks: ByteArray): List<SpeechRecognitionEvent> =
+        flow<SpeechRecognitionEvent> {
+            chunks.forEach { with(pipeline) { process(it) } }
+        }.toList()
+
     private suspend fun processOnce(pipeline: RecognitionPipeline) {
         flow<SpeechRecognitionEvent> { with(pipeline) { process(ByteArray(4)) } }.toList()
+    }
+
+    private companion object {
+        /** 振幅 10000 の 16bit PCM。音量は閾値を超える。 */
+        val loudPcm = pcmOf(amplitude = 10_000)
+
+        /** 振幅 100 の 16bit PCM。音量は閾値未満。 */
+        val quietPcm = pcmOf(amplitude = 100)
+
+        fun pcmOf(amplitude: Int): ByteArray =
+            ByteArray(4) { i -> if (i % 2 == 0) (amplitude and 0xFF).toByte() else (amplitude shr 8).toByte() }
     }
 }
