@@ -1,0 +1,20 @@
+name: Nightly Android Test
+
+on:
+  schedule:
+    - cron: "23 17 * * *" # JST 2:23 (UTC 17:23)。nightly-todo（UTC 19:03）と重ならない時刻
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # PR 側（API 36・28）の中間 API（minSdk 後〜最新未満）を夜間に検証する
+  android-test-intermediate:
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level: [31, 34]
+    uses: ./.github/workflows/_android-test.yml
+    with:
+      api-level: ${{ matrix.api-level }}
