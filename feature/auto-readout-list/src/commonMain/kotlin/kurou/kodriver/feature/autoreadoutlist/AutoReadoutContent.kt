@@ -108,7 +108,7 @@ internal fun AutoReadoutContent(
                     else -> {
                         scaffoldDirective
                     }
-                },
+                }.withoutAutoFocusOnCurrentDestination(),
             initialDestinationHistory =
                 if (uiState.selectedItem != null) {
                     listOf(
@@ -208,6 +208,26 @@ internal fun AutoReadoutContent(
         )
     }
 }
+
+/**
+ * 現在のペインへ scaffold が自動でフォーカスを移す動きを止めた [PaneScaffoldDirective] を返す。
+ *
+ * [AnimatedPane] を使うと、詳細へ移るたびにペイン内の最初のフォーカス可能な部品へフォーカスが移る。
+ * 詳細の下部にあるスライダーなどが選ばれると、画面内へ出すためのスクロールで TopAppBar が畳まれて戻るボタンが押せなくなる。
+ * キーボード操作の初期フォーカスは [kurou.kodriver.core.designsystem.detailPaneInitialFocus] が受け持つため、ここでは止める。
+ * [PaneScaffoldDirective.copy] はこの設定を引き継がないため、コンストラクターで作り直す。
+ */
+private fun PaneScaffoldDirective.withoutAutoFocusOnCurrentDestination(): PaneScaffoldDirective =
+    PaneScaffoldDirective(
+        maxHorizontalPartitions = maxHorizontalPartitions,
+        horizontalPartitionSpacerSize = horizontalPartitionSpacerSize,
+        maxVerticalPartitions = maxVerticalPartitions,
+        verticalPartitionSpacerSize = verticalPartitionSpacerSize,
+        defaultPanePreferredWidth = defaultPanePreferredWidth,
+        defaultPanePreferredHeight = defaultPanePreferredHeight,
+        excludedBounds = excludedBounds,
+        shouldAutoFocusCurrentDestination = false,
+    )
 
 @Preview(showBackground = true)
 @Composable
