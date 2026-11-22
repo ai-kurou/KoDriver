@@ -245,7 +245,7 @@ class ManualReadoutListPlayButtonPaneTest {
     }
 
     @Test
-    fun `再生タイルはカテゴリドットを集計して表示する`() {
+    fun `再生タイルはカテゴリをアイコンと名称のチップで件数なしに集計して表示する`() {
         showPlayButtons(
             sets =
                 listOf(
@@ -261,8 +261,22 @@ class ManualReadoutListPlayButtonPaneTest {
                     ),
                 ),
         )
-        rule.onNodeWithContentDescription("燃料 2", useUnmergedTree = true).assertIsDisplayed()
-        rule.onNodeWithContentDescription("タイヤ 1", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithText("燃料", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithText("タイヤ", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithText("燃料 2", useUnmergedTree = true).assertDoesNotExist()
+        rule.onNodeWithText("4項目", useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun `再生タイルは項目なしのセットに項目なしを表示する`() {
+        showPlayButtons(sets = listOf(ManualReadoutSet("empty")))
+        rule.onNodeWithText("項目なし", useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun `再生タイルは不明なキーだけのセットに項目数を表示する`() {
+        showPlayButtons(sets = listOf(ManualReadoutSet("unknown", itemKeys = listOf("a", "b"))))
+        rule.onNodeWithText("2項目", useUnmergedTree = true).assertIsDisplayed()
     }
 
     private fun showPlayButtons(

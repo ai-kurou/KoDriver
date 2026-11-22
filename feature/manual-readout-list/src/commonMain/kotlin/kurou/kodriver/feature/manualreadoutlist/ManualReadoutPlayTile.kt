@@ -5,6 +5,8 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.PlayingEqualizer
+import kurou.kodriver.core.designsystem.fullBackgroundImages
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_item_count
@@ -43,6 +47,7 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_readout_set_named
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_requesting
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 /** 再生を主操作にし、長押しで「編集」「削除」メニューを開くタイル。 */
@@ -60,6 +65,9 @@ internal fun ManualReadoutSetPlayButton(
     focusRequester: FocusRequester,
 ) {
     val haptic = LocalHapticFeedback.current
+    val categories = remember(set.itemKeys) { manualReadoutCategorySummary(set.itemKeys) }
+    val backgroundPainters =
+        categories.counts.map { (category, _) -> painterResource(manualReadoutCategoryBackground(category).drawable) }
     var menuExpanded by remember { mutableStateOf(false) }
     var requestCount by remember { mutableIntStateOf(0) }
     LaunchedEffect(requestCount) {
@@ -95,7 +103,12 @@ internal fun ManualReadoutSetPlayButton(
                 onDelete = onDeleteSet,
             )
             Column(
-                modifier = Modifier.fillMaxWidth().heightIn(min = 104.dp).padding(KoDriverSpacing.medium),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 104.dp)
+                        .fullBackgroundImages(backgroundPainters, MaterialTheme.colorScheme.primary)
+                        .padding(KoDriverSpacing.medium),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall, Alignment.CenterVertically),
             ) {
@@ -107,11 +120,7 @@ internal fun ManualReadoutSetPlayButton(
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
                 )
-                Text(
-                    text = manualReadoutPlayButtonSubtitle(set.itemKeys.size),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                ManualReadoutCategoryDots(remember(set.itemKeys) { manualReadoutCategorySummary(set.itemKeys) })
+                ManualReadoutPlayTileCategoryChips(categories, set.itemKeys.size)
                 val hasHotkeyLabel = manualReadoutHotkeyLabel(set.hotkeyModifiers, set.hotkeyVirtualKeyCode) != null
                 // ホットキー解除後の退場アニメーション中に「未割り当て」チップが出ないよう、最後に割り当て済みだったセットを保つ。
                 var lastAssignedSet by remember { mutableStateOf(set) }
@@ -154,9 +163,54 @@ internal fun manualReadoutPlayButtonDescription(
         stringResource(Res.string.manual_readout_list_readout_set_named, set.name)
     }
 
+/** タイル上のカテゴリ表示。背景画像の上でも読めるよう、前面色を薄く重ねたチップに「アイコン + カテゴリ名」を出す。 */
 @Composable
-internal fun manualReadoutPlayButtonSubtitle(itemCount: Int): String =
-    when {
-        itemCount == 0 -> stringResource(Res.string.manual_readout_list_no_items)
-        else -> stringResource(Res.string.manual_readout_list_item_count, itemCount)
+private fun ManualReadoutPlayTileCategoryChips(
+    summary: ManualReadoutCategorySummary,
+    itemCount: Int,
+) {
+    val counts = summary.counts
+    if (counts.isEmpty()) {
+        Text(
+            text =
+                if (itemCount == 0) {
+                    stringResource(Res.string.manual_readout_list_no_items)
+                } else {
+                    stringResource(Res.string.manual_readout_list_item_count, itemCount)
+                },
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    } else {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+        ) {
+            counts.forEach { (category, _) ->
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = LocalContentColor.current.copy(alpha = PLAY_TILE_CHIP_ALPHA),
+                    contentColor = LocalContentColor.current,
+                ) {
+                    Row(
+                        modifier = Modifier.padding(KoDriverSpacing.extraSmall),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+                    ) {
+                        Icon(
+                            imageVector = manualReadoutCategoryIcon(category),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Text(
+                            text = manualReadoutCategoryLabel(category),
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                    }
+                }
+            }
+        }
     }
+}
+
+private const val PLAY_TILE_CHIP_ALPHA = 0.18f
