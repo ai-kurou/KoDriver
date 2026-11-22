@@ -64,6 +64,7 @@ internal fun AutoReadoutDetailPane(
     rootItemName: String = title,
     background: ReadoutBackground? = null,
     onEnableRoot: () -> Unit = {},
+    topBarModifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     content: @Composable () -> Unit,
 ) {
@@ -78,6 +79,7 @@ internal fun AutoReadoutDetailPane(
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             DetailPaneTopAppBar(
+                modifier = topBarModifier,
                 title = title,
                 canNavigateBack = canNavigateBack,
                 onBack = onBack,

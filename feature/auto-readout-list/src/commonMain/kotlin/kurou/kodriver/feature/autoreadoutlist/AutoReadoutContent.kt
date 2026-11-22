@@ -1,10 +1,16 @@
 package kurou.kodriver.feature.autoreadoutlist
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor
@@ -25,6 +31,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntRect
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
@@ -71,7 +78,7 @@ public fun AutoReadoutContent(
     )
 }
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun AutoReadoutContent(
     uiState: AutoReadoutListUiState,
@@ -105,7 +112,7 @@ internal fun AutoReadoutContent(
                     else -> {
                         scaffoldDirective
                     }
-                },
+                }.withoutAutoFocusOnCurrentDestination(),
             initialDestinationHistory =
                 if (uiState.selectedItem != null) {
                     listOf(
@@ -149,46 +156,102 @@ internal fun AutoReadoutContent(
 
     backHandler(navigator.canNavigateBack(), { predictiveBackProgress = it }) { navigateBack() }
 
-    ListDetailPaneScaffold(
-        directive = navigator.scaffoldDirective,
-        scaffoldState = navigator.scaffoldState,
-        paneExpansionState = paneExpansionState,
-        paneExpansionDragHandle = { VerticalDivider() },
-        modifier = modifier.constrainToTabletopTopPane(windowPosture),
-        listPane = {
-            AutoReadoutListPane(
-                uiState = uiState,
-                onMove = onMove,
-                onReadoutEnabledChanged = onReadoutEnabledChanged,
-                onQueueEnabledChanged = onQueueEnabledChanged,
-                onStartSoundEnabledChanged = onStartSoundEnabledChanged,
-                onItemClick = {
-                    lastOpenedItemKey = it.value
-                    onItemSelected(it)
-                },
-                scrollToTopRequest = scrollToTopRequest,
-                restoreFocusItemKey = lastOpenedItemKey.takeIf { uiState.selectedItem == null },
-                onFocusRestored = { lastOpenedItemKey = null },
-            )
-        },
-        detailPane = {
-            uiState.selectedItem?.let { selectedItem ->
-                Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
-                    AutoReadoutDetailPane(
-                        title = autoReadoutItemDisplayName(selectedItem.id),
-                        rootItemName = autoReadoutItemDisplayName(selectedItem.id),
-                        background = autoReadoutBackground(selectedItem.id),
-                        canNavigateBack = navigator.canNavigateBack(),
-                        onBack = { navigateBack() },
-                        rootEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(selectedItem.id),
-                        onEnableRoot = { onReadoutEnabledChanged(selectedItem.id, true) },
-                        content = { detailContent(selectedItem) },
+    // 共有要素は一覧と詳細を同時に表示しない1ペイン表示のときだけ使う。2ペイン表示では遷移が起きない。
+    val useSharedBounds = navigator.scaffoldDirective.maxHorizontalPartitions == 1
+    SharedTransitionLayout(modifier = modifier.constrainToTabletopTopPane(windowPosture)) {
+        ListDetailPaneScaffold(
+            directive = navigator.scaffoldDirective,
+            scaffoldState = navigator.scaffoldState,
+            paneExpansionState = paneExpansionState,
+            paneExpansionDragHandle = { VerticalDivider() },
+            listPane = {
+                AnimatedPane(
+                    enterTransition = PaneEnterTransition,
+                    exitTransition = PaneExitTransition,
+                    boundsAnimationSpec = PaneBoundsAnimationSpec,
+                ) {
+                    AutoReadoutListPane(
+                        uiState = uiState,
+                        onMove = onMove,
+                        onReadoutEnabledChanged = onReadoutEnabledChanged,
+                        onQueueEnabledChanged = onQueueEnabledChanged,
+                        onStartSoundEnabledChanged = onStartSoundEnabledChanged,
+                        onItemClick = {
+                            lastOpenedItemKey = it.value
+                            onItemSelected(it)
+                        },
+                        scrollToTopRequest = scrollToTopRequest,
+                        restoreFocusItemKey = lastOpenedItemKey.takeIf { uiState.selectedItem == null },
+                        onFocusRestored = { lastOpenedItemKey = null },
+                        sharedBounds =
+                            if (useSharedBounds) AutoReadoutSharedBounds(this@SharedTransitionLayout, this) else null,
                     )
                 }
-            }
-        },
-    )
+            },
+            detailPane = {
+                uiState.selectedItem?.let { selectedItem ->
+                    AnimatedPane(
+                        enterTransition = PaneEnterTransition,
+                        exitTransition = PaneExitTransition,
+                        boundsAnimationSpec = PaneBoundsAnimationSpec,
+                    ) {
+                        Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
+                            AutoReadoutDetailPane(
+                                title = autoReadoutItemDisplayName(selectedItem.id),
+                                rootItemName = autoReadoutItemDisplayName(selectedItem.id),
+                                background = autoReadoutBackground(selectedItem.id),
+                                canNavigateBack = navigator.canNavigateBack(),
+                                onBack = { navigateBack() },
+                                rootEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(selectedItem.id),
+                                onEnableRoot = { onReadoutEnabledChanged(selectedItem.id, true) },
+                                topBarModifier =
+                                    if (useSharedBounds) {
+                                        AutoReadoutSharedBounds(this@SharedTransitionLayout, this@AnimatedPane)
+                                            .modifier(selectedItem.id)
+                                    } else {
+                                        Modifier
+                                    },
+                                content = { detailContent(selectedItem) },
+                            )
+                        }
+                    }
+                }
+            },
+        )
+    }
 }
+
+private const val PANE_TRANSITION_MILLIS = 250
+
+/**
+ * ペインの出入りはフェードにする。
+ * 既定は減衰比0.8のバネでペインを横へスライドさせるため、目標位置を行き過ぎて左右に揺れて見える。
+ */
+private val PaneEnterTransition = fadeIn(animationSpec = tween(durationMillis = PANE_TRANSITION_MILLIS))
+private val PaneExitTransition = fadeOut(animationSpec = tween(durationMillis = PANE_TRANSITION_MILLIS))
+
+/** ペインが表示されたまま大きさや位置が変わるときの動き。既定のバネと違い、行き過ぎない。 */
+private val PaneBoundsAnimationSpec = tween<IntRect>(durationMillis = PANE_TRANSITION_MILLIS)
+
+/**
+ * 現在のペインへ scaffold が自動でフォーカスを移す動きを止めた [PaneScaffoldDirective] を返す。
+ *
+ * [AnimatedPane] を使うと、詳細へ移るたびにペイン内の最初のフォーカス可能な部品へフォーカスが移る。
+ * 詳細の下部にあるスライダーなどが選ばれると、画面内へ出すためのスクロールで TopAppBar が畳まれて戻るボタンが押せなくなる。
+ * キーボード操作の初期フォーカスは [kurou.kodriver.core.designsystem.detailPaneInitialFocus] が受け持つため、ここでは止める。
+ * [PaneScaffoldDirective.copy] はこの設定を引き継がないため、コンストラクターで作り直す。
+ */
+private fun PaneScaffoldDirective.withoutAutoFocusOnCurrentDestination(): PaneScaffoldDirective =
+    PaneScaffoldDirective(
+        maxHorizontalPartitions = maxHorizontalPartitions,
+        horizontalPartitionSpacerSize = horizontalPartitionSpacerSize,
+        maxVerticalPartitions = maxVerticalPartitions,
+        verticalPartitionSpacerSize = verticalPartitionSpacerSize,
+        defaultPanePreferredWidth = defaultPanePreferredWidth,
+        defaultPanePreferredHeight = defaultPanePreferredHeight,
+        excludedBounds = excludedBounds,
+        shouldAutoFocusCurrentDestination = false,
+    )
 
 @Preview(showBackground = true)
 @Composable

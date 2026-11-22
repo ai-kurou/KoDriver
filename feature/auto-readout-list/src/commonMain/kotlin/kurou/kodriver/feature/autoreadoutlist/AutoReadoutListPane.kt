@@ -193,6 +193,7 @@ internal fun AutoReadoutListPane(
     scrollToTopRequest: Int = 0,
     restoreFocusItemKey: String? = null,
     onFocusRestored: () -> Unit = {},
+    sharedBounds: AutoReadoutSharedBounds? = null,
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -318,7 +319,8 @@ internal fun AutoReadoutListPane(
                         val readoutEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(item)
                         AutoReadoutListItemCard(
                             modifier =
-                                Modifier.onFocusChanged { rowFocusState.onRowFocusChanged(item.value, it.hasFocus) },
+                                (sharedBounds?.modifier(item) ?: Modifier)
+                                    .onFocusChanged { rowFocusState.onRowFocusChanged(item.value, it.hasFocus) },
                             rowFocusRequester = rowFocusState.requesterFor(item.value),
                             item = item,
                             index = index,
