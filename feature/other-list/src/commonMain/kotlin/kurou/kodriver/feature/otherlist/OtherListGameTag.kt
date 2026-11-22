@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.Icon
@@ -63,7 +63,7 @@ internal fun OtherListGameTag(
         softWrap = false,
         modifier =
             modifier
-                .requiredWidth(60.dp)
+                .widthIn(min = 60.dp)
                 .background(backgroundColor, MaterialTheme.shapes.small)
                 .padding(vertical = KoDriverSpacing.extraSmall),
     )
