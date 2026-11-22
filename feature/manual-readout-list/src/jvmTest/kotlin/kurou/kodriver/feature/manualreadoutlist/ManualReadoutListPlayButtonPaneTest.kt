@@ -59,7 +59,7 @@ class ManualReadoutListPlayButtonPaneTest {
         showPlayButtons()
 
         rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsEnabled().performClick()
-        rule.onNodeWithText("LMU(Windows)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
+        rule.onNodeWithText("LMU (Win)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
         rule.onNodeWithText("編集").performClick()
         rule.onNodeWithContentDescription("セットを追加").assertDoesNotExist()
         rule.onNodeWithText("セットを追加").performClick()
@@ -99,11 +99,11 @@ class ManualReadoutListPlayButtonPaneTest {
             .onNodeWithContentDescription("セット 1 を読み上げ")
             .assert(SemanticsMatcher.keyIsDefined(SemanticsActions.OnLongClick))
             .performClick()
-        rule.onNodeWithText("LMU(Windows)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
+        rule.onNodeWithText("LMU (Win)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
         rule.onNodeWithText("編集").performClick()
         rule.runOnIdle { canReadSets.value = true }
         rule.onNodeWithContentDescription("セット 2 を読み上げ").performClick()
-        rule.onNodeWithText("LMU(Windows)セット2").performSemanticsAction(SemanticsActions.OnLongClick)
+        rule.onNodeWithText("LMU (Win)セット2").performSemanticsAction(SemanticsActions.OnLongClick)
         rule.onNodeWithText("編集").performClick()
         verify(exactly = 0) { onReadSet("set-1") }
         verify(exactly = 0) { onReadSet("empty") }
@@ -135,7 +135,7 @@ class ManualReadoutListPlayButtonPaneTest {
             }
         }
 
-        rule.onNodeWithText("LMU(Windows)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
+        rule.onNodeWithText("LMU (Win)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
         rule.onNodeWithText("編集").assertIsDisplayed()
         rule.onNodeWithText("削除").assertIsDisplayed().performClick()
         rule.onNodeWithText("セットを削除しますか？").assertIsDisplayed()
@@ -144,7 +144,7 @@ class ManualReadoutListPlayButtonPaneTest {
         rule.onNodeWithText("セットを削除しますか？").assertDoesNotExist()
         rule.runOnIdle { assertEquals(emptyList<String>(), deleted) }
         rule.mainClock.advanceTimeBy(500)
-        rule.onNodeWithText("LMU(Windows)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
+        rule.onNodeWithText("LMU (Win)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
         rule.onNodeWithText("削除").performClick()
         val deleteActions = rule.onAllNodesWithText("削除")
         deleteActions.assertCountEquals(1)
@@ -235,12 +235,12 @@ class ManualReadoutListPlayButtonPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("LMU(Windows)セット3").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット3").assertIsDisplayed()
         rule.runOnIdle { state.value = state.value.copy(sets = listOf(third)) }
-        rule.onNodeWithText("LMU(Windows)セット3").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット3").assertIsDisplayed()
         rule.onNodeWithContentDescription("セット 3 を読み上げ").assertIsDisplayed()
         rule.runOnIdle { state.value = state.value.copy(playButtonLayoutEnabled = true) }
-        rule.onNodeWithText("LMU(Windows)セット3").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット3").assertIsDisplayed()
         rule.onNodeWithContentDescription("セット 3 を読み上げ").assertIsDisplayed()
     }
 

@@ -35,7 +35,7 @@ class DebugStateYellowFlagStateCardTest {
             }
         }
 
-        rule.onNodeWithText("イエローフラッグ状態（LMUのみ）").assertIsDisplayed()
+        rule.onNodeWithText("イエローフラッグ状態（LMU (Win)のみ）").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 

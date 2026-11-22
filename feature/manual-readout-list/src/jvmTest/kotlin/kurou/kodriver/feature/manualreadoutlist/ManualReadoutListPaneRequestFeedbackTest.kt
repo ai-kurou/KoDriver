@@ -44,7 +44,7 @@ class ManualReadoutListPaneRequestFeedbackTest {
             onSetClick = { clickedSetIds += it },
         )
 
-        rule.onNodeWithText("LMU(Windows)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
+        rule.onNodeWithText("LMU (Win)セット1").performSemanticsAction(SemanticsActions.OnLongClick)
         rule.mainClock.advanceTimeByFrame()
         rule.onNodeWithText("編集").performClick()
         rule.mainClock.advanceTimeByFrame()

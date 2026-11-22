@@ -93,7 +93,7 @@ LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingF
 
 ## 仕様（合意済み）
 
-- 位置: 「自動読み上げ」と「ログ」の間。LMU・ACE・GT7 の全シミュレーター、Windows版と Android版の両方に出す。
+- 位置: 「自動読み上げ」と「ログ」の間。LMU (Win)・ACE・GT7 の全シミュレーター、Windows版と Android版の両方に出す。
 - 一覧の1行が1セット（1つのキーに複数の項目）。行の▶をタップすると読み上げ、行のそれ以外は詳細（編集）を開く。セットの初期状態は空。
 - 標準の行一覧では ↑↓ キーで行単位にフォーカスを移動する（`:core:designsystem` の `ListRowKeyboardNavigation` を使用）。
 - 2列の再生ボタン一覧では ↑↓←→ キーでタイル間を移動する（`ListGridKeyboardNavigation` を使用）。末尾の「セットを追加」タイルも移動先に含む。
