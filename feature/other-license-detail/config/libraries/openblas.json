@@ -1,0 +1,10 @@
+{
+  "uniqueId": "net.openblas:openblas",
+  "name": "OpenBLAS",
+  "description": "Vosk の Android 用ネイティブライブラリ（libvosk）に静的に組み込まれている線形代数ライブラリ",
+  "website": "https://github.com/OpenMathLib/OpenBLAS",
+  "scm": { "url": "https://github.com/OpenMathLib/OpenBLAS" },
+  "developers": [{ "name": "The OpenBLAS Project" }],
+  "licenses": ["BSD-3-Clause"],
+  "openSource": true
+}

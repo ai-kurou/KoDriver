@@ -1,0 +1,10 @@
+{
+  "uniqueId": "org.netlib:clapack",
+  "name": "CLAPACK",
+  "description": "Vosk の Android 用ネイティブライブラリ（libvosk）に静的に組み込まれている線形代数ライブラリ",
+  "website": "https://www.netlib.org/clapack/",
+  "scm": { "url": "https://www.netlib.org/clapack/" },
+  "developers": [{ "name": "The University of Tennessee" }],
+  "licenses": ["BSD-3-Clause"],
+  "openSource": true
+}

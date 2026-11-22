@@ -1,0 +1,10 @@
+{
+  "uniqueId": "org.kaldi-asr:kaldi",
+  "name": "Kaldi",
+  "description": "Vosk のネイティブライブラリ（libvosk）に静的に組み込まれている音声認識ツールキット",
+  "website": "https://github.com/kaldi-asr/kaldi",
+  "scm": { "url": "https://github.com/kaldi-asr/kaldi" },
+  "developers": [{ "name": "Kaldi contributors" }],
+  "licenses": ["Apache-2.0"],
+  "openSource": true
+}

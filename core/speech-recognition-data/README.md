@@ -51,6 +51,7 @@
 - Vosk 本体は Apache-2.0。Desktop は `com.alphacephei:vosk`、Android は `com.alphacephei:vosk-android`（バージョンは `gradle/libs.versions.toml` が正）。
 - 同梱の日本語モデル `vosk-model-small-ja-0.22` は Apache-2.0。配布元は https://alphacephei.com/vosk/models 。
 - Vosk が実行時に使う JNA（`net.java.dev.jna:jna`）は LGPL-2.1 と Apache-2.0 のデュアルライセンス。ライセンス画面には Apache-2.0 として登録している。
-- vosk-android の AAR 内のネイティブライブラリ（Kaldi 等）の個別の表記は未確認。
+- vosk-android の AAR（`libvosk.so`）には LICENSE・NOTICE が同梱されていない。上流の `android/lib/build-vosk.sh` によると、Kaldi（Apache-2.0）・OpenFst 1.8.0（Apache-2.0）・OpenBLAS 0.3.20（BSD-3-Clause）・CLAPACK 3.2.1（BSD-3-Clause）を静的にリンクしている。これらはライセンス画面に個別に登録している。
+- Desktop 用 `vosk` の JAR の Windows 版には MinGW ランタイム（`libstdc++-6.dll`、`libgcc_s_seh-1.dll`、`libwinpthread-1.dll`）が同梱されている。これらの表記は未対応（ランタイム例外付きライセンス）。
 
 ライセンス画面への登録は [`feature/other-license-detail/README.md`](../../feature/other-license-detail/README.md) を参照。
