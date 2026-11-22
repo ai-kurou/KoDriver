@@ -68,6 +68,44 @@ class ManualReadoutListPaneLayoutScreenshotTest {
     @Test
     fun `ACEのセットあり再生ボタン表示`() = captureListPane(Simulator.ACE, aceSets(), switchToPlayButtons = true)
 
+    @Test
+    fun `LMUの背景画像が3枚の標準表示`() =
+        captureListPane(
+            Simulator.LMU,
+            listOf(
+                ManualReadoutSet(
+                    id = "set-1",
+                    name = "燃料とタイヤとブレーキ",
+                    itemKeys =
+                        listOf(
+                            LmuWindowsReadoutItemKey.RemainingFuel.Root.value,
+                            LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                            LmuWindowsReadoutItemKey.BrakeWear.Root.value,
+                        ),
+                ),
+            ),
+            switchToPlayButtons = false,
+        )
+
+    @Test
+    fun `LMUの同じカテゴリの3項目は背景画像が1枚の標準表示`() =
+        captureListPane(
+            Simulator.LMU,
+            listOf(
+                ManualReadoutSet(
+                    id = "set-1",
+                    name = "タイヤ3項目",
+                    itemKeys =
+                        listOf(
+                            LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                            LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
+                            LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
+                        ),
+                ),
+            ),
+            switchToPlayButtons = false,
+        )
+
     private fun lmuSets() =
         listOf(
             ManualReadoutSet(

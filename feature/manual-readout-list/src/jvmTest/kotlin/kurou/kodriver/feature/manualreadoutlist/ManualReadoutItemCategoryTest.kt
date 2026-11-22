@@ -75,6 +75,20 @@ class ManualReadoutItemCategoryTest {
     }
 
     @Test
+    fun `同じカテゴリの3項目は1カテゴリに集計する`() {
+        assertEquals(
+            listOf(ManualReadoutItemCategory.TYRE to 3),
+            manualReadoutCategoryCounts(
+                listOf(
+                    LmuWindowsReadoutItemKey.TyreWear.Root.value,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root.value,
+                    LmuWindowsReadoutItemKey.PitTiming.TyreWear.value,
+                ),
+            ),
+        )
+    }
+
+    @Test
     fun `カテゴリごとに対応する背景画像を返す`() {
         val expected =
             mapOf(
