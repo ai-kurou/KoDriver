@@ -37,6 +37,29 @@ class AndroidHapticFeedbackAvailabilityRepositoryTest {
 }
 
 @RunWith(RobolectricTestRunner::class)
+@Config(sdk = [31])
+class AndroidHapticFeedbackAvailabilityRepositoryAndroid12Test {
+    private val context = ApplicationProvider.getApplicationContext<Context>()
+    private val repository = AndroidHapticFeedbackAvailabilityRepository(context)
+
+    @Test
+    fun `Android12ちょうどで振動機能がある端末ではtrueを返す`() {
+        val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        shadowOf(manager.defaultVibrator).setHasVibrator(true)
+
+        assertTrue(repository.isHapticFeedbackAvailable())
+    }
+
+    @Test
+    fun `Android12ちょうどで振動機能がない端末ではfalseを返す`() {
+        val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        shadowOf(manager.defaultVibrator).setHasVibrator(false)
+
+        assertFalse(repository.isHapticFeedbackAvailable())
+    }
+}
+
+@RunWith(RobolectricTestRunner::class)
 @Config(sdk = [30])
 class AndroidHapticFeedbackAvailabilityRepositoryLegacyTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()

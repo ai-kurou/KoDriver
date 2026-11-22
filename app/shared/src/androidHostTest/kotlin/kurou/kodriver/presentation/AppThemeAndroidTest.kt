@@ -37,6 +37,14 @@ class AppThemeAndroidTest {
     }
 
     @Test
+    @Config(sdk = [31])
+    fun `SDK31ちょうどではライトテーマの動的カラースキームを返す`() {
+        val (actual, expected) = captureDynamicColorSchemeComparison(darkTheme = false)
+
+        assertColorSchemeEquals(expected, actual)
+    }
+
+    @Test
     @Config(sdk = [36])
     fun `SDK31以上ではライトテーマの動的カラースキームを返す`() {
         val (actual, expected) = captureDynamicColorSchemeComparison(darkTheme = false)
