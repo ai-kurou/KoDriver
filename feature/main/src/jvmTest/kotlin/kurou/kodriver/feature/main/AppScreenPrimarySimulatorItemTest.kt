@@ -45,7 +45,7 @@ class AppScreenPrimarySimulatorItemTest {
             label = appScreenPrimarySimulatorLabel(simulatorId = "lmu_windows")
         }
 
-        assertEquals("LMU", label)
+        assertEquals("LMU (Win)", label)
     }
 
     @Test

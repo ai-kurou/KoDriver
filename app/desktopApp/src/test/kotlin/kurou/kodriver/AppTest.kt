@@ -360,7 +360,7 @@ class AppTest {
 
     @Test
     fun `LMU選択時にアプリバージョンを5回連続タップするとLMUのデバッグ状態画面へ遷移する`() {
-        assertDebugStateScreen("Le Mans Ultimate（Windows版）", "ゲームフェーズ（LMUのみ）")
+        assertDebugStateScreen("Le Mans Ultimate（Windows版）", "ゲームフェーズ（LMU (Win)のみ）")
     }
 
     @Test
@@ -379,7 +379,7 @@ class AppTest {
         selectSimulator("Le Mans Ultimate（Windows版）")
 
         clickItem("手動")
-        waitUntilDisplayed("LMUの手動読み上げセットはまだありません")
+        waitUntilDisplayed("LMU (Win)の手動読み上げセットはまだありません")
         waitUntilDisplayed("手動読み上げについて")
     }
 

@@ -191,7 +191,7 @@ class OtherListPaneTest {
         }
 
         rule.onNodeWithText("音量").assertIsDisplayed()
-        rule.onAllNodesWithText("LMU").assertCountEquals(0)
+        rule.onAllNodesWithText("LMU (Win)").assertCountEquals(0)
         rule.onAllNodesWithText("ACE").assertCountEquals(0)
         rule.onAllNodesWithText("GT7").assertCountEquals(0)
     }

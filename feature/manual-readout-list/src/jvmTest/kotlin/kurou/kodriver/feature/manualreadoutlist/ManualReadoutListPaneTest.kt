@@ -83,7 +83,7 @@ class ManualReadoutListPaneTest {
             }
         }
         rule.onNodeWithText("燃料用").assertIsDisplayed()
-        rule.onNodeWithText("LMU(Windows)セット2").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット2").assertIsDisplayed()
         rule.onNodeWithContentDescription("燃料用 を読み上げ").assertIsDisplayed()
         rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsDisplayed()
     }
@@ -91,7 +91,7 @@ class ManualReadoutListPaneTest {
     @Test
     fun `名前なしセットは各シミュレーターのタイトルと既存番号を表示する`() {
         listOf(
-            "lmu_windows" to "LMU(Windows)セット1",
+            "lmu_windows" to "LMU (Win)セット1",
             "gt7_ps5" to "GT7セット1",
             "ace_windows" to "ACEセット1",
         ).forEach { (simulatorId, expectedTitle) ->
@@ -127,8 +127,8 @@ class ManualReadoutListPaneTest {
 
         rule.onNodeWithText("Ctrl+Shift+A", useUnmergedTree = true).assertDoesNotExist()
         rule.onNodeWithText("未設定", useUnmergedTree = true).assertDoesNotExist()
-        rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
-        rule.onNodeWithText("LMU(Windows)セット2").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット1").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット2").assertIsDisplayed()
     }
 
     private fun showHotkeySets(showHotkeyChip: Boolean) {
@@ -218,9 +218,9 @@ class ManualReadoutListPaneTest {
 
         rule.onNodeWithText("手動読み上げについて").assertIsDisplayed()
         rule.onNodeWithText("LMUの手動読み上げセットはまだありません").assertDoesNotExist()
-        rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット1").assertIsDisplayed()
         rule.onNodeWithText("項目なし").assertIsDisplayed()
-        rule.onNodeWithText("LMU(Windows)セット2").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット2").assertIsDisplayed()
         rule.onNodeWithText("燃料 2", useUnmergedTree = true).assertIsDisplayed()
         rule.onNodeWithContentDescription("セット 1 を読み上げ").assertIsDisplayed().assertIsNotEnabled()
         rule.onNodeWithContentDescription("セット 2 を読み上げ").assertIsDisplayed().assertIsNotEnabled()
@@ -389,7 +389,7 @@ class ManualReadoutListPaneTest {
         }
         rule.onNodeWithContentDescription("セット 1 を読み上げ").performClick()
         rule.runOnIdle { assertEquals(emptyList(), selected) }
-        rule.onNodeWithText("LMU(Windows)セット1").performClick()
+        rule.onNodeWithText("LMU (Win)セット1").performClick()
         rule.runOnIdle {
             assertEquals(listOf("set-1"), selected)
             assertEquals(listOf("set-1"), requested)
@@ -423,7 +423,7 @@ class ManualReadoutListPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("LMU(Windows)セット2").performTouchInput { longClick() }
+        rule.onNodeWithText("LMU (Win)セット2").performTouchInput { longClick() }
         rule.onNodeWithText("削除").assertIsDisplayed().performClick()
         rule.onNodeWithText("セットを削除しますか？").assertIsDisplayed()
         rule.onNodeWithText("この操作は取り消せません。").assertIsDisplayed()
@@ -435,7 +435,7 @@ class ManualReadoutListPaneTest {
         rule.onNodeWithText("セットを削除しますか？").assertDoesNotExist()
         rule.runOnIdle { assertEquals(emptyList(), deleted) }
         rule.mainClock.advanceTimeBy(500)
-        rule.onNodeWithText("LMU(Windows)セット2").performTouchInput { longClick() }
+        rule.onNodeWithText("LMU (Win)セット2").performTouchInput { longClick() }
         rule.onNodeWithText("削除").performClick()
         val deleteActions = rule.onAllNodesWithText("削除")
         deleteActions.assertCountEquals(1)
@@ -464,7 +464,7 @@ class ManualReadoutListPaneTest {
             }
         }
 
-        val row = rule.onNodeWithText("LMU(Windows)セット1")
+        val row = rule.onNodeWithText("LMU (Win)セット1")
         row.performTouchInput { longClick(Offset(10f, 10f)) }
         val edit = rule.onNodeWithText("編集")
         edit.assertIsDisplayed()
@@ -494,7 +494,7 @@ class ManualReadoutListPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
+        rule.onNodeWithText("LMU (Win)セット1").performTouchInput { longClick() }
         rule.onNodeWithText("編集").performClick()
         rule.runOnIdle { assertEquals(listOf("set-1"), selected) }
         rule.onNodeWithText("編集").assertDoesNotExist()

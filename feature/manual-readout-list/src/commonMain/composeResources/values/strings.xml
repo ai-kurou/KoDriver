@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="manual_readout_list_add_set">セットを追加</string>
-    <string name="manual_readout_list_set_title_lmu">LMU(Windows)セット%1$d</string>
+    <string name="manual_readout_list_set_title_lmu">LMU (Win)セット%1$d</string>
     <string name="manual_readout_list_set_title_gt7">GT7セット%1$d</string>
     <string name="manual_readout_list_set_title_ace">ACEセット%1$d</string>
     <string name="manual_readout_list_no_items">項目なし</string>

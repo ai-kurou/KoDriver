@@ -36,9 +36,9 @@ class BaselineProfileGenerator {
             // クリティカルユーザージャーニーをプロファイル対象にする。
             // アイコンのcontentDescriptionはCompose Resourcesの非同期解決に依存し
             // 出現直後はUiAutomatorから見つからないことがあるため、
-            // 同期的に確定する短縮名テキスト（デフォルト選択中のLMU）をクリック対象にする。
-            device.requireText("LMU")
-            device.findObject(By.text("LMU")).click()
+            // 同期的に確定する短縮名テキスト（デフォルト選択中のLMU Windows版）をクリック対象にする。
+            device.requireText("LMU (Win)")
+            device.findObject(By.text("LMU (Win)")).click()
             // ダイアログ内のシミュレーター項目はtextではなくcontentDescriptionとして露出する。
             device.requireObject(By.desc("Le Mans Ultimate（Windows版）"))
             device.findObject(By.desc("Le Mans Ultimate（Windows版）")).click()
