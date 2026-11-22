@@ -8,6 +8,7 @@ import kurou.kodriver.core.designsystem.generated.resources.fuel_row_background
 import kurou.kodriver.core.designsystem.generated.resources.pit_timing_row_background
 import kurou.kodriver.core.designsystem.generated.resources.tyre_row_background
 import kurou.kodriver.core.designsystem.generated.resources.vehicle_approach_row_background
+import kurou.kodriver.core.designsystem.generated.resources.vehicle_failure_row_background
 import kurou.kodriver.core.designsystem.generated.resources.virtual_energy_row_background
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -41,4 +42,7 @@ public enum class ReadoutBackground(
 
     /** ピットタイミング。 */
     PIT_TIMING(Res.drawable.pit_timing_row_background),
+
+    /** 車両故障。 */
+    VEHICLE_FAILURE(Res.drawable.vehicle_failure_row_background),
 }
