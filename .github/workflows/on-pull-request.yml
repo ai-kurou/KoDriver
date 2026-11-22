@@ -105,11 +105,26 @@ jobs:
     with:
       api-level: 36
 
-  # gradle/libs.versions.toml の android-minSdk と同じ値にする
+  resolve-min-sdk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      level: ${{ steps.min-sdk.outputs.level }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - id: min-sdk
+        uses: ./.github/actions/resolve-min-sdk
+
+  # API レベルは gradle/libs.versions.toml の android-minSdk から取得する（手動同期不要）
   android-test-min-sdk:
+    needs: resolve-min-sdk
     uses: ./.github/workflows/_android-test.yml
     with:
-      api-level: 28
+      api-level: ${{ fromJSON(needs.resolve-min-sdk.outputs.level) }}
 
   android-maestro-e2e:
     uses: ./.github/workflows/_e2e-android-maestro.yml

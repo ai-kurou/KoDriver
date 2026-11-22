@@ -1,0 +1,22 @@
+name: Resolve minSdk
+description: Read android-minSdk from gradle/libs.versions.toml and output it as `level`. Requires the repository to be checked out.
+
+outputs:
+  level:
+    description: "android-minSdk の値（例: 28）"
+    value: ${{ steps.resolve.outputs.level }}
+
+runs:
+  using: composite
+  steps:
+    - id: resolve
+      name: Read android-minSdk
+      shell: bash
+      run: |
+        set -euo pipefail
+        level="$(sed -nE 's/^android-minSdk *= *"([0-9]+)".*/\1/p' gradle/libs.versions.toml)"
+        if [ -z "$level" ]; then
+          echo "::error::android-minSdk を gradle/libs.versions.toml から取得できませんでした"
+          exit 1
+        fi
+        echo "level=$level" >> "$GITHUB_OUTPUT"

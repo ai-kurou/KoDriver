@@ -48,18 +48,20 @@ jobs:
           ref: ${{ inputs.ref }}
           persist-credentials: false
 
+      - name: Resolve minSdk
+        id: min-sdk
+        if: matrix.target == 'min-sdk'
+        uses: ./.github/actions/resolve-min-sdk
+
       - name: Resolve emulator API level
         id: api
         env:
           TARGET: ${{ matrix.target }}
+          MIN_SDK_LEVEL: ${{ steps.min-sdk.outputs.level }}
         run: |
           set -euo pipefail
           if [ "$TARGET" = "min-sdk" ]; then
-            level="$(sed -nE 's/^android-minSdk *= *"([0-9]+)".*/\1/p' gradle/libs.versions.toml)"
-            if [ -z "$level" ]; then
-              echo "::error::android-minSdk を gradle/libs.versions.toml から取得できませんでした"
-              exit 1
-            fi
+            level="$MIN_SDK_LEVEL"
           else
             level=36
           fi
